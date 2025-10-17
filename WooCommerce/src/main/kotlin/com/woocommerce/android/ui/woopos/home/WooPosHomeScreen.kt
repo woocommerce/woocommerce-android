@@ -116,7 +116,6 @@ private fun WooPosHomeScreen(
         cartWidthDp = cartWidthDp,
         totalsWidthDp = totalsWidthAnimatedDp,
         onHomeUIEvent = onHomeUIEvent,
-        onRetryCatalogSyncClicked = { onHomeUIEvent(WooPosHomeUIEvent.RetryCatalogSyncClicked) },
     )
 }
 
@@ -128,7 +127,6 @@ private fun WooPosHomeScreen(
     cartWidthDp: Dp,
     totalsWidthDp: Dp,
     onHomeUIEvent: (WooPosHomeUIEvent) -> Unit,
-    onRetryCatalogSyncClicked: () -> Unit = {},
 ) {
     Box(
         modifier = Modifier
@@ -151,9 +149,7 @@ private fun WooPosHomeScreen(
         ) {
             WooPosHomeScreenProducts(
                 modifier = Modifier
-                    .width(productsWidthDp),
-                catalogSyncState = state.catalogSyncState,
-                onRetryCatalogSyncClicked = onRetryCatalogSyncClicked
+                    .width(productsWidthDp)
             )
             WooPosHomeScreenCart(
                 modifier = Modifier
@@ -199,19 +195,11 @@ private fun Dialogs(
 }
 
 @Composable
-private fun WooPosHomeScreenProducts(
-    modifier: Modifier,
-    catalogSyncState: WooPosHomeState.CatalogSyncState = WooPosHomeState.CatalogSyncState.Idle,
-    onRetryCatalogSyncClicked: () -> Unit = {}
-) {
+private fun WooPosHomeScreenProducts(modifier: Modifier) {
     if (isPreviewMode()) {
         WooPosItemsScreenPreview(modifier)
     } else {
-        WooPosItemsScreen(
-            modifier = modifier,
-            catalogSyncState = catalogSyncState,
-            onRetryCatalogSyncClicked = onRetryCatalogSyncClicked
-        )
+        WooPosItemsScreen(modifier = modifier)
     }
 }
 

@@ -25,17 +25,12 @@ import com.woocommerce.android.ui.analytics.ranges.data.TodayRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.WeekToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YearToDateRangeData
 import com.woocommerce.android.ui.analytics.ranges.data.YesterdayRangeData
+import com.woocommerce.commons.stats.StatsTimeRange
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.WCStatsStore.StatsGranularity
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-
-@Parcelize
-data class StatsTimeRange(
-    val start: Date,
-    val end: Date
-) : Parcelable
 
 /**
  * This class represents the date range selection for the Analytics Hub and the Stats screen

@@ -34,7 +34,9 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
@@ -74,25 +76,29 @@ class RefundSummaryViewModel @Inject constructor(
     val refundSummaryStateLiveData = LiveDataDelegate(savedState, RefundSummaryViewState())
     private var refundSummaryState by refundSummaryStateLiveData
 
-    private lateinit var order: Order
+    private val order: Deferred<Order> by lazy {
+        viewModelScope.async {
+            requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId))
+        }
+    }
+
     private lateinit var gateway: PaymentGateway
 
     private var cardType = PaymentMethodType.CARD_PRESENT
     private var refundJob: Job? = null
     val isRefundInProgress: Boolean
         get() = refundJob?.isActive ?: false
-    private val formatCurrency: (BigDecimal) -> String
-        get() = currencyFormatter.buildBigDecimalFormatter(order.currency)
 
     init {
-        viewModelScope.launch {
-            order = requireNotNull(orderDetailRepository.getOrderById(navArgs.orderId))
-            gateway = loadPaymentGateway()
-            initRefundSummaryState()
+        launch {
+            val order = order.await()
+            gateway = loadPaymentGateway(order)
+            initRefundSummaryState(order)
         }
     }
 
-    fun onRefundIssued(reason: String) = viewModelScope.launch {
+    fun onRefundIssued(reason: String) = launch {
+        val order = order.await()
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
@@ -108,7 +114,7 @@ class RefundSummaryViewModel @Inject constructor(
             ShowRefundConfirmation(
                 resourceProvider.getString(
                     R.string.order_refunds_title_with_amount,
-                    formatCurrency(refundSummaryState.refundAmount!!)
+                    formatCurrency(refundSummaryState.refundAmount!!, order.currency)
                 ),
                 resourceProvider.getString(R.string.order_refunds_confirmation),
                 resourceProvider.getString(R.string.order_refunds_refund)
@@ -120,16 +126,18 @@ class RefundSummaryViewModel @Inject constructor(
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
                 refundJob = launch {
+                    val order = order.await()
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false
                     )
                     if (isInteracRefund()) {
                         triggerEvent(NavigateToCardReaderScreen(order.id, refundSummaryState.refundAmount!!))
                     } else {
+                        val formattedAmount = formatCurrency(refundSummaryState.refundAmount!!, order.currency)
                         triggerEvent(
                             ShowSnackbar(
                                 R.string.order_refunds_amount_refund_progress_message,
-                                arrayOf(formatCurrency(refundSummaryState.refundAmount!!))
+                                arrayOf(formattedAmount)
                             )
                         )
                         refund()
@@ -161,13 +169,13 @@ class RefundSummaryViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
-    private fun initRefundSummaryState() {
+    private fun initRefundSummaryState(order: Order) {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val refundAmount = navArgs.refundAmount.toBigDecimal()
             refundSummaryState = refundSummaryState.copy(
                 refundAmount = refundAmount,
-                refundAmountFormatted = formatCurrency(refundAmount),
-                previouslyRefunded = formatCurrency(order.refundTotal),
+                refundAmountFormatted = formatCurrency(refundAmount, order.currency),
+                previouslyRefunded = formatCurrency(order.refundTotal, order.currency),
                 isFormEnabled = true
             )
 
@@ -180,12 +188,12 @@ class RefundSummaryViewModel @Inject constructor(
                 }
                 updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                enrichRefundMethodWithCardDetails(gateway.title.ifBlank { gateway.methodTitle })
+                enrichRefundMethodWithCardDetails(order, gateway.title.ifBlank { gateway.methodTitle })
             }
         }
     }
 
-    private fun enrichRefundMethodWithCardDetails(refundMethod: String) {
+    private fun enrichRefundMethodWithCardDetails(order: Order, refundMethod: String) {
         val chargeId = order.chargeId
         if (chargeId != null) {
             loadCardDetails(chargeId, refundMethod)
@@ -227,7 +235,7 @@ class RefundSummaryViewModel @Inject constructor(
         )
     }
 
-    private suspend fun loadPaymentGateway(): PaymentGateway = withContext(coroutineDispatchers.io) {
+    private suspend fun loadPaymentGateway(order: Order): PaymentGateway = withContext(coroutineDispatchers.io) {
         val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
         return@withContext if (paymentGateway != null && paymentGateway.isEnabled) {
             paymentGateway
@@ -245,13 +253,14 @@ class RefundSummaryViewModel @Inject constructor(
     fun refund() {
         triggerUIMessageIfRefundIsInterac()
         launch {
-            val result = initiateRefund()
+            val order = order.await()
+            val result = initiateRefund(order)
             if (result.isError) {
-                trackRefundError(result)
+                trackRefundError(order, result)
                 triggerUIMessage()
             } else {
-                trackRefundSuccess(result)
-                updateRefundSummaryStateWithOrderNote()
+                trackRefundSuccess(order, result)
+                updateRefundSummaryStateWithOrderNote(order)
                 triggerEvent(ShowSnackbar(R.string.order_refunds_amount_refund_successful))
                 triggerEvent(Exit)
             }
@@ -264,7 +273,7 @@ class RefundSummaryViewModel @Inject constructor(
         }
     }
 
-    private suspend fun initiateRefund(): WooResult<WCRefundModel> {
+    private suspend fun initiateRefund(order: Order): WooResult<WCRefundModel> {
         return refundStore.createItemsRefund(
             site = selectedSite.get(),
             orderId = order.id,
@@ -276,7 +285,7 @@ class RefundSummaryViewModel @Inject constructor(
         )
     }
 
-    private fun trackRefundError(result: WooResult<WCRefundModel>) {
+    private fun trackRefundError(order: Order, result: WooResult<WCRefundModel>) {
         analyticsTrackerWrapper.track(
             REFUND_CREATE_FAILED,
             mapOf(
@@ -300,7 +309,7 @@ class RefundSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun trackRefundSuccess(result: WooResult<WCRefundModel>) {
+    private fun trackRefundSuccess(order: Order, result: WooResult<WCRefundModel>) {
         analyticsTrackerWrapper.track(
             REFUND_CREATE_SUCCESS,
             mapOf(
@@ -310,15 +319,15 @@ class RefundSummaryViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateRefundSummaryStateWithOrderNote() {
+    private suspend fun updateRefundSummaryStateWithOrderNote(order: Order) {
         refundSummaryState.refundReason?.let { reason ->
             if (reason.isNotBlank()) {
-                addOrderNote(reason)
+                addOrderNote(order, reason)
             }
         }
     }
 
-    private suspend fun addOrderNote(reason: String) {
+    private suspend fun addOrderNote(order: Order, reason: String) {
         val note = OrderNote(note = reason, isCustomerNote = false)
         orderDetailRepository.addOrderNote(order.id, note).fold(
             onSuccess = {
@@ -331,6 +340,10 @@ class RefundSummaryViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    private fun formatCurrency(amount: BigDecimal, currency: String): String {
+        return currencyFormatter.buildBigDecimalFormatter(currency)(amount)
     }
 
     private fun prepareTracksEventsDetails(exception: WooException) = mapOf(

@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -25,6 +26,7 @@ constructor(
     private val timestampManager: WooPosSyncTimestampManager,
     private val logger: WooPosLogWrapper,
     private val featureFlagM1Enabled: WooPosLocalCatalogM1Enabled,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -44,31 +46,47 @@ constructor(
 
         val site = selectedSite.getOrNull()
         if (site == null) {
-            logger.e("No selected WooCommerce site found, skipping local catalog sync")
+            logger.w("No selected WooCommerce site found, skipping local catalog sync")
             return Result.failure()
         }
 
-        logger.d("Starting full local catalog sync")
+        if (!preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)) {
+            logger.w("Periodic sync permanently disabled for site ${site.url}, skipping local catalog sync.")
+            return Result.failure()
+        }
 
-        val syncResult = syncRepository.syncLocalCatalogFull(site)
+        logger.d("Starting FULL local catalog sync")
 
-        return when (syncResult) {
+        val fullSyncResult = syncRepository.syncLocalCatalogFull(site)
+
+        return when (fullSyncResult) {
             is PosLocalCatalogSyncResult.Success -> {
                 logger.d(
-                    "Local catalog sync completed successfully. Products: ${syncResult.productsSynced}, " +
-                        "Variations: ${syncResult.variationsSynced}, Duration: ${syncResult.syncDurationMs}ms"
+                    "Local catalog FULL sync completed successfully. Products: ${fullSyncResult.productsSynced}, " +
+                        "Variations: ${fullSyncResult.variationsSynced}, Duration: ${fullSyncResult.syncDurationMs}ms"
                 )
                 timestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
+                logger.d("Starting Local catalog INCREMENTAL sync.")
+                val incrementalSyncResult = syncRepository.syncLocalCatalogIncremental(site)
+                if (incrementalSyncResult is PosLocalCatalogSyncResult.Failure) {
+                    logger.d(
+                        "Local catalog INCREMENTAL sync failed."
+                    )
+                }
                 Result.success()
             }
 
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
-                logger.e("Local catalog sync failed: ${syncResult.error}. Retrying ...")
+                logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }
+
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
-                // TBD Local Catalog - stop future syncs for this site if catalog too large
-                logger.e("Local catalog sync failed: ${syncResult.error}.")
+                preferencesRepository.disablePeriodicSyncForSite(site.siteId)
+                logger.e(
+                    "Local catalog FULL sync failed: ${fullSyncResult.error}. Permanently " +
+                        "disabling periodic sync for site ${site.url}."
+                )
                 Result.failure()
             }
         }

@@ -50,6 +50,7 @@ import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.models.SiteParameters
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel
+import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -106,6 +107,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
     private lateinit var getShippingMethodsWithOtherValue: GetShippingMethodsWithOtherValue
     protected lateinit var feedbackRepository: FeedbackRepository
     protected lateinit var fetchProductByIdentifier: FetchProductByIdentifier
+    private lateinit var wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler
 
     protected val defaultOrderValue = Order.getEmptyOrder(Date(), Date()).copy(id = 123)
 
@@ -219,6 +221,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             )
         }
         fetchProductByIdentifier = mock()
+        wooPosSurveysNotificationScheduler = mock()
     }
 
     protected abstract val tracksFlow: String
@@ -2175,6 +2178,7 @@ abstract class UnifiedOrderEditViewModelTest : BaseUnitTest() {
             getShippingMethodsWithOtherValue = getShippingMethodsWithOtherValue,
             feedbackRepository = feedbackRepository,
             fetchProductByIdentifier = fetchProductByIdentifier,
+            wooPosSurveysNotificationScheduler = wooPosSurveysNotificationScheduler,
         )
     }
 

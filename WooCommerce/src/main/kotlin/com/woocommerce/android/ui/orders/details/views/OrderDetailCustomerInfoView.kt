@@ -25,7 +25,9 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.orders.OrderCustomerHelper
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
+import com.woocommerce.android.util.PhoneContactOption
 import com.woocommerce.android.util.PhoneUtils
+import com.woocommerce.android.util.getAvailablePhoneContactOptions
 import com.woocommerce.android.widgets.AppRatingDialog
 
 class OrderDetailCustomerInfoView @JvmOverloads constructor(
@@ -36,8 +38,6 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     private companion object {
         const val KEY_SUPER_STATE = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-SUPER-STATE"
         const val KEY_IS_CUSTOMER_INFO_VIEW_EXPANDED = "ORDER-DETAIL-CUSTOMER-INFO-VIEW-IS_CUSTOMER_INFO_VIEW_EXPANDED"
-        private const val WHATSAPP_PACKAGE_NAME = "com.whatsapp"
-        private const val TELEGRAM_PACKAGE_NAME = "org.telegram.messenger"
     }
 
     private val binding = OrderDetailCustomerInfoBinding.inflate(LayoutInflater.from(ctx), this)
@@ -281,6 +281,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
                 binding.customerInfoMorePanel.expand()
                 binding.customerInfoViewMore.setOnClickListener(null)
             }
+
             else -> {
                 binding.customerInfoShippingAddr.setText(shippingAddress, R.string.order_detail_add_shipping_address)
                 binding.customerInfoShippingMethodSection.isVisible = order.shippingMethods.firstOrNull()?.let {
@@ -331,6 +332,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         val popup = PopupMenu(context, binding.customerInfoCallOrMessageBtn)
         popup.menuInflater.inflate(R.menu.menu_order_detail_phone_actions, popup.menu)
 
+        val contactOptions = context.getAvailablePhoneContactOptions()
+
         popup.menu.findItem(R.id.menu_call)?.setOnMenuItemClickListener {
             AnalyticsTracker.track(AnalyticsEvent.ORDER_DETAIL_CUSTOMER_INFO_PHONE_MENU_PHONE_TAPPED)
             OrderCustomerHelper.dialPhone(context, order, order.billingAddress.phone)
@@ -345,7 +348,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             true
         }
 
-        if (ActivityUtils.isAppInstalled(context, WHATSAPP_PACKAGE_NAME)) {
+        if (contactOptions.contains(PhoneContactOption.WHATSAPP)) {
             popup.menu.add(
                 0,
                 View.generateViewId(),
@@ -359,7 +362,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
             }
         }
 
-        if (ActivityUtils.isAppInstalled(context, TELEGRAM_PACKAGE_NAME)) {
+        if (contactOptions.contains(PhoneContactOption.TELEGRAM)) {
             popup.menu.add(
                 0,
                 View.generateViewId(),

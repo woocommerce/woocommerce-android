@@ -169,6 +169,7 @@
     <string name="date_timeframe_older_week">Older than a week</string>
     <string name="date_timeframe_older_month">Older than a month</string>
     <string name="date_compared_to">Compared to</string>
+    <string name="date_time_connector">at</string>
     <string name="images_unavailable_notice">The images are unavailable because your site is marked Private. You can change this by switching to Coming Soon mode.\n<a href="">Tap to learn more.</a></string>
     <!--
         Error Strings
@@ -3210,6 +3211,10 @@
     <string name="local_notification_blaze_no_campaign_reminder_description">Promote your products with Blaze Ads and increase your sales now.</string>
     <string name="local_notification_blaze_abandoned_campaign_reminder_title">Thinking about boosting your sales?</string>
     <string name="local_notification_blaze_abandoned_campaign_reminder_description">Get your products seen by millions with Blaze and boost your sales</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">Thinking about in-person sales?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Take a quick 2-minute survey to help us shape features you\'ll love.</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
 
     <!--
     First product published congratulatory feature
@@ -3649,6 +3654,24 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
+    <string name="woopos_settings_local_catalog_category">Catalog</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
+    <string name="woopos_settings_local_catalog_status">Catalog Status</string>
+    <string name="woopos_settings_local_catalog_size">Catalog Size</string>
+    <string name="woopos_settings_local_catalog_last_update">Last Update</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Last Full Update</string>
+    <string name="woopos_settings_local_catalog_settings">Manage Data Usage</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Allow full update on cellular data</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Download catalog updates using mobile data</string>
+    <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
+
+    <string name="woopos_date_never">Never</string>
+    <string name="woopos_date_just_now">Just now</string>
+    <string name="woopos_date_today_at">Today at %s</string>
+    <string name="woopos_date_yesterday_at">Yesterday at %s</string>
+
     <string name="woopos_settings_barcode_scanner_detail_title">Barcode Scanner Settings</string>
     <string name="woopos_settings_barcode_scanner_setup_title">Scanner Setup</string>
     <string name="woopos_settings_barcode_scanner_setup_subtitle">Configure and test your barcode scanner</string>
@@ -3769,8 +3792,24 @@
     <string name="woopos_coupons_pagination_error_title">Unable to load more coupons</string>
     <string name="woopos_coupons_pagination_error_description">Please check your internet connection and try again.</string>
 
+    <string name="woopos_orders_empty_list_title">No orders found</string>
+    <string name="woopos_orders_empty_list_message">Explore how you can increase your store sales.</string>
+    <string name="woopos_orders_empty_action_label">Learn more</string>
+    <string name="woopos_orders_empty_list_image_description">No orders</string>
+    <string name="woopos_orders_loading_error_title">Unable to load orders</string>
+    <string name="woopos_orders_loading_error_message">Please check your connection try again.</string>
+    <string name="woopos_orders_loading_error_retry_button">Retry</string>
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
+
+    <string name="woopos_orders_status_auto_draft">Draft</string>
+    <string name="woopos_orders_status_pending">Pending Payment</string>
+    <string name="woopos_orders_status_processing">Processing</string>
+    <string name="woopos_orders_status_on_hold">On hold</string>
+    <string name="woopos_orders_status_failed">Failed</string>
+    <string name="woopos_orders_status_cancelled">Cancelled</string>
+    <string name="woopos_orders_status_completed">Completed</string>
+    <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4138,6 +4177,33 @@
     <string name="bookings_tab_all">All</string>
     <string name="bookings_search_hint">Search bookings</string>
     <string name="bookings_search_with_filters_hint">Search filtered bookings</string>
+    <string name="bookings_sort_by_oldest_to_newest">Oldest to newest</string>
+    <string name="bookings_sort_by_newest_to_oldest">Newest to oldest</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">Oldest</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">Newest</string>
+    <string name="bookings_empty_state_title_default">No bookings found</string>
+    <string name="bookings_empty_state_title_today">No bookings today</string>
+    <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
+    <string name="bookings_empty_state_description_default">Incoming bookings will appear here, where you can view and manage them.</string>
+    <string name="bookings_empty_state_description_today">You don’t have any appointments or events scheduled for today.</string>
+    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled scheduled yet.</string>
+    <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
+    <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
+    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_empty_state_change_filters_button">Change filters</string>
+    <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
+    <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_show_bookings">Show bookings</string>
+    <string name="bookings_filter_title_team_member">Assigned team member</string>
+    <string name="bookings_filter_title_attendance_status">Attendance status</string>
+    <string name="bookings_filter_title_payment_status">Payment status</string>
+    <string name="bookings_filter_title_type">Booking type</string>
+    <string name="bookings_filter_customer_name">Customer name</string>
+    <string name="bookings_filter_location">Location</string>
+    <string name="bookings_filter_title_date">Date &amp; time</string>
+    <string name="bookings_filter_title_service_event">Service / Event</string>
+    <string name="bookings_filter_default">Any</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4176,6 +4242,8 @@
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
+    <string name="booking_fetch_error">Error fetching booking</string>
+
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
     <string name="about_automattic_legal_page_title">Legal and More</string>
@@ -4202,5 +4270,4 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
-
 </resources>

@@ -114,24 +114,12 @@ class OrderDetailShippingLabelsAdapter(
 
             // display origin address
             shippingLabel.originAddress?.let {
-                viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(
-                    it.getFullAddress(
-                        it.firstName,
-                        it.getEnvelopeAddress(),
-                        it.country.name
-                    )
-                )
+                viewBinding.shippingLabelItemShipFrom.setShippingLabelValue(it.getFullAddress())
             }
 
             // display destination address
             shippingLabel.destinationAddress?.let {
-                viewBinding.shippingLabelItemShipTo.setShippingLabelValue(
-                    it.getFullAddress(
-                        it.firstName,
-                        it.getEnvelopeAddress(),
-                        it.country.name
-                    )
-                )
+                viewBinding.shippingLabelItemShipTo.setShippingLabelValue(it.getFullAddress())
             }
 
             // Shipping label package info

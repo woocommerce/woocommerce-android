@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.woopos.home.items
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -12,33 +10,21 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.Button
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
-import com.woocommerce.android.ui.woopos.home.WooPosHomeState.CatalogSyncState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
@@ -54,11 +40,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun WooPosItemsScreen(
-    modifier: Modifier = Modifier,
-    catalogSyncState: CatalogSyncState = CatalogSyncState.Idle,
-    onRetryCatalogSyncClicked: () -> Unit = {}
-) {
+fun WooPosItemsScreen(modifier: Modifier = Modifier) {
     val productsViewState = rememberLazyListState()
     val couponsListState = rememberLazyListState()
     val productsViewModel: WooPosItemsViewModel = hiltViewModel()
@@ -68,8 +50,6 @@ fun WooPosItemsScreen(
         catalogSyncOverdueBannerStateFlow = productsViewModel.catalogSyncOverdueBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        catalogSyncState = catalogSyncState,
-        onRetryCatalogSync = onRetryCatalogSyncClicked,
         onUIEvent = { productsViewModel.onUIEvent(it) },
     )
 }
@@ -82,8 +62,6 @@ private fun WooPosItemsScreen(
     catalogSyncOverdueBannerStateFlow: StateFlow<WooPosItemsViewModel.CatalogSyncOverdueBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
-    catalogSyncState: CatalogSyncState,
-    onRetryCatalogSync: () -> Unit,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
 ) {
     val state = itemsStateFlow.collectAsState()
@@ -95,8 +73,6 @@ private fun WooPosItemsScreen(
         bannerState = catalogSyncOverdueBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
-        catalogSyncState = catalogSyncState,
-        onRetryCatalogSync = onRetryCatalogSync,
         onSearchEvent = {
             when (it) {
                 WooPosSearchUIEvent.Clear -> onUIEvent(WooPosItemsUIEvent.ClearSearchClicked)
@@ -128,13 +104,11 @@ private fun MainItemsList(
     bannerState: State<WooPosItemsViewModel.CatalogSyncOverdueBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
-    catalogSyncState: CatalogSyncState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onTabClicked: (WooPosItemsToolbarViewState.Tab) -> Unit,
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
     onSyncWarningBannerDismissed: () -> Unit,
-    onRetryCatalogSync: () -> Unit = {},
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier.fillMaxHeight()) {
@@ -203,15 +177,6 @@ private fun MainItemsList(
                 }
             }
         }
-
-        if (catalogSyncState is CatalogSyncState.Syncing ||
-            catalogSyncState is CatalogSyncState.Failed
-        ) {
-            CatalogSyncOverlay(
-                catalogSyncState = catalogSyncState,
-                onRetryClicked = onRetryCatalogSync
-            )
-        }
     }
 }
 
@@ -254,61 +219,6 @@ private fun getScreenState(state: WooPosItemsToolbarViewState): ScreenState {
     }
 }
 
-@Composable
-private fun CatalogSyncOverlay(
-    catalogSyncState: CatalogSyncState,
-    onRetryClicked: () -> Unit = {}
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.95f)),
-        contentAlignment = Alignment.Center
-    ) {
-        when (catalogSyncState) {
-            is CatalogSyncState.Syncing -> {
-                SyncingCatalogContent()
-            }
-            is CatalogSyncState.Failed -> {
-                SyncFailedContent(onRetryClicked = onRetryClicked)
-            }
-            else -> {
-                // Should not happen, but handle gracefully
-            }
-        }
-    }
-}
-
-@Suppress("WooPosDesignSystemSpacingUsageRule", "WooPosDesignSystemTextUsageRule")
-@Composable
-private fun SyncingCatalogContent() {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        WooPosCircularLoadingIndicator(modifier = Modifier.size(160.dp))
-        Spacer(modifier = Modifier.height(32.dp))
-        Text(
-            text = stringResource(R.string.woopos_home_syncing_catalog_title),
-            style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-    }
-}
-
-@Composable
-private fun SyncFailedContent(onRetryClicked: () -> Unit) {
-    WooPosErrorScreen(
-        message = stringResource(R.string.woopos_home_sync_failed_title),
-        reason = stringResource(R.string.woopos_home_sync_failed_message),
-        primaryButton = Button(
-            text = stringResource(R.string.woopos_home_sync_failed_retry_button),
-            click = onRetryClicked
-        )
-    )
-}
-
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 @WooPosPreview
@@ -332,8 +242,6 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
             catalogSyncOverdueBannerStateFlow = bannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
-            catalogSyncState = CatalogSyncState.Idle,
-            onRetryCatalogSync = {},
             onUIEvent = {},
         )
     }
@@ -362,8 +270,6 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
             catalogSyncOverdueBannerStateFlow = bannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
-            catalogSyncState = CatalogSyncState.Idle,
-            onRetryCatalogSync = {},
             onUIEvent = {},
         )
     }

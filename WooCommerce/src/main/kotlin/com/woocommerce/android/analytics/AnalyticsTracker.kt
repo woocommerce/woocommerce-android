@@ -367,6 +367,8 @@ class AnalyticsTracker private constructor(
         const val VALUE_PRODUCT_ADDONS_FEEDBACK = "product_addons"
         const val VALUE_ANALYTICS_HUB_FEEDBACK = "analytics_hub"
         const val VALUE_ORDER_SHIPPING_LINES_FEEDBACK = "order_shipping_lines"
+        const val VALUE_WOO_POS_POTENTIAL_USER_FEEDBACK = "woo_pos_potential_user"
+        const val VALUE_WOO_POS_CURRENT_USER_FEEDBACK = "woo_pos_current_user"
         const val VALUE_STATE_ON = "on"
         const val VALUE_STATE_OFF = "off"
 

@@ -48,7 +48,8 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val _catalogSyncOverdueBannerState = MutableStateFlow<CatalogSyncOverdueBannerState>(CatalogSyncOverdueBannerState.Hidden)
+    private val _catalogSyncOverdueBannerState =
+        MutableStateFlow<CatalogSyncOverdueBannerState>(CatalogSyncOverdueBannerState.Hidden)
     val catalogSyncOverdueBannerState: StateFlow<CatalogSyncOverdueBannerState> = _catalogSyncOverdueBannerState
 
     init {

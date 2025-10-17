@@ -38,7 +38,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
 import com.woocommerce.android.ui.blaze.BlazeRepository
 import com.woocommerce.android.ui.blaze.creation.payment.BlazeCampaignPaymentSummaryViewModel.CampaignCreationState
-import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.clickableAnnotatedStringRes
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.ToolbarWithHelpButton
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -143,7 +143,7 @@ private fun PaymentSummaryContent(
                 .padding(horizontal = dimensionResource(id = R.dimen.major_100))
         )
 
-        val termsOfServices = annotatedStringRes(
+        val termsOfServices = clickableAnnotatedStringRes(
             stringResId = R.string.blaze_campaign_payment_summary_terms_and_conditions,
             onUrlClick = { url ->
                 when (url) {

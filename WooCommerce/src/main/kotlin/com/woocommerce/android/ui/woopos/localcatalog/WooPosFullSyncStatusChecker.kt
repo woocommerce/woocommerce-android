@@ -31,11 +31,6 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.Error("No site selected")
         }
 
-        if (!networkStatus.isConnected()) {
-            wooPosLogWrapper.d("Full sync check skipped: No network connection")
-            return WooPosFullSyncRequirement.Error("No network connection")
-        }
-
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
         val productCount = localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(site.id))
             .getOrElse {
@@ -44,21 +39,31 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             }
         val catalogIsEmpty = productCount == 0
 
+        if (lastFullSyncTimestamp == null) {
+            if (!networkStatus.isConnected()) {
+                wooPosLogWrapper.e("Cannot perform initial sync: No network connection")
+                return WooPosFullSyncRequirement.Error("No network connection")
+            }
+            wooPosLogWrapper.d("Full sync required: Never synced before")
+            return WooPosFullSyncRequirement.BlockingRequired
+        }
+
         return when {
-            lastFullSyncTimestamp == null -> {
-                wooPosLogWrapper.d("Full sync required: Never synced before")
-                WooPosFullSyncRequirement.BlockingRequired
-            }
-            catalogIsEmpty -> {
-                wooPosLogWrapper.d("Full sync required: Catalog is empty")
-                WooPosFullSyncRequirement.BlockingRequired
-            }
             isFullSyncOverdue(lastFullSyncTimestamp) -> {
-                wooPosLogWrapper.d("Full sync overdue (last sync: $lastFullSyncTimestamp), showing banner")
+                if (!networkStatus.isConnected()) {
+                    wooPosLogWrapper.d(
+                        "Full sync overdue but offline - allowing POS to load with cached data " +
+                            "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
+                    )
+                }
+                wooPosLogWrapper.d("Full sync overdue (last sync: $lastFullSyncTimestamp)")
                 WooPosFullSyncRequirement.Overdue
             }
             else -> {
-                wooPosLogWrapper.d("Full sync not required: Recent sync found at $lastFullSyncTimestamp")
+                wooPosLogWrapper.d(
+                    "Full sync not required: Recent sync at $lastFullSyncTimestamp " +
+                        "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
+                )
                 WooPosFullSyncRequirement.NotRequired
             }
         }

@@ -145,6 +145,7 @@ import com.woocommerce.android.ui.products.inventory.FetchProductByIdentifier
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem
 import com.woocommerce.android.ui.products.selector.ProductSelectorViewModel.SelectedItem.Product
 import com.woocommerce.android.ui.products.selector.variationIds
+import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -210,6 +211,7 @@ class OrderCreateEditViewModel @Inject constructor(
     private val totalsHelper: OrderCreateEditTotalsHelper,
     private val feedbackRepository: FeedbackRepository,
     private val fetchProductByIdentifier: FetchProductByIdentifier,
+    private val wooPosSurveysNotificationScheduler: WooPosSurveysNotificationScheduler,
     dateUtils: DateUtils,
     autoSyncOrder: AutoSyncOrder,
     autoSyncPriceModifier: AutoSyncPriceModifier,
@@ -1381,6 +1383,7 @@ class OrderCreateEditViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     trackOrderCreationSuccess()
+                    wooPosSurveysNotificationScheduler.schedulePotentialUserSurveyNotification()
                     onSuccess(it)
                 },
                 onFailure = {

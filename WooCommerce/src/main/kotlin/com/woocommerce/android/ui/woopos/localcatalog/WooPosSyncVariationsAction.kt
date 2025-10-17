@@ -32,10 +32,14 @@ class WooPosSyncVariationsAction @Inject constructor(
             val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
             posLocalCatalogStore.executeInTransaction {
-                // TBD local catalog We need to either remove variations that are no longer present on the server
-                // or delete all variations before we start inserting (low performance)
-                // or soft-delete all variations before we start inserting
-                posLocalCatalogStore.upsertVariations(variations)
+                val isFullSync = modifiedAfterGmt == null
+                if (isFullSync) {
+                    posLocalCatalogStore.deleteAllVariations(
+                        siteId = site.localId()
+                    ).getOrThrow()
+                }
+
+                posLocalCatalogStore.upsertVariations(variations).getOrThrow()
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog variations transaction committed successfully")
