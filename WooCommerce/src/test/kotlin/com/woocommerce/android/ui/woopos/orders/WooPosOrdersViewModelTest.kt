@@ -2,17 +2,18 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -43,7 +44,7 @@ class WooPosOrdersViewModelTest {
     private val wooStore: WooCommerceStore = org.mockito.kotlin.mock()
     private val selectedSite: SelectedSite = org.mockito.kotlin.mock()
     private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
-    private val productImageMap: ProductImageMap = org.mockito.kotlin.mock()
+    private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
     private val providedLocale: Locale = Locale.US
 
     private fun createViewModel(): WooPosOrdersViewModel {
@@ -53,7 +54,7 @@ class WooPosOrdersViewModelTest {
             selectedSite = selectedSite,
             resourceProvider = resourceProvider,
             locale = providedLocale,
-            productImageMap = productImageMap
+            getProductById = getProductById
         )
     }
 
@@ -86,7 +87,9 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
 
-        whenever(productImageMap.get(any())).thenReturn(null)
+        runBlocking {
+            whenever(getProductById.invoke(any())).thenReturn(null)
+        }
     }
 
     @Test
@@ -109,11 +112,11 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
         val content = state as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(2L, 3L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(2L, 3L)
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource).loadOrders()
-        assertThat(content.selectedOrderDetails.id).isEqualTo(2L)
+        assertThat(content.selectedDetails.id).isEqualTo(2L)
     }
 
     @Test
@@ -135,9 +138,9 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
         val content = state as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(10L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(10L)
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
-        assertThat(content.selectedOrderDetails.id).isEqualTo(10L)
+        assertThat(content.selectedDetails.id).isEqualTo(10L)
     }
 
     @Test
@@ -186,7 +189,7 @@ class WooPosOrdersViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
         val before = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(before.items.map { it.id }).containsExactly(1L)
+        assertThat(before.items.keys.map { it.id }).containsExactly(1L)
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
@@ -201,7 +204,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val after = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(after.items.map { it.id }).containsExactly(5L, 6L)
+        assertThat(after.items.keys.map { it.id }).containsExactly(5L, 6L)
         assertThat(after.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         verify(dataSource).clearCache()
         verify(dataSource, times(2)).loadOrders()
@@ -222,12 +225,11 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(state.selectedOrderId).isEqualTo(3L)
-        val selectedFlags = state.items.associate { it.id to it.isSelected }
+        val selectedFlags = state.items.keys.associate { it.id to it.isSelected }
         assertThat(selectedFlags[1L]).isFalse()
         assertThat(selectedFlags[2L]).isFalse()
         assertThat(selectedFlags[3L]).isTrue()
-        assertThat(state.selectedOrderDetails.id).isEqualTo(3L)
+        assertThat(state.selectedDetails.id).isEqualTo(3L)
     }
 
     @Test
@@ -254,9 +256,9 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(state.items.map { it.id }).containsExactly(300L, 400L)
-        assertThat(state.selectedOrderId).isEqualTo(300L)
-        assertThat(state.selectedOrderDetails.id).isEqualTo(300L)
+        assertThat(state.items.keys.map { it.id }).containsExactly(300L, 400L)
+        // first item should be auto-selected after reload
+        assertThat(state.selectedDetails.id).isEqualTo(300L)
     }
 
     @Test
@@ -295,7 +297,7 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
         val content = state as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(10L, 20L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(10L, 20L)
         assertThat(content.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
         verify(dataSource).searchOrders(query)
     }
@@ -355,7 +357,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
     }
 
@@ -376,7 +378,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(1L, 2L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(1L, 2L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.Error)
     }
 
@@ -421,11 +423,10 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
-        assertThat(content.selectedOrderId).isEqualTo(20L)
-        val selectedFlags = content.items.associate { it.id to it.isSelected }
+        assertThat(content.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
+        val selectedFlags = content.items.keys.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
-        assertThat(content.selectedOrderDetails.id).isEqualTo(20L)
+        assertThat(content.selectedDetails.id).isEqualTo(20L)
     }
 
     @Test
@@ -454,7 +455,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource).loadMore(query)
     }
@@ -477,7 +478,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN (pagination shows error)
         var content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(1L, 2L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(1L, 2L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.Error)
 
         // GIVEN (next call will succeed)
@@ -489,7 +490,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.items.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource).loadOrders()
         verify(dataSource, times(2)).loadMore()
@@ -510,7 +511,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val item = content.items.single { it.id == 42L }
+        val item = content.items.keys.single { it.id == 42L }
         assertThat(item.status.text).isEqualTo("On hold")
     }
 
@@ -529,7 +530,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val item = content.items.single { it.id == 77L }
+        val item = content.items.keys.single { it.id == 77L }
         assertThat(item.status.text).isEqualTo("Awaiting payment")
     }
 
@@ -547,52 +548,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val item = content.items.single { it.id == 11L }
+        val item = content.items.keys.single { it.id == 11L }
         assertThat(item.date).contains(" at ")
-    }
-
-    @Test
-    fun `given product image map returns url, when mapping selected details, then line item uses that url`() = runTest {
-        // GIVEN
-        val ord = order(101)
-        whenever(dataSource.loadOrders()).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(listOf(ord))) }
-        )
-        whenever(productImageMap.get(any())).thenReturn("https://example.com/image.jpg")
-
-        // WHEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        // THEN
-        val state = viewModel.state.value as WooPosOrdersState.Content
-        val details = state.selectedOrderDetails
-        assertThat(details.lineItems).isNotEmpty
-        assertThat(details.lineItems.all { it.imageUrl == "https://example.com/image.jpg" }).isTrue()
-    }
-
-    @Test
-    fun `given product fetch completes, when onProductFetched called, then selected details refresh and show image`() = runTest {
-        // GIVEN
-        val ord = order(202)
-        whenever(dataSource.loadOrders()).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(listOf(ord))) }
-        )
-        whenever(productImageMap.get(any()))
-            .thenReturn(null)
-            .thenReturn("https://example.com/img.png")
-
-        // WHEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        val affectedProductId = ord.items.firstOrNull()?.productId ?: 0L
-        viewModel.onProductFetched(affectedProductId)
-        advanceUntilIdle()
-
-        // THEN
-        val content = viewModel.state.value as WooPosOrdersState.Content
-        val details = content.selectedOrderDetails
-        assertThat(details.lineItems.any { it.imageUrl == "https://example.com/img.png" }).isTrue()
     }
 
     @Test
@@ -610,10 +567,12 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedOrderId).isEqualTo(2L)
-        assertThat(content.selectedOrderDetails.id).isEqualTo(2L)
-        assertThat(content.selectedOrderDetails.lineItems).isNotEmpty
-        assertThat(content.selectedOrderDetails.total).isEqualTo("$0.00")
+        // selected item should be 2, and selectedDetails should match
+        val selectedItemId = content.items.keys.single { it.isSelected }.id
+        assertThat(selectedItemId).isEqualTo(2L)
+        assertThat(content.selectedDetails.id).isEqualTo(2L)
+        assertThat(content.selectedDetails.lineItems).isNotEmpty
+        assertThat(content.selectedDetails.total).isEqualTo("$0.00")
     }
 
     @Test
@@ -635,7 +594,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val details = content.selectedOrderDetails
+        val details = content.selectedDetails
+        assertThat(content.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         assertThat(details.id).isEqualTo(20L)
         assertThat(details.totalPaid).isEqualTo("$0.00")
     }
@@ -658,7 +618,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedOrderId).isEqualTo(300L)
-        assertThat(content.selectedOrderDetails.id).isEqualTo(300L)
+        assertThat(content.items.keys.map { it.id }).containsExactly(300L, 400L)
+        assertThat(content.selectedDetails.id).isEqualTo(300L)
     }
 }
