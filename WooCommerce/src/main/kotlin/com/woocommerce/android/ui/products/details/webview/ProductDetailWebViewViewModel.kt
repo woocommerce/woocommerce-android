@@ -36,7 +36,8 @@ class ProductDetailWebViewViewModel @Inject constructor(
         emit(
             ViewState(
                 urlToLoad = urlToLoad,
-                title = product.name
+                title = product.name,
+                onBackClick = ::navigateBack
             )
         )
     }
@@ -52,6 +53,7 @@ class ProductDetailWebViewViewModel @Inject constructor(
 
     data class ViewState(
         val urlToLoad: String,
-        val title: String
+        val title: String,
+        val onBackClick: () -> Unit
     )
 }

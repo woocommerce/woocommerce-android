@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.products.details.webview
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -28,6 +29,8 @@ private fun ProductDetailWebViewScreen(
     webViewAuthenticator: WebViewAuthenticator,
     userAgent: UserAgent
 ) {
+    BackHandler(onBack = viewState.onBackClick)
+
     Scaffold(
         topBar = {
             Toolbar(
