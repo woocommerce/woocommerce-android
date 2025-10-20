@@ -177,7 +177,6 @@ class BookingDetailsViewModel @Inject constructor(
         BookingAttendanceStatus.Booked -> BookingEntity.AttendanceStatus.Booked
         BookingAttendanceStatus.CheckedIn -> BookingEntity.AttendanceStatus.CheckedIn
         BookingAttendanceStatus.NoShow -> BookingEntity.AttendanceStatus.NoShow
-        is BookingAttendanceStatus.Unknown,
         BookingAttendanceStatus.Cancelled -> null
     }
 

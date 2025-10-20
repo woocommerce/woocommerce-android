@@ -35,7 +35,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingAttendanceSection(
-    status: BookingAttendanceStatus,
+    status: BookingAttendanceStatus?,
     attendanceUpdateStatus: AttendanceUpdateStatus,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,

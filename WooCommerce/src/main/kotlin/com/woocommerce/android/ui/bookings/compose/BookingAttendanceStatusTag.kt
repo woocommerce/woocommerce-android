@@ -73,17 +73,16 @@ sealed interface BookingAttendanceStatus {
     data object CheckedIn : BookingAttendanceStatus
     data object NoShow : BookingAttendanceStatus
     data object Cancelled : BookingAttendanceStatus
-    data class Unknown(val key: String) : BookingAttendanceStatus
 }
 
 @Composable
-fun BookingAttendanceStatus.text(): String {
+fun BookingAttendanceStatus?.text(): String {
     return when (this) {
         BookingAttendanceStatus.Booked -> stringResource(R.string.booking_attendance_status_booked)
         BookingAttendanceStatus.CheckedIn -> stringResource(R.string.booking_attendance_status_checked_in)
         BookingAttendanceStatus.Cancelled -> stringResource(R.string.booking_attendance_status_cancelled)
         BookingAttendanceStatus.NoShow -> stringResource(R.string.booking_attendance_status_no_show)
-        is BookingAttendanceStatus.Unknown -> key
+        else -> ""
     }
 }
 

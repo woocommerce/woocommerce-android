@@ -121,11 +121,11 @@ class BookingMapper @Inject constructor(
         }
     }
 
-    private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus = when (this) {
+    private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus? = when (this) {
         BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
         BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
         BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
-        is BookingEntity.AttendanceStatus.Unknown -> BookingAttendanceStatus.Unknown(this.key)
+        is BookingEntity.AttendanceStatus.Unknown -> null
     }
 
     private fun BookingCustomerInfo.fullName(): String? {
