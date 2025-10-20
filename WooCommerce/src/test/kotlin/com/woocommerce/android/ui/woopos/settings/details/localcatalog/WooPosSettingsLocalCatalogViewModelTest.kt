@@ -1,13 +1,13 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
-import com.woocommerce.android.ui.woopos.settings.SettingsChildToParentEvent
-import com.woocommerce.android.ui.woopos.settings.SettingsParentToChildEvent
-import com.woocommerce.android.ui.woopos.settings.WooPosSettingsChildToParentEventSender
-import com.woocommerce.android.ui.woopos.settings.WooPosSettingsParentToChildEventReceiver
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -41,8 +41,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
     private val dateFormatter: WooPosDateFormatter = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
-    private val childToParentEventSender: WooPosSettingsChildToParentEventSender = mock()
-    private val parentToChildEventReceiver: WooPosSettingsParentToChildEventReceiver = mock()
+    private val childToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver = mock()
 
     private val siteModel = SiteModel()
 
@@ -73,7 +73,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         // THEN
         verify(childToParentEventSender).sendToParent(
             argThat {
-                this is SettingsChildToParentEvent.ShowSyncErrorDialog &&
+                this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
                     this.errorMessage == errorMessage
             }
         )
@@ -128,7 +128,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `given RetrySyncRequested event, when received from parent, then runFullCatalogSync is triggered`() = runTest {
         // GIVEN
-        val eventsFlow = MutableSharedFlow<SettingsParentToChildEvent>()
+        val eventsFlow = MutableSharedFlow<ParentToChildrenEvent>()
         whenever(parentToChildEventReceiver.events).thenReturn(eventsFlow)
         whenever(localCatalogSyncRepository.syncLocalCatalogFull(siteModel))
             .thenReturn(
@@ -143,7 +143,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         advanceUntilIdle()
 
         // WHEN
-        eventsFlow.emit(SettingsParentToChildEvent.RetrySyncRequested)
+        eventsFlow.emit(ParentToChildrenEvent.SettingsEvent.RetrySyncRequested)
         advanceUntilIdle()
 
         // THEN

@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.woopos.settings
 
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,15 +27,15 @@ class WooPosSettingsViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule()
 
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val childToParentEventReceiver: WooPosSettingsChildToParentEventReceiver = mock()
-    private val parentToChildEventSender: WooPosSettingsParentToChildEventSender = mock()
+    private val childToParentEventReceiver: WooPosChildrenToParentEventReceiver = mock()
+    private val parentToChildEventSender: WooPosParentToChildrenEventSender = mock()
 
     @Test
     fun `when ShowSyncErrorDialog event collected, then dialog state is shown`() = runTest {
         // GIVEN
         val errorMessage = "Network error"
         whenever(childToParentEventReceiver.events).thenReturn(
-            flowOf(SettingsChildToParentEvent.ShowSyncErrorDialog(errorMessage))
+            flowOf(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(errorMessage))
         )
 
         // WHEN
@@ -50,7 +54,7 @@ class WooPosSettingsViewModelTest {
         // GIVEN
         val errorMessage = "Network error"
         whenever(childToParentEventReceiver.events).thenReturn(
-            flowOf(SettingsChildToParentEvent.ShowSyncErrorDialog(errorMessage))
+            flowOf(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(errorMessage))
         )
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -67,7 +71,7 @@ class WooPosSettingsViewModelTest {
         // GIVEN
         val errorMessage = "Network error"
         whenever(childToParentEventReceiver.events).thenReturn(
-            flowOf(SettingsChildToParentEvent.ShowSyncErrorDialog(errorMessage))
+            flowOf(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(errorMessage))
         )
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -85,7 +89,7 @@ class WooPosSettingsViewModelTest {
         // GIVEN
         val errorMessage = "Network error"
         whenever(childToParentEventReceiver.events).thenReturn(
-            flowOf(SettingsChildToParentEvent.ShowSyncErrorDialog(errorMessage))
+            flowOf(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(errorMessage))
         )
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -95,9 +99,9 @@ class WooPosSettingsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        verify(parentToChildEventSender).sendToChild(
+        verify(parentToChildEventSender).sendToChildren(
             argThat {
-                this is SettingsParentToChildEvent.RetrySyncRequested
+                this is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested
             }
         )
     }
@@ -114,14 +118,14 @@ class WooPosSettingsViewModelTest {
     @Test
     fun `given multiple error events, when received, then dialog state is updated for each`() = runTest {
         // GIVEN
-        val eventsFlow = MutableSharedFlow<SettingsChildToParentEvent>()
+        val eventsFlow = MutableSharedFlow<ChildToParentEvent>()
         whenever(childToParentEventReceiver.events).thenReturn(eventsFlow)
 
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN & THEN
-        eventsFlow.emit(SettingsChildToParentEvent.ShowSyncErrorDialog("Error 1"))
+        eventsFlow.emit(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog("Error 1"))
         advanceUntilIdle()
         assertThat(viewModel.state.value.dialogState)
             .isInstanceOf(WooPosSettingsDialogState.SyncErrorDialog::class.java)
@@ -130,7 +134,7 @@ class WooPosSettingsViewModelTest {
 
         viewModel.hideDialog()
 
-        eventsFlow.emit(SettingsChildToParentEvent.ShowSyncErrorDialog("Error 2"))
+        eventsFlow.emit(ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog("Error 2"))
         advanceUntilIdle()
         assertThat((viewModel.state.value.dialogState as WooPosSettingsDialogState.SyncErrorDialog).errorMessage)
             .isEqualTo("Error 2")

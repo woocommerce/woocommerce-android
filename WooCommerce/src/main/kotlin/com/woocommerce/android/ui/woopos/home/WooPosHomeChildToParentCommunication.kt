@@ -99,6 +99,10 @@ sealed class ChildToParentEvent {
             val discountAmount: BigDecimal,
         )
     }
+
+    sealed class SettingsEvent : ChildToParentEvent() {
+        data class ShowSyncErrorDialog(val errorMessage: String) : SettingsEvent()
+    }
 }
 
 interface WooPosChildrenToParentEventReceiver {

@@ -3,13 +3,13 @@ package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
-import com.woocommerce.android.ui.woopos.settings.SettingsChildToParentEvent
-import com.woocommerce.android.ui.woopos.settings.SettingsParentToChildEvent
-import com.woocommerce.android.ui.woopos.settings.WooPosSettingsChildToParentEventSender
-import com.woocommerce.android.ui.woopos.settings.WooPosSettingsParentToChildEventReceiver
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
@@ -29,8 +29,8 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val dateFormatter: WooPosDateFormatter,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncScheduler: WooPosLocalCatalogSyncScheduler,
-    private val childToParentEventSender: WooPosSettingsChildToParentEventSender,
-    private val parentToChildEventReceiver: WooPosSettingsParentToChildEventReceiver,
+    private val childToParentEventSender: WooPosChildrenToParentEventSender,
+    private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
@@ -47,9 +47,10 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildEventReceiver.events.collect { event ->
                 when (event) {
-                    is SettingsParentToChildEvent.RetrySyncRequested -> {
+                    is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> {
                         runFullCatalogSync()
                     }
+                    else -> Unit
                 }
             }
         }
@@ -112,7 +113,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                 is PosLocalCatalogSyncResult.Failure -> {
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
                     childToParentEventSender.sendToParent(
-                        SettingsChildToParentEvent.ShowSyncErrorDialog(result.error)
+                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(result.error)
                     )
                 }
             }
