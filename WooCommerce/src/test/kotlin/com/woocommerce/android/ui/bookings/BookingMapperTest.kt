@@ -1,9 +1,12 @@
 package com.woocommerce.android.ui.bookings
 
+import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -98,7 +101,7 @@ class BookingMapperTest : BaseUnitTest() {
         val expectedTime = "${timeFormatter.format(start)} - ${timeFormatter.format(end)}"
 
         // WHEN
-        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus) }
+        val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
@@ -107,6 +110,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
         assertThat(model.duration).isEqualTo("90 min")
         assertThat(model.price).isEqualTo("$55.00")
+        assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
 
     @Test
@@ -169,12 +173,93 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.total).isEqualTo("$110.00")
     }
 
+    @Test
+    fun `given booking, when building cancel dialog message, then formats using booking details`() {
+        // GIVEN
+        val start = Instant.parse("2025-09-12T16:00:00Z")
+        val booking = sampleBooking(start = start, end = start.plus(Duration.ofHours(1)))
+        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
+        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
+
+        // WHEN
+        val message = mapper.buildCancelDialogMessage(booking)
+
+        // THEN
+        val customerName =
+            "${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}"
+        assertThat(message)
+            .isEqualTo(
+                UiString.UiStringRes(
+                    R.string.booking_cancel_dialog_message,
+                    listOf(
+                        UiString.UiStringText(customerName),
+                        UiString.UiStringText("${booking.order.productInfo?.name}"),
+                        UiString.UiStringText(expectedDate),
+                        UiString.UiStringText(expectedTime)
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `given booking without customer, when building cancel dialog message, then falls back to guest`() {
+        // GIVEN
+        val start = Instant.parse("2025-09-12T16:00:00Z")
+        val booking = sampleBooking(start = start, customerInfo = null)
+        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
+        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
+
+        // WHEN
+        val message = mapper.buildCancelDialogMessage(booking)
+
+        // THEN
+        assertThat(message)
+            .isEqualTo(
+                UiString.UiStringRes(
+                    R.string.booking_cancel_dialog_message,
+                    listOf(
+                        UiString.UiStringRes(R.string.customer_detail_guest_customer),
+                        UiString.UiStringText("${booking.order.productInfo?.name}"),
+                        UiString.UiStringText(expectedDate),
+                        UiString.UiStringText(expectedTime)
+                    )
+                )
+            )
+    }
+
+    @Test
+    fun `given processing order with COD payment method, when mapped to summary model, then status is PayAtLocation`() {
+        // GIVEN
+        val booking = sampleBooking().let { original ->
+            val paymentInfo = BookingPaymentInfo(
+                paymentMethodId = "cod",
+                paymentMethodTitle = "Cash on Delivery",
+                subtotal = BigDecimal("55.00"),
+                subtotalTax = BigDecimal("0.00"),
+                total = BigDecimal("55.00"),
+                totalTax = BigDecimal("0.00")
+            )
+            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "processing")
+            original.copy(order = orderWithPayment)
+        }
+
+        // WHEN
+        val model = mapper.run { booking.toBookingSummaryModel() }
+
+        // THEN
+        assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
+    }
+
     private fun sampleBooking(
         status: BookingEntity.Status = BookingEntity.Status.Confirmed,
         start: Instant = Instant.parse("2025-07-05T11:00:00Z"),
         end: Instant = start.plus(Duration.ofHours(1)),
         cost: String = "0.00",
-        currency: String = "USD"
+        currency: String = "USD",
+        customerInfo: BookingCustomerInfo? = BookingCustomerInfo(
+            billingFirstName = "Margarita",
+            billingLastName = "Nikolaevna"
+        )
     ): BookingEntity {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(1L),
@@ -199,10 +284,7 @@ class BookingMapperTest : BaseUnitTest() {
             order = BookingOrderInfo(
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),
-                customerInfo = BookingCustomerInfo(
-                    billingFirstName = "Margarita",
-                    billingLastName = "Nikolaevna"
-                )
+                customerInfo = customerInfo,
             )
         )
     }

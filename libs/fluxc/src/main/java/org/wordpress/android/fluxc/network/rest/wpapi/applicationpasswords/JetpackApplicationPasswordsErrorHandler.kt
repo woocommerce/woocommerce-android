@@ -39,7 +39,8 @@ class JetpackApplicationPasswordsErrorHandler @Inject constructor(
             httpStatusCode == TOO_MANY_REQUESTS ||
             apiErrorCode == "incorrect_password" ||
             apiErrorCode == ApplicationPasswordsManager.APPLICATION_PASSWORDS_DISABLED_ERROR_CODE ||
-            apiErrorCode == ApplicationPasswordsManager.APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE
+            apiErrorCode == ApplicationPasswordsManager.APPLICATION_PASSWORDS_DISABLED_USER_ERROR_CODE ||
+            apiErrorCode == ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
         ) {
             appLogWrapper.w(
                 AppLog.T.API,

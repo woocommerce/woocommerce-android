@@ -204,6 +204,57 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             .isEqualTo(BookingStaffMemberStatus.Unavailable)
     }
 
+    @Test
+    fun `when onCancelBooking called, then cancel dialog is shown with message`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 111L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onCancelBooking()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.dialogState).isNotNull
+    }
+
+    @Test
+    fun `given cancel dialog shown, when onDismissCancelDialog called, then dialog is hidden`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 222L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+        assertThat(stateWithDialog.dialogState).isNotNull
+
+        // When
+        stateWithDialog.dialogState?.negativeButton?.onClick()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.dialogState).isNull()
+    }
+
+    @Test
+    fun `given cancel dialog shown, when onConfirmCancelBooking called, then dialog is hidden`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("bookingId" to 333L))
+        val viewModel = createViewModel(savedState)
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+        assertThat(stateWithDialog.dialogState).isNotNull()
+
+        // When
+        stateWithDialog.dialogState?.positiveButton?.onClick()
+
+        // Then
+        val updated = viewModel.state.getOrAwaitValue()
+        assertThat(updated.dialogState).isNull()
+    }
+
     private fun createViewModel(
         savedState: SavedStateHandle,
     ): BookingDetailsViewModel {
