@@ -14,7 +14,7 @@ class WooPosPerformLocalCatalogInitialFullSync @Inject constructor(
         when (requirement) {
             is WooPosFullSyncRequirement.NotRequired,
             is WooPosFullSyncRequirement.Overdue -> {
-                emit(WooPosLocalCatalogInitialFullSyncState.Ready)
+                emit(WooPosLocalCatalogInitialFullSyncState.NotRequired)
             }
             is WooPosFullSyncRequirement.BlockingRequired -> {
                 performFullSync().collect { syncStatus ->
@@ -39,7 +39,7 @@ class WooPosPerformLocalCatalogInitialFullSync @Inject constructor(
 }
 
 sealed class WooPosLocalCatalogInitialFullSyncState {
-    data object Ready : WooPosLocalCatalogInitialFullSyncState()
+    data object NotRequired : WooPosLocalCatalogInitialFullSyncState()
     data object Syncing : WooPosLocalCatalogInitialFullSyncState()
     data object Completed : WooPosLocalCatalogInitialFullSyncState()
     data class Failed(val error: String) : WooPosLocalCatalogInitialFullSyncState()

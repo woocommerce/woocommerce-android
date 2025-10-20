@@ -157,7 +157,7 @@ class WooPosSplashViewModelTest {
     }
 
     private fun createSut(): WooPosSplashViewModel {
-        whenever(performInitialFullSync()).thenReturn(flowOf(WooPosLocalCatalogInitialFullSyncState.Ready))
+        whenever(performInitialFullSync()).thenReturn(flowOf(WooPosLocalCatalogInitialFullSyncState.NotRequired))
 
         return WooPosSplashViewModel(
             productsDataSource,

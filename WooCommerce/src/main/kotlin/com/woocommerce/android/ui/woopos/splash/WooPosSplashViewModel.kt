@@ -65,7 +65,7 @@ class WooPosSplashViewModel @Inject constructor(
         startTime: Long
     ) = FlowCollector<WooPosLocalCatalogInitialFullSyncState> { syncState ->
         when (syncState) {
-            is WooPosLocalCatalogInitialFullSyncState.Ready -> {
+            is WooPosLocalCatalogInitialFullSyncState.NotRequired -> {
                 _state.value = WooPosSplashState.Loaded
                 trackPosLoaded(startTime)
             }
