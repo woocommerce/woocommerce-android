@@ -103,9 +103,10 @@ private fun CatalogStatusSection(
 
         when (catalogStatus) {
             is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
-                StatusRow(
+                CatalogSizeRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = catalogStatus.catalogSize,
+                    productCount = catalogStatus.productCount,
+                    variationCount = catalogStatus.variationCount,
                     isLoading = false
                 )
                 StatusRow(
@@ -121,9 +122,10 @@ private fun CatalogStatusSection(
             }
             is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
             is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
-                StatusRow(
+                CatalogSizeRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = null,
+                    productCount = 0,
+                    variationCount = 0,
                     isLoading = true
                 )
                 StatusRow(
@@ -265,6 +267,53 @@ private fun StatusRow(
 }
 
 @Composable
+private fun CatalogSizeRow(
+    label: String,
+    productCount: Int,
+    variationCount: Int,
+    isLoading: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = WooPosSpacing.Small.value),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        WooPosText(
+            text = label,
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+
+        if (isLoading) {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .width(100.dp)
+                    .height(20.dp),
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.End
+            ) {
+                WooPosText(
+                    text = "$productCount products",
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                WooPosText(
+                    text = "$variationCount variations",
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun SectionTitle(title: String) {
     WooPosText(
         text = title,
@@ -281,7 +330,8 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
-                    catalogSize = "12.5 MB",
+                    productCount = 1250,
+                    variationCount = 3420,
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
