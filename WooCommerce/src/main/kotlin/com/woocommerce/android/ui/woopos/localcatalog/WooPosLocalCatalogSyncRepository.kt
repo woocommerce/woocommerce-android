@@ -100,18 +100,20 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, modifiedAfterGmt)
         if (productsCountResult.isFailure) {
-            logger.e("Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}")
-            return PosLocalCatalogSyncResult.Failure.UnexpectedError(
-                productsCountResult.exceptionOrNull()?.message ?: "Failed to fetch products count"
+            logger.w(
+                "Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}. " +
+                    "Skipping upfront catalog size check, will check during sync instead."
             )
+            return null
         }
 
         val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, modifiedAfterGmt)
         if (variationsCountResult.isFailure) {
-            logger.e("Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}")
-            return PosLocalCatalogSyncResult.Failure.UnexpectedError(
-                variationsCountResult.exceptionOrNull()?.message ?: "Failed to fetch variations count"
+            logger.w(
+                "Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}. " +
+                    "Skipping upfront catalog size check, will check during sync instead."
             )
+            return null
         }
 
         val totalProducts = productsCountResult.getOrThrow()

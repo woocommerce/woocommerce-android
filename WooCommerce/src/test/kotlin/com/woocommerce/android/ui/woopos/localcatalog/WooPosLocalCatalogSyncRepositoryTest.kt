@@ -250,30 +250,38 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given products count fetch fails, when sync starts, then returns UnexpectedError`() = testBlocking {
+    fun `given products count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
         // GIVEN
         whenever(posLocalCatalogStore.fetchProductsCount(any(), anyOrNull()))
-            .thenReturn(Result.failure(Exception("Network error")))
+            .thenReturn(Result.failure(Exception("Missing required header in response: X-WP-Total.")))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(100, "2024-01-01T12:00:00Z"))
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
 
         // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.UnexpectedError::class.java)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 
     @Test
-    fun `given variations count fetch fails, when sync starts, then returns UnexpectedError`() = testBlocking {
+    fun `given variations count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
         // GIVEN
         whenever(posLocalCatalogStore.fetchProductsCount(any(), anyOrNull()))
             .thenReturn(Result.success(500))
         whenever(posLocalCatalogStore.fetchVariationsCount(any(), anyOrNull()))
-            .thenReturn(Result.failure(Exception("Network error")))
+            .thenReturn(Result.failure(Exception("Missing required header in response: X-WP-Total.")))
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(500, "2024-01-01T12:00:00Z"))
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(200, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
 
         // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.UnexpectedError::class.java)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 }
