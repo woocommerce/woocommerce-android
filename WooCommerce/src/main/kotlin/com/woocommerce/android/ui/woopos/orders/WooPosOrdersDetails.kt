@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Inventory2
@@ -19,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -34,6 +36,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -86,7 +89,7 @@ private fun OrdersHeader(details: OrderDetailsViewState) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosText(
             text = details.dateTime,
-            style = WooPosTypography.BodySmall,
+            style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest
         )
 
@@ -94,7 +97,7 @@ private fun OrdersHeader(details: OrderDetailsViewState) {
             Spacer(Modifier.height(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = it,
-                style = WooPosTypography.BodySmall,
+                style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
         }
@@ -245,10 +248,11 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
             )
 
             details.paymentMethodTitle?.let {
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = it,
                     style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                 )
             }
 
@@ -323,7 +327,8 @@ private fun OrderLineItemImage(
                 .crossfade(true)
                 .build(),
             contentDescription = null,
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
     }
 }
