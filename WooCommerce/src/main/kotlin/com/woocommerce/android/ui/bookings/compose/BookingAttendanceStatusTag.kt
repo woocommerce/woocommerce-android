@@ -36,7 +36,7 @@ fun BookingAttendanceStatusTag(
 ) {
     val density = LocalDensity.current
     var skeletonSize by remember { mutableStateOf(DpSize.Zero) }
-    Box(modifier = Modifier) {
+    Box(modifier = modifier) {
         when (attendanceUpdateStatus) {
             AttendanceUpdateStatus.InProgress -> {
                 SkeletonView(
@@ -56,7 +56,7 @@ fun BookingAttendanceStatusTag(
                     backgroundColor = state.backgroundColor(),
                     textColor = colorResource(R.color.tagView_text),
                     fontWeight = FontWeight.Normal,
-                    modifier = modifier
+                    modifier = Modifier
                         .onSizeChanged {
                             with(density) {
                                 skeletonSize = DpSize(it.width.toDp(), it.height.toDp())
