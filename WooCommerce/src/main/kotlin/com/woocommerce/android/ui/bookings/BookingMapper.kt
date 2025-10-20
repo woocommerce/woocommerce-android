@@ -16,6 +16,9 @@ import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.normalizeDuration
+import com.woocommerce.android.util.toHumanReadableFormat
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
@@ -30,7 +33,8 @@ import javax.inject.Inject
 
 class BookingMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
-    private val getLocations: GetLocations
+    private val getLocations: GetLocations,
+    private val resourceProvider: ResourceProvider
 ) {
     private val summaryDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(
         FormatStyle.MEDIUM,
@@ -64,16 +68,18 @@ class BookingMapper @Inject constructor(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
     ): BookingAppointmentDetailsModel {
-        val durationMinutes = Duration.between(start, end).toMinutes()
+        val duration = Duration.between(start, end)
+            .normalizeDuration()
+            .toHumanReadableFormat(resourceProvider)
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
-            duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
+            duration = duration,
         )
     }
 

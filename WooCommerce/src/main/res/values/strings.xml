@@ -4262,6 +4262,14 @@
     <string name="booking_payment_view_order">View order</string>
     <string name="booking_fetch_error">Error fetching booking</string>
     <string name="booking_attendance_status_error">Error changing the attendance status</string>
+    <string name="booking_duration_minute">%1$d minute</string>
+    <string name="booking_duration_minutes">%1$d minutes</string>
+    <string name="booking_duration_hour">%1$d hour</string>
+    <string name="booking_duration_hours">%1$d hours</string>
+    <string name="booking_duration_day">%1$d day</string>
+    <string name="booking_duration_days">%1$d days</string>
+    <string name="booking_duration_second">%1$d second</string>
+    <string name="booking_duration_seconds">%1$d seconds</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

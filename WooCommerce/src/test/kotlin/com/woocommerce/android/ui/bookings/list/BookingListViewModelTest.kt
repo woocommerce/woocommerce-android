@@ -11,6 +11,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -52,7 +53,8 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val getLocations = mock<GetLocations>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
+    private val resourceProvider = mock<ResourceProvider>()
+    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
     private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
