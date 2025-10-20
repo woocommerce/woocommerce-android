@@ -142,7 +142,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         assertThat(catalogStatus).isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
 
         val availableStatus = catalogStatus as WooPosSettingsLocalCatalogState.CatalogStatus.Available
-        assertThat(availableStatus.productCount).isEqualTo(888)
+        assertThat(availableStatus.productCount).isEqualTo(999)
         assertThat(availableStatus.variationCount).isEqualTo(777)
         assertThat(availableStatus.lastUpdate).isEqualTo("Never")
         assertThat(availableStatus.lastFullUpdate).isEqualTo("Never")

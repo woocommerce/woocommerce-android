@@ -103,10 +103,13 @@ private fun CatalogStatusSection(
 
         when (catalogStatus) {
             is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
-                CatalogSizeRow(
+                StatusRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    productCount = catalogStatus.productCount,
-                    variationCount = catalogStatus.variationCount,
+                    value = stringResource(
+                        R.string.woopos_settings_local_catalog_size_format,
+                        catalogStatus.productCount,
+                        catalogStatus.variationCount
+                    ),
                     isLoading = false
                 )
                 StatusRow(
@@ -122,10 +125,9 @@ private fun CatalogStatusSection(
             }
             is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
             is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
-                CatalogSizeRow(
+                StatusRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    productCount = 0,
-                    variationCount = 0,
+                    value = null,
                     isLoading = true
                 )
                 StatusRow(
@@ -266,52 +268,6 @@ private fun StatusRow(
     }
 }
 
-@Composable
-private fun CatalogSizeRow(
-    label: String,
-    productCount: Int,
-    variationCount: Int,
-    isLoading: Boolean
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = WooPosSpacing.Small.value),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.Top
-    ) {
-        WooPosText(
-            text = label,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-
-        if (isLoading) {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(20.dp),
-            )
-        } else {
-            Column(
-                horizontalAlignment = Alignment.End
-            ) {
-                WooPosText(
-                    text = "$productCount products",
-                    style = WooPosTypography.BodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                WooPosText(
-                    text = "$variationCount variations",
-                    style = WooPosTypography.BodySmall,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-    }
-}
 
 @Composable
 private fun SectionTitle(title: String) {
