@@ -33,6 +33,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -52,8 +53,10 @@ fun WooPosOrderDetails(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Large.value,
+                start = WooPosSpacing.Medium.value,
+                end = WooPosSpacing.Medium.value,
+                top = WooPosSpacing.Large.value,
+                bottom = WooPosSpacing.XLarge.value
             )
     ) {
         Row {
@@ -110,7 +113,7 @@ private fun OrdersHeader(details: OrderDetailsViewState) {
 
 @Composable
 private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
-    WooPosCard {
+    WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_products_title),
@@ -185,7 +188,7 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 
 @Composable
 private fun OrdersTotals(details: OrderDetailsViewState) {
-    WooPosCard {
+    WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_totals_title),
