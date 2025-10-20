@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.take
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -51,7 +51,7 @@ class BookingListHandler @Inject constructor(
                 order = sortBy.toBookingsOrderOption()
             )
         } else {
-            searchResults.take(page * PAGE_SIZE)
+            searchResults.map { it.take(page * PAGE_SIZE) }
         }
     }.flatMapLatest { it }
 
