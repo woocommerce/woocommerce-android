@@ -245,7 +245,7 @@ class BookingMapperTest : BaseUnitTest() {
         }
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
