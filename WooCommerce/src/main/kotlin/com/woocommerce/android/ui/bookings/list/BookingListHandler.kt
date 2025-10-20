@@ -4,6 +4,7 @@ import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -23,6 +24,7 @@ class BookingListHandler @Inject constructor(
     companion object {
         @VisibleForTesting
         const val PAGE_SIZE = 25
+        private const val MIN_FETCH_DURATION_MS = 100L
     }
 
     private val mutex = Mutex()
@@ -75,7 +77,8 @@ class BookingListHandler @Inject constructor(
             }
             if (searchQuery.isEmpty()) {
                 // If the query is empty, return cached results directly
-                canLoadMore.set(false)
+                // Mimic network delay to allow the UI to show then hide the refreshing indicator
+                delay(MIN_FETCH_DURATION_MS)
                 Result.success(Unit)
             } else {
                 fetchBookings()
