@@ -15,6 +15,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.normalizeDuration
+import com.woocommerce.android.util.toHumanReadableFormat
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -65,8 +67,8 @@ class BookingMapper @Inject constructor(
         cancelStatus: CancelStatus,
     ): BookingAppointmentDetailsModel {
         val duration = Duration.between(start, end)
-            .normalizeBookingDuration()
-            .toHumanReadableFormat()
+            .normalizeDuration()
+            .toHumanReadableFormat(resourceProvider)
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
@@ -133,77 +135,6 @@ class BookingMapper @Inject constructor(
                 UiString.UiStringText(time)
             )
         )
-    }
-
-    /**
-     * Normalize booking duration by adjusting for precision issues.
-     *
-     * This function handles cases where a booking duration is very close to
-     * common time boundaries (days/hours) but falls short due to precision issues.
-     * It rounds up durations that are within one minute of these boundaries.
-     */
-    private fun Duration.normalizeBookingDuration(): Duration {
-        val dayInSeconds = Duration.ofDays(1).seconds
-        val hourInSeconds = Duration.ofHours(1).seconds
-        val minuteInSeconds = Duration.ofMinutes(1).seconds
-
-        var durationInSeconds = this.seconds
-        val boundaries = listOf(dayInSeconds, hourInSeconds)
-        for (boundary in boundaries) {
-            val remainder = durationInSeconds % boundary
-            val difference = if (remainder == 0L) 0L else boundary - remainder
-            if (difference > 0 && difference <= minuteInSeconds) {
-                durationInSeconds += difference
-            }
-        }
-        return Duration.ofSeconds(durationInSeconds)
-    }
-
-    @Suppress("LongMethod")
-    private fun Duration.toHumanReadableFormat(): String {
-        if (this < Duration.ofMinutes(1)) {
-            return resourceProvider.getQuantityString(
-                quantity = seconds.toInt(),
-                default = R.string.booking_duration_seconds,
-                one = R.string.booking_duration_second
-            )
-        }
-
-        val days = toDays()
-        val hours = minusDays(days).toHours()
-        val minutes = minusDays(days).minusHours(hours).toMinutes()
-
-        return buildString {
-            if (days > 0) {
-                append(
-                    resourceProvider.getQuantityString(
-                        quantity = days.toInt(),
-                        default = R.string.booking_duration_days,
-                        one = R.string.booking_duration_day
-                    )
-                )
-            }
-            if (hours > 0) {
-                append(" ")
-                append(
-                    resourceProvider.getQuantityString(
-                        quantity = hours.toInt(),
-                        default = R.string.booking_duration_hours,
-                        one = R.string.booking_duration_hour
-                    )
-                )
-            }
-            if (minutes > 0) {
-                append(" ")
-                append(
-                    resourceProvider.getQuantityString(
-                        quantity = minutes.toInt(),
-                        default = R.string.booking_duration_minutes,
-                        one = R.string.booking_duration_minute
-                    )
-                )
-            }
-        }.trim()
     }
 
     private suspend fun BookingCustomerInfo.address(): Address? {
