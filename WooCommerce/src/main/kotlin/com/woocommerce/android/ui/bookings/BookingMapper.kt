@@ -161,82 +161,49 @@ class BookingMapper @Inject constructor(
 
     @Suppress("LongMethod")
     private fun Duration.toHumanReadableFormat(): String {
-        val totalSeconds = seconds
-        val dayInSeconds = Duration.ofDays(1).toSeconds()
-        val hourInSeconds = Duration.ofHours(1).toSeconds()
-        val minuteInSeconds = Duration.ofMinutes(1).toSeconds()
-
-        return when {
-            totalSeconds >= dayInSeconds -> {
-                val days = (totalSeconds / dayInSeconds).toInt()
-                val hours = ((totalSeconds % dayInSeconds) / hourInSeconds).toInt()
-                val minutes = ((totalSeconds % hourInSeconds) / minuteInSeconds).toInt()
-
-                val parts = mutableListOf<String>()
-                parts += resourceProvider.getQuantityString(
-                    quantity = days,
-                    default = R.string.booking_duration_days,
-                    one = R.string.booking_duration_day
-                )
-                if (hours > 0) {
-                    parts += resourceProvider.getQuantityString(
-                        quantity = hours,
-                        default = R.string.booking_duration_hours,
-                        one = R.string.booking_duration_hour
-                    )
-                }
-                if (minutes > 0) {
-                    parts += resourceProvider.getQuantityString(
-                        quantity = minutes,
-                        default = R.string.booking_duration_minutes,
-                        one = R.string.booking_duration_minute
-                    )
-                }
-                parts.joinToString(separator = " ")
-            }
-
-            totalSeconds >= hourInSeconds -> {
-                val hours = (totalSeconds / hourInSeconds).toInt()
-                val minutes = ((totalSeconds % hourInSeconds) / minuteInSeconds).toInt()
-                if (minutes == 0) {
-                    resourceProvider.getQuantityString(
-                        quantity = hours,
-                        default = R.string.booking_duration_hours,
-                        one = R.string.booking_duration_hour
-                    )
-                } else {
-                    val hoursPart = resourceProvider.getQuantityString(
-                        quantity = hours,
-                        default = R.string.booking_duration_hours,
-                        one = R.string.booking_duration_hour
-                    )
-                    val minutesPart = resourceProvider.getQuantityString(
-                        quantity = minutes,
-                        default = R.string.booking_duration_minutes,
-                        one = R.string.booking_duration_minute
-                    )
-                    "$hoursPart $minutesPart"
-                }
-            }
-
-            totalSeconds >= minuteInSeconds -> {
-                val minutes = (totalSeconds / minuteInSeconds).toInt()
-                resourceProvider.getQuantityString(
-                    quantity = minutes,
-                    default = R.string.booking_duration_minutes,
-                    one = R.string.booking_duration_minute
-                )
-            }
-
-            else -> {
-                val seconds = totalSeconds.toInt()
-                resourceProvider.getQuantityString(
-                    quantity = seconds,
-                    default = R.string.booking_duration_seconds,
-                    one = R.string.booking_duration_second
-                )
-            }
+        if (this < Duration.ofMinutes(1)) {
+            return resourceProvider.getQuantityString(
+                quantity = seconds.toInt(),
+                default = R.string.booking_duration_seconds,
+                one = R.string.booking_duration_second
+            )
         }
+
+        val days = toDays()
+        val hours = minusDays(days).toHours()
+        val minutes = minusDays(days).minusHours(hours).toMinutes()
+
+        return buildString {
+            if (days > 0) {
+                append(
+                    resourceProvider.getQuantityString(
+                        quantity = days.toInt(),
+                        default = R.string.booking_duration_days,
+                        one = R.string.booking_duration_day
+                    )
+                )
+            }
+            if (hours > 0) {
+                append(" ")
+                append(
+                    resourceProvider.getQuantityString(
+                        quantity = hours.toInt(),
+                        default = R.string.booking_duration_hours,
+                        one = R.string.booking_duration_hour
+                    )
+                )
+            }
+            if (minutes > 0) {
+                append(" ")
+                append(
+                    resourceProvider.getQuantityString(
+                        quantity = minutes.toInt(),
+                        default = R.string.booking_duration_minutes,
+                        one = R.string.booking_duration_minute
+                    )
+                )
+            }
+        }.trim()
     }
 
     private suspend fun BookingCustomerInfo.address(): Address? {
