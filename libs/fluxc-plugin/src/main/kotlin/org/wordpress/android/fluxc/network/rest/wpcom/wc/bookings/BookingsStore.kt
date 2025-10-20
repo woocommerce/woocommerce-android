@@ -155,20 +155,26 @@ class BookingsStore @Inject internal constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val bookingDto = response.result
-                    val orderResult = bookingDto.orderId.takeIf { it != 0L }?.let {
-                        orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
+
+                    val storedBooking = bookingsDao.getBooking(
+                        localSiteId = site.localId(),
+                        bookingId = bookingId
+                    )
+                    if (storedBooking == null) {
+                        return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                     }
-                    if (orderResult?.isError == true) {
-                        return@withDefaultContext WooResult(orderResult.error)
-                    }
-                    val entity = with(bookingDtoMapper) {
-                        bookingDto.toEntity(
+
+                    with(bookingDtoMapper) {
+                        val updatedBooking = bookingDto.toEntity(
                             localSiteId = site.localId(),
-                            orderEntity = orderResult?.model,
+                            orderEntity = null,
+                        ).copy(
+                            // Preserve fields not returned by the API
+                            order = storedBooking.order,
                         )
+                        bookingsDao.insertOrReplace(updatedBooking)
+                        return@withDefaultContext WooResult(updatedBooking)
                     }
-                    bookingsDao.insertOrReplace(listOf(entity))
-                    WooResult(entity)
                 }
 
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
