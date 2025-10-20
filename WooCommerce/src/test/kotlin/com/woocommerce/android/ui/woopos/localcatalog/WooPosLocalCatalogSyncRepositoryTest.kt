@@ -15,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 
 @ExperimentalCoroutinesApi
 class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
@@ -25,6 +26,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
 
     @Before
     fun setup() {
@@ -40,6 +42,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,
+            posLocalCatalogStore = posLocalCatalogStore,
         )
 
         site = SiteModel().apply {

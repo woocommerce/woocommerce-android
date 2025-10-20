@@ -6,7 +6,9 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,6 +32,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -122,6 +125,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         return result
     }
+
+    suspend fun getProductCount(site: SiteModel): Int =
+        posLocalCatalogStore.getProductCount(LocalId(site.id)).getOrElse { 0 }
+
+    suspend fun getVariationCount(site: SiteModel): Int =
+        posLocalCatalogStore.getVariationCount(LocalId(site.id)).getOrElse { 0 }
+
 }
 
 private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
