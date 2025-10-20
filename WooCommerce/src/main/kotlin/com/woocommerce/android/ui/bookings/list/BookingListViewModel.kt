@@ -12,6 +12,7 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -19,7 +20,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
@@ -113,7 +116,7 @@ class BookingListViewModel @Inject constructor(
         monitorSearchAndFilterChanges()
     }
 
-    @OptIn(FlowPreview::class)
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private fun monitorSearchAndFilterChanges() {
         launch {
             var lastFetchParams: FetchParams? = null
@@ -137,17 +140,25 @@ class BookingListViewModel @Inject constructor(
                     selectedTab = tab,
                     filters = filters
                 )
-            }.collectLatest { fetchParams ->
+            }.flatMapLatest { fetchParams ->
+                refreshTrigger.map { true }
+                    .onStart { emit(false) }
+                    .map { isRefreshing -> Pair(fetchParams, isRefreshing) }
+            }.collectLatest { (fetchParams, isRefreshing) ->
                 // Cancel any ongoing fetch or load more operations
                 bookingsFetchJob?.cancel()
                 bookingsLoadMoreJob?.cancel()
 
-                val initialLoadingState = lastFetchParams.let { lastFetchParams ->
-                    if (lastFetchParams != null && lastFetchParams.sortOption != fetchParams.sortOption) {
-                        // When sort option changes, force refreshing state to indicate data reload
-                        BookingListLoadingState.Refreshing
-                    } else {
-                        BookingListLoadingState.Loading
+                val initialLoadingState = if (isRefreshing) {
+                    BookingListLoadingState.Refreshing
+                } else {
+                    lastFetchParams.let { lastFetchParams ->
+                        if (lastFetchParams != null && lastFetchParams.sortOption != fetchParams.sortOption) {
+                            // When sort option changes, force refreshing state to indicate data reload
+                            BookingListLoadingState.Refreshing
+                        } else {
+                            BookingListLoadingState.Loading
+                        }
                     }
                 }
 
@@ -156,13 +167,6 @@ class BookingListViewModel @Inject constructor(
                     initialLoadingState = initialLoadingState,
                     fetchParams = fetchParams
                 )
-
-                refreshTrigger.collect {
-                    fetchBookings(
-                        initialLoadingState = BookingListLoadingState.Refreshing,
-                        fetchParams = fetchParams
-                    )
-                }
             }
         }
     }
