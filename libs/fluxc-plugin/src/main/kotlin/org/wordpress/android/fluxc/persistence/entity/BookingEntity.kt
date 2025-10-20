@@ -99,7 +99,7 @@ data class BookingEntity(
 
         data class Unknown(override val key: String) : AttendanceStatus
 
-        companion object Companion {
+        companion object {
             fun fromKey(key: String): AttendanceStatus {
                 return when (key) {
                     Booked.key -> Booked
