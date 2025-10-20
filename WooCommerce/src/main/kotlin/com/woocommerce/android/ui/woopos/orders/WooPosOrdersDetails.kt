@@ -111,8 +111,8 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_products_title),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -186,8 +186,8 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_totals_title),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -198,6 +198,8 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
                 value = breakdown.products,
                 boldLabel = false
             )
+
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
 
             breakdown.discount?.let { discount ->
                 val label = if (breakdown.discountCode.isNullOrBlank()) {
@@ -211,6 +213,8 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
                 TotalRowLine(label, discount, boldLabel = false)
             }
 
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
             TotalRowLine(
                 label = stringResource(R.string.woopos_orders_details_breakdown_taxes_label),
                 value = breakdown.taxes,
@@ -218,6 +222,7 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
             )
 
             breakdown.shipping?.let {
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
                 TotalRowLine(
                     label = stringResource(R.string.woopos_orders_details_breakdown_shipping_label),
                     value = it,
@@ -242,8 +247,8 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
             details.paymentMethodTitle?.let {
                 WooPosText(
                     text = it,
-                    style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
                 )
             }
 
@@ -291,7 +296,7 @@ private fun TotalRowLine(
         Spacer(Modifier.weight(1f))
         WooPosText(
             text = value,
-            style = WooPosTypography.BodySmall,
+            style = WooPosTypography.BodyMedium,
         )
     }
 }
