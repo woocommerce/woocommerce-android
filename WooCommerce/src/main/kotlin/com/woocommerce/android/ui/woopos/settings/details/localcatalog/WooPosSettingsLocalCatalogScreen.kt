@@ -64,10 +64,10 @@ fun WooPosSettingsLocalCatalogScreen(
 
 @Composable
 private fun WooPosSettingsLocalCatalogScreen(
+    modifier: Modifier = Modifier,
     state: WooPosSettingsLocalCatalogState,
     onToggleCellularData: (Boolean) -> Unit,
-    onRefreshCatalog: () -> Unit,
-    modifier: Modifier = Modifier
+    onRefreshCatalog: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -286,10 +286,10 @@ private fun SectionTitle(title: String) {
 
 @Composable
 fun WooPosSyncErrorDialog(
+    modifier: Modifier = Modifier,
     isVisible: Boolean,
     onRetry: () -> Unit,
-    onDismissRequest: () -> Unit,
-    modifier: Modifier = Modifier
+    onDismissRequest: () -> Unit
 ) {
     WooPosDialogWrapper(
         modifier = modifier,
