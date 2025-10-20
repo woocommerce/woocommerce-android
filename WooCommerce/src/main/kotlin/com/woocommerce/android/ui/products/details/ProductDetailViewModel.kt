@@ -24,6 +24,7 @@ import com.woocommerce.android.extensions.clearList
 import com.woocommerce.android.extensions.containsItem
 import com.woocommerce.android.extensions.fastStripHtml
 import com.woocommerce.android.extensions.getList
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.extensions.isEligibleForAI
 import com.woocommerce.android.extensions.isEmpty
 import com.woocommerce.android.extensions.isSitePublic
@@ -114,6 +115,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNot
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onCompletion
@@ -403,6 +405,7 @@ class ProductDetailViewModel @Inject constructor(
 
     init {
         start()
+        openInWebViewIfNeeded()
     }
 
     fun start() {
@@ -422,6 +425,17 @@ class ProductDetailViewModel @Inject constructor(
         }
 
         observeProductCategorySearchQuery()
+    }
+
+    fun openInWebViewIfNeeded() {
+        if (navArgs.mode !is ProductDetailFragment.Mode.ShowProduct) return
+
+        launch {
+            val product = storedProductAggregate.filterNotNull().first().product
+            if (selectedSite.get().isCIABSite() && product.productType == ProductType.BOOKING) {
+                triggerEvent(OpenProductInWebView(product.remoteId))
+            }
+        }
     }
 
     private fun initializeViewState() {
@@ -2725,6 +2739,8 @@ class ProductDetailViewModel @Inject constructor(
     data class ShowUpdateProductError(val message: String) : Event()
 
     data class TrashProduct(val productId: Long) : Event()
+
+    data class OpenProductInWebView(val productId: Long) : Event()
 
     /**
      * [productDraft] is used for the UI. Any updates to the fields in the UI would update this model.

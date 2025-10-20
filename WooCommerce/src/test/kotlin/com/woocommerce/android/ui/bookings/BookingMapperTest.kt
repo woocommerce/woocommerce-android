@@ -227,6 +227,29 @@ class BookingMapperTest : BaseUnitTest() {
             )
     }
 
+    @Test
+    fun `given processing order with COD payment method, when mapped to summary model, then status is PayAtLocation`() {
+        // GIVEN
+        val booking = sampleBooking().let { original ->
+            val paymentInfo = BookingPaymentInfo(
+                paymentMethodId = "cod",
+                paymentMethodTitle = "Cash on Delivery",
+                subtotal = BigDecimal("55.00"),
+                subtotalTax = BigDecimal("0.00"),
+                total = BigDecimal("55.00"),
+                totalTax = BigDecimal("0.00")
+            )
+            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "processing")
+            original.copy(order = orderWithPayment)
+        }
+
+        // WHEN
+        val model = mapper.run { booking.toBookingSummaryModel() }
+
+        // THEN
+        assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
+    }
+
     private fun sampleBooking(
         status: BookingEntity.Status = BookingEntity.Status.Confirmed,
         start: Instant = Instant.parse("2025-07-05T11:00:00Z"),

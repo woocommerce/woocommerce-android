@@ -175,4 +175,20 @@ class JetpackApplicationPasswordsErrorHandlerTests {
             )
         )
     }
+
+    @Test
+    fun `given KeyStore error, when handling error, then flag site as unsupported`() {
+        // Given
+        val baseError = BaseNetworkError(mock<VolleyError>())
+        val networkError = WPAPINetworkError(
+            baseError,
+            ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR
+        )
+
+        // When
+        errorHandler.handleError(testSite, networkError)
+
+        // Then
+        verify(jetpackApplicationPasswordsSupport).flagAsUnsupported(testSite)
+    }
 }

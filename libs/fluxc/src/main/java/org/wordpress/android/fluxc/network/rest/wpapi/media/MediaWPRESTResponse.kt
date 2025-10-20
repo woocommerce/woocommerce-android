@@ -40,7 +40,7 @@ data class MediaWPRESTResponse(
         val height: Int,
         val file: String?,
         val sizes: Sizes?
-    )
+    ) : JsonObjectOrEmptyArray()
 
     data class Sizes(
         val medium: ImageSize?,
@@ -80,9 +80,9 @@ fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
     StringEscapeUtils.unescapeHtml4(altText),
     mediaDetails.width,
     mediaDetails.height,
-        0,
-        null,
-        false,
+    0,
+    null,
+    false,
     if (MediaWPComRestResponse.DELETED_STATUS == status) {
         MediaUploadState.DELETED
     } else {

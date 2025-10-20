@@ -669,13 +669,7 @@ class ProductListFragment :
     private fun onProductClick(remoteProductId: Long, sharedView: View?) {
         if (shouldPreventDetailNavigation(remoteProductId)) return
         productListToolbar.disableSearchListeners()
-        (activity as? MainNavigationRouter)?.let { router ->
-            if (sharedView == null) {
-                router.showProductDetail(remoteProductId)
-            } else {
-                router.showProductDetailWithSharedTransition(remoteProductId, sharedView)
-            }
-        }
+        (activity as? MainNavigationRouter)?.showProductDetail(remoteProductId, sharedView = sharedView)
     }
 
     private fun showAddProductBottomSheet() {
