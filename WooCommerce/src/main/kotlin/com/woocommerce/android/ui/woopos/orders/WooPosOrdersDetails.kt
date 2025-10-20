@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,11 +10,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,7 +24,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -36,7 +34,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -52,8 +49,8 @@ fun WooPosOrderDetails(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(
-                horizontal = WooPosSpacing.Large.value,
-                vertical = WooPosSpacing.Medium.value
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Large.value,
             )
     ) {
         Row {
@@ -86,67 +83,46 @@ fun WooPosOrderDetails(
 
 @Composable
 private fun OrdersHeader(details: OrderDetailsViewState) {
-    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
-        val (dateTimeText, emailText, statusBadge, emailButton) = createRefs()
-
+    Column(modifier = Modifier.fillMaxWidth()) {
         WooPosText(
             text = details.dateTime,
             style = WooPosTypography.BodySmall,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.constrainAs(dateTimeText) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(emailButton.start, margin = WooPosSpacing.Medium.value)
-                width = Dimension.fillToConstraints
-            }
+            color = WooPosTheme.colors.onSurfaceVariantHighest
         )
 
         details.customerEmail?.takeIf { it.isNotBlank() }?.let {
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = it,
                 style = WooPosTypography.BodySmall,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                modifier = Modifier.constrainAs(emailText) {
-                    top.linkTo(dateTimeText.bottom, margin = WooPosSpacing.XSmall.value)
-                    start.linkTo(parent.start)
-                    end.linkTo(emailButton.start, margin = WooPosSpacing.Medium.value)
-                    width = Dimension.fillToConstraints
-                }
+                color = WooPosTheme.colors.onSurfaceVariantHighest
             )
         }
 
-        Box(
-            modifier = Modifier.constrainAs(statusBadge) {
-                top.linkTo(
-                    if (details.customerEmail?.isNotBlank() == true) emailText.bottom
-                    else dateTimeText.bottom,
-                    margin = WooPosSpacing.Small.value
-                )
-                start.linkTo(parent.start)
-            }
-        ) {
-            WooPosOrdersStatusBadge(status = details.status)
-        }
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosOrdersStatusBadge(status = details.status)
     }
 }
 
 @Composable
 private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
-    WooPosCard(
-        shape = MaterialTheme.shapes.medium,
-        backgroundColor = MaterialTheme.colorScheme.surface,
-        elevation = WooPosElevation.Medium,
-        shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
-    ) {
+    WooPosCard {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_products_title),
-                style = WooPosTypography.Heading
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
             )
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-            lineItems.forEach { row ->
-                OrderProductItem(row = row)
+            Spacer(Modifier.height(WooPosSpacing.Medium.value))
+
+            lineItems.forEachIndexed { ind, item ->
+                OrderProductItem(row = item)
+
+                if (ind < lineItems.size - 1) {
+                    DividerWithSpacing()
+                }
             }
         }
     }
@@ -171,11 +147,11 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 
         WooPosText(
             text = row.name,
-            style = WooPosTypography.BodySmall,
-            fontWeight = FontWeight.Medium,
+            style = WooPosTypography.BodyLarge,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameText) {
-                top.linkTo(parent.top)
-                start.linkTo(image.end)
+                top.linkTo(image.top)
+                start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
                 end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
                 width = Dimension.fillToConstraints
             }
@@ -183,11 +159,11 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 
         WooPosText(
             text = row.qtyAndUnitPrice,
-            style = WooPosTypography.BodySmall,
+            style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest,
             modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(nameText.bottom, margin = WooPosSpacing.XSmall.value)
-                start.linkTo(image.end)
+                bottom.linkTo(image.bottom)
+                start.linkTo(nameText.start)
                 end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
                 width = Dimension.fillToConstraints
             }
@@ -195,10 +171,9 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 
         WooPosText(
             text = row.lineTotal,
-            style = WooPosTypography.BodySmall,
+            style = WooPosTypography.BodyMedium,
             modifier = Modifier.constrainAs(totalText) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
+                top.linkTo(nameText.top)
                 end.linkTo(parent.end)
             }
         )
@@ -207,23 +182,21 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 
 @Composable
 private fun OrdersTotals(details: OrderDetailsViewState) {
-    WooPosCard(
-        shape = MaterialTheme.shapes.medium,
-        backgroundColor = MaterialTheme.colorScheme.surface,
-        elevation = WooPosElevation.Medium,
-        shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
-    ) {
+    WooPosCard {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_orders_details_totals_title),
-                style = WooPosTypography.Heading
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
             )
+
             Spacer(Modifier.height(WooPosSpacing.Small.value))
 
             val breakdown = details.breakdown
             TotalRowLine(
                 label = stringResource(R.string.woopos_orders_details_breakdown_products_label),
-                value = breakdown.products
+                value = breakdown.products,
+                boldLabel = false
             )
 
             breakdown.discount?.let { discount ->
@@ -235,43 +208,38 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
                         breakdown.discountCode
                     )
                 }
-                TotalRowLine(label, discount)
+                TotalRowLine(label, discount, boldLabel = false)
             }
 
             TotalRowLine(
                 label = stringResource(R.string.woopos_orders_details_breakdown_taxes_label),
-                value = breakdown.taxes
+                value = breakdown.taxes,
+                boldLabel = false,
             )
 
             breakdown.shipping?.let {
                 TotalRowLine(
                     label = stringResource(R.string.woopos_orders_details_breakdown_shipping_label),
-                    value = it
+                    value = it,
+                    boldLabel = false
                 )
             }
 
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-            )
+            DividerWithSpacing()
 
             TotalRowLine(
                 label = stringResource(R.string.woopos_orders_details_total_label),
                 value = details.total,
-                fontWeight = FontWeight.Bold,
-                paddingVertical = WooPosSpacing.Small.value
             )
+
+            DividerWithSpacing()
 
             TotalRowLine(
                 label = stringResource(R.string.woopos_orders_details_total_paid_label),
-                value = details.totalPaid
+                value = details.totalPaid,
             )
 
             details.paymentMethodTitle?.let {
-                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = it,
                     style = WooPosTypography.BodySmall,
@@ -280,25 +248,23 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
             }
 
             if (breakdown.refunds.isNotEmpty()) {
-                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                DividerWithSpacing()
                 breakdown.refunds.forEachIndexed { index, refundAmount ->
                     TotalRowLine(
                         label = stringResource(R.string.woopos_orders_details_refunded_label),
                         value = refundAmount
                     )
                     if (index < breakdown.refunds.size - 1) {
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                        DividerWithSpacing()
                     }
                 }
             }
 
             breakdown.netPayment?.let { netPayment ->
-                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                DividerWithSpacing()
                 TotalRowLine(
                     label = stringResource(R.string.woopos_orders_details_net_payment_label),
                     value = netPayment,
-                    fontWeight = FontWeight.Bold,
-                    paddingBottom = WooPosSpacing.Medium.value
                 )
             }
         }
@@ -309,32 +275,23 @@ private fun OrdersTotals(details: OrderDetailsViewState) {
 private fun TotalRowLine(
     label: String,
     value: String,
-    fontWeight: FontWeight? = null,
-    paddingVertical: Dp = WooPosSpacing.XSmall.value,
-    paddingBottom: Dp? = null
+    boldLabel: Boolean = true
 ) {
-    val modifier = if (paddingBottom != null) {
-        Modifier
-            .fillMaxWidth()
-            .padding(bottom = paddingBottom)
-    } else {
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = paddingVertical)
-    }
-
-    Row(modifier) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         WooPosText(
             text = label,
-            style = WooPosTypography.BodySmall,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            fontWeight = fontWeight,
-            modifier = Modifier.weight(1f)
+            style = if (boldLabel) WooPosTypography.BodyLarge else WooPosTypography.BodyMedium,
+            fontWeight = if (boldLabel) FontWeight.Bold else FontWeight.Normal,
+            color = if (boldLabel) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                WooPosTheme.colors.onSurfaceVariantHighest
+            }
         )
+        Spacer(Modifier.weight(1f))
         WooPosText(
             text = value,
             style = WooPosTypography.BodySmall,
-            fontWeight = fontWeight
         )
     }
 }
@@ -346,9 +303,7 @@ private fun OrderLineItemImage(
 ) {
     Box(
         modifier = modifier
-            .width(56.dp)
-            .height(56.dp)
-            .background(MaterialTheme.colorScheme.surfaceDim),
+            .size(56.dp),
         contentAlignment = Alignment.Center
     ) {
         Image(
@@ -366,6 +321,13 @@ private fun OrderLineItemImage(
             contentScale = ContentScale.Crop
         )
     }
+}
+
+@Composable
+private fun DividerWithSpacing() {
+    Spacer(Modifier.height(WooPosSpacing.Medium.value))
+    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 
 @WooPosPreview

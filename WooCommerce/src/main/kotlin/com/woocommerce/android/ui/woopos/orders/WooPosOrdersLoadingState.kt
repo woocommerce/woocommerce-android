@@ -214,7 +214,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         ProductLoadingItem()
                         if (it < 2) {
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant,)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                         }
                     }
