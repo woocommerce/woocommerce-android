@@ -268,7 +268,6 @@ private fun StatusRow(
     }
 }
 
-
 @Composable
 private fun SectionTitle(title: String) {
     WooPosText(

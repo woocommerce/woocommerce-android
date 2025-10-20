@@ -131,7 +131,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
     suspend fun getVariationCount(site: SiteModel): Int =
         posLocalCatalogStore.getVariationCount(LocalId(site.id)).getOrElse { 0 }
-
 }
 
 private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
