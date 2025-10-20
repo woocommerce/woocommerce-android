@@ -163,14 +163,14 @@ private fun OrdersContent(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceBright)
         )
 
         WooPosOrderDetails(
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                .background(MaterialTheme.colorScheme.surface),
             details = state.selectedDetails,
             onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
         )
