@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManag
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -49,6 +50,18 @@ class WooPosFullSyncStatusCheckerTest {
         wooPosLogWrapper = wooPosLogWrapper
     )
 
+    @Before
+    fun setup() = runTest {
+        val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
+        whenever(selectedSite.getOrNull()).thenReturn(siteModel)
+        whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
+            .thenReturn(Result.success(15))
+    }
+
     @Test
     fun `given feature flag disabled, when checkSyncRequirement called, then should return NotRequired`() = runTest {
         // GIVEN
@@ -66,7 +79,6 @@ class WooPosFullSyncStatusCheckerTest {
     @Test
     fun `given no site selected, when checkSyncRequirement called, then should return Error`() = runTest {
         // GIVEN
-        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         val sut = createSut()
@@ -80,31 +92,25 @@ class WooPosFullSyncStatusCheckerTest {
     }
 
     @Test
-    fun `given periodic sync disabled for site, when checkSyncRequirement called, then should return NotRequired`() = runTest {
-        // GIVEN
-        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(false)
+    fun `given periodic sync disabled for site, when checkSyncRequirement called, then should return NotRequired`() =
+        runTest {
+            // GIVEN
+            whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(false)
 
+            val sut = createSut()
 
-        val sut = createSut()
+            // WHEN
+            val result = sut.checkSyncRequirement()
 
-        // WHEN
-        val result = sut.checkSyncRequirement()
-
-        // THEN
-        assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
-    }
+            // THEN
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+        }
 
     @Test
     fun `given never synced before and network connected, when checkSyncRequirement called, then should return BlockingRequired`() =
         runTest {
             // GIVEN
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(null)
-            whenever(networkStatus.isConnected()).thenReturn(true)
-            whenever(localCatalogStore.getProductCount(any())).thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -119,11 +125,8 @@ class WooPosFullSyncStatusCheckerTest {
     fun `given never synced before and no network, when checkSyncRequirement called, then should return Error`() =
         runTest {
             // GIVEN
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(null)
             whenever(networkStatus.isConnected()).thenReturn(false)
-            whenever(localCatalogStore.getProductCount(any())).thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -140,12 +143,8 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(true)
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(10))
 
             val sut = createSut()
 
@@ -161,12 +160,8 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(false)
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(5))
 
             val sut = createSut()
 
@@ -182,8 +177,6 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -203,12 +196,7 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
-            whenever(networkStatus.isConnected()).thenReturn(true)
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(15))
 
             val sut = createSut()
 
@@ -224,12 +212,7 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             val exactThresholdTimestamp = System.currentTimeMillis() - 7.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(exactThresholdTimestamp)
-            whenever(networkStatus.isConnected()).thenReturn(true)
-            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
-                .thenReturn(Result.success(20))
 
             val sut = createSut()
 
@@ -244,11 +227,6 @@ class WooPosFullSyncStatusCheckerTest {
     fun `given product count fetch fails, when checkSyncRequirement called, then should treat as empty catalog`() =
         runTest {
             // GIVEN
-            val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-            whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-            whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
-            whenever(networkStatus.isConnected()).thenReturn(true)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.failure(Exception("Database error")))
 
