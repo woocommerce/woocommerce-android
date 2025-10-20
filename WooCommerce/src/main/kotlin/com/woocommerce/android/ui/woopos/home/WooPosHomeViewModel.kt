@@ -14,6 +14,8 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -31,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
+    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -53,6 +56,13 @@ class WooPosHomeViewModel @Inject constructor(
         listenBottomEvents()
         viewModelScope.launch {
             soundHelper.preloadChaChing()
+        }
+        performLocalCatalogIncrementalSync()
+    }
+
+    private fun performLocalCatalogIncrementalSync() {
+        viewModelScope.launch {
+            incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
         }
     }
 

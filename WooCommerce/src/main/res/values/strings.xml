@@ -3601,6 +3601,14 @@
     <!--
     Woo POS
     -->
+    <string name="woopos_home_syncing_catalog_title">Syncing product catalog</string>
+    <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_retry_button">Retry</string>
+    <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
+    <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
+
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -4258,6 +4266,14 @@
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
     <string name="booking_fetch_error">Error fetching booking</string>
+    <string name="booking_duration_minute">%1$d minute</string>
+    <string name="booking_duration_minutes">%1$d minutes</string>
+    <string name="booking_duration_hour">%1$d hour</string>
+    <string name="booking_duration_hours">%1$d hours</string>
+    <string name="booking_duration_day">%1$d day</string>
+    <string name="booking_duration_days">%1$d days</string>
+    <string name="booking_duration_second">%1$d second</string>
+    <string name="booking_duration_seconds">%1$d seconds</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

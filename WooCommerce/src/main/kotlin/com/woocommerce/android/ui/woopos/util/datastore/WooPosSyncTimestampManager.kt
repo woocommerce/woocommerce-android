@@ -35,6 +35,12 @@ class WooPosSyncTimestampManager @Inject constructor(
         timestampRepository.clearAllSyncTimestamps()
     }
 
+    suspend fun storeFullSyncLastCompletedTimestamp(timestamp: Long) {
+        timestampRepository.storeFullSyncLastCompletedTimestamp(timestamp)
+    }
+
+    suspend fun getFullSyncLastCompletedTimestamp(): Long? = timestampRepository.getFullSyncLastCompletedTimestamp()
+
     fun formatTimestampForApi(timestamp: Long): String {
         return defaultApiDateFormatter.format(Instant.ofEpochMilli(timestamp))
     }
