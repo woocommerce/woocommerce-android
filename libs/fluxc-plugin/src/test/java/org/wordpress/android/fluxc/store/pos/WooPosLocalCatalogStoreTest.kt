@@ -609,14 +609,14 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `when server date header is missing, then sync returns invalid response error`() = runTest {
+    fun `given sucessful response, when server date header is missing, then sync returns invalid response error`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
         val response = WooResult(remoteProducts)
         whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
-            .thenReturn(null) // Missing server date
+            .thenReturn(null)
 
         // WHEN
         val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
@@ -624,6 +624,30 @@ class WooPosLocalCatalogStoreTest {
         // THEN
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
+        assertThat(error).isNotNull
+    }
+
+    @Test
+    fun `given error response, when server date header is missing, then sync returns error response`() = runTest {
+        // GIVEN
+        val response = WooResult<Array<ProductApiResponse>> (
+            WooError(
+                type = WooErrorType.API_ERROR,
+                original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR,
+                message = "API error"
+            )
+        )
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+        whenever(headersParser.getServerDate(response))
+            .thenReturn(null)
+
+        // WHEN
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error).isNotNull
     }
 
