@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -30,6 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
@@ -79,31 +79,56 @@ private fun OrdersHeader(
     details: OrderDetailsViewState,
     onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(modifier = Modifier.weight(1f)) {
-            WooPosText(
-                text = details.dateTime,
-                style = WooPosTypography.BodySmall,
-                color = WooPosTheme.colors.onSurfaceVariantHighest
-            )
-            details.customerEmail?.takeIf { it.isNotBlank() }?.let {
-                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                WooPosText(
-                    text = it,
-                    style = WooPosTypography.BodySmall,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest
-                )
+    ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
+        val (dateTimeText, emailText, statusBadge, emailButton) = createRefs()
+
+        WooPosText(
+            text = details.dateTime,
+            style = WooPosTypography.BodySmall,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+            modifier = Modifier.constrainAs(dateTimeText) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(emailButton.start, margin = WooPosSpacing.Medium.value)
+                width = Dimension.fillToConstraints
             }
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
-            WooPosOrdersStatusBadge(details.status)
+        )
+
+        details.customerEmail?.takeIf { it.isNotBlank() }?.let {
+            WooPosText(
+                text = it,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(emailText) {
+                    top.linkTo(dateTimeText.bottom, margin = WooPosSpacing.XSmall.value)
+                    start.linkTo(parent.start)
+                    end.linkTo(emailButton.start, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
+                }
+            )
+        }
+
+        Box(
+            modifier = Modifier.constrainAs(statusBadge) {
+                top.linkTo(
+                    if (details.customerEmail?.isNotBlank() == true) emailText.bottom
+                    else dateTimeText.bottom,
+                    margin = WooPosSpacing.Small.value
+                )
+                start.linkTo(parent.start)
+            }
+        ) {
+            WooPosOrdersStatusBadge(status = details.status)
         }
 
         WooPosButton(
             text = stringResource(R.string.woopos_orders_email_receipt),
-            onClick = { onEmailReceiptButtonClicked(details.id) }
+            onClick = { onEmailReceiptButtonClicked(details.id) },
+            modifier = Modifier.constrainAs(emailButton) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }
         )
     }
 }
@@ -124,34 +149,62 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
             Spacer(Modifier.height(WooPosSpacing.Small.value))
 
             lineItems.forEach { row ->
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = WooPosSpacing.Small.value),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OrderLineItemImage(imageUrl = row.imageUrl)
-
-                    Column(Modifier.weight(1f)) {
-                        WooPosText(
-                            text = row.name,
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.Medium
-                        )
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                        WooPosText(
-                            text = row.qtyAndUnitPrice,
-                            style = WooPosTypography.BodySmall,
-                            color = WooPosTheme.colors.onSurfaceVariantHighest
-                        )
-                    }
-                    WooPosText(
-                        text = row.lineTotal,
-                        style = WooPosTypography.BodySmall
-                    )
-                }
+                OrderProductItem(row = row)
             }
         }
+    }
+}
+
+@Composable
+private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = WooPosSpacing.Small.value)
+    ) {
+        val (image, nameText, qtyText, totalText) = createRefs()
+
+        OrderLineItemImage(
+            imageUrl = row.imageUrl,
+            modifier = Modifier.constrainAs(image) {
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+            }
+        )
+
+        WooPosText(
+            text = row.name,
+            style = WooPosTypography.BodySmall,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.constrainAs(nameText) {
+                top.linkTo(parent.top)
+                start.linkTo(image.end)
+                end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        WooPosText(
+            text = row.qtyAndUnitPrice,
+            style = WooPosTypography.BodySmall,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+            modifier = Modifier.constrainAs(qtyText) {
+                top.linkTo(nameText.bottom, margin = WooPosSpacing.XSmall.value)
+                start.linkTo(image.end)
+                end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
+                width = Dimension.fillToConstraints
+            }
+        )
+
+        WooPosText(
+            text = row.lineTotal,
+            style = WooPosTypography.BodySmall,
+            modifier = Modifier.constrainAs(totalText) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                end.linkTo(parent.end)
+            }
+        )
     }
 }
 
@@ -290,12 +343,14 @@ private fun TotalRowLine(
 }
 
 @Composable
-private fun OrderLineItemImage(imageUrl: String?) {
+private fun OrderLineItemImage(
+    imageUrl: String?,
+    modifier: Modifier = Modifier
+) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .width(56.dp)
-            .fillMaxHeight()
-            .heightIn(min = 56.dp)
+            .height(56.dp)
             .background(MaterialTheme.colorScheme.surfaceDim),
         contentAlignment = Alignment.Center
     ) {
