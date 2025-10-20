@@ -51,6 +51,15 @@ class WooPosDateFormatter @Inject constructor(
     }
 
     /**
+     * Formats the date into a user-friendly string. Returns "Never" if timestamps is null.
+     */
+    fun formatCatalogLastFullSync(fullSyncTimestamp: Long?): String {
+        return fullSyncTimestamp?.let {
+            formatLastUpdateTimestamp(it)
+        } ?: context.getString(R.string.woopos_date_never)
+    }
+
+    /**
      * Formats a timestamp into a user-friendly string representation.
      * Shows:
      * - "Just now" for very recent updates (< 1 minute)
