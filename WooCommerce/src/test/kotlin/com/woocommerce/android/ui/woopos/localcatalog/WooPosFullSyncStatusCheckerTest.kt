@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -31,6 +32,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val prefsRepo: WooPosPreferencesRepository = mock()
 
     private val siteModel = SiteModel().apply {
         id = 123
@@ -43,6 +45,7 @@ class WooPosFullSyncStatusCheckerTest {
         networkStatus = networkStatus,
         wooPosLocalCatalogM1Enabled = wooPosLocalCatalogM1Enabled,
         localCatalogStore = localCatalogStore,
+        prefsRepo = prefsRepo,
         wooPosLogWrapper = wooPosLogWrapper
     )
 
@@ -74,6 +77,23 @@ class WooPosFullSyncStatusCheckerTest {
         // THEN
         assertThat(result).isInstanceOf(WooPosFullSyncRequirement.Error::class.java)
         assertThat((result as WooPosFullSyncRequirement.Error).message).isEqualTo("No site selected")
+    }
+
+    @Test
+    fun `given periodic sync disabled for site, when checkSyncRequirement called, then should return NotRequired`() = runTest {
+        // GIVEN
+        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
+        whenever(selectedSite.getOrNull()).thenReturn(siteModel)
+        whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(false)
+
+
+        val sut = createSut()
+
+        // WHEN
+        val result = sut.checkSyncRequirement()
+
+        // THEN
+        assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
     }
 
     @Test
