@@ -609,7 +609,7 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `given sucessful response, when server date header is missing, then sync returns invalid response error`() = runTest {
+    fun `given successful response, when server date header is missing, then sync returns invalid response error`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
         val response = WooResult(remoteProducts)
