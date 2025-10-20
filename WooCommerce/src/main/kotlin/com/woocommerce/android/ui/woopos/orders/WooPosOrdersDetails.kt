@@ -135,6 +135,7 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
     ConstraintLayout(
         modifier = Modifier

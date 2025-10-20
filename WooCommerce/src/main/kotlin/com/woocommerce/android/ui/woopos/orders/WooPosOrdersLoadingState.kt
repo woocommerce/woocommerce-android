@@ -242,6 +242,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun ProductLoadingItem() {
     ConstraintLayout(
         modifier = Modifier
