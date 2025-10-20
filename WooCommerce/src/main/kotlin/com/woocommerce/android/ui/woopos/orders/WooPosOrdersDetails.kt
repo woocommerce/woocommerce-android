@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -36,7 +37,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -46,258 +46,246 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState,
-    onEmailReceiptButtonClicked: (Long) -> Unit = {}
+    onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-        WooPosToolbar(
-            modifier = Modifier.fillMaxWidth(),
-            titleText = details.number,
-            onBackClicked = null
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(
+                horizontal = WooPosSpacing.Large.value,
+                vertical = WooPosSpacing.Medium.value
+            ),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
+    ) {
+        WooPosText(
+            text = details.number,
+            style = WooPosTypography.Heading
         )
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(
-                    start = WooPosSpacing.Large.value,
-                    end = WooPosSpacing.Large.value,
-                    top = WooPosSpacing.Medium.value,
-                    bottom = WooPosSpacing.XLarge.value
-                ),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    WooPosText(
-                        text = details.dateTime,
-                        style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantHighest
-                    )
-                    details.customerEmail?.takeIf { it.isNotBlank() }?.let {
+        OrdersHeader(
+            details = details,
+            onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+        )
+
+        OrdersProducts(lineItems = details.lineItems)
+
+        OrdersTotals(details = details)
+    }
+}
+
+@Composable
+private fun OrdersHeader(
+    details: OrderDetailsViewState,
+    onEmailReceiptButtonClicked: (Long) -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            WooPosText(
+                text = details.dateTime,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantHighest
+            )
+            details.customerEmail?.takeIf { it.isNotBlank() }?.let {
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = it,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
+                )
+            }
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+            WooPosOrdersStatusBadge(details.status)
+        }
+
+        WooPosButton(
+            text = stringResource(R.string.woopos_orders_email_receipt),
+            onClick = { onEmailReceiptButtonClicked(details.id) }
+        )
+    }
+}
+
+@Composable
+private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
+    WooPosCard(
+        shape = MaterialTheme.shapes.medium,
+        backgroundColor = MaterialTheme.colorScheme.surface,
+        elevation = WooPosElevation.Medium,
+        shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
+    ) {
+        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+            WooPosText(
+                text = stringResource(R.string.woopos_orders_details_products_title),
+                style = WooPosTypography.Heading
+            )
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+            lineItems.forEach { row ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = WooPosSpacing.Small.value),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    OrderLineItemImage(imageUrl = row.imageUrl)
+
+                    Column(Modifier.weight(1f)) {
+                        WooPosText(
+                            text = row.name,
+                            style = WooPosTypography.BodySmall,
+                            fontWeight = FontWeight.Medium
+                        )
                         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosText(
-                            text = it,
+                            text = row.qtyAndUnitPrice,
                             style = WooPosTypography.BodySmall,
                             color = WooPosTheme.colors.onSurfaceVariantHighest
                         )
                     }
-                    Spacer(Modifier.height(WooPosSpacing.Small.value))
-                    OrderStatusBadge(details.status)
-                }
-
-                WooPosButton(
-                    text = stringResource(R.string.woopos_orders_email_receipt),
-                    onClick = { onEmailReceiptButtonClicked(details.id) }
-                )
-            }
-
-            WooPosCard(
-                shape = MaterialTheme.shapes.medium,
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                elevation = WooPosElevation.Medium,
-                shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
-            ) {
-                Column(Modifier.padding(WooPosSpacing.Medium.value)) {
                     WooPosText(
-                        text = stringResource(R.string.woopos_orders_details_products_title),
-                        style = WooPosTypography.Heading
+                        text = row.lineTotal,
+                        style = WooPosTypography.BodySmall
                     )
-                    Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-                    details.lineItems.forEach { row ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = WooPosSpacing.Small.value),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            OrderLineItemImage(imageUrl = row.imageUrl)
-
-                            Column(Modifier.weight(1f)) {
-                                WooPosText(
-                                    text = row.name,
-                                    style = WooPosTypography.BodySmall,
-                                    fontWeight = FontWeight.Medium
-                                )
-                                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                                WooPosText(
-                                    text = row.qtyAndUnitPrice,
-                                    style = WooPosTypography.BodySmall,
-                                    color = WooPosTheme.colors.onSurfaceVariantHighest
-                                )
-                            }
-                            WooPosText(
-                                text = row.lineTotal,
-                                style = WooPosTypography.BodySmall
-                            )
-                        }
-                    }
-                }
-            }
-
-            WooPosCard(
-                shape = MaterialTheme.shapes.medium,
-                backgroundColor = MaterialTheme.colorScheme.surface,
-                elevation = WooPosElevation.Medium,
-                shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
-            ) {
-                Column(Modifier.padding(WooPosSpacing.Medium.value)) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_orders_details_totals_title),
-                        style = WooPosTypography.Heading
-                    )
-                    Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-                    @Composable
-                    fun RowLine(label: String, value: String) {
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = WooPosSpacing.XSmall.value)
-                        ) {
-                            WooPosText(
-                                text = label,
-                                style = WooPosTypography.BodySmall,
-                                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                                modifier = Modifier.weight(1f)
-                            )
-                            WooPosText(
-                                text = value,
-                                style = WooPosTypography.BodySmall
-                            )
-                        }
-                    }
-
-                    val b = details.breakdown
-                    RowLine(
-                        label = stringResource(R.string.woopos_orders_details_breakdown_products_label),
-                        value = b.products
-                    )
-
-                    b.discount?.let { d ->
-                        val label =
-                            if (b.discountCode.isNullOrBlank()) {
-                                stringResource(R.string.woopos_orders_details_breakdown_discount_label)
-                            } else {
-                                stringResource(
-                                    R.string.woopos_orders_details_breakdown_discount_with_code_label,
-                                    b.discountCode
-                                )
-                            }
-                        RowLine(label, d)
-                    }
-
-                    RowLine(
-                        label = stringResource(R.string.woopos_orders_details_breakdown_taxes_label),
-                        value = b.taxes
-                    )
-
-                    b.shipping?.let {
-                        RowLine(
-                            label = stringResource(R.string.woopos_orders_details_breakdown_shipping_label),
-                            value = it
-                        )
-                    }
-
-                    Spacer(Modifier.height(WooPosSpacing.Small.value))
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .height(1.dp)
-                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                    )
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = WooPosSpacing.Small.value)
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_orders_details_total_label),
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.weight(1f)
-                        )
-                        WooPosText(
-                            text = details.total,
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Row(
-                        Modifier
-                            .fillMaxWidth()
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_orders_details_total_paid_label),
-                            style = WooPosTypography.BodySmall,
-                            modifier = Modifier.weight(1f)
-                        )
-                        WooPosText(
-                            text = details.totalPaid,
-                            style = WooPosTypography.BodySmall
-                        )
-                    }
-                    details.paymentMethodTitle?.let {
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                        WooPosText(
-                            text = it,
-                            style = WooPosTypography.BodySmall,
-                            color = WooPosTheme.colors.onSurfaceVariantHighest,
-                        )
-                    }
-
-                    if (details.breakdown.refunds.isNotEmpty()) {
-                        Spacer(Modifier.height(WooPosSpacing.Small.value))
-                        details.breakdown.refunds.forEachIndexed { index, refundAmount ->
-                            Row(
-                                Modifier
-                                    .fillMaxWidth()
-                            ) {
-                                WooPosText(
-                                    text = stringResource(R.string.woopos_orders_details_refunded_label),
-                                    style = WooPosTypography.BodySmall,
-                                    modifier = Modifier.weight(1f)
-                                )
-                                WooPosText(
-                                    text = refundAmount,
-                                    style = WooPosTypography.BodySmall
-                                )
-                            }
-                            if (index < details.breakdown.refunds.size - 1) {
-                                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                            }
-                        }
-                    }
-
-                    details.breakdown.netPayment?.let { netPayment ->
-                        Spacer(Modifier.height(WooPosSpacing.Small.value))
-                        Row(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = WooPosSpacing.Medium.value)
-                        ) {
-                            WooPosText(
-                                text = stringResource(R.string.woopos_orders_details_net_payment_label),
-                                style = WooPosTypography.BodySmall,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.weight(1f)
-                            )
-                            WooPosText(
-                                text = netPayment,
-                                style = WooPosTypography.BodySmall,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun OrdersTotals(details: OrderDetailsViewState) {
+    WooPosCard(
+        shape = MaterialTheme.shapes.medium,
+        backgroundColor = MaterialTheme.colorScheme.surface,
+        elevation = WooPosElevation.Medium,
+        shadowType = com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType.Soft
+    ) {
+        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+            WooPosText(
+                text = stringResource(R.string.woopos_orders_details_totals_title),
+                style = WooPosTypography.Heading
+            )
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+            val breakdown = details.breakdown
+            TotalRowLine(
+                label = stringResource(R.string.woopos_orders_details_breakdown_products_label),
+                value = breakdown.products
+            )
+
+            breakdown.discount?.let { discount ->
+                val label = if (breakdown.discountCode.isNullOrBlank()) {
+                    stringResource(R.string.woopos_orders_details_breakdown_discount_label)
+                } else {
+                    stringResource(
+                        R.string.woopos_orders_details_breakdown_discount_with_code_label,
+                        breakdown.discountCode
+                    )
+                }
+                TotalRowLine(label, discount)
+            }
+
+            TotalRowLine(
+                label = stringResource(R.string.woopos_orders_details_breakdown_taxes_label),
+                value = breakdown.taxes
+            )
+
+            breakdown.shipping?.let {
+                TotalRowLine(
+                    label = stringResource(R.string.woopos_orders_details_breakdown_shipping_label),
+                    value = it
+                )
+            }
+
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+            )
+
+            TotalRowLine(
+                label = stringResource(R.string.woopos_orders_details_total_label),
+                value = details.total,
+                fontWeight = FontWeight.Bold,
+                paddingVertical = WooPosSpacing.Small.value
+            )
+
+            TotalRowLine(
+                label = stringResource(R.string.woopos_orders_details_total_paid_label),
+                value = details.totalPaid
+            )
+
+            details.paymentMethodTitle?.let {
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = it,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                )
+            }
+
+            if (breakdown.refunds.isNotEmpty()) {
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                breakdown.refunds.forEachIndexed { index, refundAmount ->
+                    TotalRowLine(
+                        label = stringResource(R.string.woopos_orders_details_refunded_label),
+                        value = refundAmount
+                    )
+                    if (index < breakdown.refunds.size - 1) {
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                    }
+                }
+            }
+
+            breakdown.netPayment?.let { netPayment ->
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
+                TotalRowLine(
+                    label = stringResource(R.string.woopos_orders_details_net_payment_label),
+                    value = netPayment,
+                    fontWeight = FontWeight.Bold,
+                    paddingBottom = WooPosSpacing.Medium.value
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun TotalRowLine(
+    label: String,
+    value: String,
+    fontWeight: FontWeight? = null,
+    paddingVertical: Dp = WooPosSpacing.XSmall.value,
+    paddingBottom: Dp? = null
+) {
+    val modifier = if (paddingBottom != null) {
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = paddingBottom)
+    } else {
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = paddingVertical)
+    }
+
+    Row(modifier) {
+        WooPosText(
+            text = label,
+            style = WooPosTypography.BodySmall,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+            fontWeight = fontWeight,
+            modifier = Modifier.weight(1f)
+        )
+        WooPosText(
+            text = value,
+            style = WooPosTypography.BodySmall,
+            fontWeight = fontWeight
+        )
     }
 }
 
