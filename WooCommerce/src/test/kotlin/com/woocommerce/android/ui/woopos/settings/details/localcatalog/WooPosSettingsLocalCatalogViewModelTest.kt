@@ -61,6 +61,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(1000L)
         whenever(dateFormatter.formatCatalogLastUpdate(anyOrNull(), anyOrNull())).thenReturn("Never")
         whenever(dateFormatter.formatCatalogLastFullSync(anyOrNull())).thenReturn("Never")
+        whenever(localCatalogSyncRepository.getProductCount(any())).thenReturn(150)
+        whenever(localCatalogSyncRepository.getVariationCount(any())).thenReturn(300)
     }
 
     @Test
@@ -130,6 +132,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `when init, then loading state gets replaced when data loads`() = runTest {
         // WHEN
+        whenever(localCatalogSyncRepository.getProductCount(any())).thenReturn(999)
+        whenever(localCatalogSyncRepository.getVariationCount(any())).thenReturn(777)
         sut = createViewModel()
         advanceUntilIdle()
 
@@ -138,7 +142,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
         assertThat(catalogStatus).isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
 
         val availableStatus = catalogStatus as WooPosSettingsLocalCatalogState.CatalogStatus.Available
-        assertThat(availableStatus.catalogSize).isEqualTo("8.3 MB")
+        assertThat(availableStatus.productCount).isEqualTo(888)
+        assertThat(availableStatus.variationCount).isEqualTo(777)
         assertThat(availableStatus.lastUpdate).isEqualTo("Never")
         assertThat(availableStatus.lastFullUpdate).isEqualTo("Never")
     }
