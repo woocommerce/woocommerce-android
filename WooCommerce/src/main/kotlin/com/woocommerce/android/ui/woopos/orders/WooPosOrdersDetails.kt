@@ -378,21 +378,21 @@ fun WooPosOrderDetailsPreview() {
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
         lineItems = listOf(
-            OrderDetailsViewState.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
-            OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
-            OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
+            OrderDetailsViewState.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
+            OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
+            OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $5.00", "$5.00", null)
         ),
         breakdown = OrderDetailsViewState.TotalsBreakdown(
             products = "$23.00",
             discount = "-$5.00",
-            discountCode = "8qew4mnq",
+            discountCode = "SAVE5",
             taxes = "$0.00",
             shipping = null,
             refunds = listOf("-$3.00", "-$2.00"),
-            netPayment = "$12.00"
+            netPayment = "$13.00"
         ),
-        total = "$17.00",
-        totalPaid = "$17.00",
+        total = "$18.00",
+        totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments"
     )
 
