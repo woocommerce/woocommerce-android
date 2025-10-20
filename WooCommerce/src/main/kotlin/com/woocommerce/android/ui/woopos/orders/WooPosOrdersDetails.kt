@@ -55,7 +55,7 @@ fun WooPosOrderDetails(
             .padding(
                 start = WooPosSpacing.Medium.value,
                 end = WooPosSpacing.Medium.value,
-                top = WooPosSpacing.Large.value,
+                top = WooPosSpacing.XLarge.value,
                 bottom = WooPosSpacing.XLarge.value
             )
     ) {
