@@ -34,7 +34,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -58,15 +58,21 @@ fun WooPosOrderDetails(
             ),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
     ) {
-        WooPosText(
-            text = details.number,
-            style = WooPosTypography.Heading
-        )
+        Row {
+            WooPosText(
+                text = details.number,
+                style = WooPosTypography.Heading
+            )
 
-        OrdersHeader(
-            details = details,
-            onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
-        )
+            Spacer(Modifier.weight(1f))
+
+            WooPosButtonSmall(
+                text = stringResource(R.string.woopos_orders_email_receipt),
+                onClick = { onEmailReceiptButtonClicked(details.id) },
+            )
+        }
+
+        OrdersHeader(details = details)
 
         OrdersProducts(lineItems = details.lineItems)
 
@@ -75,10 +81,7 @@ fun WooPosOrderDetails(
 }
 
 @Composable
-private fun OrdersHeader(
-    details: OrderDetailsViewState,
-    onEmailReceiptButtonClicked: (Long) -> Unit
-) {
+private fun OrdersHeader(details: OrderDetailsViewState) {
     ConstraintLayout(modifier = Modifier.fillMaxWidth()) {
         val (dateTimeText, emailText, statusBadge, emailButton) = createRefs()
 
@@ -120,16 +123,6 @@ private fun OrdersHeader(
         ) {
             WooPosOrdersStatusBadge(status = details.status)
         }
-
-        WooPosButton(
-            text = stringResource(R.string.woopos_orders_email_receipt),
-            onClick = { onEmailReceiptButtonClicked(details.id) },
-            modifier = Modifier.constrainAs(emailButton) {
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
-                end.linkTo(parent.end)
-            }
-        )
     }
 }
 
