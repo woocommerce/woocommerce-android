@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -55,8 +54,7 @@ fun WooPosOrderDetails(
             .padding(
                 horizontal = WooPosSpacing.Large.value,
                 vertical = WooPosSpacing.Medium.value
-            ),
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
+            )
     ) {
         Row {
             WooPosText(
@@ -72,9 +70,15 @@ fun WooPosOrderDetails(
             )
         }
 
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
         OrdersHeader(details = details)
 
+        Spacer(Modifier.height(WooPosSpacing.Large.value))
+
         OrdersProducts(lineItems = details.lineItems)
+
+        Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
         OrdersTotals(details = details)
     }
