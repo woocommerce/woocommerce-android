@@ -39,6 +39,6 @@ fun WooPosOrdersStatusBadge(status: PosOrderStatus) {
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosSpacing.Small.value))
             .background(bgColor)
-            .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
+            .padding(WooPosSpacing.Small.value)
     )
 }
