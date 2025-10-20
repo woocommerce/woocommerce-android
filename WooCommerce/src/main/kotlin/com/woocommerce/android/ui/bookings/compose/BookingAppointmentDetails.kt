@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,16 +90,9 @@ fun BookingAppointmentDetails(
                 ),
                 onClick = onCancelBooking,
                 enabled = model.cancelButtonEnabled,
-            ) {
-                if (model.cancelInProgressShown) {
-                    CircularProgressIndicator(
-                        color = LocalContentColor.current,
-                        modifier = Modifier.size(24.dp)
-                    )
-                } else {
-                    Text(text = stringResource(R.string.booking_details_cancel_booking_button))
-                }
-            }
+                text = stringResource(R.string.booking_details_cancel_booking_button),
+                loading = model.cancelInProgressShown,
+            )
             HorizontalDivider(thickness = 0.5.dp)
         }
     }
