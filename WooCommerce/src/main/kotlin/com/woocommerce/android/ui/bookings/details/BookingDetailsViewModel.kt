@@ -111,7 +111,11 @@ class BookingDetailsViewModel @Inject constructor(
                 } ?: "",
                 bookingUiState = bookingUiState,
                 onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                onAttendanceStatusSelected = { attendanceStatus ->
+                    if (attendanceStatus.toDataModel() != booking?.attendanceStatus) {
+                        onAttendanceStatusSelected(attendanceStatus)
+                    }
+                },
                 dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
