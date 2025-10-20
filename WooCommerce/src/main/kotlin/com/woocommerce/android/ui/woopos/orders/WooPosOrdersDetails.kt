@@ -62,7 +62,8 @@ fun WooPosOrderDetails(
         Row {
             WooPosText(
                 text = details.number,
-                style = WooPosTypography.Heading
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
             )
 
             Spacer(Modifier.weight(1f))
