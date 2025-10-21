@@ -191,6 +191,12 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
         exclude group: 'com.android.support', module: 'support-core-utils'
     }
+
+    constraints {
+        implementation(libs.androidx.wear.protolayout.expression) {
+            because("Horologist 0.7.15 uses Wear ProtoLayout 1.0.0-beta01, which has known issues.")
+        }
+    }
 }
 
 android.buildTypes.all { buildType ->
