@@ -38,7 +38,10 @@ class WooPosProductsDataSource @Inject constructor(
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     override suspend fun prepopulateProductsCache(): Result<Unit> {
-        return selectDataSource().prepopulateProductsCache()
+        return selectDataSource().let {
+            activeSource = it
+            prepopulateProductsCache()
+        }
     }
 
     override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
@@ -60,11 +63,12 @@ class WooPosProductsDataSource @Inject constructor(
 
     private suspend fun selectDataSource(): WooPosProductsDataSourceInterface {
         return when (syncStatusChecker.checkSyncRequirement()) {
-            is WooPosFullSyncRequirement.NotRequired -> remoteDataSource
-            is WooPosFullSyncRequirement.Error ->
-                throw NotImplementedError("Data source selection error handling not implemented")
+            is WooPosFullSyncRequirement.Error,
+            is WooPosFullSyncRequirement.NotRequired,
+            WooPosFullSyncRequirement.BlockingRequired,
+            WooPosFullSyncRequirement.Overdue -> localDbDataSource
 
-            WooPosFullSyncRequirement.BlockingRequired, WooPosFullSyncRequirement.Overdue -> localDbDataSource
+            is WooPosFullSyncRequirement.LocalCatalogDisabled -> remoteDataSource
         }
     }
 

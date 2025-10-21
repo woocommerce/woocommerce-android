@@ -24,7 +24,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         if (!wooPosLocalCatalogM1Enabled()) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog feature not enabled")
-            return WooPosFullSyncRequirement.NotRequired
+            return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog feature not enabled")
         }
 
         // TBD local catalog: check woo version
@@ -37,7 +37,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
         if (!prefsRepo.isPeriodicSyncEnabledForSite(site.siteId)) {
             wooPosLogWrapper.d("Full sync check skipped: Periodic Sync disabled for site.")
-            return WooPosFullSyncRequirement.NotRequired
+            return WooPosFullSyncRequirement.LocalCatalogDisabled("Periodic Sync disabled for site.")
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
@@ -95,4 +95,5 @@ sealed class WooPosFullSyncRequirement {
     data object Overdue : WooPosFullSyncRequirement()
     data object BlockingRequired : WooPosFullSyncRequirement()
     data class Error(val message: String) : WooPosFullSyncRequirement()
+    data class LocalCatalogDisabled(val message: String) : WooPosFullSyncRequirement()
 }
