@@ -13,4 +13,6 @@ interface WooPosProductsDataSourceInterface {
     val hasMorePages: Boolean
 
     suspend fun resetState()
+
+    suspend fun prepopulateProductsCache(): Result<Unit>
 }

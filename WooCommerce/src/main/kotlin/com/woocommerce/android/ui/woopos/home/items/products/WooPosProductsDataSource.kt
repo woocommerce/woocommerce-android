@@ -42,7 +42,7 @@ class WooPosProductsDataSource @Inject constructor(
 
     override suspend fun resetState() = remoteDataSource.resetState()
 
-    suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
+    override suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
 
     sealed class ProductsResult {
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
@@ -83,6 +83,8 @@ class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = Visibl
     override val hasMorePages: Boolean = false
 
     override suspend fun resetState() = Unit
+
+    override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
 }
 
 class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
@@ -99,7 +101,7 @@ class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = Visi
     override val hasMorePages: Boolean
         get() = canLoadMore.get()
 
-    suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
+    override suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
         productsCache.clear()
 
         val pageOne = async {
