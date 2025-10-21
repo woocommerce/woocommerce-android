@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -42,7 +43,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun OrderDetails(
+fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState,
     onEmailReceiptButtonClicked: (Long) -> Unit = {}
@@ -227,28 +228,73 @@ fun OrderDetails(
                             fontWeight = FontWeight.Bold
                         )
                     }
-                }
-            }
 
-            Column {
-                Row(Modifier.fillMaxWidth()) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_orders_details_total_paid_label),
-                        style = WooPosTypography.BodySmall,
-                        modifier = Modifier.weight(1f)
-                    )
-                    WooPosText(
-                        text = details.totalPaid,
-                        style = WooPosTypography.BodySmall
-                    )
-                }
-                details.paymentMethodTitle?.let {
-                    Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                    WooPosText(
-                        text = it,
-                        style = WooPosTypography.BodySmall,
-                        color = WooPosTheme.colors.onSurfaceVariantHighest
-                    )
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                    ) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_orders_details_total_paid_label),
+                            style = WooPosTypography.BodySmall,
+                            modifier = Modifier.weight(1f)
+                        )
+                        WooPosText(
+                            text = details.totalPaid,
+                            style = WooPosTypography.BodySmall
+                        )
+                    }
+                    details.paymentMethodTitle?.let {
+                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                        WooPosText(
+                            text = it,
+                            style = WooPosTypography.BodySmall,
+                            color = WooPosTheme.colors.onSurfaceVariantHighest,
+                        )
+                    }
+
+                    if (details.breakdown.refunds.isNotEmpty()) {
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+                        details.breakdown.refunds.forEachIndexed { index, refundAmount ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                WooPosText(
+                                    text = stringResource(R.string.woopos_orders_details_refunded_label),
+                                    style = WooPosTypography.BodySmall,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                WooPosText(
+                                    text = refundAmount,
+                                    style = WooPosTypography.BodySmall
+                                )
+                            }
+                            if (index < details.breakdown.refunds.size - 1) {
+                                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                            }
+                        }
+                    }
+
+                    details.breakdown.netPayment?.let { netPayment ->
+                        Spacer(Modifier.height(WooPosSpacing.Small.value))
+                        Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(bottom = WooPosSpacing.Medium.value)
+                        ) {
+                            WooPosText(
+                                text = stringResource(R.string.woopos_orders_details_net_payment_label),
+                                style = WooPosTypography.BodySmall,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.weight(1f)
+                            )
+                            WooPosText(
+                                text = netPayment,
+                                style = WooPosTypography.BodySmall,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -278,6 +324,42 @@ private fun OrderLineItemImage(imageUrl: String?) {
                 .build(),
             contentDescription = null,
             contentScale = ContentScale.Crop
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrderDetailsPreview() {
+    val orderDetails = OrderDetailsViewState(
+        id = 1L,
+        number = "#014",
+        dateTime = "Aug 28, 2025 at 10:31 AM",
+        customerEmail = "johndoe@mail.com",
+        status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
+        lineItems = listOf(
+            OrderDetailsViewState.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
+            OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
+            OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
+        ),
+        breakdown = OrderDetailsViewState.TotalsBreakdown(
+            products = "$23.00",
+            discount = "-$5.00",
+            discountCode = "8qew4mnq",
+            taxes = "$0.00",
+            shipping = null,
+            refunds = listOf("-$3.00", "-$2.00"),
+            netPayment = "$12.00"
+        ),
+        total = "$17.00",
+        totalPaid = "$17.00",
+        paymentMethodTitle = "WooCommerce In-Person Payments"
+    )
+
+    WooPosTheme {
+        WooPosOrderDetails(
+            details = orderDetails,
+            onEmailReceiptButtonClicked = {}
         )
     }
 }
