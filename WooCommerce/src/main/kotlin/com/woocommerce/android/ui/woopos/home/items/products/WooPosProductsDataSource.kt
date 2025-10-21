@@ -25,6 +25,28 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
+    private val remoteDataSource: WooPosProductsRemoteDataSource
+) : WooPosProductsDataSourceInterface {
+
+    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult>
+    = remoteDataSource.fetchFirstPage(forceRefresh)
+
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> = remoteDataSource.loadMore()
+
+    override val hasMorePages: Boolean
+        get() = remoteDataSource.hasMorePages
+
+    override suspend fun resetState() = remoteDataSource.resetState()
+
+    suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
+
+    sealed class ProductsResult {
+        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
+        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
+    }
+}
+
+class WooPosProductsRemoteDataSource @Inject private constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
@@ -82,21 +104,21 @@ class WooPosProductsDataSource @Inject constructor(
 
     override fun fetchFirstPage(
         forceRefresh: Boolean
-    ): Flow<ProductsResult> = flow {
+    ): Flow<WooPosProductsDataSource.ProductsResult> = flow {
         offset.set(0)
         productsIndex.clearCache()
 
         if (!forceRefresh) {
             val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
-            emit(ProductsResult.Cached(cachedProducts))
+            emit(WooPosProductsDataSource.ProductsResult.Cached(cachedProducts))
         }
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
+            emit(WooPosProductsDataSource.ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
-            emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
+            emit(WooPosProductsDataSource.ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
         }
     }.flowOn(Dispatchers.IO).take(2)
 
@@ -156,11 +178,6 @@ class WooPosProductsDataSource @Inject constructor(
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
         WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage")
-    }
-
-    sealed class ProductsResult {
-        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
     }
 
     override suspend fun resetState() {

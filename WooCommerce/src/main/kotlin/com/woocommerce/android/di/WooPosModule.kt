@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsInMemoryCache
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSourceInterface
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsInDbDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSourceInterface
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
@@ -27,15 +26,9 @@ abstract class WooPosModule {
         @Provides
         @Singleton
         fun provideWooPosProductsDataSource(
-            wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
             productsDataSource: WooPosProductsDataSource,
-            productsInDbDataSource: WooPosProductsInDbDataSource
         ): WooPosProductsDataSourceInterface {
-            return if (wooPosLocalCatalogM1Enabled()) {
-                productsInDbDataSource
-            } else {
-                productsDataSource
-            }
+            return productsDataSource
         }
 
         @Provides
