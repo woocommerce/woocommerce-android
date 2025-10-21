@@ -1,23 +1,32 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WOO_POS_DOCUMENTATION_URL
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -38,6 +47,9 @@ class WooPosOrdersViewModel @Inject constructor(
         WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
     )
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
+
+    private val _openUrlEvent = MutableSharedFlow<String>()
+    val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
@@ -115,7 +127,9 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrdersEmptyActionClicked() {
-        // Action to be defined
+        viewModelScope.launch {
+            _openUrlEvent.emit(AppUrls.URL_LEARN_MORE_ORDERS)
+        }
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
