@@ -157,6 +157,7 @@ private fun BookingDetailsContent(
         )
     }
     BookingNoteSection(
+        note = booking.note,
         onClick = {},
         modifier = Modifier.fillMaxWidth()
     )
@@ -256,7 +257,8 @@ private fun BookingDetailsPreview() {
                         tax = "$4.50",
                         discount = "-",
                         total = "$59.50"
-                    )
+                    ),
+                    note = ""
                 ),
             ),
             onBack = {},
