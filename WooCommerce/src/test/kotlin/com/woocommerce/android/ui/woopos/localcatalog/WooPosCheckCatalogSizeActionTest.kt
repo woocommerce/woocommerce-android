@@ -213,12 +213,12 @@ class WooPosCheckCatalogSizeActionTest {
         assertThat(catalogTooLarge.error).contains("exceed maximum of 300 items")
     }
 
-    private suspend fun givenProductsCount(count: Int, modifiedAfterGmt: String? = null) {
+    private suspend fun givenProductsCount(count: Int) {
         whenever(posLocalCatalogStore.fetchProductsCount(any(), anyOrNull()))
             .thenReturn(KotlinResult.success(count))
     }
 
-    private suspend fun givenVariationsCount(count: Int, modifiedAfterGmt: String? = null) {
+    private suspend fun givenVariationsCount(count: Int) {
         whenever(posLocalCatalogStore.fetchVariationsCount(any(), anyOrNull()))
             .thenReturn(KotlinResult.success(count))
     }
