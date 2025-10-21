@@ -97,7 +97,7 @@ class WooPosOrdersViewModel @Inject constructor(
         if (query.isNullOrEmpty()) {
             loadOrders()
         } else {
-            performSearch(query)
+            performSearch(query, isRefreshing = true)
         }
     }
 
@@ -217,17 +217,19 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun performSearch(query: String) {
+    private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
-            _state.value = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.Searching,
-                pullToRefreshState = WooPosPullToRefreshState.Disabled,
-                searchInputState = _state.value.searchInputState,
-                paginationState = WooPosPaginationState.None
-            )
+            if (!isRefreshing) {
+                _state.value = WooPosOrdersState.Content(
+                    items = WooPosOrdersState.Content.Items.Searching,
+                    pullToRefreshState = WooPosPullToRefreshState.Disabled,
+                    searchInputState = _state.value.searchInputState,
+                    paginationState = WooPosPaginationState.None
+                )
+            }
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
