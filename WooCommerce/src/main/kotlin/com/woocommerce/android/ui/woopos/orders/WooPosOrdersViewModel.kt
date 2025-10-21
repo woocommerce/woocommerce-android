@@ -158,7 +158,9 @@ class WooPosOrdersViewModel @Inject constructor(
             is WooPosSearchUIEvent.SearchIconClicked -> {
                 updateSearchState(
                     WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query("", 0),
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
                         isLoading = false,
                         requestFocus = true
                     )
@@ -186,7 +188,9 @@ class WooPosOrdersViewModel @Inject constructor(
             is WooPosSearchUIEvent.Clear -> {
                 updateSearchState(
                     WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query("", 0),
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
                         isLoading = false,
                         requestFocus = true
                     )
