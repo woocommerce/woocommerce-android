@@ -107,7 +107,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
             val result = checker.checkPreconditions()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip::class.java)
+            assertThat(
+                result
+            ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip::class.java)
             val skipResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip
             assertThat(skipResult.workerResult).isEqualTo(ListenableWorker.Result.failure())
             assertThat(skipResult.reason).contains("Periodic sync permanently disabled")
@@ -129,7 +131,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
             val result = checker.checkPreconditions()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip::class.java)
+            assertThat(
+                result
+            ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip::class.java)
             val skipResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip
             assertThat(skipResult.workerResult).isEqualTo(ListenableWorker.Result.success())
             assertThat(skipResult.reason).contains("POS not used in the last 30 days")
@@ -151,7 +155,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
             val result = checker.checkPreconditions()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
+            assertThat(
+                result
+            ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
             val proceedResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed
             assertThat(proceedResult.site).isEqualTo(site)
         }
@@ -171,7 +177,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
         val result = checker.checkPreconditions()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
+        assertThat(
+            result
+        ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
         val proceedResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed
         assertThat(proceedResult.site).isEqualTo(site)
     }
@@ -189,7 +197,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
         val result = checker.checkPreconditions()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
+        assertThat(
+            result
+        ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
         val proceedResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed
         assertThat(proceedResult.site).isEqualTo(site)
     }
@@ -209,7 +219,9 @@ class WooPosLocalCatalogSyncPreconditionsCheckerTest : BaseUnitTest() {
         val result = checker.checkPreconditions()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
+        assertThat(
+            result
+        ).isInstanceOf(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed::class.java)
         val proceedResult = result as WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed
         assertThat(proceedResult.site).isEqualTo(site)
     }

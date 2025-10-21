@@ -24,7 +24,7 @@ constructor(
     }
 
     override suspend fun doWork(): Result {
-        val preconditionResult: WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult = preconditionsChecker.checkPreconditions()
+        val preconditionResult = preconditionsChecker.checkPreconditions()
 
         val site = when (preconditionResult) {
             is WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip -> {

@@ -3,11 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -139,7 +135,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
     }
-
 
     @Test
     fun `given full sync succeeds, when incremental sync succeeds, then returns success and calls both syncs`() = testBlocking {

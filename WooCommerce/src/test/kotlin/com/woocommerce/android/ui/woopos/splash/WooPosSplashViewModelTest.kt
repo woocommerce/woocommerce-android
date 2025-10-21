@@ -32,7 +32,8 @@ class WooPosSplashViewModelTest {
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
     private val performInitialFullSync: WooPosPerformLocalCatalogInitialFullSync = mock()
-    private val preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository = mock()
+    private val preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository =
+        mock()
 
     @Rule
     @JvmField
