@@ -43,12 +43,12 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
-    private val wooStore: WooCommerceStore = org.mockito.kotlin.mock()
-    private val selectedSite: SelectedSite = org.mockito.kotlin.mock()
-    private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
-    private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
+    private val wooStore: WooCommerceStore = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val getProductById: WooPosGetProductById = mock()
     private val providedLocale: Locale = Locale.US
-    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = org.mockito.kotlin.mock()
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
