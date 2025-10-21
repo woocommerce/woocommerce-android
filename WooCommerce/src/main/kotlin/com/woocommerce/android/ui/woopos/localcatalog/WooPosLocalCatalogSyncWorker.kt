@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enable
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import java.util.concurrent.TimeUnit
 
 @HiltWorker
 class WooPosLocalCatalogSyncWorker
@@ -29,6 +30,8 @@ constructor(
 
     companion object {
         const val WORK_NAME = "PosLocalCatalogSyncWork"
+        private const val DAYS_SINCE_LAST_USE_THRESHOLD = 30L
+        private val MILLISECONDS_IN_DAY = TimeUnit.DAYS.toMillis(1)
     }
 
     @Suppress("ReturnCount")
@@ -53,6 +56,17 @@ constructor(
             return Result.failure()
         }
 
+        val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp()
+        if (lastUsedTimestamp != null) {
+            val daysSinceLastUse = (System.currentTimeMillis() - lastUsedTimestamp) / MILLISECONDS_IN_DAY
+            if (daysSinceLastUse > DAYS_SINCE_LAST_USE_THRESHOLD) {
+                logger.d(
+                    "POS not used in the last $DAYS_SINCE_LAST_USE_THRESHOLD days " +
+                        "(last used $daysSinceLastUse days ago), skipping background full catalog sync."
+                )
+                return Result.success()
+            }
+        }
         logger.d("Starting FULL local catalog sync")
 
         val fullSyncResult = syncRepository.syncLocalCatalogFull(site)
