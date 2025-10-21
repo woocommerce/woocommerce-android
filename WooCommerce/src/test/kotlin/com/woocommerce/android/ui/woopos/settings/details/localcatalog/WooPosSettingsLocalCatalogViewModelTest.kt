@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
@@ -9,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesReposit
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -18,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -37,9 +43,12 @@ class WooPosSettingsLocalCatalogViewModelTest {
     private val dateFormatter: WooPosDateFormatter = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
+    private val childToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver = mock()
 
     private val mockSite: SiteModel = mock()
     private val allowCellularDataFlow = MutableStateFlow(false)
+    private val parentEventsFlow = MutableSharedFlow<ParentToChildrenEvent>()
 
     private lateinit var sut: WooPosSettingsLocalCatalogViewModel
 
@@ -47,6 +56,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     fun setUp() = runTest {
         whenever(selectedSite.get()).thenReturn(mockSite)
         whenever(preferencesRepository.allowCellularDataUpdate).thenReturn(allowCellularDataFlow)
+        whenever(parentToChildEventReceiver.events).thenReturn(parentEventsFlow)
         whenever(localCatalogSyncRepository.syncLocalCatalogFull(any()))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
@@ -165,12 +175,129 @@ class WooPosSettingsLocalCatalogViewModelTest {
         verify(syncTimestampManager, times(2)).getFullSyncLastCompletedTimestamp()
     }
 
+    @Test
+    fun `given sync fails, when runFullCatalogSync called, then ShowSyncErrorDialog event is sent`() = runTest {
+        // GIVEN
+        val errorMessage = "Network error"
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError(errorMessage))
+
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        verify(childToParentEventSender).sendToParent(
+            argThat {
+                this is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog &&
+                    this.errorMessage == errorMessage
+            }
+        )
+    }
+
+    @Test
+    fun `given sync fails, when runFullCatalogSync called, then catalog status is restored to previous state`() = runTest {
+        // GIVEN
+        val errorMessage = "Network error"
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+            .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError(errorMessage))
+
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        val initialStatus = sut.state.value.catalogStatus
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.catalogStatus).isEqualTo(initialStatus)
+    }
+
+    @Test
+    fun `given sync succeeds, when runFullCatalogSync called, then catalog status is reloaded`() = runTest {
+        // GIVEN
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+            .thenReturn(
+                PosLocalCatalogSyncResult.Success(
+                    productsSynced = 10,
+                    variationsSynced = 5,
+                    syncDurationMs = 1000
+                )
+            )
+
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.catalogStatus)
+            .isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
+    }
+
+    @Test
+    fun `given RetrySyncRequested event, when received from parent, then runFullCatalogSync is triggered`() = runTest {
+        // GIVEN
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+            .thenReturn(
+                PosLocalCatalogSyncResult.Success(
+                    productsSynced = 10,
+                    variationsSynced = 5,
+                    syncDurationMs = 1000
+                )
+            )
+
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        parentEventsFlow.emit(ParentToChildrenEvent.SettingsEvent.RetrySyncRequested)
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.catalogStatus)
+            .isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
+    }
+
+    @Test
+    fun `when runFullCatalogSync called, then catalog status eventually updates to Available`() = runTest {
+        // GIVEN
+        whenever(localCatalogSyncRepository.syncLocalCatalogFull(mockSite))
+            .thenReturn(
+                PosLocalCatalogSyncResult.Success(
+                    productsSynced = 10,
+                    variationsSynced = 5,
+                    syncDurationMs = 1000
+                )
+            )
+
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        sut.runFullCatalogSync()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.catalogStatus)
+            .isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
+    }
+
     private fun createViewModel() = WooPosSettingsLocalCatalogViewModel(
         syncTimestampManager = syncTimestampManager,
         localCatalogSyncRepository = localCatalogSyncRepository,
         selectedSite = selectedSite,
         dateFormatter = dateFormatter,
         preferencesRepository = preferencesRepository,
-        syncScheduler = syncScheduler
+        syncScheduler = syncScheduler,
+        childToParentEventSender = childToParentEventSender,
+        parentToChildEventReceiver = parentToChildEventReceiver,
     )
 }

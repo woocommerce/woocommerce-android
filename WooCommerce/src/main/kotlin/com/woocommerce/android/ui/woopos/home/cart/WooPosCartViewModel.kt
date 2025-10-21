@@ -216,7 +216,8 @@ class WooPosCartViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     ParentToChildrenEvent.SearchEvent.Started,
                     ParentToChildrenEvent.RefreshProductList,
-                    is ParentToChildrenEvent.CouponsRemoved -> Unit
+                    is ParentToChildrenEvent.CouponsRemoved,
+                    is ParentToChildrenEvent.SettingsEvent -> Unit
 
                     is ParentToChildrenEvent.CouponsValidationFailed -> {
                         onCouponsValidationFails()
