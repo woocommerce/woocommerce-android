@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
@@ -45,20 +46,21 @@ class BookingMapper @Inject constructor(
     private val timeRangeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         .withZone(ZoneOffset.UTC)
 
-    fun Booking.toBookingSummaryModel(): BookingSummaryModel {
+    fun Booking.toBookingSummaryModel(attendanceUpdateStatus: AttendanceUpdateStatus): BookingSummaryModel {
         return BookingSummaryModel(
             date = summaryDateFormatter.format(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
-            attendanceStatus = BookingAttendanceStatus.BOOKED,
-            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId)
+            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
+            attendanceStatus = attendanceStatus.toUiModel(),
+            attendanceUpdateStatus = attendanceUpdateStatus,
         )
     }
 
     fun Booking.toListItem(): BookingListItem {
         return BookingListItem(
             id = id.value,
-            summary = toBookingSummaryModel()
+            summary = toBookingSummaryModel(AttendanceUpdateStatus.Idle)
         )
     }
 
@@ -123,6 +125,13 @@ class BookingMapper @Inject constructor(
                 is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
             }
         }
+    }
+
+    private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus? = when (this) {
+        BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
+        BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
+        BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
+        is BookingEntity.AttendanceStatus.Unknown -> null
     }
 
     private fun BookingCustomerInfo.fullName(): String? {

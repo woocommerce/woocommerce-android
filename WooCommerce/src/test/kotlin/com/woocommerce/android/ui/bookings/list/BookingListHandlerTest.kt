@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.InlineClassesAnswer
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -21,6 +22,7 @@ import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.willSuspendableAnswer
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
@@ -202,6 +204,87 @@ class BookingListHandlerTest : BaseUnitTest() {
         assertThat(bookings).hasSize(BookingListHandler.PAGE_SIZE * 2)
     }
 
+    @Test
+    fun `given search, when refreshing, then keep previous search results during the fetch`() = testBlocking {
+        val searchQuery = "Sample"
+        val firstResults = List(BookingListHandler.PAGE_SIZE) { getSampleBooking(it) }
+        val refreshedResults = List(BookingListHandler.PAGE_SIZE - 2) { getSampleBooking(it) }
+        given(bookingsRepository.fetchBookings(any(), any(), eq(searchQuery), any(), any()))
+            .willReturn(
+                Result.success(
+                    BookingsRepository.FetchResult(firstResults, false)
+                )
+            )
+            .willSuspendableAnswer {
+                delay(10) // To allow checking intermediate state
+                Result.success(
+                    BookingsRepository.FetchResult(refreshedResults, false)
+                )
+            }
+
+        bookingListHandler.loadBookings(
+            searchQuery = searchQuery,
+            sortBy = BookingListSortOption.NewestToOldest
+        )
+        val bookingsAfterFirstLoad = bookingListHandler.bookingsFlow.first()
+        val refreshJob = launch {
+            bookingListHandler.loadBookings(
+                searchQuery = searchQuery,
+                sortBy = BookingListSortOption.NewestToOldest
+            )
+        }
+        val bookingsDuringRefresh = bookingListHandler.bookingsFlow.first()
+        refreshJob.join()
+        val bookingsAfterRefresh = bookingListHandler.bookingsFlow.first()
+
+        assertThat(bookingsAfterFirstLoad).isEqualTo(firstResults)
+        assertThat(bookingsDuringRefresh).isEqualTo(firstResults)
+        assertThat(bookingsAfterRefresh).isEqualTo(refreshedResults)
+    }
+
+    @Test
+    fun `given search, when changing search query, then reset search results`() = testBlocking {
+        val initialQuery = "Initial"
+        val newQuery = "New"
+
+        val firstResults = List(BookingListHandler.PAGE_SIZE) { getSampleBooking(it) }
+        val newResults = List(BookingListHandler.PAGE_SIZE - 3) { getSampleBooking(it) }
+
+        given(bookingsRepository.fetchBookings(any(), any(), eq(initialQuery), any(), any()))
+            .willReturn(
+                Result.success(
+                    BookingsRepository.FetchResult(firstResults, false)
+                )
+            )
+        given(bookingsRepository.fetchBookings(any(), any(), eq(newQuery), any(), any()))
+            .willSuspendableAnswer {
+                delay(10) // To allow checking intermediate state
+                Result.success(
+                    BookingsRepository.FetchResult(newResults, false)
+                )
+            }
+
+        bookingListHandler.loadBookings(
+            searchQuery = initialQuery,
+            sortBy = BookingListSortOption.NewestToOldest
+        )
+        val bookingsAfterInitialSearch = bookingListHandler.bookingsFlow.first()
+
+        val refreshJob = launch {
+            bookingListHandler.loadBookings(
+                searchQuery = newQuery,
+                sortBy = BookingListSortOption.NewestToOldest
+            )
+        }
+        val bookingsDuringNewSearch = bookingListHandler.bookingsFlow.first()
+        refreshJob.join()
+        val bookingsAfterNewSearch = bookingListHandler.bookingsFlow.first()
+
+        assertThat(bookingsAfterInitialSearch).isEqualTo(firstResults)
+        assertThat(bookingsDuringNewSearch).isEmpty()
+        assertThat(bookingsAfterNewSearch).isEqualTo(newResults)
+    }
+
     private fun getSampleBooking(id: Int) = BookingEntity(
         id = RemoteId(id.toLong()),
         localSiteId = LocalId(1),
@@ -222,6 +305,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         parentId = 0L,
         personCounts = listOf(1L),
         localTimezone = "",
+        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
         order = BookingOrderInfo()
     )
 }
