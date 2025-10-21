@@ -185,8 +185,8 @@ class WooPosCheckCatalogSizeActionTest {
         // GIVEN
         val maxTotalItems = 300
         val modifiedAfterGmt = "2024-01-01T00:00:00Z"
-        givenProductsCount(100, modifiedAfterGmt)
-        givenVariationsCount(50, modifiedAfterGmt)
+        givenProductsCount(100)
+        givenVariationsCount(50)
 
         // WHEN
         val result = sut.execute(site, modifiedAfterGmt = modifiedAfterGmt, maxTotalItems = maxTotalItems)
