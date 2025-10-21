@@ -193,6 +193,7 @@ private fun OrdersListPane(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(end = WooPosSpacing.Medium.value)
                 .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
         ) {
             WooPosSearchInput(
