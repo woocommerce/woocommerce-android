@@ -42,14 +42,15 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
-        activeSource?.fetchFirstPage(forceRefresh) ?: throw IllegalStateException("FetchFirstPage - Data source not selected")
+        activeSource?.fetchFirstPage(forceRefresh)
+            ?: error("FetchFirstPage - Data source not selected")
 
     override suspend fun loadMore(): Result<List<WooPosProductModel>> {
-        return activeSource?.loadMore() ?: throw IllegalStateException("LoadMore - Data source not selected")
+        return activeSource?.loadMore() ?: error("LoadMore - Data source not selected")
     }
 
     override val hasMorePages: Boolean
-        get() = activeSource?.hasMorePages ?: throw IllegalStateException("hasMorePages - Data source not selected")
+        get() = activeSource?.hasMorePages ?: error("hasMorePages - Data source not selected")
 
     override suspend fun resetState() {
         activeSource = null
@@ -60,7 +61,9 @@ class WooPosProductsDataSource @Inject constructor(
     private suspend fun selectDataSource(): WooPosProductsDataSourceInterface {
         return when (syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.NotRequired -> remoteDataSource
-            is WooPosFullSyncRequirement.Error -> throw NotImplementedError("Data source selection error handling not implemented")
+            is WooPosFullSyncRequirement.Error ->
+                throw NotImplementedError("Data source selection error handling not implemented")
+
             WooPosFullSyncRequirement.BlockingRequired, WooPosFullSyncRequirement.Overdue -> localDbDataSource
         }
     }
@@ -71,7 +74,10 @@ class WooPosProductsDataSource @Inject constructor(
     }
 }
 
-class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
+class WooPosProductsInDbDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val mapper: WooPosProductModelMapper
@@ -108,7 +114,10 @@ class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = Visibl
     override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
 }
 
-class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
+class WooPosProductsRemoteDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
