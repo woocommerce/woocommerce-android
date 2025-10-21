@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
@@ -16,6 +17,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val localCatalogStore: WooPosLocalCatalogStore,
+    private val prefsRepo: WooPosPreferencesRepository,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
     @Suppress("ReturnCount")
@@ -29,6 +31,11 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         if (site == null) {
             wooPosLogWrapper.e("Full sync check failed: No site selected")
             return WooPosFullSyncRequirement.Error("No site selected")
+        }
+
+        if (!prefsRepo.isPeriodicSyncEnabledForSite(site.siteId)) {
+            wooPosLogWrapper.d("Full sync check skipped: Periodic Sync disabled for site.")
+            return WooPosFullSyncRequirement.NotRequired
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()

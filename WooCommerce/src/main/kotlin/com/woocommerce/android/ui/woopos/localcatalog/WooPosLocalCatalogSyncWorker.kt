@@ -79,7 +79,6 @@ constructor(
             }
 
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
-                preferencesRepository.disablePeriodicSyncForSite(site.siteId)
                 logger.e(
                     "Local catalog FULL sync failed: ${fullSyncResult.error}. Permanently " +
                         "disabling periodic sync for site ${site.url}."

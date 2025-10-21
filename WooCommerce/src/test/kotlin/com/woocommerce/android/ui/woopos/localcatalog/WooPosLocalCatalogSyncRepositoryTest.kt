@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -12,6 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -22,6 +24,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var posSyncProductsAction: WooPosSyncProductsAction = mock()
     private var posSyncVariationsAction: WooPosSyncVariationsAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
+    private var preferencesRepository: WooPosPreferencesRepository = mock()
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
@@ -40,6 +43,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,
+            preferencesRepository = preferencesRepository,
         )
 
         site = SiteModel().apply {
@@ -83,6 +87,39 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // THEN
         verify(syncTimestampManager).storeProductsLastSyncTimestamp(any())
         verify(syncTimestampManager).storeFullSyncLastCompletedTimestamp(any())
+    }
+
+    @Test
+    fun `when full sync succeeds, then does not disable periodic sync`() = testBlocking {
+        // GIVEN
+        val productsSynced = 150
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+            )
+        whenever(posSyncVariationsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
+    }
+
+    @Test
+    fun `when full sync fails, then disables periodic sync`() = testBlocking {
+        // GIVEN
+        val totalPages = 15
+        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
+        whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(preferencesRepository).disablePeriodicSyncForSite(any())
     }
 
     @Test
