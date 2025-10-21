@@ -488,7 +488,7 @@ class WooPosProductsRemoteDataSourceTest {
         }
 
     @Test
-    fun `when loading products, they should be sorted by name in ascending order`() = runTest {
+    fun `when loading products, then should be sorted by name in ascending order`() = runTest {
         // GIVEN
         val mockProductC = generateProduct(productName = "C Product", productId = 3L)
 
