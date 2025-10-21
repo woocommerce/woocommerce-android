@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosOrdersLoadingState() {
     Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListLoadingPane(
+        WooPosOrdersListLoadingPane(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -112,7 +112,7 @@ fun WooPosOrdersOrderLoadingRow() {
 }
 
 @Composable
-private fun OrdersListLoadingPane(modifier: Modifier = Modifier) {
+fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),

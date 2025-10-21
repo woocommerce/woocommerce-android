@@ -15,12 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -240,6 +243,7 @@ private fun OrdersListPane(
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onRefresh = onRefresh,
             )
 
             PullRefreshIndicator(
@@ -261,7 +265,8 @@ private fun OrdersList(
     state: WooPosOrdersState.Content,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
-    onPaginationErrorTryAgain: () -> Unit
+    onPaginationErrorTryAgain: () -> Unit,
+    onRefresh: () -> Unit
 ) {
     when (val items = state.items) {
         is WooPosOrdersState.Content.Items.Loaded -> {
@@ -275,60 +280,32 @@ private fun OrdersList(
             )
         }
         is WooPosOrdersState.Content.Items.Searching -> {
-            Box(
-                modifier = modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                WooPosText(
-                    text = "Searching...",
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-            }
+            WooPosOrdersListLoadingPane(
+                modifier = modifier.imePadding()
+            )
         }
         is WooPosOrdersState.Content.Items.Error -> {
-            Box(
-                modifier = modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-                ) {
-                    WooPosText(
-                        text = items.title,
-                        style = WooPosTypography.BodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    WooPosText(
-                        text = items.message,
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            WooPosErrorScreen(
+                modifier = modifier
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
+                message = items.title,
+                reason = items.message,
+                primaryButton = WooPosErrorScreenButtonState(
+                    text = stringResource(id = R.string.retry),
+                    click = onRefresh
+                )
+            )
         }
         is WooPosOrdersState.Content.Items.NothingFound -> {
-            Box(
-                modifier = modifier,
-                contentAlignment = Alignment.Center
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-                ) {
-                    WooPosText(
-                        text = items.title,
-                        style = WooPosTypography.BodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                    WooPosText(
-                        text = items.message,
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
+            WooPosEmptyScreen(
+                modifier = modifier
+                    .verticalScroll(rememberScrollState())
+                    .imePadding(),
+                title = items.title,
+                message = items.message,
+                contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description)
+            )
         }
     }
 }
