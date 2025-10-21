@@ -53,7 +53,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit
+    onViewOrder: (Long) -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -62,6 +63,7 @@ fun BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
             onViewOrder = onViewOrder,
+            onViewNotes = onViewNotes,
         )
     }
 }
@@ -72,6 +74,7 @@ fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
     onViewOrder: (Long) -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -103,6 +106,7 @@ fun BookingDetailsScreen(
                             onCancelBooking = viewState.onCancelBooking,
                             onViewOrder = onViewOrder,
                             onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                            onViewNotes = onViewNotes,
                         )
                     }
                 }
@@ -126,6 +130,7 @@ private fun BookingDetailsContent(
     onCancelBooking: () -> Unit,
     onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -158,7 +163,7 @@ private fun BookingDetailsContent(
     }
     BookingNoteSection(
         note = booking.note,
-        onClick = {},
+        onClick = onViewNotes,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -262,7 +267,8 @@ private fun BookingDetailsPreview() {
                 ),
             ),
             onBack = {},
-            onViewOrder = {}
+            onViewOrder = {},
+            onViewNotes = {},
         )
     }
 }
@@ -278,6 +284,7 @@ private fun BookingDetailsLoadingPreview() {
             ),
             onBack = {},
             onViewOrder = {},
+            onViewNotes = {},
         )
     }
 }

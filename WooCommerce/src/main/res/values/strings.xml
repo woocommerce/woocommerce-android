@@ -4280,6 +4280,11 @@
     <string name="booking_note_header">BOOKING NOTE</string>
     <string name="booking_note_label_add_note">Add note</string>
     <string name="booking_note_description_private">This is a private note. It’ll not be shared with the customer.</string>
+    <string name="booking_cancel_dialog_title">Cancel booking</string>
+    <string name="booking_cancel_dialog_message">%1$s will no longer be able to attend “%2$s” on %3$s at %4$s.</string>
+    <string name="booking_cancel_dialog_keep">No, keep it</string>
+    <string name="booking_cancel_dialog_confirm">Yes, cancel it</string>
+    <string name="booking_note_screen_title">Booking note</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
@@ -4307,8 +4312,4 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
-    <string name="booking_cancel_dialog_title">Cancel booking</string>
-    <string name="booking_cancel_dialog_message">%1$s will no longer be able to attend “%2$s” on %3$s at %4$s.</string>
-    <string name="booking_cancel_dialog_keep">No, keep it</string>
-    <string name="booking_cancel_dialog_confirm">Yes, cancel it</string>
 </resources>
