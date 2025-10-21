@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -164,14 +163,14 @@ private fun OrdersContent(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceBright)
         )
 
-        OrderDetails(
+        WooPosOrderDetails(
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                .background(MaterialTheme.colorScheme.surface),
             details = state.selectedDetails,
             onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
         )
@@ -341,7 +340,7 @@ private fun OrdersList(
 
                         Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-                        OrderStatusBadge(item.status)
+                        WooPosOrdersStatusBadge(item.status)
                     }
 
                     WooPosText(
@@ -407,37 +406,6 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
             text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),
-    )
-}
-
-@Composable
-fun OrderStatusBadge(status: PosOrderStatus) {
-    val bgColor = when (status.colorKey) {
-        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
-        OrderStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
-        OrderStatusColorKey.PROCESSING,
-        OrderStatusColorKey.ON_HOLD,
-        OrderStatusColorKey.OTHER -> WooPosTheme.colors.default
-    }
-
-    val textColor = when (status.colorKey) {
-        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
-        OrderStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
-        OrderStatusColorKey.PROCESSING,
-        OrderStatusColorKey.ON_HOLD,
-        OrderStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
-    }
-
-    WooPosText(
-        text = status.text,
-        style = WooPosTypography.BodySmall,
-        color = textColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
-            .clip(RoundedCornerShape(WooPosSpacing.Small.value))
-            .background(bgColor)
-            .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
     )
 }
 
@@ -517,7 +485,9 @@ private fun sampleOrderDetails(
         discount = "-$5.00",
         discountCode = "8qew4mnq",
         taxes = "$0.00",
-        shipping = null
+        shipping = null,
+        refunds = listOf("-$3.00", "-$2.00"),
+        netPayment = "$12.00"
     ),
     total = "$17.00",
     totalPaid = "$17.00",

@@ -41,7 +41,11 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
-        return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC)
+        return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC).also {
+            if (it is PosLocalCatalogSyncResult.Success) {
+                syncTimestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
+            }
+        }
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {

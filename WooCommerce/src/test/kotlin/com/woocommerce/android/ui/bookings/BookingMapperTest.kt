@@ -6,14 +6,17 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -42,11 +45,35 @@ class BookingMapperTest : BaseUnitTest() {
         }
     }
     private val getLocations: GetLocations = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
+            val quantity = invocation.arguments[0] as Int
+            val default = invocation.arguments[1] as Int
+            val one = invocation.arguments[3] as Int?
+            when (quantity) {
+                1 -> when (one) {
+                    R.string.booking_duration_second -> "1 second"
+                    R.string.booking_duration_minute -> "1 minute"
+                    R.string.booking_duration_hour -> "1 hour"
+                    R.string.booking_duration_day -> "1 day"
+                    else -> ""
+                }
+
+                else -> when (default) {
+                    R.string.booking_duration_seconds -> "$quantity seconds"
+                    R.string.booking_duration_minutes -> "$quantity minutes"
+                    R.string.booking_duration_hours -> "$quantity hours"
+                    R.string.booking_duration_days -> "$quantity days"
+                    else -> ""
+                }
+            }
+        }
+    }
     private lateinit var mapper: BookingMapper
 
     @Before
     fun setup() {
-        mapper = BookingMapper(currencyFormatter, getLocations)
+        mapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
     }
 
     @Test
@@ -67,14 +94,14 @@ class BookingMapperTest : BaseUnitTest() {
             .format(start)
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
         assertThat(model.name).isEqualTo(booking.order.productInfo?.name)
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
-        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.BOOKED)
+        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.Booked)
         assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
     }
 
@@ -108,7 +135,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.time).isEqualTo(expectedTime)
         assertThat(model.staff).isEqualTo(staffMemberStatus)
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
-        assertThat(model.duration).isEqualTo("90 min")
+        assertThat(model.duration).isEqualTo("1 hour 30 minutes")
         assertThat(model.price).isEqualTo("$55.00")
         assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
@@ -119,7 +146,7 @@ class BookingMapperTest : BaseUnitTest() {
         val booking = sampleBooking(status = BookingEntity.Status.Unknown("weird-status"))
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.status).isInstanceOf(BookingStatus.Unknown::class.java)
@@ -244,7 +271,7 @@ class BookingMapperTest : BaseUnitTest() {
         }
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
@@ -281,6 +308,7 @@ class BookingMapperTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "UTC",
+            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
             order = BookingOrderInfo(
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),

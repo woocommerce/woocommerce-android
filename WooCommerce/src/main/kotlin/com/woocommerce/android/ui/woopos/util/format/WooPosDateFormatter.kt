@@ -51,7 +51,7 @@ class WooPosDateFormatter @Inject constructor(
     }
 
     /**
-     * Formats the date into a user-friendly string. Returns "Never" if timestamps is null.
+     * Formats the date into a user-friendly string. Returns "Never" if timestamp is null.
      */
     fun formatCatalogLastFullSync(fullSyncTimestamp: Long?): String {
         return fullSyncTimestamp?.let {

@@ -135,14 +135,12 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> Result.failure(mapResponseError(response.error))
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> Result.success(
                     WooPosLocalCatalogFetchProductsResult(
@@ -263,18 +261,16 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> {
                     Result.failure(
                         mapResponseError(response.error)
                     )
                 }
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(

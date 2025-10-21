@@ -2,14 +2,16 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -22,12 +24,11 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.BigDecimal
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -41,20 +42,20 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
-    private val wooStore: WooCommerceStore = org.mockito.kotlin.mock()
-    private val selectedSite: SelectedSite = org.mockito.kotlin.mock()
-    private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
-    private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val getProductById: WooPosGetProductById = mock()
+    private val formatPrice: WooPosFormatPrice = mock()
+    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
-            wooCommerceStore = wooStore,
-            selectedSite = selectedSite,
             resourceProvider = resourceProvider,
             locale = providedLocale,
-            getProductById = getProductById
+            getProductById = getProductById,
+            formatPrice = formatPrice,
+            getOrderRefunds = getOrderRefunds
         )
     }
 
@@ -62,17 +63,9 @@ class WooPosOrdersViewModelTest {
     fun setUp() {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        whenever(
-            wooStore.formatCurrencyForDisplay(
-                amount = any(),
-                site = any(),
-                currencyCode = anyOrNull(),
-                applyDecimalFormatting = any()
-            )
-        ).thenReturn("$0.00")
-
-        val site: SiteModel = mock()
-        whenever(selectedSite.get()).thenReturn(site)
+        runBlocking {
+            whenever(formatPrice.invoke(any())).thenReturn("$0.00")
+        }
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessCache(listOf(order(1), order(2)))) }
@@ -89,6 +82,7 @@ class WooPosOrdersViewModelTest {
 
         runBlocking {
             whenever(getProductById.invoke(any())).thenReturn(null)
+            whenever(getOrderRefunds.invoke(any())).thenReturn(emptyList())
         }
     }
 
@@ -620,5 +614,70 @@ class WooPosOrdersViewModelTest {
         val content = viewModel.state.value as WooPosOrdersState.Content
         assertThat(content.items.keys.map { it.id }).containsExactly(300L, 400L)
         assertThat(content.selectedDetails.id).isEqualTo(300L)
+    }
+
+    @Test
+    fun `given order with no refunds, when mapped, then breakdown has empty refunds and null net payment`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
+        )
+        runBlocking {
+            whenever(getOrderRefunds.invoke(1L)).thenReturn(emptyList())
+        }
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedDetails.breakdown.refunds).isEmpty()
+        assertThat(content.selectedDetails.breakdown.netPayment).isNull()
+    }
+
+    @Test
+    fun `given order with refunds, when mapped, then breakdown includes refund amounts and net payment`() = runTest {
+        // GIVEN
+        val testOrder = order(1)
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(testOrder))) }
+        )
+
+        val refund1 = Refund(
+            id = 1,
+            dateCreated = Date(),
+            amount = BigDecimal("10.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+        val refund2 = Refund(
+            id = 2,
+            dateCreated = Date(),
+            amount = BigDecimal("5.00"),
+            reason = null,
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        runBlocking {
+            whenever(getOrderRefunds.invoke(1L)).thenReturn(listOf(refund1, refund2))
+            whenever(formatPrice.invoke(java.math.BigDecimal("10.00"))).thenReturn("$10.00")
+            whenever(formatPrice.invoke(java.math.BigDecimal("5.00"))).thenReturn("$5.00")
+        }
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(content.selectedDetails.breakdown.refunds).containsExactly("-$10.00", "-$5.00")
+        assertThat(content.selectedDetails.breakdown.netPayment).isNotNull()
     }
 }
