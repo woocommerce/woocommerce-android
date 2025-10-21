@@ -3822,6 +3822,8 @@
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
+    <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
 
@@ -4266,6 +4268,7 @@
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
     <string name="booking_fetch_error">Error fetching booking</string>
+    <string name="booking_attendance_status_error">Error changing the attendance status</string>
     <string name="booking_duration_minute">%1$d minute</string>
     <string name="booking_duration_minutes">%1$d minutes</string>
     <string name="booking_duration_hour">%1$d hour</string>

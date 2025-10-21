@@ -8,7 +8,6 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -30,7 +29,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var accountRepository: AccountRepository = mock()
     private var selectedSite: SelectedSite = mock()
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
-    private var timestampManager: WooPosSyncTimestampManager = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
@@ -78,7 +76,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             accountRepository = accountRepository,
             selectedSite = selectedSite,
             syncRepository = syncRepository,
-            timestampManager = timestampManager,
             logger = logger,
             featureFlagM1Enabled = featureFlagM1Enabled,
             preferencesRepository = preferencesRepository,
@@ -97,19 +94,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
         verify(syncRepository).syncLocalCatalogIncremental(eq(site))
-    }
-
-    @Test
-    fun `given successful sync, when doWork completes, then stores full sync completion timestamp`() = testBlocking {
-        // GIVEN
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(timestampManager).storeFullSyncLastCompletedTimestamp(any())
     }
 
     @Test
@@ -336,52 +320,5 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `when sync fails with catalog too large, then disables periodic sync for site`() = testBlocking {
-        // GIVEN
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(catalogTooLargeResponse)
-
-        val worker = createWorker()
-
-        // WHEN
-        worker.doWork()
-
-        // THEN
-        verify(preferencesRepository).disablePeriodicSyncForSite(site.siteId)
-    }
-
-    @Test
-    fun `when sync fails with unexpected error, then does not disable periodic sync`() = testBlocking {
-        // GIVEN
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(PosLocalCatalogSyncResult.Failure.UnexpectedError("Network error"))
-
-        val worker = createWorker()
-
-        // WHEN
-        worker.doWork()
-
-        // THEN
-        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
-    }
-
-    @Test
-    fun `when sync succeeds, then does not disable periodic sync`() = testBlocking {
-        // GIVEN
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(successResponse)
-        whenever(syncRepository.syncLocalCatalogIncremental(site))
-            .thenReturn(incrementalSuccessResponse)
-
-        val worker = createWorker()
-
-        // WHEN
-        worker.doWork()
-
-        // THEN
-        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
     }
 }
