@@ -22,6 +22,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.eq
@@ -43,7 +44,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val resourceProvider = mock<ResourceProvider>()
     private val getLocations = mock<GetLocations>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
+    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
     private val bookingsRepository = mock<BookingsRepository> {
         on { observeBooking(any()) } doReturn bookingFlow
         onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
@@ -61,6 +62,19 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
                 any()
             )
         ).thenReturn("Booking #${initialBooking.id.value}")
+
+        // Stub duration formatting strings used by BookingMapper for exact days
+        whenever(
+            resourceProvider.getQuantityString(
+                quantity = any(),
+                default = eq(R.string.booking_duration_days),
+                zero = anyOrNull(),
+                one = eq(R.string.booking_duration_day)
+            )
+        ).thenAnswer {
+            val qty = it.getArgument<Int>(0)
+            if (qty == 1) "$qty day" else "$qty days"
+        }
     }
 
     @Test
