@@ -95,6 +95,44 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Fetches only the total count of products without fetching the actual product data.
+     * Makes a minimal API call with per_page=1 to get the count from response headers.
+     *
+     * @param [site] The site to get the products count for
+     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
+     * @return Result containing the total count of products or error
+     */
+    suspend fun fetchProductsCount(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
+            val response = posProductRestClient.fetchProducts(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                offset = 0,
+                pageSize = 1
+            )
+
+            when {
+                response.isError -> Result.failure(mapResponseError(response.error))
+
+                else -> {
+                    val totalCount = headersParser.getTotalCount(response)
+                    if (totalCount == null) {
+                        Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: X-WP-Total."
+                            )
+                        )
+                    } else {
+                        Result.success(totalCount)
+                    }
+                }
+            }
+        }
+
+    /**
      * Fetch recently modified products with pagination support.
      *
      * @param [site] The site to sync products for
@@ -216,6 +254,44 @@ class WooPosLocalCatalogStore @Inject constructor(
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
             val variation = posVariationsDao.getVariation(siteId, productId, variationId)
             Result.success(variation)
+        }
+
+    /**
+     * Fetches only the total count of variations without fetching the actual variation data.
+     * Makes a minimal API call with per_page=1 to get the count from response headers.
+     *
+     * @param [site] The site to get the variations count for
+     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
+     * @return Result containing the total count of variations or error
+     */
+    suspend fun fetchVariationsCount(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
+            val response = posProductRestClient.fetchVariations(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                page = 1,
+                pageSize = 1
+            )
+
+            when {
+                response.isError -> Result.failure(mapResponseError(response.error))
+
+                else -> {
+                    val totalCount = headersParser.getTotalCount(response)
+                    if (totalCount == null) {
+                        Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: X-WP-Total."
+                            )
+                        )
+                    } else {
+                        Result.success(totalCount)
+                    }
+                }
+            }
         }
 
     /**
