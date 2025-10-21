@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManag
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -28,7 +27,7 @@ sealed class PosLocalCatalogSyncResult {
 class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,
     private val posSyncVariationsAction: WooPosSyncVariationsAction,
-    private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
@@ -75,9 +74,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val catalogSizeCheck = checkCatalogSize(site, modifiedAfterGmt, maxTotalItems)
-        if (catalogSizeCheck is PosLocalCatalogSyncResult.Failure) {
-            return catalogSizeCheck
+        val catalogSizeCheckResult = posCheckCatalogSizeAction.execute(
+            site = site,
+            modifiedAfterGmt = modifiedAfterGmt,
+            maxTotalItems = maxTotalItems
+        )
+        if (catalogSizeCheckResult is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
+            return catalogSizeCheckResult.toPosLocalCatalogSyncFailure()
         }
 
         val productSyncResult = syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
@@ -97,52 +100,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             variationsSynced = (variationSyncResult as WooPosSyncVariationsResult.Success).variationsSynced,
             syncDurationMs = syncDuration
         )
-    }
-
-    @Suppress("ReturnCount")
-    private suspend fun checkCatalogSize(
-        site: SiteModel,
-        modifiedAfterGmt: String? = null,
-        maxTotalItems: Int,
-    ): PosLocalCatalogSyncResult? {
-        logger.d("Checking catalog size before sync")
-
-        val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, modifiedAfterGmt)
-        if (productsCountResult.isFailure) {
-            logger.w(
-                "Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}. " +
-                    "Skipping upfront catalog size check, will check during sync instead."
-            )
-            return null
-        }
-
-        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, modifiedAfterGmt)
-        if (variationsCountResult.isFailure) {
-            logger.w(
-                "Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}. " +
-                    "Skipping upfront catalog size check, will check during sync instead."
-            )
-            return null
-        }
-
-        val totalProducts = productsCountResult.getOrThrow()
-        val totalVariations = variationsCountResult.getOrThrow()
-        val totalItems = totalProducts + totalVariations
-
-        logger.d("Catalog size check: $totalProducts products + $totalVariations variations = $totalItems items")
-
-        if (totalItems > maxTotalItems) {
-            logger.e("Catalog too large: $totalItems items exceed maximum of $maxTotalItems items")
-            return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-                error = "Catalog too large: $totalItems items " +
-                    "(products: $totalProducts, variations: $totalVariations) " +
-                    "exceed maximum of $maxTotalItems items",
-                totalPages = 0,
-                maxPages = 0
-            )
-        }
-
-        return null
     }
 
     private suspend fun syncProducts(
@@ -214,4 +171,13 @@ private fun WooPosSyncVariationsResult.Failed.toPosLocalCatalogSyncFailure(): Po
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
     }
+}
+
+private fun WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge.toPosLocalCatalogSyncFailure():
+    PosLocalCatalogSyncResult.Failure {
+    return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+        error = error,
+        totalPages = 0,
+        maxPages = 0
+    )
 }
