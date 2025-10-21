@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductsAction.WooPosSyncProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
@@ -28,6 +29,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,
     private val posSyncVariationsAction: WooPosSyncVariationsAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val preferencesRepository: WooPosPreferencesRepository,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
 ) {
@@ -39,6 +41,11 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
         return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC)
+            .also {
+                if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
+                    preferencesRepository.disablePeriodicSyncForSite(site.siteId)
+                }
+            }
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
@@ -133,6 +140,7 @@ private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosL
                 maxPages = maxPages
             )
         }
+
         else -> {
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
@@ -148,6 +156,7 @@ private fun WooPosSyncVariationsResult.Failed.toPosLocalCatalogSyncFailure(): Po
                 maxPages = maxPages
             )
         }
+
         else -> {
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
