@@ -366,7 +366,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
             total = formatPrice(order.total),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             isSelected = order.id == selectedId,
             status = PosOrderStatus(
                 text = statusText,
@@ -422,7 +422,7 @@ class WooPosOrdersViewModel @Inject constructor(
             dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -26,6 +27,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,10 +42,10 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
-    private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
-    private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
-    private val formatPrice: WooPosFormatPrice = org.mockito.kotlin.mock()
-    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = org.mockito.kotlin.mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val getProductById: WooPosGetProductById = mock()
+    private val formatPrice: WooPosFormatPrice = mock()
+    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
 
     private fun createViewModel(): WooPosOrdersViewModel {
@@ -669,20 +672,20 @@ class WooPosOrdersViewModelTest {
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(testOrder))) }
         )
 
-        val refund1 = com.woocommerce.android.model.Refund(
+        val refund1 = Refund(
             id = 1,
-            dateCreated = java.util.Date(),
-            amount = java.math.BigDecimal("10.00"),
+            dateCreated = Date(),
+            amount = BigDecimal("10.00"),
             reason = null,
             automaticGatewayRefund = false,
             items = emptyList(),
             shippingLines = emptyList(),
             feeLines = emptyList()
         )
-        val refund2 = com.woocommerce.android.model.Refund(
+        val refund2 = Refund(
             id = 2,
-            dateCreated = java.util.Date(),
-            amount = java.math.BigDecimal("5.00"),
+            dateCreated = Date(),
+            amount = BigDecimal("5.00"),
             reason = null,
             automaticGatewayRefund = false,
             items = emptyList(),

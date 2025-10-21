@@ -166,7 +166,7 @@ private fun OrdersContent(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceBright)
         )
 
         when (val items = state.items) {
@@ -175,7 +175,7 @@ private fun OrdersContent(
                     modifier = Modifier
                         .weight(0.7f)
                         .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                        .background(MaterialTheme.colorScheme.surface),
                     details = items.selectedDetails,
                     onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
                 )
@@ -411,7 +411,7 @@ private fun LoadedOrdersList(
 
                         Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-                        OrderStatusBadge(item.status)
+                        WooPosOrdersStatusBadge(item.status)
                     }
 
                     WooPosText(
@@ -477,37 +477,6 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
             text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),
-    )
-}
-
-@Composable
-fun OrderStatusBadge(status: PosOrderStatus) {
-    val bgColor = when (status.colorKey) {
-        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
-        OrderStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
-        OrderStatusColorKey.PROCESSING,
-        OrderStatusColorKey.ON_HOLD,
-        OrderStatusColorKey.OTHER -> WooPosTheme.colors.default
-    }
-
-    val textColor = when (status.colorKey) {
-        OrderStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
-        OrderStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
-        OrderStatusColorKey.PROCESSING,
-        OrderStatusColorKey.ON_HOLD,
-        OrderStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
-    }
-
-    WooPosText(
-        text = status.text,
-        style = WooPosTypography.BodySmall,
-        color = textColor,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        modifier = Modifier
-            .clip(RoundedCornerShape(WooPosSpacing.Small.value))
-            .background(bgColor)
-            .padding(horizontal = WooPosSpacing.Small.value, vertical = WooPosSpacing.XSmall.value)
     )
 }
 
