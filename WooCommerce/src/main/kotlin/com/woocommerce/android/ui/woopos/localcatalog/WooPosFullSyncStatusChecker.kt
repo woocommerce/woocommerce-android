@@ -25,6 +25,8 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.NotRequired
         }
 
+        // TBD local catalog: check woo version
+
         val site = selectedSite.getOrNull()
         if (site == null) {
             wooPosLogWrapper.e("Full sync check failed: No site selected")

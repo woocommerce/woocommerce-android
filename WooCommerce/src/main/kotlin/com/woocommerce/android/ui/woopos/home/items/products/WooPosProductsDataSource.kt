@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterCo
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,20 +31,39 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
-    private val remoteDataSource: WooPosProductsRemoteDataSource
+    private val remoteDataSource: WooPosProductsRemoteDataSource,
+    private val localDbDataSource: WooPosProductsInDbDataSource,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker
 ) : WooPosProductsDataSourceInterface {
+    private var activeSource: WooPosProductsDataSourceInterface? = null
 
-    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult>
-    = remoteDataSource.fetchFirstPage(forceRefresh)
+    override suspend fun prepopulateProductsCache(): Result<Unit> {
+        return selectDataSource().prepopulateProductsCache()
+    }
 
-    override suspend fun loadMore(): Result<List<WooPosProductModel>> = remoteDataSource.loadMore()
+    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
+        activeSource?.fetchFirstPage(forceRefresh) ?: throw IllegalStateException("FetchFirstPage - Data source not selected")
+
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> {
+        return activeSource?.loadMore() ?: throw IllegalStateException("LoadMore - Data source not selected")
+    }
 
     override val hasMorePages: Boolean
-        get() = remoteDataSource.hasMorePages
+        get() = activeSource?.hasMorePages ?: throw IllegalStateException("hasMorePages - Data source not selected")
 
-    override suspend fun resetState() = remoteDataSource.resetState()
+    override suspend fun resetState() {
+        activeSource = null
+        remoteDataSource.resetState()
+        localDbDataSource.resetState()
+    }
 
-    override suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
+    private suspend fun selectDataSource(): WooPosProductsDataSourceInterface {
+        return when (syncStatusChecker.checkSyncRequirement()) {
+            is WooPosFullSyncRequirement.NotRequired -> remoteDataSource
+            is WooPosFullSyncRequirement.Error -> throw NotImplementedError("Data source selection error handling not implemented")
+            WooPosFullSyncRequirement.BlockingRequired, WooPosFullSyncRequirement.Overdue -> localDbDataSource
+        }
+    }
 
     sealed class ProductsResult {
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
@@ -159,7 +180,13 @@ class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = Visi
         if (fetchResult.isSuccess) {
             emit(WooPosProductsDataSource.ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
-            emit(WooPosProductsDataSource.ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
+            emit(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(
+                        fetchResult.exceptionOrNull() ?: Exception("Unknown error")
+                    )
+                )
+            )
         }
     }.flowOn(Dispatchers.IO).take(2)
 
