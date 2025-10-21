@@ -35,7 +35,9 @@ data class OrderDetailsViewState(
         val discount: String?,
         val discountCode: String?,
         val taxes: String,
-        val shipping: String?
+        val shipping: String?,
+        val refunds: List<String>,
+        val netPayment: String?
     )
 }
 

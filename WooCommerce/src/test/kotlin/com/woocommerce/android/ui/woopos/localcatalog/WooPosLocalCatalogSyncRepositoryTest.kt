@@ -73,7 +73,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync succeeds, then stores timestamp`() = testBlocking {
+    fun `when full sync succeeds, then stores both last sync and last full sync timestamps`() = testBlocking {
         // GIVEN
         val productsSynced = 150
         whenever(posSyncProductsAction.execute(any(), anyOrNull(), any(), any()))
@@ -88,6 +88,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         // THEN
         verify(syncTimestampManager).storeProductsLastSyncTimestamp(any())
+        verify(syncTimestampManager).storeFullSyncLastCompletedTimestamp(any())
     }
 
     @Test

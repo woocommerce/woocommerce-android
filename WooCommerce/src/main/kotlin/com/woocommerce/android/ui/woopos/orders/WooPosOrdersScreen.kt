@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -167,7 +166,7 @@ private fun OrdersContent(
                 .background(MaterialTheme.colorScheme.surface)
         )
 
-        OrderDetails(
+        WooPosOrderDetails(
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
@@ -517,7 +516,9 @@ private fun sampleOrderDetails(
         discount = "-$5.00",
         discountCode = "8qew4mnq",
         taxes = "$0.00",
-        shipping = null
+        shipping = null,
+        refunds = listOf("-$3.00", "-$2.00"),
+        netPayment = "$12.00"
     ),
     total = "$17.00",
     totalPaid = "$17.00",

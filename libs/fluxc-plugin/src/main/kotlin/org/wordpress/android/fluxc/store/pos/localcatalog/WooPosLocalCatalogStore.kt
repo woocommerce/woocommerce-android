@@ -65,6 +65,20 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets the count of products in the local database for a given site.
+     *
+     * @param [siteId] The local site ID
+     * @return Result containing the product count or error
+     */
+    suspend fun getProductCount(
+        siteId: LocalOrRemoteId.LocalId
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "getProductCount") {
+            val count = posProductDao.getProductCount(siteId)
+            Result.success(count)
+        }
+
+    /**
      * Executes a block of code within a database transaction.
      * If the block throws an exception, the transaction is rolled back.
      *
@@ -145,14 +159,12 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> Result.failure(mapResponseError(response.error))
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> Result.success(
                     WooPosLocalCatalogFetchProductsResult(
@@ -311,18 +323,16 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> {
                     Result.failure(
                         mapResponseError(response.error)
                     )
                 }
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
