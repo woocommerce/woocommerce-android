@@ -37,11 +37,17 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_FULL_SYNC = 10
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = 3
-        const val MAX_TOTAL_ITEMS = 1000
+        const val MAX_TOTAL_ITEMS_FULL_SYNC = 1000
+        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = 300
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
-        return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC)
+        return@withContext performSync(
+            site = site,
+            pageSize = PAGE_SIZE,
+            maxPages = MAX_PAGES_PER_FULL_SYNC,
+            maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
+        )
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
@@ -53,6 +59,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             modifiedAfterGmt = modifiedAfterGmt,
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
+            maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
         )
     }
 
@@ -61,13 +68,14 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         site: SiteModel,
         pageSize: Int,
         maxPages: Int,
+        maxTotalItems: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
         val startTime = System.currentTimeMillis()
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        val catalogSizeCheck = checkCatalogSize(site, modifiedAfterGmt)
+        val catalogSizeCheck = checkCatalogSize(site, modifiedAfterGmt, maxTotalItems)
         if (catalogSizeCheck is PosLocalCatalogSyncResult.Failure) {
             return catalogSizeCheck
         }
@@ -95,6 +103,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private suspend fun checkCatalogSize(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
+        maxTotalItems: Int,
     ): PosLocalCatalogSyncResult? {
         logger.d("Checking catalog size before sync")
 
@@ -122,12 +131,12 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Catalog size check: $totalProducts products + $totalVariations variations = $totalItems items")
 
-        if (totalItems > MAX_TOTAL_ITEMS) {
-            logger.e("Catalog too large: $totalItems items exceed maximum of $MAX_TOTAL_ITEMS items")
+        if (totalItems > maxTotalItems) {
+            logger.e("Catalog too large: $totalItems items exceed maximum of $maxTotalItems items")
             return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
                 error = "Catalog too large: $totalItems items " +
                     "(products: $totalProducts, variations: $totalVariations) " +
-                    "exceed maximum of $MAX_TOTAL_ITEMS items",
+                    "exceed maximum of $maxTotalItems items",
                 totalPages = 0,
                 maxPages = 0
             )
