@@ -6,6 +6,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -14,11 +15,13 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -45,6 +48,41 @@ class WooPosProductsDataSource @Inject constructor(
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
         data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
     }
+}
+
+class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val selectedSite: SelectedSite,
+    private val mapper: WooPosProductModelMapper
+) : WooPosProductsDataSourceInterface {
+
+    private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
+        val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
+        val siteId = org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId(siteModel.id)
+
+        return posLocalCatalogStore.observeProducts(siteId)
+            .map { result ->
+                result.getOrNull()?.map { entity ->
+                    mapper.fromEntity(entity)
+                } ?: emptyList()
+            }
+    }
+
+    override fun fetchFirstPage(
+        forceRefresh: Boolean
+    ): Flow<WooPosProductsDataSource.ProductsResult> = getProductsFromDatabaseFlow()
+        .map { products ->
+            WooPosProductsDataSource.ProductsResult.Remote(Result.success(products))
+        }
+        .flowOn(Dispatchers.IO)
+
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+        Result.success(emptyList())
+    }
+
+    override val hasMorePages: Boolean = false
+
+    override suspend fun resetState() = Unit
 }
 
 class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
