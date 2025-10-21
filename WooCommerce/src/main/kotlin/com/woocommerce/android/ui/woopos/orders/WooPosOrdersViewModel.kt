@@ -126,6 +126,13 @@ class WooPosOrdersViewModel @Inject constructor(
         loadOrders()
     }
 
+    fun onSearchErrorRetry() {
+        val query = currentSearchQuery
+        if (!query.isNullOrEmpty()) {
+            performSearch(query)
+        }
+    }
+
     @Suppress("UnusedParameter")
     fun onEmailReceiptButtonClicked(orderId: Long) {
         // Action to be implemented

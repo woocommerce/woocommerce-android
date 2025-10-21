@@ -62,55 +62,57 @@ fun WooPosOrdersLoadingState() {
 
 @Composable
 fun WooPosOrdersOrderLoadingRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            )
-            .heightIn(min = 64.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+    WooPosCard(shadowType = ShadowType.Soft) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
+                .heightIn(min = 64.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.2f)
+                        .height(18.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.35f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.2f)
+                        .height(16.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
             WooPosShimmerBox(
                 modifier = Modifier
-                    .fillMaxWidth(0.2f)
+                    .width(48.dp)
                     .height(18.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.35f)
-                    .height(14.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.25f)
-                    .height(14.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .height(16.dp)
+                    .alignByBaseline()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
-
-        Spacer(Modifier.weight(1f))
-
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(48.dp)
-                .height(18.dp)
-                .alignByBaseline()
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-        )
     }
 }
 
@@ -122,9 +124,7 @@ fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
         items(7) {
-            WooPosCard(shadowType = ShadowType.Soft) {
-                WooPosOrdersOrderLoadingRow()
-            }
+            WooPosOrdersOrderLoadingRow()
         }
     }
 }

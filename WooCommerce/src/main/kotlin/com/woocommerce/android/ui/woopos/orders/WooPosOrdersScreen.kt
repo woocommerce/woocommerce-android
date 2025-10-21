@@ -90,6 +90,7 @@ fun WooPosOrdersScreen(
         onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onSearchEvent = viewModel::onSearchEvent,
+        onSearchErrorRetry = viewModel::onSearchErrorRetry,
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
         onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked
@@ -106,6 +107,7 @@ private fun WooPosOrdersScreen(
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onSearchErrorRetry: () -> Unit,
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit,
@@ -121,8 +123,10 @@ private fun WooPosOrdersScreen(
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
                 onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
             )
+
             is WooPosOrdersState.Empty -> OrdersEmpty(
                 onActionClicked = onOrdersEmptyActionClicked
             )
@@ -152,6 +156,7 @@ private fun OrdersContent(
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onSearchErrorRetry: () -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -163,32 +168,32 @@ private fun OrdersContent(
             onEndOfOrdersListReached = onEndOfOrdersListReached,
             onPaginationErrorTryAgain = onPaginationErrorTryAgain,
             onSearchEvent = onSearchEvent,
+            onSearchErrorRetry = onSearchErrorRetry,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceBright)
         )
 
-        when (val items = state.items) {
-            is WooPosOrdersState.Content.Items.Loaded -> {
-                WooPosOrderDetails(
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.surface),
-                    details = items.selectedDetails,
-                    onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
-                )
-            }
-            is WooPosOrdersState.Content.Items.Searching,
-            is WooPosOrdersState.Content.Items.Error,
-            is WooPosOrdersState.Content.Items.NothingFound -> {
-                Box(
-                    modifier = Modifier
-                        .weight(0.7f)
-                        .fillMaxHeight()
-                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
-                )
+        Box(
+            modifier = Modifier
+                .weight(0.7f)
+                .background(MaterialTheme.colorScheme.surface)
+        ) {
+            when (val items = state.items) {
+                is WooPosOrdersState.Content.Items.Loaded -> {
+                    WooPosOrderDetails(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        details = items.selectedDetails,
+                        onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                    )
+                }
+
+                is WooPosOrdersState.Content.Items.Searching,
+                is WooPosOrdersState.Content.Items.Error,
+                is WooPosOrdersState.Content.Items.NothingFound -> {
+                }
             }
         }
     }
@@ -204,6 +209,7 @@ private fun OrdersListPane(
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
+    onSearchErrorRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
@@ -243,7 +249,7 @@ private fun OrdersListPane(
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onRefresh = onRefresh,
+                onSearchErrorRetry = onSearchErrorRetry,
             )
 
             PullRefreshIndicator(
@@ -266,7 +272,7 @@ private fun OrdersList(
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onRefresh: () -> Unit
+    onSearchErrorRetry: () -> Unit
 ) {
     when (val items = state.items) {
         is WooPosOrdersState.Content.Items.Loaded -> {
@@ -279,29 +285,35 @@ private fun OrdersList(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain
             )
         }
+
         is WooPosOrdersState.Content.Items.Searching -> {
             WooPosOrdersListLoadingPane(
                 modifier = modifier.imePadding()
             )
         }
+
         is WooPosOrdersState.Content.Items.Error -> {
-            WooPosErrorScreen(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .imePadding(),
-                message = items.title,
-                reason = items.message,
-                primaryButton = WooPosErrorScreenButtonState(
-                    text = stringResource(id = R.string.retry),
-                    click = onRefresh
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                WooPosErrorScreen(
+                    modifier = Modifier
+                        .verticalScroll(rememberScrollState())
+                        .imePadding(),
+                    message = items.title,
+                    reason = items.message,
+                    primaryButton = WooPosErrorScreenButtonState(
+                        text = stringResource(id = R.string.retry),
+                        click = onSearchErrorRetry
+                    )
                 )
-            )
+            }
         }
+
         is WooPosOrdersState.Content.Items.NothingFound -> {
             WooPosEmptyScreen(
-                modifier = modifier
-                    .verticalScroll(rememberScrollState())
-                    .imePadding(),
+                modifier = modifier.imePadding(),
                 title = items.title,
                 message = items.message,
                 contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description)
@@ -531,6 +543,7 @@ fun WooPosOrdersScreenPreview() {
             onEndOfOrdersListReached = {},
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
+            onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onEmailReceiptButtonClicked = {}
