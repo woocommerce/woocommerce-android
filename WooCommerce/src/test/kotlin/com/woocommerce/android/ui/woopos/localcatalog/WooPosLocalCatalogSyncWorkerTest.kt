@@ -65,7 +65,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
-            preconditionsChecker = preconditionsChecker,
+            syncPreconditionsChecker = preconditionsChecker,
             syncRepository = syncRepository,
             logger = logger,
         )

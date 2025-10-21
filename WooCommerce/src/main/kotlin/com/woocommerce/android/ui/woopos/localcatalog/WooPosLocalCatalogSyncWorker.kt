@@ -14,7 +14,7 @@ class WooPosLocalCatalogSyncWorker
 constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val preconditionsChecker: WooPosLocalCatalogSyncPreconditionsChecker,
+    private val syncPreconditionsChecker: WooPosLocalCatalogSyncPreconditionsChecker,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
 ) : CoroutineWorker(appContext, workerParams) {
@@ -24,7 +24,7 @@ constructor(
     }
 
     override suspend fun doWork(): Result {
-        val preconditionResult = preconditionsChecker.checkPreconditions()
+        val preconditionResult = syncPreconditionsChecker.checkPreconditions()
 
         val site = when (preconditionResult) {
             is WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip -> {
