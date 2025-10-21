@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
@@ -155,6 +156,10 @@ private fun BookingDetailsContent(
             modifier = Modifier.fillMaxWidth()
         )
     }
+    BookingNoteSection(
+        onClick = {},
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
