@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -46,7 +47,7 @@ class WooPosProductsDataSource @Inject constructor(
     }
 }
 
-class WooPosProductsRemoteDataSource @Inject private constructor(
+class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,

@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.W
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsRemoteDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +39,7 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.Test
 
 @ExperimentalCoroutinesApi
-class WooPosProductsDataSourceTest {
+class WooPosProductsRemoteDataSourceTest {
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -114,7 +115,7 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf()))
         whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
-        val sut = WooPosProductsDataSource(
+        val sut = WooPosProductsRemoteDataSource(
             productStore,
             selectedSite,
             productsCache,
@@ -148,7 +149,7 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(listOf<WCProductModel>()))
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -179,7 +180,7 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf()))
         whenever(productsIndex.getProductList()).thenReturn(emptyList())
-        val sut = WooPosProductsDataSource(
+        val sut = WooPosProductsRemoteDataSource(
             productStore,
             selectedSite,
             productsCache,
@@ -234,7 +235,7 @@ class WooPosProductsDataSourceTest {
                     )
                 )
             )
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -278,7 +279,7 @@ class WooPosProductsDataSourceTest {
             ).thenReturn(WooResult(wooError))
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -324,7 +325,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts + additionalProducts)
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -385,7 +386,7 @@ class WooPosProductsDataSourceTest {
                 WooResult(wooError)
             )
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -427,7 +428,7 @@ class WooPosProductsDataSourceTest {
                 )
             )
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -463,7 +464,7 @@ class WooPosProductsDataSourceTest {
                     includeTypes = any(),
                 )
             ).thenReturn(WooResult(emptyList()))
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -512,7 +513,7 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(listOf()))
 
-        val sut = WooPosProductsDataSource(
+        val sut = WooPosProductsRemoteDataSource(
             productStore,
             selectedSite,
             productsCache,
@@ -576,7 +577,7 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(secondPageProducts))
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -634,7 +635,7 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(wooError))
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
@@ -672,7 +673,7 @@ class WooPosProductsDataSourceTest {
             )
         ).thenReturn(WooResult(wooError))
 
-        val sut = WooPosProductsDataSource(
+        val sut = WooPosProductsRemoteDataSource(
             productStore,
             selectedSite,
             productsCache,
@@ -733,7 +734,7 @@ class WooPosProductsDataSourceTest {
                 )
             ).thenReturn(WooResult(secondPageProducts))
 
-            val sut = WooPosProductsDataSource(
+            val sut = WooPosProductsRemoteDataSource(
                 productStore,
                 selectedSite,
                 productsCache,
