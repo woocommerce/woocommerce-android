@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -55,6 +56,7 @@ class WooPosItemsViewModelTest {
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
+    private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
 
     @Before
     fun setup() {
@@ -457,6 +459,7 @@ class WooPosItemsViewModelTest {
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             preferencesRepository = preferencesRepository,
             analyticsTracker = analyticsTracker,
+            syncStatusChecker = syncStatusChecker,
         )
     }
 }

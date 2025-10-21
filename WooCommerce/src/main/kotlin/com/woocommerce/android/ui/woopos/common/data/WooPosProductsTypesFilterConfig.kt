@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
+// Note: For the Local Catalog feature, the filtering is done locally in WooPosProductsDao.
 class WooPosProductsTypesFilterConfig @Inject constructor() {
     val filters: Map<ProductFilterOption, String> =
         mapOf(

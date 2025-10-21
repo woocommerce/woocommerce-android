@@ -64,12 +64,11 @@ class WooPosProductRestClient @Inject constructor(
         page: Int,
         pageSize: Int,
     ): WooResult<Array<WooPosVariationApiResponse>> {
-        val url = "/wc-analytics/variations"
+        val url = WOOCOMMERCE.variations.pathV3
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
             "_fields" to VARIATIONS_FIELDS,
-            "orderby" to "modified",
             ).also {
             if (modifiedAfter.isNullOrBlank().not()) {
                 it["modified_after"] = modifiedAfter
@@ -157,7 +156,6 @@ class WooPosProductRestClient @Inject constructor(
             "per_page" to pageSize.toString(),
             "offset" to offset.toString(),
             "_fields" to fields,
-            "orderby" to "modified",
             ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified

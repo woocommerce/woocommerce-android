@@ -66,6 +66,7 @@ import com.woocommerce.android.ui.orders.OrdersCommunicationViewModel
 import com.woocommerce.android.ui.orders.creation.CodeScannerStatus
 import com.woocommerce.android.ui.orders.creation.GoogleBarcodeFormatMapper.BarcodeFormat
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
+import com.woocommerce.android.ui.orders.creation.customerlist.CustomerListRepository
 import com.woocommerce.android.ui.orders.details.OrderStatusSelectorDialog
 import com.woocommerce.android.ui.orders.filters.data.OrderFiltersRepository
 import com.woocommerce.android.ui.orders.filters.data.OrderListFilterCategory
@@ -116,6 +117,9 @@ class OrderListFragment :
 
     @Inject
     internal lateinit var orderFiltersRepository: OrderFiltersRepository
+
+    @Inject
+    internal lateinit var customerListRepository: CustomerListRepository
 
     private var tracker: SelectionTracker<Long>? = null
     private var actionMode: ActionMode? = null
@@ -930,6 +934,7 @@ class OrderListFragment :
             OrderListFilterCategory.CUSTOMER,
             listOf(customerId.toString())
         )
+        orderFiltersRepository.loadCustomerInfoIfNeeded(customerId)
         viewModel.loadOrders()
         uiMessageResolver.showSnack(R.string.order_list_customer_filter_applied)
     }

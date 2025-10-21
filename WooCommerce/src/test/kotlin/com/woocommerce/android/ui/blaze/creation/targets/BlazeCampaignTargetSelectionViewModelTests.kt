@@ -31,7 +31,7 @@ class BlazeCampaignTargetSelectionViewModelTests : BaseUnitTest() {
         on { observeDevices() } doReturn devicesFlow
     }
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { it.getArgument<Any?>(0).toString() }
+        on { getString(any()) } doAnswer { it.getArgument<Any>(0).toString() }
     }
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 

@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCa
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -1514,5 +1516,61 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         // THEN: once the product is stored, trash option should be visible
         Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
+    }
+
+    @Test
+    fun `given CIAB site and bookable product, when product detail is opened, then show WebView`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+            }
+        )
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        val testProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(type = ProductType.BOOKING.value)
+        )
+        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
+
+        setup()
+        viewModel.start()
+
+        // WHEN
+        val event = viewModel.event.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(event).isEqualTo(
+            ProductDetailViewModel.OpenProductInWebView(testProductAggregate.product.remoteId)
+        )
+    }
+
+    @Test
+    fun `given CIAB site and non-bookable product, when product detail is opened, then don't show WebView`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+            }
+        )
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        val testProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(type = ProductType.SIMPLE.value)
+        )
+        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
+
+        setup()
+        viewModel.start()
+
+        // WHEN
+        val events = viewModel.event.captureValues()
+
+        // THEN
+        Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
     }
 }

@@ -36,6 +36,24 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun updateAttendanceStatus(
+        site: SiteModel,
+        bookingId: Long,
+        attendanceStatus: String
+    ): WooPayload<BookingDto> {
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            body = mapOf("attendance_status" to attendanceStatus)
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,
@@ -69,7 +87,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         resourceId: Long
     ): WooPayload<BookingResourceDto> {
-        val endpoint = WOOCOMMERCE.resources.id(resourceId).pathV2Bookings
+        val endpoint = WOOCOMMERCE.resources.team_members.id(resourceId).pathV2Bookings
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -90,7 +108,7 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.AttendanceStatus -> TODO()
                 BookingsFilterOption.PaymentStatus -> TODO()
                 BookingsFilterOption.BookingType -> TODO()
-                is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
+                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
 
                 BookingsFilterOption.Location -> TODO()
                 is BookingsFilterOption.DateRange -> {

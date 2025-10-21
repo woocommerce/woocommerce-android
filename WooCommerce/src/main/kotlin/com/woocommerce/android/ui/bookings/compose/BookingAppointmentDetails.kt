@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -87,10 +88,11 @@ fun BookingAppointmentDetails(
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.onSurface
                 ),
-                onClick = onCancelBooking
-            ) {
-                Text(text = stringResource(R.string.booking_details_cancel_booking_button))
-            }
+                onClick = onCancelBooking,
+                enabled = model.cancelButtonEnabled,
+                text = stringResource(R.string.booking_details_cancel_booking_button),
+                loading = model.cancelInProgressShown,
+            )
             HorizontalDivider(thickness = 0.5.dp)
         }
     }
@@ -139,8 +141,12 @@ data class BookingAppointmentDetailsModel(
     val staff: BookingStaffMemberStatus?,
     val location: String,
     val duration: String,
-    val price: String
-)
+    val price: String,
+    val cancelStatus: CancelStatus,
+) {
+    val cancelButtonEnabled: Boolean = cancelStatus != CancelStatus.InProgress
+    val cancelInProgressShown: Boolean = cancelStatus == CancelStatus.InProgress
+}
 
 sealed interface BookingStaffMemberStatus {
     data object Loading : BookingStaffMemberStatus
@@ -159,7 +165,8 @@ private fun BookingAppointmentDetailsPreview() {
                 staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
-                price = "$55.00"
+                price = "$55.00",
+                cancelStatus = CancelStatus.Idle,
             ),
             onCancelBooking = {},
             modifier = Modifier.fillMaxWidth()

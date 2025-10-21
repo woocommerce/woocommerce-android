@@ -99,14 +99,16 @@ class BookingsStore @Inject internal constructor(
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
                     val bookingDto = response.result
-                    val orderResult = orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
-                    if (orderResult.isError) {
+                    val orderResult = bookingDto.orderId.takeIf { it != 0L }?.let {
+                        orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
+                    }
+                    if (orderResult?.isError == true) {
                         return@withDefaultContext WooResult(orderResult.error)
                     }
                     val entity = with(bookingDtoMapper) {
                         bookingDto.toEntity(
                             localSiteId = site.localId(),
-                            orderEntity = orderResult.model,
+                            orderEntity = orderResult?.model,
                         )
                     }
                     bookingsDao.insertOrReplace(listOf(entity))
@@ -142,11 +144,51 @@ class BookingsStore @Inject internal constructor(
         resourceId: Long
     ): Flow<BookingResourceEntity?> = bookingsDao.observeResource(site.localId(), resourceId)
 
+    suspend fun updateAttendanceStatus(
+        site: SiteModel,
+        bookingId: Long,
+        attendanceStatus: BookingEntity.AttendanceStatus,
+    ): WooResult<BookingEntity> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updateAttendanceStatus") {
+            val response = bookingsRestClient.updateAttendanceStatus(site, bookingId, attendanceStatus.key)
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> {
+                    val bookingDto = response.result
+
+                    val storedBooking = bookingsDao.getBooking(
+                        localSiteId = site.localId(),
+                        bookingId = bookingId
+                    )
+                    if (storedBooking == null) {
+                        return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                    }
+
+                    with(bookingDtoMapper) {
+                        val updatedBooking = bookingDto.toEntity(
+                            localSiteId = site.localId(),
+                            orderEntity = null,
+                        ).copy(
+                            // Preserve fields not returned by the API
+                            order = storedBooking.order,
+                        )
+                        bookingsDao.insertOrReplace(updatedBooking)
+                        return@withDefaultContext WooResult(updatedBooking)
+                    }
+                }
+
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     private suspend fun fetchOrders(
         site: SiteModel,
         orderIds: List<Long>
     ): WooResult<Map<Long, OrderEntity>> {
-        if (orderIds.isEmpty()) { return WooResult(emptyMap()) }
+        if (orderIds.isEmpty()) {
+            return WooResult(emptyMap())
+        }
 
         val result = orderStore.fetchOrdersByIds(WCOrderStore.FetchOrdersByIdsPayload(site, orderIds))
         return if (result.isError) {
