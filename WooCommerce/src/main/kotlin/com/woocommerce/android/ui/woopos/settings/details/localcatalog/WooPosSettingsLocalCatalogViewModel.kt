@@ -39,18 +39,21 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         viewModelScope.launch {
             _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus) }
 
-            val productsTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
-            val variationsTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
+            val productsLastSyncTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
+            val variationsLastSyncTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
+            val fullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
 
-            val formattedTimestamp = dateFormatter.formatCatalogLastUpdate(
-                productsTimestamp,
-                variationsTimestamp
+            val formattedLastSyncTimestamp = dateFormatter.formatCatalogLastUpdate(
+                productsLastSyncTimestamp,
+                variationsLastSyncTimestamp
             )
+
+            val formattedLastFullSyncTimestamp = dateFormatter.formatCatalogLastFullSync(fullSyncTimestamp)
 
             val catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
                 catalogSize = "8.3 MB", // TBD local catalog: Replace with actual catalog size
-                lastUpdate = formattedTimestamp,
-                lastFullUpdate = formattedTimestamp // TBD local catalog: Replace with full sync timestamp
+                lastUpdate = formattedLastSyncTimestamp,
+                lastFullUpdate = formattedLastFullSyncTimestamp
             )
 
             _state.update {
