@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,6 +29,7 @@ class WooPosSplashViewModel @Inject constructor(
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val ordersCache: WooPosOrdersInMemoryCache,
     private val performInitialFullSync: WooPosPerformLocalCatalogInitialFullSync,
+    private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
     val state: StateFlow<WooPosSplashState> = _state
@@ -36,6 +38,8 @@ class WooPosSplashViewModel @Inject constructor(
         val splashScreenStartTime = System.currentTimeMillis()
 
         viewModelScope.launch {
+            preferencesRepository.setLastUsedTimestamp()
+
             val launchability = posCanBeLaunchedInTab()
 
             if (launchability is WooPosLaunchability.NotLaunchable) {
