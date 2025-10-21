@@ -166,14 +166,28 @@ private fun OrdersContent(
                 .background(MaterialTheme.colorScheme.surface)
         )
 
-        WooPosOrderDetails(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow),
-            details = state.selectedDetails,
-            onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
-        )
+        when (val items = state.items) {
+            is WooPosOrdersState.Content.Items.Loaded -> {
+                WooPosOrderDetails(
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow),
+                    details = items.selectedDetails,
+                    onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                )
+            }
+            is WooPosOrdersState.Content.Items.Searching,
+            is WooPosOrdersState.Content.Items.Error,
+            is WooPosOrdersState.Content.Items.NothingFound -> {
+                Box(
+                    modifier = Modifier
+                        .weight(0.7f)
+                        .fillMaxHeight()
+                        .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                )
+            }
+        }
     }
 }
 
@@ -249,6 +263,85 @@ private fun OrdersList(
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit
 ) {
+    when (val items = state.items) {
+        is WooPosOrdersState.Content.Items.Loaded -> {
+            LoadedOrdersList(
+                modifier = modifier,
+                items = items.items,
+                paginationState = state.paginationState,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain
+            )
+        }
+        is WooPosOrdersState.Content.Items.Searching -> {
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                WooPosText(
+                    text = "Searching...",
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        }
+        is WooPosOrdersState.Content.Items.Error -> {
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+                ) {
+                    WooPosText(
+                        text = items.title,
+                        style = WooPosTypography.BodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    WooPosText(
+                        text = items.message,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+        is WooPosOrdersState.Content.Items.NothingFound -> {
+            Box(
+                modifier = modifier,
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+                ) {
+                    WooPosText(
+                        text = items.title,
+                        style = WooPosTypography.BodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    WooPosText(
+                        text = items.message,
+                        style = WooPosTypography.BodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LoadedOrdersList(
+    modifier: Modifier = Modifier,
+    items: Map<OrderItemViewState, OrderDetailsViewState>,
+    paginationState: WooPosPaginationState,
+    onOrderSelected: (Long) -> Unit,
+    onEndOfOrdersListReached: () -> Unit,
+    onPaginationErrorTryAgain: () -> Unit
+) {
     val listState = rememberLazyListState()
 
     val loadMoreBuffer = 5
@@ -261,7 +354,7 @@ private fun OrdersList(
             lastVisible >= total - 1 - loadMoreBuffer
         }
     }
-    LaunchedEffect(state.paginationState) {
+    LaunchedEffect(paginationState) {
         snapshotFlow { shouldLoadMore.value }
             .distinctUntilChanged()
             .filter { it }
@@ -274,7 +367,7 @@ private fun OrdersList(
         contentPadding = PaddingValues(WooPosSpacing.Medium.value),
         state = listState,
     ) {
-        items(state.items.keys.toList(), key = { it.id }) { item ->
+        items(items.keys.toList(), key = { it.id }) { item ->
             WooPosCard(
                 modifier = modifier
                     .wrapContentHeight(),
@@ -354,13 +447,13 @@ private fun OrdersList(
             }
         }
 
-        if (state.paginationState == WooPosPaginationState.Loading) {
+        if (paginationState == WooPosPaginationState.Loading) {
             item {
                 WooPosOrdersOrderLoadingRow()
             }
         }
 
-        if (state.paginationState == WooPosPaginationState.Error) {
+        if (paginationState == WooPosPaginationState.Error) {
             item {
                 OrdersPaginationErrorRow(onPaginationErrorTryAgain)
             }
@@ -475,11 +568,13 @@ fun WooPosOrdersScreenPreview() {
     WooPosTheme {
         WooPosOrdersScreen(
             state = WooPosOrdersState.Content(
-                items = mapOf(
-                    item1 to details1,
-                    item2 to details2
+                items = WooPosOrdersState.Content.Items.Loaded(
+                    items = mapOf(
+                        item1 to details1,
+                        item2 to details2
+                    ),
+                    selectedDetails = details1
                 ),
-                selectedDetails = details1,
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
                 paginationState = WooPosPaginationState.None

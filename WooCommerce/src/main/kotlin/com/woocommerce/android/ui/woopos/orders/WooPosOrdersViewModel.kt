@@ -60,16 +60,19 @@ class WooPosOrdersViewModel @Inject constructor(
 
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
+        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val updatedItems = current.items.mapKeys { (item, _) ->
+        val updatedItems = loadedItems.items.mapKeys { (item, _) ->
             item.copy(isSelected = item.id == orderId)
         }
 
         val selectedEntry = updatedItems.entries.first { (item, _) -> item.isSelected }
 
         _state.value = current.copy(
-            items = updatedItems,
-            selectedDetails = selectedEntry.value
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = updatedItems,
+                selectedDetails = selectedEntry.value
+            )
         )
     }
 
@@ -219,20 +222,36 @@ class WooPosOrdersViewModel @Inject constructor(
 
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
-            _state.value = WooPosOrdersState.Loading(searchInputState = _state.value.searchInputState)
+            _state.value = WooPosOrdersState.Content(
+                items = WooPosOrdersState.Content.Items.Searching,
+                pullToRefreshState = WooPosPullToRefreshState.Disabled,
+                searchInputState = _state.value.searchInputState,
+                paginationState = WooPosPaginationState.None
+            )
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    _state.value = WooPosOrdersState.Error(
-                        message = result.message,
-                        searchInputState = _state.value.searchInputState
+                    _state.value = WooPosOrdersState.Content(
+                        items = WooPosOrdersState.Content.Items.Error(
+                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
+                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                        ),
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        searchInputState = _state.value.searchInputState,
+                        paginationState = WooPosPaginationState.None
                     )
                 }
 
                 is SearchOrdersResult.Success -> {
                     if (result.orders.isEmpty()) {
-                        _state.value = WooPosOrdersState.Empty(
-                            searchInputState = _state.value.searchInputState
+                        _state.value = WooPosOrdersState.Content(
+                            items = WooPosOrdersState.Content.Items.NothingFound(
+                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
+                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                            searchInputState = _state.value.searchInputState,
+                            paginationState = WooPosPaginationState.None
                         )
                     } else {
                         replaceOrders(result.orders)
@@ -293,8 +312,10 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
 
         _state.value = WooPosOrdersState.Content(
-            items = items,
-            selectedDetails = selectedEntry.value,
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = items,
+                selectedDetails = selectedEntry.value
+            ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
@@ -306,13 +327,16 @@ class WooPosOrdersViewModel @Inject constructor(
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val current = _state.value as WooPosOrdersState.Content
-        val currentSelectedId = current.items.entries.firstOrNull { it.key.isSelected }?.key?.id
+        val loadedItems = current.items as WooPosOrdersState.Content.Items.Loaded
+        val currentSelectedId = loadedItems.items.entries.firstOrNull { it.key.isSelected }?.key?.id
         val newItems = buildItemsMap(orders, currentSelectedId)
-        val items = current.items + newItems
+        val items = loadedItems.items + newItems
 
         _state.value = WooPosOrdersState.Content(
-            items = items,
-            selectedDetails = current.selectedDetails,
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = items,
+                selectedDetails = loadedItems.selectedDetails
+            ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState

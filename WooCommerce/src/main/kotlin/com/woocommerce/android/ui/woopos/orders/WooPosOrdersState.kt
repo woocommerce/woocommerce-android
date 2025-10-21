@@ -59,12 +59,22 @@ sealed class WooPosOrdersState {
 
     @Immutable
     data class Content(
-        val items: Map<OrderItemViewState, OrderDetailsViewState>,
-        val selectedDetails: OrderDetailsViewState,
+        val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val paginationState: WooPosPaginationState,
-    ) : WooPosOrdersState()
+    ) : WooPosOrdersState() {
+        sealed class Items {
+            data class Loaded(
+                val items: Map<OrderItemViewState, OrderDetailsViewState>,
+                val selectedDetails: OrderDetailsViewState,
+            ) : Items()
+
+            object Searching : Items()
+            data class Error(val title: String, val message: String) : Items()
+            data class NothingFound(val title: String, val message: String) : Items()
+        }
+    }
 
     @Immutable
     data class Error(
