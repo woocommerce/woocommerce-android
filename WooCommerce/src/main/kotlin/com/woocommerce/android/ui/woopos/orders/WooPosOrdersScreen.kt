@@ -379,7 +379,7 @@ private fun OrdersList(
 }
 
 @Composable
-fun OrdersEmpty(
+private fun OrdersEmpty(
     onActionClicked: () -> Unit
 ) {
     WooPosEmptyScreen(
@@ -387,14 +387,14 @@ fun OrdersEmpty(
         icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
-        contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+        contentDescription = stringResource(id = R.string.woopos_orders_empty_list_image_description),
         actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
         onActionClicked = onActionClicked
     )
 }
 
 @Composable
-fun OrdersError(
+private fun OrdersError(
     onRetryClicked: () -> Unit
 ) {
     WooPosErrorScreen(
@@ -414,7 +414,7 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
         primaryButton = WooPosErrorScreenButtonState(
-            text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
+            text = stringResource(id = R.string.woopos_orders_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),
     )
