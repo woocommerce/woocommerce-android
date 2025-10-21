@@ -32,8 +32,8 @@ class WooPosProductsDataSource @Inject constructor(
     private val remoteDataSource: WooPosProductsRemoteDataSource
 ) : WooPosProductsDataSourceInterface {
 
-    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult>
-    = remoteDataSource.fetchFirstPage(forceRefresh)
+    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
+        remoteDataSource.fetchFirstPage(forceRefresh)
 
     override suspend fun loadMore(): Result<List<WooPosProductModel>> = remoteDataSource.loadMore()
 
@@ -50,7 +50,10 @@ class WooPosProductsDataSource @Inject constructor(
     }
 }
 
-class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
+class WooPosProductsInDbDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val mapper: WooPosProductModelMapper
@@ -87,7 +90,10 @@ class WooPosProductsInDbDataSource @Inject @VisibleForTesting(otherwise = Visibl
     override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
 }
 
-class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE) constructor(
+class WooPosProductsRemoteDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
@@ -159,7 +165,13 @@ class WooPosProductsRemoteDataSource @Inject @VisibleForTesting(otherwise = Visi
         if (fetchResult.isSuccess) {
             emit(WooPosProductsDataSource.ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
-            emit(WooPosProductsDataSource.ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
+            emit(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(
+                        fetchResult.exceptionOrNull() ?: Exception("Unknown error")
+                    )
+                )
+            )
         }
     }.flowOn(Dispatchers.IO).take(2)
 
