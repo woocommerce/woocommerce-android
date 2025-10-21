@@ -36,6 +36,24 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun updateAttendanceStatus(
+        site: SiteModel,
+        bookingId: Long,
+        attendanceStatus: String
+    ): WooPayload<BookingDto> {
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            body = mapOf("attendance_status" to attendanceStatus)
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     @Suppress("LongParameterList")
     suspend fun fetchBookings(
         site: SiteModel,
