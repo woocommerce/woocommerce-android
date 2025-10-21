@@ -6,6 +6,7 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -93,14 +94,14 @@ class BookingMapperTest : BaseUnitTest() {
             .format(start)
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.date).isEqualTo(expectedDate)
         assertThat(model.name).isEqualTo(booking.order.productInfo?.name)
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
-        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.BOOKED)
+        assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.Booked)
         assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
     }
 
@@ -145,7 +146,7 @@ class BookingMapperTest : BaseUnitTest() {
         val booking = sampleBooking(status = BookingEntity.Status.Unknown("weird-status"))
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.status).isInstanceOf(BookingStatus.Unknown::class.java)
@@ -270,7 +271,7 @@ class BookingMapperTest : BaseUnitTest() {
         }
 
         // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel() }
+        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
         assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
@@ -307,6 +308,7 @@ class BookingMapperTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "UTC",
+            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
             order = BookingOrderInfo(
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),

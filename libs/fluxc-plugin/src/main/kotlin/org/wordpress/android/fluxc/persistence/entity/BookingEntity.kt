@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.persistence.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.TypeConverter
@@ -34,6 +35,7 @@ data class BookingEntity(
     val parentId: Long,
     val personCounts: List<Long>?,
     val localTimezone: String,
+    @ColumnInfo(defaultValue = "") val attendanceStatus: AttendanceStatus,
     @Embedded("order_") val order: BookingOrderInfo
 ) {
     sealed interface Status {
@@ -79,6 +81,35 @@ data class BookingEntity(
             }
         }
     }
+
+    sealed interface AttendanceStatus {
+        val key: String
+
+        data object Booked : AttendanceStatus {
+            override val key = "booked"
+        }
+
+        data object NoShow : AttendanceStatus {
+            override val key = "no-show"
+        }
+
+        data object CheckedIn : AttendanceStatus {
+            override val key = "checked-in"
+        }
+
+        data class Unknown(override val key: String) : AttendanceStatus
+
+        companion object {
+            fun fromKey(key: String): AttendanceStatus {
+                return when (key) {
+                    Booked.key -> Booked
+                    NoShow.key -> NoShow
+                    CheckedIn.key -> CheckedIn
+                    else -> Unknown(key)
+                }
+            }
+        }
+    }
 }
 
 internal class BookingEntityConverters {
@@ -93,4 +124,12 @@ internal class BookingEntityConverters {
 
     @TypeConverter
     fun stringToPaymentStatus(key: String): BookingEntity.Status = BookingEntity.Status.fromKey(key)
+
+    @TypeConverter
+    fun attendanceStatusToString(status: BookingEntity.AttendanceStatus): String = status.key
+
+    @TypeConverter
+    fun stringToAttendanceStatus(key: String): BookingEntity.AttendanceStatus {
+        return BookingEntity.AttendanceStatus.fromKey(key)
+    }
 }

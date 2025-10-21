@@ -209,10 +209,13 @@ fun WCSearchField(
     var textFieldValueState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(text = value))
     }
+    // Keep TextFieldValue in sync with external value
+    val textFieldValue = textFieldValueState.copy(text = value)
+
     val lastValue by rememberUpdatedState(value)
 
     BasicTextField(
-        value = textFieldValueState,
+        value = textFieldValue,
         onValueChange = {
             textFieldValueState = it
             if (it.text != lastValue) {
