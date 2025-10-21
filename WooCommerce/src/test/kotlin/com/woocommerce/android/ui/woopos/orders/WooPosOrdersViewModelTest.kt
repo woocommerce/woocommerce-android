@@ -325,8 +325,10 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val query = "test query"
         whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title)).thenReturn("Unable to load orders")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description)).thenReturn("Please try again.")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
+            .thenReturn("Unable to load orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Please try again.")
 
         viewModel = createViewModel()
         advanceUntilIdle()
