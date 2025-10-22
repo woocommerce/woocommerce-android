@@ -34,7 +34,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosProductsViewModel @Inject constructor(
-    private val dataSource: WooPosProductsDataSourceInterface,
+    private val dataSource: WooPosProductsDataSource,
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
