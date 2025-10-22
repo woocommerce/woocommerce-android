@@ -2,11 +2,14 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -26,6 +29,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import java.math.BigDecimal
+import java.util.Date
 import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -39,11 +44,12 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
-    private val resourceProvider: ResourceProvider = org.mockito.kotlin.mock()
-    private val getProductById: WooPosGetProductById = org.mockito.kotlin.mock()
-    private val formatPrice: WooPosFormatPrice = org.mockito.kotlin.mock()
-    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = org.mockito.kotlin.mock()
+    private val resourceProvider: ResourceProvider = mock()
+    private val getProductById: WooPosGetProductById = mock()
+    private val formatPrice: WooPosFormatPrice = mock()
+    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -51,6 +57,7 @@ class WooPosOrdersViewModelTest {
             resourceProvider = resourceProvider,
             locale = providedLocale,
             getProductById = getProductById,
+            childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
             getOrderRefunds = getOrderRefunds
         )
@@ -614,6 +621,22 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
+    fun `given content loaded, when onEmailReceiptButtonClicked called, then ToEmailReceipt is sent`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(123)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onEmailReceiptButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(123L))
+    }
+
     fun `given order with no refunds, when mapped, then breakdown has empty refunds and null net payment`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
@@ -641,20 +664,20 @@ class WooPosOrdersViewModelTest {
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(testOrder))) }
         )
 
-        val refund1 = com.woocommerce.android.model.Refund(
+        val refund1 = Refund(
             id = 1,
-            dateCreated = java.util.Date(),
-            amount = java.math.BigDecimal("10.00"),
+            dateCreated = Date(),
+            amount = BigDecimal("10.00"),
             reason = null,
             automaticGatewayRefund = false,
             items = emptyList(),
             shippingLines = emptyList(),
             feeLines = emptyList()
         )
-        val refund2 = com.woocommerce.android.model.Refund(
+        val refund2 = Refund(
             id = 2,
-            dateCreated = java.util.Date(),
-            amount = java.math.BigDecimal("5.00"),
+            dateCreated = Date(),
+            amount = BigDecimal("5.00"),
             reason = null,
             automaticGatewayRefund = false,
             items = emptyList(),

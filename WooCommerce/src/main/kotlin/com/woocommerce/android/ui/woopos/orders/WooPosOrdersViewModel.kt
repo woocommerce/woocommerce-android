@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
@@ -30,6 +32,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val locale: Locale,
     private val getProductById: WooPosGetProductById,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId,
 ) : ViewModel() {
@@ -114,6 +117,14 @@ class WooPosOrdersViewModel @Inject constructor(
         loadMoreIfPossible()
     }
 
+    fun onEmailReceiptButtonClicked(orderId: Long) {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ToEmailReceipt(orderId)
+            )
+        }
+    }
+
     fun onOrdersEmptyActionClicked() {
         // Action to be defined
     }
@@ -121,11 +132,6 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onOrdersLoadingErrorRetryButtonClicked() {
         _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
         loadOrders()
-    }
-
-    @Suppress("UnusedParameter")
-    fun onEmailReceiptButtonClicked(orderId: Long) {
-        // Action to be implemented
     }
 
     @Suppress("ReturnCount")
@@ -336,7 +342,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
             total = formatPrice(order.total),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             isSelected = order.id == selectedId,
             status = PosOrderStatus(
                 text = statusText,
@@ -392,7 +398,7 @@ class WooPosOrdersViewModel @Inject constructor(
             dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,
