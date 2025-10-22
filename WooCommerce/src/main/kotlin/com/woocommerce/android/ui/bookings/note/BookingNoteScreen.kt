@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
@@ -52,7 +53,8 @@ fun BookingNoteScreen(
 ) {
     val focusRequester = remember { FocusRequester() }
 
-    LaunchedEffect(Unit) {
+    // Request focus only after the note is available in the composition
+    LaunchedEffect(viewState.editedNote != null) {
         focusRequester.requestFocus()
     }
 
@@ -90,32 +92,55 @@ fun BookingNoteScreen(
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(top = innerPadding.calculateTopPadding())
         ) {
-            var textFieldValueState by rememberSaveable(viewState.editedNote, stateSaver = TextFieldValue.Saver) {
-                mutableStateOf(
-                    TextFieldValue(
-                        text = viewState.editedNote,
-                        selection = TextRange(viewState.editedNote.length)
-                    )
+            viewState.editedNote?.let {
+                NoteTextField(
+                    value = it,
+                    onValueChange = viewState.onNoteChange,
+                    enabled = viewState.noteEditable,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 12.dp)
+                        .focusRequester(focusRequester)
                 )
             }
-
-            val lastValue by rememberUpdatedState(viewState.editedNote)
-
-            BasicTextField(
-                value = textFieldValueState,
-                onValueChange = {
-                    textFieldValueState = it
-                    if (it.text != lastValue) {
-                        // Update external value when changed
-                        viewState.onNoteChange(it.text)
-                    }
-                },
-                enabled = viewState.noteEditable,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-                    .focusRequester(focusRequester)
-            )
         }
     }
+}
+
+@Composable
+private fun NoteTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    var textFieldValueState by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(
+            TextFieldValue(
+                text = value,
+                selection = TextRange(value.length)
+            )
+        )
+    }
+
+    val textFieldValue = textFieldValueState.copy(text = value)
+
+    val lastValue by rememberUpdatedState(value)
+
+    BasicTextField(
+        value = textFieldValue,
+        onValueChange = {
+            textFieldValueState = it
+            if (it.text != lastValue) {
+                // Update external value when changed
+                onValueChange(it.text)
+            }
+        },
+        enabled = enabled,
+        modifier = modifier,
+        textStyle = MaterialTheme.typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.onSurface
+        ),
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.primary)
+    )
 }

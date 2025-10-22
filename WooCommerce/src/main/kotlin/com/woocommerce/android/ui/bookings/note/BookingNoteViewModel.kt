@@ -23,7 +23,7 @@ class BookingNoteViewModel @Inject constructor(
     private val navArgs: BookingNoteFragmentArgs by savedState.navArgs()
 
     private val initialNoteState = MutableStateFlow("")
-    private val editedNoteState = MutableStateFlow("")
+    private val editedNoteState = MutableStateFlow<String?>(null)
     private val noteSaveStatusFlow = MutableStateFlow<NoteSaveStatus>(NoteSaveStatus.Idle)
 
     val state: LiveData<BookingNoteViewState> = combine(
@@ -60,7 +60,7 @@ class BookingNoteViewModel @Inject constructor(
     private fun saveNote() {
         launch {
             noteSaveStatusFlow.value = NoteSaveStatus.InProgress
-            bookingsRepository.updateNote(navArgs.bookingId, editedNoteState.value.trim())
+            bookingsRepository.updateNote(navArgs.bookingId, editedNoteState.value.orEmpty().trim())
                 .onFailure {
                     triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_note_screen_update_error))
                 }
