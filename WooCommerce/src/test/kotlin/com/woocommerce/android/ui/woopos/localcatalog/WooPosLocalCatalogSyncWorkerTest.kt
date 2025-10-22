@@ -22,7 +22,10 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
     private var context: Context = mock()
     private var workerParams: WorkerParameters = mock()
-    private var preconditionsChecker: WooPosLocalCatalogSyncPreconditionsChecker = mock()
+    private var accountRepository: com.woocommerce.android.ui.login.AccountRepository = mock()
+    private var selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
+    private var featureFlagM1Enabled: com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled = mock()
+    private var preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository = mock()
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
@@ -53,8 +56,11 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             url = "https://test.com"
         }
 
-        whenever(preconditionsChecker.checkPreconditions())
-            .thenReturn(WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Proceed(site))
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
+        whenever(selectedSite.getOrNull()).thenReturn(site)
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(successResponse)
         whenever(syncRepository.syncLocalCatalogIncremental(site))
@@ -65,7 +71,10 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
-            syncPreconditionsChecker = preconditionsChecker,
+            accountRepository = accountRepository,
+            selectedSite = selectedSite,
+            featureFlagM1Enabled = featureFlagM1Enabled,
+            preferencesRepository = preferencesRepository,
             syncRepository = syncRepository,
             logger = logger,
         )
@@ -86,16 +95,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when preconditions fail, then returns skip result`() = testBlocking {
+    fun `when feature flag disabled, then returns failure`() = testBlocking {
         // GIVEN
-        whenever(preconditionsChecker.checkPreconditions())
-            .thenReturn(
-                WooPosLocalCatalogSyncPreconditionsChecker.PreconditionResult.Skip(
-                    workerResult = ListenableWorker.Result.failure(),
-                    reason = "Precondition failed"
-                )
-            )
-
+        whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
         val worker = createWorker()
 
         // WHEN
@@ -104,7 +106,63 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
-        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `when user not logged in, then returns failure`() = testBlocking {
+        // GIVEN
+        whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+    }
+
+    @Test
+    fun `when no site selected, then returns failure`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+    }
+
+    @Test
+    fun `when periodic sync disabled, then returns failure`() = testBlocking {
+        // GIVEN
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)).thenReturn(false)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+    }
+
+    @Test
+    fun `when POS not used in 31 days, then returns success without sync`() = testBlocking {
+        // GIVEN
+        val thirtyOneDaysAgo = System.currentTimeMillis() - (31 * 24 * 60 * 60 * 1000L)
+        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(thirtyOneDaysAgo)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
     }
 
     @Test
