@@ -31,7 +31,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog feature not enabled")
         }
 
-        if(!isVariationsEndpointAvailable()) {
+        if (!isVariationsEndpointAvailable()) {
             wooPosLogWrapper.d("Full sync check skipped: Variations endpoint not available")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Variations endpoint not available")
         }
@@ -85,6 +85,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 wooPosLogWrapper.d("Full sync overdue (last sync: $lastFullSyncTimestamp)")
                 WooPosFullSyncRequirement.Overdue
             }
+
             else -> {
                 wooPosLogWrapper.d(
                     "Full sync not required: Recent sync at $lastFullSyncTimestamp " +
@@ -102,15 +103,17 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         return timeSinceLastSync >= overdueThreshold
     }
 
+    private fun isVariationsEndpointAvailable(): Boolean {
+        val currentWooCoreVersion = getWooVersion() ?: return false.also {
+            wooPosLogWrapper.d("Unknown WooCommerce version - assuming variations endpoint not available.")
+        }
+
+        return currentWooCoreVersion.semverCompareTo(WC_VARIATIONS_ENDPOINT_AVAILABLE) >= 0
+    }
+
     companion object {
         private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days
         private const val WC_VARIATIONS_ENDPOINT_AVAILABLE = "10.3.0"
-    }
-
-    fun isVariationsEndpointAvailable(): Boolean {
-        val currentWooCoreVersion = getWooVersion() ?: return false
-
-        return currentWooCoreVersion.semverCompareTo(WC_VARIATIONS_ENDPOINT_AVAILABLE) >= 0
     }
 }
 
