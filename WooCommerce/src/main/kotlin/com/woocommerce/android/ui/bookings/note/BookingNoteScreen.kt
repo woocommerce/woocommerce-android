@@ -4,9 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -26,6 +29,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun BookingNoteScreen(
@@ -57,6 +61,26 @@ fun BookingNoteScreen(
             Toolbar(
                 title = stringResource(R.string.booking_note_screen_title),
                 onNavigationButtonClick = onBack,
+                actions = {
+                    if (viewState.isSaveVisible) {
+                        WCTextButton(
+                            onClick = viewState.onSaveClicked,
+                            enabled = viewState.isSaveEnabled,
+                        ) {
+                            when (viewState.noteSaveStatus) {
+                                is NoteSaveStatus.Idle -> {
+                                    Text(stringResource(R.string.booking_note_screen_done))
+                                }
+
+                                is NoteSaveStatus.InProgress -> {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(24.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                },
                 modifier = Modifier.shadow(4.dp)
             )
         }
@@ -86,6 +110,7 @@ fun BookingNoteScreen(
                         viewState.onNoteChange(it.text)
                     }
                 },
+                enabled = viewState.noteEditable,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp, vertical = 12.dp)
