@@ -63,8 +63,14 @@ class WooPosProductsDataSource @Inject constructor(
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
                 activeSource = localDbDataSource
-                localDbDataSource.prepopulateProductsCache()
-                emit(WooPosPrepopulatingDataStatus.Completed)
+                localDbDataSource.prepopulateProductsCache().fold(
+                    onSuccess = {
+                        emit(WooPosPrepopulatingDataStatus.Completed)
+                    },
+                    onFailure = {
+                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                    }
+                )
             }
 
             is WooPosFullSyncRequirement.Error -> {

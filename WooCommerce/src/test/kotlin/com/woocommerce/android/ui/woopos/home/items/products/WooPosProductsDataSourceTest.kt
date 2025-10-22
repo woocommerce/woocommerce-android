@@ -108,6 +108,27 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
+    fun `given blocking sync required and prepopulate fails, when prepopulate cache, then emits failed status`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.BlockingRequired
+        )
+        val errorMessage = "Failed to prepopulate cache"
+        whenever(localDbDataSource.prepopulateProductsCache()).thenReturn(
+            Result.failure(Exception(errorMessage))
+        )
+        val sut = createSut()
+
+        // WHEN
+        val result = sut.prepopulateProductsCache().toList()
+
+        // THEN
+        val status = result.last()
+        assertThat(status).isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
+        verify(localDbDataSource).prepopulateProductsCache()
+    }
+
+    @Test
     fun `given sync error, when prepopulate cache, then no active source is set`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(

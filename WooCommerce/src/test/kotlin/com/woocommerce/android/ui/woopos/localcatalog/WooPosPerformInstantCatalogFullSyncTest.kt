@@ -128,12 +128,14 @@ class WooPosPerformInstantCatalogFullSyncTest {
         whenever(syncScheduler.observeOneTimeWorkStatus()).thenReturn(flowOf(false))
         whenever(syncScheduler.observePeriodicWorkStatus()).thenReturn(flowOf(true))
         whenever(syncScheduler.observePeriodicWorkInfo()).thenReturn(workInfoFlow)
+        whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp())
+            .thenReturn(System.currentTimeMillis())
 
         // WHEN
         val result = sut()
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
