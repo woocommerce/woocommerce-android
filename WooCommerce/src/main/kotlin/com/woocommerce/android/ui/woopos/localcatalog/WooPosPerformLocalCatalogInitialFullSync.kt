@@ -34,6 +34,10 @@ class WooPosPerformLocalCatalogInitialFullSync @Inject constructor(
             is WooPosFullSyncRequirement.Error -> {
                 emit(WooPosLocalCatalogInitialFullSyncState.Failed(requirement.message))
             }
+
+            is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
+                WooPosLocalCatalogInitialFullSyncState.LocalCatalogDisabled
+            }
         }
     }
 }
@@ -43,4 +47,5 @@ sealed class WooPosLocalCatalogInitialFullSyncState {
     data object Syncing : WooPosLocalCatalogInitialFullSyncState()
     data object Completed : WooPosLocalCatalogInitialFullSyncState()
     data class Failed(val error: String) : WooPosLocalCatalogInitialFullSyncState()
+    data object LocalCatalogDisabled : WooPosLocalCatalogInitialFullSyncState()
 }

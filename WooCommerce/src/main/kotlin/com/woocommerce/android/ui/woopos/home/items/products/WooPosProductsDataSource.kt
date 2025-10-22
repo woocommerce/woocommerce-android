@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -78,10 +77,7 @@ class WooPosProductsDataSource @Inject constructor(
     }
 }
 
-class WooPosProductsInDbDataSource
-@Inject
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-constructor(
+class WooPosProductsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val mapper: WooPosProductModelMapper
@@ -118,10 +114,7 @@ constructor(
     override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
 }
 
-class WooPosProductsRemoteDataSource
-@Inject
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-constructor(
+class WooPosProductsRemoteDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,

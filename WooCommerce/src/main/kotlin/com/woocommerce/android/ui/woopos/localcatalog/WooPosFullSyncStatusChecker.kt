@@ -1,11 +1,13 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -18,6 +20,8 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val localCatalogStore: WooPosLocalCatalogStore,
     private val prefsRepo: WooPosPreferencesRepository,
+    private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
     @Suppress("ReturnCount")
@@ -27,17 +31,30 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog feature not enabled")
         }
 
-        // TBD local catalog: check woo version
+        if(!isVariationsEndpointAvailable()) {
+            wooPosLogWrapper.d("Full sync check skipped: Variations endpoint not available")
+            return WooPosFullSyncRequirement.LocalCatalogDisabled("Variations endpoint not available")
+        }
 
         val site = selectedSite.getOrNull()
         if (site == null) {
             wooPosLogWrapper.e("Full sync check failed: No site selected")
-            return WooPosFullSyncRequirement.Error("No site selected")
+            error("No site selected")
         }
 
         if (!prefsRepo.isPeriodicSyncEnabledForSite(site.siteId)) {
             wooPosLogWrapper.d("Full sync check skipped: Periodic Sync disabled for site.")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Periodic Sync disabled for site.")
+        }
+
+        if (localCatalogStore.getProductCount(site.localId()).getOrNull() == 0) {
+            val size = checkCatalogSizeAction
+                .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
+
+            if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
+                prefsRepo.disablePeriodicSyncForSite(site.siteId)
+                return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
+            }
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
@@ -87,6 +104,13 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
     companion object {
         private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days
+        private const val WC_VARIATIONS_ENDPOINT_AVAILABLE = "10.3.0"
+    }
+
+    fun isVariationsEndpointAvailable(): Boolean {
+        val currentWooCoreVersion = getWooVersion() ?: return false
+
+        return currentWooCoreVersion.semverCompareTo(WC_VARIATIONS_ENDPOINT_AVAILABLE) >= 0
     }
 }
 
