@@ -180,21 +180,12 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            when (val items = state.items) {
-                is WooPosOrdersState.Content.Items.Loaded -> {
-                    WooPosOrderDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = items.selectedDetails,
-                        onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
-                    )
-                }
-
-                is WooPosOrdersState.Content.Items.Searching,
-                is WooPosOrdersState.Content.Items.Error,
-                is WooPosOrdersState.Content.Items.NothingFound -> {
-                }
-            }
+            WooPosOrderDetails(
+                modifier = Modifier
+                    .fillMaxHeight(),
+                details = state.selectedDetails,
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+            )
         }
     }
 }
@@ -533,11 +524,11 @@ fun WooPosOrdersScreenPreview() {
                     items = mapOf(
                         item1 to details1,
                         item2 to details2
-                    ),
-                    selectedDetails = details1
+                    )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
+                selectedDetails = details1,
                 paginationState = WooPosPaginationState.None
             ),
             onBackClicked = {},
@@ -557,6 +548,7 @@ fun WooPosOrdersScreenPreview() {
 @WooPosPreview
 @Composable
 fun WooPosOrdersSearchErrorStatePreview() {
+    val details = sampleOrderDetails()
     WooPosTheme {
         WooPosOrdersScreen(
             state = WooPosOrdersState.Content(
@@ -569,6 +561,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
+                selectedDetails = details,
                 paginationState = WooPosPaginationState.None
             ),
             onBackClicked = {},
@@ -588,6 +581,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
 @WooPosPreview
 @Composable
 fun WooPosOrdersNothingFoundStatePreview() {
+    val details = sampleOrderDetails()
     WooPosTheme {
         WooPosOrdersScreen(
             state = WooPosOrdersState.Content(
@@ -600,6 +594,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
                     input = WooPosSearchInputState.Open.Input.Query("test", 4),
                     isLoading = false
                 ),
+                selectedDetails = details,
                 paginationState = WooPosPaginationState.None
             ),
             onBackClicked = {},

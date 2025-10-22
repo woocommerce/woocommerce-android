@@ -73,9 +73,9 @@ class WooPosOrdersViewModel @Inject constructor(
 
         _state.value = current.copy(
             items = WooPosOrdersState.Content.Items.Loaded(
-                items = updatedItems,
-                selectedDetails = selectedEntry.value
-            )
+                items = updatedItems
+            ),
+            selectedDetails = selectedEntry.value
         )
     }
 
@@ -233,41 +233,58 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
-            if (!isRefreshing) {
+            if (!isRefreshing && currentSelectedDetails != null) {
                 _state.value = WooPosOrdersState.Content(
                     items = WooPosOrdersState.Content.Items.Searching,
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
                     searchInputState = _state.value.searchInputState,
+                    selectedDetails = currentSelectedDetails,
                     paginationState = WooPosPaginationState.None
                 )
             }
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    _state.value = WooPosOrdersState.Content(
-                        items = WooPosOrdersState.Content.Items.Error(
-                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
-                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
-                        ),
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                        searchInputState = _state.value.searchInputState,
-                        paginationState = WooPosPaginationState.None
-                    )
+                    if (currentSelectedDetails != null) {
+                        _state.value = WooPosOrdersState.Content(
+                            items = WooPosOrdersState.Content.Items.Error(
+                                title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
+                                message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                            searchInputState = _state.value.searchInputState,
+                            selectedDetails = currentSelectedDetails,
+                            paginationState = WooPosPaginationState.None
+                        )
+                    } else {
+                        _state.value = WooPosOrdersState.Error(
+                            message = result.message,
+                            searchInputState = _state.value.searchInputState
+                        )
+                    }
                 }
 
                 is SearchOrdersResult.Success -> {
                     if (result.orders.isEmpty()) {
-                        _state.value = WooPosOrdersState.Content(
-                            items = WooPosOrdersState.Content.Items.NothingFound(
-                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
-                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
-                            ),
-                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                            searchInputState = _state.value.searchInputState,
-                            paginationState = WooPosPaginationState.None
-                        )
+                        if (currentSelectedDetails != null) {
+                            _state.value = WooPosOrdersState.Content(
+                                items = WooPosOrdersState.Content.Items.NothingFound(
+                                    title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
+                                    message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
+                                ),
+                                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                                searchInputState = _state.value.searchInputState,
+                                selectedDetails = currentSelectedDetails,
+                                paginationState = WooPosPaginationState.None
+                            )
+                        } else {
+                            _state.value = WooPosOrdersState.Empty(
+                                searchInputState = _state.value.searchInputState
+                            )
+                        }
                     } else {
                         replaceOrders(result.orders)
                     }
@@ -328,10 +345,10 @@ class WooPosOrdersViewModel @Inject constructor(
 
         _state.value = WooPosOrdersState.Content(
             items = WooPosOrdersState.Content.Items.Loaded(
-                items = items,
-                selectedDetails = selectedEntry.value
+                items = items
             ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            selectedDetails = selectedEntry.value,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
@@ -349,10 +366,10 @@ class WooPosOrdersViewModel @Inject constructor(
 
         _state.value = WooPosOrdersState.Content(
             items = WooPosOrdersState.Content.Items.Loaded(
-                items = items,
-                selectedDetails = loadedItems.selectedDetails
+                items = items
             ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            selectedDetails = current.selectedDetails,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
