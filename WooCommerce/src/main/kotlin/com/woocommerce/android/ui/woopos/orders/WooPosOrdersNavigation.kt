@@ -30,6 +30,11 @@ fun NavGraphBuilder.ordersScreen(
                 targetOffsetX = { fullWidth -> -fullWidth },
             )
         },
+        popEnterTransition = {
+            slideInHorizontally(
+                initialOffsetX = { fullWidth -> -fullWidth }
+            )
+        },
         popExitTransition = {
             slideOutHorizontally(
                 targetOffsetX = { fullWidth -> fullWidth },

@@ -91,7 +91,8 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
-                    ParentToChildrenEvent.SearchEvent.Started -> Unit
+                    ParentToChildrenEvent.SearchEvent.Started,
+                    is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }
         }

@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
@@ -25,6 +29,8 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val dateFormatter: WooPosDateFormatter,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncScheduler: WooPosLocalCatalogSyncScheduler,
+    private val childToParentEventSender: WooPosChildrenToParentEventSender,
+    private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
@@ -33,6 +39,21 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
         loadCatalogStatus()
 
         listenToCellularDataUpdateValue()
+
+        listenToParentEvents()
+    }
+
+    private fun listenToParentEvents() {
+        viewModelScope.launch {
+            parentToChildEventReceiver.events.collect { event ->
+                when (event) {
+                    is ParentToChildrenEvent.SettingsEvent.RetrySyncRequested -> {
+                        runFullCatalogSync()
+                    }
+                    else -> Unit
+                }
+            }
+        }
     }
 
     private fun loadCatalogStatus() {
@@ -97,8 +118,10 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
                     loadCatalogStatus()
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    // TBD local catalog: Handle errors
                     backupCatalogData?.let { _state.update { it.copy(catalogStatus = backupCatalogData) } }
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog(result.error)
+                    )
                 }
             }
         }
