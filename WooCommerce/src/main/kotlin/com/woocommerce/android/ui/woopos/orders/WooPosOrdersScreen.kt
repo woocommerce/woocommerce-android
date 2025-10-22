@@ -300,7 +300,8 @@ private fun OrdersList(
                 WooPosErrorScreen(
                     modifier = Modifier
                         .verticalScroll(rememberScrollState())
-                        .imePadding(),
+                        .imePadding()
+                        .padding(horizontal = WooPosSpacing.XLarge.value),
                     message = items.title,
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
@@ -313,7 +314,9 @@ private fun OrdersList(
 
         is WooPosOrdersState.Content.Items.NothingFound -> {
             WooPosEmptyScreen(
-                modifier = modifier.imePadding(),
+                modifier = modifier
+                    .imePadding()
+                    .padding(horizontal = WooPosSpacing.XLarge.value),
                 title = items.title,
                 message = items.message,
                 contentDescription = stringResource(id = R.string.woopos_search_empty_image_content_description)
