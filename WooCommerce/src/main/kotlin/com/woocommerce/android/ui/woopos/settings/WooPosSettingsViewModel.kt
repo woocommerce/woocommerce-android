@@ -2,6 +2,10 @@ package com.woocommerce.android.ui.woopos.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventReceiver
+import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventSender
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.HardwareTapped
@@ -21,10 +25,36 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsViewModel @Inject constructor(
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val childToParentEventReceiver: WooPosChildrenToParentEventReceiver,
+    private val parentToChildEventSender: WooPosParentToChildrenEventSender,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsState())
     val state: StateFlow<WooPosSettingsState> = _state.asStateFlow()
+
+    init {
+        listenToChildEvents()
+    }
+
+    private fun listenToChildEvents() {
+        viewModelScope.launch {
+            childToParentEventReceiver.events.collect { event ->
+                when (event) {
+                    is ChildToParentEvent.SettingsEvent.ShowSyncErrorDialog -> {
+                        showSyncErrorDialog(event.errorMessage)
+                    }
+                    else -> Unit
+                }
+            }
+        }
+    }
+
+    fun onRetrySyncFromDialogClicked() {
+        hideDialog()
+        viewModelScope.launch {
+            parentToChildEventSender.sendToChildren(ParentToChildrenEvent.SettingsEvent.RetrySyncRequested)
+        }
+    }
 
     fun onCategorySelected(category: WooPosSettingsCategory) {
         trackCategorySelection(category)
@@ -77,6 +107,12 @@ class WooPosSettingsViewModel @Inject constructor(
     fun showScanningSetupDialog() {
         _state.update { currentState ->
             currentState.copy(dialogState = WooPosSettingsDialogState.ScanningSetupDialog)
+        }
+    }
+
+    fun showSyncErrorDialog(errorMessage: String) {
+        _state.update { currentState ->
+            currentState.copy(dialogState = WooPosSettingsDialogState.SyncErrorDialog(errorMessage))
         }
     }
 

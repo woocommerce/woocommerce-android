@@ -3667,6 +3667,11 @@
     <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
     <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
     <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
     <string name="woopos_date_never">Never</string>
     <string name="woopos_date_just_now">Just now</string>
@@ -4277,6 +4282,9 @@
     <string name="booking_duration_days">%1$d days</string>
     <string name="booking_duration_second">%1$d second</string>
     <string name="booking_duration_seconds">%1$d seconds</string>
+    <string name="booking_note_header">BOOKING NOTE</string>
+    <string name="booking_note_label_add_note">Add note</string>
+    <string name="booking_note_description_private">This is a private note. It’ll not be shared with the customer.</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

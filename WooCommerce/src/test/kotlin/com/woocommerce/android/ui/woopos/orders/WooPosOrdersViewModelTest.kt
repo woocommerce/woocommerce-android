@@ -8,6 +8,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -47,6 +49,7 @@ class WooPosOrdersViewModelTest {
     private val formatPrice: WooPosFormatPrice = mock()
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -54,6 +57,7 @@ class WooPosOrdersViewModelTest {
             resourceProvider = resourceProvider,
             locale = providedLocale,
             getProductById = getProductById,
+            childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
             getOrderRefunds = getOrderRefunds
         )
@@ -646,6 +650,22 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
+    fun `given content loaded, when onEmailReceiptButtonClicked called, then ToEmailReceipt is sent`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(123)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onEmailReceiptButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(123L))
+    }
+
     fun `given order with no refunds, when mapped, then breakdown has empty refunds and null net payment`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
