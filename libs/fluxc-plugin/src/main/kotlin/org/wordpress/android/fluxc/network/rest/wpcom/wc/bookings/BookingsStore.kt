@@ -46,11 +46,6 @@ class BookingsStore @Inject internal constructor(
                         return@withDefaultContext WooResult(ordersResult.error)
                     }
 
-                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
-                        // Clear existing bookings when fetching the first page
-                        bookingsDao.deleteAllForSite(site.localId())
-                    }
-
                     val entities = response.result.map {
                         with(bookingDtoMapper) {
                             it.toEntity(
@@ -59,7 +54,12 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    bookingsDao.insertOrReplace(entities)
+                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
+                        // Clear existing bookings and insert new ones when fetching the first page
+                        bookingsDao.replaceAllForSite(site.localId(), entities)
+                    } else {
+                        bookingsDao.insertOrReplace(entities)
+                    }
                     val totalPages = headersParser.getTotalPages(response.headers)
                     // Determine if we can load more from the total pages header if available, otherwise
                     // infer it from the number of items returned
