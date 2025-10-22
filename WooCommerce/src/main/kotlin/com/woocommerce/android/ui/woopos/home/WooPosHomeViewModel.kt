@@ -250,6 +250,8 @@ class WooPosHomeViewModel @Inject constructor(
                     ChildToParentEvent.RefreshProductList -> {
                         sendEventToChildren(ParentToChildrenEvent.RefreshProductList)
                     }
+
+                    is ChildToParentEvent.SettingsEvent -> Unit
                 }
             }
         }
