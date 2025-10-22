@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.bookings.note
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -30,9 +29,31 @@ import java.time.Instant
 class BookingNoteViewModelTest : BaseUnitTest() {
 
     private val bookingId = 42L
-    private val initialNote = "Initial note"
 
-    private val booking = sampleBooking(bookingId, note = initialNote)
+    private val booking = BookingEntity(
+        id = LocalOrRemoteId.RemoteId(bookingId),
+        localSiteId = LocalOrRemoteId.LocalId(1),
+        start = Instant.now(),
+        end = Instant.now() + Duration.ofDays(1),
+        allDay = false,
+        status = BookingEntity.Status.Confirmed,
+        cost = "100.00",
+        currency = "USD",
+        customerId = 1L,
+        productId = 1L,
+        resourceId = 1L,
+        dateCreated = Instant.now(),
+        dateModified = Instant.now(),
+        googleCalendarEventId = "",
+        orderId = bookingId,
+        orderItemId = 1L,
+        parentId = 0L,
+        personCounts = listOf(1L),
+        localTimezone = "",
+        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        note = "Initial note",
+        order = BookingOrderInfo()
+    )
 
     private val savedStateHandle: SavedStateHandle = BookingNoteFragmentArgs(bookingId).toSavedStateHandle()
 
@@ -48,8 +69,8 @@ class BookingNoteViewModelTest : BaseUnitTest() {
 
         // Then
         val state = viewModel.state.getOrAwaitValue()
-        assertThat(state.initialNote).isEqualTo(initialNote)
-        assertThat(state.editedNote).isEqualTo(initialNote)
+        assertThat(state.initialNote).isEqualTo(booking.note)
+        assertThat(state.editedNote).isEqualTo(booking.note)
         // save not visible when same (after trim)
         assertThat(state.isSaveVisible).isFalse()
         assertThat(state.isSaveEnabled).isTrue()
@@ -76,11 +97,11 @@ class BookingNoteViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
 
         // When: whitespace-only change should not make save visible
-        state.onNoteChange("  $initialNote   ")
+        state.onNoteChange("  ${booking.note}   ")
         val updated1 = viewModel.state.getOrAwaitValue()
 
         // Then
-        assertThat(updated1.editedNote).isEqualTo("  $initialNote   ")
+        assertThat(updated1.editedNote).isEqualTo("  ${booking.note}   ")
         assertThat(updated1.isSaveVisible).isFalse()
 
         // When: real change
@@ -168,32 +189,5 @@ class BookingNoteViewModelTest : BaseUnitTest() {
         ).apply {
             state.observeForever { }
         }
-    }
-
-    private fun sampleBooking(id: Long, note: String): Booking {
-        return BookingEntity(
-            id = LocalOrRemoteId.RemoteId(id),
-            localSiteId = LocalOrRemoteId.LocalId(1),
-            start = Instant.now(),
-            end = Instant.now() + Duration.ofDays(1),
-            allDay = false,
-            status = BookingEntity.Status.Confirmed,
-            cost = "100.00",
-            currency = "USD",
-            customerId = 1L,
-            productId = 1L,
-            resourceId = 1L,
-            dateCreated = Instant.now(),
-            dateModified = Instant.now(),
-            googleCalendarEventId = "",
-            orderId = id,
-            orderItemId = 1L,
-            parentId = 0L,
-            personCounts = listOf(1L),
-            localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
-            note = note,
-            order = BookingOrderInfo()
-        )
     }
 }
