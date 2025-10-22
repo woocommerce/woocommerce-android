@@ -551,6 +551,68 @@ fun WooPosOrdersScreenPreview() {
     }
 }
 
+@WooPosPreview
+@Composable
+fun WooPosOrdersSearchErrorStatePreview() {
+    WooPosTheme {
+        WooPosOrdersScreen(
+            state = WooPosOrdersState.Content(
+                items = WooPosOrdersState.Content.Items.Error(
+                    title = stringResource(R.string.woopos_search_orders_error_title),
+                    message = stringResource(R.string.woopos_search_orders_error_description)
+                ),
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                searchInputState = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Query("test", 4),
+                    isLoading = false
+                ),
+                paginationState = WooPosPaginationState.None
+            ),
+            onBackClicked = {},
+            onRefresh = {},
+            onOrderSelected = {},
+            onEndOfOrdersListReached = {},
+            onPaginationErrorTryAgain = {},
+            onSearchEvent = {},
+            onSearchErrorRetry = {},
+            onOrdersEmptyActionClicked = {},
+            onOrdersLoadingErrorRetryButtonClicked = {},
+            onEmailReceiptButtonClicked = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersNothingFoundStatePreview() {
+    WooPosTheme {
+        WooPosOrdersScreen(
+            state = WooPosOrdersState.Content(
+                items = WooPosOrdersState.Content.Items.NothingFound(
+                    title = stringResource(R.string.woopos_search_orders_empty_title),
+                    message = stringResource(R.string.woopos_search_orders_empty_description)
+                ),
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                searchInputState = WooPosSearchInputState.Open(
+                    input = WooPosSearchInputState.Open.Input.Query("test", 4),
+                    isLoading = false
+                ),
+                paginationState = WooPosPaginationState.None
+            ),
+            onBackClicked = {},
+            onRefresh = {},
+            onOrderSelected = {},
+            onEndOfOrdersListReached = {},
+            onPaginationErrorTryAgain = {},
+            onSearchEvent = {},
+            onSearchErrorRetry = {},
+            onOrdersEmptyActionClicked = {},
+            onOrdersLoadingErrorRetryButtonClicked = {},
+            onEmailReceiptButtonClicked = {}
+        )
+    }
+}
+
 @Suppress("MagicNumber")
 private fun sampleOrderDetails(
     id: Long = 1L,
