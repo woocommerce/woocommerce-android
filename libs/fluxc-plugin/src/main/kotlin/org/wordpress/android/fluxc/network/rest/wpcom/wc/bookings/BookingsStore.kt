@@ -89,6 +89,13 @@ class BookingsStore @Inject internal constructor(
         bookingId: Long
     ): Flow<BookingEntity?> = bookingsDao.observeBooking(site.localId(), bookingId)
 
+    suspend fun getBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): BookingEntity? {
+        return bookingsDao.getBooking(site.localId(), bookingId)
+    }
+
     suspend fun fetchBooking(
         site: SiteModel,
         bookingId: Long

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.bookings
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -65,10 +64,10 @@ class BookingsRepository @Inject constructor(
         )
 
     suspend fun getBooking(bookingId: Long): Booking? {
-        return bookingsStore.observeBooking(
+        return bookingsStore.getBooking(
             site = selectedSite.get(),
             bookingId = bookingId
-        ).first()
+        )
     }
 
     suspend fun fetchBooking(
