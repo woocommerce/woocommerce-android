@@ -73,18 +73,19 @@ class WooPosFullSyncStatusCheckerTest {
     }
 
     @Test
-    fun `given feature flag disabled, when checkSyncRequirement called, then should return LocalCatalogDisabled`() = runTest {
-        // GIVEN
-        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(false)
+    fun `given feature flag disabled, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
+        runTest {
+            // GIVEN
+            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(false)
 
-        val sut = createSut()
+            val sut = createSut()
 
-        // WHEN
-        val result = sut.checkSyncRequirement()
+            // WHEN
+            val result = sut.checkSyncRequirement()
 
-        // THEN
-        assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
-    }
+            // THEN
+            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
+        }
 
     @Test(expected = IllegalStateException::class)
     fun `given no site selected, when checkSyncRequirement called, then should throw error`() = runTest {
@@ -285,7 +286,9 @@ class WooPosFullSyncStatusCheckerTest {
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
-                .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge("Too many products"))
+                .thenReturn(
+                    WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge("Too many products")
+                )
 
             val sut = createSut()
 
@@ -354,5 +357,4 @@ class WooPosFullSyncStatusCheckerTest {
             // THEN
             verify(checkCatalogSizeAction, never()).execute(any(), any(), any())
         }
-
 }

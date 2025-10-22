@@ -97,7 +97,7 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
         wooPosLogWrapper.d("Starting blocking full sync")
 
         val syncResult = syncRepository.syncLocalCatalogFull(site)
-        when (syncResult) {
+        return when (syncResult) {
             is PosLocalCatalogSyncResult.Success -> {
                 wooPosLogWrapper.d(
                     "Blocking full sync completed successfully: " +
@@ -105,11 +105,11 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
                         "${syncResult.variationsSynced} variations synced " +
                         "in ${syncResult.syncDurationMs}ms"
                 )
-                return Result.success(Unit)
+                Result.success(Unit)
             }
             is PosLocalCatalogSyncResult.Failure -> {
                 wooPosLogWrapper.e("Blocking full sync failed: ${syncResult.error}")
-                return Result.failure(Exception(syncResult.error))
+                Result.failure(Exception(syncResult.error))
             }
         }
     }

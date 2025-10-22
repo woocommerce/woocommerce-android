@@ -37,10 +37,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         }
 
         val site = selectedSite.getOrNull()
-        if (site == null) {
-            wooPosLogWrapper.e("Full sync check failed: No site selected")
-            error("No site selected")
-        }
+        if (site == null) error("No site selected")
 
         if (!prefsRepo.isPeriodicSyncEnabledForSite(site.siteId)) {
             wooPosLogWrapper.d("Full sync check skipped: Periodic Sync disabled for site.")
@@ -59,10 +56,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
         val productCount = localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(site.id))
-            .getOrElse {
-                wooPosLogWrapper.e("Failed to get product count: ${it.message}")
-                0
-            }
+            .getOrElse { 0 }
         val catalogIsEmpty = productCount == 0
 
         if (lastFullSyncTimestamp == null) {

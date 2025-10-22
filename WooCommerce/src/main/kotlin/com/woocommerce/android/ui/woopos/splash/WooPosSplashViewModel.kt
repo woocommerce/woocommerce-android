@@ -76,7 +76,6 @@ class WooPosSplashViewModel @Inject constructor(
                 _state.value = WooPosSplashState.SyncFailed(state.error)
             }
         }
-
     }
 
     private suspend fun trackPosLoaded(startTime: Long) {

@@ -53,7 +53,6 @@ class WooPosProductsDataSource @Inject constructor(
                         emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
                     }
                 )
-
             }
 
             is WooPosFullSyncRequirement.NotRequired,

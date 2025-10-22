@@ -206,7 +206,6 @@ class WooPosSplashViewModelTest {
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.SyncFailed("Network error"))
     }
 
-
     private fun createSut(): WooPosSplashViewModel {
         return WooPosSplashViewModel(
             productsDataSource,
