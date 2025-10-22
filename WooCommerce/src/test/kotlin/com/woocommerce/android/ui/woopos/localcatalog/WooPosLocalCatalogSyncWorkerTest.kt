@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -24,11 +26,16 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var workerParams: WorkerParameters = mock()
     private var accountRepository: com.woocommerce.android.ui.login.AccountRepository = mock()
     private var selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
-    private var featureFlagM1Enabled: com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled = mock()
-    private var preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository = mock()
+    private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
+    private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var currentTimeProvider: () -> Long = { CURRENT_TIME_MILLIS }
+
+    companion object {
+        private const val CURRENT_TIME_MILLIS = 1704067200000L // 2024-01-01 00:00:00 UTC
+    }
 
     private val successResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 10,
@@ -67,7 +74,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             .thenReturn(incrementalSuccessResponse)
     }
 
-    private fun createWorker(): WooPosLocalCatalogSyncWorker {
+    private fun createWorker(
+        currentTimeInMillis: () -> Long = currentTimeProvider
+    ): WooPosLocalCatalogSyncWorker {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
@@ -77,6 +86,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             preferencesRepository = preferencesRepository,
             syncRepository = syncRepository,
             logger = logger,
+            currentTimeInMillis = currentTimeInMillis,
         )
     }
 
@@ -153,7 +163,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `when POS not used in 31 days, then returns success without sync`() = testBlocking {
         // GIVEN
-        val thirtyOneDaysAgo = System.currentTimeMillis() - (31 * 24 * 60 * 60 * 1000L)
+        val thirtyOneDaysAgo = CURRENT_TIME_MILLIS - (31 * 24 * 60 * 60 * 1000L)
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(thirtyOneDaysAgo)
         val worker = createWorker()
 

@@ -27,6 +27,7 @@ constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
+    private val currentTimeInMillis: () -> Long = System::currentTimeMillis,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -79,7 +80,7 @@ constructor(
 
     private suspend fun isPosInactive(): Boolean {
         val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp() ?: return false
-        val daysSinceLastUse = (System.currentTimeMillis() - lastUsedTimestamp).milliseconds.inWholeDays
+        val daysSinceLastUse = (currentTimeInMillis() - lastUsedTimestamp).milliseconds.inWholeDays
         return if (daysSinceLastUse > DAYS_SINCE_LAST_USE_THRESHOLD) {
             logger.d(
                 "POS not used in the last $DAYS_SINCE_LAST_USE_THRESHOLD days " +
