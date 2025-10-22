@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.bookings.note
 
 data class BookingNoteViewState(
-    val note: String = "",
+    val initialNote: String = "",
+    val editedNote: String = "",
+    val onNoteChange: (String) -> Unit = {}
 )
