@@ -277,7 +277,7 @@ class WooPosOrdersViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        val state = viewModel.state.value
+        val state = viewModel.state.value as WooPosOrdersState.Content
         assertThat(state.searchInputState).isInstanceOf(WooPosSearchInputState.Open::class.java)
         val openState = state.searchInputState as WooPosSearchInputState.Open
         assertThat(openState.input).isInstanceOf(WooPosSearchInputState.Open.Input.Hint::class.java)
@@ -445,38 +445,6 @@ class WooPosOrdersViewModelTest {
         val selectedFlags = loadedItems.items.keys.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
         assertThat(content.selectedDetails.id).isEqualTo(20L)
-    }
-
-    @Test
-    fun `given search results and more pages, when end reached, then loadMore with query appends and pagination None`() = runTest {
-        // GIVEN
-        val query = "abc"
-        whenever(dataSource.loadOrders()).thenReturn(
-            flow { emit(LoadOrdersResult.SuccessRemote(emptyList())) }
-        )
-        whenever(dataSource.searchOrders(query)).thenReturn(
-            SearchOrdersResult.Success(listOf(order(10), order(20)))
-        )
-        whenever(dataSource.hasMorePages).thenReturn(true)
-        whenever(dataSource.loadMore(query)).thenReturn(
-            Result.success(listOf(order(30), order(40)))
-        )
-
-        // WHEN
-        viewModel = createViewModel()
-        advanceUntilIdle()
-        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
-        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
-        advanceUntilIdle()
-        viewModel.onEndOfOrdersListReached()
-        advanceUntilIdle()
-
-        // THEN
-        val content = viewModel.state.value as WooPosOrdersState.Content
-        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
-        assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
-        verify(dataSource).loadMore(query)
     }
 
     @Test

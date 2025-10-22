@@ -233,10 +233,10 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
-        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails!!
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
-            if (!isRefreshing && currentSelectedDetails != null) {
+            if (!isRefreshing) {
                 _state.value = WooPosOrdersState.Content(
                     items = WooPosOrdersState.Content.Items.Searching,
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
@@ -248,43 +248,30 @@ class WooPosOrdersViewModel @Inject constructor(
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    if (currentSelectedDetails != null) {
+                    _state.value = WooPosOrdersState.Content(
+                        items = WooPosOrdersState.Content.Items.Error(
+                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
+                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                        ),
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        searchInputState = _state.value.searchInputState,
+                        selectedDetails = currentSelectedDetails,
+                        paginationState = WooPosPaginationState.None
+                    )
+                }
+
+                is SearchOrdersResult.Success -> {
+                    if (result.orders.isEmpty()) {
                         _state.value = WooPosOrdersState.Content(
-                            items = WooPosOrdersState.Content.Items.Error(
-                                title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
-                                message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                            items = WooPosOrdersState.Content.Items.NothingFound(
+                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
+                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
                             selectedDetails = currentSelectedDetails,
                             paginationState = WooPosPaginationState.None
                         )
-                    } else {
-                        _state.value = WooPosOrdersState.Error(
-                            message = result.message,
-                            searchInputState = _state.value.searchInputState
-                        )
-                    }
-                }
-
-                is SearchOrdersResult.Success -> {
-                    if (result.orders.isEmpty()) {
-                        if (currentSelectedDetails != null) {
-                            _state.value = WooPosOrdersState.Content(
-                                items = WooPosOrdersState.Content.Items.NothingFound(
-                                    title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
-                                    message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
-                                ),
-                                pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                                searchInputState = _state.value.searchInputState,
-                                selectedDetails = currentSelectedDetails,
-                                paginationState = WooPosPaginationState.None
-                            )
-                        } else {
-                            _state.value = WooPosOrdersState.Empty(
-                                searchInputState = _state.value.searchInputState
-                            )
-                        }
                     } else {
                         replaceOrders(result.orders)
                     }
