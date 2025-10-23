@@ -255,7 +255,7 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given processing order with COD payment method, when mapped to summary model, then status is PayAtLocation`() {
+    fun `given processing order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
         // GIVEN
         val booking = sampleBooking().let { original ->
             val paymentInfo = BookingPaymentInfo(
@@ -274,7 +274,7 @@ class BookingMapperTest : BaseUnitTest() {
         val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
-        assertThat(model.status).isEqualTo(BookingStatus.PayAtLocation)
+        assertThat(model.status).isEqualTo(BookingStatus.PayOnSite)
     }
 
     private fun sampleBooking(
