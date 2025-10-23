@@ -155,6 +155,7 @@ class BookingsStore @Inject internal constructor(
         site: SiteModel,
         bookingId: Long,
         bookingUpdatePayload: BookingUpdatePayload,
+        refreshBooking: Boolean = false,
     ): WooResult<BookingEntity> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updateBooking") {
             val response = bookingsRestClient.updateBooking(site, bookingId, bookingUpdatePayload)
@@ -163,24 +164,18 @@ class BookingsStore @Inject internal constructor(
                 response.result != null -> {
                     val bookingDto = response.result
 
-                    val storedBooking = bookingsDao.getBooking(
-                        localSiteId = site.localId(),
-                        bookingId = bookingId
-                    )
-                    if (storedBooking == null) {
-                        return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                    val updatedBookingEntityResult = if (refreshBooking) {
+                        getBookingEntityWithRefreshedOrder(site, bookingDto)
+                    } else {
+                        getBookingEntityWithLocalOrder(site, bookingDto)
                     }
-
-                    with(bookingDtoMapper) {
-                        val updatedBooking = bookingDto.toEntity(
-                            localSiteId = site.localId(),
-                            orderEntity = null,
-                        ).copy(
-                            // Preserve fields not returned by the API
-                            order = storedBooking.order,
-                        )
-                        bookingsDao.insertOrReplace(updatedBooking)
-                        return@withDefaultContext WooResult(updatedBooking)
+                    if (updatedBookingEntityResult.isError) {
+                        return@withDefaultContext WooResult(updatedBookingEntityResult.error)
+                    } else {
+                        updatedBookingEntityResult.model?.let {
+                            bookingsDao.insertOrReplace(it)
+                        }
+                        return@withDefaultContext WooResult(updatedBookingEntityResult.model)
                     }
                 }
 
@@ -203,5 +198,46 @@ class BookingsStore @Inject internal constructor(
         } else {
             WooResult(result.fetchedOrders.map { (order, _) -> order }.associateBy { it.orderId })
         }
+    }
+
+    private suspend fun getBookingEntityWithRefreshedOrder(
+        site: SiteModel,
+        bookingDto: BookingDto
+    ): WooResult<BookingEntity> {
+        val orderResult = orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
+        if (orderResult.isError) {
+            return WooResult(orderResult.error)
+        } else {
+            val entity = with(bookingDtoMapper) {
+                bookingDto.toEntity(
+                    localSiteId = site.localId(),
+                    orderEntity = orderResult.model,
+                )
+            }
+            return WooResult(entity)
+        }
+    }
+
+    private suspend fun getBookingEntityWithLocalOrder(
+        site: SiteModel,
+        bookingDto: BookingDto
+    ): WooResult<BookingEntity> {
+        val storedBooking = bookingsDao.getBooking(
+            localSiteId = site.localId(),
+            bookingId = bookingDto.id,
+        )
+        if (storedBooking == null) {
+            return WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+        val entity = with(bookingDtoMapper) {
+            bookingDto.toEntity(
+                localSiteId = site.localId(),
+                orderEntity = null,
+            ).copy(
+                // Preserve fields not returned by the API
+                order = storedBooking.order,
+            )
+        }
+        return WooResult(entity)
     }
 }

@@ -147,7 +147,8 @@ class BookingsRepository @Inject constructor(
         val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
-            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled)
+            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled),
+            refreshBooking = true,
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))
