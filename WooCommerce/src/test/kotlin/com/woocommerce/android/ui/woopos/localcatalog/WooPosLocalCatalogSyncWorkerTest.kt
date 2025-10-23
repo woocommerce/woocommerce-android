@@ -31,8 +31,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
-    private var timeProvider: DateTimeProviderInterface = object : DateTimeProviderInterface {
-        override fun now(): Long = CURRENT_TIME_MILLIS
+    val mockTimeProvider: DateTimeProvider = mock {
+        whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
 
     companion object {
@@ -76,9 +76,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             .thenReturn(incrementalSuccessResponse)
     }
 
-    private fun createWorker(
-        currentTimeInMillis: DateTimeProviderInterface = timeProvider
-    ): WooPosLocalCatalogSyncWorker {
+    private fun createWorker(): WooPosLocalCatalogSyncWorker {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
@@ -88,7 +86,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             preferencesRepository = preferencesRepository,
             syncRepository = syncRepository,
             logger = logger,
-            timeProvider = currentTimeInMillis,
+            timeProvider = mockTimeProvider,
         )
     }
 
