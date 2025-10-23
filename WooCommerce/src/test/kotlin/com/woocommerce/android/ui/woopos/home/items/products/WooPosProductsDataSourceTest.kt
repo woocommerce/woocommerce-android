@@ -40,7 +40,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
@@ -60,7 +60,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
@@ -79,7 +79,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
@@ -99,7 +99,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
@@ -120,7 +120,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        val result = sut.prepopulateProductsCache().toList()
+        val result = sut.prepopulateCache().toList()
 
         // THEN
         val status = result.last()
@@ -137,7 +137,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // THEN
         try {
@@ -157,7 +157,7 @@ class WooPosProductsDataSourceTest {
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.loadMore()
@@ -175,7 +175,7 @@ class WooPosProductsDataSourceTest {
         )
         whenever(localDbDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.loadMore()
@@ -194,7 +194,7 @@ class WooPosProductsDataSourceTest {
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.hasMoreProductsPages).thenReturn(true)
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.hasMorePages

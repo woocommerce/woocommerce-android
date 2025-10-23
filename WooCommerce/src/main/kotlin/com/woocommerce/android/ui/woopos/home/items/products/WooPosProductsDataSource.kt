@@ -47,7 +47,7 @@ class WooPosProductsDataSource @Inject constructor(
 ) {
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
-    fun prepopulateProductsCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+    fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
         emit(WooPosPrepopulatingDataStatus.Syncing)
 
         val requirement = syncStatusChecker.checkSyncRequirement()

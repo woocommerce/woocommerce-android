@@ -35,10 +35,10 @@ class WooPosSplashViewModelTest {
     @Before
     fun setup() = runTest {
         whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Syncing, WooPosPrepopulatingDataStatus.Completed)
         )
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
     }
@@ -47,7 +47,7 @@ class WooPosSplashViewModelTest {
     fun `given eligible site and sync in progress, when vm created, then state is Syncing`() = runTest {
         // GIVEN
         whenever(posCanBeLaunchedInTab()).thenReturn(WooPosLaunchability.Launchable)
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Syncing)
         )
 
@@ -64,7 +64,7 @@ class WooPosSplashViewModelTest {
         whenever(posCanBeLaunchedInTab()).thenReturn(
             WooPosLaunchability.NotLaunchable(WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency)
         )
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
 
@@ -80,7 +80,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given sync completes, when vm created, then state is Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Syncing, WooPosPrepopulatingDataStatus.Completed)
         )
 
@@ -94,7 +94,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products prepopulation completes, when vm created, then state is Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
 
@@ -108,7 +108,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given products prepopulation completes, when vm created, then tracks event`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
 
@@ -125,7 +125,7 @@ class WooPosSplashViewModelTest {
         createSut()
 
         // THEN
-        verify(productsDataSource).prepopulateProductsCache()
+        verify(productsDataSource).prepopulateCache()
         verify(popularProductsProvider).fetchAndCachePopularProducts()
     }
 
@@ -141,7 +141,7 @@ class WooPosSplashViewModelTest {
     @Test
     fun `given product prepopulation fails, when vm created, then state is SyncFailed`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Failed("Test error"))
         )
 
@@ -171,12 +171,12 @@ class WooPosSplashViewModelTest {
     @Test
     fun `when retry sync succeeds, then state is Loaded`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Failed(""))
         )
         val sut = createSut()
 
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
 
@@ -190,12 +190,12 @@ class WooPosSplashViewModelTest {
     @Test
     fun `when retry sync fails, then state is SyncFailed`() = runTest {
         // GIVEN
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Failed(""))
         )
         val sut = createSut()
 
-        whenever(productsDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Failed("Network error"))
         )
 
