@@ -381,6 +381,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
                 updateVariationsCache(productId, remoteVariations)
                 emit(VariationsResult.Remote(Result.success(remoteVariations)))
             }
+
             else -> {
                 emit(
                     VariationsResult.Remote(
@@ -397,26 +398,28 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         return variationHandler.canLoadMore(numOfVariations)
     }
 
-    override suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>> = withContext(Dispatchers.IO) {
-        val result = variationHandler.loadMore(
-            productId,
-            filterOptions = variationFilterConfig.filters
-        )
-        when {
-            result.isSuccess -> {
-                val fetchedVariations = variationHandler.getVariationsFlow(
-                    productId
-                ).first().applyFilter().map { it.toWooPosVariation(variationMapper) }
-                Result.success(fetchedVariations)
-            }
-            else -> {
-                result.logVariationFailure()
-                Result.failure(
-                    result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
-                )
+    override suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>> =
+        withContext(Dispatchers.IO) {
+            val result = variationHandler.loadMore(
+                productId,
+                filterOptions = variationFilterConfig.filters
+            )
+            when {
+                result.isSuccess -> {
+                    val fetchedVariations = variationHandler.getVariationsFlow(
+                        productId
+                    ).first().applyFilter().map { it.toWooPosVariation(variationMapper) }
+                    Result.success(fetchedVariations)
+                }
+
+                else -> {
+                    result.logVariationFailure()
+                    Result.failure(
+                        result.exceptionOrNull() ?: Exception("Unknown error while loading more variations")
+                    )
+                }
             }
         }
-    }
 
     companion object {
         private const val NORMAL_PAGE_SIZE = 25
