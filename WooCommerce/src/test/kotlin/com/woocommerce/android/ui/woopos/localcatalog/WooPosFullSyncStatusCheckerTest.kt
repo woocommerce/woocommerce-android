@@ -39,10 +39,11 @@ class WooPosFullSyncStatusCheckerTest {
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
-    private val variationsEndpointChecker: WooPosIsLocalCatalogVariationsEndpointAvailable = WooPosIsLocalCatalogVariationsEndpointAvailable(
-        getWooVersion = getWooVersion,
-        logger = wooPosLogWrapper
-    )
+    private val variationsEndpointChecker: WooPosIsLocalCatalogVariationsEndpointAvailable =
+        WooPosIsLocalCatalogVariationsEndpointAvailable(
+            getWooVersion = getWooVersion,
+            logger = wooPosLogWrapper
+        )
 
     private val siteModel = SiteModel().apply {
         id = 123
