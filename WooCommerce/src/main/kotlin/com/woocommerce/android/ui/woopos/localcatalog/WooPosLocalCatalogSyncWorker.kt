@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -28,6 +29,7 @@ constructor(
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
     private val timeProvider: DateTimeProvider,
+    private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -37,7 +39,14 @@ constructor(
 
     @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
+        val isPosTabAvailable = wooPosTabShouldBeVisible()
+        if (isPosTabAvailable.isSuccess && isPosTabAvailable.getOrNull() == false) {
+            logger.d("POS tab is not visible, skipping local catalog sync")
+            return Result.success()
+        }
+
         if (isPosInactive()) {
+            logger.d("POS has been inactive recently, skipping local catalog sync")
             return Result.success()
         }
 
