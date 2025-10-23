@@ -67,7 +67,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private val incrementalFailureResponse = PosLocalCatalogSyncResult.Failure.UnexpectedError("Incremental sync error")
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -80,15 +80,13 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(getWooVersion()).thenReturn("10.3.0") // Default to minimum supported version
 
-        runBlocking {
-            whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
-            whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
-            whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
-            whenever(syncRepository.syncLocalCatalogFull(site))
-                .thenReturn(successResponse)
-            whenever(syncRepository.syncLocalCatalogIncremental(site))
-                .thenReturn(incrementalSuccessResponse)
-        }
+        whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
+        whenever(syncRepository.syncLocalCatalogFull(site))
+            .thenReturn(successResponse)
+        whenever(syncRepository.syncLocalCatalogIncremental(site))
+            .thenReturn(incrementalSuccessResponse)
     }
 
     private fun createWorker(): WooPosLocalCatalogSyncWorker {
