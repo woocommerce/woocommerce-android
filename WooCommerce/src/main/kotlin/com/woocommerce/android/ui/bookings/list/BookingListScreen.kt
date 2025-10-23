@@ -124,7 +124,7 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 state.contentState.loadingState == BookingListLoadingState.Loading -> {
-                    BookingListIsLoading(state.controlsState)
+                    BookingListLoading(state.controlsState)
                 }
 
                 else -> {
@@ -249,7 +249,7 @@ private fun BookingList(
 }
 
 @Composable
-private fun BookingListIsLoading(controlsState: BookingListControlsState) {
+private fun BookingListLoading(controlsState: BookingListControlsState) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
