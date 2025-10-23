@@ -36,17 +36,18 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    suspend fun updateAttendanceStatus(
+    suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,
-        attendanceStatus: String
+        payload: BookingUpdatePayload,
     ): WooPayload<BookingDto> {
         val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val body = payload.asMap
         val response = wooNetwork.executePutGsonRequest(
             site = site,
             path = endpoint,
             clazz = BookingDto::class.java,
-            body = mapOf("attendance_status" to attendanceStatus)
+            body = body,
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -121,3 +122,13 @@ class BookingsRestClient @Inject constructor(
         }
     }
 }
+
+private val BookingUpdatePayload.asMap: Map<String, Any>
+    get() = buildMap {
+        attendanceStatus?.let {
+            put("attendance_status", it.key)
+        }
+        note?.let {
+            put("note", it)
+        }
+    }

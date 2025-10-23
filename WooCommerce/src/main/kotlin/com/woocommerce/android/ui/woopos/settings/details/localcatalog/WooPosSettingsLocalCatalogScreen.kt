@@ -115,7 +115,11 @@ private fun CatalogStatusSection(
             is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
                 StatusRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = catalogStatus.catalogSize,
+                    value = stringResource(
+                        R.string.woopos_settings_local_catalog_size_format,
+                        catalogStatus.productCount,
+                        catalogStatus.variationCount
+                    ),
                     isLoading = false
                 )
                 StatusRow(
@@ -380,7 +384,8 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
-                    catalogSize = "12.5 MB",
+                    productCount = 1250,
+                    variationCount = 3420,
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
