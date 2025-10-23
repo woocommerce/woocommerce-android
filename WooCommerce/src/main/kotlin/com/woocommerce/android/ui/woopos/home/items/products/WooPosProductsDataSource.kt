@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
+import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
@@ -13,11 +15,13 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCProductStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
@@ -25,6 +29,71 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
+    private val remoteDataSource: WooPosProductsRemoteDataSource
+) : WooPosProductsDataSourceInterface {
+
+    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
+        remoteDataSource.fetchFirstPage(forceRefresh)
+
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> = remoteDataSource.loadMore()
+
+    override val hasMorePages: Boolean
+        get() = remoteDataSource.hasMorePages
+
+    override suspend fun resetState() = remoteDataSource.resetState()
+
+    override suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
+
+    sealed class ProductsResult {
+        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
+        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
+    }
+}
+
+class WooPosProductsInDbDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val selectedSite: SelectedSite,
+    private val mapper: WooPosProductModelMapper
+) : WooPosProductsDataSourceInterface {
+
+    private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
+        val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
+        val siteId = org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId(siteModel.id)
+
+        return posLocalCatalogStore.observeProducts(siteId)
+            .map { result ->
+                result.getOrNull()?.map { entity ->
+                    mapper.fromEntity(entity)
+                } ?: emptyList()
+            }
+    }
+
+    override fun fetchFirstPage(
+        forceRefresh: Boolean
+    ): Flow<WooPosProductsDataSource.ProductsResult> = getProductsFromDatabaseFlow()
+        .map { products ->
+            WooPosProductsDataSource.ProductsResult.Remote(Result.success(products))
+        }
+        .flowOn(Dispatchers.IO)
+
+    override suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+        Result.success(emptyList())
+    }
+
+    override val hasMorePages: Boolean = false
+
+    override suspend fun resetState() = Unit
+
+    override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
+}
+
+class WooPosProductsRemoteDataSource
+@Inject
+@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
@@ -38,7 +107,7 @@ class WooPosProductsDataSource @Inject constructor(
     override val hasMorePages: Boolean
         get() = canLoadMore.get()
 
-    suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
+    override suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
         productsCache.clear()
 
         val pageOne = async {
@@ -82,21 +151,27 @@ class WooPosProductsDataSource @Inject constructor(
 
     override fun fetchFirstPage(
         forceRefresh: Boolean
-    ): Flow<ProductsResult> = flow {
+    ): Flow<WooPosProductsDataSource.ProductsResult> = flow {
         offset.set(0)
         productsIndex.clearCache()
 
         if (!forceRefresh) {
             val cachedProducts = sortProducts(productsCache.getAll()).take(NORMAL_PAGE_SIZE)
-            emit(ProductsResult.Cached(cachedProducts))
+            emit(WooPosProductsDataSource.ProductsResult.Cached(cachedProducts))
         }
 
         val fetchResult = fetchProducts()
 
         if (fetchResult.isSuccess) {
-            emit(ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
+            emit(WooPosProductsDataSource.ProductsResult.Remote(Result.success(fetchResult.getOrThrow())))
         } else {
-            emit(ProductsResult.Remote(Result.failure(fetchResult.exceptionOrNull() ?: Exception("Unknown error"))))
+            emit(
+                WooPosProductsDataSource.ProductsResult.Remote(
+                    Result.failure(
+                        fetchResult.exceptionOrNull() ?: Exception("Unknown error")
+                    )
+                )
+            )
         }
     }.flowOn(Dispatchers.IO).take(2)
 
@@ -156,11 +231,6 @@ class WooPosProductsDataSource @Inject constructor(
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
         WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage")
-    }
-
-    sealed class ProductsResult {
-        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
     }
 
     override suspend fun resetState() {
