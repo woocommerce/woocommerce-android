@@ -36,15 +36,30 @@ fun NavHostController.handleNavigationEvent(
             }
             popBackStack()
         }
+
+        is WooPosNavigationEvent.GoBackWithResult -> {
+            previousBackStackEntry
+                ?.savedStateHandle
+                ?.set(event.key, event.value)
+            popBackStack()
+        }
+
         is WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment ->
             navigateToHomeScreenAfterSuccessfulCashPayment()
 
-        is WooPosNavigationEvent.OpenEmailReceipt -> navigateToEmailReceipt(event.orderId)
-        WooPosNavigationEvent.ReturnHomeFromCashPayment -> navigateToHomeScreenIfHomeScreenNotOpen()
+        is WooPosNavigationEvent.OpenEmailReceipt ->
+            navigateToEmailReceipt(event.orderId)
+
+        WooPosNavigationEvent.ReturnHomeFromCashPayment ->
+            navigateToHomeScreenIfHomeScreenNotOpen()
 
         is WooPosNavigationEvent.OpenEligibilityScreenFromSplash ->
             navigateToEligibilityScreen(event.reason)
-        is WooPosNavigationEvent.OpenSettings -> navigateToSettingsScreen()
-        is WooPosNavigationEvent.OpenOrders -> navigateToOrdersScreen()
+
+        is WooPosNavigationEvent.OpenSettings ->
+            navigateToSettingsScreen()
+
+        is WooPosNavigationEvent.OpenOrders ->
+            navigateToOrdersScreen()
     }
 }

@@ -4,6 +4,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -16,6 +17,7 @@ fun NavController.navigateToOrdersScreen() {
 }
 
 fun NavGraphBuilder.ordersScreen(
+    navController: NavHostController,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     composable(
@@ -43,6 +45,7 @@ fun NavGraphBuilder.ordersScreen(
     ) {
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
+            navController = navController
         )
     }
 }

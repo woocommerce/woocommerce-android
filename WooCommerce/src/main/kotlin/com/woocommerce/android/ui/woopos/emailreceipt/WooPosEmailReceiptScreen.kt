@@ -37,6 +37,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
+const val EMAIL_RECEIPT_SENT = "email_receipt_sent"
+
 @Composable
 fun WooPosEmailReceiptScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel = hiltViewModel<WooPosEmailReceiptViewModel>()
@@ -47,7 +49,7 @@ fun WooPosEmailReceiptScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit)
         onEmailAddressChanged = { viewModel.onUIEvent(WooPosEmailReceiptUIEvent.EmailChanged(it)) },
         onSendReceiptClicked = { viewModel.onUIEvent(WooPosEmailReceiptUIEvent.SendEmailClicked) },
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onEmailSent = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+        onEmailSent = { onNavigationEvent(WooPosNavigationEvent.GoBackWithResult(key = EMAIL_RECEIPT_SENT, true)) }
     )
 }
 

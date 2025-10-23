@@ -44,6 +44,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -64,6 +65,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_REFRESH_ORDERS
+import com.woocommerce.android.ui.woopos.emailreceipt.WooPosEmailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -75,9 +78,23 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    navController: NavHostController,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    val entry = remember(navController) { navController.currentBackStackEntry }
+    LaunchedEffect(entry) {
+        entry?.savedStateHandle
+            ?.getStateFlow(EMAIL_RECEIPT_REFRESH_ORDERS, false)
+            ?.collect { shouldRefresh ->
+                if (shouldRefresh) {
+                    viewModel.onRefresh()
+                    // clear so it doesn't retrigger on recomposition / process death restore
+                    entry.savedStateHandle[EMAIL_RECEIPT_REFRESH_ORDERS] = false
+                }
+            }
+    }
 
     WooPosOrdersScreen(
         state = state,
