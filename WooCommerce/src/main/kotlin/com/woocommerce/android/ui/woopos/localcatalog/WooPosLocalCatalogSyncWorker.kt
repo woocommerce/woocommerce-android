@@ -30,6 +30,7 @@ constructor(
     private val logger: WooPosLogWrapper,
     private val timeProvider: DateTimeProvider,
     private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
+    private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -105,6 +106,11 @@ constructor(
     private suspend fun isCatalogSyncSupported(): SiteModel? {
         if (!featureFlagM1Enabled.invoke()) {
             logger.d("Feature flag disabled, skipping local catalog sync")
+            return null
+        }
+
+        if (!isVariationsEndpointAvailable()) {
+            logger.d("Variations endpoint not available, skipping local catalog sync")
             return null
         }
 

@@ -7,8 +7,10 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -33,6 +35,12 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var wooPosTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
+    private var getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private val variationsEndpointChecker: WooPosIsLocalCatalogVariationsEndpointAvailable =
+        WooPosIsLocalCatalogVariationsEndpointAvailable(
+            getWooVersion = getWooVersion,
+            logger = logger
+        )
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -59,7 +67,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private val incrementalFailureResponse = PosLocalCatalogSyncResult.Failure.UnexpectedError("Incremental sync error")
 
     @Before
-    fun setup() = testBlocking {
+    fun setup() {
         site = SiteModel().apply {
             id = 1
             siteId = 123L
@@ -68,15 +76,19 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         }
 
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
-        whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
         whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
-        whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
-        whenever(syncRepository.syncLocalCatalogFull(site))
-            .thenReturn(successResponse)
-        whenever(syncRepository.syncLocalCatalogIncremental(site))
-            .thenReturn(incrementalSuccessResponse)
+        whenever(getWooVersion()).thenReturn("10.3.0") // Default to minimum supported version
+
+        runBlocking {
+            whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
+            whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+            whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
+            whenever(syncRepository.syncLocalCatalogFull(site))
+                .thenReturn(successResponse)
+            whenever(syncRepository.syncLocalCatalogIncremental(site))
+                .thenReturn(incrementalSuccessResponse)
+        }
     }
 
     private fun createWorker(): WooPosLocalCatalogSyncWorker {
@@ -91,6 +103,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             logger = logger,
             timeProvider = mockTimeProvider,
             wooPosTabShouldBeVisible = wooPosTabShouldBeVisible,
+            isVariationsEndpointAvailable = variationsEndpointChecker,
         )
     }
 
@@ -294,6 +307,54 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     fun `given POS tab availability check fails, when sync is attempted, then continues to attempt sync`() = testBlocking {
         // GIVEN
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.failure(Exception("Failed to check POS tab")))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
+    }
+
+    @Test
+    fun `given WooCommerce version below 10 3 0, when sync is attempted, then returns failure without syncing`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn("10.2.9")
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given WooCommerce version is null, when sync is attempted, then returns failure without syncing`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn(null)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given WooCommerce version is 10 3 0 or higher, when sync is attempted, then sync proceeds normally`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn("10.4.0")
 
         val worker = createWorker()
 
