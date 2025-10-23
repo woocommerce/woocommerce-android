@@ -25,6 +25,7 @@ abstract class WooPosModule {
 
     companion object {
         @Provides
+        @Singleton
         fun provideWooPosProductsDataSource(
             wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
             productsDataSource: WooPosProductsDataSource,
