@@ -28,7 +28,7 @@ data class MediaWPRESTResponse(
     @SerializedName("alt_text") val altText: String,
     @SerializedName("media_type") val mediaType: String,
     @SerializedName("mime_type") val mimeType: String,
-    @SerializedName("media_details") val mediaDetails: MediaDetails,
+    @SerializedName("media_details") val mediaDetails: MediaDetails?,
     @SerializedName("source_url") val sourceURL: String?
 ) {
     data class Attribute(
@@ -70,16 +70,16 @@ fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT).parse(dateGmt)
     ),
     sourceURL.orEmpty(),
-    mediaDetails.sizes?.thumbnail?.sourceURL,
-    mediaDetails.file,
-    mediaDetails.file?.substringAfterLast('.', ""),
+    mediaDetails?.sizes?.thumbnail?.sourceURL,
+    mediaDetails?.file,
+    mediaDetails?.file?.substringAfterLast('.', ""),
     mimeType,
     StringEscapeUtils.unescapeHtml4(title.rendered),
     StringEscapeUtils.unescapeHtml4(caption.rendered),
     StringEscapeUtils.unescapeHtml4(description.rendered),
     StringEscapeUtils.unescapeHtml4(altText),
-    mediaDetails.width,
-    mediaDetails.height,
+    mediaDetails?.width ?: 0,
+    mediaDetails?.height ?: 0,
     0,
     null,
     false,
