@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -24,6 +25,7 @@ class WooPosProductsInDbDataSourceTest {
     private val posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val mapper: WooPosProductModelMapper = mock()
+    private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync = mock()
 
     private val siteModel = SiteModel().apply {
         id = 1
@@ -35,7 +37,8 @@ class WooPosProductsInDbDataSourceTest {
         sut = WooPosProductsInDbDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
             selectedSite = selectedSite,
-            mapper = mapper
+            mapper = mapper,
+            performInstantCatalogFullSync = performInstantCatalogFullSync
         )
     }
 

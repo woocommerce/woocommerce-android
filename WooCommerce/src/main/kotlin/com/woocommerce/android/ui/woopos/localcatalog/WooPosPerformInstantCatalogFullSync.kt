@@ -5,10 +5,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class WooPosPerformInstantCatalogFullSync @Inject constructor(
@@ -18,11 +16,11 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
     private val selectedSite: SelectedSite,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
-    operator fun invoke(): Flow<WooPosFullSyncState> = flow {
+    suspend operator fun invoke(): Result<Unit> {
         val isOneTimeRunning = syncScheduler.observeOneTimeWorkStatus().first()
         val isPeriodicRunning = syncScheduler.observePeriodicWorkStatus().first()
 
-        when {
+        return when {
             isOneTimeRunning -> {
                 wooPosLogWrapper.d("One-time worker is running, monitoring its progress")
                 monitorWorkerProgress(syncScheduler.observeOneTimeWorkInfo(), "One-time")
@@ -37,32 +35,30 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
         }
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncState>.monitorWorkerProgress(
+    private suspend fun monitorWorkerProgress(
         workInfoFlow: Flow<WorkInfo?>,
         workerType: String
-    ) {
-        emit(WooPosFullSyncState.InProgress)
-
+    ): Result<Unit> {
         val finalWorkInfo = workInfoFlow
             .filter { workInfo ->
                 workInfo?.state?.isFinished == true || workInfo == null
             }
             .first()
 
-        handleWorkerCompletion(finalWorkInfo, workerType)
+        return handleWorkerCompletion(finalWorkInfo, workerType)
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncState>.handleWorkerCompletion(
+    private suspend fun handleWorkerCompletion(
         workInfo: WorkInfo?,
         workerType: String
-    ) {
-        when (workInfo?.state) {
+    ): Result<Unit> {
+        return when (workInfo?.state) {
             WorkInfo.State.SUCCEEDED -> {
                 verifyAndEmitSyncCompletion(workerType, "worker completed successfully")
             }
             WorkInfo.State.FAILED, WorkInfo.State.CANCELLED -> {
                 wooPosLogWrapper.e("$workerType worker failed or cancelled: ${workInfo.state}")
-                emit(WooPosFullSyncState.Failed("Background sync worker ${workInfo.state}"))
+                Result.failure(Exception("Background sync worker ${workInfo.state}"))
             }
             null -> {
                 verifyAndEmitSyncCompletion(
@@ -72,58 +68,49 @@ class WooPosPerformInstantCatalogFullSync @Inject constructor(
             }
             else -> {
                 wooPosLogWrapper.e("$workerType worker finished with unexpected state: ${workInfo.state}")
-                emit(WooPosFullSyncState.Failed("Unexpected worker state: ${workInfo.state}"))
+                Result.failure(Exception("Unexpected worker state: ${workInfo.state}"))
             }
         }
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncState>.verifyAndEmitSyncCompletion(
+    private suspend fun verifyAndEmitSyncCompletion(
         workerType: String,
         successMessage: String
-    ) {
+    ): Result<Unit> {
         val completedTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
-        if (completedTimestamp != null) {
+        return if (completedTimestamp != null) {
             wooPosLogWrapper.d("$workerType: $successMessage")
-            emit(WooPosFullSyncState.Success)
+            Result.success(Unit)
         } else {
             wooPosLogWrapper.e("$workerType: Worker completed but no timestamp found")
-            emit(WooPosFullSyncState.Failed("Worker completed but sync not verified"))
+            Result.failure(Exception("Worker completed but sync not verified"))
         }
     }
 
-    private suspend fun FlowCollector<WooPosFullSyncState>.performBlockingSync() {
+    private suspend fun performBlockingSync(): Result<Unit> {
         val site = selectedSite.getOrNull()
         if (site == null) {
             wooPosLogWrapper.e("Cannot perform blocking sync: No site selected")
-            emit(WooPosFullSyncState.Failed("No site selected"))
-            return
+            return Result.failure(Exception("No site selected"))
         }
 
         wooPosLogWrapper.d("Starting blocking full sync")
-        emit(WooPosFullSyncState.InProgress)
 
         val syncResult = syncRepository.syncLocalCatalogFull(site)
-        when (syncResult) {
+        return when (syncResult) {
             is PosLocalCatalogSyncResult.Success -> {
-                syncTimestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
                 wooPosLogWrapper.d(
                     "Blocking full sync completed successfully: " +
                         "${syncResult.productsSynced} products, " +
                         "${syncResult.variationsSynced} variations synced " +
                         "in ${syncResult.syncDurationMs}ms"
                 )
-                emit(WooPosFullSyncState.Success)
+                Result.success(Unit)
             }
             is PosLocalCatalogSyncResult.Failure -> {
                 wooPosLogWrapper.e("Blocking full sync failed: ${syncResult.error}")
-                emit(WooPosFullSyncState.Failed(syncResult.error))
+                Result.failure(Exception(syncResult.error))
             }
         }
     }
-}
-
-sealed class WooPosFullSyncState {
-    data object InProgress : WooPosFullSyncState()
-    data object Success : WooPosFullSyncState()
-    data class Failed(val error: String) : WooPosFullSyncState()
 }

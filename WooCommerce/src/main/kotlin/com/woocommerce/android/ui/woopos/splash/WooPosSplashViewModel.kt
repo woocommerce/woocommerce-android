@@ -4,8 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogInitialFullSyncState
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogInitialFullSync
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -28,7 +27,6 @@ class WooPosSplashViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val ordersCache: WooPosOrdersInMemoryCache,
-    private val performInitialFullSync: WooPosPerformLocalCatalogInitialFullSync,
     private val preferencesRepository: WooPosPreferencesRepository,
 ) : ViewModel() {
     private val _state = MutableStateFlow<WooPosSplashState>(WooPosSplashState.Loading)
@@ -48,40 +46,38 @@ class WooPosSplashViewModel @Inject constructor(
             }
 
             joinAll(
-                launch { productsDataSource.prepopulateProductsCache() },
+                launch {
+                    productsDataSource.prepopulateProductsCache()
+                        .collect(syncStateCollector(splashScreenStartTime))
+                },
                 launch { popularProductsProvider.fetchAndCachePopularProducts() },
                 launch { ordersCache.clear() }
             )
-
-            performInitialFullSync().collect(syncStateCollector(splashScreenStartTime))
         }
     }
 
     fun onRetrySync() {
         viewModelScope.launch {
             val retryStartTime = System.currentTimeMillis()
-            _state.value = WooPosSplashState.Syncing
-            performInitialFullSync().collect(syncStateCollector(retryStartTime))
+            productsDataSource.prepopulateProductsCache().collect(syncStateCollector(retryStartTime))
         }
     }
 
     private fun syncStateCollector(
         startTime: Long
-    ) = FlowCollector<WooPosLocalCatalogInitialFullSyncState> { syncState ->
-        when (syncState) {
-            is WooPosLocalCatalogInitialFullSyncState.NotRequired -> {
-                _state.value = WooPosSplashState.Loaded
-                trackPosLoaded(startTime)
-            }
-            is WooPosLocalCatalogInitialFullSyncState.Syncing -> {
+    ) = FlowCollector<WooPosPrepopulatingDataStatus> { state ->
+        when (state) {
+            WooPosPrepopulatingDataStatus.Syncing -> {
                 _state.value = WooPosSplashState.Syncing
             }
-            is WooPosLocalCatalogInitialFullSyncState.Completed -> {
+
+            WooPosPrepopulatingDataStatus.Completed -> {
                 _state.value = WooPosSplashState.Loaded
                 trackPosLoaded(startTime)
             }
-            is WooPosLocalCatalogInitialFullSyncState.Failed -> {
-                _state.value = WooPosSplashState.SyncFailed(syncState.error)
+
+            is WooPosPrepopulatingDataStatus.Failed -> {
+                _state.value = WooPosSplashState.SyncFailed(state.error)
             }
         }
     }

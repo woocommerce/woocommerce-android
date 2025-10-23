@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -8,6 +7,9 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterCo
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,34 +31,88 @@ import javax.inject.Singleton
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
-    private val remoteDataSource: WooPosProductsRemoteDataSource
-) : WooPosProductsDataSourceInterface {
+    private val remoteDataSource: WooPosProductsRemoteDataSource,
+    private val localDbDataSource: WooPosProductsInDbDataSource,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
+) {
+    private var activeSource: WooPosProductsDataSourceInterface? = null
 
-    override fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
-        remoteDataSource.fetchFirstPage(forceRefresh)
+    fun prepopulateProductsCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
+        resetState()
+        emit(WooPosPrepopulatingDataStatus.Syncing)
 
-    override suspend fun loadMore(): Result<List<WooPosProductModel>> = remoteDataSource.loadMore()
+        val requirement = syncStatusChecker.checkSyncRequirement()
+        when (requirement) {
+            is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
+                activeSource = remoteDataSource
+                remoteDataSource.prepopulateProductsCache().fold(
+                    onSuccess = {
+                        emit(WooPosPrepopulatingDataStatus.Completed)
+                    },
+                    onFailure = {
+                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                    }
+                )
+            }
 
-    override val hasMorePages: Boolean
-        get() = remoteDataSource.hasMorePages
+            is WooPosFullSyncRequirement.NotRequired,
+            is WooPosFullSyncRequirement.Overdue -> {
+                activeSource = localDbDataSource
+                emit(WooPosPrepopulatingDataStatus.Completed)
+            }
 
-    override suspend fun resetState() = remoteDataSource.resetState()
+            is WooPosFullSyncRequirement.BlockingRequired -> {
+                activeSource = localDbDataSource
+                localDbDataSource.prepopulateProductsCache().fold(
+                    onSuccess = {
+                        emit(WooPosPrepopulatingDataStatus.Completed)
+                    },
+                    onFailure = {
+                        emit(WooPosPrepopulatingDataStatus.Failed(it.message ?: "Unknown error"))
+                    }
+                )
+            }
 
-    override suspend fun prepopulateProductsCache(): Result<Unit> = remoteDataSource.prepopulateProductsCache()
+            is WooPosFullSyncRequirement.Error -> {
+                emit(WooPosPrepopulatingDataStatus.Failed(requirement.message))
+            }
+        }
+    }
+
+    fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
+        activeSource?.fetchFirstPage(forceRefresh)
+            ?: error("FetchFirstPage - Data source not selected")
+
+    suspend fun loadMore(): Result<List<WooPosProductModel>> {
+        return activeSource?.loadMore() ?: error("LoadMore - Data source not selected")
+    }
+
+    val hasMorePages: Boolean
+        get() = activeSource?.hasMorePages ?: error("hasMorePages - Data source not selected")
+
+    suspend fun resetState() {
+        activeSource = null
+        remoteDataSource.resetState()
+        localDbDataSource.resetState()
+    }
 
     sealed class ProductsResult {
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
         data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
     }
+
+    sealed class WooPosPrepopulatingDataStatus {
+        data object Syncing : WooPosPrepopulatingDataStatus()
+        data object Completed : WooPosPrepopulatingDataStatus()
+        data class Failed(val error: String) : WooPosPrepopulatingDataStatus()
+    }
 }
 
-class WooPosProductsInDbDataSource
-@Inject
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-constructor(
+class WooPosProductsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
-    private val mapper: WooPosProductModelMapper
+    private val mapper: WooPosProductModelMapper,
+    private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
 ) : WooPosProductsDataSourceInterface {
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
@@ -87,13 +143,10 @@ constructor(
 
     override suspend fun resetState() = Unit
 
-    override suspend fun prepopulateProductsCache(): Result<Unit> = Result.success(Unit)
+    override suspend fun prepopulateProductsCache(): Result<Unit> = performInstantCatalogFullSync()
 }
 
-class WooPosProductsRemoteDataSource
-@Inject
-@VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-constructor(
+class WooPosProductsRemoteDataSource @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
