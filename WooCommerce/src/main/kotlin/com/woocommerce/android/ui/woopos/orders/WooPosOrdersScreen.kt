@@ -90,8 +90,7 @@ fun WooPosOrdersScreen(
             ?.collect { shouldRefresh ->
                 if (shouldRefresh) {
                     viewModel.onRefresh()
-                    // clear so it doesn't retrigger on recomposition / process death restore
-                    entry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
+                    entry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
                 }
             }
     }
