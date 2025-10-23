@@ -3667,6 +3667,7 @@
     <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
     <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
     <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
@@ -4211,7 +4212,7 @@
     <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
     <string name="bookings_empty_state_description_default">Incoming bookings will appear here, where you can view and manage them.</string>
     <string name="bookings_empty_state_description_today">You don’t have any appointments or events scheduled for today.</string>
-    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled scheduled yet.</string>
+    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled yet.</string>
     <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
     <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
     <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
