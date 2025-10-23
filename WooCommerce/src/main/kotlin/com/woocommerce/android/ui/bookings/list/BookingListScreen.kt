@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
@@ -59,6 +58,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -124,13 +124,7 @@ fun BookingListScreen(state: BookingListViewState) {
                 }
 
                 state.contentState.loadingState == BookingListLoadingState.Loading -> {
-                    // TODO replace with shimmer
-                    CircularProgressIndicator(
-                        modifier = Modifier
-                            .padding(paddingValues)
-                            .fillMaxSize()
-                            .wrapContentSize()
-                    )
+                    BookingListIsLoading(state.controlsState)
                 }
 
                 else -> {
@@ -251,6 +245,32 @@ private fun BookingList(
         }
 
         InfiniteListHandler(listState = listState, onLoadMore = state.onLoadMore)
+    }
+}
+
+@Composable
+private fun BookingListIsLoading(controlsState: BookingListControlsState) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+            .background(MaterialTheme.colorScheme.surfaceContainer)
+    ) {
+        BookingListControls(controlsState)
+        repeat(7) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+            ) {
+                SkeletonView(Modifier.size(173.dp, 22.dp))
+                Spacer(Modifier.height(2.dp))
+                SkeletonView(Modifier.size(256.dp, 18.dp))
+                Spacer(Modifier.height(8.dp))
+                SkeletonView(Modifier.size(138.dp, 22.dp))
+            }
+            HorizontalDivider(Modifier.padding(start = 16.dp))
+        }
     }
 }
 
