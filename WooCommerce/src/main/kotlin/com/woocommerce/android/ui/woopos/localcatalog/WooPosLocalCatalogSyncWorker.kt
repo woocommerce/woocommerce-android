@@ -41,10 +41,12 @@ constructor(
     override suspend fun doWork(): Result {
         val isPosTabAvailable = wooPosTabShouldBeVisible()
         if (isPosTabAvailable.isSuccess && isPosTabAvailable.getOrNull() == false) {
+            logger.d("POS tab is not visible, skipping local catalog sync")
             return Result.success()
         }
 
         if (isPosInactive()) {
+            logger.d("POS has been inactive recently, skipping local catalog sync")
             return Result.success()
         }
 
