@@ -89,6 +89,13 @@ class BookingsStore @Inject internal constructor(
         bookingId: Long
     ): Flow<BookingEntity?> = bookingsDao.observeBooking(site.localId(), bookingId)
 
+    suspend fun getBooking(
+        site: SiteModel,
+        bookingId: Long
+    ): BookingEntity? {
+        return bookingsDao.getBooking(site.localId(), bookingId)
+    }
+
     suspend fun fetchBooking(
         site: SiteModel,
         bookingId: Long
@@ -144,13 +151,13 @@ class BookingsStore @Inject internal constructor(
         resourceId: Long
     ): Flow<BookingResourceEntity?> = bookingsDao.observeResource(site.localId(), resourceId)
 
-    suspend fun updateAttendanceStatus(
+    suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,
-        attendanceStatus: BookingEntity.AttendanceStatus,
+        bookingUpdatePayload: BookingUpdatePayload,
     ): WooResult<BookingEntity> {
-        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updateAttendanceStatus") {
-            val response = bookingsRestClient.updateAttendanceStatus(site, bookingId, attendanceStatus.key)
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updateBooking") {
+            val response = bookingsRestClient.updateBooking(site, bookingId, bookingUpdatePayload)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
