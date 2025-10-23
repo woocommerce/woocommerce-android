@@ -71,8 +71,12 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
             val formattedLastFullSyncTimestamp = dateFormatter.formatCatalogLastFullSync(fullSyncTimestamp)
 
+            val productCount = localCatalogSyncRepository.getProductCount(selectedSite.get())
+            val variationCount = localCatalogSyncRepository.getVariationCount(selectedSite.get())
+
             val catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
-                catalogSize = "8.3 MB", // TBD local catalog: Replace with actual catalog size
+                productCount = productCount,
+                variationCount = variationCount,
                 lastUpdate = formattedLastSyncTimestamp,
                 lastFullUpdate = formattedLastFullSyncTimestamp
             )

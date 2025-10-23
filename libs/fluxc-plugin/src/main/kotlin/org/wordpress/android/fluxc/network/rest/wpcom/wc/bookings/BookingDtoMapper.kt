@@ -50,6 +50,7 @@ internal class BookingDtoMapper @Inject constructor(
         personCounts = personCounts?.map { it.toLong() },
         localTimezone = localTimezone,
         attendanceStatus = BookingEntity.AttendanceStatus.fromKey(attendanceStatus),
+        note = note.orEmpty(),
         order = orderEntity?.toBookingOrderInfo(orderItemId) ?: BookingOrderInfo(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
