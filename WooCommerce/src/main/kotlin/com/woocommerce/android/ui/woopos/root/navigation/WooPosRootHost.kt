@@ -41,8 +41,7 @@ fun WooPosRootHost(
     ) {
         mainGraph(
             onNavigationEvent = onNavigationEvent,
-            homeViewModel = homeViewModel,
-            navController = rootController
+            homeViewModel = homeViewModel
         )
     }
 }

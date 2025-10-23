@@ -77,21 +77,13 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    navController: NavHostController,
+    navigatedFromEmailReceiptSent: Boolean,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
-    val entry = remember(navController) { navController.currentBackStackEntry }
-    LaunchedEffect(entry) {
-        entry?.savedStateHandle
-            ?.getStateFlow(EMAIL_RECEIPT_SENT, false)
-            ?.collect { shouldRefresh ->
-                if (shouldRefresh) {
-                    viewModel.onRefresh()
-                    entry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
-                }
-            }
+    if (navigatedFromEmailReceiptSent) {
+        viewModel.onRefresh()
     }
 
     WooPosOrdersScreen(

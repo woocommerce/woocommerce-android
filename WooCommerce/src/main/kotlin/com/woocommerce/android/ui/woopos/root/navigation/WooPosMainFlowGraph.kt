@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.splash.splashScreen
 const val MAIN_GRAPH_ROUTE = "main-graph"
 
 fun NavGraphBuilder.mainGraph(
-    navController: NavHostController,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     homeViewModel: WooPosHomeViewModel,
 ) {
@@ -30,6 +29,6 @@ fun NavGraphBuilder.mainGraph(
         emailReceiptScreen(onNavigationEvent = onNavigationEvent)
         eligibilityScreen(onNavigationEvent = onNavigationEvent)
         settingsScreen(onNavigationEvent = onNavigationEvent)
-        ordersScreen(onNavigationEvent = onNavigationEvent, navController = navController)
+        ordersScreen(onNavigationEvent = onNavigationEvent)
     }
 }
