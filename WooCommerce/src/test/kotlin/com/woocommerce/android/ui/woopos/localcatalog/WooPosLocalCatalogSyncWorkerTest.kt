@@ -31,7 +31,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
-    private var timeProvider: DateTimeProvider = DateTimeProvider()
+    private var timeProvider: DateTimeProviderInterface = object : DateTimeProviderInterface {
+        override fun now(): Long = CURRENT_TIME_MILLIS
+    }
 
     companion object {
         private const val CURRENT_TIME_MILLIS = 1704067200000L // 2024-01-01 00:00:00 UTC
@@ -74,7 +76,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             .thenReturn(incrementalSuccessResponse)
     }
 
-    private fun createWorker(): WooPosLocalCatalogSyncWorker {
+    private fun createWorker(
+        currentTimeInMillis: DateTimeProviderInterface = timeProvider
+    ): WooPosLocalCatalogSyncWorker {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
@@ -84,7 +88,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             preferencesRepository = preferencesRepository,
             syncRepository = syncRepository,
             logger = logger,
-            timeProvider = timeProvider,
+            timeProvider = currentTimeInMillis,
         )
     }
 

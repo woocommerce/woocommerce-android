@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsInDbD
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsDataSourceInterface
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsInDbDataSource
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProviderInterface
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -22,6 +24,10 @@ abstract class WooPosModule {
     @Binds
     @Singleton
     abstract fun provideWooPosProductsCache(implementation: WooPosProductsInMemoryCache): WooPosProductsCache
+
+    @Binds
+    @Singleton
+    abstract fun bindDateTimeProvider(implementation: DateTimeProvider): DateTimeProviderInterface
 
     companion object {
         @Provides
