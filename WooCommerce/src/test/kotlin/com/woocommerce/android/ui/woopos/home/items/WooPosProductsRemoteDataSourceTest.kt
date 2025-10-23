@@ -101,7 +101,7 @@ class WooPosProductsRemoteDataSourceTest {
     private val productMapper: WooPosWCProductToWooPosProductModelMapper = mock()
 
     @Test
-    fun `given cached products, when fetchFirstPage called, then should emit cached products first`() = runTest {
+    fun `given cached products, when fetchFirstProductsPage called, then should emit cached products first`() = runTest {
         // GIVEN
         whenever(productsCache.getAll()).thenReturn(sampleProducts)
         whenever(
@@ -125,7 +125,7 @@ class WooPosProductsRemoteDataSourceTest {
         )
 
         // WHEN
-        val result = sut.fetchFirstPage(forceRefresh = false).first()
+        val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -134,7 +134,7 @@ class WooPosProductsRemoteDataSourceTest {
     }
 
     @Test
-    fun `given cached products, when fetchFirstPage called with forceRefresh, then should not emit cached products`() =
+    fun `given cached products, when fetchFirstProductsPage called with forceRefresh, then should not emit cached products`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -159,14 +159,14 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val result = sut.fetchFirstPage(forceRefresh = true).first()
+            val result = sut.fetchFirstProductsPage(forceRefresh = true).first()
 
             // THEN
             assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
         }
 
     @Test
-    fun `given no products in list cache, when fetchFirstPage called, then should return empty list`() = runTest {
+    fun `given no products in list cache, when fetchFirstProductsPage called, then should return empty list`() = runTest {
         // GIVEN
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(
@@ -190,7 +190,7 @@ class WooPosProductsRemoteDataSourceTest {
         )
 
         // WHEN
-        val result = sut.fetchFirstPage(forceRefresh = false).first()
+        val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -199,7 +199,7 @@ class WooPosProductsRemoteDataSourceTest {
     }
 
     @Test
-    fun `given cached and remote products, when fetchFirstPage called, then should emit remote products after cached products`() =
+    fun `given cached and remote products, when fetchFirstProductsPage called, then should emit remote products after cached products`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -245,7 +245,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
+            val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -289,7 +289,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
+            val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
             assertThat(flow.size).isEqualTo(2)
@@ -333,10 +333,10 @@ class WooPosProductsRemoteDataSourceTest {
                 productsTypesFilterConfig,
                 productMapper,
             )
-            sut.fetchFirstPage(forceRefresh = true).first()
+            sut.fetchFirstProductsPage(forceRefresh = true).first()
 
             // WHEN
-            val result = sut.loadMore()
+            val result = sut.loadMoreProducts()
 
             // THEN
             assertThat(result.isSuccess).isTrue()
@@ -394,10 +394,10 @@ class WooPosProductsRemoteDataSourceTest {
                 productsTypesFilterConfig,
                 productMapper,
             )
-            sut.fetchFirstPage(forceRefresh = true).first()
+            sut.fetchFirstProductsPage(forceRefresh = true).first()
 
             // WHEN
-            val result = sut.loadMore()
+            val result = sut.loadMoreProducts()
 
             // THEN
             assertThat(result.isFailure).isTrue()
@@ -405,7 +405,7 @@ class WooPosProductsRemoteDataSourceTest {
         }
 
     @Test
-    fun `given no cached products and remote load fails, when fetchFirstPage called, then should emit empty cache and then error`() =
+    fun `given no cached products and remote load fails, when fetchFirstProductsPage called, then should emit empty cache and then error`() =
         runTest {
             // GIVEN
             whenever(productsIndex.getProductList()).thenReturn(emptyList())
@@ -438,7 +438,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
+            val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -449,7 +449,7 @@ class WooPosProductsRemoteDataSourceTest {
         }
 
     @Test
-    fun `given empty product list in cache, when fetchFirstPage called, then should emit empty cache and empty remote result`() =
+    fun `given empty product list in cache, when fetchFirstProductsPage called, then should emit empty cache and empty remote result`() =
         runTest {
             // GIVEN
             whenever(productsCache.getAll()).thenReturn(emptyList())
@@ -474,7 +474,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val flow = sut.fetchFirstPage(forceRefresh = false).toList()
+            val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
             val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
@@ -523,7 +523,7 @@ class WooPosProductsRemoteDataSourceTest {
         )
 
         // WHEN
-        val result = sut.fetchFirstPage(forceRefresh = false).first()
+        val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
@@ -587,7 +587,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val result = sut.prepopulateProductsCache()
+            val result = sut.prepopulateCache()
 
             // THEN
             verify(productsCache).clear()
@@ -645,7 +645,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val result = sut.prepopulateProductsCache()
+            val result = sut.prepopulateCache()
 
             // THEN
             verify(productsCache).clear()
@@ -683,7 +683,7 @@ class WooPosProductsRemoteDataSourceTest {
         )
 
         // WHEN
-        val result = sut.prepopulateProductsCache()
+        val result = sut.prepopulateCache()
 
         // THEN
         verify(productsCache).clear()
@@ -744,7 +744,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             // WHEN
-            val result = sut.prepopulateProductsCache()
+            val result = sut.prepopulateCache()
 
             // THEN
             verify(productsCache).clear()

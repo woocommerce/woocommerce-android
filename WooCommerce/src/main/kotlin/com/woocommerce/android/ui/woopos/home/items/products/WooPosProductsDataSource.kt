@@ -54,7 +54,7 @@ class WooPosProductsDataSource @Inject constructor(
         when (requirement) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
-                remoteDataSource.prepopulateProductsCache().fold(
+                remoteDataSource.prepopulateCache().fold(
                     onSuccess = {
                         emit(WooPosPrepopulatingDataStatus.Completed)
                     },
@@ -72,7 +72,7 @@ class WooPosProductsDataSource @Inject constructor(
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
                 activeSource = localDbDataSource
-                localDbDataSource.prepopulateProductsCache().fold(
+                localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
                         emit(WooPosPrepopulatingDataStatus.Completed)
                     },
@@ -89,15 +89,15 @@ class WooPosProductsDataSource @Inject constructor(
     }
 
     fun fetchFirstPage(forceRefresh: Boolean): Flow<ProductsResult> =
-        activeSource?.fetchFirstPage(forceRefresh)
+        activeSource?.fetchFirstProductsPage(forceRefresh)
             ?: error("FetchFirstPage - Data source not selected")
 
     suspend fun loadMore(): Result<List<WooPosProductModel>> {
-        return activeSource?.loadMore() ?: error("LoadMore - Data source not selected")
+        return activeSource?.loadMoreProducts() ?: error("LoadMore - Data source not selected")
     }
 
     val hasMorePages: Boolean
-        get() = activeSource?.hasMorePages ?: error("hasMorePages - Data source not selected")
+        get() = activeSource?.hasMoreProductsPages ?: error("hasMorePages - Data source not selected")
 
     suspend fun resetVariationsListHandler() {
         remoteDataSource.resetVariationsListHandler()
@@ -108,7 +108,7 @@ class WooPosProductsDataSource @Inject constructor(
         productId: Long,
         forceRefresh: Boolean = true
     ): Flow<VariationsResult> =
-        activeSource?.fetchVariationsFirstPage(productId, forceRefresh)
+        activeSource?.fetchFirstVariationsPage(productId, forceRefresh)
             ?: error("FetchVariationsFirstPage - Data source not selected")
 
     suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>> {
@@ -157,7 +157,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
             }
     }
 
-    override fun fetchFirstPage(
+    override fun fetchFirstProductsPage(
         forceRefresh: Boolean
     ): Flow<WooPosProductsDataSource.ProductsResult> = getProductsFromDatabaseFlow()
         .map { products ->
@@ -165,17 +165,17 @@ class WooPosProductsInDbDataSource @Inject constructor(
         }
         .flowOn(Dispatchers.IO)
 
-    override suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+    override suspend fun loadMoreProducts(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
         Result.success(emptyList())
     }
 
-    override val hasMorePages: Boolean = false
+    override val hasMoreProductsPages: Boolean = false
 
     override suspend fun resetVariationsListHandler() = Unit
 
-    override suspend fun prepopulateProductsCache(): Result<Unit> = performInstantCatalogFullSync()
+    override suspend fun prepopulateCache(): Result<Unit> = performInstantCatalogFullSync()
 
-    override fun fetchVariationsFirstPage(
+    override fun fetchFirstVariationsPage(
         productId: Long,
         forceRefresh: Boolean
     ): Flow<VariationsResult> {
@@ -214,10 +214,10 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
 
-    override val hasMorePages: Boolean
+    override val hasMoreProductsPages: Boolean
         get() = canLoadMore.get()
 
-    override suspend fun prepopulateProductsCache(): Result<Unit> = coroutineScope {
+    override suspend fun prepopulateCache(): Result<Unit> = coroutineScope {
         productsCache.clear()
 
         val pageOne = async {
@@ -259,7 +259,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         Result.success(Unit)
     }
 
-    override fun fetchFirstPage(
+    override fun fetchFirstProductsPage(
         forceRefresh: Boolean
     ): Flow<WooPosProductsDataSource.ProductsResult> = flow {
         offset.set(0)
@@ -285,7 +285,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         }
     }.flowOn(Dispatchers.IO).take(2)
 
-    override suspend fun loadMore(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
+    override suspend fun loadMoreProducts(): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
         if (!canLoadMore.get()) {
             return@withContext Result.success(productsIndex.getProductList())
         }
@@ -355,7 +355,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         variationCache.put(productId, variations)
     }
 
-    override fun fetchVariationsFirstPage(
+    override fun fetchFirstVariationsPage(
         productId: Long,
         forceRefresh: Boolean
     ): Flow<VariationsResult> = flow {
