@@ -28,7 +28,7 @@ constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
-    private val timeProvider: DateTimeProviderInterface,
+    private val timeProvider: DateTimeProvider,
     private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
 ) : CoroutineWorker(appContext, workerParams) {
 
