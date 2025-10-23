@@ -37,8 +37,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
-const val EMAIL_RECEIPT_SENT = "email_receipt_sent"
-
 @Composable
 fun WooPosEmailReceiptScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val viewModel = hiltViewModel<WooPosEmailReceiptViewModel>()
