@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
-import org.wordpress.android.fluxc.network.rest.JsonObjectOrEmptyArray
+import org.wordpress.android.fluxc.network.rest.JsonObjectOrNull
 import org.wordpress.android.fluxc.network.rest.wpcom.media.MediaWPComRestResponse
 import org.wordpress.android.util.DateTimeUtils
 import java.text.SimpleDateFormat
@@ -40,13 +40,13 @@ data class MediaWPRESTResponse(
         val height: Int,
         val file: String?,
         val sizes: Sizes?
-    ) : JsonObjectOrEmptyArray()
+    ) : JsonObjectOrNull()
 
     data class Sizes(
         val medium: ImageSize?,
         val thumbnail: ImageSize?,
         val full: ImageSize?
-    ) : JsonObjectOrEmptyArray()
+    ) : JsonObjectOrNull()
 
     data class ImageSize(
         val path: String?,
