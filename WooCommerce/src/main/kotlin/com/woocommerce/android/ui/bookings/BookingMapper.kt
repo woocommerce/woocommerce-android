@@ -112,7 +112,7 @@ class BookingMapper @Inject constructor(
         orderStatus: String?,
         paymentMethod: String?,
     ): BookingStatus {
-        return if (orderStatus != "completed" && paymentMethod == "cod") {
+        return if (orderStatus == "on-hold" && paymentMethod == "cod") {
             BookingStatus.PayOnSite
         } else {
             when (this) {

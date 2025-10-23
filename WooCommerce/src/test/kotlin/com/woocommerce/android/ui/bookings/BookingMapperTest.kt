@@ -255,7 +255,7 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given processing order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
+    fun `given on-hold order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
         // GIVEN
         val booking = sampleBooking().let { original ->
             val paymentInfo = BookingPaymentInfo(
@@ -266,7 +266,7 @@ class BookingMapperTest : BaseUnitTest() {
                 total = BigDecimal("55.00"),
                 totalTax = BigDecimal("0.00")
             )
-            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "processing")
+            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "on-hold")
             original.copy(order = orderWithPayment)
         }
 
