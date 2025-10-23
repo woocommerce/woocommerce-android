@@ -5,7 +5,6 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
