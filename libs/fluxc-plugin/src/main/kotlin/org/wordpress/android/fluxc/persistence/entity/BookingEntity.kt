@@ -139,3 +139,13 @@ internal class BookingEntityConverters {
         return BookingEntity.AttendanceStatus.fromKey(key)
     }
 }
+
+val BookingEntity.isCancellable: Boolean
+    get() = status !in listOf(
+        BookingEntity.Status.Cancelled,
+        BookingEntity.Status.InCart,
+        BookingEntity.Status.Complete
+    )
+
+val BookingEntity.isAttendanceStatusEditable: Boolean
+    get() = status != BookingEntity.Status.Cancelled

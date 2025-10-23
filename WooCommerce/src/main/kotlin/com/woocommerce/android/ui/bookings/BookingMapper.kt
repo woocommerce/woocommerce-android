@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.ZoneOffset
@@ -177,10 +178,3 @@ class BookingMapper @Inject constructor(
         )
     }
 }
-
-private val BookingEntity.isCancellable: Boolean
-    get() = status !in listOf(
-        BookingEntity.Status.Cancelled,
-        BookingEntity.Status.InCart,
-        BookingEntity.Status.Complete
-    )

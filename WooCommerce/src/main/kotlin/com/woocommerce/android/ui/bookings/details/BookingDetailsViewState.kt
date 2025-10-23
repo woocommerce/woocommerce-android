@@ -26,6 +26,7 @@ data class BookingUiState(
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
     val note: String,
+    val isAttendanceStatusEditable: Boolean
 )
 
 sealed interface BookingDetailsLoadingState {
