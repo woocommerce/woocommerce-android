@@ -65,7 +65,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_REFRESH_ORDERS
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.emailreceipt.WooPosEmailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -86,12 +86,12 @@ fun WooPosOrdersScreen(
     val entry = remember(navController) { navController.currentBackStackEntry }
     LaunchedEffect(entry) {
         entry?.savedStateHandle
-            ?.getStateFlow(EMAIL_RECEIPT_REFRESH_ORDERS, false)
+            ?.getStateFlow(EMAIL_RECEIPT_SENT, false)
             ?.collect { shouldRefresh ->
                 if (shouldRefresh) {
                     viewModel.onRefresh()
                     // clear so it doesn't retrigger on recomposition / process death restore
-                    entry.savedStateHandle[EMAIL_RECEIPT_REFRESH_ORDERS] = false
+                    entry.savedStateHandle[EMAIL_RECEIPT_SENT] = false
                 }
             }
     }
