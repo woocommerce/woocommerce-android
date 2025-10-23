@@ -79,6 +79,7 @@ class BookingMapper @Inject constructor(
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
+            cancelButtonVisible = isCancellable,
             duration = duration,
         )
     }
@@ -122,6 +123,7 @@ class BookingMapper @Inject constructor(
                 BookingEntity.Status.Complete -> BookingStatus.Complete
                 BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
                 BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
+                BookingEntity.Status.InCart -> BookingStatus.InCart
                 is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
             }
         }
@@ -175,3 +177,10 @@ class BookingMapper @Inject constructor(
         )
     }
 }
+
+private val BookingEntity.isCancellable: Boolean
+    get() = status !in listOf(
+        BookingEntity.Status.Cancelled,
+        BookingEntity.Status.InCart,
+        BookingEntity.Status.Complete
+    )

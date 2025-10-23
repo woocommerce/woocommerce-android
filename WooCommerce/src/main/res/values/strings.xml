@@ -4252,6 +4252,7 @@
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
     <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
