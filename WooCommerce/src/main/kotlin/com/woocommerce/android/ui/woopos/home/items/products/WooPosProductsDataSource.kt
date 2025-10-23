@@ -141,7 +141,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
     private val mapper: WooPosProductModelMapper,
-    private val variationMapper: com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper,
+    private val variationMapper: WooPosVariationMapper,
     private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
 ) : WooPosProductsDataSourceInterface {
 
