@@ -29,7 +29,6 @@ class BookingNoteFragment : BaseFragment() {
         return composeView {
             BookingNoteScreen(
                 viewModel = viewModel,
-                onBack = { findNavController().popBackStack() },
             )
         }
     }
@@ -45,6 +44,7 @@ class BookingNoteFragment : BaseFragment() {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
                 }
+
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }

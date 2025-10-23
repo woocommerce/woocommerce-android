@@ -29,19 +29,18 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
 
 @Composable
 fun BookingNoteScreen(
     viewModel: BookingNoteViewModel,
-    onBack: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
     viewState?.let {
         BookingNoteScreen(
             viewState = it,
-            onBack = onBack,
         )
     }
 }
@@ -49,7 +48,6 @@ fun BookingNoteScreen(
 @Composable
 fun BookingNoteScreen(
     viewState: BookingNoteViewState,
-    onBack: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
 
@@ -62,7 +60,7 @@ fun BookingNoteScreen(
         topBar = {
             Toolbar(
                 title = stringResource(R.string.booking_note_screen_title),
-                onNavigationButtonClick = onBack,
+                onNavigationButtonClick = viewState.onBackPressed,
                 actions = {
                     if (viewState.isSaveVisible) {
                         WCTextButton(
@@ -105,6 +103,8 @@ fun BookingNoteScreen(
             }
         }
     }
+
+    viewState.dialogState?.Render()
 }
 
 @Composable
