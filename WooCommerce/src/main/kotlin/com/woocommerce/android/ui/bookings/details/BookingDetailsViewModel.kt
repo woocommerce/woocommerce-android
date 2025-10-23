@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -32,7 +31,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
-import java.time.Duration
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -189,10 +187,12 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onConfirmCancelBooking() = launch {
-        // TODO Add logic to Cancel booking action
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        delay(Duration.ofSeconds(1).toMillis())
+        bookingsRepository.cancelBooking(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
+            }
         cancelStatusState.value = CancelStatus.Idle
     }
 

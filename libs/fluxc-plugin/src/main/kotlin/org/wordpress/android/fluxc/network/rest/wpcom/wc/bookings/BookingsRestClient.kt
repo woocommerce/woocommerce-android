@@ -131,4 +131,7 @@ private val BookingUpdatePayload.asMap: Map<String, Any>
         note?.let {
             put("note", it)
         }
+        status?.let {
+            put("status", it.key)
+        }
     }

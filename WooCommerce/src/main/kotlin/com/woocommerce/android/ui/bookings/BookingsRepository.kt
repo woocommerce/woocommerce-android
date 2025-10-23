@@ -141,6 +141,21 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    suspend fun cancelBooking(
+        bookingId: Long,
+    ): Result<Unit> {
+        val result = bookingsStore.updateBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId,
+            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled)
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
     data class FetchResult(
         val bookings: List<Booking>,
         val hasMorePages: Boolean
