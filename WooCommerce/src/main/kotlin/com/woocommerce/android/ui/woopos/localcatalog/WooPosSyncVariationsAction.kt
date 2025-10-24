@@ -182,7 +182,10 @@ class WooPosSyncVariationsAction @Inject constructor(
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
-                        logger.d("Finished fetching trash variations: ${trashVariations.size} total across $pagesSynced pages")
+                        logger.d(
+                            "Finished fetching trash variations: ${trashVariations.size} " +
+                                "total across $pagesSynced pages"
+                        )
                         break
                     } else {
                         currentPage = syncResult.nextPage

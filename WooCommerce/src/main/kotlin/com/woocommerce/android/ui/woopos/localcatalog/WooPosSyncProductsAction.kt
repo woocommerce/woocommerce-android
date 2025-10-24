@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStor
 import javax.inject.Inject
 
 private typealias ServerDate = String
+
 class WooPosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
@@ -182,7 +183,9 @@ class WooPosSyncProductsAction @Inject constructor(
                     pagesSynced++
 
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
-                        logger.d("Finished fetching trash products: ${trashProducts.size} total across $pagesSynced pages")
+                        logger.d(
+                            "Finished fetching trash products: ${trashProducts.size} total across $pagesSynced pages"
+                        )
                         break
                     } else {
                         currentOffset = syncResult.nextOffset

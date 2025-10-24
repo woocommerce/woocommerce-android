@@ -19,6 +19,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
@@ -288,7 +289,8 @@ class WooPosSyncProductsActionTest {
             anyOrNull(),
             any(),
             any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) })
+            includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+        )
     }
 
     @Test
@@ -308,7 +310,8 @@ class WooPosSyncProductsActionTest {
                 anyOrNull(),
                 any(),
                 any(),
-                includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) })
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
         }
 
     @Test
@@ -325,33 +328,35 @@ class WooPosSyncProductsActionTest {
             anyOrNull(),
             any(),
             any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) })
+            includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+        )
     }
 
     private suspend fun givenSinglePageTrashCatalog(productsCount: Int) {
         val trashProducts = createMockProducts(101, 101 + productsCount - 1)
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
-            site = any(),
-            modifiedAfterGmt = eq(null),
-            offset = eq(0),
-            pageSize = any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) }
-        ))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = trashProducts,
-                        syncedCount = productsCount,
-                        hasMore = false,
-                        nextOffset = productsCount,
-                        totalPages = 1,
-                        serverDate = ""
-                    )
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                offset = eq(0),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashProducts,
+                    syncedCount = productsCount,
+                    hasMore = false,
+                    nextOffset = productsCount,
+                    totalPages = 1,
+                    serverDate = ""
                 )
             )
+        )
     }
 
+    @Suppress("LongMethod")
     private suspend fun givenMultiPageTrashCatalog() {
         val trashPage1 = createMockProducts(101, 110)
         val trashPage2 = createMockProducts(111, 120)
@@ -359,66 +364,66 @@ class WooPosSyncProductsActionTest {
 
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
-            site = any(),
-            modifiedAfterGmt = eq(null),
-            offset = eq(0),
-            pageSize = any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) }
-        ))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = trashPage1,
-                        syncedCount = 10,
-                        hasMore = true,
-                        nextOffset = 10,
-                        totalPages = 3,
-                        serverDate = ""
-                    )
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                offset = eq(0),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage1,
+                    syncedCount = 10,
+                    hasMore = true,
+                    nextOffset = 10,
+                    totalPages = 3,
+                    serverDate = ""
                 )
             )
+        )
 
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
-            site = any(),
-            modifiedAfterGmt = eq(null),
-            offset = eq(10),
-            pageSize = any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) }
-        ))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = trashPage2,
-                        syncedCount = 10,
-                        hasMore = true,
-                        nextOffset = 20,
-                        totalPages = 3,
-                        serverDate = ""
-                    )
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                offset = eq(10),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage2,
+                    syncedCount = 10,
+                    hasMore = true,
+                    nextOffset = 20,
+                    totalPages = 3,
+                    serverDate = ""
                 )
             )
+        )
 
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
-            site = any(),
-            modifiedAfterGmt = eq(null),
-            offset = eq(20),
-            pageSize = any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) }
-        ))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = trashPage3,
-                        syncedCount = 5,
-                        hasMore = false,
-                        nextOffset = 25,
-                        totalPages = 3,
-                        serverDate = ""
-                    )
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                offset = eq(20),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage3,
+                    syncedCount = 5,
+                    hasMore = false,
+                    nextOffset = 25,
+                    totalPages = 3,
+                    serverDate = ""
                 )
             )
+        )
     }
 
     private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
@@ -575,24 +580,24 @@ class WooPosSyncProductsActionTest {
 
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
-            site = any(),
-            modifiedAfterGmt = anyOrNull(),
-            offset = eq(offset),
-            pageSize = any(),
-            includeStatus = argThat { this.contains(org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus.TRASH) }
-        ))
-            .thenReturn(
-                KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = mockProducts,
-                        syncedCount = syncedCount,
-                        hasMore = hasMore,
-                        nextOffset = nextOffset,
-                        totalPages = totalPages,
-                        serverDate = ""
-                    )
+                site = any(),
+                modifiedAfterGmt = anyOrNull(),
+                offset = eq(offset),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = mockProducts,
+                    syncedCount = syncedCount,
+                    hasMore = hasMore,
+                    nextOffset = nextOffset,
+                    totalPages = totalPages,
+                    serverDate = ""
                 )
             )
+        )
     }
 
     private fun createMockProducts(start: Int = 1, end: Int): List<WooPosProductEntity> {
