@@ -175,13 +175,14 @@ private fun BookingDetailsLoading() {
             modifier = Modifier
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            SkeletonView(Modifier.size(200.dp, 20.dp))
-            Spacer(Modifier.height(4.dp))
-            SkeletonView(Modifier.size(250.dp, 15.dp))
-            Spacer(Modifier.height(8.dp))
-            SkeletonView(Modifier.size(150.dp, 25.dp))
+            SkeletonView(Modifier.size(173.dp, 22.dp))
+            SkeletonView(Modifier.size(131.dp, 22.dp))
+            SkeletonView(Modifier.size(161.dp, 22.dp))
+            Spacer(Modifier.height(6.dp))
+            SkeletonView(Modifier.size(138.dp, 22.dp))
         }
         Spacer(Modifier.height(40.dp))
         Column(
