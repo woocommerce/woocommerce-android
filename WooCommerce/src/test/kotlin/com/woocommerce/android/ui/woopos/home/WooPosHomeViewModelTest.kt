@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
@@ -15,10 +16,12 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.argThat
+import org.mockito.kotlin.atLeast
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -341,6 +344,37 @@ class WooPosHomeViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value.dialogState).isEqualTo(WooPosHomeState.DialogState.Hidden)
+    }
+
+    @Test
+    fun `given ViewModel initialized, when one hour passes, then periodic incremental sync is triggered`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+
+        // Verify initial sync on POS home
+        verify(incrementalSync).execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+
+        // WHEN
+        advanceTimeBy(60 * 60 * 1000L) // Advance by 1 hour
+
+        // THEN
+        verify(incrementalSync).execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+    }
+
+    @Test
+    fun `given ViewModel initialized, when multiple hours pass, then periodic sync runs multiple times`() = runTest {
+        // GIVEN
+        val events = MutableSharedFlow<ChildToParentEvent>()
+        whenever(childrenToParentEventReceiver.events).thenReturn(events)
+        val viewModel = createViewModel()
+
+        // WHEN
+        advanceTimeBy(3 * 60 * 60 * 1000L) // Advance by 3 hours
+
+        // THEN
+        verify(incrementalSync, atLeast(3)).execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
     }
 
     private fun createViewModel(): WooPosHomeViewModel {

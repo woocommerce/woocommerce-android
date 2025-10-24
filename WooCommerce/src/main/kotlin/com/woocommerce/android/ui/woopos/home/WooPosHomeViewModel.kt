@@ -21,11 +21,13 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.hours
 
 @HiltViewModel
 class WooPosHomeViewModel @Inject constructor(
@@ -36,6 +38,11 @@ class WooPosHomeViewModel @Inject constructor(
     private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
+    private companion object {
+        val SYNC_INTERVAL_MS: Long = 1.hours.inWholeMilliseconds
+    }
+
     private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         key = "home_state",
@@ -58,11 +65,21 @@ class WooPosHomeViewModel @Inject constructor(
             soundHelper.preloadChaChing()
         }
         performLocalCatalogIncrementalSync()
+        startPeriodicIncrementalSync()
     }
 
     private fun performLocalCatalogIncrementalSync() {
         viewModelScope.launch {
             incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        }
+    }
+
+    private fun startPeriodicIncrementalSync() {
+        viewModelScope.launch {
+            while (true) {
+                delay(SYNC_INTERVAL_MS)
+                incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+            }
         }
     }
 
