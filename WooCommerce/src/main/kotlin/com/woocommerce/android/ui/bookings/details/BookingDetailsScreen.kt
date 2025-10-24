@@ -164,7 +164,6 @@ private fun BookingDetailsContent(
             status = booking.bookingSummary.status,
             onMarkAsPaid = onMarkAsPaid,
             onViewOrder = { onViewOrder(booking.orderId) },
-            onMarkAsRefunded = { onViewOrder(booking.orderId) },
             modifier = Modifier.fillMaxWidth(),
             markAsPaidInProgress = markAsPaidInProgress,
         )

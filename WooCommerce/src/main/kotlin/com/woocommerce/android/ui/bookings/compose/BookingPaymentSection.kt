@@ -30,7 +30,6 @@ fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
     status: BookingStatus,
     onMarkAsPaid: () -> Unit,
-    onMarkAsRefunded: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
     markAsPaidInProgress: Boolean = false,
@@ -60,19 +59,7 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            // TODO Change the logic and use Order info when available
-            if (status == BookingStatus.Paid) {
-                WCOutlinedButton(
-                    onClick = onMarkAsRefunded,
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    text = stringResource(id = R.string.orderdetail_issue_refund_button),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-            } else {
+            if (status == BookingStatus.Unpaid) {
                 WCColoredButton(
                     onClick = onMarkAsPaid,
                     text = stringResource(id = R.string.booking_payment_mark_as_paid),
@@ -82,8 +69,8 @@ fun BookingPaymentSection(
                     loading = markAsPaidInProgress,
                     enabled = !markAsPaidInProgress,
                 )
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            Spacer(modifier = Modifier.height(8.dp))
             WCOutlinedButton(
                 onClick = onViewOrder,
                 colors = ButtonDefaults.outlinedButtonColors(
@@ -148,10 +135,9 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Complete,
+            status = BookingStatus.Unpaid,
             onMarkAsPaid = {},
             onViewOrder = {},
-            onMarkAsRefunded = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -159,7 +145,7 @@ private fun BookingPaymentSectionPreview() {
 
 @LightDarkThemePreviews
 @Composable
-private fun BookingPaymentSectionWithRefundOptionPreview() {
+private fun BookingPaymentSectionWithPaidBookingPreview() {
     WooThemeWithBackground {
         BookingPaymentSection(
             model = BookingPaymentDetailsModel(
@@ -171,7 +157,6 @@ private fun BookingPaymentSectionWithRefundOptionPreview() {
             status = BookingStatus.Paid,
             onMarkAsPaid = {},
             onViewOrder = {},
-            onMarkAsRefunded = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
