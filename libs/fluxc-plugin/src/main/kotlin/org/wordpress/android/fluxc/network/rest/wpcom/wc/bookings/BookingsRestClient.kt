@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
+import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -124,14 +125,8 @@ class BookingsRestClient @Inject constructor(
 }
 
 private val BookingUpdatePayload.asMap: Map<String, Any>
-    get() = buildMap {
-        attendanceStatus?.let {
-            put("attendance_status", it.key)
-        }
-        note?.let {
-            put("note", it)
-        }
-        status?.let {
-            put("status", it.key)
-        }
-    }
+    get() = mutableMapOf<String, Any>().putIfNotNull(
+        "attendance_status" to attendanceStatus?.key,
+        "note" to note,
+        "status" to status?.key
+    )
