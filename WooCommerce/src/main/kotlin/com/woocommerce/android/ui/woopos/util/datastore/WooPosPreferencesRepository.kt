@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
@@ -18,6 +19,7 @@ class WooPosPreferencesRepository @Inject constructor(
     private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
     private val recentCouponSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
+    private val lastUsedTimestampKey = longPreferencesKey(POS_LAST_USED_TIMESTAMP_KEY)
     private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
@@ -76,6 +78,18 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun setLastUsedTimestamp(timestamp: Long = System.currentTimeMillis()) {
+        dataStore.edit { preferences ->
+            preferences[lastUsedTimestampKey] = timestamp
+        }
+    }
+
+    suspend fun getLastUsedTimestamp(): Long? {
+        return dataStore.data.map { preferences ->
+            preferences[lastUsedTimestampKey]
+        }.first()
+    }
+
     suspend fun setAllowCellularDataUpdate(allow: Boolean) {
         dataStore.edit { preferences ->
             preferences[allowCellularDataUpdateKey] = allow
@@ -104,6 +118,7 @@ class WooPosPreferencesRepository @Inject constructor(
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"
         const val RECENT_COUPON_SEARCHES_KEY = "recent_coupon_searches_key"
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
+        const val POS_LAST_USED_TIMESTAMP_KEY = "pos_last_used_timestamp_key"
         const val ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY = "allow_full_sync_on_cellular_data_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10

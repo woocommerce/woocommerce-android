@@ -214,7 +214,8 @@ class BookingDetailsViewModel @Inject constructor(
             cancelStatus = cancelStatus
         ),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
-        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency)
+        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
+        note = booking.note
     )
 
     private fun buildStaffMemberStatus(

@@ -63,15 +63,18 @@ class WooPosOrdersViewModel @Inject constructor(
 
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
+        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val updatedItems = current.items.mapKeys { (item, _) ->
+        val updatedItems = loadedItems.items.mapKeys { (item, _) ->
             item.copy(isSelected = item.id == orderId)
         }
 
         val selectedEntry = updatedItems.entries.first { (item, _) -> item.isSelected }
 
         _state.value = current.copy(
-            items = updatedItems,
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = updatedItems
+            ),
             selectedDetails = selectedEntry.value
         )
     }
@@ -97,7 +100,7 @@ class WooPosOrdersViewModel @Inject constructor(
         if (query.isNullOrEmpty()) {
             loadOrders()
         } else {
-            performSearch(query)
+            performSearch(query, isRefreshing = true)
         }
     }
 
@@ -134,6 +137,13 @@ class WooPosOrdersViewModel @Inject constructor(
         loadOrders()
     }
 
+    fun onSearchErrorRetry() {
+        val query = currentSearchQuery
+        if (!query.isNullOrEmpty()) {
+            performSearch(query)
+        }
+    }
+
     @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
@@ -164,7 +174,9 @@ class WooPosOrdersViewModel @Inject constructor(
             is WooPosSearchUIEvent.SearchIconClicked -> {
                 updateSearchState(
                     WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query("", 0),
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
                         isLoading = false,
                         requestFocus = true
                     )
@@ -192,7 +204,9 @@ class WooPosOrdersViewModel @Inject constructor(
             is WooPosSearchUIEvent.Clear -> {
                 updateSearchState(
                     WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query("", 0),
+                        input = WooPosSearchInputState.Open.Input.Hint(
+                            resourceProvider.getString(R.string.woopos_search_orders)
+                        ),
                         isLoading = false,
                         requestFocus = true
                     )
@@ -216,25 +230,47 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun performSearch(query: String) {
+    private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails!!
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
-            _state.value = WooPosOrdersState.Loading(searchInputState = _state.value.searchInputState)
+            if (!isRefreshing) {
+                _state.value = WooPosOrdersState.Content(
+                    items = WooPosOrdersState.Content.Items.Searching,
+                    pullToRefreshState = WooPosPullToRefreshState.Disabled,
+                    searchInputState = _state.value.searchInputState,
+                    selectedDetails = currentSelectedDetails,
+                    paginationState = WooPosPaginationState.None
+                )
+            }
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    _state.value = WooPosOrdersState.Error(
-                        message = result.message,
-                        searchInputState = _state.value.searchInputState
+                    _state.value = WooPosOrdersState.Content(
+                        items = WooPosOrdersState.Content.Items.Error(
+                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
+                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
+                        ),
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        searchInputState = _state.value.searchInputState,
+                        selectedDetails = currentSelectedDetails,
+                        paginationState = WooPosPaginationState.None
                     )
                 }
 
                 is SearchOrdersResult.Success -> {
                     if (result.orders.isEmpty()) {
-                        _state.value = WooPosOrdersState.Empty(
-                            searchInputState = _state.value.searchInputState
+                        _state.value = WooPosOrdersState.Content(
+                            items = WooPosOrdersState.Content.Items.NothingFound(
+                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
+                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                            searchInputState = _state.value.searchInputState,
+                            selectedDetails = currentSelectedDetails,
+                            paginationState = WooPosPaginationState.None
                         )
                     } else {
                         replaceOrders(result.orders)
@@ -295,9 +331,11 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
 
         _state.value = WooPosOrdersState.Content(
-            items = items,
-            selectedDetails = selectedEntry.value,
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = items
+            ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            selectedDetails = selectedEntry.value,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
@@ -308,14 +346,17 @@ class WooPosOrdersViewModel @Inject constructor(
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val current = _state.value as WooPosOrdersState.Content
-        val currentSelectedId = current.items.entries.firstOrNull { it.key.isSelected }?.key?.id
+        val loadedItems = current.items as WooPosOrdersState.Content.Items.Loaded
+        val currentSelectedId = loadedItems.items.entries.firstOrNull { it.key.isSelected }?.key?.id
         val newItems = buildItemsMap(orders, currentSelectedId)
-        val items = current.items + newItems
+        val items = loadedItems.items + newItems
 
         _state.value = WooPosOrdersState.Content(
-            items = items,
-            selectedDetails = current.selectedDetails,
+            items = WooPosOrdersState.Content.Items.Loaded(
+                items = items
+            ),
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
+            selectedDetails = current.selectedDetails,
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
@@ -342,7 +383,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
             total = formatPrice(order.total),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             isSelected = order.id == selectedId,
             status = PosOrderStatus(
                 text = statusText,
@@ -398,7 +439,7 @@ class WooPosOrdersViewModel @Inject constructor(
             dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
-            customerEmail = order.customer?.email,
+            customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,

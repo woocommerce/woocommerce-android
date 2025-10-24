@@ -22,8 +22,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -38,7 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosOrdersLoadingState() {
     Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListLoadingPane(
+        WooPosOrdersListLoadingPane(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -59,74 +62,69 @@ fun WooPosOrdersLoadingState() {
 
 @Composable
 fun WooPosOrdersOrderLoadingRow() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(MaterialTheme.shapes.medium)
-            .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            )
-            .heightIn(min = 64.dp),
-        verticalAlignment = Alignment.Top
-    ) {
-        Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+    WooPosCard(shadowType = ShadowType.Soft) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(MaterialTheme.shapes.medium)
+                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
+                .padding(
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Medium.value
+                )
+                .heightIn(min = 64.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.2f)
+                        .height(18.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.35f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.25f)
+                        .height(14.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosShimmerBox(
+                    modifier = Modifier
+                        .fillMaxWidth(0.2f)
+                        .height(16.dp)
+                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                )
+            }
+
+            Spacer(Modifier.weight(1f))
+
             WooPosShimmerBox(
                 modifier = Modifier
-                    .fillMaxWidth(0.2f)
+                    .width(48.dp)
                     .height(18.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.35f)
-                    .height(14.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.25f)
-                    .height(14.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.2f)
-                    .height(16.dp)
+                    .alignByBaseline()
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
-
-        Spacer(Modifier.weight(1f))
-
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(48.dp)
-                .height(18.dp)
-                .alignByBaseline()
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-        )
     }
 }
 
 @Composable
-private fun OrdersListLoadingPane(modifier: Modifier = Modifier) {
+fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
         items(7) {
-            WooPosCard(
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                elevation = WooPosElevation.Medium,
-                shadowType = ShadowType.Soft,
-            ) {
-                WooPosOrdersOrderLoadingRow()
-            }
+            WooPosOrdersOrderLoadingRow()
         }
     }
 }
@@ -151,7 +149,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
                 WooPosShimmerBox(
                     modifier = Modifier
@@ -161,15 +159,6 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .width(100.dp)
-                        .height(18.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-                )
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
                 WooPosShimmerBox(
                     modifier = Modifier
@@ -187,22 +176,18 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             )
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            WooPosCard(
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                elevation = WooPosElevation.Medium,
-                shadowType = ShadowType.Soft,
-            ) {
+            WooPosCard(shadowType = ShadowType.Soft) {
                 Column(
                     modifier = Modifier.padding(WooPosSpacing.Medium.value)
                 ) {
                     WooPosText(
-                        text = "Products",
+                        text = stringResource(R.string.woopos_orders_details_products_title),
                         style = WooPosTypography.BodyXLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
@@ -214,14 +199,14 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         ProductLoadingItem()
                         if (it < 2) {
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant,)
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                         }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosCard(
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -232,7 +217,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                     modifier = Modifier.padding(WooPosSpacing.Medium.value)
                 ) {
                     WooPosText(
-                        text = "Totals",
+                        text = stringResource(R.string.woopos_orders_details_totals_title),
                         style = WooPosTypography.BodyXLarge,
                         color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
@@ -257,42 +242,56 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 }
 
 @Composable
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun ProductLoadingItem() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        verticalAlignment = Alignment.CenterVertically
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = WooPosSpacing.Small.value)
     ) {
+        val (image, nameShimmer, qtyShimmer, totalShimmer) = createRefs()
+
         WooPosShimmerBox(
             modifier = Modifier
-                .size(48.dp)
+                .size(56.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                .constrainAs(image) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
         )
 
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
-        ) {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.6f)
-                    .height(16.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.3f)
-                    .height(14.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            )
-        }
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(120.dp)
+                .height(22.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                .constrainAs(nameShimmer) {
+                    top.linkTo(image.top)
+                    start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
+                }
+        )
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .width(80.dp)
+                .height(18.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                .constrainAs(qtyShimmer) {
+                    bottom.linkTo(image.bottom)
+                    start.linkTo(nameShimmer.start)
+                }
+        )
 
         WooPosShimmerBox(
             modifier = Modifier
                 .width(60.dp)
                 .height(18.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                .constrainAs(totalShimmer) {
+                    top.linkTo(nameShimmer.top)
+                    end.linkTo(parent.end)
+                }
         )
     }
 }

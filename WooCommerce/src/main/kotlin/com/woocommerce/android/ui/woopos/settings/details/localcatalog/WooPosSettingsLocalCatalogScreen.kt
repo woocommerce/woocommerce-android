@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,10 +10,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -30,12 +36,16 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosSettingsLocalCatalogScreen(
@@ -54,10 +64,10 @@ fun WooPosSettingsLocalCatalogScreen(
 
 @Composable
 private fun WooPosSettingsLocalCatalogScreen(
+    modifier: Modifier = Modifier,
     state: WooPosSettingsLocalCatalogState,
     onToggleCellularData: (Boolean) -> Unit,
-    onRefreshCatalog: () -> Unit,
-    modifier: Modifier = Modifier
+    onRefreshCatalog: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -105,7 +115,11 @@ private fun CatalogStatusSection(
             is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
                 StatusRow(
                     label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = catalogStatus.catalogSize,
+                    value = stringResource(
+                        R.string.woopos_settings_local_catalog_size_format,
+                        catalogStatus.productCount,
+                        catalogStatus.variationCount
+                    ),
                     isLoading = false
                 )
                 StatusRow(
@@ -274,6 +288,95 @@ private fun SectionTitle(title: String) {
     )
 }
 
+@Composable
+fun WooPosSyncErrorDialog(
+    modifier: Modifier = Modifier,
+    isVisible: Boolean,
+    onRetry: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    WooPosDialogWrapper(
+        modifier = modifier,
+        isVisible = isVisible,
+        dialogBackgroundContentDescription = stringResource(
+            id = R.string.woopos_settings_local_catalog_sync_error_dialog_background_content_description
+        ),
+        onDismissRequest = onDismissRequest
+    ) {
+        Column(
+            modifier = Modifier
+                .background(color = MaterialTheme.colorScheme.surfaceBright)
+                .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+        ) {
+            Row {
+                Spacer(modifier = Modifier.weight(1f))
+                IconButton(
+                    onClick = onDismissRequest,
+                    modifier = Modifier
+                ) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = stringResource(
+                            id = R.string.woopos_exit_dialog_confirmation_close_content_description
+                        ),
+                        modifier = Modifier.size(40.dp),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    imageVector = WooPosIcons.ErrorX,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+
+                WooPosText(
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                WooPosText(
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_message),
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+
+                WooPosButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onRetry,
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_retry_button)
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+
+                WooPosOutlinedButton(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = onDismissRequest,
+                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_cancel_button)
+                )
+            }
+        }
+    }
+}
+
 @WooPosPreview
 @Composable
 fun WooPosSettingsLocalCatalogScreenPreview() {
@@ -281,7 +384,8 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
-                    catalogSize = "12.5 MB",
+                    productCount = 1250,
+                    variationCount = 3420,
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
@@ -319,6 +423,18 @@ fun WooPosSettingsLocalCatalogRefreshingPreview() {
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSyncErrorDialogPreview() {
+    WooPosTheme {
+        WooPosSyncErrorDialog(
+            isVisible = true,
+            onRetry = {},
+            onDismissRequest = {}
         )
     }
 }

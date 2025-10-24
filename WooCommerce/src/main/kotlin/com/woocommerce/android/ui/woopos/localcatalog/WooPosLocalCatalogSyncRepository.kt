@@ -3,10 +3,13 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductsAction.WooPosSyncProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,20 +30,33 @@ sealed class PosLocalCatalogSyncResult {
 class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,
     private val posSyncVariationsAction: WooPosSyncVariationsAction,
+    private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val preferencesRepository: WooPosPreferencesRepository,
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
 ) {
     companion object {
         const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_FULL_SYNC = 10
         const val MAX_PAGES_PER_INCREMENTAL_SYNC = 3
+        const val MAX_TOTAL_ITEMS_FULL_SYNC = 1000
+        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = 300
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
-        return@withContext performSync(site = site, pageSize = PAGE_SIZE, maxPages = MAX_PAGES_PER_FULL_SYNC).also {
+        return@withContext performSync(
+            site = site,
+            pageSize = PAGE_SIZE,
+            maxPages = MAX_PAGES_PER_FULL_SYNC,
+            maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
+        ).also {
             if (it is PosLocalCatalogSyncResult.Success) {
                 syncTimestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
+            }
+            if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
+                preferencesRepository.disablePeriodicSyncForSite(site.siteId)
             }
         }
     }
@@ -54,6 +70,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             modifiedAfterGmt = modifiedAfterGmt,
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
+            maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
         )
     }
 
@@ -62,11 +79,21 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         site: SiteModel,
         pageSize: Int,
         maxPages: Int,
+        maxTotalItems: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
         val startTime = System.currentTimeMillis()
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
+
+        val catalogSizeCheckResult = posCheckCatalogSizeAction.execute(
+            site = site,
+            modifiedAfterGmt = modifiedAfterGmt,
+            maxTotalItems = maxTotalItems
+        )
+        if (catalogSizeCheckResult is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
+            return catalogSizeCheckResult.toPosLocalCatalogSyncFailure()
+        }
 
         val productSyncResult = syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
         if (productSyncResult is WooPosSyncProductsResult.Failed) {
@@ -126,6 +153,12 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         return result
     }
+
+    suspend fun getProductCount(site: SiteModel): Int =
+        posLocalCatalogStore.getProductCount(LocalId(site.id)).getOrElse { 0 }
+
+    suspend fun getVariationCount(site: SiteModel): Int =
+        posLocalCatalogStore.getVariationCount(LocalId(site.id)).getOrElse { 0 }
 }
 
 private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCatalogSyncResult.Failure {
@@ -137,6 +170,7 @@ private fun WooPosSyncProductsResult.Failed.toPosLocalCatalogSyncFailure(): PosL
                 maxPages = maxPages
             )
         }
+
         else -> {
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
@@ -152,8 +186,18 @@ private fun WooPosSyncVariationsResult.Failed.toPosLocalCatalogSyncFailure(): Po
                 maxPages = maxPages
             )
         }
+
         else -> {
             PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
     }
+}
+
+private fun WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge.toPosLocalCatalogSyncFailure():
+    PosLocalCatalogSyncResult.Failure {
+    return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+        error = error,
+        totalPages = 0,
+        maxPages = 0
+    )
 }
