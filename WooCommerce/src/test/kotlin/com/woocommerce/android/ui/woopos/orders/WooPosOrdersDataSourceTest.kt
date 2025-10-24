@@ -468,4 +468,33 @@ class WooPosOrdersDataSourceTest {
             searchQuery = query
         )
     }
+
+    @Test
+    fun `given orderId, when refreshOrderById succeeds, then returns mapped order and does not use cache`() = runTest {
+        // GIVEN
+        val orderId = 123L
+        val entity = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), orderId = orderId)
+        val mapped = OrderTestUtils.generateTestOrder(orderId = orderId)
+
+        whenever(orderMapper.toAppModel(entity)).thenReturn(mapped)
+
+        val payload = WCOrderStore.RemoteOrderPayload.Fetching(
+            orderWithMeta = entity to emptyList<WCMetaData>(),
+            site = siteModel
+        )
+        whenever(orderRestClient.fetchSingleOrder(siteModel, orderId)).thenReturn(payload)
+
+        // WHEN
+        val result = sut.refreshOrderById(orderId)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow()).isEqualTo(mapped)
+
+        verify(selectedSite).get()
+        verify(orderRestClient).fetchSingleOrder(siteModel, orderId)
+        verify(orderMapper).toAppModel(entity)
+        verify(ordersCache, never()).getAll()
+        verify(ordersCache, never()).setAll(any())
+    }
 }
