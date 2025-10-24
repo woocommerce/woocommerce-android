@@ -53,10 +53,16 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         state = state,
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
-        onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
+        onBackClicked = {
+            viewModel.onBackClicked()
+            onNavigationEvent(WooPosNavigationEvent.GoBack)
+        },
         onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
     )
-    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    BackHandler {
+        viewModel.onBackClicked()
+        onNavigationEvent(WooPosNavigationEvent.GoBack)
+    }
 }
 
 @Composable
