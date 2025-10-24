@@ -108,6 +108,8 @@ fun BookingDetailsScreen(
                             onViewOrder = onViewOrder,
                             onAttendanceStatusClicked = { showAttendanceSheet.value = true },
                             onViewNotes = onViewNotes,
+                            onMarkAsPaid = viewState.onMarkAsPaid,
+                            markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
                         )
                     }
                 }
@@ -132,6 +134,8 @@ private fun BookingDetailsContent(
     onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
     onViewNotes: () -> Unit,
+    onMarkAsPaid: () -> Unit,
+    markAsPaidInProgress: Boolean,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -158,10 +162,11 @@ private fun BookingDetailsContent(
         BookingPaymentSection(
             model = it,
             status = booking.bookingSummary.status,
-            onMarkAsPaid = { onViewOrder(booking.orderId) },
+            onMarkAsPaid = onMarkAsPaid,
             onViewOrder = { onViewOrder(booking.orderId) },
             onMarkAsRefunded = { onViewOrder(booking.orderId) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            markAsPaidInProgress = markAsPaidInProgress,
         )
     }
     BookingNoteSection(

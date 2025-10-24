@@ -33,6 +33,7 @@ fun BookingPaymentSection(
     onMarkAsRefunded: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
+    markAsPaidInProgress: Boolean = false,
 ) {
     Column(modifier = modifier) {
         BookingSectionHeader(R.string.booking_payment_header)
@@ -77,7 +78,9 @@ fun BookingPaymentSection(
                     text = stringResource(id = R.string.booking_payment_mark_as_paid),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
+                        .padding(horizontal = 16.dp),
+                    loading = markAsPaidInProgress,
+                    enabled = !markAsPaidInProgress,
                 )
             }
             Spacer(modifier = Modifier.height(8.dp))
