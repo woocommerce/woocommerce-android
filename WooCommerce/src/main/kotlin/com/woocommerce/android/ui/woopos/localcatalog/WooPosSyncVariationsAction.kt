@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
@@ -29,21 +30,30 @@ class WooPosSyncVariationsAction @Inject constructor(
         maxPages: Int
     ): WooPosSyncVariationsResult {
         return runCatching {
+            val isFullSync = modifiedAfterGmt == null
+
             val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
+            val trashVariations = if (!isFullSync) {
+                fetchAllTrashVariations(site, pageSize)
+            } else {
+                emptyList()
+            }
+
+            val allVariations = variations + trashVariations
+
             posLocalCatalogStore.executeInTransaction {
-                val isFullSync = modifiedAfterGmt == null
                 if (isFullSync) {
                     posLocalCatalogStore.deleteAllVariations(
                         siteId = site.localId()
                     ).getOrThrow()
                 }
 
-                posLocalCatalogStore.upsertVariations(variations).getOrThrow()
+                posLocalCatalogStore.upsertVariations(allVariations).getOrThrow()
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog variations transaction committed successfully")
-                    WooPosSyncVariationsResult.Success(variations.size, serverDate)
+                    WooPosSyncVariationsResult.Success(allVariations.size, serverDate)
                 },
                 onFailure = { error ->
                     handleTransactionError(error)
@@ -145,6 +155,47 @@ class WooPosSyncVariationsAction @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun fetchAllTrashVariations(
+        site: SiteModel,
+        pageSize: Int
+    ): List<WooPosVariationEntity> {
+        var currentPage = 1
+        var pagesSynced = 0
+        val trashVariations = mutableListOf<WooPosVariationEntity>()
+
+        logger.d("Fetching all trash variations for incremental sync")
+
+        while (true) {
+            val result = posLocalCatalogStore.fetchRecentlyModifiedVariations(
+                site = site,
+                modifiedAfterGmt = null,
+                page = currentPage,
+                pageSize = pageSize,
+                includeStatus = listOf(CoreProductStatus.TRASH)
+            )
+
+            result.fold(
+                onSuccess = { syncResult ->
+                    trashVariations.addAll(syncResult.variations)
+                    pagesSynced++
+
+                    if (!syncResult.hasMore || syncResult.syncedCount == 0) {
+                        logger.d("Finished fetching trash variations: ${trashVariations.size} total across $pagesSynced pages")
+                        break
+                    } else {
+                        currentPage = syncResult.nextPage
+                    }
+                },
+                onFailure = { error ->
+                    logger.e("Failed to fetch trash variations on page ${pagesSynced + 1}: ${error.message}")
+                    throw error
+                }
+            )
+        }
+
+        return trashVariations.toList()
     }
 
     internal class CatalogTooLargeException(
