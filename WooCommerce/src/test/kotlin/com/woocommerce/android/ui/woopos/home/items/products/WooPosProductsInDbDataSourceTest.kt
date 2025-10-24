@@ -37,7 +37,7 @@ class WooPosProductsInDbDataSourceTest {
         sut = WooPosProductsInDbDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
             selectedSite = selectedSite,
-            mapper = mapper,
+            productMapper = mapper,
             performInstantCatalogFullSync = performInstantCatalogFullSync,
             variationMapper = mock(),
             localCatalogSyncRepository = mock(),

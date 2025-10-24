@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 interface WooPosProductsDataSourceInterface {
     fun fetchFirstProductsPage(
@@ -12,6 +13,8 @@ interface WooPosProductsDataSourceInterface {
     suspend fun loadMoreProducts(): Result<List<WooPosProductModel>>
 
     val hasMoreProductsPages: Boolean
+
+    suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel?
 
     suspend fun resetVariationsListHandler()
 
@@ -39,4 +42,6 @@ interface WooPosProductsDataSourceInterface {
      * For remote sources, performs a regular refresh of variations.
      */
     suspend fun refreshVariations(productId: Long): Flow<WooPosProductsDataSource.VariationsResult>
+
+    suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation?
 }
