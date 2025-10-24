@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.note
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -178,6 +179,103 @@ class BookingNoteViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_note_screen_update_error))
         val finalState = viewModel.state.getOrAwaitValue()
         assertThat(finalState.noteSaveStatus).isEqualTo(NoteSaveStatus.Idle)
+    }
+
+    @Test
+    fun `given no changes, when back pressed, then exit is triggered and no dialog`() = testBlocking {
+        // Given
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onBackPressed()
+
+        // Then
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.Exit)
+        val latestState = viewModel.state.getOrAwaitValue()
+        assertThat(latestState.dialogState).isNull()
+    }
+
+    @Test
+    fun `given changed note, when back pressed, then show discard dialog with correct copy and buttons`() = testBlocking {
+        // Given
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.onNoteChange("Changed note")
+        viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onBackPressed()
+
+        // Then
+        val withDialog = viewModel.state.getOrAwaitValue()
+        val dialog = withDialog.dialogState
+        check(dialog != null)
+        // Verify message and buttons types/ids
+        assertThat(dialog.message).isInstanceOf(UiString.UiStringRes::class.java)
+        assertThat((dialog.message as UiString.UiStringRes).stringRes)
+            .isEqualTo(R.string.booking_note_discard_changes_message)
+        val positive = dialog.positiveButton
+        val negative = dialog.negativeButton
+        check(positive != null && negative != null)
+        assertThat((positive.text as UiString.UiStringRes).stringRes)
+            .isEqualTo(R.string.booking_note_discard_changes_discard)
+        assertThat((negative.text as UiString.UiStringRes).stringRes)
+            .isEqualTo(R.string.cancel)
+
+        // Clicking negative should dismiss dialog and not exit
+        negative.onClick()
+        val afterDismiss = viewModel.state.getOrAwaitValue()
+        assertThat(afterDismiss.dialogState).isNull()
+    }
+
+    @Test
+    fun `when confirm discard in dialog, then exit is triggered`() = testBlocking {
+        // Given
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.onNoteChange("Changed note")
+        viewModel.state.getOrAwaitValue()
+        state.onBackPressed()
+        val withDialog = viewModel.state.getOrAwaitValue()
+        val positive = withDialog.dialogState?.positiveButton
+        check(positive != null)
+
+        // When
+        positive.onClick()
+
+        // Then
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    @Test
+    fun `when save in progress and back pressed, then do nothing (no dialog, no exit)`() = testBlocking {
+        // Given a slow repository update to keep InProgress state
+        whenever(bookingsRepository.updateNote(any(), any())).doSuspendableAnswer {
+            delay(200)
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.onNoteChange("Changed")
+        viewModel.state.getOrAwaitValue()
+
+        // Start save
+        state.onSaveClicked()
+        val inProgress = viewModel.state.getOrAwaitValue()
+        assertThat(inProgress.noteSaveStatus).isEqualTo(NoteSaveStatus.InProgress)
+
+        // When
+        inProgress.onBackPressed()
+
+        // Then: dialog remains null while in progress
+        val stillInProgress = viewModel.state.getOrAwaitValue()
+        assertThat(stillInProgress.dialogState).isNull()
+
+        // Clean up
+        advanceUntilIdle()
     }
 
     private fun createViewModel(

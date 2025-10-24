@@ -61,6 +61,9 @@
     <string name="this_month">This Month</string>
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
+    <!-- Booking note discard changes dialog -->
+    <string name="booking_note_discard_changes_message">Are you sure you want to discard these changes?</string>
+    <string name="booking_note_discard_changes_discard">Discard changes</string>
     <string name="products">Products</string>
     <string name="point_of_sale">Point of Sale</string>
     <string name="custom_amounts">Custom Amounts</string>
