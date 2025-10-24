@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
 import android.util.Patterns
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -10,6 +11,7 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
@@ -22,7 +24,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
-        val order = getOrderById(orderId)
+        val order = getOrderById(orderId) ?: fetchOrderById(orderId)
         if (order == null) {
             return@withContext Result.failure(Exception("Failed to get order"))
         }
@@ -64,6 +66,21 @@ class WooPosEmailReceiptRepository @Inject constructor(
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
             orderMapper.toAppModel(it)
         }
+
+    suspend fun fetchOrderById(orderId: Long): Order? {
+        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
+            orderStore.fetchSingleOrder(
+                selectedSite.get(),
+                orderId
+            )
+        }
+
+        return if (result?.isError == false) {
+            getOrderById(orderId)
+        } else {
+            null
+        }
+    }
 
     private fun isWooCoreSupportsPOSReceipts(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false
