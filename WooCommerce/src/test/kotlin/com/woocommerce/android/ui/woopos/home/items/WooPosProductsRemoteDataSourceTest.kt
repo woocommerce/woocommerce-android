@@ -46,6 +46,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCProductStore
 import kotlin.test.Test
 
@@ -101,6 +102,7 @@ class WooPosProductsRemoteDataSourceTest {
 
     private val productStore: WCProductStore = mock()
     private val siteModel: SiteModel = mock()
+    private val productRestClient: ProductRestClient = mock()
     private val selectedSite: SelectedSite = mock {
         on { get() }.thenReturn(siteModel)
     }
@@ -1071,6 +1073,7 @@ class WooPosProductsRemoteDataSourceTest {
     private fun createSUT(): WooPosProductsRemoteDataSource {
         val sut = WooPosProductsRemoteDataSource(
             productStore,
+            productRestClient,
             selectedSite,
             productsCache,
             productsIndex,
