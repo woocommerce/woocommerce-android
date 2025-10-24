@@ -36,6 +36,7 @@ data class BookingEntity(
     val personCounts: List<Long>?,
     val localTimezone: String,
     @ColumnInfo(defaultValue = "") val attendanceStatus: AttendanceStatus,
+    @ColumnInfo(defaultValue = "") val note: String = "",
     @Embedded("order_") val order: BookingOrderInfo
 ) {
     sealed interface Status {

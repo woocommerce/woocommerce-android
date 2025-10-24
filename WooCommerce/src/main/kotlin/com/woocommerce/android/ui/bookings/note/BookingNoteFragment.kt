@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.bookings.details
+package com.woocommerce.android.ui.bookings.note
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
@@ -16,34 +15,20 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class BookingDetailsFragment : BaseFragment() {
+class BookingNoteFragment : BaseFragment() {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
 
-    private val viewModel: BookingDetailsViewModel by viewModels()
-    private val args: BookingDetailsFragmentArgs by navArgs()
+    private val viewModel: BookingNoteViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            BookingDetailsScreen(
+            BookingNoteScreen(
                 viewModel = viewModel,
-                onBack = { findNavController().popBackStack() },
-                onViewOrder = { orderId ->
-                    findNavController().navigate(
-                        BookingDetailsFragmentDirections
-                            .actionBookingDetailsFragmentToOrderDetailFragment(orderId)
-                    )
-                },
-                onViewNotes = {
-                    findNavController().navigate(
-                        BookingDetailsFragmentDirections
-                            .actionBookingDetailsFragmentToBookingNoteFragment(args.bookingId)
-                    )
-                }
             )
         }
     }
@@ -58,6 +43,10 @@ class BookingDetailsFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
+                }
+
+                is MultiLiveEvent.Event.Exit -> {
+                    findNavController().navigateUp()
                 }
             }
         }

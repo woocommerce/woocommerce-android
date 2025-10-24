@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
@@ -52,7 +53,8 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit
+    onViewOrder: (Long) -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -61,6 +63,7 @@ fun BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
             onViewOrder = onViewOrder,
+            onViewNotes = onViewNotes,
         )
     }
 }
@@ -71,6 +74,7 @@ fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
     onViewOrder: (Long) -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
@@ -102,6 +106,7 @@ fun BookingDetailsScreen(
                             onCancelBooking = viewState.onCancelBooking,
                             onViewOrder = onViewOrder,
                             onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                            onViewNotes = onViewNotes,
                         )
                     }
                 }
@@ -125,6 +130,7 @@ private fun BookingDetailsContent(
     onCancelBooking: () -> Unit,
     onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
+    onViewNotes: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -155,6 +161,11 @@ private fun BookingDetailsContent(
             modifier = Modifier.fillMaxWidth()
         )
     }
+    BookingNoteSection(
+        note = booking.note,
+        onClick = onViewNotes,
+        modifier = Modifier.fillMaxWidth()
+    )
 }
 
 @Composable
@@ -251,11 +262,13 @@ private fun BookingDetailsPreview() {
                         tax = "$4.50",
                         discount = "-",
                         total = "$59.50"
-                    )
+                    ),
+                    note = ""
                 ),
             ),
             onBack = {},
-            onViewOrder = {}
+            onViewOrder = {},
+            onViewNotes = {},
         )
     }
 }
@@ -271,6 +284,7 @@ private fun BookingDetailsLoadingPreview() {
             ),
             onBack = {},
             onViewOrder = {},
+            onViewNotes = {},
         )
     }
 }
