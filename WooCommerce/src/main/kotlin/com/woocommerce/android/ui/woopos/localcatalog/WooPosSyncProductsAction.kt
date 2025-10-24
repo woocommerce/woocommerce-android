@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
@@ -30,21 +31,30 @@ class WooPosSyncProductsAction @Inject constructor(
         maxPages: Int
     ): WooPosSyncProductsResult {
         return runCatching {
+            val isFullSync = modifiedAfterGmt == null
+
             val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
+            val trashProducts = if (!isFullSync) {
+                fetchAllTrashProducts(site, pageSize)
+            } else {
+                emptyList()
+            }
+
+            val allProducts = products + trashProducts
+
             posLocalCatalogStore.executeInTransaction {
-                val isFullSync = modifiedAfterGmt == null
                 if (isFullSync) {
                     posLocalCatalogStore.deleteAllProducts(
                         siteId = site.localId()
                     ).getOrThrow()
                 }
 
-                posLocalCatalogStore.upsertProducts(products).getOrThrow()
+                posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog transaction committed successfully")
-                    WooPosSyncProductsResult.Success(products.size, serverDate)
+                    WooPosSyncProductsResult.Success(allProducts.size, serverDate)
                 },
                 onFailure = { error ->
                     handleTransactionError(error)
@@ -145,6 +155,47 @@ class WooPosSyncProductsAction @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun fetchAllTrashProducts(
+        site: SiteModel,
+        pageSize: Int
+    ): List<WooPosProductEntity> {
+        var currentOffset = 0
+        var pagesSynced = 0
+        val trashProducts = mutableListOf<WooPosProductEntity>()
+
+        logger.d("Fetching all trash products for incremental sync")
+
+        while (true) {
+            val result = posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = site,
+                pageSize = pageSize,
+                modifiedAfterGmt = null,
+                offset = currentOffset,
+                includeStatus = listOf(CoreProductStatus.TRASH)
+            )
+
+            result.fold(
+                onSuccess = { syncResult ->
+                    trashProducts.addAll(syncResult.products)
+                    pagesSynced++
+
+                    if (!syncResult.hasMore || syncResult.syncedCount == 0) {
+                        logger.d("Finished fetching trash products: ${trashProducts.size} total across $pagesSynced pages")
+                        break
+                    } else {
+                        currentOffset = syncResult.nextOffset
+                    }
+                },
+                onFailure = { error ->
+                    logger.e("Failed to fetch trash products on page ${pagesSynced + 1}: ${error.message}")
+                    throw error
+                }
+            )
+        }
+
+        return trashProducts.toList()
     }
 
     internal class CatalogTooLargeException(
