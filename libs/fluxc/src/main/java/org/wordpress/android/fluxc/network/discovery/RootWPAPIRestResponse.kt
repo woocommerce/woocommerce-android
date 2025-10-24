@@ -2,7 +2,7 @@ package org.wordpress.android.fluxc.network.discovery
 
 import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.network.Response
-import org.wordpress.android.fluxc.network.rest.JsonObjectOrEmptyArray
+import org.wordpress.android.fluxc.network.rest.JsonObjectOrNull
 
 class RootWPAPIRestResponse(
     val name: String? = null,
@@ -14,7 +14,7 @@ class RootWPAPIRestResponse(
 ) : Response {
     class Authentication(
         @SerializedName("application-passwords") val applicationPasswords: ApplicationPasswords? = null
-    ) : JsonObjectOrEmptyArray() {
+    ) : JsonObjectOrNull() {
         class ApplicationPasswords(
             val endpoints: Endpoints?
         ) {
