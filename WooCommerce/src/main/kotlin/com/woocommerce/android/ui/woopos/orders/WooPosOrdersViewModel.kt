@@ -221,6 +221,52 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun onBackFromSuccesfullySendingEmailReceipt() {
+        refreshSelectedOrder()
+    }
+
+    private fun refreshSelectedOrder() {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val selectedOrderId = current.selectedDetails.id
+
+        viewModelScope.launch {
+            setRefreshingOrderDetails(true)
+            ordersDataSource.refreshOrderById(selectedOrderId)
+                .onSuccess { applyOrderUpdate(it) }
+            setRefreshingOrderDetails(false)
+        }
+    }
+
+    private fun setRefreshingOrderDetails(value: Boolean) {
+        val current = _state.value
+        if (current is WooPosOrdersState.Content) {
+            _state.value = current.copy(isRefreshingSelectedDetails = value)
+        }
+    }
+
+    private suspend fun applyOrderUpdate(updated: Order) {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+
+        val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
+        val newItem = mapOrderItem(updated, selectedId)
+        val newDetails = mapOrderDetails(updated)
+
+        val newMap = buildMap<OrderItemViewState, OrderDetailsViewState> {
+            loaded.items.forEach { (item, details) ->
+                if (item.id == updated.id) put(newItem, newDetails) else put(item, details)
+            }
+        }
+
+        var newState = current.copy(
+            items = WooPosOrdersState.Content.Items.Loaded(newMap)
+        )
+        if (selectedId == updated.id) {
+            newState = newState.copy(selectedDetails = newDetails)
+        }
+        _state.value = newState
+    }
+
     private fun updateSearchState(searchState: WooPosSearchInputState) {
         _state.value = when (val currentState = _state.value) {
             is WooPosOrdersState.Content -> currentState.copy(searchInputState = searchState)

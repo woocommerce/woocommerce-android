@@ -67,6 +67,17 @@ class WooPosOrdersDataSource @Inject constructor(
     suspend fun loadMore(searchQuery: String? = null): Result<List<Order>> =
         withContext(Dispatchers.IO) { loadNextPage(searchQuery) }
 
+    suspend fun refreshOrderById(orderId: Long): Result<Order> {
+        val site = selectedSite.get()
+        val payload = restClient.fetchSingleOrder(site, orderId)
+        return if (payload.error == null) {
+            val entity = payload.orderWithMeta.first
+            Result.success(orderMapper.toAppModel(entity))
+        } else {
+            Result.failure(Throwable("[${payload.error.type}] ${payload.error.message}"))
+        }
+    }
+
     private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
         page.set(1)
         canLoadMore.set(false)
