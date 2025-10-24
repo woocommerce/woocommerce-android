@@ -30,8 +30,10 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.util.concurrent.atomic.AtomicBoolean
@@ -99,6 +101,11 @@ class WooPosProductsDataSource @Inject constructor(
     val hasMorePages: Boolean
         get() = activeSource?.hasMoreProductsPages ?: error("hasMorePages - Data source not selected")
 
+    suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
+        return activeSource?.getProductById(productId)
+            ?: error("GetProductById - Data source not selected")
+    }
+
     suspend fun resetVariationsListHandler() {
         remoteDataSource.resetVariationsListHandler()
         localDbDataSource.resetVariationsListHandler()
@@ -140,19 +147,19 @@ class WooPosProductsDataSource @Inject constructor(
 class WooPosProductsInDbDataSource @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val selectedSite: SelectedSite,
-    private val mapper: WooPosProductModelMapper,
+    private val productMapper: WooPosProductModelMapper,
     private val variationMapper: WooPosVariationMapper,
     private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
 ) : WooPosProductsDataSourceInterface {
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
         val siteModel = selectedSite.getOrNull() ?: return flow { emit(emptyList()) }
-        val siteId = org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId(siteModel.id)
+        val siteId = LocalOrRemoteId.LocalId(siteModel.id)
 
         return posLocalCatalogStore.observeProducts(siteId)
             .map { result ->
                 result.getOrNull()?.map { entity ->
-                    mapper.fromEntity(entity)
+                    productMapper.fromEntity(entity)
                 } ?: emptyList()
             }
     }
@@ -170,6 +177,16 @@ class WooPosProductsInDbDataSource @Inject constructor(
     }
 
     override val hasMoreProductsPages: Boolean = false
+
+    override suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
+        val result = posLocalCatalogStore.getProduct(
+            siteId = LocalOrRemoteId.LocalId(selectedSite.get().id),
+            remoteProductId = productId
+        )
+        return result.getOrNull()?.let { entity ->
+            productMapper.fromEntity(entity)
+        }
+    }
 
     override suspend fun resetVariationsListHandler() = Unit
 
@@ -201,6 +218,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
 class WooPosProductsRemoteDataSource @Inject constructor(
     private val productStore: WCProductStore,
+    private val productRestClient: ProductRestClient,
     private val selectedSite: SelectedSite,
     private val productsCache: WooPosProductsCache,
     private val productsIndex: WooPosProductsIndex,
@@ -341,6 +359,31 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     private fun WooResult<*>.logFailure() {
         val errorMessage = error?.message ?: "Unknown error"
         WooLog.e(WooLog.T.POS, "Loading products failed - $errorMessage")
+    }
+
+    override suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
+        val cachedProduct = productsCache.getProductById(productId.value)
+        if (cachedProduct != null) {
+            return cachedProduct
+        }
+
+        return if (productsCache.getAll().size >= WooPosProductsCache.MAX_CACHE_SIZE) {
+            val remoteProductResult = productRestClient.fetchSingleProduct(
+                site = selectedSite.get(),
+                remoteProductId = productId.value,
+            )
+
+            if (!remoteProductResult.isError) {
+                val remoteProduct = remoteProductResult.productWithMetaData.product
+                val product = posProductMapper.map(remoteProduct)
+                productsCache.addAll(listOf(product))
+                product
+            } else {
+                null
+            }
+        } else {
+            null
+        }
     }
 
     override suspend fun resetVariationsListHandler() {
