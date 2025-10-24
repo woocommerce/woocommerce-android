@@ -127,6 +127,14 @@ class WooPosProductsDataSource @Inject constructor(
         activeSource?.canLoadMoreVariations(numOfVariations)
             ?: error("canLoadMoreVariations - Data source not selected")
 
+    suspend fun getVariationById(
+        productId: Long,
+        variationId: Long
+    ): WooPosVariation? {
+        return activeSource?.getVariationById(productId, variationId)
+            ?: error("GetVariationById - Data source not selected")
+    }
+
     sealed class ProductsResult {
         data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
         data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
@@ -214,6 +222,16 @@ class WooPosProductsInDbDataSource @Inject constructor(
         }
 
     override fun canLoadMoreVariations(numOfVariations: Int): Boolean = false
+
+    override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
+        val siteModel = selectedSite.getOrNull() ?: return null
+        val result = posLocalCatalogStore.getVariation(
+            siteId = siteModel.id,
+            productId = productId,
+            variationId = variationId
+        )
+        return result.getOrNull()?.toWooPosVariation(variationMapper)
+    }
 }
 
 class WooPosProductsRemoteDataSource @Inject constructor(
@@ -463,6 +481,12 @@ class WooPosProductsRemoteDataSource @Inject constructor(
                 }
             }
         }
+
+    override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
+        val siteModel = selectedSite.getOrNull() ?: return null
+        return productStore.getVariationByRemoteId(siteModel, productId, variationId)
+            ?.toWooPosVariation(variationMapper)
+    }
 
     companion object {
         private const val NORMAL_PAGE_SIZE = 25

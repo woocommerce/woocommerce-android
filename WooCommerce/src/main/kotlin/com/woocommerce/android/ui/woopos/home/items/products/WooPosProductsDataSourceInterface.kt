@@ -28,4 +28,6 @@ interface WooPosProductsDataSourceInterface {
     suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>>
 
     fun canLoadMoreVariations(numOfVariations: Int): Boolean
+
+    suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation?
 }
