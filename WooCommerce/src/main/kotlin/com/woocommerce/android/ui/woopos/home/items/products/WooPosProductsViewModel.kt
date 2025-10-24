@@ -3,9 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -15,8 +13,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -39,9 +35,6 @@ class WooPosProductsViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
-    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
-    private val selectedSite: SelectedSite,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
@@ -109,17 +102,7 @@ class WooPosProductsViewModel @Inject constructor(
             }
 
             WooPosProductsUIEvent.PullToRefreshTriggered -> {
-                when {
-                    wooPosLocalCatalogM1Enabled() -> {
-                        performIncrementalSync()
-                    }
-                    else -> {
-                        loadProducts(
-                            forceRefreshProducts = true,
-                            withPullToRefresh = true,
-                        )
-                    }
-                }
+                handlePullToRefresh()
                 viewModelScope.launch {
                     analyticsTracker.track(
                         PullToRefreshTriggered(
@@ -337,32 +320,42 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private fun performIncrementalSync() {
-        _viewState.value = buildReloadingState()
-
+    private fun handlePullToRefresh() {
         viewModelScope.launch {
-            selectedSite.getOrNull()?.let { site ->
-                val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-                _viewState.value = buildViewStateForSyncResult(syncResult)
+            _viewState.value = buildReloadingState()
+
+            dataSource.refreshProducts().collect { result ->
+                when (result) {
+                    is WooPosProductsDataSource.ProductsResult.Cached -> {
+                        if (result.products.isNotEmpty()) {
+                            _viewState.value = result.products.toContentState()
+                        }
+                    }
+
+                    is WooPosProductsDataSource.ProductsResult.Remote -> {
+                        _viewState.value = when {
+                            result.productsResult.isSuccess -> {
+                                val products = result.productsResult.getOrThrow()
+                                if (products.isNotEmpty()) {
+                                    products.toContentState()
+                                } else {
+                                    WooPosProductsViewState.Empty()
+                                }
+                            }
+                            else -> {
+                                sendEventToParent(
+                                    ChildToParentEvent.ToastMessageDisplayed(
+                                        message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                                    )
+                                )
+                                hidePTRIndicator()
+                            }
+                        }
+                    }
+                }
             }
         }
     }
-
-    private fun buildViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosProductsViewState =
-        when (syncResult) {
-            is PosLocalCatalogSyncResult.Success -> {
-                hidePTRIndicator()
-            }
-
-            is PosLocalCatalogSyncResult.Failure -> {
-                sendEventToParent(
-                    ChildToParentEvent.ToastMessageDisplayed(
-                        message = resourceProvider.getString(R.string.something_went_wrong_try_again)
-                    )
-                )
-                hidePTRIndicator()
-            }
-        }
 
     private fun hidePTRIndicator(): WooPosProductsViewState = when (val currentState = _viewState.value) {
         is WooPosProductsViewState.Content -> currentState.copy(

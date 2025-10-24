@@ -17,6 +17,13 @@ interface WooPosProductsDataSourceInterface {
 
     suspend fun prepopulateCache(): Result<Unit>
 
+    /**
+     * Refreshes products data.
+     * For local catalog sources, performs incremental sync of both products and variations if supported.
+     * For remote sources, performs a regular refresh of products.
+     */
+    suspend fun refreshProducts(): Flow<WooPosProductsDataSource.ProductsResult>
+
     fun fetchFirstVariationsPage(
         productId: Long,
         forceRefresh: Boolean
@@ -25,4 +32,11 @@ interface WooPosProductsDataSourceInterface {
     suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>>
 
     fun canLoadMoreVariations(numOfVariations: Int): Boolean
+
+    /**
+     * Refreshes variations data.
+     * For local catalog sources, performs incremental sync of both products and variations if supported.
+     * For remote sources, performs a regular refresh of variations.
+     */
+    suspend fun refreshVariations(productId: Long): Flow<WooPosProductsDataSource.VariationsResult>
 }

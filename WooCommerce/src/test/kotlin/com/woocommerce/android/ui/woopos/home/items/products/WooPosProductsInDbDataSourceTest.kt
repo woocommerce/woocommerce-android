@@ -39,7 +39,15 @@ class WooPosProductsInDbDataSourceTest {
             selectedSite = selectedSite,
             mapper = mapper,
             performInstantCatalogFullSync = performInstantCatalogFullSync,
-            variationMapper = mock()
+            variationMapper = mock(),
+            localCatalogSyncRepository = mock(),
+            preferencesRepository = mock(),
+            isVariationsEndpointAvailable = mock {
+                on { invoke() }.thenReturn(true)
+            },
+            wooPosLocalCatalogM1Enabled = mock {
+                on { invoke() }.thenReturn(true)
+            }
         )
     }
 

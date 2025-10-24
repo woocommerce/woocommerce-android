@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.home.variations
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
@@ -10,7 +9,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
@@ -20,7 +18,6 @@ import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataS
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.VariationsResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -39,7 +36,6 @@ import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -56,9 +52,6 @@ class WooPosVariationsViewModelTest {
 
     private val getProductById: WooPosGetProductById = mock()
     private val variationsDataSource: WooPosProductsDataSource = mock()
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
-        on { invoke() } doReturn false // Default to using variationsDataSource
-    }
     private val fromChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val priceFormat: WooPosFormatPrice = mock {
@@ -68,8 +61,6 @@ class WooPosVariationsViewModelTest {
         onBlocking { invoke(null) }.thenReturn("$0.00")
     }
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
-    private val selectedSite: SelectedSite = mock()
     private val mapper: WooPosVariationMapper = mock {
         on { fromProductVariation(any()) } doAnswer { invocation ->
             val productVariation = invocation.arguments[0] as com.woocommerce.android.model.ProductVariation
@@ -219,7 +210,7 @@ class WooPosVariationsViewModelTest {
     }
 
     @Test
-    fun `given variations, when pull to refresh triggered, then fetchVariationsFirstPage() is called`() = runTest {
+    fun `given variations, when pull to refresh triggered, then refreshVariations() is called`() = runTest {
         // GIVEN
         val variations = listOf(
             ProductTestUtils.generateProductVariation(1, 1, "10.0").toWooPosVariation(mapper),
@@ -228,7 +219,7 @@ class WooPosVariationsViewModelTest {
         whenever(variationsDataSource.fetchVariationsFirstPage(any(), eq(false))).thenReturn(
             flowOf(VariationsResult.Remote(Result.success(emptyList())))
         )
-        whenever(variationsDataSource.fetchVariationsFirstPage(any(), eq(true))).thenReturn(
+        whenever(variationsDataSource.refreshVariations(any())).thenReturn(
             flowOf(VariationsResult.Remote(Result.success(variations)))
         )
 
@@ -237,12 +228,15 @@ class WooPosVariationsViewModelTest {
         viewModel.onUIEvent(WooPosVariationsUIEvents.PullToRefreshTriggered(123L))
 
         // THEN
-        verify(variationsDataSource).fetchVariationsFirstPage(eq(123L), eq(true))
+        verify(variationsDataSource).refreshVariations(eq(123L))
     }
 
     @Test
     fun `when pull to refresh triggered, then should track event`() = runTest {
         whenever(variationsDataSource.fetchVariationsFirstPage(any(), any())).thenReturn(
+            flowOf(VariationsResult.Remote(Result.success(emptyList())))
+        )
+        whenever(variationsDataSource.refreshVariations(any())).thenReturn(
             flowOf(VariationsResult.Remote(Result.success(emptyList())))
         )
 
@@ -759,14 +753,11 @@ class WooPosVariationsViewModelTest {
         WooPosVariationsViewModel(
             fromChildToParentEventSender,
             getProductById,
-            variationsDataSource, // Since feature flag is false in test
+            variationsDataSource,
             priceFormat,
             resourceProvider,
             analyticsTracker,
-            wooPosLocalCatalogM1Enabled,
             mapper,
-            localCatalogSyncRepository,
-            selectedSite,
         ).let {
             it.init(productId, sourceType = sourceType)
             it

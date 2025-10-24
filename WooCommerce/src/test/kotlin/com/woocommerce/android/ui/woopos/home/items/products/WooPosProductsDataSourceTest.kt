@@ -216,6 +216,88 @@ class WooPosProductsDataSourceTest {
         verify(localDbDataSource).resetVariationsListHandler()
     }
 
+    @Test
+    fun `given local catalog disabled, when refresh products, then delegates to remote data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
+        )
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.refreshProducts()).thenReturn(
+            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshProducts().toList()
+
+        // THEN
+        verify(remoteDataSource).refreshProducts()
+        assertThat(result).isNotEmpty()
+    }
+
+    @Test
+    fun `given sync not required, when refresh products, then delegates to local db data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NotRequired
+        )
+        whenever(localDbDataSource.refreshProducts()).thenReturn(
+            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshProducts().toList()
+
+        // THEN
+        verify(localDbDataSource).refreshProducts()
+        assertThat(result).isNotEmpty()
+    }
+
+    @Test
+    fun `given local catalog disabled, when refresh variations, then delegates to remote data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
+        )
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.refreshVariations(123L)).thenReturn(
+            flowOf(WooPosProductsDataSource.VariationsResult.Remote(Result.success(emptyList())))
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshVariations(123L).toList()
+
+        // THEN
+        verify(remoteDataSource).refreshVariations(123L)
+        assertThat(result).isNotEmpty()
+    }
+
+    @Test
+    fun `given sync not required, when refresh variations, then delegates to local db data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NotRequired
+        )
+        whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
+            flowOf(WooPosProductsDataSource.VariationsResult.Remote(Result.success(emptyList())))
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshVariations(123L).toList()
+
+        // THEN
+        verify(localDbDataSource).refreshVariations(123L)
+        assertThat(result).isNotEmpty()
+    }
+
     private fun createSut() = WooPosProductsDataSource(
         remoteDataSource = remoteDataSource,
         localDbDataSource = localDbDataSource,
