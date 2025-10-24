@@ -66,7 +66,7 @@ class BookingsStoreTest {
             site = site,
             bookingId = dto.id,
             bookingUpdatePayload = BookingUpdatePayload(note = "n"),
-            refreshBooking = false
+            refreshOrder = false
         )
 
         // then
@@ -93,7 +93,7 @@ class BookingsStoreTest {
             site = site,
             bookingId = dto.id,
             bookingUpdatePayload = BookingUpdatePayload(status = Status.Confirmed),
-            refreshBooking = true
+            refreshOrder = true
         )
 
         // then
@@ -116,7 +116,7 @@ class BookingsStoreTest {
             site = site,
             bookingId = TEST_BOOKING_ID,
             bookingUpdatePayload = BookingUpdatePayload(note = "n"),
-            refreshBooking = false
+            refreshOrder = false
         )
 
         // then
@@ -150,7 +150,7 @@ class BookingsStoreTest {
             site = site,
             bookingId = dto.id,
             bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn),
-            refreshBooking = true
+            refreshOrder = true
         )
 
         // then

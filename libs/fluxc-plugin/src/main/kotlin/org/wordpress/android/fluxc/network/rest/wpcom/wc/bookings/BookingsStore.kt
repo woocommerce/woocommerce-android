@@ -155,7 +155,7 @@ class BookingsStore @Inject internal constructor(
         site: SiteModel,
         bookingId: Long,
         bookingUpdatePayload: BookingUpdatePayload,
-        refreshBooking: Boolean = false,
+        refreshOrder: Boolean = false,
     ): WooResult<BookingEntity> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "updateBooking") {
             val response = bookingsRestClient.updateBooking(site, bookingId, bookingUpdatePayload)
@@ -164,7 +164,7 @@ class BookingsStore @Inject internal constructor(
                 response.result != null -> {
                     val bookingDto = response.result
 
-                    val updatedBookingEntityResult = if (refreshBooking) {
+                    val updatedBookingEntityResult = if (refreshOrder) {
                         getBookingEntityWithRefreshedOrder(site, bookingDto)
                     } else {
                         getBookingEntityWithLocalOrder(site, bookingDto)

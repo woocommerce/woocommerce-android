@@ -148,7 +148,7 @@ class BookingsRepository @Inject constructor(
             site = selectedSite.get(),
             bookingId = bookingId,
             bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled),
-            refreshBooking = true,
+            refreshOrder = true,
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))
