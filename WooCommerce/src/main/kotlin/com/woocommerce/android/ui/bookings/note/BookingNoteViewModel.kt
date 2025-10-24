@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
@@ -25,18 +26,22 @@ class BookingNoteViewModel @Inject constructor(
     private val initialNoteState = MutableStateFlow("")
     private val editedNoteState = MutableStateFlow<String?>(null)
     private val noteSaveStatusFlow = MutableStateFlow<NoteSaveStatus>(NoteSaveStatus.Idle)
+    private val dialogStateFlow = MutableStateFlow<DialogState?>(null)
 
     val state: LiveData<BookingNoteViewState> = combine(
         initialNoteState,
         editedNoteState,
-        noteSaveStatusFlow
-    ) { initialNote, editedNote, noteSaveStatus ->
+        noteSaveStatusFlow,
+        dialogStateFlow,
+    ) { initialNote, editedNote, noteSaveStatus, dialogState ->
         BookingNoteViewState(
             initialNote = initialNote,
             editedNote = editedNote,
             noteSaveStatus = noteSaveStatus,
             onNoteChange = ::onNoteChange,
             onSaveClicked = ::saveNote,
+            onBackPressed = ::onBackPressed,
+            dialogState = dialogState,
         )
     }.asLiveData()
 
@@ -55,6 +60,40 @@ class BookingNoteViewModel @Inject constructor(
 
     private fun onNoteChange(value: String) {
         editedNoteState.value = value
+    }
+
+    private fun onBackPressed() {
+        if (noteSaveStatusFlow.value == NoteSaveStatus.InProgress) {
+            return
+        }
+        val initial = initialNoteState.value.trim()
+        val current = editedNoteState.value.orEmpty().trim()
+        val noteHasChanged = initial != current
+        if (noteHasChanged) {
+            dialogStateFlow.value = DialogState(
+                message = R.string.booking_note_discard_changes_message,
+                positiveButton = DialogState.DialogButton(
+                    text = R.string.booking_note_discard_changes_discard,
+                    onClick = ::onDiscardChanges
+                ),
+                negativeButton = DialogState.DialogButton(
+                    text = R.string.cancel,
+                    onClick = ::onDismissDialog
+                ),
+                onDismiss = ::onDismissDialog,
+            )
+        } else {
+            triggerEvent(MultiLiveEvent.Event.Exit)
+        }
+    }
+
+    private fun onDiscardChanges() {
+        dialogStateFlow.value = null
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun onDismissDialog() {
+        dialogStateFlow.value = null
     }
 
     private fun saveNote() {

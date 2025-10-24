@@ -47,7 +47,7 @@ class WooPosSplashViewModel @Inject constructor(
 
             joinAll(
                 launch {
-                    productsDataSource.prepopulateProductsCache()
+                    productsDataSource.prepopulateCache()
                         .collect(syncStateCollector(splashScreenStartTime))
                 },
                 launch { popularProductsProvider.fetchAndCachePopularProducts() },
@@ -59,7 +59,7 @@ class WooPosSplashViewModel @Inject constructor(
     fun onRetrySync() {
         viewModelScope.launch {
             val retryStartTime = System.currentTimeMillis()
-            productsDataSource.prepopulateProductsCache().collect(syncStateCollector(retryStartTime))
+            productsDataSource.prepopulateCache().collect(syncStateCollector(retryStartTime))
         }
     }
 

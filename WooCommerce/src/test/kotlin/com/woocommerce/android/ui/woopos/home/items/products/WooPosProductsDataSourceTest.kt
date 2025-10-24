@@ -33,19 +33,19 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(remoteDataSource.prepopulateProductsCache()).thenReturn(Result.success(Unit))
-        whenever(remoteDataSource.fetchFirstPage(false)).thenReturn(
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
-        verify(remoteDataSource).prepopulateProductsCache()
-        verify(remoteDataSource).fetchFirstPage(false)
+        verify(remoteDataSource).prepopulateCache()
+        verify(remoteDataSource).fetchFirstProductsPage(false)
     }
 
     @Test
@@ -54,17 +54,17 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired
         )
-        whenever(localDbDataSource.fetchFirstPage(false)).thenReturn(
+        whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
-        verify(localDbDataSource).fetchFirstPage(false)
+        verify(localDbDataSource).fetchFirstProductsPage(false)
     }
 
     @Test
@@ -73,17 +73,17 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.Overdue
         )
-        whenever(localDbDataSource.fetchFirstPage(false)).thenReturn(
+        whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
-        verify(localDbDataSource).fetchFirstPage(false)
+        verify(localDbDataSource).fetchFirstProductsPage(false)
     }
 
     @Test
@@ -92,19 +92,19 @@ class WooPosProductsDataSourceTest {
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.BlockingRequired
         )
-        whenever(localDbDataSource.prepopulateProductsCache()).thenReturn(Result.success(Unit))
-        whenever(localDbDataSource.fetchFirstPage(false)).thenReturn(
+        whenever(localDbDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
         )
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
         sut.fetchFirstPage(false).toList()
 
         // THEN
-        verify(localDbDataSource).prepopulateProductsCache()
-        verify(localDbDataSource).fetchFirstPage(false)
+        verify(localDbDataSource).prepopulateCache()
+        verify(localDbDataSource).fetchFirstProductsPage(false)
     }
 
     @Test
@@ -114,18 +114,18 @@ class WooPosProductsDataSourceTest {
             WooPosFullSyncRequirement.BlockingRequired
         )
         val errorMessage = "Failed to prepopulate cache"
-        whenever(localDbDataSource.prepopulateProductsCache()).thenReturn(
+        whenever(localDbDataSource.prepopulateCache()).thenReturn(
             Result.failure(Exception(errorMessage))
         )
         val sut = createSut()
 
         // WHEN
-        val result = sut.prepopulateProductsCache().toList()
+        val result = sut.prepopulateCache().toList()
 
         // THEN
         val status = result.last()
         assertThat(status).isInstanceOf(WooPosProductsDataSource.WooPosPrepopulatingDataStatus.Failed::class.java)
-        verify(localDbDataSource).prepopulateProductsCache()
+        verify(localDbDataSource).prepopulateCache()
     }
 
     @Test
@@ -137,7 +137,7 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // THEN
         try {
@@ -149,52 +149,52 @@ class WooPosProductsDataSourceTest {
     }
 
     @Test
-    fun `given local catalog disabled, when load more, then delegates to remote data source`() = runTest {
+    fun `given local catalog disabled, when load more products, then delegates to remote data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(remoteDataSource.prepopulateProductsCache()).thenReturn(Result.success(Unit))
-        whenever(remoteDataSource.loadMore()).thenReturn(Result.success(emptyList()))
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.loadMore()
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(remoteDataSource).loadMore()
+        verify(remoteDataSource).loadMoreProducts()
     }
 
     @Test
-    fun `given sync not required, when load more, then delegates to local db data source`() = runTest {
+    fun `given sync not required, when load more products, then delegates to local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.NotRequired
         )
-        whenever(localDbDataSource.loadMore()).thenReturn(Result.success(emptyList()))
+        whenever(localDbDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.loadMore()
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(localDbDataSource).loadMore()
+        verify(localDbDataSource).loadMoreProducts()
     }
 
     @Test
-    fun `given local catalog disabled, when has more pages, then delegates to remote data source`() = runTest {
+    fun `given local catalog disabled, when has more products pages, then delegates to remote data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
             WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
         )
-        whenever(remoteDataSource.prepopulateProductsCache()).thenReturn(Result.success(Unit))
-        whenever(remoteDataSource.hasMorePages).thenReturn(true)
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.hasMoreProductsPages).thenReturn(true)
         val sut = createSut()
-        sut.prepopulateProductsCache().toList()
+        sut.prepopulateCache().toList()
 
         // WHEN
         val result = sut.hasMorePages
@@ -209,11 +209,11 @@ class WooPosProductsDataSourceTest {
         val sut = createSut()
 
         // WHEN
-        sut.resetState()
+        sut.resetVariationsListHandler()
 
         // THEN
-        verify(remoteDataSource).resetState()
-        verify(localDbDataSource).resetState()
+        verify(remoteDataSource).resetVariationsListHandler()
+        verify(localDbDataSource).resetVariationsListHandler()
     }
 
     private fun createSut() = WooPosProductsDataSource(
