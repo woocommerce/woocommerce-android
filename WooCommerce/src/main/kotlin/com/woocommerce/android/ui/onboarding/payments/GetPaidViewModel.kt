@@ -34,10 +34,7 @@ class GetPaidViewModel @Inject constructor(
     private val setupUrl = selectedSite.get().url.slashJoin("/wp-admin/admin.php?page=wc-admin&task=${args.taskId}")
 
     val viewState = flowOf(
-        ViewState(
-            url = setupUrl,
-            shouldAuthenticate = selectedSite.get().isWPComAtomic
-        )
+        ViewState(url = setupUrl)
     ).asLiveData()
 
     fun onBackPressed() {
@@ -67,8 +64,7 @@ class GetPaidViewModel @Inject constructor(
     }
 
     data class ViewState(
-        val url: String,
-        val shouldAuthenticate: Boolean
+        val url: String
     )
 
     object ShowWooPaymentsSetupSuccess : MultiLiveEvent.Event()
