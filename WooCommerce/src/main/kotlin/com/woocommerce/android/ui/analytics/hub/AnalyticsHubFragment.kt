@@ -26,17 +26,18 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.CUSTOM
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.common.MarginBottomItemDecoration
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment.Companion.WEBVIEW_RESULT
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.EntryPointSource.ANALYTICS_HUB
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel.UrlComparisonMode.PARTIAL
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.util.Date
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
@@ -46,6 +47,10 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
     }
 
     private val viewModel: AnalyticsHubViewModel by viewModels()
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
+
     private var _binding: FragmentAnalyticsBinding? = null
     private val binding
         get() = _binding!!
@@ -91,10 +96,9 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
                 isCreationFlow = event.isCreationFlow
             )
 
-            is AnalyticsViewEvent.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-
-            is AnalyticsViewEvent.OpenAuthenticatedWebView -> findNavController()
-                .navigate(NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = event.url))
+            is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> with(authenticatedWebViewLauncher) {
+                findNavController().showAuthenticatedWebView(event)
+            }
 
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
                 event.fromMillis,
