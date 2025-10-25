@@ -26,7 +26,6 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentProductDetailBinding
 import com.woocommerce.android.extensions.fastStripHtml
-import com.woocommerce.android.extensions.findNavController
 import com.woocommerce.android.extensions.handleNotice
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.hide
@@ -405,9 +404,7 @@ class ProductDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                is Event.LaunchUrlInAuthenticatedWebView -> with(authenticatedWebViewLauncher) {
-                    findNavController(R.id.nav_host_fragment_main).showAuthenticatedWebView(event)
-                }
+                is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 is ProductDetailViewModel.OpenProductInWebView -> findNavController().navigateSafely(
                     ProductDetailFragmentDirections.actionProductDetailFragmentToProductDetailWebViewFragment(
                         remoteProductId = event.productId

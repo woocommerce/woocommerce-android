@@ -96,9 +96,8 @@ class AnalyticsHubFragment : BaseFragment(R.layout.fragment_analytics) {
                 isCreationFlow = event.isCreationFlow
             )
 
-            is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> with(authenticatedWebViewLauncher) {
-                findNavController().showAuthenticatedWebView(event)
-            }
+            is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
+                authenticatedWebViewLauncher.showAuthenticatedWebView(event)
 
             is AnalyticsViewEvent.OpenDatePicker -> showDateRangePicker(
                 event.fromMillis,
