@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.common.webview
 
 import android.content.Context
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
@@ -32,6 +33,10 @@ class AuthenticatedWebViewLauncher @Inject constructor(
             navController.navigate(action)
         } else {
             ChromeCustomTabUtils.launchUrl(context, event.url)
+            if (fragment is DialogFragment) {
+                // To align with the regular fragment behavior, we dismiss the dialog after launching the CCT.
+                fragment.dismiss()
+            }
         }
     }
 
