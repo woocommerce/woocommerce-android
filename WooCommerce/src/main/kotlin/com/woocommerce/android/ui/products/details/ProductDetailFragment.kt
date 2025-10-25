@@ -20,7 +20,6 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.transition.MaterialContainerTransform
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.RequestCodes
 import com.woocommerce.android.analytics.AnalyticsEvent
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_
 import com.woocommerce.android.ui.aztec.AztecEditorFragment.Companion.ARG_AZTEC_TITLE_FROM_AI_DESCRIPTION
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dialog.WooDialog
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -119,6 +119,9 @@ class ProductDetailFragment :
 
     @Inject
     lateinit var toolbarHelper: ProductDetailsToolbarHelper
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     private val skeletonView = SkeletonView()
 
@@ -402,8 +405,9 @@ class ProductDetailFragment :
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                is Event.LaunchUrlInAuthenticatedWebView -> findNavController(R.id.nav_host_fragment_main)
-                    .navigateSafely(NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(event.url))
+                is Event.LaunchUrlInAuthenticatedWebView -> with(authenticatedWebViewLauncher) {
+                    findNavController(R.id.nav_host_fragment_main).showAuthenticatedWebView(event)
+                }
                 is ProductDetailViewModel.OpenProductInWebView -> findNavController().navigateSafely(
                     ProductDetailFragmentDirections.actionProductDetailFragmentToProductDetailWebViewFragment(
                         remoteProductId = event.productId
