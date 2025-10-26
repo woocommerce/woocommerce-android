@@ -1,11 +1,14 @@
 package com.woocommerce.android.ui.compose.component.web
 
 import android.net.Uri
+import android.os.Message
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebView
+import android.widget.FrameLayout
 import androidx.activity.ComponentActivity
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import com.woocommerce.android.extensions.findActivity
 
 open class WCWebChromeClient : WebChromeClient() {
@@ -47,5 +50,43 @@ open class WCWebChromeClient : WebChromeClient() {
 
     override fun onProgressChanged(view: WebView?, newProgress: Int) {
         onProgressChanged(newProgress)
+    }
+
+    override fun onCreateWindow(
+        view: WebView,
+        isDialog: Boolean,
+        isUserGesture: Boolean,
+        resultMsg: Message
+    ): Boolean {
+        require(view.parent is FrameLayout) {
+            "Ensure the WebView is added to a FrameLayout to support popups. Check WCWebView implementation."
+        }
+
+        val popupContainer = view.parent as FrameLayout
+
+        val popupWebView = WebView(view.context).apply {
+            settings.useWideViewPort = view.settings.useWideViewPort
+            settings.loadWithOverviewMode = view.settings.loadWithOverviewMode
+            settings.javaScriptEnabled = view.settings.javaScriptEnabled
+            settings.domStorageEnabled = view.settings.domStorageEnabled
+            settings.setSupportMultipleWindows(true)
+        }
+
+        popupWebView.webViewClient = view.webViewClient
+        popupWebView.webChromeClient = object : WebChromeClient() {
+            override fun onCloseWindow(window: WebView) {
+                popupContainer.removeView(popupWebView)
+                view.isVisible = true
+            }
+        }
+
+        popupContainer.layoutParams = view.layoutParams
+        popupContainer.addView(popupWebView)
+        view.isVisible = false
+
+        (resultMsg.obj as WebView.WebViewTransport).webView = popupWebView
+        resultMsg.sendToTarget()
+
+        return true
     }
 }
