@@ -4,6 +4,7 @@
 23.6
 -----
 - [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
+- [Internal] Update In-Person Payments setup flow to use Authenticated WebView [https://github.com/woocommerce/woocommerce-android/pull/14827]
 
 23.5
 -----
