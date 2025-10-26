@@ -28,6 +28,7 @@ import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.UiHelpers
@@ -42,6 +43,9 @@ import javax.inject.Inject
 class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_onboarding) {
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     val viewModel: CardReaderOnboardingViewModel by viewModels()
 
@@ -92,9 +96,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                 is CardReaderOnboardingEvent.NavigateToSupport -> {
                     requireActivity().startHelpActivity(HelpOrigin.CARD_READER_ONBOARDING)
                 }
-                is CardReaderOnboardingEvent.NavigateToUrlInBrowser -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
-                }
+
                 is CardReaderOnboardingEvent.ContinueToHub -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -103,6 +105,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+
                 is CardReaderOnboardingEvent.ContinueToConnection -> {
                     findNavController().navigate(
                         CardReaderOnboardingFragmentDirections
@@ -112,6 +115,15 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                             )
                     )
                 }
+
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
+                }
+
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+
                 is MultiLiveEvent.Event.ShowUiStringSnackbar -> uiMessageResolver.showSnack(event.message)
                 is MultiLiveEvent.Event.Exit -> findNavController().popBackStack()
                 else -> event.isHandled = false
@@ -148,20 +160,28 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         when (state) {
             is CardReaderOnboardingViewState.GenericErrorState ->
                 showGenericErrorState(layout, state)
+
             is CardReaderOnboardingViewState.NoConnectionErrorState ->
                 showNetworkErrorState(layout, state)
+
             is CardReaderOnboardingViewState.LoadingState ->
                 showLoadingState(layout, state)
+
             is CardReaderOnboardingViewState.UnsupportedErrorState ->
                 showCountryNotSupportedState(layout, state)
+
             is CardReaderOnboardingViewState.WCPayError ->
                 showWCPayErrorState(layout, state)
+
             is CardReaderOnboardingViewState.StripeAccountError ->
                 showStripeAccountError(layout, state)
+
             is CardReaderOnboardingViewState.StripeExtensionError ->
                 showStripeExtensionErrorState(layout, state)
+
             is CardReaderOnboardingViewState.SelectPaymentPluginState ->
                 showPaymentPluginSelectionState(layout, state)
+
             is CardReaderOnboardingViewState.CashOnDeliveryDisabledState ->
                 showCashOnDeliveryDisabledState(layout, state)
         }
@@ -195,6 +215,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
                         R.string.card_reader_onboarding_cash_on_delivery_enable_failure
                     )
                 }
+
                 null -> {}
             }
         }
