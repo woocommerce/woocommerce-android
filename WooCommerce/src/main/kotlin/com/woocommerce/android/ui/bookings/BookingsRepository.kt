@@ -4,6 +4,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
@@ -62,6 +63,13 @@ class BookingsRepository @Inject constructor(
             bookingId = bookingId
         )
 
+    suspend fun getBooking(bookingId: Long): Booking? {
+        return bookingsStore.getBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId
+        )
+    }
+
     suspend fun fetchBooking(
         bookingId: Long
     ): Result<Booking> {
@@ -105,10 +113,42 @@ class BookingsRepository @Inject constructor(
         bookingId: Long,
         attendanceStatus: BookingEntity.AttendanceStatus,
     ): Result<Unit> {
-        val result = bookingsStore.updateAttendanceStatus(
+        val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
-            attendanceStatus = attendanceStatus
+            bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = attendanceStatus)
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    suspend fun updateNote(
+        bookingId: Long,
+        note: String,
+    ): Result<Unit> {
+        val result = bookingsStore.updateBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId,
+            bookingUpdatePayload = BookingUpdatePayload(note = note)
+        )
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    suspend fun cancelBooking(
+        bookingId: Long,
+    ): Result<Unit> {
+        val result = bookingsStore.updateBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId,
+            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled),
+            refreshOrder = true,
         )
         return if (result.isError) {
             Result.failure(WooException(result.error))

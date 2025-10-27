@@ -27,6 +27,8 @@ class WooPosSplashViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
+    private val preferencesRepository: com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository =
+        mock()
 
     @Rule
     @JvmField
@@ -213,6 +215,7 @@ class WooPosSplashViewModelTest {
             analyticsTracker,
             posCanBeLaunchedInTab,
             ordersCache,
+            preferencesRepository,
         )
     }
 }

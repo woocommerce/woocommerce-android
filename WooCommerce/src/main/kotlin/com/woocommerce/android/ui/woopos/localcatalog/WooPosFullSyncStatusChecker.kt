@@ -1,13 +1,10 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
-import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -17,31 +14,20 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val selectedSite: SelectedSite,
     private val networkStatus: WooPosNetworkStatus,
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val localCatalogStore: WooPosLocalCatalogStore,
     private val prefsRepo: WooPosPreferencesRepository,
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
-    private val getWooVersion: GetWooCorePluginCachedVersion,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper
 ) {
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
-        if (!wooPosLocalCatalogM1Enabled()) {
-            wooPosLogWrapper.d("Full sync check skipped: Local catalog feature not enabled")
-            return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog feature not enabled")
-        }
-
-        if (!isVariationsEndpointAvailable()) {
-            wooPosLogWrapper.d("Full sync check skipped: Variations endpoint not available")
-            return WooPosFullSyncRequirement.LocalCatalogDisabled("Variations endpoint not available")
-        }
-
         val site = selectedSite.getOrNull()
-        if (site == null) error("No site selected")
+            ?: error("No site selected")
 
-        if (!prefsRepo.isPeriodicSyncEnabledForSite(site.siteId)) {
-            wooPosLogWrapper.d("Full sync check skipped: Periodic Sync disabled for site.")
-            return WooPosFullSyncRequirement.LocalCatalogDisabled("Periodic Sync disabled for site.")
+        if (!isLocalCatalogSupported(site.siteId)) {
+            wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
+            return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
 
         if (localCatalogStore.getProductCount(site.localId()).getOrNull() == 0) {
@@ -97,17 +83,8 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         return timeSinceLastSync >= overdueThreshold
     }
 
-    private fun isVariationsEndpointAvailable(): Boolean {
-        val currentWooCoreVersion = getWooVersion() ?: return false.also {
-            wooPosLogWrapper.d("Unknown WooCommerce version - assuming variations endpoint not available.")
-        }
-
-        return currentWooCoreVersion.semverCompareTo(WC_VARIATIONS_ENDPOINT_AVAILABLE) >= 0
-    }
-
     companion object {
         private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days
-        private const val WC_VARIATIONS_ENDPOINT_AVAILABLE = "10.3.0"
     }
 }
 

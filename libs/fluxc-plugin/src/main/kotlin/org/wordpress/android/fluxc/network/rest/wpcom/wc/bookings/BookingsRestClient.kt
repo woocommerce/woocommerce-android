@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
+import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,17 +37,18 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    suspend fun updateAttendanceStatus(
+    suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,
-        attendanceStatus: String
+        payload: BookingUpdatePayload,
     ): WooPayload<BookingDto> {
         val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val body = payload.asMap
         val response = wooNetwork.executePutGsonRequest(
             site = site,
             path = endpoint,
             clazz = BookingDto::class.java,
-            body = mapOf("attendance_status" to attendanceStatus)
+            body = body,
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -121,3 +123,10 @@ class BookingsRestClient @Inject constructor(
         }
     }
 }
+
+private val BookingUpdatePayload.asMap: Map<String, Any>
+    get() = mutableMapOf<String, Any>().putIfNotNull(
+        "attendance_status" to attendanceStatus?.key,
+        "note" to note,
+        "status" to status?.key
+    )

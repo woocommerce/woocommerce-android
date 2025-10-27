@@ -2,12 +2,10 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -33,12 +31,11 @@ class WooPosFullSyncStatusCheckerTest {
     private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val selectedSite: SelectedSite = mock()
     private val networkStatus: WooPosNetworkStatus = mock()
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
-    private val getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
 
     private val siteModel = SiteModel().apply {
         id = 123
@@ -49,21 +46,18 @@ class WooPosFullSyncStatusCheckerTest {
         syncTimestampManager = syncTimestampManager,
         selectedSite = selectedSite,
         networkStatus = networkStatus,
-        wooPosLocalCatalogM1Enabled = wooPosLocalCatalogM1Enabled,
         localCatalogStore = localCatalogStore,
         prefsRepo = prefsRepo,
         checkCatalogSizeAction = checkCatalogSizeAction,
-        getWooVersion = getWooVersion,
+        isLocalCatalogSupported = isLocalCatalogSupported,
         wooPosLogWrapper = wooPosLogWrapper
     )
 
     @Before
     fun setup() = runTest {
         val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
-        whenever(wooPosLocalCatalogM1Enabled()).thenReturn(true)
-        whenever(getWooVersion()).thenReturn("10.3.0")
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(isLocalCatalogSupported(siteModel.siteId)).thenReturn(true)
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -73,10 +67,10 @@ class WooPosFullSyncStatusCheckerTest {
     }
 
     @Test
-    fun `given feature flag disabled, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
+    fun `given local catalog not supported, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
         runTest {
             // GIVEN
-            whenever(wooPosLocalCatalogM1Enabled()).thenReturn(false)
+            whenever(isLocalCatalogSupported(siteModel.siteId)).thenReturn(false)
 
             val sut = createSut()
 
@@ -100,21 +94,6 @@ class WooPosFullSyncStatusCheckerTest {
         // THEN
         // Exception is expected
     }
-
-    @Test
-    fun `given periodic sync disabled for site, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
-        runTest {
-            // GIVEN
-            whenever(prefsRepo.isPeriodicSyncEnabledForSite(any())).thenReturn(false)
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
-        }
 
     @Test
     fun `given never synced before and network connected, when checkSyncRequirement called, then should return BlockingRequired`() =
@@ -247,36 +226,6 @@ class WooPosFullSyncStatusCheckerTest {
 
             // THEN
             assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
-        }
-
-    @Test
-    fun `given variations endpoint not available, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
-        runTest {
-            // GIVEN
-            whenever(getWooVersion()).thenReturn("10.2.0") // Version below 10.3.0
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
-        }
-
-    @Test
-    fun `given woo version null, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
-        runTest {
-            // GIVEN
-            whenever(getWooVersion()).thenReturn(null)
-
-            val sut = createSut()
-
-            // WHEN
-            val result = sut.checkSyncRequirement()
-
-            // THEN
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
         }
 
     @Test
