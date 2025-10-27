@@ -35,13 +35,13 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
  *  bug https://issuetracker.google.com/issues/411868840 the insets are re-applied when the keyboard is shown.
  */
 @Composable
-fun OrderCustomerListScreen(
+fun CustomerListSelectionScreen(
     viewModel: CustomerListSelectionViewModel,
     handleInsets: Boolean
 ) {
     val state by viewModel.viewState.observeAsState()
     state?.let {
-        OrderCustomerListScreen(
+        CustomerListSelectionScreen(
             state = it,
             handleInsets = handleInsets,
             onNavigateBack = viewModel::onNavigateBack,
@@ -55,7 +55,7 @@ fun OrderCustomerListScreen(
 }
 
 @Composable
-fun OrderCustomerListScreen(
+private fun CustomerListSelectionScreen(
     state: CustomerListViewState,
     handleInsets: Boolean,
     onNavigateBack: () -> Unit,
@@ -111,7 +111,7 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
 @Composable
 fun OrderCustomerListScreenPreview() {
     WooThemeWithBackground {
-        OrderCustomerListScreen(
+        CustomerListSelectionScreen(
             state = CustomerListViewState(
                 searchHint = R.string.order_creation_customer_search_hint,
                 searchQuery = "",
