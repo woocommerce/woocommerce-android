@@ -20,7 +20,8 @@ fun BookingCustomerFilterPage(
 
     CustomerListSelectionScreen(
         viewModel = viewModel,
-        handleInsets = false
+        handleInsets = false,
+        showToolbar = false
     )
 
     HandleEvents(viewModel.event, onCustomerSelected)

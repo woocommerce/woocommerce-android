@@ -37,13 +37,15 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 @Composable
 fun CustomerListSelectionScreen(
     viewModel: CustomerListSelectionViewModel,
-    handleInsets: Boolean
+    handleInsets: Boolean,
+    showToolbar: Boolean = true
 ) {
     val state by viewModel.viewState.observeAsState()
     state?.let {
         CustomerListSelectionScreen(
             state = it,
             handleInsets = handleInsets,
+            showToolbar = showToolbar,
             onNavigateBack = viewModel::onNavigateBack,
             onAddCustomerClicked = viewModel::onAddCustomerClicked,
             onCustomerSelected = viewModel::onCustomerSelected,
@@ -58,6 +60,7 @@ fun CustomerListSelectionScreen(
 private fun CustomerListSelectionScreen(
     state: CustomerListViewState,
     handleInsets: Boolean,
+    showToolbar: Boolean,
     onNavigateBack: () -> Unit,
     onAddCustomerClicked: () -> Unit,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -68,12 +71,14 @@ private fun CustomerListSelectionScreen(
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
-                title = stringResource(id = R.string.order_creation_add_customer),
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationButtonClick = onNavigateBack,
-                windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
-            )
+            if (showToolbar) {
+                Toolbar(
+                    title = stringResource(id = R.string.order_creation_add_customer),
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                    onNavigationButtonClick = onNavigateBack,
+                    windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
+                )
+            }
         },
         floatingActionButton = {
             if (state.showFab) CustomerListAddCustomerButton(onAddCustomerClicked)
@@ -171,6 +176,7 @@ fun OrderCustomerListScreenPreview() {
                 ),
             ),
             handleInsets = false,
+            showToolbar = true,
             onNavigateBack = {},
             onAddCustomerClicked = {},
             onCustomerSelected = {},
