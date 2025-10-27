@@ -4,10 +4,8 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -26,20 +24,13 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
     private var context: Context = mock()
     private var workerParams: WorkerParameters = mock()
-    private var accountRepository: com.woocommerce.android.ui.login.AccountRepository = mock()
     private var selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
-    private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var wooPosTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
-    private var getWooVersion: GetWooCorePluginCachedVersion = mock()
-    private val variationsEndpointChecker: WooPosIsLocalCatalogVariationsEndpointAvailable =
-        WooPosIsLocalCatalogVariationsEndpointAvailable(
-            getWooVersion = getWooVersion,
-            logger = logger
-        )
+    private var isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -74,13 +65,10 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             url = "https://test.com"
         }
 
-        whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(getWooVersion()).thenReturn("10.3.0") // Default to minimum supported version
+        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(true)
 
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
-        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(successResponse)
@@ -92,15 +80,13 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         return WooPosLocalCatalogSyncWorker(
             appContext = context,
             workerParams = workerParams,
-            accountRepository = accountRepository,
             selectedSite = selectedSite,
-            featureFlagM1Enabled = featureFlagM1Enabled,
             preferencesRepository = preferencesRepository,
             syncRepository = syncRepository,
             logger = logger,
             timeProvider = mockTimeProvider,
             wooPosTabShouldBeVisible = wooPosTabShouldBeVisible,
-            isVariationsEndpointAvailable = variationsEndpointChecker,
+            isLocalCatalogSupported = isLocalCatalogSupported,
         )
     }
 
@@ -119,23 +105,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when feature flag disabled, then returns failure`() = testBlocking {
+    fun `given local catalog not supported, when sync is attempted, then returns failure`() = testBlocking {
         // GIVEN
-        whenever(featureFlagM1Enabled.invoke()).thenReturn(false)
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-    }
-
-    @Test
-    fun `when user not logged in, then returns failure`() = testBlocking {
-        // GIVEN
-        whenever(accountRepository.isUserLoggedIn()).thenReturn(false)
+        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(false)
         val worker = createWorker()
 
         // WHEN
@@ -150,20 +122,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     fun `when no site selected, then returns failure`() = testBlocking {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-    }
-
-    @Test
-    fun `when periodic sync disabled, then returns failure`() = testBlocking {
-        // GIVEN
-        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)).thenReturn(false)
         val worker = createWorker()
 
         // WHEN
@@ -304,54 +262,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     fun `given POS tab availability check fails, when sync is attempted, then continues to attempt sync`() = testBlocking {
         // GIVEN
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.failure(Exception("Failed to check POS tab")))
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
-    }
-
-    @Test
-    fun `given WooCommerce version below 10 3 0, when sync is attempted, then returns failure without syncing`() = testBlocking {
-        // GIVEN
-        whenever(getWooVersion()).thenReturn("10.2.9")
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `given WooCommerce version is null, when sync is attempted, then returns failure without syncing`() = testBlocking {
-        // GIVEN
-        whenever(getWooVersion()).thenReturn(null)
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `given WooCommerce version is 10 3 0 or higher, when sync is attempted, then sync proceeds normally`() = testBlocking {
-        // GIVEN
-        whenever(getWooVersion()).thenReturn("10.4.0")
 
         val worker = createWorker()
 
