@@ -39,8 +39,8 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private fun startPeriodicSync(owner: LifecycleOwner) {
         periodicSyncJob = owner.lifecycleScope.launch {
             while (isActive) {
-                delay(SYNC_INTERVAL)
                 incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+                delay(SYNC_INTERVAL)
             }
         }
     }
