@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -79,20 +80,23 @@ fun BookingAppointmentDetails(
             )
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_price,
-                value = model.price
+                value = model.price,
+                withDivider = model.cancelButtonVisible,
             )
-            WCOutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = MaterialTheme.colorScheme.onSurface
-                ),
-                onClick = onCancelBooking,
-                enabled = model.cancelButtonEnabled,
-                text = stringResource(R.string.booking_details_cancel_booking_button),
-                loading = model.cancelInProgressShown,
-            )
+            AnimatedVisibility(model.cancelButtonVisible) {
+                WCOutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    onClick = onCancelBooking,
+                    enabled = model.cancelButtonEnabled,
+                    text = stringResource(R.string.booking_details_cancel_booking_button),
+                    loading = model.cancelInProgressShown,
+                )
+            }
             HorizontalDivider(thickness = 0.5.dp)
         }
     }
@@ -101,6 +105,7 @@ fun BookingAppointmentDetails(
 @Composable
 private fun AppointmentDetailsRow(
     @StringRes label: Int,
+    withDivider: Boolean = true,
     value: @Composable () -> Unit
 ) {
     Column {
@@ -115,16 +120,22 @@ private fun AppointmentDetailsRow(
                 value()
             }
         }
-        HorizontalDivider(
-            modifier = Modifier.padding(start = 16.dp),
-            thickness = 0.5.dp
-        )
+        if (withDivider) {
+            HorizontalDivider(
+                modifier = Modifier.padding(start = 16.dp),
+                thickness = 0.5.dp
+            )
+        }
     }
 }
 
 @Composable
-private fun AppointmentDetailsRow(@StringRes label: Int, value: String) {
-    AppointmentDetailsRow(label = label) {
+private fun AppointmentDetailsRow(
+    @StringRes label: Int,
+    withDivider: Boolean = true,
+    value: String,
+) {
+    AppointmentDetailsRow(label = label, withDivider = withDivider) {
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium,
@@ -142,10 +153,11 @@ data class BookingAppointmentDetailsModel(
     val location: String,
     val duration: String,
     val price: String,
+    val cancelButtonVisible: Boolean,
     val cancelStatus: CancelStatus,
 ) {
-    val cancelButtonEnabled: Boolean = cancelStatus != CancelStatus.InProgress
-    val cancelInProgressShown: Boolean = cancelStatus == CancelStatus.InProgress
+    val cancelButtonEnabled: Boolean = cancelButtonVisible && cancelStatus != CancelStatus.InProgress
+    val cancelInProgressShown: Boolean = cancelButtonVisible && cancelStatus == CancelStatus.InProgress
 }
 
 sealed interface BookingStaffMemberStatus {
@@ -166,6 +178,28 @@ private fun BookingAppointmentDetailsPreview() {
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
                 price = "$55.00",
+                cancelButtonVisible = true,
+                cancelStatus = CancelStatus.Idle,
+            ),
+            onCancelBooking = {},
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingAppointmentDetailsCancelHiddenPreview() {
+    WooThemeWithBackground {
+        BookingAppointmentDetails(
+            model = BookingAppointmentDetailsModel(
+                date = "05/07/2025, 11:00 AM",
+                time = "11:00 am - 12:00 pm",
+                staff = BookingStaffMemberStatus.Loading,
+                location = "238 Willow Creek Drive, Montgomery AL 36109",
+                duration = "60 min",
+                price = "$55.00",
+                cancelButtonVisible = false,
                 cancelStatus = CancelStatus.Idle,
             ),
             onCancelBooking = {},

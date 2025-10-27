@@ -4252,6 +4252,7 @@
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
     <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
@@ -4296,6 +4297,8 @@
     <string name="booking_note_screen_title">Booking note</string>
     <string name="booking_note_screen_done">DONE</string>
     <string name="booking_note_screen_update_error">Error saving booking note</string>
+    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -68,7 +69,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -101,7 +102,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -130,7 +131,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -153,7 +154,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.failure(Exception())
                 )
             )
@@ -176,8 +177,8 @@ class WooPosProductsViewModelTest {
         runTest {
             // GIVEN
             whenever(productsDataSource.refreshProducts()).thenReturn(
-                flowOf(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                Result.success(
+                    ProductsResult.Remote(
                         Result.success(
                             listOf(
                                 generateWooPosProduct(
@@ -273,7 +274,7 @@ class WooPosProductsViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            verify(productsDataSource).fetchFirstPage(forceRefresh = false)
+            verify(productsDataSource, times(2)).fetchFirstPage(forceRefresh = false)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -309,8 +310,8 @@ class WooPosProductsViewModelTest {
         // GIVEN
         val viewModel = createViewModel()
         whenever(productsDataSource.refreshProducts()).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+            Result.success(
+                ProductsResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -330,8 +331,8 @@ class WooPosProductsViewModelTest {
     fun `when pull to refresh, then should track event`() = runTest {
         // GIVEN
         whenever(productsDataSource.refreshProducts()).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+            Result.success(
+                ProductsResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -375,7 +376,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -412,7 +413,7 @@ class WooPosProductsViewModelTest {
 
             val productsFlow = flow {
                 emit(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    ProductsResult.Remote(
                         Result.success(
                             listOf(
                                 generateWooPosProduct(
@@ -445,7 +446,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
-        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        val productsFlow = MutableSharedFlow<ProductsResult>()
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(productsFlow)
 
         val viewModel = createViewModel()
@@ -455,7 +456,7 @@ class WooPosProductsViewModelTest {
 
         // Then
         productsFlow.emit(
-            WooPosProductsDataSource.ProductsResult.Remote(
+            ProductsResult.Remote(
                 Result.failure(Exception("Test error"))
             )
         )
@@ -520,7 +521,7 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked)
 
         // THEN
-        verify(productsDataSource, times(2)).fetchFirstPage(forceRefresh = false)
+        verify(productsDataSource, times(3)).fetchFirstPage(forceRefresh = false)
     }
 
     @Test

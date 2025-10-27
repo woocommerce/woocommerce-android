@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -224,17 +225,19 @@ class WooPosProductsDataSourceTest {
         )
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshProducts()).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+            Result.success(
+                ProductsResult.Remote(Result.success(emptyList()))
+            )
         )
         val sut = createSut()
         sut.prepopulateCache().toList()
 
         // WHEN
-        val result = sut.refreshProducts().toList()
+        val result = sut.refreshProducts()
 
         // THEN
         verify(remoteDataSource).refreshProducts()
-        assertThat(result).isNotEmpty()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
@@ -244,17 +247,19 @@ class WooPosProductsDataSourceTest {
             WooPosFullSyncRequirement.NotRequired
         )
         whenever(localDbDataSource.refreshProducts()).thenReturn(
-            flowOf(ProductsResult.Remote(Result.success(emptyList())))
+            Result.success(
+                com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success(0, 0, 0)
+            )
         )
         val sut = createSut()
         sut.prepopulateCache().toList()
 
         // WHEN
-        val result = sut.refreshProducts().toList()
+        val result = sut.refreshProducts()
 
         // THEN
         verify(localDbDataSource).refreshProducts()
-        assertThat(result).isNotEmpty()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
@@ -265,17 +270,19 @@ class WooPosProductsDataSourceTest {
         )
         whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
         whenever(remoteDataSource.refreshVariations(123L)).thenReturn(
-            flowOf(WooPosProductsDataSource.VariationsResult.Remote(Result.success(emptyList())))
+            Result.success(
+                VariationsResult.Remote(Result.success(emptyList()))
+            )
         )
         val sut = createSut()
         sut.prepopulateCache().toList()
 
         // WHEN
-        val result = sut.refreshVariations(123L).toList()
+        val result = sut.refreshVariations(123L)
 
         // THEN
         verify(remoteDataSource).refreshVariations(123L)
-        assertThat(result).isNotEmpty()
+        assertThat(result.isSuccess).isTrue()
     }
 
     @Test
@@ -285,17 +292,19 @@ class WooPosProductsDataSourceTest {
             WooPosFullSyncRequirement.NotRequired
         )
         whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
-            flowOf(WooPosProductsDataSource.VariationsResult.Remote(Result.success(emptyList())))
+            Result.success(
+                com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success(0, 0, 0)
+            )
         )
         val sut = createSut()
         sut.prepopulateCache().toList()
 
         // WHEN
-        val result = sut.refreshVariations(123L).toList()
+        val result = sut.refreshVariations(123L)
 
         // THEN
         verify(localDbDataSource).refreshVariations(123L)
-        assertThat(result).isNotEmpty()
+        assertThat(result.isSuccess).isTrue()
     }
 
     private fun createSut() = WooPosProductsDataSource(

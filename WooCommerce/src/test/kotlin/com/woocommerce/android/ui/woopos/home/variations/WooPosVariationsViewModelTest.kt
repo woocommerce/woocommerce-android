@@ -15,9 +15,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.VariationsResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsUIEvents
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsViewModel
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -220,7 +220,9 @@ class WooPosVariationsViewModelTest {
             flowOf(VariationsResult.Remote(Result.success(emptyList())))
         )
         whenever(variationsDataSource.refreshVariations(any())).thenReturn(
-            flowOf(VariationsResult.Remote(Result.success(variations)))
+            Result.success(
+                VariationsResult.Remote(Result.success(variations))
+            )
         )
 
         // WHEN
@@ -237,7 +239,9 @@ class WooPosVariationsViewModelTest {
             flowOf(VariationsResult.Remote(Result.success(emptyList())))
         )
         whenever(variationsDataSource.refreshVariations(any())).thenReturn(
-            flowOf(VariationsResult.Remote(Result.success(emptyList())))
+            Result.success(
+                VariationsResult.Remote(Result.success(emptyList()))
+            )
         )
 
         // WHEN

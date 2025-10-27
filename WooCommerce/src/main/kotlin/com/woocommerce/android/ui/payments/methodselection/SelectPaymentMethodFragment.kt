@@ -126,6 +126,7 @@ class SelectPaymentMethodFragment : BaseFragment(R.layout.fragment_select_paymen
         with(binding.learnMoreIppPaymentMethodsTv) {
             learnMore.setOnClickListener { state.learnMoreIpp.onClick.invoke() }
             UiHelpers.setTextOrHide(binding.learnMoreIppPaymentMethodsTv.learnMore, state.learnMoreIpp.label)
+            learnMore.isVisible = state.learnMoreIpp.isVisible
         }
     }
 

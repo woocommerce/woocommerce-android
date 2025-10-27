@@ -255,7 +255,7 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given processing order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
+    fun `given on-hold order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
         // GIVEN
         val booking = sampleBooking().let { original ->
             val paymentInfo = BookingPaymentInfo(
@@ -266,7 +266,7 @@ class BookingMapperTest : BaseUnitTest() {
                 total = BigDecimal("55.00"),
                 totalTax = BigDecimal("0.00")
             )
-            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "processing")
+            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "on-hold")
             original.copy(order = orderWithPayment)
         }
 
@@ -275,6 +275,48 @@ class BookingMapperTest : BaseUnitTest() {
 
         // THEN
         assertThat(model.status).isEqualTo(BookingStatus.PayOnSite)
+    }
+
+    @Test
+    fun `given cancellable statuses, when mapped to appointment details, then cancel button visible`() {
+        whenever(currencyFormatter.formatCurrency(any<String>(), any(), eq(true))).thenAnswer {
+            val amount = it.getArgument<String>(0)
+            val currency = it.getArgument<String>(1)
+            "$currency$amount"
+        }
+        val statuses = listOf(
+            BookingEntity.Status.Confirmed,
+            BookingEntity.Status.Paid,
+            BookingEntity.Status.Unpaid,
+            BookingEntity.Status.PendingConfirmation,
+            BookingEntity.Status.Unknown("some-new-status")
+        )
+        statuses.forEach { status ->
+            val booking = sampleBooking(status = status, cost = "55.00", currency = "USD")
+            val model =
+                mapper.run { booking.toAppointmentDetailsModel(BookingStaffMemberStatus.Loading, CancelStatus.Idle) }
+            assertThat(model.cancelButtonVisible).describedAs("status $status").isTrue()
+        }
+    }
+
+    @Test
+    fun `given non-cancellable statuses, when mapped to appointment details, then cancel button hidden`() {
+        whenever(currencyFormatter.formatCurrency(any<String>(), any(), eq(true))).thenAnswer {
+            val amount = it.getArgument<String>(0)
+            val currency = it.getArgument<String>(1)
+            "$currency$amount"
+        }
+        val statuses = listOf(
+            BookingEntity.Status.Cancelled,
+            BookingEntity.Status.InCart,
+            BookingEntity.Status.Complete
+        )
+        statuses.forEach { status ->
+            val booking = sampleBooking(status = status, cost = "55.00", currency = "USD")
+            val model =
+                mapper.run { booking.toAppointmentDetailsModel(BookingStaffMemberStatus.Loading, CancelStatus.Idle) }
+            assertThat(model.cancelButtonVisible).describedAs("status $status").isFalse()
+        }
     }
 
     private fun sampleBooking(
