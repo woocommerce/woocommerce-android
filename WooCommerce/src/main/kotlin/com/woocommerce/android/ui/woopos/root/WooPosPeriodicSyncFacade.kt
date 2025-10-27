@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.root
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -19,7 +21,9 @@ import kotlin.time.Duration.Companion.hours
  */
 @Singleton
 class WooPosPeriodicSyncFacade @Inject constructor(
-    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync
+    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
+    private val selectedSite: SelectedSite,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
 ) : DefaultLifecycleObserver {
 
     private var periodicSyncJob: Job? = null
@@ -38,6 +42,10 @@ class WooPosPeriodicSyncFacade @Inject constructor(
 
     private fun startPeriodicSync(owner: LifecycleOwner) {
         periodicSyncJob = owner.lifecycleScope.launch {
+            val site = selectedSite.getOrNull()
+                ?: error("No site selected")
+            if (!isLocalCatalogSupported(site.siteId)) return@launch
+
             while (isActive) {
                 incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
                 delay(SYNC_INTERVAL)
