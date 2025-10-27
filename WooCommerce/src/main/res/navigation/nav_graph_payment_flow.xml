@@ -1,6 +1,5 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_payment_flow"
     app:startDestination="@id/selectPaymentMethodFragment">
 
@@ -414,8 +413,7 @@
     <fragment
         android:id="@+id/AuthenticatedWebViewFragment"
         android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
-        android:label="AuthenticatedWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
+        android:label="AuthenticatedWebViewFragment">
         <argument
             android:name="urlToLoad"
             app:argType="string" />

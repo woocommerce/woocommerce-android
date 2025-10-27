@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.payments.taptopay
 import com.woocommerce.android.cardreader.config.CardReaderConfigForCanada
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUnsupportedCountry
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.CardReaderCountryConfigProvider
 import com.woocommerce.android.util.DeviceFeatures
@@ -30,15 +32,18 @@ class TapToPayAvailabilityStatusTest {
     private val wooStore: WooCommerceStore = mock {
         on { getStoreCountryCode(siteModel) }.thenReturn("US")
     }
-
     private val deviceFeatures = mock<DeviceFeatures>()
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
+        on { isFeatureUnsupported(CIABAffectedFeature.WooPayments) }.thenReturn(false)
+    }
 
     private val availabilityStatus = TapToPayAvailabilityStatus(
-        selectedSite,
-        deviceFeatures,
-        systemVersionUtilsWrapper,
-        cardReaderCountryConfigProvider,
-        wooStore,
+        selectedSite = selectedSite,
+        deviceFeatures = deviceFeatures,
+        systemVersionUtilsWrapper = systemVersionUtilsWrapper,
+        cardReaderCountryConfigProvider = cardReaderCountryConfigProvider,
+        wooStore = wooStore,
+        ciabSiteGateKeeper = ciabSiteGateKeeper
     )
 
     @Test
@@ -95,5 +100,17 @@ class TapToPayAvailabilityStatusTest {
         val result = availabilityStatus.invoke()
 
         assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Available)
+    }
+
+    @Test
+    fun `given CIAB blocks WooPayments, when invoking, then tpp hidden returned`() {
+        whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
+        whenever(deviceFeatures.isGooglePlayServicesAvailable()).thenReturn(true)
+        whenever(systemVersionUtilsWrapper.isAtLeastR()).thenReturn(true)
+        whenever(ciabSiteGateKeeper.isFeatureUnsupported(CIABAffectedFeature.WooPayments)).thenReturn(true)
+
+        val result = availabilityStatus.invoke()
+
+        assertThat(result).isEqualTo(TapToPayAvailabilityStatus.Result.Hidden)
     }
 }
