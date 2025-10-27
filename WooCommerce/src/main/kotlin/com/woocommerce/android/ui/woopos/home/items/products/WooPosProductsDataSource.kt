@@ -241,7 +241,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     override fun canLoadMoreVariations(numOfVariations: Int): Boolean = false
 
     override suspend fun refreshProducts(): Flow<WooPosProductsDataSource.ProductsResult> = flow {
-        if (shouldUseIncrementalSync()) {
+        if (isLocalCatalogEnabled()) {
             selectedSite.getOrNull()?.let { site ->
                 val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
                 when (syncResult) {
@@ -269,7 +269,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     override suspend fun refreshVariations(productId: Long): Flow<VariationsResult> = flow {
-        if (shouldUseIncrementalSync()) {
+        if (isLocalCatalogEnabled()) {
             selectedSite.getOrNull()?.let { site ->
                 val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
                 when (syncResult) {
@@ -294,7 +294,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
         }
     }.flowOn(Dispatchers.IO)
 
-    private suspend fun shouldUseIncrementalSync(): Boolean {
+    private suspend fun isLocalCatalogEnabled(): Boolean {
         val site = selectedSite.getOrNull()
         return wooPosLocalCatalogM1Enabled() &&
             isVariationsEndpointAvailable() &&
