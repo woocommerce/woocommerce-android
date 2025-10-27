@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.details
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -145,12 +146,14 @@ private fun BookingDetailsContent(
         model = booking.bookingCustomerDetails,
         modifier = Modifier.fillMaxWidth()
     )
-    BookingAttendanceSection(
-        status = booking.bookingSummary.attendanceStatus,
-        attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
-        onClick = onAttendanceStatusClicked,
-        modifier = Modifier.fillMaxWidth()
-    )
+    AnimatedVisibility(booking.isAttendanceStatusEditable) {
+        BookingAttendanceSection(
+            status = booking.bookingSummary.attendanceStatus,
+            attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
+            onClick = onAttendanceStatusClicked,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
@@ -245,6 +248,7 @@ private fun BookingDetailsPreview() {
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
                         price = "$55.00",
+                        cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,
                     ),
                     bookingCustomerDetails = BookingCustomerDetailsModel(
@@ -263,7 +267,8 @@ private fun BookingDetailsPreview() {
                         discount = "-",
                         total = "$59.50"
                     ),
-                    note = ""
+                    note = "",
+                    isAttendanceStatusEditable = true
                 ),
             ),
             onBack = {},
