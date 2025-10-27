@@ -192,6 +192,5 @@ class JetpackBenefitsViewModel @Inject constructor(
         val jetpackStatus: JetpackStatus
     ) : Event()
 
-    data class OpenWpAdminJetpackActivation(val activationUrl: String) : Event()
     data class OpenJetpackEligibilityError(val username: String, val role: String) : Event()
 }

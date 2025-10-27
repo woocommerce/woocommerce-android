@@ -252,6 +252,110 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         assertThat(updated.dialogState).isNull()
     }
 
+    @Test
+    fun `given cancel dialog shown, when confirm, then repository cancelBooking called and cancel status shows progress then idle`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.cancelBooking(any())).doSuspendableAnswer {
+            delay(100)
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+
+        // When
+        stateWithDialog.dialogState?.positiveButton?.onClick()
+
+        // Then: immediately after click (operation in progress)
+        val during = viewModel.state.getOrAwaitValue()
+        assertThat(during.bookingUiState?.bookingsAppointmentDetails?.cancelInProgressShown).isTrue()
+        verify(bookingsRepository, times(1)).cancelBooking(bookingId)
+
+        // And after operation completes, status returns to idle
+        advanceUntilIdle()
+        val after = viewModel.state.getOrAwaitValue()
+        assertThat(after.bookingUiState?.bookingsAppointmentDetails?.cancelInProgressShown).isFalse()
+    }
+
+    @Test
+    fun `given cancel fails, when confirm, then show error snackbar and status returns idle`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.cancelBooking(any())).thenReturn(Result.failure(Exception("Cancel failed")))
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+        state.onCancelBooking()
+        val stateWithDialog = viewModel.state.getOrAwaitValue()
+
+        // When
+        stateWithDialog.dialogState?.positiveButton?.onClick()
+
+        // Then
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
+        advanceUntilIdle()
+        val after = viewModel.state.getOrAwaitValue()
+        assertThat(after.bookingUiState?.bookingsAppointmentDetails?.cancelInProgressShown).isFalse()
+    }
+
+    @Test
+    fun `when onMarkAsPaid invoked, then repository markAsPaid called and payment status shows progress then idle`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.markAsPaid(any())).doSuspendableAnswer {
+            delay(100)
+            Result.success(Unit)
+        }
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onMarkAsPaid()
+
+        // Then: immediately after click (operation in progress)
+        val during = viewModel.state.getOrAwaitValue()
+        assertThat(during.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.InProgress)
+        verify(bookingsRepository, times(1)).markAsPaid(bookingId)
+
+        // And after operation completes, status returns to idle
+        advanceUntilIdle()
+        val after = viewModel.state.getOrAwaitValue()
+        assertThat(after.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
+    }
+
+    @Test
+    fun `when offline and onMarkAsPaid invoked, then offline snackbar shown and repo not called`() = testBlocking {
+        // Given
+        whenever(networkStatus.isConnected()).thenReturn(false)
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onMarkAsPaid()
+
+        // Then
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+        verify(bookingsRepository, times(0)).markAsPaid(any())
+    }
+
+    @Test
+    fun `given markAsPaid fails, when called, then show error snackbar and status returns idle`() = testBlocking {
+        // Given
+        whenever(bookingsRepository.markAsPaid(any())).thenReturn(Result.failure(Exception("Mark as paid failed")))
+        val viewModel = createViewModel()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // When
+        state.onMarkAsPaid()
+
+        // Then
+        val event = viewModel.event.getOrAwaitValue()
+        assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
+        advanceUntilIdle()
+        val after = viewModel.state.getOrAwaitValue()
+        assertThat(after.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
+    }
+
     private fun createViewModel(
         savedState: SavedStateHandle = savedStateHandle,
     ): BookingDetailsViewModel {
