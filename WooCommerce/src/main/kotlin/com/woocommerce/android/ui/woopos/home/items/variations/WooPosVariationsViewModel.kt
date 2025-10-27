@@ -239,7 +239,6 @@ class WooPosVariationsViewModel @Inject constructor(
             dataSource.refreshVariations(productId).collect { result ->
                 when (result) {
                     is WooPosProductsDataSource.VariationsResult.Cached -> {
-                        // Handle cached variations
                         if (result.data.isNotEmpty()) {
                             _viewState.value = createContentState(result.data, productId)
                         }
