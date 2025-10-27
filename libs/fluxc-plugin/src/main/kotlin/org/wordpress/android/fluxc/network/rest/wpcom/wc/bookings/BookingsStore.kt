@@ -164,18 +164,17 @@ class BookingsStore @Inject internal constructor(
                 response.result != null -> {
                     val bookingDto = response.result
 
-                    val updatedBookingEntityResult = if (refreshOrder) {
+                    val updatedBookingEntity = if (refreshOrder) {
                         getBookingEntityWithRefreshedOrder(site, bookingDto)
+                            ?: getBookingEntityWithLocalOrder(site, bookingDto) // Fallback to local
                     } else {
                         getBookingEntityWithLocalOrder(site, bookingDto)
                     }
-                    if (updatedBookingEntityResult.isError) {
-                        return@withDefaultContext WooResult(updatedBookingEntityResult.error)
+                    if (updatedBookingEntity == null) {
+                        return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                     } else {
-                        updatedBookingEntityResult.model?.let {
-                            bookingsDao.insertOrReplace(it)
-                        }
-                        return@withDefaultContext WooResult(updatedBookingEntityResult.model)
+                        bookingsDao.insertOrReplace(updatedBookingEntity)
+                        return@withDefaultContext WooResult(updatedBookingEntity)
                     }
                 }
 
@@ -203,10 +202,10 @@ class BookingsStore @Inject internal constructor(
     private suspend fun getBookingEntityWithRefreshedOrder(
         site: SiteModel,
         bookingDto: BookingDto
-    ): WooResult<BookingEntity> {
+    ): BookingEntity? {
         val orderResult = orderStore.fetchSingleOrderSync(site, bookingDto.orderId)
         if (orderResult.isError) {
-            return WooResult(orderResult.error)
+            return null
         } else {
             val entity = with(bookingDtoMapper) {
                 bookingDto.toEntity(
@@ -214,20 +213,20 @@ class BookingsStore @Inject internal constructor(
                     orderEntity = orderResult.model,
                 )
             }
-            return WooResult(entity)
+            return entity
         }
     }
 
     private suspend fun getBookingEntityWithLocalOrder(
         site: SiteModel,
         bookingDto: BookingDto
-    ): WooResult<BookingEntity> {
+    ): BookingEntity? {
         val storedBooking = bookingsDao.getBooking(
             localSiteId = site.localId(),
             bookingId = bookingDto.id,
         )
         if (storedBooking == null) {
-            return WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            return null
         }
         val entity = with(bookingDtoMapper) {
             bookingDto.toEntity(
@@ -238,6 +237,6 @@ class BookingsStore @Inject internal constructor(
                 order = storedBooking.order,
             )
         }
-        return WooResult(entity)
+        return entity
     }
 }

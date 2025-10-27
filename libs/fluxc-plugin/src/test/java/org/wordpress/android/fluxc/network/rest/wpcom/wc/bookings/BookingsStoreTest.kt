@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.persistence.dao.BookingsDao
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -58,7 +59,7 @@ class BookingsStoreTest {
         val storedBooking = sampleBookingEntity(order = BookingOrderInfo(productInfo = null))
         whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
         whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(note = "n")))
-            .thenReturn(org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload(dto))
+            .thenReturn(WooPayload(dto))
         whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
 
         // when
@@ -85,7 +86,7 @@ class BookingsStoreTest {
         val fetchedOrder = OrderEntity(orderId = dto.orderId, localSiteId = TEST_LOCAL_SITE_ID)
         whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
         whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
-            .thenReturn(org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload(dto))
+            .thenReturn(WooPayload(dto))
         whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
 
         // when
@@ -101,6 +102,7 @@ class BookingsStoreTest {
         val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
         assertThat(result.model).isEqualTo(expected)
         verify(bookingsDao).insertOrReplace(expected)
+        verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
     }
 
     @Test
@@ -109,7 +111,7 @@ class BookingsStoreTest {
         val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
         val error = WooError(GENERIC_ERROR, UNKNOWN)
         whenever(bookingsRestClient.updateBooking(site, TEST_BOOKING_ID, BookingUpdatePayload(note = "n")))
-            .thenReturn(org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload(error))
+            .thenReturn(WooPayload(error))
 
         // when
         val result = sut.updateBooking(
@@ -125,38 +127,47 @@ class BookingsStoreTest {
     }
 
     @Test
-    fun `given order refresh fails, when updateBooking with refreshOrder true, then returns error and does not insert`(): Unit = runBlocking {
-        // given
-        val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
-        val dto = sampleBookingDto()
-        whenever(
-            bookingsRestClient.updateBooking(
-                site,
-                dto.id,
-                BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn)
+    fun `given order refresh fails, when updateBooking with refreshOrder true, then fallbacks to local entity and inserts it`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto()
+            val storedBooking = sampleBookingEntity(
+                order = BookingOrderInfo(
+                    productInfo = null,
+                    status = "paid",
+                )
             )
-        )
-            .thenReturn(org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload(dto))
+            whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
+            whenever(
+                bookingsRestClient.updateBooking(
+                    site,
+                    dto.id,
+                    BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn)
+                )
+            ).thenReturn(WooPayload(dto))
 
-        whenever(
-            orderStore.fetchSingleOrderSync(
-                site,
-                dto.orderId
+            whenever(
+                orderStore.fetchSingleOrderSync(
+                    site,
+                    dto.orderId
+                )
+            ).thenReturn(WooResult(error = WooError(GENERIC_ERROR, UNKNOWN)))
+
+            // when
+            val result = sut.updateBooking(
+                site = site,
+                bookingId = dto.id,
+                bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn),
+                refreshOrder = true
             )
-        ).thenReturn(WooResult(error = WooError(GENERIC_ERROR, UNKNOWN)))
 
-        // when
-        val result = sut.updateBooking(
-            site = site,
-            bookingId = dto.id,
-            bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn),
-            refreshOrder = true
-        )
-
-        // then
-        assertThat(result.isError).isTrue()
-        verify(bookingsDao, never()).insertOrReplace(any<BookingEntity>())
-    }
+            // then
+            assertThat(result.isError).isFalse
+            verify(bookingsDao).getBooking(TEST_LOCAL_SITE_ID, dto.id)
+            // The store preserves the stored order on the mapped entity
+            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+        }
 
     private fun sampleBookingDto(): BookingDto = BookingDto(
         id = TEST_BOOKING_ID,
