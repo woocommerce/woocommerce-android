@@ -277,8 +277,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = 1,
-                pageSize = 1,
-                includeStatus = null
+                pageSize = 1
             )
 
             when {
@@ -314,7 +313,6 @@ class WooPosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-        includeStatus: List<CoreProductStatus>? = null,
     ): Result<WooPosVariationsFetchResult> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
             require(page > 0) { "Page number must be 1 or greater" }
@@ -324,8 +322,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = page,
-                pageSize = validPageSize,
-                includeStatus = includeStatus
+                pageSize = validPageSize
             )
 
             val serverDate = headersParser.getServerDate(response)

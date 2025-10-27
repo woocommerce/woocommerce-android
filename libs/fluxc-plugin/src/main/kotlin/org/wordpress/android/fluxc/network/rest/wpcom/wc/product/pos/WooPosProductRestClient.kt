@@ -66,7 +66,6 @@ class WooPosProductRestClient @Inject constructor(
         modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
-        includeStatus: List<CoreProductStatus>? = null,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
         val params = mutableMapOf(
@@ -76,9 +75,6 @@ class WooPosProductRestClient @Inject constructor(
             ).also {
             if (modifiedAfter.isNullOrBlank().not()) {
                 it["modified_after"] = modifiedAfter
-            }
-            includeStatus?.let { statuses ->
-                it["include_status"] = statusListToString(statuses)
             }
         }
 
