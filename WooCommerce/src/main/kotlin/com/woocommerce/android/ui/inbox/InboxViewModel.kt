@@ -17,6 +17,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_IS_LOADI
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_DISMISS
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_DISMISS_ALL
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_INBOX_NOTE_ACTION_OPEN
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -151,7 +152,12 @@ class InboxViewModel @Inject constructor(
                 viewModelScope.launch {
                     inboxRepository.markInboxNoteAsActioned(clickedNote.id, actionId)
                 }
-                triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
+                triggerEvent(
+                    Event.LaunchUrlInAuthenticatedWebView(
+                        url = it.url,
+                        screenTitle = UiString.UiStringText(clickedNote.title)
+                    )
+                )
             }
         }
     }

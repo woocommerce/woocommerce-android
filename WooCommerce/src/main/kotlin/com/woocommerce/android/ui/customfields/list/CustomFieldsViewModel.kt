@@ -228,7 +228,7 @@ class CustomFieldsViewModel @Inject constructor(
             MetaDataParentItemType.PRODUCT -> PRODUCTS_HELP_DOCUMENT
             MetaDataParentItemType.ORDER -> ORDERS_HELP_DOCUMENT
         }
-        triggerEvent(MultiLiveEvent.Event.OpenUrl(url))
+        triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(url))
     }
 
     fun onSaveClicked() {

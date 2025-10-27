@@ -24,13 +24,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.CardReaderConnectDialogBinding
 import com.woocommerce.android.extensions.handleResult
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.payments.PaymentsBaseDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
@@ -53,6 +53,7 @@ import com.woocommerce.android.util.UiHelpers.getIllustrationVisibilityForAccess
 import com.woocommerce.android.util.WooAnimUtils
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import com.woocommerce.android.widgets.AlignedDividerDecoration
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,7 +64,11 @@ import javax.inject.Inject
 class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card_reader_connect_dialog) {
     val viewModel: CardReaderConnectViewModel by viewModels()
 
-    @Inject lateinit var locationUtils: LocationUtils
+    @Inject
+    lateinit var locationUtils: LocationUtils
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         (viewModel.event.value as? RequestLocationPermissions)?.onPermissionsRequestResult?.invoke(isGranted)
@@ -270,11 +275,9 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
                     ToastUtils.showToast(requireContext(), getString(event.message))
                 is CardReaderConnectEvent.ShowToastString ->
                     ToastUtils.showToast(requireContext(), event.message)
-                is CardReaderConnectEvent.OpenAuthenticatedWebView ->
-                    findNavController().navigateSafely(
-                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(urlToLoad = event.url)
-                    )
-                is CardReaderConnectEvent.OpenGenericWebView ->
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab ->
                     ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 else -> event.isHandled = false
             }

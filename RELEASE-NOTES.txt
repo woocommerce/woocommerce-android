@@ -3,7 +3,7 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.6
 -----
-
+- [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
 
 23.5
 -----
