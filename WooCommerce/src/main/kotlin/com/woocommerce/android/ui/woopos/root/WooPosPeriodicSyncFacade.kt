@@ -30,7 +30,7 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private var periodicSyncJob: Job? = null
 
     private companion object {
-        val SYNC_INTERVAL = 1.minutes.inWholeMilliseconds
+        val SYNC_INTERVAL = 1.hours.inWholeMilliseconds
     }
 
     override fun onResume(owner: LifecycleOwner) {
