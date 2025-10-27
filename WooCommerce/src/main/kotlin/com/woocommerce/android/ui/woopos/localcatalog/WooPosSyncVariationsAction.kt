@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
@@ -32,13 +34,22 @@ class WooPosSyncVariationsAction @Inject constructor(
         return runCatching {
             val isFullSync = modifiedAfterGmt == null
 
-            val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+            val (variations, trashVariations, serverDate) = coroutineScope {
+                val regularVariationsDeferred = async {
+                    fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+                }
+                val trashVariationsDeferred = async {
+                    if (isFullSync) {
+                        // We run incremental sync right after completing full sync -> no need to fetch trash products
+                        emptyList()
+                    } else {
+                        fetchAllTrashVariations(site, pageSize)
+                    }
+                }
 
-            val trashVariations = if (isFullSync) {
-                // We run incremental sync right after completing full sync, so no need to fetch trash products here
-                emptyList()
-            } else {
-                fetchAllTrashVariations(site, pageSize)
+                val (variations, serverDate) = regularVariationsDeferred.await()
+                val trashVariations = trashVariationsDeferred.await()
+                Triple(variations, trashVariations, serverDate)
             }
 
             val allVariations = variations + trashVariations
@@ -121,7 +132,7 @@ class WooPosSyncVariationsAction @Inject constructor(
         logger.d("Local catalog variations sync completed, variations synced across $pagesSynced pages")
         return Pair(
             variations.toList(),
-            requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
+            requireNotNull(firstPageServerDate) { "Can't be null since we throw an exception in the store layer." }
         )
     }
 

@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
@@ -34,13 +36,22 @@ class WooPosSyncProductsAction @Inject constructor(
         return runCatching {
             val isFullSync = modifiedAfterGmt == null
 
-            val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+            val (products, trashProducts, serverDate) = coroutineScope {
+                val regularProductsDeferred = async {
+                    fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+                }
+                val trashProductsDeferred = async {
+                    if (isFullSync) {
+                        // We run incremental sync right after completing full sync -> no need to fetch trash products
+                        emptyList()
+                    } else {
+                        fetchAllTrashProducts(site, pageSize)
+                    }
+                }
 
-            val trashProducts = if (isFullSync) {
-                // We run incremental sync right after completing full sync, so no need to fetch trash products here
-                emptyList()
-            } else {
-                fetchAllTrashProducts(site, pageSize)
+                val (products, serverDate) = regularProductsDeferred.await()
+                val trashProducts = trashProductsDeferred.await()
+                Triple(products, trashProducts, serverDate)
             }
 
             val allProducts = products + trashProducts
@@ -123,7 +134,7 @@ class WooPosSyncProductsAction @Inject constructor(
         logger.d("Local catalog sync completed, products synced across $pagesSynced pages")
         return Pair(
             products.toList(),
-            requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
+            requireNotNull(firstPageServerDate) { "Can't be null since we throw an exception in the store layer." }
         )
     }
 
