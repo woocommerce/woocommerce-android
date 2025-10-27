@@ -174,7 +174,7 @@ class WooPosSyncProductsAction @Inject constructor(
         site: SiteModel,
         pageSize: Int
     ): List<WooPosProductEntity> {
-        var currentOffset = 0
+        var currentPage = 1
         var pagesSynced = 0
         val trashProducts = mutableListOf<WooPosProductEntity>()
 
@@ -185,7 +185,7 @@ class WooPosSyncProductsAction @Inject constructor(
                 site = site,
                 pageSize = pageSize,
                 modifiedAfterGmt = null,
-                offset = currentOffset,
+                page = currentPage,
                 includeStatus = listOf(CoreProductStatus.TRASH)
             )
 
@@ -200,7 +200,7 @@ class WooPosSyncProductsAction @Inject constructor(
                         )
                         break
                     } else {
-                        currentOffset = syncResult.nextOffset
+                        currentPage = syncResult.nextPage
                     }
                 },
                 onFailure = { error ->
