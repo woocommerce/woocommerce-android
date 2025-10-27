@@ -70,7 +70,7 @@ class WooPosSyncProductsAction @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): Pair<List<WooPosProductEntity>, ServerDate> {
-        var currentOffset = 0
+        var currentPage = 1
         var pagesSynced = 0
         var totalPages = maxPages
         var firstPageServerDate: String? = null
@@ -82,7 +82,7 @@ class WooPosSyncProductsAction @Inject constructor(
                 site = site,
                 pageSize = pageSize,
                 modifiedAfterGmt = modifiedAfterGmt,
-                offset = currentOffset,
+                page = currentPage,
             )
 
             result.fold(
@@ -98,7 +98,7 @@ class WooPosSyncProductsAction @Inject constructor(
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("Local Catalog: No more products to sync")
                     } else {
-                        currentOffset = syncResult.nextOffset
+                        currentPage = syncResult.nextPage
                     }
                 },
                 onFailure = { error ->

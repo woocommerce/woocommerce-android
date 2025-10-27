@@ -273,11 +273,10 @@ class WooPosSyncProductsActionTest {
         val mockProducts = createMockProducts(1, productsCount)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockProducts,
             syncedCount = productsCount,
             hasMore = false,
-            nextOffset = 0,
             totalPages = 1,
         )
     }
@@ -291,40 +290,36 @@ class WooPosSyncProductsActionTest {
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockPage1Products,
             syncedCount = page1Count,
             hasMore = true,
-            nextOffset = page1Count,
             totalPages = totalPages,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = page1Count,
+            page = 2,
             mockProducts = mockPage2Products,
             syncedCount = page2Count,
             hasMore = true,
-            nextOffset = page1Count + page2Count,
             totalPages = totalPages,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = page1Count + page2Count,
+            page = 3,
             mockProducts = mockPage3Products,
             syncedCount = page3Count,
             hasMore = false,
-            nextOffset = 0,
             totalPages = totalPages,
         )
     }
 
     private suspend fun givenEmptyCatalog() {
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = emptyList(),
             syncedCount = 0,
             hasMore = false,
-            nextOffset = 0,
             totalPages = 1,
         )
     }
@@ -343,15 +338,14 @@ class WooPosSyncProductsActionTest {
         val mockPage1Products = createMockProducts(1, 100)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockPage1Products,
             syncedCount = 100,
             hasMore = true,
-            nextOffset = 100,
             totalPages = 2,
         )
 
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(2), any()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
@@ -359,20 +353,18 @@ class WooPosSyncProductsActionTest {
         val mockPage2Products = createMockProducts(1, 50)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = emptyList(),
             syncedCount = 0,
             hasMore = true,
-            nextOffset = 100,
             totalPages = 2,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 100,
+            page = 2,
             mockProducts = mockPage2Products,
             syncedCount = 50,
             hasMore = true,
-            nextOffset = 0,
             totalPages = 2,
         )
     }
@@ -381,10 +373,9 @@ class WooPosSyncProductsActionTest {
         val mockProducts = createMockProducts(1, PAGE_SIZE)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts,
             totalPages,
-            nextOffset = PAGE_SIZE,
             syncedCount = PAGE_SIZE,
             hasMore = true
         )
@@ -392,21 +383,20 @@ class WooPosSyncProductsActionTest {
 
     @Suppress("LongParameterList")
     private suspend fun mockFetchRecentlyModifiedProductsSuccess(
-        offset: Int,
+        page: Int,
         mockProducts: List<WooPosProductEntity>,
         totalPages: Int,
-        nextOffset: Int,
         syncedCount: Int,
         hasMore: Boolean
     ) {
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(offset), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(page), any()))
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogFetchProductsResult(
                         products = mockProducts,
                         syncedCount = syncedCount,
                         hasMore = hasMore,
-                        nextOffset = nextOffset,
+                        nextPage = page + 1,
                         totalPages = totalPages,
                         serverDate = ""
                     )
