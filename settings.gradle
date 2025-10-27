@@ -58,11 +58,13 @@ static def readPropertiesFromFile(File file) {
 }
 
 buildCache {
+    local.enabled = false
     if (gradle.ext.isCi) {
         remote(HttpBuildCache) {
             url = "http://10.0.2.214:5071/cache/"
             allowUntrustedServer = true
             allowInsecureProtocol = true
+            path = "cache/exp4-2021-dec31-take1"
             push = true
             credentials {
                 username = "ci-user"
