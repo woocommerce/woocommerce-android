@@ -135,7 +135,11 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
 
         data class ExitWithResult<out T>(val data: T, val key: String? = null) : Event()
 
-        data class LaunchUrlInAuthenticatedWebView(val url: String) : Event()
+        data class LaunchUrlInAuthenticatedWebView(
+            val url: String,
+            val screenTitle: UiString? = null,
+            val fallbackToChromeTab: Boolean = true
+        ) : Event()
 
         data class LaunchUrlInChromeTab(val url: String) : Event()
 

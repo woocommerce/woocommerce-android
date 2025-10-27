@@ -1,13 +1,17 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
 private typealias ServerDate = String
+
 class WooPosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
@@ -30,21 +34,40 @@ class WooPosSyncProductsAction @Inject constructor(
         maxPages: Int
     ): WooPosSyncProductsResult {
         return runCatching {
-            val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+            val isFullSync = modifiedAfterGmt == null
+
+            val (products, trashProducts, serverDate) = coroutineScope {
+                val regularProductsDeferred = async {
+                    fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+                }
+                val trashProductsDeferred = async {
+                    if (isFullSync) {
+                        // We run incremental sync right after completing full sync -> no need to fetch trash products
+                        emptyList()
+                    } else {
+                        fetchAllTrashProducts(site, pageSize)
+                    }
+                }
+
+                val (products, serverDate) = regularProductsDeferred.await()
+                val trashProducts = trashProductsDeferred.await()
+                Triple(products, trashProducts, serverDate)
+            }
+
+            val allProducts = products + trashProducts
 
             posLocalCatalogStore.executeInTransaction {
-                val isFullSync = modifiedAfterGmt == null
                 if (isFullSync) {
                     posLocalCatalogStore.deleteAllProducts(
                         siteId = site.localId()
                     ).getOrThrow()
                 }
 
-                posLocalCatalogStore.upsertProducts(products).getOrThrow()
+                posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog transaction committed successfully")
-                    WooPosSyncProductsResult.Success(products.size, serverDate)
+                    WooPosSyncProductsResult.Success(allProducts.size, serverDate)
                 },
                 onFailure = { error ->
                     handleTransactionError(error)
@@ -111,7 +134,7 @@ class WooPosSyncProductsAction @Inject constructor(
         logger.d("Local catalog sync completed, products synced across $pagesSynced pages")
         return Pair(
             products.toList(),
-            requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
+            requireNotNull(firstPageServerDate) { "Can't be null since we throw an exception in the store layer." }
         )
     }
 
@@ -145,6 +168,49 @@ class WooPosSyncProductsAction @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun fetchAllTrashProducts(
+        site: SiteModel,
+        pageSize: Int
+    ): List<WooPosProductEntity> {
+        var currentOffset = 0
+        var pagesSynced = 0
+        val trashProducts = mutableListOf<WooPosProductEntity>()
+
+        logger.d("Fetching all trash products for incremental sync")
+
+        while (true) {
+            val result = posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = site,
+                pageSize = pageSize,
+                modifiedAfterGmt = null,
+                offset = currentOffset,
+                includeStatus = listOf(CoreProductStatus.TRASH)
+            )
+
+            result.fold(
+                onSuccess = { syncResult ->
+                    trashProducts.addAll(syncResult.products)
+                    pagesSynced++
+
+                    if (!syncResult.hasMore || syncResult.syncedCount == 0) {
+                        logger.d(
+                            "Finished fetching trash products: ${trashProducts.size} total across $pagesSynced pages"
+                        )
+                        break
+                    } else {
+                        currentOffset = syncResult.nextOffset
+                    }
+                },
+                onFailure = { error ->
+                    logger.e("Failed to fetch trash products on page ${pagesSynced + 1}: ${error.message}")
+                    throw error
+                }
+            )
+        }
+
+        return trashProducts.toList()
     }
 
     internal class CatalogTooLargeException(

@@ -33,6 +33,7 @@ sealed interface BookingStatus {
     data object Paid : BookingStatus
     data object Cancelled : BookingStatus
     data object Complete : BookingStatus
+    data object InCart : BookingStatus
     data class Unknown(val key: String) : BookingStatus
 }
 
@@ -46,6 +47,7 @@ private fun BookingStatus.text(): String {
         BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
         BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
         BookingStatus.PayOnSite -> stringResource(R.string.booking_payment_status_pay_on_site)
+        BookingStatus.InCart -> stringResource(R.string.booking_payment_status_in_cart)
         is BookingStatus.Unknown -> key
     }
 }
