@@ -11,6 +11,8 @@ import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_CASH
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.VALUE_SIMPLE_PAYMENTS_COLLECT_LINK
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Order
@@ -78,6 +80,7 @@ class SelectPaymentMethodViewModel @Inject constructor(
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper,
     private val paymentsUtils: PaymentUtils,
     private val logOrderCurrencyMismatchWithSiteSettings: SelectPaymentMethodCurrencyMissMatchLog,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) : ScopedViewModel(savedState) {
     private val navArgs: SelectPaymentMethodFragmentArgs by savedState.navArgs()
 
@@ -173,7 +176,8 @@ class SelectPaymentMethodViewModel @Inject constructor(
                     R.string.card_reader_connect_learn_more,
                     containsHtml = true
                 ),
-                onClick = ::onLearnMoreIppClicked
+                onClick = ::onLearnMoreIppClicked,
+                isVisible = ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
             )
         )
     }
