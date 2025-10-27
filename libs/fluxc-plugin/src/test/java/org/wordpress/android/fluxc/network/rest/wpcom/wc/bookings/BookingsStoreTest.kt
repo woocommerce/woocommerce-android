@@ -51,7 +51,7 @@ class BookingsStoreTest {
     }
 
     @Test
-    fun `given refreshBooking is false, when updateBooking succeeds, then inserts mapped entity and returns it`(): Unit = runBlocking {
+    fun `given refreshOrder is false, when updateBooking succeeds, then inserts mapped entity and returns it`(): Unit = runBlocking {
         // given
         val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
         val dto = sampleBookingDto()
@@ -77,7 +77,7 @@ class BookingsStoreTest {
     }
 
     @Test
-    fun `given refreshBooking is true, when updateBooking succeeds, then refreshes order and inserts mapped entity`(): Unit = runBlocking {
+    fun `given refreshOrder is true, when updateBooking succeeds, then refreshes order and inserts mapped entity`(): Unit = runBlocking {
         // given
         val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
         val dto = sampleBookingDto()
@@ -125,7 +125,7 @@ class BookingsStoreTest {
     }
 
     @Test
-    fun `given order refresh fails, when updateBooking with refreshBooking true, then returns error and does not insert`(): Unit = runBlocking {
+    fun `given order refresh fails, when updateBooking with refreshOrder true, then returns error and does not insert`(): Unit = runBlocking {
         // given
         val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
         val dto = sampleBookingDto()
