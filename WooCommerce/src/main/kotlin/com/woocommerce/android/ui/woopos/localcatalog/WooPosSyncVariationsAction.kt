@@ -34,10 +34,11 @@ class WooPosSyncVariationsAction @Inject constructor(
 
             val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
-            val trashVariations = if (!isFullSync) {
-                fetchAllTrashVariations(site, pageSize)
-            } else {
+            val trashVariations = if (isFullSync) {
+                // We run incremental sync right after completing full sync, so no need to fetch trash products here
                 emptyList()
+            } else {
+                fetchAllTrashVariations(site, pageSize)
             }
 
             val allVariations = variations + trashVariations

@@ -36,10 +36,11 @@ class WooPosSyncProductsAction @Inject constructor(
 
             val (products, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
-            val trashProducts = if (!isFullSync) {
-                fetchAllTrashProducts(site, pageSize)
-            } else {
+            val trashProducts = if (isFullSync) {
+                // We run incremental sync right after completing full sync, so no need to fetch trash products here
                 emptyList()
+            } else {
+                fetchAllTrashProducts(site, pageSize)
             }
 
             val allProducts = products + trashProducts
