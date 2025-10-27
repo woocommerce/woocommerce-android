@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
@@ -128,7 +129,15 @@ private fun FiltersNavHost(
             }
         }
         composable(BookingFilterPage.Customer.route) {
-            TODO()
+            BookingCustomerFilterPage { customer ->
+                state.onUpdateFilterOption(
+                    BookingsFilterOption.Customer(
+                        customerId = customer.customerId ?: 0L,
+                        customerName = "${customer.firstName} ${customer.lastName}".trim()
+                    )
+                )
+                state.onClose()
+            }
         }
         composable(BookingFilterPage.ServiceEvent.route) {
             TODO()

@@ -25,7 +25,7 @@ data class BookingFilterListUiState(
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
-    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {}
+    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
