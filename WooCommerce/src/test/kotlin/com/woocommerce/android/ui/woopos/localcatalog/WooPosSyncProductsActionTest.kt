@@ -338,7 +338,7 @@ class WooPosSyncProductsActionTest {
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = any(),
                 modifiedAfterGmt = eq(null),
-                offset = eq(0),
+                page = eq(1),
                 pageSize = any(),
                 includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
             )
@@ -348,7 +348,7 @@ class WooPosSyncProductsActionTest {
                     products = trashProducts,
                     syncedCount = productsCount,
                     hasMore = false,
-                    nextOffset = productsCount,
+                    nextPage = 1,
                     totalPages = 1,
                     serverDate = ""
                 )
@@ -366,7 +366,7 @@ class WooPosSyncProductsActionTest {
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = any(),
                 modifiedAfterGmt = eq(null),
-                offset = eq(0),
+                page = eq(1),
                 pageSize = any(),
                 includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
             )
@@ -376,7 +376,7 @@ class WooPosSyncProductsActionTest {
                     products = trashPage1,
                     syncedCount = 10,
                     hasMore = true,
-                    nextOffset = 10,
+                    nextPage = 2,
                     totalPages = 3,
                     serverDate = ""
                 )
@@ -387,7 +387,7 @@ class WooPosSyncProductsActionTest {
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = any(),
                 modifiedAfterGmt = eq(null),
-                offset = eq(10),
+                page = eq(2),
                 pageSize = any(),
                 includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
             )
@@ -397,7 +397,7 @@ class WooPosSyncProductsActionTest {
                     products = trashPage2,
                     syncedCount = 10,
                     hasMore = true,
-                    nextOffset = 20,
+                    nextPage = 3,
                     totalPages = 3,
                     serverDate = ""
                 )
@@ -408,7 +408,7 @@ class WooPosSyncProductsActionTest {
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = any(),
                 modifiedAfterGmt = eq(null),
-                offset = eq(20),
+                page = eq(3),
                 pageSize = any(),
                 includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
             )
@@ -418,7 +418,7 @@ class WooPosSyncProductsActionTest {
                     products = trashPage3,
                     syncedCount = 5,
                     hasMore = false,
-                    nextOffset = 25,
+                    nextPage = 3,
                     totalPages = 3,
                     serverDate = ""
                 )
@@ -561,7 +561,7 @@ class WooPosSyncProductsActionTest {
                         products = mockProducts,
                         syncedCount = syncedCount,
                         hasMore = hasMore,
-                        nextPage = page + 1,
+                        nextPage = if (hasMore) page + 1 else page,
                         totalPages = totalPages,
                         serverDate = ""
                     )
@@ -572,7 +572,7 @@ class WooPosSyncProductsActionTest {
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 site = any(),
                 modifiedAfterGmt = anyOrNull(),
-                offset = eq(offset),
+                page = eq(page),
                 pageSize = any(),
                 includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
             )
@@ -582,7 +582,7 @@ class WooPosSyncProductsActionTest {
                     products = mockProducts,
                     syncedCount = syncedCount,
                     hasMore = hasMore,
-                    nextOffset = nextOffset,
+                    nextPage = if (hasMore) page + 1 else page,
                     totalPages = totalPages,
                     serverDate = ""
                 )
