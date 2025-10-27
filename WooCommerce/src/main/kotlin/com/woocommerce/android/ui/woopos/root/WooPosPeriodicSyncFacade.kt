@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.root
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -12,6 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Lifecycle-aware facade that performs periodic incremental syncs while [WooPosActivity] is visible.
@@ -19,13 +22,15 @@ import kotlin.time.Duration.Companion.hours
  */
 @Singleton
 class WooPosPeriodicSyncFacade @Inject constructor(
-    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync
+    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val selectedSite: SelectedSite,
 ) : DefaultLifecycleObserver {
 
     private var periodicSyncJob: Job? = null
 
     private companion object {
-        val SYNC_INTERVAL = 1.hours.inWholeMilliseconds
+        val SYNC_INTERVAL = 1.minutes.inWholeMilliseconds
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -37,10 +42,15 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     }
 
     private fun startPeriodicSync(owner: LifecycleOwner) {
+        val site = selectedSite.getOrNull()
+            ?: error("No site selected")
+
         periodicSyncJob = owner.lifecycleScope.launch {
-            while (isActive) {
-                incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-                delay(SYNC_INTERVAL)
+            if (isLocalCatalogSupported(site.siteId)) {
+                while (isActive) {
+                    incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+                    delay(SYNC_INTERVAL)
+                }
             }
         }
     }
