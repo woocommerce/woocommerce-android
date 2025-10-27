@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import javax.inject.Inject
@@ -31,13 +32,15 @@ class WooPosProductRestClient @Inject constructor(
         modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        includeStatus: List<CoreProductStatus>? = null,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
             pageSize = pageSize,
             page = page,
             modifiedAfter = modifiedAfter,
-            fields = PRODUCT_FIELDS
+            fields = PRODUCT_FIELDS,
+            includeStatus = includeStatus
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -143,6 +146,7 @@ class WooPosProductRestClient @Inject constructor(
         page: Int,
         fields: String,
         modifiedAfter: String?,
+        includeStatus: List<CoreProductStatus>? = null,
     ): MutableMap<String, String> {
         return mutableMapOf(
             "per_page" to pageSize.toString(),
@@ -152,6 +156,13 @@ class WooPosProductRestClient @Inject constructor(
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
+            includeStatus?.let { statuses ->
+                it["include_status"] = statusListToString(statuses)
+            }
         }
+    }
+
+    private fun statusListToString(statuses: List<CoreProductStatus>): String {
+        return statuses.joinToString(",") { it.value }
     }
 }
