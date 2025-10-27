@@ -26,7 +26,7 @@ fun BookingStatusTag(
 }
 
 sealed interface BookingStatus {
-    data object PayAtLocation : BookingStatus
+    data object PayOnSite : BookingStatus
     data object Unpaid : BookingStatus
     data object PendingConfirmation : BookingStatus
     data object Confirmed : BookingStatus
@@ -45,7 +45,7 @@ private fun BookingStatus.text(): String {
         BookingStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
         BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
         BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
-        BookingStatus.PayAtLocation -> stringResource(R.string.booking_payment_status_pay_at_location)
+        BookingStatus.PayOnSite -> stringResource(R.string.booking_payment_status_pay_on_site)
         is BookingStatus.Unknown -> key
     }
 }
@@ -53,7 +53,7 @@ private fun BookingStatus.text(): String {
 @Composable
 fun BookingStatus.backgroundColor(): Color {
     return when (this) {
-        BookingStatus.PayAtLocation -> R.color.tag_bg_booking_yellow
+        BookingStatus.PayOnSite -> R.color.tag_bg_booking_yellow
         else -> R.color.tagView_bg
     }.let { colorResource(it) }
 }
@@ -70,10 +70,10 @@ private fun PaymentStatusTagPreview() {
 
 @LightDarkThemePreviews
 @Composable
-private fun PaymentStatusTagPayAtLocationPreview() {
+private fun PaymentStatusTagPayOnSitePreview() {
     WooThemeWithBackground {
         BookingStatusTag(
-            state = BookingStatus.PayAtLocation
+            state = BookingStatus.PayOnSite
         )
     }
 }
