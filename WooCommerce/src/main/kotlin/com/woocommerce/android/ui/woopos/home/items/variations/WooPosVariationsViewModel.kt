@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -65,11 +67,36 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch {
             dataSource.resetVariationsListHandler()
         }
+        observeVariationsContinuously(productId)
         loadVariations(
             productId = productId,
             withPullToRefresh = false,
             forceRefresh = false
         )
+    }
+
+    private fun observeVariationsContinuously(productId: Long) {
+        viewModelScope.launch {
+            dataSource.fetchVariationsFirstPage(productId, forceRefresh = false).collect { result ->
+                when (result) {
+                    is VariationsResult.Cached -> {
+                        if (result.data.isNotEmpty()) {
+                            _viewState.value = createContentState(result.data, productId)
+                        }
+                    }
+                    is VariationsResult.Remote -> {
+                        if (result.result.isSuccess) {
+                            val variations = result.result.getOrThrow()
+                            _viewState.value = if (variations.isNotEmpty()) {
+                                createContentState(variations, productId)
+                            } else {
+                                WooPosVariationsViewState.Empty()
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private fun loadVariations(
@@ -87,13 +114,13 @@ class WooPosVariationsViewModel @Inject constructor(
 
             dataSource.fetchVariationsFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
-                    is WooPosProductsDataSource.VariationsResult.Cached -> {
+                    is VariationsResult.Cached -> {
                         if (result.data.isNotEmpty()) {
                             updateViewStateWithVariations(result.data, productId)
                         }
                     }
 
-                    is WooPosProductsDataSource.VariationsResult.Remote -> {
+                    is VariationsResult.Remote -> {
                         _viewState.value = when {
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
@@ -236,35 +263,53 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch {
             _viewState.value = buildReloadingState()
 
-            dataSource.refreshVariations(productId).collect { result ->
-                when (result) {
-                    is WooPosProductsDataSource.VariationsResult.Cached -> {
-                        if (result.data.isNotEmpty()) {
-                            _viewState.value = createContentState(result.data, productId)
+            val result = dataSource.refreshVariations(productId)
+            result.onSuccess { posSyncResult ->
+                when (posSyncResult) {
+                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success -> {
+                        _viewState.value = hidePTRIndicator()
+                    }
+                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure -> {
+                        sendEventToParent(
+                            ChildToParentEvent.ToastMessageDisplayed(
+                                message = resourceProvider.getString(R.string.offline_error)
+                            )
+                        )
+                        _viewState.value = hidePTRIndicator()
+                    }
+                    is VariationsResult.Cached -> {
+                        if (posSyncResult.data.isNotEmpty()) {
+                            _viewState.value = createContentState(posSyncResult.data, productId)
                         }
                     }
-
-                    is WooPosProductsDataSource.VariationsResult.Remote -> {
-                        _viewState.value = when {
-                            result.result.isSuccess -> {
-                                val variations = result.result.getOrThrow()
-                                if (variations.isNotEmpty()) {
-                                    createContentState(variations, productId)
-                                } else {
-                                    WooPosVariationsViewState.Empty()
-                                }
+                    is VariationsResult.Remote -> {
+                        if (posSyncResult.result.isSuccess) {
+                            val variations = posSyncResult.result.getOrThrow()
+                            _viewState.value = if (variations.isNotEmpty()) {
+                                createContentState(variations, productId)
+                            } else {
+                                WooPosVariationsViewState.Empty()
                             }
-                            else -> {
-                                sendEventToParent(
-                                    ChildToParentEvent.ToastMessageDisplayed(
-                                        message = resourceProvider.getString(R.string.offline_error)
-                                    )
+                        } else {
+                            sendEventToParent(
+                                ChildToParentEvent.ToastMessageDisplayed(
+                                    message = resourceProvider.getString(R.string.offline_error)
                                 )
-                                hidePTRIndicator()
-                            }
+                            )
+                            _viewState.value = hidePTRIndicator()
                         }
+                    }
+                    is ProductsResult -> {
+                        error("Unexpected products result in variations refresh")
                     }
                 }
+            }.onFailure { exception ->
+                sendEventToParent(
+                    ChildToParentEvent.ToastMessageDisplayed(
+                        message = resourceProvider.getString(R.string.offline_error)
+                    )
+                )
+                _viewState.value = hidePTRIndicator()
             }
         }
     }

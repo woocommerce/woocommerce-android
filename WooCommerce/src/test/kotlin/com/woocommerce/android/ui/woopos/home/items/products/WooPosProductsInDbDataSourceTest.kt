@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -41,13 +42,6 @@ class WooPosProductsInDbDataSourceTest {
             performInstantCatalogFullSync = performInstantCatalogFullSync,
             variationMapper = mock(),
             localCatalogSyncRepository = mock(),
-            preferencesRepository = mock(),
-            isVariationsEndpointAvailable = mock {
-                on { invoke() }.thenReturn(true)
-            },
-            wooPosLocalCatalogM1Enabled = mock {
-                on { invoke() }.thenReturn(true)
-            }
         )
     }
 
@@ -68,9 +62,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(productModel)
     }
@@ -94,9 +88,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model1, model2)
     }
@@ -112,9 +106,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }
@@ -131,9 +125,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }

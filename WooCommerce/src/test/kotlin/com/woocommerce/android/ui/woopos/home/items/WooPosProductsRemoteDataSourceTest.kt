@@ -16,11 +16,11 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.W
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductType
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.VariationsResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsRemoteDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import junit.framework.TestCase.assertFalse
@@ -202,8 +202,8 @@ class WooPosProductsRemoteDataSourceTest {
             val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
-            val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
+            assertThat(result).isInstanceOf(ProductsResult.Cached::class.java)
+            val cachedResult = result as ProductsResult.Cached
             assertThat(cachedResult.products).containsExactlyElementsOf(sampleProducts)
         }
 
@@ -229,7 +229,7 @@ class WooPosProductsRemoteDataSourceTest {
             val result = sut.fetchFirstProductsPage(forceRefresh = true).first()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+            assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
         }
 
     @Test
@@ -254,8 +254,8 @@ class WooPosProductsRemoteDataSourceTest {
             val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
-            val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
+            assertThat(result).isInstanceOf(ProductsResult.Cached::class.java)
+            val cachedResult = result as ProductsResult.Cached
             assertThat(cachedResult.products).isEmpty()
         }
 
@@ -302,8 +302,8 @@ class WooPosProductsRemoteDataSourceTest {
             val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
-            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            val cachedResult = flow[0] as ProductsResult.Cached
+            val remoteResult = flow[1] as ProductsResult.Remote
 
             assertThat(cachedResult.products.size).isEqualTo(3)
             assertThat(remoteResult.productsResult.isSuccess).isTrue()
@@ -340,10 +340,10 @@ class WooPosProductsRemoteDataSourceTest {
 
             // THEN
             assertThat(flow.size).isEqualTo(2)
-            assertThat(flow[0]).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
-            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
+            assertThat(flow[0]).isInstanceOf(ProductsResult.Cached::class.java)
+            val cachedResult = flow[0] as ProductsResult.Cached
             assertThat(cachedResult.products).isEqualTo(sampleProducts)
-            assertThat(flow[1]).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+            assertThat(flow[1]).isInstanceOf(ProductsResult.Remote::class.java)
         }
 
     @Test
@@ -467,8 +467,8 @@ class WooPosProductsRemoteDataSourceTest {
             val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
-            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            val cachedResult = flow[0] as ProductsResult.Cached
+            val remoteResult = flow[1] as ProductsResult.Remote
 
             assertThat(cachedResult.products).isEmpty()
             assertThat(remoteResult.productsResult.isFailure).isTrue()
@@ -496,8 +496,8 @@ class WooPosProductsRemoteDataSourceTest {
             val flow = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
             // THEN
-            val cachedResult = flow[0] as WooPosProductsDataSource.ProductsResult.Cached
-            val remoteResult = flow[1] as WooPosProductsDataSource.ProductsResult.Remote
+            val cachedResult = flow[0] as ProductsResult.Cached
+            val remoteResult = flow[1] as ProductsResult.Remote
 
             assertThat(cachedResult.products).isEmpty()
             assertThat(remoteResult.productsResult.isSuccess).isTrue()
@@ -538,8 +538,8 @@ class WooPosProductsRemoteDataSourceTest {
         val result = sut.fetchFirstProductsPage(forceRefresh = false).first()
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Cached::class.java)
-        val cachedResult = result as WooPosProductsDataSource.ProductsResult.Cached
+        assertThat(result).isInstanceOf(ProductsResult.Cached::class.java)
+        val cachedResult = result as ProductsResult.Cached
 
         assertThat(cachedResult.products[0].name).isEqualTo("A Product")
         assertThat(cachedResult.products[1].name).isEqualTo("ab Product")

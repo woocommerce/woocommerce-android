@@ -13,14 +13,15 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.VariationsResult
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncResult
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.withContext
@@ -130,11 +132,11 @@ class WooPosProductsDataSource @Inject constructor(
         activeSource?.canLoadMoreVariations(numOfVariations)
             ?: error("canLoadMoreVariations - Data source not selected")
 
-    suspend fun refreshProducts(): Flow<ProductsResult> =
+    suspend fun refreshProducts(): Result<WooPosSyncResult> =
         activeSource?.refreshProducts()
             ?: error("refreshProducts - Data source not selected")
 
-    suspend fun refreshVariations(productId: Long): Flow<VariationsResult> =
+    suspend fun refreshVariations(productId: Long): Result<WooPosSyncResult> =
         activeSource?.refreshVariations(productId)
             ?: error("refreshVariations - Data source not selected")
 
@@ -144,16 +146,6 @@ class WooPosProductsDataSource @Inject constructor(
     ): WooPosVariation? {
         return activeSource?.getVariationById(productId, variationId)
             ?: error("GetVariationById - Data source not selected")
-    }
-
-    sealed class ProductsResult {
-        data class Cached(val products: List<WooPosProductModel>) : ProductsResult()
-        data class Remote(val productsResult: Result<List<WooPosProductModel>>) : ProductsResult()
-    }
-
-    sealed class VariationsResult {
-        data class Cached(val data: List<WooPosVariation>) : VariationsResult()
-        data class Remote(val result: Result<List<WooPosVariation>>) : VariationsResult()
     }
 
     sealed class WooPosPrepopulatingDataStatus {
@@ -235,46 +227,6 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     override fun canLoadMoreVariations(numOfVariations: Int): Boolean = false
 
-    override suspend fun refreshProducts(): Flow<ProductsResult> = flow {
-        selectedSite.getOrNull()?.let { site ->
-            val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-            when (syncResult) {
-                is PosLocalCatalogSyncResult.Success -> {
-                    getProductsFromDatabaseFlow().collect { products ->
-                        emit(ProductsResult.Remote(Result.success(products)))
-                    }
-                }
-
-                is PosLocalCatalogSyncResult.Failure -> {
-                    emit(
-                        ProductsResult.Remote(
-                            Result.failure(Exception(syncResult.error))
-                        )
-                    )
-                }
-            }
-        } ?: emit(ProductsResult.Remote(Result.failure(Exception("No site selected"))))
-    }.flowOn(Dispatchers.IO)
-
-    override suspend fun refreshVariations(productId: Long): Flow<VariationsResult> = flow {
-        selectedSite.getOrNull()?.let { site ->
-            val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-            when (syncResult) {
-                is PosLocalCatalogSyncResult.Success -> {
-                    fetchFirstVariationsPage(productId, forceRefresh = true).collect { emit(it) }
-                }
-
-                is PosLocalCatalogSyncResult.Failure -> {
-                    emit(
-                        VariationsResult.Remote(
-                            Result.failure(Exception(syncResult.error))
-                        )
-                    )
-                }
-            }
-        } ?: emit(VariationsResult.Remote(Result.failure(Exception("No site selected"))))
-    }.flowOn(Dispatchers.IO)
-
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
         val siteModel = selectedSite.getOrNull() ?: return null
         val result = posLocalCatalogStore.getVariation(
@@ -283,6 +235,24 @@ class WooPosProductsInDbDataSource @Inject constructor(
             variationId = variationId
         )
         return result.getOrNull()?.toWooPosVariation(variationMapper)
+    }
+
+    override suspend fun refreshProducts(): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+        selectedSite.getOrNull()?.let { site ->
+            val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+            Result.success(syncResult)
+        } ?: Result.success(
+            PosLocalCatalogSyncResult.Failure.UnexpectedError("No site selected")
+        )
+    }
+
+    override suspend fun refreshVariations(productId: Long): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+        selectedSite.getOrNull()?.let { site ->
+            val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+            Result.success(syncResult)
+        } ?: Result.success(
+            PosLocalCatalogSyncResult.Failure.UnexpectedError("No site selected")
+        )
     }
 }
 
@@ -534,18 +504,28 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
-    override suspend fun refreshProducts(): Flow<ProductsResult> {
-        return fetchFirstProductsPage(forceRefresh = true)
-    }
-
-    override suspend fun refreshVariations(productId: Long): Flow<VariationsResult> {
-        return fetchFirstVariationsPage(productId, forceRefresh = true)
-    }
-
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
         val siteModel = selectedSite.getOrNull() ?: return null
         return productStore.getVariationByRemoteId(siteModel, productId, variationId)
             ?.toWooPosVariation(variationMapper)
+    }
+
+    override suspend fun refreshProducts(): Result<WooPosSyncResult> = withContext(
+        Dispatchers.IO
+    ) {
+        // We can return the last-emitted result which will always be the instance of [ProductsResult.Remote] because
+        // when forceRefresh = true the in-memory cache gets wiped out and the flow fetches from remote only.
+        val productsResult = fetchFirstProductsPage(forceRefresh = true).last()
+        Result.success(productsResult)
+    }
+
+    override suspend fun refreshVariations(
+        productId: Long
+    ): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+        // We can return the last-emitted result which will always be the instance of [VariationsResult.Remote] because
+        // when forceRefresh = true the in-memory cache gets wiped out and the flow fetches from remote only.
+        val variationsResult = fetchFirstVariationsPage(productId, forceRefresh = true).last()
+        Result.success(variationsResult)
     }
 
     companion object {

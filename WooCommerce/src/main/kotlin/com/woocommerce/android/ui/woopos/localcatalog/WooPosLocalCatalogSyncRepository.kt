@@ -13,7 +13,9 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStor
 import javax.inject.Inject
 import javax.inject.Singleton
 
-sealed class PosLocalCatalogSyncResult {
+sealed class WooPosSyncResult
+
+sealed class PosLocalCatalogSyncResult : WooPosSyncResult() {
     data class Success(
         val productsSynced: Int,
         val variationsSynced: Int,
