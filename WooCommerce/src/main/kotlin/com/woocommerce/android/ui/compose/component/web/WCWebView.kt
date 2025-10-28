@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.compose.component.web
 import android.annotation.SuppressLint
 import android.view.ViewGroup
 import android.webkit.WebView
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -104,6 +105,7 @@ fun WCWebView(
             webView.settings.loadWithOverviewMode = settings.loadWithOverviewMode
             webView.settings.javaScriptEnabled = settings.isJavaScriptEnabled
             webView.settings.domStorageEnabled = settings.isDomStorageEnabled
+            webView.settings.setSupportMultipleWindows(true)
         }
     }
 
@@ -127,7 +129,7 @@ fun WCWebView(
 
         AndroidView(
             factory = { context ->
-                WebView(context).apply {
+                val webView = WebView(context).apply {
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
@@ -140,6 +142,10 @@ fun WCWebView(
 
                     this.settings.userAgentString = userAgent.webViewUserAgent
                 }.also { webView = it }
+
+                FrameLayout(context).apply {
+                    addView(webView)
+                }
             },
             modifier = Modifier
                 .alpha(webViewAlpha)

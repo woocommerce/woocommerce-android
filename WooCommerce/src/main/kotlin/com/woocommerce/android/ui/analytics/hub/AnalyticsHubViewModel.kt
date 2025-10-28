@@ -52,13 +52,13 @@ import com.woocommerce.android.ui.analytics.hub.sync.UpdateAnalyticsHubStats
 import com.woocommerce.android.ui.analytics.hub.sync.toAnalyticData
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
-import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -102,7 +102,6 @@ class AnalyticsHubViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val getReportUrl: GetReportUrl,
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration,
-    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView,
     savedState: SavedStateHandle
 ) : ScopedViewModel(savedState) {
 
@@ -201,14 +200,7 @@ class AnalyticsHubViewModel @Inject constructor(
 
     fun onSeeReport(url: String, card: ReportCard) {
         trackSeeReportInteraction(card)
-        selectedSite.getOrNull()?.let { site ->
-            val event = if (canAutoAuthenticateInWebView(url)) {
-                AnalyticsViewEvent.OpenAuthenticatedWebView(url)
-            } else {
-                AnalyticsViewEvent.OpenUrl(url)
-            }
-            triggerEvent(event)
-        } ?: triggerEvent(AnalyticsViewEvent.OpenUrl(url))
+        triggerEvent(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(url))
     }
 
     private fun trackSeeReportInteraction(card: ReportCard) {

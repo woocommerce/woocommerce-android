@@ -16,7 +16,6 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.getMaxRefundQuantities
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.max
@@ -42,7 +41,7 @@ import kotlinx.coroutines.runBlocking
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 import org.wordpress.android.fluxc.utils.sumBy as sumByBigDecimal
 
@@ -306,7 +305,7 @@ class IssueRefundViewModel @Inject constructor(
     }
 
     fun onOpenStoreAdminLinkClicked() {
-        triggerEvent(OpenUrl(selectedSite.get().adminUrlOrDefault))
+        triggerEvent(Event.LaunchUrlInAuthenticatedWebView(selectedSite.get().adminUrlOrDefault))
     }
 
     private fun showRefundSummary() {
@@ -477,7 +476,6 @@ class IssueRefundViewModel @Inject constructor(
             val confirmButtonTitle: String
         ) : IssueRefundEvent()
 
-        data class OpenUrl(val url: String) : IssueRefundEvent()
         data class ShowRefundSummary(
             val orderId: Long,
             val refundAmount: BigDecimal,

@@ -71,7 +71,7 @@ internal class BookingDtoMapper @Inject constructor(
         description = description,
     )
 
-    private suspend fun OrderEntity.toBookingOrderInfo(
+    suspend fun OrderEntity.toBookingOrderInfo(
         orderItemId: Long
     ): BookingOrderInfo {
         val lineItem = getLineItemList().firstOrNull { it.id == orderItemId }

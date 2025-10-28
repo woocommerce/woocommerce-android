@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -173,7 +174,13 @@ private fun SettingsSection(
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         Row(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                .clickable(enabled = !isLoading) {
+                    onToggleCellularData(!allowCellularDataUpdate)
+                }
+                .padding(WooPosSpacing.Small.value),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -195,7 +202,7 @@ private fun SettingsSection(
 
             Switch(
                 checked = allowCellularDataUpdate,
-                onCheckedChange = { onToggleCellularData(it) },
+                onCheckedChange = null, // Disable direct interaction since the entire row is clickable
                 enabled = !isLoading,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.primary,

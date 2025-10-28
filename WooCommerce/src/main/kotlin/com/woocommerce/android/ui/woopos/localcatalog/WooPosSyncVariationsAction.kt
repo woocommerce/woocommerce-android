@@ -110,7 +110,7 @@ class WooPosSyncVariationsAction @Inject constructor(
         logger.d("Local catalog variations sync completed, variations synced across $pagesSynced pages")
         return Pair(
             variations.toList(),
-            requireNotNull(firstPageServerDate, { "Can't be null since we throw an exception in the store layer." })
+            requireNotNull(firstPageServerDate) { "Can't be null since we throw an exception in the store layer." }
         )
     }
 

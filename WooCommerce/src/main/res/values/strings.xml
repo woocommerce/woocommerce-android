@@ -3811,6 +3811,7 @@
     <string name="woopos_orders_loading_error_retry_button">Retry</string>
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
+    <string name="woopos_orders_pagination_try_again_label">Retry</string>
 
     <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
@@ -4252,9 +4253,10 @@
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
     <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
-    <string name="booking_payment_status_pay_at_location">Pay at location</string>
+    <string name="booking_payment_status_pay_on_site">Pay on site</string>
     <string name="booking_attendance_status_booked">Booked</string>
     <string name="booking_attendance_status_checked_in">Checked-in</string>
     <string name="booking_attendance_status_cancelled">Cancelled</string>
@@ -4296,6 +4298,8 @@
     <string name="booking_note_screen_title">Booking note</string>
     <string name="booking_note_screen_done">DONE</string>
     <string name="booking_note_screen_update_error">Error saving booking note</string>
+    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
