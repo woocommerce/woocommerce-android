@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -61,6 +62,12 @@ interface BookingsDao {
     @Query("DELETE FROM Bookings WHERE localSiteId = :localSiteId")
     suspend fun deleteAllForSite(localSiteId: LocalId)
 
+    @Transaction
+    suspend fun replaceAllForSite(siteId: LocalId, entities: List<BookingEntity>) {
+        deleteAllForSite(siteId)
+        insertOrReplace(entities)
+    }
+
     fun observeBookings(
         localSiteId: LocalId,
         limit: Int? = null,
@@ -98,6 +105,9 @@ interface BookingsDao {
             order = order
         )
     }
+
+    @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
+    suspend fun getBooking(localSiteId: LocalId, bookingId: Long): BookingEntity?
 
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
     fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>

@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOSEntity
@@ -65,6 +66,34 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Gets the count of products in the local database for a given site.
+     *
+     * @param [siteId] The local site ID
+     * @return Result containing the product count or error
+     */
+    suspend fun getProductCount(
+        siteId: LocalOrRemoteId.LocalId
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "getProductCount") {
+            val count = posProductDao.getProductCount(siteId)
+            Result.success(count)
+        }
+
+    /**
+     * Gets the count of variations in the local database for a given site.
+     *
+     * @param [siteId] The local site ID
+     * @return Result containing the variation count or error
+     */
+    suspend fun getVariationCount(
+        siteId: LocalOrRemoteId.LocalId
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "getVariationCount") {
+            val count = posVariationsDao.getVariationCount(siteId)
+            Result.success(count)
+        }
+
+    /**
      * Executes a block of code within a database transaction.
      * If the block throws an exception, the transaction is rolled back.
      *
@@ -81,19 +110,59 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Fetches only the total count of products without fetching the actual product data.
+     * Makes a minimal API call with per_page=1 to get the count from response headers.
+     *
+     * @param [site] The site to get the products count for
+     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
+     * @return Result containing the total count of products or error
+     */
+    suspend fun fetchProductsCount(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
+            val response = posProductRestClient.fetchProducts(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                page = 1,
+                pageSize = 1,
+                includeStatus = null
+            )
+
+            when {
+                response.isError -> Result.failure(mapResponseError(response.error))
+
+                else -> {
+                    val totalCount = headersParser.getTotalCount(response)
+                    if (totalCount == null) {
+                        Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: X-WP-Total."
+                            )
+                        )
+                    } else {
+                        Result.success(totalCount)
+                    }
+                }
+            }
+        }
+
+    /**
      * Fetch recently modified products with pagination support.
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
-     * @param [offset] Starting offset for pagination
+     * @param [page] Page for pagination.
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
     suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
-        offset: Int = 0,
+        page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
+        includeStatus: List<CoreProductStatus>? = null,
     ): Result<WooPosLocalCatalogFetchProductsResult> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -101,27 +170,26 @@ class WooPosLocalCatalogStore @Inject constructor(
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = offset,
-                pageSize = validPageSize
+                page = page,
+                pageSize = validPageSize,
+                includeStatus = includeStatus
             )
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> Result.failure(mapResponseError(response.error))
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> Result.success(
                     WooPosLocalCatalogFetchProductsResult(
                         products = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
-                        nextOffset = offset,
+                        nextPage = page,
                         totalPages = 0,
                         serverDate = serverDate
                     )
@@ -147,7 +215,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                             products = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
-                            nextOffset = if (hasMore) offset + products.size else offset,
+                            nextPage = if (hasMore) page + 1 else page,
                             totalPages = totalPages,
                             serverDate = serverDate,
                         )
@@ -207,6 +275,44 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Fetches only the total count of variations without fetching the actual variation data.
+     * Makes a minimal API call with per_page=1 to get the count from response headers.
+     *
+     * @param [site] The site to get the variations count for
+     * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT) to filter by modified date
+     * @return Result containing the total count of variations or error
+     */
+    suspend fun fetchVariationsCount(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+    ): Result<Int> =
+        coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
+            val response = posProductRestClient.fetchVariations(
+                site = site,
+                modifiedAfter = modifiedAfterGmt,
+                page = 1,
+                pageSize = 1
+            )
+
+            when {
+                response.isError -> Result.failure(mapResponseError(response.error))
+
+                else -> {
+                    val totalCount = headersParser.getTotalCount(response)
+                    if (totalCount == null) {
+                        Result.failure(
+                            WooPosLocalCatalogError.InvalidResponse(
+                                "Missing required header in response: X-WP-Total."
+                            )
+                        )
+                    } else {
+                        Result.success(totalCount)
+                    }
+                }
+            }
+        }
+
+    /**
      * Fetches recently modified variations with pagination support.
      *
      * @param site The site to sync variations for
@@ -235,18 +341,16 @@ class WooPosLocalCatalogStore @Inject constructor(
 
             val serverDate = headersParser.getServerDate(response)
 
-            if (serverDate == null) {
-                return@withDefaultContext Result.failure(
-                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
-                )
-            }
-
             when {
                 response.isError -> {
                     Result.failure(
                         mapResponseError(response.error)
                     )
                 }
+
+                serverDate == null -> return@withDefaultContext Result.failure(
+                    WooPosLocalCatalogError.InvalidResponse("Missing required header in response: Server Date.")
+                )
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(

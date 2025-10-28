@@ -1,16 +1,33 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.flow.Flow
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 interface WooPosProductsDataSourceInterface {
-    fun fetchFirstPage(
+    fun fetchFirstProductsPage(
         forceRefresh: Boolean
     ): Flow<WooPosProductsDataSource.ProductsResult>
 
-    suspend fun loadMore(): Result<List<WooPosProductModel>>
+    suspend fun loadMoreProducts(): Result<List<WooPosProductModel>>
 
-    val hasMorePages: Boolean
+    val hasMoreProductsPages: Boolean
 
-    suspend fun resetState()
+    suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel?
+
+    suspend fun resetVariationsListHandler()
+
+    suspend fun prepopulateCache(): Result<Unit>
+
+    fun fetchFirstVariationsPage(
+        productId: Long,
+        forceRefresh: Boolean
+    ): Flow<WooPosProductsDataSource.VariationsResult>
+
+    suspend fun loadMoreVariations(productId: Long): Result<List<WooPosVariation>>
+
+    fun canLoadMoreVariations(numOfVariations: Int): Boolean
+
+    suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation?
 }

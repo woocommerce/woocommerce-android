@@ -72,12 +72,32 @@ class WooPosSyncTimestampRepository @Inject constructor(
     suspend fun clearAllSyncTimestamps() {
         val productsKey = buildSiteSpecificKey(PRODUCTS_TIMESTAMP_KEY)
         val variationsKey = buildSiteSpecificKey(VARIATIONS_TIMESTAMP_KEY)
+        val fullSyncKey = buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY)
 
-        if (productsKey != null && variationsKey != null) {
+        if (productsKey != null && variationsKey != null && fullSyncKey != null) {
             dataStore.edit { preferences ->
                 preferences.remove(productsKey)
                 preferences.remove(variationsKey)
+                preferences.remove(fullSyncKey)
             }
+        }
+    }
+
+    suspend fun storeFullSyncLastCompletedTimestamp(timestamp: Long) {
+        val key = buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY)
+        if (key != null) {
+            dataStore.edit { preferences ->
+                preferences[key] = timestamp.toString()
+            }
+        }
+    }
+
+    suspend fun getFullSyncLastCompletedTimestamp(): Long? {
+        val key = buildSiteSpecificKey(FULL_SYNC_TIMESTAMP_KEY)
+        return if (key != null) {
+            dataStore.data.first()[key]?.toLongOrNull()
+        } else {
+            null
         }
     }
 
@@ -94,5 +114,6 @@ class WooPosSyncTimestampRepository @Inject constructor(
     private companion object {
         const val PRODUCTS_TIMESTAMP_KEY = "pos_products_sync_timestamp"
         const val VARIATIONS_TIMESTAMP_KEY = "pos_variations_sync_timestamp"
+        const val FULL_SYNC_TIMESTAMP_KEY = "pos_full_sync_completed_timestamp"
     }
 }

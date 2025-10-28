@@ -71,9 +71,9 @@ private fun BookingAttendanceStatusSelection(
             modifier = Modifier.padding(bottom = 22.dp)
         )
         listOf(
-            BookingAttendanceStatus.BOOKED,
-            BookingAttendanceStatus.CHECKED_IN,
-            BookingAttendanceStatus.NO_SHOW,
+            BookingAttendanceStatus.Booked,
+            BookingAttendanceStatus.CheckedIn,
+            BookingAttendanceStatus.NoShow,
         ).forEachIndexed { index, status ->
             AttendanceStatusRow(
                 status = status,
@@ -122,17 +122,17 @@ private fun AttendanceStatusRow(
 
 @Composable
 private fun BookingAttendanceStatus.description(): String = when (this) {
-    BookingAttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked_desc
-    BookingAttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in_desc
-    BookingAttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show_desc
+    BookingAttendanceStatus.Booked -> R.string.booking_attendance_status_booked_desc
+    BookingAttendanceStatus.CheckedIn -> R.string.booking_attendance_status_checked_in_desc
+    BookingAttendanceStatus.NoShow -> R.string.booking_attendance_status_no_show_desc
     else -> null
 }?.let { stringResource(it) } ?: ""
 
 private val BookingAttendanceStatus.iconRes: Int?
     get() = when (this) {
-        BookingAttendanceStatus.BOOKED -> R.drawable.ic_attendance_booked
-        BookingAttendanceStatus.CHECKED_IN -> R.drawable.ic_attendance_checked_in
-        BookingAttendanceStatus.NO_SHOW -> R.drawable.ic_attendance_no_show
+        BookingAttendanceStatus.Booked -> R.drawable.ic_attendance_booked
+        BookingAttendanceStatus.CheckedIn -> R.drawable.ic_attendance_checked_in
+        BookingAttendanceStatus.NoShow -> R.drawable.ic_attendance_no_show
         else -> null
     }
 
@@ -151,7 +151,7 @@ private fun BookingAttendanceStatusBottomSheetPreview() {
 private fun AttendanceStatusRowPreview() {
     WooThemeWithBackground {
         AttendanceStatusRow(
-            status = BookingAttendanceStatus.CHECKED_IN,
+            status = BookingAttendanceStatus.CheckedIn,
             onClick = {}
         )
     }

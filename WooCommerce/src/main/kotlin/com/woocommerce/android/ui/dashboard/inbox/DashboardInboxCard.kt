@@ -15,7 +15,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -35,12 +34,9 @@ import com.woocommerce.android.ui.dashboard.WidgetCard
 import com.woocommerce.android.ui.dashboard.WidgetError
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxViewModel.NavigateToInbox
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxViewModel.ViewState
-import com.woocommerce.android.ui.inbox.InboxNoteActionEvent
 import com.woocommerce.android.ui.inbox.InboxNoteItemSkeleton
 import com.woocommerce.android.ui.inbox.InboxNoteRow
 import com.woocommerce.android.ui.inbox.InboxNoteUi
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 
 @Composable
@@ -71,17 +67,17 @@ fun DashboardInboxCard(
         }
     }
 
-    HandleEvents(viewModel.event, parentViewModel::onShowSnackbar)
+    HandleEvents(viewModel.event, parentViewModel::onShowSnackbar, parentViewModel::onLaunchUrlInAuthenticatedWebView)
 }
 
 @Composable
 private fun HandleEvents(
     event: LiveData<Event>,
-    onShowSnackbar: (message: Int) -> Unit
+    onShowSnackbar: (message: Int) -> Unit,
+    onLaunchUrlInAuthenticatedWebView: (Event.LaunchUrlInAuthenticatedWebView) -> Unit
 ) {
     val navController = rememberNavController()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val context = LocalContext.current
 
     DisposableEffect(event, navController, lifecycleOwner) {
         val observer = Observer { event: Event ->
@@ -93,9 +89,7 @@ private fun HandleEvents(
                 }
                 is Event.ShowSnackbar -> onShowSnackbar(event.message)
 
-                is InboxNoteActionEvent.OpenUrlEvent -> {
-                    ChromeCustomTabUtils.launchUrl(context, event.url, ThreeQuarters)
-                }
+                is Event.LaunchUrlInAuthenticatedWebView -> onLaunchUrlInAuthenticatedWebView(event)
             }
         }
 

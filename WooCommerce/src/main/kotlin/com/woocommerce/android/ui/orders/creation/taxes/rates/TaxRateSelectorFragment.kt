@@ -11,17 +11,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.extensions.navigateBackWithResult
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.orders.creation.taxes.rates.TaxRateSelectorFragmentDirections.Companion.actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TaxRateSelectorFragment : BaseFragment() {
     private val viewModel: TaxRateSelectorViewModel by viewModels<TaxRateSelectorViewModel>()
     private val args: TaxRateSelectorFragmentArgs by navArgs()
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     override val activityAppBarStatus = AppBarStatus.Hidden
 
@@ -54,10 +58,8 @@ class TaxRateSelectorFragment : BaseFragment() {
                 is TaxRateSelectorViewModel.TaxRateSelected -> {
                     navigateBackWithResult(KEY_SELECTED_TAX_RATE, event.taxRate)
                 }
-                is TaxRateSelectorViewModel.EditTaxRatesInAdmin -> {
-                    args.dialogState.taxRatesSettingsUrl.let {
-                        ChromeCustomTabUtils.launchUrl(requireContext(), it)
-                    }
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 }
                 is TaxRateSelectorViewModel.ShowTaxesInfoDialog -> {
                     actionTaxRateSelectorFragmentToTaxRatesInfoDialogFragment(args.dialogState).also {

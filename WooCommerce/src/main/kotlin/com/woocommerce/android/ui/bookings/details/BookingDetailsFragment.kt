@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.composeView
@@ -21,6 +22,7 @@ class BookingDetailsFragment : BaseFragment() {
     lateinit var uiMessageResolver: UIMessageResolver
 
     private val viewModel: BookingDetailsViewModel by viewModels()
+    private val args: BookingDetailsFragmentArgs by navArgs()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -34,6 +36,12 @@ class BookingDetailsFragment : BaseFragment() {
                     findNavController().navigate(
                         BookingDetailsFragmentDirections
                             .actionBookingDetailsFragmentToOrderDetailFragment(orderId)
+                    )
+                },
+                onViewNotes = {
+                    findNavController().navigate(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToBookingNoteFragment(args.bookingId)
                     )
                 }
             )

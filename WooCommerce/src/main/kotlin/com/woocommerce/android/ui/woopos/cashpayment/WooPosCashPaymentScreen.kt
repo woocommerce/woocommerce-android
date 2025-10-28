@@ -49,14 +49,21 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
     val viewModel = hiltViewModel<WooPosCashPaymentViewModel>()
     val state = viewModel.state.collectAsState().value
 
+    val onBackClicked = {
+        viewModel.onBackClicked()
+        onNavigationEvent(WooPosNavigationEvent.GoBack)
+    }
+
     WooPosCashPaymentScreen(
         state = state,
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
-        onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
+        onBackClicked = onBackClicked,
         onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
     )
-    BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+    BackHandler {
+        onBackClicked()
+    }
 }
 
 @Composable

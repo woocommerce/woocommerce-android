@@ -6,7 +6,8 @@ data class WooPosSettingsLocalCatalogState(
 ) {
     sealed class CatalogStatus {
         data class Available(
-            val catalogSize: String,
+            val productCount: Int,
+            val variationCount: Int,
             val lastUpdate: String,
             val lastFullUpdate: String
         ) : CatalogStatus()

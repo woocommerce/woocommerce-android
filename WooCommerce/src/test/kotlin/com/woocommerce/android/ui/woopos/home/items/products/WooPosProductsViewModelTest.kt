@@ -82,7 +82,7 @@ class WooPosProductsViewModelTest {
                 )
             )
         )
-        whenever(productsInDbDataSource.fetchFirstPage(any())).thenReturn(
+        whenever(productsInDbDataSource.fetchFirstProductsPage(any())).thenReturn(
             flowOf(
                 WooPosProductsDataSource.ProductsResult.Remote(
                     Result.success(products)

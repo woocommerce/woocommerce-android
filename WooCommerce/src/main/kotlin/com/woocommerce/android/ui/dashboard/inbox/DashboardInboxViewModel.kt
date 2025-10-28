@@ -10,13 +10,13 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.model.DashboardWidget.Type.INBOX
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.dashboard.DashboardViewModel
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetAction
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.RefreshEvent
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxViewModel.Factory
-import com.woocommerce.android.ui.inbox.InboxNoteActionEvent
 import com.woocommerce.android.ui.inbox.InboxNoteUi
 import com.woocommerce.android.ui.inbox.domain.InboxNote
 import com.woocommerce.android.ui.inbox.domain.InboxRepository
@@ -170,7 +170,12 @@ class DashboardInboxViewModel @AssistedInject constructor(
                 viewModelScope.launch {
                     inboxRepository.markInboxNoteAsActioned(clickedNote.id, actionId)
                 }
-                triggerEvent(InboxNoteActionEvent.OpenUrlEvent(it.url))
+                triggerEvent(
+                    Event.LaunchUrlInAuthenticatedWebView(
+                        url = it.url,
+                        screenTitle = UiString.UiStringText(clickedNote.title)
+                    )
+                )
             }
         }
     }

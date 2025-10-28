@@ -40,7 +40,6 @@ import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.Selec
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.LAST_YEAR
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.TODAY
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType.WEEK_TO_DATE
-import com.woocommerce.android.ui.common.webview.CanAutoAuthenticateInWebView
 import com.woocommerce.android.ui.dashboard.DashboardStatsUsageTracksEventEmitter
 import com.woocommerce.android.ui.dashboard.domain.ObserveLastUpdate
 import com.woocommerce.android.ui.feedback.FeedbackRepository
@@ -48,6 +47,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.DateUtils
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
@@ -68,7 +68,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -101,7 +100,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     private val dateUtils: DateUtils = mock()
     private val trackerEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
     private val observeAnalyticsCardsConfiguration: ObserveAnalyticsCardsConfiguration = mock()
-    private val canAutoAuthenticateInWebView: CanAutoAuthenticateInWebView = mock()
 
     private lateinit var localeProvider: LocaleProvider
     private lateinit var testLocale: Locale
@@ -774,28 +772,16 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given we can auto-authenticate in WebView, when see report is pressed, then open an authenticated webview`() =
+    fun `when see report is pressed, then open an authenticated webview`() =
         testBlocking {
-            whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
-            whenever(canAutoAuthenticateInWebView.invoke(any())).thenReturn(true)
             sut = givenAViewModel()
             sut.onSeeReport("https://report-url", ReportCard.Revenue)
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenAuthenticatedWebView::class.java)
+            assertThat(sut.event.value)
+                .isEqualTo(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView("https://report-url"))
         }
 
     @Test
-    fun `given we can't auto-authenticate in WebView, when see report is pressed, then open the default webview`() =
-        testBlocking {
-            whenever(selectedSite.getOrNull()).thenReturn(SiteModel())
-            whenever(canAutoAuthenticateInWebView.invoke(any())).thenReturn(false)
-            sut = givenAViewModel()
-            sut.onSeeReport("https://report-url", ReportCard.Revenue)
-            assertThat(sut.event.value).isInstanceOf(AnalyticsViewEvent.OpenUrl::class.java)
-        }
-
-    @Test
-    fun `when see report is pressed then track see report event`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(SiteModel().apply { setIsWpComStore(true) })
+    fun `when see report is pressed, then track see report event`() = testBlocking {
         sut = givenAViewModel()
         sut.onNewRangeSelection(WEEK_TO_DATE)
 
@@ -811,13 +797,7 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when see report is pressed then interaction tracked`() = testBlocking {
-        whenever(selectedSite.getOrNull()).thenReturn(
-            SiteModel().apply {
-                setIsWpComStore(true)
-                adminUrl = "https://report-url/wc-admin"
-            }
-        )
+    fun `when see report is pressed, then interaction tracked`() = testBlocking {
         configureSuccessfulStatsResponse()
         sut = givenAViewModel()
         // When the view is initialized we track some interactions
@@ -1041,7 +1021,6 @@ class AnalyticsHubViewModelTest : BaseUnitTest() {
             selectedSite,
             getReportUrl,
             observeAnalyticsCardsConfiguration,
-            canAutoAuthenticateInWebView,
             savedState
         )
     }

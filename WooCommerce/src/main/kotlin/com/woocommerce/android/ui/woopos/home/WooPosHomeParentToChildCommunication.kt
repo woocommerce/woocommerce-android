@@ -90,6 +90,10 @@ sealed class ParentToChildrenEvent {
             val discountAmount: BigDecimal,
         )
     }
+
+    sealed class SettingsEvent : ParentToChildrenEvent() {
+        data object RetrySyncRequested : SettingsEvent()
+    }
 }
 
 interface WooPosParentToChildrenEventReceiver {

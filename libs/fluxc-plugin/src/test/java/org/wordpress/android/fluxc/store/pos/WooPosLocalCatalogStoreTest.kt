@@ -145,17 +145,17 @@ class WooPosLocalCatalogStoreTest {
             createTestApiResponse(id = 1L, name = "Coffee Mug"),
             createTestApiResponse(id = 2L, name = "Laptop Stand")
         )
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.products.size).isEqualTo(remoteProducts.size)
         assertThat(syncResult.syncedCount).isEqualTo(2)
         assertThat(syncResult.hasMore).isFalse()
-        assertThat(syncResult.nextOffset).isEqualTo(0)
+        assertThat(syncResult.nextPage).isEqualTo(1)
     }
 
     @Test
@@ -164,31 +164,31 @@ class WooPosLocalCatalogStoreTest {
         val fullPageOfProducts = Array(100) { index ->
             createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
         }
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
             .thenReturn(WooResult(fullPageOfProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isTrue()
-        assertThat(syncResult.nextOffset).isEqualTo(100)
+        assertThat(syncResult.nextPage).isEqualTo(2)
         assertThat(syncResult.syncedCount).isEqualTo(100)
     }
 
     @Test
     fun `given no remote products, when fetching, then completes`() = runTest {
         // GIVEN
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.syncedCount).isEqualTo(0)
         assertThat(syncResult.hasMore).isFalse()
-        assertThat(syncResult.nextOffset).isEqualTo(0)
+        assertThat(syncResult.nextPage).isEqualTo(1)
     }
 
     @Test
@@ -233,15 +233,15 @@ class WooPosLocalCatalogStoreTest {
         val partialPageProducts = Array(50) { index ->
             createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
         }
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
             .thenReturn(WooResult(partialPageProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isFalse()
-        assertThat(syncResult.nextOffset).isEqualTo(0)
+        assertThat(syncResult.nextPage).isEqualTo(1)
         assertThat(syncResult.syncedCount).isEqualTo(50)
     }
 
@@ -609,14 +609,14 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `when server date header is missing, then sync returns invalid response error`() = runTest {
+    fun `given successful response, when server date header is missing, then sync returns invalid response error`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
         val response = WooResult(remoteProducts)
         whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
-            .thenReturn(null) // Missing server date
+            .thenReturn(null)
 
         // WHEN
         val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
@@ -624,6 +624,30 @@ class WooPosLocalCatalogStoreTest {
         // THEN
         assertThat(result.isFailure).isTrue()
         val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
+        assertThat(error).isNotNull
+    }
+
+    @Test
+    fun `given error response, when server date header is missing, then sync returns error response`() = runTest {
+        // GIVEN
+        val response = WooResult<Array<ProductApiResponse>> (
+            WooError(
+                type = WooErrorType.API_ERROR,
+                original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR,
+                message = "API error"
+            )
+        )
+        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+            .thenReturn(response)
+        whenever(headersParser.getServerDate(response))
+            .thenReturn(null)
+
+        // WHEN
+        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
         assertThat(error).isNotNull
     }
 

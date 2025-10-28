@@ -126,7 +126,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 69
+const val WC_DATABASE_VERSION = 71
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -228,7 +228,9 @@ const val WC_DATABASE_VERSION = 69
         AutoMigration(from = 65, to = 66),
         AutoMigration(from = 66, to = 67),
         AutoMigration(from = 67, to = 68),
-        AutoMigration(from = 68, to = 69)
+        AutoMigration(from = 68, to = 69),
+        AutoMigration(from = 69, to = 70),
+        AutoMigration(from = 70, to = 71),
     ]
 )
 @TypeConverters(

@@ -105,7 +105,10 @@ class CardReaderPaymentViewModel @Inject constructor(
                     it.receiptUrl,
                     it.documentName
                 )
-                is CardReaderPaymentEvent.PurchaseCardReaderTapped -> PurchaseCardReader(it.url)
+
+                is CardReaderPaymentEvent.PurchaseCardReaderTapped ->
+                    MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(it.url)
+
                 is CardReaderPaymentEvent.ShowPaymentErrorMessage -> ShowSnackbarInDialog(it.message)
                 is CardReaderPaymentEvent.ShowErrorMessage -> MultiLiveEvent.Event.ShowSnackbar(it.message)
             }
