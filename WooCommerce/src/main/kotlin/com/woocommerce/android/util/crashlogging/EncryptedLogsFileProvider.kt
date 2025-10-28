@@ -12,7 +12,7 @@ class EncryptedLogsFileProvider @Inject constructor(
 ) {
     suspend fun provide(): File {
         return withContext(dispatchers.io) {
-            val logs = wooLog.getCurrentLogEntries().take(LOG_ENTRIES_LIMIT)
+            val logs = wooLog.getCurrentLogEntries().takeLast(LOG_ENTRIES_LIMIT)
 
             File.createTempFile("log", "").apply {
                 appendText(logs.joinToString("\n"))
