@@ -304,16 +304,33 @@ private fun BookingListControls(
             )
         }
         if (state.isFilterButtonVisible) {
+            val areFiltersEnabled = state.enabledFiltersCount > 0
             OutlinedButton(
                 modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 colors = ButtonDefaults.outlinedButtonColors().copy(
-                    contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    containerColor = if (areFiltersEnabled) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    contentColor = if (areFiltersEnabled) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    }
                 ),
                 onClick = state.onFilterClick,
             ) {
                 Text(
-                    text = stringResource(R.string.bookings_filters_default_title),
+                    text = if (areFiltersEnabled) {
+                        stringResource(
+                            id = R.string.bookings_filters_enabled_title,
+                            state.enabledFiltersCount
+                        )
+                    } else {
+                        stringResource(R.string.bookings_filters_default_title)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
