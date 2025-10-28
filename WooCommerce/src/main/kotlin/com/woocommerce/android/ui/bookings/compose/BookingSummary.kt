@@ -75,9 +75,9 @@ fun BookingSummaryLoading() {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
-        SkeletonView(Modifier.size(173.dp, 22.dp))
-        SkeletonView(Modifier.size(131.dp, 22.dp))
-        SkeletonView(Modifier.size(161.dp, 22.dp))
+        SkeletonView(Modifier.size(173.dp, 18.dp))
+        SkeletonView(Modifier.size(131.dp, 18.dp))
+        SkeletonView(Modifier.size(161.dp, 18.dp))
         Spacer(Modifier.height(6.dp))
         SkeletonView(Modifier.size(138.dp, 22.dp))
     }
