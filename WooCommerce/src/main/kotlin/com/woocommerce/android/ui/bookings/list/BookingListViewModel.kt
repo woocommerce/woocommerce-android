@@ -76,35 +76,50 @@ class BookingListViewModel @Inject constructor(
             }
         )
     }
+    private val tabsState = selectedTab.map {
+        BookingListTabState(
+            selectedTab = it,
+            onTabChanged = ::onTabChanged
+        )
+    }
+    private val controlsState = combine(
+        selectedTab,
+        sortOption,
+    ) { tab, sort ->
+        BookingListControlsState(
+            selectedSortOption = sort,
+            isFilterButtonVisible = tab == BookingListTab.All,
+            onSortClick = ::onSortClicked,
+            onFilterClick = ::onFilterClicked
+        )
+    }
+    private val listSortBottomSheetState = combine(
+        sortOption,
+        isSortSheetVisible
+    ) { sortOption, sheetVisible ->
+        if (sheetVisible) {
+            BookingListSortBottomSheetState(
+                selectedOption = sortOption,
+                onSelect = ::onSortOptionSelected,
+                onDismiss = ::onSortDismiss
+            )
+        } else {
+            null
+        }
+    }
 
     val state = combine(
         contentState,
-        selectedTab,
-        sortOption,
-        isSortSheetVisible,
+        tabsState,
+        controlsState,
+        listSortBottomSheetState,
         searchState
-    ) { contentState, selectedTab, sortOption, sheetVisible, searchState ->
+    ) { contentState, tabsState, controlsState, listSortBottomSheetState, searchState ->
         BookingListViewState(
             contentState = contentState,
-            tabState = BookingListTabState(
-                selectedTab = selectedTab,
-                onTabChanged = ::onTabChanged
-            ),
-            controlsState = BookingListControlsState(
-                selectedSortOption = sortOption,
-                isFilterButtonVisible = selectedTab == BookingListTab.All,
-                onSortClick = ::onSortClicked,
-                onFilterClick = ::onFilterClicked
-            ),
-            sortBottomSheetState = if (sheetVisible) {
-                BookingListSortBottomSheetState(
-                    selectedOption = sortOption,
-                    onSelect = ::onSortOptionSelected,
-                    onDismiss = ::onSortDismiss
-                )
-            } else {
-                null
-            },
+            tabState = tabsState,
+            controlsState = controlsState,
+            sortBottomSheetState = listSortBottomSheetState,
             searchState = searchState
         )
     }.asLiveData()
