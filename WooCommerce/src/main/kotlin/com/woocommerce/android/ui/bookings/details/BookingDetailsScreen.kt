@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,6 +39,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -171,19 +171,7 @@ private fun BookingDetailsContent(
 @Composable
 private fun BookingDetailsLoading() {
     Column {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(2.dp)
-        ) {
-            SkeletonView(Modifier.size(173.dp, 22.dp))
-            SkeletonView(Modifier.size(131.dp, 22.dp))
-            SkeletonView(Modifier.size(161.dp, 22.dp))
-            Spacer(Modifier.height(6.dp))
-            SkeletonView(Modifier.size(138.dp, 22.dp))
-        }
+        BookingSummaryLoading()
         Spacer(Modifier.height(40.dp))
         Column(
             modifier = Modifier
