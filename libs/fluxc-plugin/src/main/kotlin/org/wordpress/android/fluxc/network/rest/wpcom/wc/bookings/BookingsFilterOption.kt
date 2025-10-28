@@ -46,4 +46,8 @@ data class BookingFilters(
             if (serviceEvent != null) count++
             return count
         }
+
+    companion object {
+        val EMPTY = BookingFilters()
+    }
 }

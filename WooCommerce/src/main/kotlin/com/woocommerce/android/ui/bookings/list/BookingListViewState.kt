@@ -7,7 +7,7 @@ data class BookingListViewState(
     val tabState: BookingListTabState,
     val controlsState: BookingListControlsState,
     val sortBottomSheetState: BookingListSortBottomSheetState?,
-    val searchState: BookingListSearchState
+    val searchState: BookingListSearchState,
 ) {
     val areFiltersActive: Boolean
         get() = controlsState.enabledFiltersCount > 0
@@ -41,7 +41,8 @@ data class BookingListControlsState(
     val isFilterButtonVisible: Boolean,
     val enabledFiltersCount: Int,
     val onSortClick: () -> Unit,
-    val onFilterClick: () -> Unit
+    val onFilterClick: () -> Unit,
+    val onClearFiltersClick: () -> Unit
 )
 
 data class BookingListItem(

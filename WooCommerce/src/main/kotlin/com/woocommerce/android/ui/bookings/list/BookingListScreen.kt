@@ -363,6 +363,8 @@ private fun EmptyView(
             EmptyListView(
                 selectedTab = state.tabState.selectedTab,
                 areFiltersActive = state.areFiltersActive,
+                onChangeFiltersClick = state.controlsState.onFilterClick,
+                onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
         }
@@ -373,6 +375,8 @@ private fun EmptyView(
 private fun EmptyListView(
     selectedTab: BookingListTab,
     areFiltersActive: Boolean,
+    onChangeFiltersClick: () -> Unit,
+    onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -421,13 +425,13 @@ private fun EmptyListView(
             Spacer(Modifier.height(24.dp))
             WCColoredButton(
                 text = stringResource(R.string.bookings_empty_state_change_filters_button),
-                onClick = { TODO() },
+                onClick = onChangeFiltersClick,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
             WCOutlinedButton(
                 text = stringResource(R.string.bookings_empty_state_clear_filters_button),
-                onClick = { TODO() },
+                onClick = onClearFiltersClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -507,7 +511,8 @@ private fun BookingListPreview() {
                     isFilterButtonVisible = true,
                     enabledFiltersCount = 0,
                     onSortClick = {},
-                    onFilterClick = {}
+                    onFilterClick = {},
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
@@ -542,6 +547,7 @@ private fun EmptyViewPreview() {
                     enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
@@ -576,6 +582,7 @@ private fun EmptySearchResultsViewPreview() {
                     enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(

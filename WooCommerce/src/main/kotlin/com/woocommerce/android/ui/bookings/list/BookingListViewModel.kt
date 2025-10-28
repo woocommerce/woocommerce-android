@@ -35,7 +35,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    bookingFilterRepository: BookingFilterRepository,
+    private val bookingFilterRepository: BookingFilterRepository,
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
@@ -98,7 +98,8 @@ class BookingListViewModel @Inject constructor(
             isFilterButtonVisible = tab == BookingListTab.All,
             enabledFiltersCount = filters.enabledFiltersCount,
             onSortClick = ::onSortClicked,
-            onFilterClick = ::onFilterClicked
+            onFilterClick = ::onFilterClicked,
+            onClearFiltersClick = ::onClearFiltersClicked
         )
     }
     private val listSortBottomSheetState = combine(
@@ -246,6 +247,12 @@ class BookingListViewModel @Inject constructor(
 
     private fun onFilterClicked() {
         triggerEvent(NavigateToFilters)
+    }
+
+    private fun onClearFiltersClicked() {
+        launch {
+            bookingFilterRepository.save(BookingFilters.EMPTY)
+        }
     }
 
     private fun FetchParams.prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
