@@ -488,6 +488,7 @@ private fun BookingListPreview() {
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
                     isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {}
                 ),
@@ -520,9 +521,10 @@ private fun EmptyViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
-                    isFilterButtonVisible = true
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
@@ -553,9 +555,10 @@ private fun EmptySearchResultsViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
-                    isFilterButtonVisible = true
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(

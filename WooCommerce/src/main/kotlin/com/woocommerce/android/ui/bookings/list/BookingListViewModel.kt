@@ -17,22 +17,25 @@ import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val bookingFilterRepository: BookingFilterRepository,
+    bookingFilterRepository: BookingFilterRepository,
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
@@ -45,6 +48,9 @@ class BookingListViewModel @Inject constructor(
         clazz = String::class.java,
         key = "searchQuery"
     )
+    private val filters = bookingFilterRepository.bookingFiltersFlow
+        .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
     private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
@@ -85,10 +91,12 @@ class BookingListViewModel @Inject constructor(
     private val controlsState = combine(
         selectedTab,
         sortOption,
-    ) { tab, sort ->
+        filters
+    ) { tab, sort, filters ->
         BookingListControlsState(
             selectedSortOption = sort,
             isFilterButtonVisible = tab == BookingListTab.All,
+            enabledFiltersCount = filters.enabledFiltersCount,
             onSortClick = ::onSortClicked,
             onFilterClick = ::onFilterClicked
         )
@@ -131,7 +139,6 @@ class BookingListViewModel @Inject constructor(
         monitorSearchAndFilterChanges()
     }
 
-    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private fun monitorSearchAndFilterChanges() {
         launch {
             var lastFetchParams: FetchParams? = null
@@ -147,7 +154,7 @@ class BookingListViewModel @Inject constructor(
                 selectedTab,
                 queryFlow,
                 sortOption,
-                bookingFilterRepository.bookingFiltersFlow
+                filters
             ) { tab, query, sort, filters ->
                 FetchParams(
                     searchQuery = query,
