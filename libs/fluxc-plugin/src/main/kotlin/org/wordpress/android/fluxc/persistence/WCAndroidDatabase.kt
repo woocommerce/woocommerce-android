@@ -126,7 +126,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 71
+const val WC_DATABASE_VERSION = 72
 
 @Database(
     version = WC_DATABASE_VERSION,
