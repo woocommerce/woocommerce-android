@@ -28,7 +28,7 @@ fun GetPaidScreen(
             WCWebView(
                 url = state.url,
                 userAgent = userAgent,
-                authenticator = if (state.shouldAuthenticate) authenticator else null,
+                authenticator = authenticator,
                 onUrlLoaded = viewModel::onUrlLoaded,
                 modifier = Modifier.padding(padding)
             )

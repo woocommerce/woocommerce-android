@@ -60,6 +60,8 @@ class BookingDetailsViewModel @Inject constructor(
     private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
     private val showCancelBookingDialog = MutableStateFlow(false)
 
+    private val paymentUpdateStatus = MutableStateFlow<PaymentUpdateStatus>(PaymentUpdateStatus.Idle)
+
     private val cancelBookingDialogState = combine(
         booking,
         showCancelBookingDialog,
@@ -102,7 +104,8 @@ class BookingDetailsViewModel @Inject constructor(
         bookingUiStateFlow,
         loadingState,
         cancelBookingDialogState,
-    ) { booking, bookingUiState, loadingState, cancelBookingDialog ->
+        paymentUpdateStatus,
+    ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
@@ -115,6 +118,8 @@ class BookingDetailsViewModel @Inject constructor(
                         onAttendanceStatusSelected(attendanceStatus)
                     }
                 },
+                onMarkAsPaid = ::onMarkAsPaid,
+                paymentUpdateStatus = paymentUpdateStatus,
                 dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
@@ -195,6 +200,19 @@ class BookingDetailsViewModel @Inject constructor(
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
             }
         cancelStatusState.value = CancelStatus.Idle
+    }
+
+    private fun onMarkAsPaid() = launch {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return@launch
+        }
+        paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
+        bookingsRepository.markAsPaid(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
+            }
+        paymentUpdateStatus.value = PaymentUpdateStatus.Idle
     }
 
     private suspend fun BookingMapper.buildBookingUiState(

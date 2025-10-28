@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboa
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.CashOnDeliverySource.PAYMENTS_HUB
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.CardReaderUpdateAvailable
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.NavigateToTapToPaySummaryScreen
-import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToast
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewModel.PaymentsHubEvents.ShowToastString
 import com.woocommerce.android.ui.payments.hub.PaymentsHubViewState.ListItem.NonToggleableListItem
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.util.UtmProvider
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import org.assertj.core.api.Assertions.assertThat
@@ -195,7 +195,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when user clicks on purchase card reader, then app opens external webview`() {
+    fun `when user clicks on purchase card reader, then app opens authenticated webview`() {
         whenever(wooStore.getStoreCountryCode(any())).thenReturn("US")
         whenever(paymentMenuUtmProvider.getUrlWithUtmParams(any())).thenReturn(
             "${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US"
@@ -206,13 +206,13 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         val event = (
-            viewModel.event.value as PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow
+            viewModel.event.value as MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView
             )
 
         assertThat(event.url)
             .isEqualTo("${WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY}US")
-        assertThat(event.titleRes)
-            .isEqualTo(R.string.card_reader_purchase_card_reader)
+        assertThat(event.screenTitle)
+            .isEqualTo(UiStringRes(R.string.card_reader_purchase_card_reader))
     }
 
     @Test
@@ -238,7 +238,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
         }!!.onClick!!.invoke()
 
         assertThat(
-            (viewModel.event.value as PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow).url
+            (viewModel.event.value as MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView).url
         ).isEqualTo("$WOOCOMMERCE_PURCHASE_CARD_READER_IN_COUNTRY$storeCountryCode")
     }
 
@@ -1244,7 +1244,8 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
                 ).onLearnMoreClicked.invoke()
 
             // THEN
-            assertThat(viewModel.event.getOrAwaitValue()).isInstanceOf(OpenGenericWebView::class.java)
+            assertThat(viewModel.event.getOrAwaitValue())
+                .isInstanceOf(MultiLiveEvent.Event.LaunchUrlInChromeTab::class.java)
         }
 
     @Test
@@ -1263,7 +1264,9 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             assertThat(viewModel.event.getOrAwaitValue()).isEqualTo(
-                OpenGenericWebView(AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY)
+                MultiLiveEvent.Event.LaunchUrlInChromeTab(
+                    AppUrls.WOOCOMMERCE_LEARN_MORE_ABOUT_PAYMENTS_CASH_ON_DELIVERY
+                )
             )
         }
 
@@ -1378,7 +1381,7 @@ class PaymentsHubViewModelTest : BaseUnitTest() {
 
             // THEN
             val event = viewModel.event.getOrAwaitValue()
-            assertThat((event as OpenGenericWebView).url).isEqualTo(url)
+            assertThat((event as MultiLiveEvent.Event.LaunchUrlInChromeTab).url).isEqualTo(url)
         }
 
     @Test
