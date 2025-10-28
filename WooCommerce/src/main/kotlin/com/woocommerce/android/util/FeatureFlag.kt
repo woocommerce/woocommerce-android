@@ -13,8 +13,7 @@ enum class FeatureFlag {
     WOO_POS_SURVEYS,
     WOO_POS_HISTORICAL_ORDERS_M1,
     WOO_POS_LOCAL_CATALOG_M1,
-    BOOKINGS_MVP,
-    STRIPE_GATEWAY_SUPPORT_IN_UK;
+    BOOKINGS_MVP;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -28,8 +27,7 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             WOO_POS_LOCAL_CATALOG_M1,
-            BOOKINGS_MVP,
-            STRIPE_GATEWAY_SUPPORT_IN_UK -> PackageUtils.isDebugBuild()
+            BOOKINGS_MVP -> PackageUtils.isDebugBuild()
         }
     }
 }
