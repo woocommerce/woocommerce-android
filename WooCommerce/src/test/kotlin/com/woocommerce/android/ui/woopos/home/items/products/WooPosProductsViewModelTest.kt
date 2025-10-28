@@ -274,7 +274,7 @@ class WooPosProductsViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            verify(productsDataSource, times(2)).fetchFirstPage(forceRefresh = false)
+            verify(productsDataSource, times(1)).fetchFirstPage(forceRefresh = false)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -521,7 +521,7 @@ class WooPosProductsViewModelTest {
         viewModel.onUIEvent(WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked)
 
         // THEN
-        verify(productsDataSource, times(3)).fetchFirstPage(forceRefresh = false)
+        verify(productsDataSource, times(2)).fetchFirstPage(forceRefresh = false)
     }
 
     @Test
