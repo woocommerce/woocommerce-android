@@ -69,7 +69,6 @@ class WooPosVariationsViewModel @Inject constructor(
         }
         loadVariations(
             productId = productId,
-            withPullToRefresh = false,
             forceRefresh = false
         )
     }
@@ -77,15 +76,10 @@ class WooPosVariationsViewModel @Inject constructor(
     private fun loadVariations(
         productId: Long,
         forceRefresh: Boolean,
-        withPullToRefresh: Boolean,
     ) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildReloadingState()
-            } else {
-                WooPosVariationsViewState.Loading()
-            }
+            _viewState.value = WooPosVariationsViewState.Loading()
 
             dataSource.fetchVariationsFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
@@ -207,7 +201,7 @@ class WooPosVariationsViewModel @Inject constructor(
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = false)
+                loadVariations(event.productId, forceRefresh = true)
             }
 
             is WooPosVariationsUIEvents.OnItemClicked -> {
