@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -58,10 +59,7 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         observeProductsContinuously()
-        loadProducts(
-            forceRefreshProducts = false,
-            withPullToRefresh = false,
-        )
+        loadProducts(forceRefreshProducts = false)
     }
 
     private fun observeProductsContinuously() {
@@ -92,12 +90,7 @@ class WooPosProductsViewModel @Inject constructor(
         viewModelScope.launch {
             parentToChildrenEventReceiver.events.collect { event ->
                 when (event) {
-                    ParentToChildrenEvent.RefreshProductList -> {
-                        loadProducts(
-                            forceRefreshProducts = true,
-                            withPullToRefresh = false,
-                        )
-                    }
+                    ParentToChildrenEvent.RefreshProductList -> loadProducts(forceRefreshProducts = true)
 
                     ParentToChildrenEvent.BackFromCheckoutToCartClicked,
                     is ParentToChildrenEvent.BarcodeEvent,
@@ -140,12 +133,7 @@ class WooPosProductsViewModel @Inject constructor(
                 }
             }
 
-            WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> {
-                loadProducts(
-                    forceRefreshProducts = false,
-                    withPullToRefresh = false,
-                )
-            }
+            WooPosProductsUIEvent.ProductsLoadingErrorRetryButtonClicked -> loadProducts(forceRefreshProducts = false)
         }
     }
 
@@ -180,18 +168,11 @@ class WooPosProductsViewModel @Inject constructor(
         }
     }
 
-    private fun loadProducts(
-        forceRefreshProducts: Boolean,
-        withPullToRefresh: Boolean,
-    ) {
+    private fun loadProducts(forceRefreshProducts: Boolean) {
         loadProductsJob?.cancel()
         loadMoreProductsJob?.cancel()
         loadProductsJob = viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildReloadingState()
-            } else {
-                WooPosProductsViewState.Loading()
-            }
+            _viewState.value = WooPosProductsViewState.Loading()
 
             dataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->
                 when (result) {
@@ -354,22 +335,13 @@ class WooPosProductsViewModel @Inject constructor(
             val result = dataSource.refreshProducts()
             result.onSuccess { posSyncResult ->
                 when (posSyncResult) {
-                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success -> {
+                    is PosLocalCatalogSyncResult.Success -> {
                         _viewState.value = hidePTRIndicator()
                     }
-                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure -> {
-                        sendEventToParent(
-                            ChildToParentEvent.ToastMessageDisplayed(
-                                message = resourceProvider.getString(R.string.something_went_wrong_try_again)
-                            )
-                        )
-                        _viewState.value = hidePTRIndicator()
+                    is PosLocalCatalogSyncResult.Failure -> {
+                        handlePTRError()
                     }
-                    is ProductsResult.Cached -> {
-                        if (posSyncResult.products.isNotEmpty()) {
-                            _viewState.value = posSyncResult.products.toContentState()
-                        }
-                    }
+                    is ProductsResult.Cached -> Unit // PTR is not expected to deliver cached result
                     is ProductsResult.Remote -> {
                         if (posSyncResult.productsResult.isSuccess) {
                             val products = posSyncResult.productsResult.getOrThrow()
@@ -379,14 +351,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 WooPosProductsViewState.Empty()
                             }
                         } else {
-                            sendEventToParent(
-                                ChildToParentEvent.ToastMessageDisplayed(
-                                    message = resourceProvider.getString(
-                                        R.string.something_went_wrong_try_again
-                                    )
-                                )
-                            )
-                            _viewState.value = hidePTRIndicator()
+                            handlePTRError()
                         }
                     }
                     is VariationsResult -> {
@@ -394,14 +359,20 @@ class WooPosProductsViewModel @Inject constructor(
                     }
                 }
             }.onFailure { exception ->
-                sendEventToParent(
-                    ChildToParentEvent.ToastMessageDisplayed(
-                        message = resourceProvider.getString(R.string.something_went_wrong_try_again)
-                    )
-                )
-                _viewState.value = hidePTRIndicator()
+                handlePTRError()
             }
         }
+    }
+
+    private fun handlePTRError() {
+        sendEventToParent(
+            ChildToParentEvent.ToastMessageDisplayed(
+                message = resourceProvider.getString(
+                    R.string.something_went_wrong_try_again
+                )
+            )
+        )
+        _viewState.value = hidePTRIndicator()
     }
 
     private fun hidePTRIndicator(): WooPosProductsViewState = when (val currentState = _viewState.value) {
