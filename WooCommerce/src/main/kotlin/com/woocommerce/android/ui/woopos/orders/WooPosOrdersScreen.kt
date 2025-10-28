@@ -100,7 +100,6 @@ fun WooPosOrdersScreen(
         }
     }
 
-
     WooPosOrdersScreen(
         state = state,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
