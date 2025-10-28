@@ -664,6 +664,7 @@ internal val MIGRATION_21_22 = Migration(21, 22) { database ->
     database.execSQL("CREATE INDEX IF NOT EXISTS `index_AddonEntity_globalGroupLocalId` ON `AddonEntity` (`globalGroupLocalId`)")
     database.execSQL("CREATE INDEX IF NOT EXISTS `index_InboxNoteActions_inboxNoteLocalId` ON `InboxNoteActions` (`inboxNoteLocalId`)")
 }
+
 internal class AutoMigration23to24 : AutoMigrationSpec
 
 /**
@@ -1082,5 +1083,168 @@ internal class AutoMigration37to38 : AutoMigrationSpec
 internal val MIGRATION_62_63 = object : Migration(62, 63) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE PosProductEntity ADD COLUMN variations TEXT NOT NULL DEFAULT ''")
+    }
+}
+
+@Suppress("LongMethod")
+internal val MIGRATION_71_72 = object : Migration(71, 72) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        // 1) Create new table with the new schema (stableId TEXT PRIMARY KEY)
+        db.execSQL(
+            """"
+              CREATE TABLE IF NOT EXISTS `CustomerEntity_new` (
+              `stableId` TEXT NOT NULL,
+              `localSiteId` INTEGER NOT NULL,
+              `remoteCustomerId` INTEGER NOT NULL,
+              `avatarUrl` TEXT NOT NULL,
+              `dateCreated` TEXT NOT NULL,
+              `dateCreatedGmt` TEXT NOT NULL,
+              `dateModified` TEXT NOT NULL,
+              `dateModifiedGmt` TEXT NOT NULL,
+              `email` TEXT NOT NULL,
+              `firstName` TEXT NOT NULL,
+              `isPayingCustomer` INTEGER NOT NULL,
+              `lastName` TEXT NOT NULL,
+              `role` TEXT NOT NULL,
+              `username` TEXT NOT NULL,
+              `billingAddress1` TEXT NOT NULL,
+              `billingAddress2` TEXT NOT NULL,
+              `billingCity` TEXT NOT NULL,
+              `billingCompany` TEXT NOT NULL,
+              `billingCountry` TEXT NOT NULL,
+              `billingEmail` TEXT NOT NULL,
+              `billingFirstName` TEXT NOT NULL,
+              `billingLastName` TEXT NOT NULL,
+              `billingPhone` TEXT NOT NULL,
+              `billingPostcode` TEXT NOT NULL,
+              `billingState` TEXT NOT NULL,
+              `shippingAddress1` TEXT NOT NULL,
+              `shippingAddress2` TEXT NOT NULL,
+              `shippingCity` TEXT NOT NULL,
+              `shippingCompany` TEXT NOT NULL,
+              `shippingCountry` TEXT NOT NULL,
+              `shippingFirstName` TEXT NOT NULL,
+              `shippingLastName` TEXT NOT NULL,
+              `shippingPostcode` TEXT NOT NULL,
+              `shippingState` TEXT NOT NULL,
+              `analyticsCustomerId` INTEGER,
+              PRIMARY KEY(`stableId`)
+            )
+            """.trimIndent()
+        )
+
+        // 2) Build a temporary deduplication table to collapse duplicates that map to the same stableId
+        db.execSQL(
+            """
+            CREATE TEMP TABLE IF NOT EXISTS `tmpCustomerDedup` (
+              `stableId` TEXT NOT NULL PRIMARY KEY,
+              `keepId` INTEGER NOT NULL
+            )
+            """.trimIndent()
+        )
+        // Populate the dedup table: compute stableId for each old row and keep the row with the highest id per stableId
+        db.execSQL(
+            """
+            INSERT OR REPLACE INTO `tmpCustomerDedup` (stableId, keepId)
+            SELECT stableId, MAX(id) AS keepId FROM (
+              SELECT `id`,
+                CASE
+                  WHEN `remoteCustomerId` > 0 THEN 'site:' || `localSiteId` || '|wp:' || `remoteCustomerId`
+                  WHEN `analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0 THEN 'site:' || `localSiteId` || '|analytics:' || `analyticsCustomerId`
+                  ELSE 'site:' || `localSiteId` || '|wp:' || `remoteCustomerId`
+                END AS `stableId`
+              FROM `CustomerEntity`
+            )
+            GROUP BY stableId
+            """.trimIndent()
+        )
+
+        // 3) Backfill by copying only the deduplicated rows from the old table, joining on keepId
+        db.execSQL(
+            """
+            INSERT INTO `CustomerEntity_new` (
+              `stableId`,
+              `localSiteId`,
+              `remoteCustomerId`,
+              `avatarUrl`,
+              `dateCreated`,
+              `dateCreatedGmt`,
+              `dateModified`,
+              `dateModifiedGmt`,
+              `email`,
+              `firstName`,
+              `isPayingCustomer`,
+              `lastName`,
+              `role`,
+              `username`,
+              `billingAddress1`,
+              `billingAddress2`,
+              `billingCity`,
+              `billingCompany`,
+              `billingCountry`,
+              `billingEmail`,
+              `billingFirstName`,
+              `billingLastName`,
+              `billingPhone`,
+              `billingPostcode`,
+              `billingState`,
+              `shippingAddress1`,
+              `shippingAddress2`,
+              `shippingCity`,
+              `shippingCompany`,
+              `shippingCountry`,
+              `shippingFirstName`,
+              `shippingLastName`,
+              `shippingPostcode`,
+              `shippingState`,
+              `analyticsCustomerId`
+            )
+            SELECT
+              d.`stableId`,
+              c.`localSiteId`,
+              c.`remoteCustomerId`,
+              c.`avatarUrl`,
+              c.`dateCreated`,
+              c.`dateCreatedGmt`,
+              c.`dateModified`,
+              c.`dateModifiedGmt`,
+              c.`email`,
+              c.`firstName`,
+              c.`isPayingCustomer`,
+              c.`lastName`,
+              c.`role`,
+              c.`username`,
+              c.`billingAddress1`,
+              c.`billingAddress2`,
+              c.`billingCity`,
+              c.`billingCompany`,
+              c.`billingCountry`,
+              c.`billingEmail`,
+              c.`billingFirstName`,
+              c.`billingLastName`,
+              c.`billingPhone`,
+              c.`billingPostcode`,
+              c.`billingState`,
+              c.`shippingAddress1`,
+              c.`shippingAddress2`,
+              c.`shippingCity`,
+              c.`shippingCompany`,
+              c.`shippingCountry`,
+              c.`shippingFirstName`,
+              c.`shippingLastName`,
+              c.`shippingPostcode`,
+              c.`shippingState`,
+              c.`analyticsCustomerId`
+            FROM `CustomerEntity` c
+            INNER JOIN `tmpCustomerDedup` d ON c.`id` = d.`keepId`
+            """.trimIndent()
+        )
+
+        // 4) Clean up temporary dedup table
+        db.execSQL("DROP TABLE IF EXISTS `tmpCustomerDedup`")
+
+        // 5) Replace old table with new one
+        db.execSQL("DROP TABLE `CustomerEntity`")
+        db.execSQL("ALTER TABLE `CustomerEntity_new` RENAME TO `CustomerEntity`")
     }
 }
