@@ -125,7 +125,7 @@ class WooPosLocalCatalogStore @Inject constructor(
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = 0,
+                page = 1,
                 pageSize = 1,
                 includeStatus = null
             )
@@ -153,14 +153,14 @@ class WooPosLocalCatalogStore @Inject constructor(
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
-     * @param [offset] Starting offset for pagination
+     * @param [page] Page for pagination.
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
     suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
-        offset: Int = 0,
+        page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         includeStatus: List<CoreProductStatus>? = null,
     ): Result<WooPosLocalCatalogFetchProductsResult> =
@@ -170,7 +170,7 @@ class WooPosLocalCatalogStore @Inject constructor(
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = offset,
+                page = page,
                 pageSize = validPageSize,
                 includeStatus = includeStatus
             )
@@ -189,7 +189,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                         products = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
-                        nextOffset = offset,
+                        nextPage = page,
                         totalPages = 0,
                         serverDate = serverDate
                     )
@@ -215,7 +215,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                             products = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
-                            nextOffset = if (hasMore) offset + products.size else offset,
+                            nextPage = if (hasMore) page + 1 else page,
                             totalPages = totalPages,
                             serverDate = serverDate,
                         )

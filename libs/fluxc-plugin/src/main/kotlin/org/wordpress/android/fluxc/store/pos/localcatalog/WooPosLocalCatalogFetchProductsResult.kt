@@ -6,7 +6,7 @@ data class WooPosLocalCatalogFetchProductsResult(
     val products: List<WooPosProductEntity>,
     val syncedCount: Int,
     val hasMore: Boolean,
-    val nextOffset: Int,
+    val nextPage: Int,
     val totalPages: Int,
     val serverDate: String,
 )
