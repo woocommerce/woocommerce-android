@@ -3811,6 +3811,7 @@
     <string name="woopos_orders_loading_error_retry_button">Retry</string>
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
+    <string name="woopos_orders_pagination_try_again_label">Retry</string>
 
     <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
