@@ -47,7 +47,10 @@ class UPSDAPTermsOfServiceBottomSheetFragment : WCBottomSheetDialogFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is MultiLiveEvent.Event.ExitWithResult<*> -> navigateBackWithNotice(TOS_ACCEPTED_NOTICE_KEY)
-                is MultiLiveEvent.Event.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab -> {
+                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                }
+
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     viewLifecycleOwner.lifecycleScope.launch {
                         snackbarHostState.showSnackbar(message = getString(event.message))

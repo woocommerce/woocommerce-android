@@ -22,7 +22,13 @@ import org.mockito.kotlin.verify
 internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: TaxRateSelectorViewModel
     private val tracker: AnalyticsTrackerWrapper = mock()
-    private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(mock()).toSavedStateHandle()
+    private val savedStateHandle: SavedStateHandle = TaxRateSelectorFragmentArgs(
+        dialogState = TaxRatesInfoDialogViewState(
+            taxBasedOnSettingText = "Test Setting Text",
+            taxLineTexts = emptyList(),
+            taxRatesSettingsUrl = "https://example.com/settings"
+        )
+    ).toSavedStateHandle()
     private val taxRateListHandler: TaxRateListHandler = mock()
     private val getTaxRatePercentageValueText: GetTaxRatePercentageValueText = mock()
     private val getTaxRateLabel: GetTaxRateLabel = mock()

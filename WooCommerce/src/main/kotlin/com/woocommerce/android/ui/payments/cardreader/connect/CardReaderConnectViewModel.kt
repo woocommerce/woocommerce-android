@@ -33,8 +33,6 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenAuthenticatedWebView
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
@@ -518,12 +516,7 @@ class CardReaderConnectViewModel @Inject constructor(
     private fun triggerOpenUrlEventAndExitIfNeeded(
         result: CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress
     ) {
-        if (selectedSite.getIfExists()?.isWPCom == true || selectedSite.getIfExists()?.isWPComAtomic == true) {
-            triggerEvent(OpenAuthenticatedWebView(result.url))
-        } else {
-            triggerEvent(OpenGenericWebView(result.url))
-            exitFlow(connected = false)
-        }
+        triggerEvent(Event.LaunchUrlInAuthenticatedWebView(result.url))
     }
 
     private fun onKeepSearchingClicked() {
@@ -540,7 +533,7 @@ class CardReaderConnectViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         tracker.trackLearnMoreConnectionClicked()
-        triggerEvent(OpenGenericWebView(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
+        triggerEvent(Event.LaunchUrlInChromeTab(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
     private fun onReaderConnected(cardReader: CardReader) {
