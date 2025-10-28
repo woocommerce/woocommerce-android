@@ -215,6 +215,7 @@
     <color name="light_colored_button_text_secondary">@color/color_primary</color>
     <color name="primary_colored_button_background">@color/woo_purple_40</color>
     <color name="text_button_over_bottom_sheet">@color/color_primary</color>
+    <color name="button_outlined_text">@color/white</color>
 
     <!--
     Analytics
