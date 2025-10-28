@@ -58,32 +58,7 @@ class WooPosProductsViewModel @Inject constructor(
 
     init {
         listenEventsFromParent()
-        observeProductsContinuously()
         loadProducts(forceRefreshProducts = false)
-    }
-
-    private fun observeProductsContinuously() {
-        viewModelScope.launch {
-            dataSource.fetchFirstPage(forceRefresh = false).collect { result ->
-                when (result) {
-                    is ProductsResult.Cached -> {
-                        if (result.products.isNotEmpty()) {
-                            _viewState.value = result.products.toContentState()
-                        }
-                    }
-                    is ProductsResult.Remote -> {
-                        if (result.productsResult.isSuccess) {
-                            val products = result.productsResult.getOrThrow()
-                            _viewState.value = if (products.isNotEmpty()) {
-                                products.toContentState()
-                            } else {
-                                WooPosProductsViewState.Empty()
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun listenEventsFromParent() {

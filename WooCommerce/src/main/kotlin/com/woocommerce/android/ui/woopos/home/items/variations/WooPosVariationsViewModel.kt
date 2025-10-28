@@ -67,36 +67,11 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch {
             dataSource.resetVariationsListHandler()
         }
-        observeVariationsContinuously(productId)
         loadVariations(
             productId = productId,
             withPullToRefresh = false,
             forceRefresh = false
         )
-    }
-
-    private fun observeVariationsContinuously(productId: Long) {
-        viewModelScope.launch {
-            dataSource.fetchVariationsFirstPage(productId, forceRefresh = false).collect { result ->
-                when (result) {
-                    is VariationsResult.Cached -> {
-                        if (result.data.isNotEmpty()) {
-                            _viewState.value = createContentState(result.data, productId)
-                        }
-                    }
-                    is VariationsResult.Remote -> {
-                        if (result.result.isSuccess) {
-                            val variations = result.result.getOrThrow()
-                            _viewState.value = if (variations.isNotEmpty()) {
-                                createContentState(variations, productId)
-                            } else {
-                                WooPosVariationsViewState.Empty()
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 
     private fun loadVariations(
