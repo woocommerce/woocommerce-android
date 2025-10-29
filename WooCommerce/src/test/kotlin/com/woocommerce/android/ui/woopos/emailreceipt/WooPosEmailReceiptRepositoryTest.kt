@@ -148,6 +148,11 @@ class WooPosEmailReceiptRepositoryTest {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
 
+        val onOrderChangedError = mock<WCOrderStore.OnOrderChanged> {
+            on { isError }.thenReturn(true)
+        }
+        whenever(orderStore.fetchSingleOrder(siteModel, orderId)).thenReturn(onOrderChangedError)
+
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
