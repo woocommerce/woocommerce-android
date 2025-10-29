@@ -21,7 +21,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosPaginatedFetchResult
 import kotlin.Result as KotlinResult
 
 class WooPosSyncVariationsActionTest {
@@ -344,8 +344,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations,
+                        WooPosPaginatedFetchResult(
+                            items = variations,
                             syncedCount = variationsCount,
                             hasMore = false,
                             nextPage = 2,
@@ -372,8 +372,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = page1Count,
                             hasMore = true,
                             nextPage = 2,
@@ -388,8 +388,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations2,
+                        WooPosPaginatedFetchResult(
+                            items = variations2,
                             syncedCount = page2Count,
                             hasMore = page3Count > 0,
                             nextPage = 3,
@@ -411,8 +411,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations3,
+                        WooPosPaginatedFetchResult(
+                            items = variations3,
                             syncedCount = page3Count,
                             hasMore = false,
                             nextPage = 4,
@@ -429,8 +429,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList<WooPosVariationEntity>(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = 1,
@@ -458,8 +458,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 2,
@@ -479,8 +479,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList<WooPosVariationEntity>(),
                             syncedCount = 0,
                             hasMore = false, // Changed to false so it stops fetching after zero items
                             nextPage = 1,
@@ -501,8 +501,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 2,
@@ -517,8 +517,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations2,
+                        WooPosPaginatedFetchResult(
+                            items = variations2,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 3,
@@ -533,8 +533,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations3,
+                        WooPosPaginatedFetchResult(
+                            items = variations3,
                             syncedCount = 50,
                             hasMore = false,
                             nextPage = 4,

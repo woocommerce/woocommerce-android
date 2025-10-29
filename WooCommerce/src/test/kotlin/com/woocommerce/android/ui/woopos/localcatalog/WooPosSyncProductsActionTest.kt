@@ -20,8 +20,8 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosPaginatedFetchResult
 import kotlin.Result as KotlinResult
 
 class WooPosSyncProductsActionTest {
@@ -343,8 +343,8 @@ class WooPosSyncProductsActionTest {
             )
         ).thenReturn(
             KotlinResult.success(
-                WooPosLocalCatalogFetchProductsResult(
-                    products = trashProducts,
+                WooPosPaginatedFetchResult(
+                    items = trashProducts,
                     syncedCount = productsCount,
                     hasMore = false,
                     nextPage = 1,
@@ -371,8 +371,8 @@ class WooPosSyncProductsActionTest {
             )
         ).thenReturn(
             KotlinResult.success(
-                WooPosLocalCatalogFetchProductsResult(
-                    products = trashPage1,
+                WooPosPaginatedFetchResult(
+                    items = trashPage1,
                     syncedCount = 10,
                     hasMore = true,
                     nextPage = 2,
@@ -392,8 +392,8 @@ class WooPosSyncProductsActionTest {
             )
         ).thenReturn(
             KotlinResult.success(
-                WooPosLocalCatalogFetchProductsResult(
-                    products = trashPage2,
+                WooPosPaginatedFetchResult(
+                    items = trashPage2,
                     syncedCount = 10,
                     hasMore = true,
                     nextPage = 3,
@@ -413,8 +413,8 @@ class WooPosSyncProductsActionTest {
             )
         ).thenReturn(
             KotlinResult.success(
-                WooPosLocalCatalogFetchProductsResult(
-                    products = trashPage3,
+                WooPosPaginatedFetchResult(
+                    items = trashPage3,
                     syncedCount = 5,
                     hasMore = false,
                     nextPage = 3,
@@ -556,8 +556,8 @@ class WooPosSyncProductsActionTest {
         )
             .thenReturn(
                 KotlinResult.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = mockProducts,
+                    WooPosPaginatedFetchResult(
+                        items = mockProducts,
                         syncedCount = syncedCount,
                         hasMore = hasMore,
                         nextPage = if (hasMore) page + 1 else page,
@@ -577,8 +577,8 @@ class WooPosSyncProductsActionTest {
             )
         ).thenReturn(
             KotlinResult.success(
-                WooPosLocalCatalogFetchProductsResult(
-                    products = mockProducts,
+                WooPosPaginatedFetchResult(
+                    items = mockProducts,
                     syncedCount = syncedCount,
                     hasMore = hasMore,
                     nextPage = if (hasMore) page + 1 else page,
