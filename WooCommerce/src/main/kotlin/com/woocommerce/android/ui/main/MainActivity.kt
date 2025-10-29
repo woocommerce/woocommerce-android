@@ -17,6 +17,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -25,6 +26,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.BuildCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -112,6 +114,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -306,6 +309,7 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
+        handleOnBackNavigationCompat()
 
         super.onCreate(savedInstanceState)
 
@@ -372,6 +376,29 @@ class MainActivity :
             viewModel.handleIncomingAppLink(intent?.data)
             viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
+        }
+    }
+
+    private fun handleOnBackNavigationCompat() {
+        if (BuildCompat.isAtLeastT()) {
+            onBackPressedDispatcher
+                .addCallback(this) {
+                    WooLog.d(WooLog.T.UTILS, "Predictive back: New back navigation callback")
+
+                    AnalyticsTracker.trackBackPressed(this@MainActivity)
+                    getActiveChildFragment()?.let { fragment ->
+                        if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                            return@addCallback
+                        }
+                    }
+                    supportFragmentManager.primaryNavigationFragment?.let { fragment ->
+                        updateAppBarVisibility(fragment)
+                    }
+                    if (isAtNavigationRoot()) {
+                        remove()
+                        onBackPressedDispatcher.onBackPressed()
+                    }
+                }
         }
     }
 
@@ -459,8 +486,18 @@ class MainActivity :
         }
     }
 
-    @Deprecated("Deprecated in Java")
+    /**
+     * The custom back navigation compatible with Android 33 onwards is provided in handleOnBackNavigationCompat()
+     * function from this class.
+     */
+    @Deprecated(
+        """This method has been deprecated in favor of using the
+      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.
+      The OnBackPressedDispatcher controls how back button events are dispatched
+      to one or more {@link OnBackPressedCallback} objects."""
+    )
     override fun onBackPressed() {
+        WooLog.d(WooLog.T.UTILS, "Predictive back: Legacy OnBackPressed called")
         AnalyticsTracker.trackBackPressed(this)
 
         getActiveChildFragment()?.let { fragment ->
@@ -472,7 +509,6 @@ class MainActivity :
         supportFragmentManager.primaryNavigationFragment?.let { fragment ->
             updateAppBarVisibility(fragment)
         }
-
         super.onBackPressed()
     }
 
@@ -537,7 +573,7 @@ class MainActivity :
     /**
      * Get the actual primary navigation Fragment from the support manager
      */
-    private fun getHostChildFragment(): Fragment? {
+    fun getHostChildFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.primaryNavigationFragment
         if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
             return navHostFragment.childFragmentManager.fragments[0]
