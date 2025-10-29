@@ -82,7 +82,6 @@ class WooPosOrdersDataSource @Inject constructor(
         }
     }
 
-
     private fun updateCachedOrderIfPresent(order: Order) {
         val current = ordersCache.getAll()
         val idx = current.indexOfFirst { it.id == order.id }
