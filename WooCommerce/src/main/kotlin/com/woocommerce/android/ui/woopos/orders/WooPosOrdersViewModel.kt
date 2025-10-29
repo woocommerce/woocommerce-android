@@ -230,7 +230,7 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun onBackFromSuccesfullySendingEmailReceipt() {
+    fun onBackFromSuccessfullySendingEmailReceipt() {
         refreshSelectedOrder()
     }
 

@@ -89,7 +89,7 @@ fun WooPosOrdersScreen(
     val state by viewModel.state.collectAsState()
 
     if (navigatedFromEmailReceiptSent) {
-        viewModel.onBackFromSuccesfullySendingEmailReceipt()
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
     }
 
     val context = LocalContext.current
