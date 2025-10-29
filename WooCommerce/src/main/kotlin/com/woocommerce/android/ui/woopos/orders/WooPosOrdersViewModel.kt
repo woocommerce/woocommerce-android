@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -35,6 +36,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(

@@ -126,6 +126,21 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
+        data object GoToOrdersTapped: Event() {
+            override val name: String = "orders_menu_item_tapped"
+        }
+
+        data class OrdersListFetched(val milimetersSinceRequestSent: Boolean): Event()  {
+            override val name: String = "orders_list_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to milimetersSinceRequestSent.toString()
+                    )
+                )
+            }
+        }
 
         data class BarcodeScanned(
             val scanDurationMs: Long,

@@ -3,6 +3,9 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -30,7 +33,8 @@ class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersInMemoryCache
+    private val ordersCache: WooPosOrdersInMemoryCache,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val page = AtomicInteger(1)
@@ -49,6 +53,7 @@ class WooPosOrdersDataSource @Inject constructor(
 
         val result = loadFirstPage()
         result.onSuccess {
+            analyticsTracker.track(OrdersListFetched())
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
         }.onFailure {
