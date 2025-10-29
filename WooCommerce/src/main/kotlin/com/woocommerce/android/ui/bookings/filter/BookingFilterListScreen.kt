@@ -72,7 +72,8 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                 .padding(innerPadding)
         )
 
-        // Make sure this is called after the NavHost to properly receive back events
+        // The navigation is driven by the state, so we handle back navigation by calling onClose
+        // We need to ensure that this called after NavHost to make sure we receive back events
         BackHandler {
             state.onClose()
         }
