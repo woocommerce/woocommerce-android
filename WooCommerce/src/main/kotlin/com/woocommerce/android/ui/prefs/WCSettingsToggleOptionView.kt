@@ -59,7 +59,7 @@ class WCSettingsToggleOptionView @JvmOverloads constructor(
                     R.styleable.WCSettingsToggleOptionView_toggleOptionIcon,
                     R.styleable.WCSettingsToggleOptionView_tools_toggleOptionIcon
                 ).let {
-                    UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                    UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(
                         binding.toggleSettingIcon,
                         it,
                         setInvisible = true

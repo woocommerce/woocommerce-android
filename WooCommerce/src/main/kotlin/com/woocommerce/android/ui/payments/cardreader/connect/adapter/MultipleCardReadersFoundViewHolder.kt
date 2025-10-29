@@ -50,7 +50,7 @@ sealed class MultipleCardReadersFoundViewHolder(
         override fun onBind(uiState: ListItemViewState) {
             uiState as ScanningInProgressListItem
             UiHelpers.setTextOrHide(binding.cardReaderConnectProgressLabel, uiState.label)
-            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+            UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(
                 binding.cardReaderConnectProgressIndicator,
                 uiState.scanningIcon
             )

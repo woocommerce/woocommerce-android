@@ -87,15 +87,13 @@ object UiHelpers {
         }
     }
 
-    fun setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+    fun setImageOrHideOnCompactScreenHeightSizeClass(
         imageView: ImageView,
         @DrawableRes resId: Int?,
         setInvisible: Boolean = false
     ) {
-        val isLandscape = DisplayUtils.isLandscape(imageView.context)
-        val isNotCompact = imageView.context.windowHeightSizeClass >= WindowSizeClass.Medium
-        val shouldShowBasedOnOrientationAndSize = !isLandscape || isNotCompact
-        val showImage = resId != null && shouldShowBasedOnOrientationAndSize
+        val largeHeightThanCompact = imageView.context.windowHeightSizeClass >= WindowSizeClass.Medium
+        val showImage = resId != null && largeHeightThanCompact
         updateVisibility(imageView, showImage, setInvisible)
         resId?.let {
             imageView.setImageResource(resId)

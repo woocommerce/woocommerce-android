@@ -21,7 +21,7 @@ class CardReaderTutorialViewPagerItemFragment :
             binding.labelTextView.setText(args.getInt(ARG_LABEL_ID))
             binding.detailTextView.setText(args.getInt(ARG_DETAIL_ID))
 
-            UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+            UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(
                 binding.imageView,
                 args.getInt(ARG_DRAWABLE_ID)
             )
