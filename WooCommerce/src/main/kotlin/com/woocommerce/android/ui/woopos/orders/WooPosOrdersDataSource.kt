@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import android.os.SystemClock
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
@@ -51,9 +52,12 @@ class WooPosOrdersDataSource @Inject constructor(
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
 
+        val startMs = SystemClock.elapsedRealtime()
         val result = loadFirstPage()
+        val elapsedMs = SystemClock.elapsedRealtime() - startMs
+
         result.onSuccess {
-            analyticsTracker.track(OrdersListFetched())
+            analyticsTracker.track(OrdersListFetched(elapsedMs))
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
         }.onFailure {

@@ -130,7 +130,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "orders_menu_item_tapped"
         }
 
-        data class OrdersListFetched(val milimetersSinceRequestSent: Boolean): Event()  {
+        data class OrdersListFetched(val milimetersSinceRequestSent: Long): Event()  {
             override val name: String = "orders_list_fetched"
 
             init {
