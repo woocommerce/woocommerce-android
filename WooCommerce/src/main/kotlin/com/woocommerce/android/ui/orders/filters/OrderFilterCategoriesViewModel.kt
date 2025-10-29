@@ -115,6 +115,7 @@ class OrderFilterCategoriesViewModel @Inject constructor(
                 )
             }
         )
+        saveFiltersSelection(_categories.list)
     }
 
     fun onClearProductFilter() {
