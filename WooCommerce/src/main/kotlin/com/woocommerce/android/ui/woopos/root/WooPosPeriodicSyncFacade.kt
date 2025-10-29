@@ -4,9 +4,11 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -24,6 +26,8 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     private val selectedSite: SelectedSite,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val time: DateTimeProvider,
 ) : DefaultLifecycleObserver {
 
     private var periodicSyncJob: Job? = null
@@ -42,14 +46,30 @@ class WooPosPeriodicSyncFacade @Inject constructor(
 
     private fun startPeriodicSync(owner: LifecycleOwner) {
         periodicSyncJob = owner.lifecycleScope.launch {
-            val site = selectedSite.getOrNull()
-                ?: error("No site selected")
+            val site = selectedSite.getOrNull() ?: return@launch
             if (!isLocalCatalogSupported(site.siteId)) return@launch
 
             while (isActive) {
-                incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
                 delay(SYNC_INTERVAL)
+
+                if (isLocalCatalogRequiresIncrementalSync()) {
+                    incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+                }
             }
+        }
+    }
+
+    private suspend fun isLocalCatalogRequiresIncrementalSync(): Boolean {
+        val productsTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
+        val variationsTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()
+        val currentTime = time.now()
+
+        return if (productsTimestamp != null && variationsTimestamp != null) {
+            val timeSinceProductsSync = currentTime - productsTimestamp
+            val timeSinceVariationsSync = currentTime - variationsTimestamp
+            timeSinceProductsSync >= SYNC_INTERVAL || timeSinceVariationsSync >= SYNC_INTERVAL
+        } else {
+            true
         }
     }
 
