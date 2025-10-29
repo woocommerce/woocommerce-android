@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Lifecycle-aware facade that performs periodic incremental syncs while [WooPosActivity] is visible.
@@ -35,7 +36,8 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private var periodicSyncJob: Job? = null
 
     private companion object {
-        val SYNC_INTERVAL = 1.hours.inWholeMilliseconds
+        val INCREMENTAL_SYNC_INTERVAL = 1.hours.inWholeMilliseconds
+        val SYNC_STATUS_CHECK_INTERVAL = 10.minutes.inWholeMilliseconds
     }
 
     override fun onResume(owner: LifecycleOwner) {
@@ -52,7 +54,7 @@ class WooPosPeriodicSyncFacade @Inject constructor(
             if (!isLocalCatalogSupported(site.siteId)) return@launch
 
             while (isActive) {
-                delay(SYNC_INTERVAL)
+                delay(SYNC_STATUS_CHECK_INTERVAL)
 
                 if (isLocalCatalogRequiresIncrementalSync()) {
                     incrementalSync.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
@@ -69,7 +71,7 @@ class WooPosPeriodicSyncFacade @Inject constructor(
         return if (productsTimestamp != null && variationsTimestamp != null) {
             val timeSinceProductsSync = currentTime - productsTimestamp
             val timeSinceVariationsSync = currentTime - variationsTimestamp
-            timeSinceProductsSync >= SYNC_INTERVAL || timeSinceVariationsSync >= SYNC_INTERVAL
+            timeSinceProductsSync >= INCREMENTAL_SYNC_INTERVAL || timeSinceVariationsSync >= INCREMENTAL_SYNC_INTERVAL
         } else {
             true
         }
