@@ -67,7 +67,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
             orderMapper.toAppModel(it)
         }
 
-    suspend fun fetchOrderById(orderId: Long): Order? {
+    private suspend fun fetchOrderById(orderId: Long): Order? {
         val result = orderStore.fetchSingleOrder(
             selectedSite.get(),
             orderId
