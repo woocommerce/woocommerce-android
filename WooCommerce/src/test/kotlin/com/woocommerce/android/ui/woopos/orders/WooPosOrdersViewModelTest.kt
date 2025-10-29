@@ -725,7 +725,7 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then subtle flag resets and details unchanged`() = runTest {
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
@@ -747,7 +747,6 @@ class WooPosOrdersViewModelTest {
         // THEN
         val after = viewModel.state.value as WooPosOrdersState.Content
 
-        assertThat(after.isRefreshingSelectedDetails).isFalse()
         assertThat(after.selectedDetails).isEqualTo(beforeDetails)
         verify(dataSource).refreshOrderById(1L)
     }
