@@ -10,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.extensions.handleResult
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.customfields.CustomFieldContentType
 import com.woocommerce.android.ui.customfields.CustomFieldUiModel
@@ -22,10 +24,14 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CustomFieldsFragment : BaseFragment() {
     private val viewModel: CustomFieldsViewModel by viewModels()
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     private val snackbarHostState = SnackbarHostState()
 
@@ -57,7 +63,11 @@ class CustomFieldsFragment : BaseFragment() {
                     action = { event.action.onClick(null) }
                 )
 
-                is MultiLiveEvent.Event.OpenUrl -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(
+                    requireContext(),
+                    event.url
+                )
+
                 is MultiLiveEvent.Event.Exit -> {
                     findNavController().navigateUp()
                 }
@@ -88,7 +98,13 @@ class CustomFieldsFragment : BaseFragment() {
 
     private fun handleValueClick(field: CustomFieldUiModel) {
         when (field.contentType) {
-            CustomFieldContentType.URL -> ChromeCustomTabUtils.launchUrl(requireContext(), field.value)
+            CustomFieldContentType.URL -> authenticatedWebViewLauncher.showAuthenticatedWebView(
+                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                    url = field.value,
+                    screenTitle = UiString.UiStringText(field.key)
+                )
+            )
+
             CustomFieldContentType.EMAIL -> ActivityUtils.sendEmail(requireContext(), field.value)
             CustomFieldContentType.PHONE -> ActivityUtils.dialPhoneNumber(requireContext(), field.value)
             CustomFieldContentType.TEXT -> error("Values of type TEXT should not be clickable")

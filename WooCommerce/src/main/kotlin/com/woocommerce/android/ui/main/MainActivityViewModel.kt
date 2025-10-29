@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuNewFeatureHandler
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState
 import com.woocommerce.android.ui.prefs.PrivacySettingsRepository
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
+import com.woocommerce.android.ui.shortcuts.AppShortcut
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.WooLog
@@ -91,14 +92,14 @@ class MainActivityViewModel @Inject constructor(
     fun handleShortcutAction(action: String?) {
         if (!selectedSite.exists()) return
         when (action) {
-            SHORTCUT_PAYMENTS -> {
+            AppShortcut.Payments.action -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_PAYMENTS_TAPPED
                 )
                 triggerEvent(ShortcutOpenPayments)
             }
 
-            SHORTCUT_OPEN_ORDER_CREATION -> {
+            AppShortcut.CreateOrder.action -> {
                 analyticsTrackerWrapper.track(
                     AnalyticsEvent.SHORTCUT_ORDERS_ADD_NEW
                 )
@@ -376,10 +377,5 @@ class MainActivityViewModel @Inject constructor(
     sealed class BottomBarState : Event() {
         object Visible : BottomBarState()
         object Hidden : BottomBarState()
-    }
-
-    companion object {
-        const val SHORTCUT_PAYMENTS = "com.woocommerce.android.payments"
-        const val SHORTCUT_OPEN_ORDER_CREATION = "com.woocommerce.android.ordercreation"
     }
 }

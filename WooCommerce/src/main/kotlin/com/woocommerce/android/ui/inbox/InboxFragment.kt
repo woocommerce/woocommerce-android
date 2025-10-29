@@ -14,10 +14,8 @@ import androidx.fragment.app.viewModels
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.inbox.InboxNoteActionEvent.OpenUrlEvent
-import com.woocommerce.android.util.ChromeCustomTabUtils
-import com.woocommerce.android.util.ChromeCustomTabUtils.Height.Partial.ThreeQuarters
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,7 +24,11 @@ import javax.inject.Inject
 class InboxFragment : BaseFragment(), MenuProvider {
     private val viewModel: InboxViewModel by viewModels()
 
-    @Inject lateinit var uiMessageResolver: UIMessageResolver
+    @Inject
+    lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     override fun getFragmentTitle() = getString(R.string.inbox_screen_title)
 
@@ -70,7 +72,7 @@ class InboxFragment : BaseFragment(), MenuProvider {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                is OpenUrlEvent -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url, ThreeQuarters)
+                is Event.LaunchUrlInAuthenticatedWebView -> authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 is Event.ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 else -> event.isHandled = false
             }

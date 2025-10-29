@@ -20,8 +20,6 @@ import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectE
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckBluetoothPermissionsGiven
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationEnabled
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.CheckLocationPermissions
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenAuthenticatedWebView
-import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenGenericWebView
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenLocationSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.OpenPermissionsSettings
 import com.woocommerce.android.ui.payments.cardreader.connect.CardReaderConnectEvent.RequestBluetoothRuntimePermissions
@@ -105,7 +103,6 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
     }
     private val siteModel: SiteModel = mock()
     private val selectedSite: SelectedSite = mock {
-        on { getIfExists() }.thenReturn(siteModel)
         on { get() }.thenReturn(siteModel)
     }
     private val cardReaderTrackingInfoKeeper: CardReaderTrackingInfoKeeper = mock()
@@ -719,9 +716,8 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given address empty on wp com, when user clicks enter address, then opens authenticated webview`() =
+    fun `given address empty, when user clicks enter address, then opens authenticated webview`() =
         testBlocking {
-            whenever(siteModel.isWPCom).thenReturn(true)
             init()
             val url = "https://wordpress.com"
             whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
@@ -733,78 +729,11 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
                 .onPrimaryActionClicked.invoke()
 
             assertThat(viewModel.event.value).isInstanceOf(
-                OpenAuthenticatedWebView::class.java
+                Event.LaunchUrlInAuthenticatedWebView::class.java
             )
             assertThat(
-                (viewModel.event.value as OpenAuthenticatedWebView).url
+                (viewModel.event.value as Event.LaunchUrlInAuthenticatedWebView).url
             ).isEqualTo(url)
-        }
-
-    @Test
-    fun `given address empty on atomic, when user clicks enter address, then opens authenticated webview`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(true)
-            init()
-            val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
-            )
-            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
-
-            (viewModel.viewStateData.value as MissingMerchantAddressError)
-                .onPrimaryActionClicked.invoke()
-
-            assertThat(viewModel.event.value).isInstanceOf(
-                OpenAuthenticatedWebView::class.java
-            )
-            assertThat(
-                (viewModel.event.value as OpenAuthenticatedWebView).url
-            ).isEqualTo(url)
-        }
-
-    @Test
-    fun `given address empty on selfhosted, when user clicks enter address, then opens unauthenticated webview`() =
-        testBlocking {
-            val events = mutableListOf<Event>()
-            viewModel.event.observeForever {
-                events.add(it)
-            }
-
-            whenever(siteModel.isWPComAtomic).thenReturn(false)
-            whenever(siteModel.isWPCom).thenReturn(false)
-            init()
-            val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
-            )
-            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
-
-            (viewModel.viewStateData.value as MissingMerchantAddressError)
-                .onPrimaryActionClicked.invoke()
-
-            assertThat(events[events.size - 2]).isInstanceOf(
-                OpenGenericWebView::class.java
-            )
-            assertThat(
-                (events[events.size - 2] as OpenGenericWebView).url
-            ).isEqualTo(url)
-        }
-
-    @Test
-    fun `given address empty on selfhosted, when user clicks enter address, then emits exit event`() =
-        testBlocking {
-            whenever(siteModel.isWPComAtomic).thenReturn(false)
-            whenever(siteModel.isWPCom).thenReturn(false)
-            init()
-            val url = "https://wordpress.com"
-            whenever(locationRepository.getDefaultLocationId(any())).thenReturn(
-                CardReaderLocationRepository.LocationIdFetchingResult.Error.MissingAddress(url)
-            )
-            (viewModel.viewStateData.value as ExternalReaderFoundState).onPrimaryActionClicked.invoke()
-            (viewModel.viewStateData.value as MissingMerchantAddressError)
-                .onPrimaryActionClicked.invoke()
-
-            assertThat(viewModel.event.value).isEqualTo(Event.ExitWithResult(false))
         }
 
     @Test
@@ -1050,7 +979,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given app in scanning state, when user clicks on learn more, then OpenGenericWebView emitted`() =
+    fun `given app in scanning state, when user clicks on learn more, then LaunchUrlInChromeTab emitted`() =
         testBlocking {
             init(scanState = SCANNING)
             val url = "https://www.example.com"
@@ -1058,7 +987,7 @@ class CardReaderConnectViewModelTest : BaseUnitTest() {
 
             (viewModel.viewStateData.value as ExternalReaderScanningState).onLearnMoreClicked.invoke()
 
-            assertThat(viewModel.event.value).isEqualTo(OpenGenericWebView(url))
+            assertThat(viewModel.event.value).isEqualTo(Event.LaunchUrlInChromeTab(url))
         }
 
     @Test

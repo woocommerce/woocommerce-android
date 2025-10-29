@@ -24,17 +24,17 @@ import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.extensions.withOldValue
 import com.woocommerce.android.tools.ProductImageMap
 import com.woocommerce.android.ui.base.BaseFragment
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.FeesRefundSection
-import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.OpenUrl
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowNumberPicker
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.IssueRefundEvent.ShowRefundSummary
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ProductsRefundSection
 import com.woocommerce.android.ui.payments.refunds.IssueRefundViewModel.ShippingRefundSection
 import com.woocommerce.android.ui.payments.refunds.RefundFeeListAdapter.OnFeeLineCheckedChangeListener
 import com.woocommerce.android.ui.payments.refunds.RefundShippingListAdapter.OnCheckedChangeListener
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.widgets.WooClickableSpan
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -44,9 +44,14 @@ class IssueRefundFragment :
     BaseFragment(R.layout.fragment_issue_refund),
     OnCheckedChangeListener,
     OnFeeLineCheckedChangeListener {
-    @Inject lateinit var currencyFormatter: CurrencyFormatter
+    @Inject
+    lateinit var currencyFormatter: CurrencyFormatter
 
-    @Inject lateinit var imageMap: ProductImageMap
+    @Inject
+    lateinit var imageMap: ProductImageMap
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     private var _binding: FragmentIssueRefundBinding? = null
     private val binding get() = _binding!!
@@ -198,8 +203,8 @@ class IssueRefundFragment :
                     findNavController().navigateSafely(action)
                 }
 
-                is OpenUrl -> {
-                    ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
+                is Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 }
 
                 else -> event.isHandled = false

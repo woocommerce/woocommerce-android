@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewMod
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.CampaignStopped
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.None
 import com.woocommerce.android.ui.blaze.detail.BlazeCampaignDetailWebViewViewModel.BlazeAction.PromoteProductAgain
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ContactSupport
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.FeedbackNegativeAction
@@ -64,6 +65,7 @@ import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.prefs.privacy.banner.PrivacyBannerFragmentDirections
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
@@ -97,6 +99,9 @@ class DashboardFragment :
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     private var _binding: FragmentDashboardBinding? = null
     private val binding get() = _binding!!
@@ -177,6 +182,9 @@ class DashboardFragment :
                 is FeedbackNegativeAction -> mainNavigationRouter?.showFeedbackSurvey()
 
                 is ShowSnackbar -> ToastUtils.showToast(requireContext(), event.message)
+
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
 
                 is RefreshJitm -> refreshJitm()
 
