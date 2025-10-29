@@ -32,4 +32,22 @@ data class BookingFilters(
     val bookingType: BookingsFilterOption.BookingType? = null,
     val location: BookingsFilterOption.Location? = null,
     val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
-)
+) {
+    val enabledFiltersCount: Int
+        get() {
+            var count = 0
+            if (dateRange != null) count++
+            if (customer != null) count++
+            if (teamMember != null) count++
+            if (attendanceStatus != null) count++
+            if (paymentStatus != null) count++
+            if (bookingType != null) count++
+            if (location != null) count++
+            if (serviceEvent != null) count++
+            return count
+        }
+
+    companion object {
+        val EMPTY = BookingFilters()
+    }
+}

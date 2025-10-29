@@ -330,6 +330,24 @@ class BookingListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given enabled filters, when controls state is observed, then enabledFiltersCount is correct`() = testBlocking {
+        // GIVEN
+        setup()
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.All)
+
+        // THEN
+        val controlsState = viewModel.state.getOrAwaitValue().controlsState
+        assertThat(controlsState.enabledFiltersCount).isEqualTo(1)
+    }
+
     private fun getSampleBooking(id: Int): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id.toLong()),
