@@ -119,7 +119,6 @@ private fun CategoryItem(
     }
 }
 
-
 @Composable
 private fun FixedCategoryItem(
     item: WooPosSettingsCategory,
@@ -155,7 +154,7 @@ private fun FixedCategoryItem(
 
 @WooPosPreview
 @Composable
-private fun WooPosSettingsCategoriesPaneScreenPreview() {
+fun WooPosSettingsCategoriesPaneScreenPreview() {
     WooPosTheme {
         WooPosSettingsCategoriesPaneScreenContent(
             scrollableCategories = listOf(
