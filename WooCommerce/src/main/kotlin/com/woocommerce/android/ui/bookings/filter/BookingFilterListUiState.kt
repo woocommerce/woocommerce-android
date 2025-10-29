@@ -60,12 +60,6 @@ data class BookingFilterListUiState(
         }
 }
 
-data class BookingFilterListItem(
-    @StringRes val title: Int,
-    val value: String? = null,
-    val onClick: () -> Unit = {}
-)
-
 val BookingFilterPage.titleRes: Int
     @StringRes get() = when (this) {
         BookingFilterPage.TeamMember -> R.string.bookings_filter_title_team_member
