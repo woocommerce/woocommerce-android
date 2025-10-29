@@ -11,6 +11,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.isNull
 import org.mockito.kotlin.mock
@@ -496,5 +497,45 @@ class WooPosOrdersDataSourceTest {
         verify(orderMapper).toAppModel(entity)
         verify(ordersCache, never()).getAll()
         verify(ordersCache, never()).setAll(any())
+    }
+
+    @Test
+    fun `given order in cache, when refreshOrderById succeeds, then replaces cached order and keeps list size`() = runTest {
+        // GIVEN
+        val orderId = 42L
+        val site = siteModel
+
+        val cached1 = OrderTestUtils.generateTestOrder(orderId = 1)
+        val cachedTarget = OrderTestUtils.generateTestOrder(orderId = orderId)
+        val cached3 = OrderTestUtils.generateTestOrder(orderId = 3)
+        whenever(ordersCache.getAll()).thenReturn(listOf(cached1, cachedTarget, cached3))
+
+        val entity = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), orderId = orderId)
+        val mappedUpdated = OrderTestUtils.generateTestOrder(orderId = orderId) // different instance
+        whenever(orderMapper.toAppModel(entity)).thenReturn(mappedUpdated)
+
+        val payload = WCOrderStore.RemoteOrderPayload.Fetching(
+            orderWithMeta = entity to emptyList<WCMetaData>(),
+            site = site
+        )
+        whenever(orderRestClient.fetchSingleOrder(site, orderId)).thenReturn(payload)
+
+        // WHEN
+        val result = sut.refreshOrderById(orderId)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue
+        assertThat(result.getOrThrow()).isEqualTo(mappedUpdated)
+
+        val listCaptor = argumentCaptor<List<com.woocommerce.android.model.Order>>()
+        verify(ordersCache).getAll()
+        verify(ordersCache).setAll(listCaptor.capture())
+
+        val finalList = listCaptor.firstValue
+        assertThat(finalList).hasSize(3)
+
+        assertThat(finalList[0]).isEqualTo(cached1)
+        assertThat(finalList[1]).isEqualTo(mappedUpdated)
+        assertThat(finalList[2]).isEqualTo(cached3)
     }
 }
