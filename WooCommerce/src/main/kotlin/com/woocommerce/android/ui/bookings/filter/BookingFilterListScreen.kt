@@ -25,6 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterPage
+import com.woocommerce.android.ui.bookings.filter.type.DUMMY_BOOKING_TYPE_FILTER_UI_STATE
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -85,8 +87,8 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                     BookingFilterRootPage(state.items)
                 }
 
+                BookingFilterPage.BookingType -> BookingTypeFilterPage(DUMMY_BOOKING_TYPE_FILTER_UI_STATE)
                 BookingFilterPage.AttendanceStatus,
-                BookingFilterPage.BookingType,
                 BookingFilterPage.Customer,
                 BookingFilterPage.Location,
                 BookingFilterPage.PaymentStatus,
