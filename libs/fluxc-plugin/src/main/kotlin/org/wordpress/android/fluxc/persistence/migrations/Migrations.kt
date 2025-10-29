@@ -1091,7 +1091,7 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
     override fun migrate(db: SupportSQLiteDatabase) {
         // 1) Create new table with the new schema (stableId TEXT PRIMARY KEY)
         db.execSQL(
-            """"
+            """
               CREATE TABLE IF NOT EXISTS `CustomerEntity_new` (
               `stableId` TEXT NOT NULL,
               `localSiteId` INTEGER NOT NULL,
