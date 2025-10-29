@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
 import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
@@ -168,6 +169,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var wooPosSurveysNotificationScheduler: Lazy<WooPosSurveysNotificationScheduler>
 
+    @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
+
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
@@ -253,6 +256,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
         observeSiteChangesForCatalogSync()
+
+        appShortcutsHandler.init()
     }
 
     @Suppress("DEPRECATION")

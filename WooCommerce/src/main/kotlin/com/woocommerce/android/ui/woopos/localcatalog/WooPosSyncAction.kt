@@ -6,9 +6,40 @@ import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
 import javax.inject.Inject
+
+class WooPosSyncAction @Inject constructor(
+    private val productAction: WooPosSyncProductsAction,
+    private val variationsAction: WooPosSyncVariationsAction
+) {
+    suspend fun syncProducts(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+        pageSize: Int,
+        maxPages: Int
+    ) = productAction.execute(
+        site = site,
+        modifiedAfterGmt = modifiedAfterGmt,
+        pageSize = pageSize,
+        maxPages = maxPages
+    )
+
+    suspend fun syncVariations(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+        pageSize: Int,
+        maxPages: Int
+    ) = variationsAction.execute(
+        site = site,
+        modifiedAfterGmt = modifiedAfterGmt,
+        pageSize = pageSize,
+        maxPages = maxPages
+    )
+}
 
 private typealias ServerDate = String
 
@@ -93,7 +124,7 @@ class WooPosSyncProductsAction @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): Pair<List<WooPosProductEntity>, ServerDate> {
-        var currentOffset = 0
+        var currentPage = 1
         var pagesSynced = 0
         var totalPages = maxPages
         var firstPageServerDate: String? = null
@@ -105,7 +136,7 @@ class WooPosSyncProductsAction @Inject constructor(
                 site = site,
                 pageSize = pageSize,
                 modifiedAfterGmt = modifiedAfterGmt,
-                offset = currentOffset,
+                page = currentPage,
             )
 
             result.fold(
@@ -121,7 +152,7 @@ class WooPosSyncProductsAction @Inject constructor(
                     if (!syncResult.hasMore || syncResult.syncedCount == 0) {
                         logger.d("Local Catalog: No more products to sync")
                     } else {
-                        currentOffset = syncResult.nextOffset
+                        currentPage = syncResult.nextPage
                     }
                 },
                 onFailure = { error ->
@@ -174,7 +205,7 @@ class WooPosSyncProductsAction @Inject constructor(
         site: SiteModel,
         pageSize: Int
     ): List<WooPosProductEntity> {
-        var currentOffset = 0
+        var currentPage = 1
         var pagesSynced = 0
         val trashProducts = mutableListOf<WooPosProductEntity>()
 
@@ -185,7 +216,7 @@ class WooPosSyncProductsAction @Inject constructor(
                 site = site,
                 pageSize = pageSize,
                 modifiedAfterGmt = null,
-                offset = currentOffset,
+                page = currentPage,
                 includeStatus = listOf(CoreProductStatus.TRASH)
             )
 
@@ -200,7 +231,7 @@ class WooPosSyncProductsAction @Inject constructor(
                         )
                         break
                     } else {
-                        currentOffset = syncResult.nextOffset
+                        currentPage = syncResult.nextPage
                     }
                 },
                 onFailure = { error ->
@@ -219,6 +250,156 @@ class WooPosSyncProductsAction @Inject constructor(
     ) : Exception("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages") {
         fun toSyncResult(): WooPosSyncProductsResult.Failed.CatalogTooLarge {
             return WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages)
+        }
+    }
+}
+
+class WooPosSyncVariationsAction @Inject constructor(
+    private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val logger: WooPosLogWrapper,
+) {
+    sealed class WooPosSyncVariationsResult {
+        data class Success(val variationsSynced: Int, val serverDate: String?) : WooPosSyncVariationsResult()
+
+        sealed class Failed(val error: String) : WooPosSyncVariationsResult() {
+            class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
+                Failed("Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
+
+            class UnexpectedError(error: String) : Failed(error)
+        }
+    }
+
+    suspend fun execute(
+        site: SiteModel,
+        modifiedAfterGmt: String? = null,
+        pageSize: Int,
+        maxPages: Int
+    ): WooPosSyncVariationsResult {
+        return runCatching {
+            val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
+
+            posLocalCatalogStore.executeInTransaction {
+                val isFullSync = modifiedAfterGmt == null
+                if (isFullSync) {
+                    posLocalCatalogStore.deleteAllVariations(
+                        siteId = site.localId()
+                    ).getOrThrow()
+                }
+
+                posLocalCatalogStore.upsertVariations(variations).getOrThrow()
+            }.fold(
+                onSuccess = {
+                    logger.d("Local Catalog variations transaction committed successfully")
+                    WooPosSyncVariationsResult.Success(variations.size, serverDate)
+                },
+                onFailure = { error ->
+                    handleTransactionError(error)
+                }
+            )
+        }.fold(
+            onSuccess = { result -> result },
+            onFailure = { error ->
+                logger.e("Failed to sync variations: ${error.message}")
+                when (error) {
+                    is CatalogTooLargeException -> error.toSyncResult()
+                    else -> WooPosSyncVariationsResult.Failed.UnexpectedError(
+                        error.message ?: "Failed to sync variations"
+                    )
+                }
+            }
+        )
+    }
+
+    private suspend fun fetchAllPages(
+        site: SiteModel,
+        modifiedAfterGmt: String?,
+        pageSize: Int,
+        maxPages: Int
+    ): Pair<List<WooPosVariationEntity>, String> {
+        var currentPage = 1
+        var pagesSynced = 0
+        var totalPages = maxPages
+        var firstPageServerDate: String? = null
+
+        val variations = mutableListOf<WooPosVariationEntity>()
+
+        while (pagesSynced < totalPages) {
+            val result = posLocalCatalogStore.fetchRecentlyModifiedVariations(
+                site = site,
+                modifiedAfterGmt = modifiedAfterGmt,
+                page = currentPage,
+                pageSize = pageSize,
+            )
+
+            result.fold(
+                onSuccess = { syncResult ->
+                    processPageResult(syncResult, pagesSynced, maxPages)
+                    if (pagesSynced == 0) {
+                        firstPageServerDate = syncResult.serverDate
+                    }
+                    variations.addAll(syncResult.variations)
+                    totalPages = syncResult.totalPages
+                    pagesSynced++
+
+                    if (!syncResult.hasMore || syncResult.syncedCount == 0) {
+                        logger.d("Local Catalog: No more variations to sync")
+                    } else {
+                        currentPage = syncResult.nextPage
+                    }
+                },
+                onFailure = { error ->
+                    logger.e("Local Catalog Variations sync failed on page ${pagesSynced + 1}: ${error.message}")
+                    throw error
+                }
+            )
+        }
+
+        logger.d("Local catalog variations sync completed, variations synced across $pagesSynced pages")
+        return Pair(
+            variations.toList(),
+            requireNotNull(firstPageServerDate) { "Can't be null since we throw an exception in the store layer." }
+        )
+    }
+
+    private fun processPageResult(
+        syncResult: WooPosVariationsFetchResult,
+        pagesSynced: Int,
+        maxPages: Int
+    ) {
+        if (pagesSynced == 0) {
+            if (syncResult.totalPages > maxPages) {
+                logger.e(
+                    "Local Catalog variations too large: ${syncResult.totalPages} pages exceed maximum " +
+                        "of $maxPages pages"
+                )
+                throw CatalogTooLargeException(syncResult.totalPages, maxPages)
+            }
+        }
+        logger.d("Local Catalog variations page ${pagesSynced + 1} synced, ${syncResult.syncedCount} variations")
+    }
+
+    private fun handleTransactionError(error: Throwable): WooPosSyncVariationsResult {
+        return when (error) {
+            is CatalogTooLargeException -> {
+                logger.e("Local Catalog variations too large, transaction rolled back")
+                error.toSyncResult()
+            }
+
+            else -> {
+                logger.e("Local Catalog Variations Transaction failed and was rolled back: ${error.message}")
+                WooPosSyncVariationsResult.Failed.UnexpectedError(
+                    error.message ?: "Local Catalog Variations Transaction failed and was rolled back"
+                )
+            }
+        }
+    }
+
+    internal class CatalogTooLargeException(
+        val totalPages: Int,
+        val maxPages: Int
+    ) : Exception("Local Catalog variations too large: $totalPages pages exceed maximum of $maxPages pages") {
+        fun toSyncResult(): WooPosSyncVariationsResult.Failed.CatalogTooLarge {
+            return WooPosSyncVariationsResult.Failed.CatalogTooLarge(totalPages, maxPages)
         }
     }
 }
