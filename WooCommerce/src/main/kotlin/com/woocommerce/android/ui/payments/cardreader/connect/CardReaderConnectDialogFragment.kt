@@ -170,7 +170,7 @@ class CardReaderConnectDialogFragment : PaymentsBaseDialogFragment(R.layout.card
 
     private fun moveToState(binding: CardReaderConnectDialogBinding, viewState: CardReaderConnectViewState) {
         UiHelpers.setTextOrHide(binding.headerLabel, viewState.headerLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, viewState.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, viewState.illustration)
             .also {
                 if (binding.illustration.isVisible) {
                     binding.illustration.visibility =

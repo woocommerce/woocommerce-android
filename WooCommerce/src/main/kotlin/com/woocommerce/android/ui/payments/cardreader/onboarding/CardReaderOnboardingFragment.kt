@@ -198,7 +198,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         UiHelpers.setTextOrHide(binding.enableCashOnDelivery, state.enableCashOnDeliveryButtonLabel)
         UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.cardIllustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.cardIllustration)
 
         if (state.shouldShowProgress) {
             binding.enableCashOnDelivery.isEnabled = false
@@ -279,7 +279,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingLoadingBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeaderTv, state.headerLabel)
         UiHelpers.setTextOrHide(binding.hintTv, state.hintLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustrationIv, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustrationIv, state.illustration)
     }
 
     private fun showGenericErrorState(
@@ -289,7 +289,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingGenericErrorBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textSupport, state.contactSupportLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
         binding.textSupport.setOnClickListener {
             state.onContactSupportActionClicked.invoke()
         }
@@ -303,7 +303,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         state: CardReaderOnboardingViewState.NoConnectionErrorState
     ) {
         val binding = FragmentCardReaderOnboardingNetworkErrorBinding.bind(view)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
         binding.buttonRetry.setOnClickListener {
             state.onRetryButtonActionClicked.invoke()
         }
@@ -316,7 +316,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingStripeBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
 
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreButton.label)
         binding.learnMoreContainer.learnMore.setOnClickListener {
@@ -352,7 +352,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         val binding = FragmentCardReaderOnboardingWcpayBinding.bind(view)
         UiHelpers.setTextOrHide(binding.textHeader, state.headerLabel)
         UiHelpers.setTextOrHide(binding.textLabel, state.hintLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
 
         UiHelpers.setTextOrHide(binding.primaryButton, state.actionButtonPrimary.label)
         binding.primaryButton.setWhiteIcon(state.actionButtonPrimary.icon)
@@ -382,7 +382,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
         binding.primaryButton.visibility = View.GONE
         UiHelpers.setTextOrHide(binding.secondaryButton, state.refreshButtonLabel)
         UiHelpers.setTextOrHide(binding.learnMoreContainer.learnMore, state.learnMoreLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(binding.illustration, state.illustration)
         binding.secondaryButton.setOnClickListener {
             state.refreshButtonAction.invoke()
         }
@@ -397,7 +397,7 @@ class CardReaderOnboardingFragment : BaseFragment(R.layout.fragment_card_reader_
     ) {
         val binding = FragmentCardReaderOnboardingUnsupportedBinding.bind(view)
         UiHelpers.setTextOrHide(binding.unsupportedCountryHeader, state.headerLabel)
-        UiHelpers.setImageOrHideOnCompactScreenHeightSizeClass(
+        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
             binding.unsupportedCountryIllustration,
             state.illustration
         )
