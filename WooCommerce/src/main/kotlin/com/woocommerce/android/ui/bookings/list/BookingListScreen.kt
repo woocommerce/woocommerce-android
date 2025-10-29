@@ -88,7 +88,8 @@ fun BookingListScreen(state: BookingListViewState) {
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
-                        areFiltersActive = state.areFiltersActive || state.tabState.selectedTab != BookingListTab.All
+                        areFiltersActive = state.controlsState.areFiltersActive ||
+                            state.tabState.selectedTab != BookingListTab.All
                     )
                 }
             )
@@ -304,17 +305,16 @@ private fun BookingListControls(
             )
         }
         if (state.isFilterButtonVisible) {
-            val areFiltersEnabled = state.enabledFiltersCount > 0
             OutlinedButton(
                 modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 colors = ButtonDefaults.outlinedButtonColors().copy(
-                    containerColor = if (areFiltersEnabled) {
+                    containerColor = if (state.areFiltersActive) {
                         MaterialTheme.colorScheme.primary
                     } else {
                         MaterialTheme.colorScheme.surface
                     },
-                    contentColor = if (areFiltersEnabled) {
+                    contentColor = if (state.areFiltersActive) {
                         MaterialTheme.colorScheme.onPrimary
                     } else {
                         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
@@ -323,7 +323,7 @@ private fun BookingListControls(
                 onClick = state.onFilterClick,
             ) {
                 Text(
-                    text = if (areFiltersEnabled) {
+                    text = if (state.areFiltersActive) {
                         stringResource(
                             id = R.string.bookings_filters_enabled_title,
                             state.enabledFiltersCount
@@ -356,13 +356,13 @@ private fun EmptyView(
 
         if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
-                areFiltersActive = state.areFiltersActive,
+                areFiltersActive = state.controlsState.areFiltersActive,
                 modifier = innerEmptyViewModifier
             )
         } else {
             EmptyListView(
                 selectedTab = state.tabState.selectedTab,
-                areFiltersActive = state.areFiltersActive,
+                areFiltersActive = state.controlsState.areFiltersActive,
                 onChangeFiltersClick = state.controlsState.onFilterClick,
                 onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
