@@ -6,6 +6,7 @@
 - [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
 - [Internal] Update In-Person Payments setup flow to use Authenticated WebView [https://github.com/woocommerce/woocommerce-android/pull/14827]
 - [*] Improved the Filters button colors on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/14832]
+- [*] Fixed an issue when images for the card reader flows were not shown on tablets [https://github.com/woocommerce/woocommerce-android/pull/14849]
 
 23.5
 -----
