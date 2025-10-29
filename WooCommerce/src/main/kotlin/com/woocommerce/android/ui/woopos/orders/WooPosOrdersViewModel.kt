@@ -252,19 +252,14 @@ class WooPosOrdersViewModel @Inject constructor(
         val newItem = mapOrderItem(updated, selectedId)
         val newDetails = mapOrderDetails(updated)
 
-        val newMap = buildMap<OrderItemViewState, OrderDetailsViewState> {
-            loaded.items.forEach { (item, details) ->
-                if (item.id == updated.id) put(newItem, newDetails) else put(item, details)
-            }
+        val newMap = loaded.items.entries.associate { (item, details) ->
+            if (item.id == updated.id) newItem to newDetails else item to details
         }
 
-        var newState = current.copy(
-            items = WooPosOrdersState.Content.Items.Loaded(newMap)
+        _state.value = current.copy(
+            items = WooPosOrdersState.Content.Items.Loaded(newMap),
+            selectedDetails = if (selectedId == updated.id) newDetails else current.selectedDetails
         )
-        if (selectedId == updated.id) {
-            newState = newState.copy(selectedDetails = newDetails)
-        }
-        _state.value = newState
     }
 
     private fun updateSearchState(searchState: WooPosSearchInputState) {
