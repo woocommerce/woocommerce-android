@@ -700,7 +700,7 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details and resets isRefreshingSelectedDetails`() = runTest {
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(100), order(200)))) }
@@ -720,7 +720,6 @@ class WooPosOrdersViewModelTest {
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
 
-        assertThat(state.isRefreshingSelectedDetails).isFalse()
         assertThat(state.selectedDetails.id).isEqualTo(200L)
         verify(dataSource).refreshOrderById(200L)
     }

@@ -239,17 +239,8 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedOrderId = current.selectedDetails.id
 
         viewModelScope.launch {
-            setRefreshingOrderDetails(true)
             ordersDataSource.refreshOrderById(selectedOrderId)
                 .onSuccess { applyOrderUpdate(it) }
-            setRefreshingOrderDetails(false)
-        }
-    }
-
-    private fun setRefreshingOrderDetails(value: Boolean) {
-        val current = _state.value
-        if (current is WooPosOrdersState.Content) {
-            _state.value = current.copy(isRefreshingSelectedDetails = value)
         }
     }
 

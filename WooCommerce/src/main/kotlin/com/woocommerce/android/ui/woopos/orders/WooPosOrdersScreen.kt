@@ -239,14 +239,6 @@ private fun OrdersListPane(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        AnimatedVisibility(visible = state.isRefreshingSelectedDetails) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Medium.value)
-            )
-        }
-
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
             onRefresh = onRefresh
