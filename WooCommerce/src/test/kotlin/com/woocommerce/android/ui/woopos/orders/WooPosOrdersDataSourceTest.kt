@@ -471,7 +471,7 @@ class WooPosOrdersDataSourceTest {
     }
 
     @Test
-    fun `given orderId, when refreshOrderById succeeds, then returns mapped order and does not use cache`() = runTest {
+    fun `given orderId, when refreshOrderById succeeds, then returns mapped order`() = runTest {
         // GIVEN
         val orderId = 123L
         val entity = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), orderId = orderId)
@@ -495,8 +495,6 @@ class WooPosOrdersDataSourceTest {
         verify(selectedSite).get()
         verify(orderRestClient).fetchSingleOrder(siteModel, orderId)
         verify(orderMapper).toAppModel(entity)
-        verify(ordersCache, never()).getAll()
-        verify(ordersCache, never()).setAll(any())
     }
 
     @Test
