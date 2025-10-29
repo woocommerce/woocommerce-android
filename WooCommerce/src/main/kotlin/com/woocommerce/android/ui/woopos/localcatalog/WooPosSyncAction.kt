@@ -23,74 +23,85 @@ class WooPosSyncAction @Inject constructor(
     ): WooPosSyncResult {
         return runCatching {
             val isFullSync = modifiedAfterGmt == null
+            val fetchResults = fetchAllCatalogData(site, modifiedAfterGmt, pageSize, maxPages, isFullSync)
 
-            val fetchResults = coroutineScope {
-                val regularProductsDeferred = async {
-                    fetchAllProductPages(site, modifiedAfterGmt, pageSize, maxPages)
-                }
-                val trashProductsDeferred = async {
-                    if (isFullSync) {
-                        // We run incremental sync right after completing full sync -> no need to fetch trash products
-                        emptyList()
-                    } else {
-                        fetchAllTrashProducts(site, pageSize)
-                    }
-                }
-                val variationsDeferred = async {
-                    fetchAllVariationPages(site, modifiedAfterGmt, pageSize, maxPages)
-                }
-
-                val (products, productsServerDate) = regularProductsDeferred.await()
-                val trashProducts = trashProductsDeferred.await()
-                val (variations, variationsServerDate) = variationsDeferred.await()
-
-                FetchResults(products, trashProducts, productsServerDate, variations, variationsServerDate)
-            }
-
-            val allProducts = fetchResults.products + fetchResults.trashProducts
-
-            posLocalCatalogStore.executeInTransaction {
-                if (isFullSync) {
-                    posLocalCatalogStore.deleteAllProducts(
-                        siteId = site.localId()
-                    ).getOrThrow()
-                    posLocalCatalogStore.deleteAllVariations(
-                        siteId = site.localId()
-                    ).getOrThrow()
-                }
-
-                posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
-                posLocalCatalogStore.upsertVariations(fetchResults.variations).getOrThrow()
-            }.fold(
-                onSuccess = {
-                    logger.d("Local Catalog transaction committed successfully")
-                    WooPosSyncResult.Success(
-                        productsSynced = allProducts.size,
-                        variationsSynced = fetchResults.variations.size,
-                        productsServerDate = fetchResults.productsServerDate,
-                        variationsServerDate = fetchResults.variationsServerDate
-                    )
-                },
-                onFailure = { error ->
-                    handleTransactionError(error)
-                }
-            )
+            executeDatabaseTransaction(site, fetchResults, isFullSync)
         }.fold(
             onSuccess = { result -> result },
-            onFailure = { error ->
-                logger.e("Failed to sync catalog: ${error.message}")
-                when (error) {
-                    is CatalogTooLargeException -> WooPosSyncResult.Failed.CatalogTooLarge(
-                        error.totalPages,
-                        error.maxPages
-                    )
-
-                    else -> WooPosSyncResult.Failed.UnexpectedError(
-                        error.message ?: "Failed to sync catalog"
-                    )
-                }
-            }
+            onFailure = { error -> handleSyncError(error) }
         )
+    }
+
+    private suspend fun fetchAllCatalogData(
+        site: SiteModel,
+        modifiedAfterGmt: String?,
+        pageSize: Int,
+        maxPages: Int,
+        isFullSync: Boolean
+    ): FetchResults = coroutineScope {
+        val regularProductsDeferred = async {
+            fetchAllProductPages(site, modifiedAfterGmt, pageSize, maxPages)
+        }
+        val trashProductsDeferred = async {
+            if (isFullSync) {
+                // We run incremental sync right after completing full sync -> no need to fetch trash products
+                emptyList()
+            } else {
+                fetchAllTrashProducts(site, pageSize)
+            }
+        }
+        val variationsDeferred = async {
+            fetchAllVariationPages(site, modifiedAfterGmt, pageSize, maxPages)
+        }
+
+        val (products, productsServerDate) = regularProductsDeferred.await()
+        val trashProducts = trashProductsDeferred.await()
+        val (variations, variationsServerDate) = variationsDeferred.await()
+
+        FetchResults(products, trashProducts, productsServerDate, variations, variationsServerDate)
+    }
+
+    private suspend fun executeDatabaseTransaction(
+        site: SiteModel,
+        fetchResults: FetchResults,
+        isFullSync: Boolean
+    ): WooPosSyncResult {
+        val allProducts = fetchResults.products + fetchResults.trashProducts
+
+        return posLocalCatalogStore.executeInTransaction {
+            if (isFullSync) {
+                posLocalCatalogStore.deleteAllProducts(site.localId()).getOrThrow()
+                posLocalCatalogStore.deleteAllVariations(site.localId()).getOrThrow()
+            }
+
+            posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
+            posLocalCatalogStore.upsertVariations(fetchResults.variations).getOrThrow()
+        }.fold(
+            onSuccess = {
+                logger.d("Local Catalog transaction committed successfully")
+                WooPosSyncResult.Success(
+                    productsSynced = allProducts.size,
+                    variationsSynced = fetchResults.variations.size,
+                    productsServerDate = fetchResults.productsServerDate,
+                    variationsServerDate = fetchResults.variationsServerDate
+                )
+            },
+            onFailure = { error -> handleTransactionError(error) }
+        )
+    }
+
+    private fun handleSyncError(error: Throwable): WooPosSyncResult {
+        logger.e("Failed to sync catalog: ${error.message}")
+        return when (error) {
+            is CatalogTooLargeException -> WooPosSyncResult.Failed.CatalogTooLarge(
+                error.totalPages,
+                error.maxPages
+            )
+
+            else -> WooPosSyncResult.Failed.UnexpectedError(
+                error.message ?: "Failed to sync catalog"
+            )
+        }
     }
 
     private data class FetchResults(
