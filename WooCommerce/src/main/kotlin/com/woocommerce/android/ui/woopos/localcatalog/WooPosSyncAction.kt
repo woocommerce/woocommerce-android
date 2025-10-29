@@ -42,27 +42,42 @@ class WooPosSyncAction @Inject constructor(
 
 private typealias ServerDate = String
 
+sealed interface WooPosSyncResult {
+    val syncedCount: Int
+    val serverDate: String?
+
+    data class Success(
+        override val syncedCount: Int,
+        override val serverDate: String?
+    ) : WooPosSyncResult
+
+    sealed class Failed(
+        val error: String
+    ) : WooPosSyncResult {
+        override val syncedCount: Int = 0
+        override val serverDate: String? = null
+
+        data class CatalogTooLarge(
+            val totalPages: Int,
+            val maxPages: Int
+        ) : Failed("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
+
+        data class UnexpectedError(
+            val errorMessage: String
+        ) : Failed(errorMessage)
+    }
+}
+
 class WooPosSyncProductsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
-    sealed class WooPosSyncProductsResult {
-        data class Success(val productsSynced: Int, val serverDate: String?) : WooPosSyncProductsResult()
-
-        sealed class Failed(val error: String) : WooPosSyncProductsResult() {
-            class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
-                Failed("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
-
-            class UnexpectedError(error: String) : Failed(error)
-        }
-    }
-
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
         pageSize: Int,
         maxPages: Int
-    ): WooPosSyncProductsResult {
+    ): WooPosSyncResult {
         return runCatching {
             val isFullSync = modifiedAfterGmt == null
 
@@ -97,7 +112,7 @@ class WooPosSyncProductsAction @Inject constructor(
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog transaction committed successfully")
-                    WooPosSyncProductsResult.Success(allProducts.size, serverDate)
+                    WooPosSyncResult.Success(allProducts.size, serverDate)
                 },
                 onFailure = { error ->
                     handleTransactionError(error)
@@ -108,12 +123,12 @@ class WooPosSyncProductsAction @Inject constructor(
             onFailure = { error ->
                 logger.e("Failed to sync products: ${error.message}")
                 when (error) {
-                    is CatalogTooLargeException -> WooPosSyncProductsResult.Failed.CatalogTooLarge(
+                    is CatalogTooLargeException -> WooPosSyncResult.Failed.CatalogTooLarge(
                         error.totalPages,
                         error.maxPages
                     )
 
-                    else -> WooPosSyncProductsResult.Failed.UnexpectedError(
+                    else -> WooPosSyncResult.Failed.UnexpectedError(
                         error.message ?: "Failed to sync products"
                     )
                 }
@@ -143,16 +158,16 @@ class WooPosSyncProductsAction @Inject constructor(
         return helper.fetchAllPages(maxPages)
     }
 
-    private fun handleTransactionError(error: Throwable): WooPosSyncProductsResult {
+    private fun handleTransactionError(error: Throwable): WooPosSyncResult {
         return when (error) {
             is CatalogTooLargeException -> {
                 logger.e("Local Catalog too large, transaction rolled back")
-                WooPosSyncProductsResult.Failed.CatalogTooLarge(error.totalPages, error.maxPages)
+                WooPosSyncResult.Failed.CatalogTooLarge(error.totalPages, error.maxPages)
             }
 
             else -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
-                WooPosSyncProductsResult.Failed.UnexpectedError(
+                WooPosSyncResult.Failed.UnexpectedError(
                     error.message ?: "Local Catalog Transaction failed and was rolled back"
                 )
             }
@@ -188,23 +203,12 @@ class WooPosSyncVariationsAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
-    sealed class WooPosSyncVariationsResult {
-        data class Success(val variationsSynced: Int, val serverDate: String?) : WooPosSyncVariationsResult()
-
-        sealed class Failed(val error: String) : WooPosSyncVariationsResult() {
-            class CatalogTooLarge(val totalPages: Int, val maxPages: Int) :
-                Failed("Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
-
-            class UnexpectedError(error: String) : Failed(error)
-        }
-    }
-
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
         pageSize: Int,
         maxPages: Int
-    ): WooPosSyncVariationsResult {
+    ): WooPosSyncResult {
         return runCatching {
             val (variations, serverDate) = fetchAllPages(site, modifiedAfterGmt, pageSize, maxPages)
 
@@ -220,7 +224,7 @@ class WooPosSyncVariationsAction @Inject constructor(
             }.fold(
                 onSuccess = {
                     logger.d("Local Catalog variations transaction committed successfully")
-                    WooPosSyncVariationsResult.Success(variations.size, serverDate)
+                    WooPosSyncResult.Success(variations.size, serverDate)
                 },
                 onFailure = { error ->
                     handleTransactionError(error)
@@ -231,12 +235,12 @@ class WooPosSyncVariationsAction @Inject constructor(
             onFailure = { error ->
                 logger.e("Failed to sync variations: ${error.message}")
                 when (error) {
-                    is CatalogTooLargeException -> WooPosSyncVariationsResult.Failed.CatalogTooLarge(
+                    is CatalogTooLargeException -> WooPosSyncResult.Failed.CatalogTooLarge(
                         error.totalPages,
                         error.maxPages
                     )
 
-                    else -> WooPosSyncVariationsResult.Failed.UnexpectedError(
+                    else -> WooPosSyncResult.Failed.UnexpectedError(
                         error.message ?: "Failed to sync variations"
                     )
                 }
@@ -266,16 +270,16 @@ class WooPosSyncVariationsAction @Inject constructor(
         return helper.fetchAllPages(maxPages)
     }
 
-    private fun handleTransactionError(error: Throwable): WooPosSyncVariationsResult {
+    private fun handleTransactionError(error: Throwable): WooPosSyncResult {
         return when (error) {
             is CatalogTooLargeException -> {
                 logger.e("Local Catalog variations too large, transaction rolled back")
-                WooPosSyncVariationsResult.Failed.CatalogTooLarge(error.totalPages, error.maxPages)
+                WooPosSyncResult.Failed.CatalogTooLarge(error.totalPages, error.maxPages)
             }
 
             else -> {
                 logger.e("Local Catalog Variations Transaction failed and was rolled back: ${error.message}")
-                WooPosSyncVariationsResult.Failed.UnexpectedError(
+                WooPosSyncResult.Failed.UnexpectedError(
                     error.message ?: "Local Catalog Variations Transaction failed and was rolled back"
                 )
             }
@@ -285,9 +289,8 @@ class WooPosSyncVariationsAction @Inject constructor(
 
 private class CatalogTooLargeException(
     val totalPages: Int,
-    val maxPages: Int,
-    entityType: String = ""
-) : Exception("Local Catalog $entityType too large: $totalPages pages exceed maximum of $maxPages pages")
+    val maxPages: Int
+) : Exception("Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
 
 private class PaginatedSyncHelper<T>(
     private val logger: WooPosLogWrapper,
@@ -315,7 +318,7 @@ private class PaginatedSyncHelper<T>(
                                 "Local Catalog $entityType too large: ${syncResult.totalPages} " +
                                     "pages exceed maximum of $maxPages pages"
                             )
-                            throw CatalogTooLargeException(syncResult.totalPages, maxPages, entityType)
+                            throw CatalogTooLargeException(syncResult.totalPages, maxPages)
                         }
                         firstPageServerDate = syncResult.serverDate
                         totalPages = syncResult.totalPages
