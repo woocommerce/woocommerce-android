@@ -4,9 +4,11 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 
 data class WooPosVariationsFetchResult(
     val variations: List<WooPosVariationEntity>,
-    val syncedCount: Int,
-    val hasMore: Boolean,
-    val nextPage: Int,
-    val totalPages: Int,
-    val serverDate: String,
-)
+    override val syncedCount: Int,
+    override val hasMore: Boolean,
+    override val nextPage: Int,
+    override val totalPages: Int,
+    override val serverDate: String,
+) : WooPosPaginatedFetchResult<WooPosVariationEntity> {
+    override val items: List<WooPosVariationEntity> get() = variations
+}
