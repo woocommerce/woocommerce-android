@@ -1,26 +1,18 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material.icons.filled.Receipt
-import androidx.compose.material.icons.filled.Store
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -28,12 +20,12 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 
 @Composable
 fun WooPosSettingsStoreScreen(
@@ -56,7 +48,7 @@ private fun WooPosSettingsStoreScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(bottom = WooPosSpacing.Medium.value)
+            .padding(bottom = WooPosSpacing.Large.value)
     ) {
         when (val storeState = state.storeInfoState) {
             is WooPosSettingsStoreState.StoreState.Loading -> {
@@ -87,117 +79,180 @@ private fun WooPosSettingsStoreScreen(
 }
 
 @Composable
-private fun SectionTitle(title: String) {
-    WooPosText(
-        text = title,
-        style = WooPosTypography.BodyXLarge,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface,
-        modifier = Modifier.padding(start = WooPosSpacing.Large.value)
-    )
-}
-
-@Composable
-private fun StoreInformationLoadingSection() {
-    // Store info loads so fast from cache that we can just show empty state briefly
-}
-
-@Composable
 private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInfo) {
-    SectionTitle(stringResource(R.string.woopos_settings_store_information_title))
-
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Store,
-        title = stringResource(R.string.woopos_settings_store_name_label),
-        subtitle = storeInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
-
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Home,
-        title = stringResource(R.string.woopos_settings_store_address_label),
-        subtitle = storeInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
-}
-
-@Composable
-private fun ReceiptLoadingSection() {
-    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
-
-    repeat(5) {
-        ReceiptMenuItemShimmer()
-    }
-}
-
-@Composable
-private fun ReceiptMenuItemShimmer() {
-    Row(
+    WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                vertical = WooPosSpacing.Medium.value,
-                horizontal = WooPosSpacing.Large.value
-            ),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(horizontal = WooPosSpacing.Large.value)
     ) {
-        WooPosShimmerBox(
-            modifier = Modifier.size(24.dp)
-        )
-
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = WooPosSpacing.Medium.value)
+            modifier = Modifier.padding(WooPosSpacing.Large.value)
         ) {
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.4f)
-                    .height(28.dp)
+            StoreSectionTitle(R.string.woopos_settings_store_general_title)
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_name_label),
+                subtitle = storeInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .fillMaxWidth(0.7f)
-                    .height(16.dp)
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_address_label),
+                subtitle = storeInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
         }
     }
 }
 
 @Composable
+private fun StoreInformationLoadingSection() {
+    WooPosCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Large.value)
+    ) {
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Large.value)
+        ) {
+            StoreSectionTitle(R.string.woopos_settings_store_general_title)
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            SettingItemShimmer()
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+            SettingItemShimmer()
+        }
+    }
+}
+
+@Composable
+private fun ReceiptLoadingSection() {
+    WooPosCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Large.value)
+    ) {
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Large.value)
+        ) {
+            StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            repeat(5) { index ->
+                SettingItemShimmer()
+                if (index < 4) {
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.ReceiptInfo) {
-    SectionTitle(stringResource(R.string.woopos_settings_receipt_information_title))
+    WooPosCard(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = WooPosSpacing.Large.value)
+    ) {
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Large.value)
+        ) {
+            StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
 
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Store,
-        title = stringResource(R.string.woopos_settings_store_name_label),
-        subtitle = receiptInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Home,
-        title = stringResource(R.string.woopos_settings_store_address_label),
-        subtitle = receiptInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_name_label),
+                subtitle = receiptInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
 
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Phone,
-        title = stringResource(R.string.woopos_settings_store_phone_label),
-        subtitle = receiptInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Email,
-        title = stringResource(R.string.woopos_settings_store_email_label),
-        subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
-    )
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_physical_address_label),
+                subtitle = receiptInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
 
-    WooPosSettingsDetailsMenuItem(
-        icon = Icons.Default.Receipt,
-        title = stringResource(R.string.woopos_settings_refund_policy_label),
-        subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_phone_label),
+                subtitle = receiptInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_store_email_label),
+                subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+
+            SettingItem(
+                title = stringResource(R.string.woopos_settings_refund_policy_label),
+                subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun SettingItem(
+    title: String,
+    subtitle: String
+) {
+    Column {
+        WooPosText(
+            text = title,
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosText(
+            text = subtitle,
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantLowest,
+        )
+    }
+}
+
+@Composable
+private fun StoreSectionTitle(title: Int) {
+    WooPosText(
+        text = stringResource(title),
+        style = WooPosTypography.BodyLarge,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
     )
+}
+
+@Composable
+private fun SettingItemShimmer() {
+    Column {
+        WooPosShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth(0.3f)
+                .height(20.dp)
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosShimmerBox(
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .height(20.dp)
+        )
+    }
 }
 
 @WooPosPreview
@@ -231,12 +286,7 @@ fun WooPosSettingsStoreScreenPreview() {
 fun WooPosSettingsStoreScreenLoadingPreview() {
     WooPosTheme {
         val state = WooPosSettingsStoreState(
-            storeInfoState = WooPosSettingsStoreState.StoreState.Loaded(
-                WooPosSettingsStoreState.StoreInfo(
-                    storeName = "My WooCommerce Store",
-                    address = "123 Main Street, City, State 12345, US"
-                )
-            ),
+            storeInfoState = WooPosSettingsStoreState.StoreState.Loading,
             receiptState = WooPosSettingsStoreState.ReceiptState.Loading
         )
 

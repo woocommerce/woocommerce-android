@@ -8,8 +8,10 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -53,9 +55,11 @@ fun WooPosSettingsDetailPaneScreen(
                 ),
             titleText = stringResource(state.currentDestination.titleRes),
             onBackClicked = if (state.canGoBack) onBack else null,
-            titleStyle = WooPosTypography.BodyLarge,
-            titleFontWeight = FontWeight.Normal
+            titleStyle = WooPosTypography.Heading,
+            titleFontWeight = FontWeight.Bold
         )
+
+        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
         AnimatedContent(
             targetState = currentDestination,
