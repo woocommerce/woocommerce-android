@@ -22,6 +22,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ciab.CIABAffectedFeature
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.adminUrlOrDefault
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.notifications.UnseenReviewsCountHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -36,6 +37,7 @@ import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -384,12 +386,22 @@ class MoreMenuViewModel @Inject constructor(
 
     private fun onViewAdminButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_ADMIN_MENU)
-        triggerEvent(MoreMenuEvent.ViewAdminEvent(selectedSite.get().adminUrlOrDefault))
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = selectedSite.get().adminUrlOrDefault,
+                screenTitle = UiString.UiStringRes(R.string.more_menu_button_wс_admin)
+            )
+        )
     }
 
     private fun onViewStoreButtonClick() {
         trackMoreMenuOptionSelected(VALUE_MORE_MENU_VIEW_STORE)
-        triggerEvent(MoreMenuEvent.ViewStoreEvent(selectedSite.get().url))
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = selectedSite.get().url,
+                screenTitle = UiString.UiStringText(selectedSite.get().getSelectedSiteName())
+            )
+        )
     }
 
     private fun onCouponsButtonClick() {
@@ -452,7 +464,7 @@ class MoreMenuViewModel @Inject constructor(
             doCheckAvailability(MoreMenuItemButton.Type.Inbox) { moreMenuRepository.isInboxEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Settings) { moreMenuRepository.isUpgradesEnabled() },
             doCheckAvailability(MoreMenuItemButton.Type.Payments) {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.Payments)
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)
             }
         ).merge()
             .map { update ->

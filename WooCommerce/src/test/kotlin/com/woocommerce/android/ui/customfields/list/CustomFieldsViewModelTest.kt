@@ -537,7 +537,8 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
             viewModel.onLearnMoreClicked()
         }.last()
 
-        assertThat(event).isEqualTo(MultiLiveEvent.Event.OpenUrl(CustomFieldsViewModel.PRODUCTS_HELP_DOCUMENT))
+        assertThat(event)
+            .isEqualTo(MultiLiveEvent.Event.LaunchUrlInChromeTab(CustomFieldsViewModel.PRODUCTS_HELP_DOCUMENT))
     }
 
     @Test
@@ -548,6 +549,7 @@ class CustomFieldsViewModelTest : BaseUnitTest() {
             viewModel.onLearnMoreClicked()
         }.last()
 
-        assertThat(event).isEqualTo(MultiLiveEvent.Event.OpenUrl(CustomFieldsViewModel.ORDERS_HELP_DOCUMENT))
+        assertThat(event)
+            .isEqualTo(MultiLiveEvent.Event.LaunchUrlInChromeTab(CustomFieldsViewModel.ORDERS_HELP_DOCUMENT))
     }
 }

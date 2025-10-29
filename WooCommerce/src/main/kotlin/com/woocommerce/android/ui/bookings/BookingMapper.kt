@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.ZoneOffset
@@ -79,6 +80,7 @@ class BookingMapper @Inject constructor(
             location = "238 Willow Creek Drive, Montgomery AL 36109",
             price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
+            cancelButtonVisible = isCancellable,
             duration = duration,
         )
     }
@@ -112,8 +114,8 @@ class BookingMapper @Inject constructor(
         orderStatus: String?,
         paymentMethod: String?,
     ): BookingStatus {
-        return if (orderStatus != "completed" && paymentMethod == "cod") {
-            BookingStatus.PayAtLocation
+        return if (orderStatus == "on-hold" && paymentMethod == "cod") {
+            BookingStatus.PayOnSite
         } else {
             when (this) {
                 BookingEntity.Status.Paid -> BookingStatus.Paid
@@ -122,6 +124,7 @@ class BookingMapper @Inject constructor(
                 BookingEntity.Status.Complete -> BookingStatus.Complete
                 BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
                 BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
+                BookingEntity.Status.InCart -> BookingStatus.InCart
                 is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
             }
         }

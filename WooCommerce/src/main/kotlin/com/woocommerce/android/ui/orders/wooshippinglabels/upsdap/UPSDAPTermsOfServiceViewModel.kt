@@ -86,7 +86,7 @@ class UPSDAPTermsOfServiceViewModel @Inject constructor(
             "ups-technology-agreement" -> TECHNOLOGY_AGREEMENT_URL
             else -> error("Unknown URL: $url")
         }
-        triggerEvent(MultiLiveEvent.Event.OpenUrl(finalUrl))
+        triggerEvent(MultiLiveEvent.Event.LaunchUrlInChromeTab(finalUrl))
     }
 
     private fun onContinueClicked() {

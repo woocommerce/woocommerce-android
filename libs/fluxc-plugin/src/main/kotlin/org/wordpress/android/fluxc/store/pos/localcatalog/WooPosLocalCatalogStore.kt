@@ -6,6 +6,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.WooPosProductRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToPosVariationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos.mapToWooPOSEntity
@@ -118,14 +119,15 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     suspend fun fetchProductsCount(
         site: SiteModel,
-        modifiedAfterGmt: String? = null,
+        modifiedAfterGmt: String? = null
     ): Result<Int> =
         coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = 0,
-                pageSize = 1
+                page = 1,
+                pageSize = 1,
+                includeStatus = null
             )
 
             when {
@@ -151,15 +153,16 @@ class WooPosLocalCatalogStore @Inject constructor(
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
-     * @param [offset] Starting offset for pagination
+     * @param [page] Page for pagination.
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
     suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
-        offset: Int = 0,
+        page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
+        includeStatus: List<CoreProductStatus>? = null,
     ): Result<WooPosLocalCatalogFetchProductsResult> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -167,8 +170,9 @@ class WooPosLocalCatalogStore @Inject constructor(
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = offset,
-                pageSize = validPageSize
+                page = page,
+                pageSize = validPageSize,
+                includeStatus = includeStatus
             )
 
             val serverDate = headersParser.getServerDate(response)
@@ -185,7 +189,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                         products = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
-                        nextOffset = offset,
+                        nextPage = page,
                         totalPages = 0,
                         serverDate = serverDate
                     )
@@ -211,7 +215,7 @@ class WooPosLocalCatalogStore @Inject constructor(
                             products = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
-                            nextOffset = if (hasMore) offset + products.size else offset,
+                            nextPage = if (hasMore) page + 1 else page,
                             totalPages = totalPages,
                             serverDate = serverDate,
                         )

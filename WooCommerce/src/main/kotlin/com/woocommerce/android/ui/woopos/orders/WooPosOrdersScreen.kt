@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,7 +28,6 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
@@ -72,6 +71,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.util.ChromeCustomTabUtils
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -86,7 +87,15 @@ fun WooPosOrdersScreen(
     val state by viewModel.state.collectAsState()
 
     if (navigatedFromEmailReceiptSent) {
-        viewModel.onBackFromSuccesfullySendingEmailReceipt()
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+    }
+
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.openUrlEvent.collectLatest { url ->
+            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
+        }
     }
 
     WooPosOrdersScreen(
@@ -227,14 +236,6 @@ private fun OrdersListPane(
         }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
-        AnimatedVisibility(visible = state.isRefreshingSelectedDetails) {
-            LinearProgressIndicator(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Medium.value)
-            )
-        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -460,7 +461,7 @@ private fun LoadedOrdersList(
 }
 
 @Composable
-fun OrdersEmpty(
+private fun OrdersEmpty(
     onActionClicked: () -> Unit
 ) {
     WooPosEmptyScreen(
@@ -468,14 +469,14 @@ fun OrdersEmpty(
         icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
-        contentDescription = stringResource(id = R.string.woopos_coupons_empty_list_image_description),
+        contentDescription = stringResource(id = R.string.woopos_orders_empty_list_image_description),
         actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
         onActionClicked = onActionClicked
     )
 }
 
 @Composable
-fun OrdersError(
+private fun OrdersError(
     onRetryClicked: () -> Unit
 ) {
     WooPosErrorScreen(
@@ -495,7 +496,7 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
         description = stringResource(id = R.string.woopos_orders_pagination_error_content_description),
         primaryButton = WooPosErrorScreenButtonState(
-            text = stringResource(id = R.string.woopos_coupons_pagination_try_again_label),
+            text = stringResource(id = R.string.woopos_orders_pagination_try_again_label),
             click = onPaginationErrorTryAgain
         ),
     )

@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import javax.inject.Inject
@@ -29,15 +30,17 @@ class WooPosProductRestClient @Inject constructor(
     suspend fun fetchProducts(
         site: SiteModel,
         modifiedAfter: String? = null,
-        offset: Int,
+        page: Int,
         pageSize: Int,
+        includeStatus: List<CoreProductStatus>? = null,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
             pageSize = pageSize,
-            offset = offset,
+            page = page,
             modifiedAfter = modifiedAfter,
-            fields = PRODUCT_FIELDS
+            fields = PRODUCT_FIELDS,
+            includeStatus = includeStatus
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -65,15 +68,7 @@ class WooPosProductRestClient @Inject constructor(
         pageSize: Int,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
-        val params = mutableMapOf(
-            "per_page" to pageSize.toString(),
-            "page" to page.toString(),
-            "_fields" to VARIATIONS_FIELDS,
-            ).also {
-            if (modifiedAfter.isNullOrBlank().not()) {
-                it["modified_after"] = modifiedAfter
-            }
-        }
+        val params = buildBaseParams(pageSize, page, VARIATIONS_FIELDS, modifiedAfter)
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -148,18 +143,26 @@ class WooPosProductRestClient @Inject constructor(
 
     private fun buildBaseParams(
         pageSize: Int,
-        offset: Int,
+        page: Int,
         fields: String,
         modifiedAfter: String?,
+        includeStatus: List<CoreProductStatus>? = null,
     ): MutableMap<String, String> {
         return mutableMapOf(
             "per_page" to pageSize.toString(),
-            "offset" to offset.toString(),
+            "page" to page.toString(),
             "_fields" to fields,
             ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
+            includeStatus?.let { statuses ->
+                it["include_status"] = statusListToString(statuses)
+            }
         }
+    }
+
+    private fun statusListToString(statuses: List<CoreProductStatus>): String {
+        return statuses.joinToString(",") { it.value }
     }
 }
