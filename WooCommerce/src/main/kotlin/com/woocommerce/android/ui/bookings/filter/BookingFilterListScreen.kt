@@ -1,14 +1,6 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.ContentTransform
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,11 +11,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -32,10 +28,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
-    BackHandler {
-        state.onClose()
-    }
-
     Scaffold(
         topBar = {
             Column {
@@ -66,61 +58,74 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
         },
         containerColor = MaterialTheme.colorScheme.surface,
     ) { innerPadding ->
-        AnimatedContent(
-            targetState = state.currentPage,
-            transitionSpec = {
-                if (targetState is BookingFilterPage.List) {
-                    slideOut()
-                } else {
-                    slideIn()
-                }
-            },
-            label = "BookingFiltersAnimatedContent",
+        FiltersNavHost(
+            state = state,
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-        ) { page ->
-            when (page) {
-                is BookingFilterPage.List -> {
-                    BookingFilterRootPage(state.items)
-                }
+        )
 
-                BookingFilterPage.AttendanceStatus,
-                BookingFilterPage.BookingType,
-                BookingFilterPage.Customer,
-                BookingFilterPage.Location,
-                BookingFilterPage.PaymentStatus,
-                BookingFilterPage.ServiceEvent,
-                BookingFilterPage.TeamMember,
-                is BookingFilterPage.DateTime -> {
-                    DateTimeFilterPicker()
-                }
-            }
+        // Make sure this is called after the NavHost to properly receive back events
+        BackHandler {
+            state.onClose()
         }
     }
 }
 
-private const val TRANSITION_DURATION = 250
+@Composable
+private fun FiltersNavHost(
+    state: BookingFilterListUiState,
+    modifier: Modifier
+) {
+    val navController = rememberNavController()
 
-private fun slideIn(duration: Int = TRANSITION_DURATION): ContentTransform {
-    return (
-        slideInHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> fullWidth } +
-            fadeIn(animationSpec = tween(durationMillis = duration))
-        ) togetherWith (
-        slideOutHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> -fullWidth } +
-            fadeOut(animationSpec = tween(durationMillis = duration))
-        )
+    LaunchedEffect(state.currentPage) {
+        if (state.currentPage != BookingFilterPage.List) {
+            navController.navigate(state.currentPage.route) {
+                popUpTo(BookingFilterPage.List.route)
+            }
+        } else {
+            navController.popBackStack(BookingFilterPage.List.route, false)
+        }
+    }
+
+    NavHost(
+        navController = navController,
+        startDestination = BookingFilterPage.List.route,
+        modifier = modifier
+    ) {
+        composable(BookingFilterPage.List.route) {
+            BookingFilterRootPage(state.items)
+        }
+        composable(BookingFilterPage.DateTime.route) {
+            DateTimeFilterPicker()
+        }
+        composable(BookingFilterPage.TeamMember.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.AttendanceStatus.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.PaymentStatus.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.BookingType.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.Customer.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.ServiceEvent.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.Location.route) {
+            TODO()
+        }
+    }
 }
 
-private fun slideOut(duration: Int = TRANSITION_DURATION): ContentTransform {
-    return (
-        slideInHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> -fullWidth } +
-            fadeIn(animationSpec = tween(durationMillis = duration))
-        ) togetherWith (
-        slideOutHorizontally(animationSpec = tween(durationMillis = duration)) { fullWidth -> fullWidth } +
-            fadeOut(animationSpec = tween(durationMillis = duration))
-        )
-}
+private val BookingFilterPage.route: String
+    get() = this::class.java.simpleName
 
 @LightDarkThemePreviews
 @Composable
