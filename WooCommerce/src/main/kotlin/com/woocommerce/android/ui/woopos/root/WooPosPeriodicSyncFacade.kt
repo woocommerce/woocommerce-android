@@ -19,7 +19,9 @@ import kotlin.time.Duration.Companion.hours
 
 /**
  * Lifecycle-aware facade that performs periodic incremental syncs while [WooPosActivity] is visible.
- * The sync runs once per hour while the POS activity is in the foreground (between onResume and onPause).
+ * The sync runs at most once per hour while the POS activity is in the foreground (between onResume and onPause).
+ * It checks the last incremental sync timestamp to avoid redundant syncs when other events
+ * (e.g., successful payment, POS home) have already triggered recent syncs.
  */
 @Singleton
 class WooPosPeriodicSyncFacade @Inject constructor(
