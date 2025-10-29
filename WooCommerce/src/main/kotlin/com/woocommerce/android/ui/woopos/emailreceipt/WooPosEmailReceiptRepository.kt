@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
 import android.util.Patterns
-import com.woocommerce.android.AppConstants
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
@@ -11,7 +10,6 @@ import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.wordpress.android.fluxc.store.WCOrderStore
 import javax.inject.Inject
 
