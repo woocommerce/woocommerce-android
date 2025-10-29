@@ -92,64 +92,36 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             return catalogSizeCheckResult.toPosLocalCatalogSyncFailure()
         }
 
-        val productSyncResult = syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
-        if (productSyncResult is WooPosSyncResult.Failed) {
-            return productSyncResult.toPosLocalCatalogSyncFailure()
+        val syncResult = posSyncAction.syncCatalog(site, modifiedAfterGmt, pageSize, maxPages)
+        if (syncResult is WooPosSyncResult.Failed) {
+            return syncResult.toPosLocalCatalogSyncFailure()
         }
 
-        val variationSyncResult = syncVariations(site, modifiedAfterGmt, pageSize, maxPages)
-        if (variationSyncResult is WooPosSyncResult.Failed) {
-            return variationSyncResult.toPosLocalCatalogSyncFailure()
+        val successResult = syncResult as WooPosSyncResult.Success
+
+        successResult.productsServerDate?.let { serverDate ->
+            syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
+                logger.d("Stored products sync timestamp: $serverDate")
+            }
+        }
+
+        successResult.variationsServerDate?.let { serverDate ->
+            syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
+                syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
+                logger.d("Stored variations sync timestamp: $serverDate")
+            }
         }
 
         val syncDuration = System.currentTimeMillis() - startTime
 
         return PosLocalCatalogSyncResult.Success(
-            productsSynced = (productSyncResult as WooPosSyncResult.Success).syncedCount,
-            variationsSynced = (variationSyncResult as WooPosSyncResult.Success).syncedCount,
+            productsSynced = successResult.productsSynced,
+            variationsSynced = successResult.variationsSynced,
             syncDurationMs = syncDuration
         )
     }
 
-    private suspend fun syncProducts(
-        site: SiteModel,
-        modifiedAfterGmt: String?,
-        pageSize: Int,
-        maxPages: Int
-    ): WooPosSyncResult {
-        val result = posSyncAction.syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
-
-        if (result is WooPosSyncResult.Success) {
-            result.serverDate?.let { serverDate ->
-                syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
-                    syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
-                    logger.d("Stored products sync timestamp: $serverDate")
-                }
-            }
-        }
-
-        return result
-    }
-
-    private suspend fun syncVariations(
-        site: SiteModel,
-        modifiedAfterGmt: String?,
-        pageSize: Int,
-        maxPages: Int
-    ): WooPosSyncResult {
-        val result = posSyncAction.syncVariations(site, modifiedAfterGmt, pageSize, maxPages)
-
-        if (result is WooPosSyncResult.Success) {
-            result.serverDate?.let { serverDate ->
-                syncTimestampManager.parseTimestampFromApi(serverDate)?.let { timestamp ->
-                    syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
-                    logger.d("Stored variations sync timestamp: $serverDate")
-                }
-            }
-        }
-
-        return result
-    }
 
     suspend fun getProductCount(site: SiteModel): Int =
         posLocalCatalogStore.getProductCount(LocalId(site.id)).getOrElse { 0 }
