@@ -43,3 +43,9 @@ val BookingFilterType.filterValue: String?
         BookingFilterType.Event -> "event"
         BookingFilterType.Any -> null
     }
+
+// TODO After refactoring navigation for the filter screens, replace this with a ViewModel-backed UI state.
+val DUMMY_BOOKING_TYPE_FILTER_UI_STATE = BookingTypeFilterUiState(
+    selectedType = BookingFilterType.Any,
+    onTypeSelected = {}
+)
