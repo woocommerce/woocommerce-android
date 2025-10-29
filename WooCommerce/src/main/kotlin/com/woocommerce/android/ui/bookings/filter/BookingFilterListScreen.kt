@@ -1,6 +1,13 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -92,6 +99,10 @@ private fun FiltersNavHost(
     NavHost(
         navController = navController,
         startDestination = BookingFilterPage.List.route,
+        enterTransition = { slideIn(popNavigation = true) },
+        exitTransition = { slideOut(popNavigation = true) },
+        popEnterTransition = { slideIn(popNavigation = false) },
+        popExitTransition = { slideOut(popNavigation = false) },
         modifier = modifier
     ) {
         composable(BookingFilterPage.List.route) {
@@ -126,6 +137,20 @@ private fun FiltersNavHost(
 
 private val BookingFilterPage.route: String
     get() = this::class.java.simpleName
+
+private fun slideIn(popNavigation: Boolean): EnterTransition {
+    return slideInHorizontally(animationSpec = tween(durationMillis = TRANSITION_DURATION)) { fullWidth ->
+        if (popNavigation) fullWidth else -fullWidth
+    } + fadeIn(animationSpec = tween(durationMillis = TRANSITION_DURATION))
+}
+
+private fun slideOut(popNavigation: Boolean): ExitTransition {
+    return slideOutHorizontally(animationSpec = tween(durationMillis = TRANSITION_DURATION)) { fullWidth ->
+        if (popNavigation) -fullWidth else fullWidth
+    } + fadeOut(animationSpec = tween(durationMillis = TRANSITION_DURATION))
+}
+
+private const val TRANSITION_DURATION = 250
 
 @LightDarkThemePreviews
 @Composable
