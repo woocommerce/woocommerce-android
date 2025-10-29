@@ -220,7 +220,6 @@ sealed interface WooPosSyncResult {
     }
 }
 
-
 private class CatalogTooLargeException(
     val totalPages: Int,
     val maxPages: Int

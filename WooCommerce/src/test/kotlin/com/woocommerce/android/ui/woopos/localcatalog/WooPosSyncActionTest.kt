@@ -44,7 +44,7 @@ class WooPosSyncActionTest {
     }
 
     // === PRODUCT SYNC TESTS ===
-    
+
     @Test
     fun `when products have single page, then syncs correct product count`() = runTest {
         // GIVEN
@@ -69,7 +69,13 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(100)
-        verify(posLocalCatalogStore, times(3)).fetchRecentlyModifiedProducts(eq(site), anyOrNull(), any(), any(), eq(null))
+        verify(posLocalCatalogStore, times(3)).fetchRecentlyModifiedProducts(
+            eq(site),
+            anyOrNull(),
+            any(),
+            any(),
+            eq(null)
+        )
     }
 
     @Test
@@ -116,7 +122,7 @@ class WooPosSyncActionTest {
         // GIVEN
         val totalPages = 15
         val maxPages = 10
-        givenProductCatalogTooLarge(totalPages, maxPages)
+        givenProductCatalogTooLarge(totalPages)
 
         // WHEN
         val result = sut.syncCatalog(site, null, PAGE_SIZE, maxPages)
@@ -139,7 +145,13 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(0)
-        verify(posLocalCatalogStore, times(1)).fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(1), any(), eq(null))
+        verify(posLocalCatalogStore, times(1)).fetchRecentlyModifiedProducts(
+            eq(site),
+            anyOrNull(),
+            eq(1),
+            any(),
+            eq(null)
+        )
     }
 
     // === VARIATIONS SYNC TESTS ===
@@ -215,7 +227,7 @@ class WooPosSyncActionTest {
     fun `when variations exceed page limit, then returns CatalogTooLarge`() = runTest {
         // GIVEN
         mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
-        givenVariationCatalogTooLarge(totalPages = 12, maxPages = 10)
+        givenVariationCatalogTooLarge(totalPages = 12)
 
         // WHEN
         val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
@@ -252,7 +264,13 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(13) // 10 + 3 trash
-        verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(eq(site), anyOrNull(), any(), any(), eq(listOf(CoreProductStatus.TRASH)))
+        verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(
+            eq(site),
+            anyOrNull(),
+            any(),
+            any(),
+            eq(listOf(CoreProductStatus.TRASH))
+        )
     }
 
     @Test
@@ -265,7 +283,13 @@ class WooPosSyncActionTest {
         sut.syncCatalog(site, null, PAGE_SIZE, 10)
 
         // THEN
-        verify(posLocalCatalogStore, never()).fetchRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), eq(listOf(CoreProductStatus.TRASH)))
+        verify(posLocalCatalogStore, never()).fetchRecentlyModifiedProducts(
+            any(),
+            anyOrNull(),
+            any(),
+            any(),
+            eq(listOf(CoreProductStatus.TRASH))
+        )
     }
 
     @Test
@@ -280,7 +304,13 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(18) // 10 + 5 + 3 trash
-        verify(posLocalCatalogStore, times(2)).fetchRecentlyModifiedProducts(eq(site), anyOrNull(), any(), any(), eq(listOf(CoreProductStatus.TRASH)))
+        verify(posLocalCatalogStore, times(2)).fetchRecentlyModifiedProducts(
+            eq(site),
+            anyOrNull(),
+            any(),
+            any(),
+            eq(listOf(CoreProductStatus.TRASH))
+        )
     }
 
     @Test
@@ -314,7 +344,7 @@ class WooPosSyncActionTest {
     // === TRANSACTION TESTS ===
 
     @Test
-    fun `when syncing executes all operations in single transaction`() = runTest {
+    fun `when syncing, then executes all operations in single transaction`() = runTest {
         // GIVEN
         mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
         mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
@@ -527,7 +557,7 @@ class WooPosSyncActionTest {
     @Test
     fun `when catalog size check fails before sync, then returns appropriate error`() = runTest {
         // GIVEN
-        givenProductCatalogTooLarge(totalPages = 20, maxPages = 10)
+        givenProductCatalogTooLarge(totalPages = 20)
 
         // WHEN
         val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
@@ -599,7 +629,13 @@ class WooPosSyncActionTest {
         pages.forEachIndexed { index, count ->
             val pageNumber = index + 1
             whenever(
-                posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(pageNumber), any(), eq(null))
+                posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                    eq(site),
+                    anyOrNull(),
+                    eq(pageNumber),
+                    any(),
+                    eq(null)
+                )
             ).thenReturn(
                 KotlinResult.success(
                     WooPosPaginatedFetchResult(
@@ -637,7 +673,13 @@ class WooPosSyncActionTest {
 
     private fun givenTrashProducts(count: Int) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), any(), any(), eq(listOf(CoreProductStatus.TRASH)))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                anyOrNull(),
+                any(),
+                any(),
+                eq(listOf(CoreProductStatus.TRASH))
+            )
         ).thenReturn(
             KotlinResult.success(
                 WooPosPaginatedFetchResult(
@@ -656,7 +698,13 @@ class WooPosSyncActionTest {
         pages.forEachIndexed { index, count ->
             val pageNumber = index + 1
             whenever(
-                posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(pageNumber), any(), eq(listOf(CoreProductStatus.TRASH)))
+                posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                    eq(site),
+                    anyOrNull(),
+                    eq(pageNumber),
+                    any(),
+                    eq(listOf(CoreProductStatus.TRASH))
+                )
             ).thenReturn(
                 KotlinResult.success(
                     WooPosPaginatedFetchResult(
@@ -674,7 +722,13 @@ class WooPosSyncActionTest {
 
     private fun givenTrashProductFetchFails(errorMessage: String) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), any(), any(), eq(listOf(CoreProductStatus.TRASH)))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                anyOrNull(),
+                any(),
+                any(),
+                eq(listOf(CoreProductStatus.TRASH))
+            )
         ).thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
@@ -690,7 +744,7 @@ class WooPosSyncActionTest {
         ).thenReturn(KotlinResult.failure(Exception(errorMessage ?: "Generic error")))
     }
 
-    private fun givenProductCatalogTooLarge(totalPages: Int, maxPages: Int) = runBlocking {
+    private fun givenProductCatalogTooLarge(totalPages: Int) = runBlocking {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(1), any(), eq(null))
         ).thenReturn(
@@ -707,7 +761,7 @@ class WooPosSyncActionTest {
         )
     }
 
-    private fun givenVariationCatalogTooLarge(totalPages: Int, maxPages: Int) = runBlocking {
+    private fun givenVariationCatalogTooLarge(totalPages: Int) = runBlocking {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(1), any())
         ).thenReturn(
@@ -772,7 +826,7 @@ class WooPosSyncActionTest {
         whenever(posLocalCatalogStore.upsertVariations(any())).thenReturn(KotlinResult.success(Unit))
     }
 
-    @Suppress("UNCHECKED_CAST") 
+    @Suppress("UNCHECKED_CAST")
     private fun givenTransactionFailure(errorMessage: String) = runBlocking {
         whenever(
             posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())

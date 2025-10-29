@@ -122,7 +122,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         )
     }
 
-
     suspend fun getProductCount(site: SiteModel): Int =
         posLocalCatalogStore.getProductCount(LocalId(site.id)).getOrElse { 0 }
 
