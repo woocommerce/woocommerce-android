@@ -68,14 +68,12 @@ class WooPosEmailReceiptRepository @Inject constructor(
         }
 
     suspend fun fetchOrderById(orderId: Long): Order? {
-        val result = withTimeoutOrNull(AppConstants.REQUEST_TIMEOUT) {
-            orderStore.fetchSingleOrder(
-                selectedSite.get(),
-                orderId
-            )
-        }
+        val result = orderStore.fetchSingleOrder(
+            selectedSite.get(),
+            orderId
+        )
 
-        return if (result?.isError == false) {
+        return if (!result.isError) {
             getOrderById(orderId)
         } else {
             null
