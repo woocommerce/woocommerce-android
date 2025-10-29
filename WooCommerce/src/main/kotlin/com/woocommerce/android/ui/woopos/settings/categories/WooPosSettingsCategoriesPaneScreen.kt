@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.settings.categories
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,12 +10,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -72,12 +77,9 @@ private fun WooPosSettingsCategoriesPaneScreenContent(
         }
 
         fixedCategories.forEach { item ->
-            CategoryItem(
+            FixedCategoryItem(
                 item = item,
-                isSelected = item == selectedCategory,
-                onClick = {
-                    onCategorySelected(item)
-                },
+                onClick = { onCategorySelected(item) }
             )
         }
     }
@@ -102,15 +104,52 @@ private fun CategoryItem(
             WooPosText(
                 text = stringResource(item.titleRes),
                 style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
             )
-            WooPosText(
-                text = stringResource(item.subtitleRes),
-                style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
-            )
+            item.subtitleRes?.let {
+                WooPosText(
+                    text = stringResource(item.subtitleRes),
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
+                )
+            }
         }
+    }
+}
+
+
+@Composable
+private fun FixedCategoryItem(
+    item: WooPosSettingsCategory,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Large.value
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        item.icon?.let {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(32.dp)
+            )
+
+            Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
+        }
+
+        WooPosText(
+            text = stringResource(item.titleRes),
+            style = WooPosTypography.BodyMedium,
+        )
     }
 }
 
@@ -121,11 +160,11 @@ private fun WooPosSettingsCategoriesPaneScreenPreview() {
         WooPosSettingsCategoriesPaneScreenContent(
             scrollableCategories = listOf(
                 WooPosSettingsCategory.STORE,
+                WooPosSettingsCategory.HARDWARE,
                 WooPosSettingsCategory.LOCAL_CATALOG,
-                WooPosSettingsCategory.HARDWARE
             ),
             fixedCategories = listOf(WooPosSettingsCategory.HELP),
-            selectedCategory = WooPosSettingsCategory.STORE,
+            selectedCategory = WooPosSettingsCategory.LOCAL_CATALOG,
             onCategorySelected = {}
         )
     }
