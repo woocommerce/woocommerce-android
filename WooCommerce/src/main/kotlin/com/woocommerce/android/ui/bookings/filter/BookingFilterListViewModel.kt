@@ -43,10 +43,11 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onUpdateFilterOption(option: BookingsFilterOption) {
         _uiState.update { current ->
             val filtered = when (option) {
-                is BookingsFilterOption.BookingType -> current.newBookingFilters
-                    .filterNot { it is BookingsFilterOption.BookingType }
-                else -> current.newBookingFilters
-                    .filterNot { it::class == option::class }
+                is BookingsFilterOption.BookingType -> {
+                    current.newBookingFilters.filterNot { it is BookingsFilterOption.BookingType }
+                }
+
+                else -> current.newBookingFilters.filterNot { it::class == option::class }
             }
             current.copy(
                 newBookingFilters = filtered
