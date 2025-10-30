@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.woopos.settings.details.hardware
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 
@@ -24,10 +27,12 @@ fun WooPosHardwareSettingsScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         state.items.forEach { item ->
             WooPosSettingsDetailsMenuItem(
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
                 title = stringResource(item.titleRes),
                 subtitle = stringResource(item.subtitleRes),
                 onClick = {

@@ -151,8 +151,11 @@ private fun ConnectedContent(
         }
     }
 
+    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
     if (batteryLevel != null) {
         WooPosSettingsDetailsMenuItem(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_settings_card_reader_battery_title),
             subtitle = stringResource(
                 R.string.card_reader_detail_connected_battery_percentage,
@@ -160,6 +163,8 @@ private fun ConnectedContent(
             ),
             onClick = { }
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     }
 
     FirmwareMenuItem(
@@ -168,7 +173,7 @@ private fun ConnectedContent(
         onUpdateClick = onUpdateClick
     )
 
-    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
     WooPosOutlinedButton(
         modifier = Modifier
@@ -226,9 +231,10 @@ private fun NotConnectedContent(
             onClick = onConnectClicked
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosSettingsDetailsMenuItem(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
             onClick = onDocumentationClicked

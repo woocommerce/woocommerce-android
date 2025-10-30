@@ -45,11 +45,11 @@ fun WooPosSettingsDetailsMenuItem(
                 color = MaterialTheme.colorScheme.onSurface,
                 fontWeight = FontWeight.Bold,
             )
+            Spacer(modifier = Modifier.size(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = subtitle,
                 style = WooPosTypography.BodySmall,
-                color = MaterialTheme.colorScheme.outline,
-                modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
             )
         }
     }
