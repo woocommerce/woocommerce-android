@@ -397,6 +397,27 @@ class MigrationTests {
                 )
                 """.trimIndent()
             )
+
+            // Insert invalid row (remoteCustomerId = 0, analyticsCustomerId = NULL)
+            execSQL(
+                """
+                INSERT INTO CustomerEntity (
+                  id, localSiteId, remoteCustomerId, avatarUrl, dateCreated, dateCreatedGmt, dateModified, dateModifiedGmt,
+                  email, firstName, isPayingCustomer, lastName, role, username,
+                  billingAddress1, billingAddress2, billingCity, billingCompany, billingCountry, billingEmail, billingFirstName,
+                  billingLastName, billingPhone, billingPostcode, billingState,
+                  shippingAddress1, shippingAddress2, shippingCity, shippingCompany, shippingCountry, shippingFirstName,
+                  shippingLastName, shippingPostcode, shippingState, analyticsCustomerId
+                ) VALUES (
+                  400, 10, 0, '', '', '', '', '',
+                  'a2@example.com', 'A2', 1, 'B2', '', 'user_high',
+                  '', '', '', '', '', '', '',
+                  '', '', '', '',
+                  '', '', '', '', '', '',
+                  '', '', '', NULL
+                )
+                """.trimIndent()
+            )
         }.close()
 
         // 2) Run the migration and validate
@@ -438,6 +459,9 @@ class MigrationTests {
             assertThat(analyticsId2).isNull()
             // We kept the row with MAX(id)=200, so its username should be 'user_high'
             assertThat(username2).isEqualTo("user_high")
+
+            // Verify the invalid row was filtered out
+            assertThat(cursor.moveToNext()).isFalse
         }
     }
 

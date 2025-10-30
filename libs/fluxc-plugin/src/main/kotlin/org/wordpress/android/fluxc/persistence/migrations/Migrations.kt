@@ -1151,9 +1151,9 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
                 CASE
                   WHEN `remoteCustomerId` > 0 THEN 'site:' || `localSiteId` || '|wp:' || `remoteCustomerId`
                   WHEN `analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0 THEN 'site:' || `localSiteId` || '|analytics:' || `analyticsCustomerId`
-                  ELSE 'site:' || `localSiteId` || '|wp:' || `remoteCustomerId`
                 END AS `stableId`
               FROM `CustomerEntity`
+              WHERE `remoteCustomerId` > 0 OR (`analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0)
             )
             GROUP BY stableId
             """.trimIndent()
