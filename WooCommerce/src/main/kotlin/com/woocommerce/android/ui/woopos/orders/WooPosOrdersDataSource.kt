@@ -30,7 +30,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersInMemoryCache,
+    private val ordersCache: WooPosOrdersInMemoryCache
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val page = AtomicInteger(1)
@@ -48,7 +48,6 @@ class WooPosOrdersDataSource @Inject constructor(
         if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
 
         val result = loadFirstPage()
-
         result.onSuccess {
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
