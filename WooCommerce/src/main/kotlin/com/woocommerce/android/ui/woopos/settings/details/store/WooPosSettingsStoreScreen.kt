@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -209,19 +211,20 @@ private fun SettingItem(
     title: String,
     subtitle: String
 ) {
-    Column {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         WooPosText(
             text = title,
             style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
         )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
         WooPosText(
             text = subtitle,
             style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantLowest,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -238,19 +241,20 @@ private fun StoreSectionTitle(title: Int) {
 
 @Composable
 private fun SettingItemShimmer() {
-    Column {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.3f)
-                .height(20.dp)
+                .height(22.dp)
         )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
         WooPosShimmerBox(
             modifier = Modifier
-                .fillMaxWidth(0.6f)
-                .height(20.dp)
+                .fillMaxWidth(0.25f)
+                .height(22.dp)
         )
     }
 }
