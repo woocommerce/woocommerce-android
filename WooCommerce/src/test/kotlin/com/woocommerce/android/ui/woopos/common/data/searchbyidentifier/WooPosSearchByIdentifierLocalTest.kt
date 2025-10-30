@@ -1,10 +1,14 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
-import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
+import com.woocommerce.android.ui.woopos.util.generateWooPosVariation
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -12,20 +16,39 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import kotlin.test.assertTrue
 
 class WooPosSearchByIdentifierLocalTest {
 
     private lateinit var sut: WooPosSearchByIdentifierLocal
-    private val productsCache: WooPosProductsCache = mock {
-        onBlocking { getProductById(any()) }.thenReturn(generateWooPosProduct())
-    }
+    private val productsCache: WooPosProductsCache = mock()
     private val variationsCache: WooPosVariationsLRUCache = mock()
+    private val localCatalogStore: WooPosLocalCatalogStore = mock()
+    private val localCatalogSupported: WooPosIsLocalCatalogSupported = mock()
+    private val productModelMapper: WooPosProductModelMapper = mock()
+    private val variationMapper: WooPosVariationMapper = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val testSite = SiteModel().apply { siteId = 123L }
 
     @Before
-    fun setup() {
-        sut = WooPosSearchByIdentifierLocal(productsCache, variationsCache)
+    fun setup() = runTest {
+        whenever(selectedSite.get()).thenReturn(testSite)
+        whenever(localCatalogSupported.invoke(any())).thenReturn(false)
+        whenever(productsCache.getAll()).thenReturn(emptyList())
+        whenever(variationsCache.getAll()).thenReturn(emptyList())
+        whenever(productsCache.getProductById(any())).thenReturn(generateWooPosProduct())
+
+        sut = WooPosSearchByIdentifierLocal(
+            productsCache,
+            variationsCache,
+            localCatalogStore,
+            localCatalogSupported,
+            productModelMapper,
+            variationMapper,
+            selectedSite
+        )
     }
 
     @Test
@@ -77,18 +100,14 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "VAR123456"
         val productId = 1L
-        val variationId = 10L
-        val product =
-            generateWooPosProduct(productId = productId, productType = WooPosProductModel.WooPosProductType.VARIABLE)
-        val variation = WooPosVariation(
-            remoteVariationId = variationId,
+        val product = generateWooPosProduct(
+            productId = productId,
+            productType = WooPosProductModel.WooPosProductType.VARIABLE
+        )
+        val variation = generateWooPosVariation(
+            remoteVariationId = 10L,
             remoteProductId = productId,
-            globalUniqueId = identifier,
-            price = BigDecimal.TEN,
-            image = null,
-            attributes = emptyList(),
-            isVisible = true,
-            isDownloadable = false
+            globalUniqueId = identifier
         )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
@@ -108,27 +127,19 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "MATCH-VAR"
         val productId = 1L
-        val product =
-            generateWooPosProduct(productId = productId, productType = WooPosProductModel.WooPosProductType.VARIABLE)
-        val variation1 = WooPosVariation(
+        val product = generateWooPosProduct(
+            productId = productId,
+            productType = WooPosProductModel.WooPosProductType.VARIABLE
+        )
+        val variation1 = generateWooPosVariation(
             remoteVariationId = 10L,
             remoteProductId = productId,
-            globalUniqueId = "OTHER-VAR",
-            price = BigDecimal.TEN,
-            image = null,
-            attributes = emptyList(),
-            isVisible = true,
-            isDownloadable = false
+            globalUniqueId = "OTHER-VAR"
         )
-        val variation2 = WooPosVariation(
+        val variation2 = generateWooPosVariation(
             remoteVariationId = 20L,
             remoteProductId = productId,
-            globalUniqueId = identifier,
-            price = BigDecimal.TEN,
-            image = null,
-            attributes = emptyList(),
-            isVisible = true,
-            isDownloadable = false
+            globalUniqueId = identifier
         )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
@@ -148,17 +159,14 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "VAR-UPPER"
         val productId = 1L
-        val product =
-            generateWooPosProduct(productId = productId, productType = WooPosProductModel.WooPosProductType.VARIABLE)
-        val variation = WooPosVariation(
+        val product = generateWooPosProduct(
+            productId = productId,
+            productType = WooPosProductModel.WooPosProductType.VARIABLE
+        )
+        val variation = generateWooPosVariation(
             remoteVariationId = 10L,
             remoteProductId = productId,
-            globalUniqueId = "var-upper",
-            price = BigDecimal.TEN,
-            image = null,
-            attributes = emptyList(),
-            isVisible = true,
-            isDownloadable = false
+            globalUniqueId = "var-upper"
         )
         whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
@@ -178,17 +186,11 @@ class WooPosSearchByIdentifierLocalTest {
         // GIVEN
         val identifier = "VAR123456"
         val productId = 1L
-        val variation = WooPosVariation(
+        val variation = generateWooPosVariation(
             remoteVariationId = 10L,
             remoteProductId = productId,
-            globalUniqueId = identifier,
-            price = BigDecimal.TEN,
-            image = null,
-            attributes = emptyList(),
-            isVisible = true,
-            isDownloadable = false
+            globalUniqueId = identifier
         )
-
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
         whenever(productsCache.getProductById(productId)).thenReturn(null)
