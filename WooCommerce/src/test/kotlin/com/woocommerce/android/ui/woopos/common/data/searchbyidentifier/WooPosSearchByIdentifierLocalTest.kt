@@ -34,8 +34,10 @@ class WooPosSearchByIdentifierLocalTest {
     private val variationMapper: WooPosVariationMapper = mock()
     private val selectedSite: SelectedSite = mock()
 
-    private val testSite = SiteModel().apply { siteId = 123L }
-    private val localSiteId = LocalOrRemoteId.LocalId(123)
+    private val testSite = SiteModel().apply {
+        siteId = 999
+        id = 123
+    }
 
     @Before
     fun setup() = runTest {
@@ -214,7 +216,7 @@ class WooPosSearchByIdentifierLocalTest {
             // GIVEN
             val identifier = "PRODUCT123"
             val productEntity = WooPosProductEntity(
-                localSiteId = localSiteId,
+                localSiteId = testSite.localId(),
                 remoteId = LocalOrRemoteId.RemoteId(1),
                 globalUniqueId = identifier,
                 name = "Test Product"
@@ -222,7 +224,7 @@ class WooPosSearchByIdentifierLocalTest {
             val productModel = generateWooPosProduct(globalUniqueId = identifier)
 
             whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
-            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(testSite.localId(), identifier))
                 .thenReturn(Result.success(productEntity))
             whenever(productModelMapper.fromEntity(productEntity)).thenReturn(productModel)
 
@@ -242,13 +244,13 @@ class WooPosSearchByIdentifierLocalTest {
             val variationId = 10L
 
             val variationEntity = WooPosVariationEntity(
-                localSiteId = localSiteId,
+                localSiteId = testSite.localId(),
                 remoteProductId = LocalOrRemoteId.RemoteId(productId),
                 remoteVariationId = LocalOrRemoteId.RemoteId(variationId),
                 globalUniqueId = identifier
             )
             val parentEntity = WooPosProductEntity(
-                localSiteId = localSiteId,
+                localSiteId = testSite.localId(),
                 remoteId = LocalOrRemoteId.RemoteId(productId),
                 name = "Parent Product"
             )
@@ -257,11 +259,11 @@ class WooPosSearchByIdentifierLocalTest {
             val parentProduct = generateWooPosProduct()
 
             whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
-            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(testSite.localId(), identifier))
                 .thenReturn(Result.failure(Exception("Not found")))
-            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(testSite.localId(), identifier))
                 .thenReturn(Result.success(variationEntity))
-            whenever(localCatalogStore.getProduct(localSiteId, LocalOrRemoteId.RemoteId(productId)))
+            whenever(localCatalogStore.getProduct(testSite.localId(), LocalOrRemoteId.RemoteId(productId)))
                 .thenReturn(Result.success(parentEntity))
             whenever(variationMapper.fromWooPosVariationEntity(variationEntity)).thenReturn(variation)
             whenever(productModelMapper.fromEntity(parentEntity)).thenReturn(parentProduct)
@@ -284,16 +286,16 @@ class WooPosSearchByIdentifierLocalTest {
             val variationId = 10L
 
             val variationEntity = WooPosVariationEntity(
-                localSiteId = localSiteId,
+                localSiteId = testSite.localId(),
                 remoteProductId = LocalOrRemoteId.RemoteId(productId),
                 remoteVariationId = LocalOrRemoteId.RemoteId(variationId),
                 globalUniqueId = identifier
             )
 
             whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
-            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(testSite.localId(), identifier))
                 .thenReturn(Result.success(variationEntity))
-            whenever(localCatalogStore.getProduct(localSiteId, LocalOrRemoteId.RemoteId(productId)))
+            whenever(localCatalogStore.getProduct(testSite.localId(), LocalOrRemoteId.RemoteId(productId)))
                 .thenReturn(Result.failure(Exception("Parent not found")))
 
             // WHEN
@@ -310,9 +312,9 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "NOTFOUND"
 
         whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
-        whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+        whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(testSite.localId(), identifier))
             .thenReturn(Result.failure(Exception("Not found")))
-        whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+        whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(testSite.localId(), identifier))
             .thenReturn(Result.failure(Exception("Not found")))
 
         // WHEN

@@ -20,9 +20,9 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val selectedSite: SelectedSite,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
-        val siteId = selectedSite.get().siteId
+        val siteId = selectedSite.get().localId()
 
-        return if (localCatalogSupported(siteId)) {
+        return if (localCatalogSupported(selectedSite.get().siteId)) {
             searchInLocalCatalog(identifier, siteId)
         } else {
             searchInMemoryCache(identifier)
@@ -30,21 +30,22 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     }
 
     @Suppress("ReturnCount")
-    private suspend fun searchInLocalCatalog(identifier: String, siteId: Long): WooPosSearchByIdentifierResult {
-        val localSiteId = LocalOrRemoteId.LocalId(siteId.toInt())
-
-        localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier).getOrNull()
+    private suspend fun searchInLocalCatalog(
+        identifier: String,
+        siteId: LocalOrRemoteId.LocalId
+    ): WooPosSearchByIdentifierResult {
+        localCatalogStore.findEvenUnsupportedProductByIdentifier(siteId, identifier).getOrNull()
             ?.let { productEntity ->
                 val productModel = productModelMapper.fromEntity(productEntity)
                 return WooPosSearchByIdentifierResult.Success(productModel)
             }
 
-        localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier)
+        localCatalogStore.findEvenUnsupportedVariationByIdentifier(siteId, identifier)
             .getOrNull()?.let { variationEntity ->
                 val variation = variationMapper.fromWooPosVariationEntity(variationEntity)
 
                 val parentProductResult = localCatalogStore.getProduct(
-                    localSiteId,
+                    siteId,
                     LocalOrRemoteId.RemoteId(variationEntity.remoteProductId.value)
                 )
 
