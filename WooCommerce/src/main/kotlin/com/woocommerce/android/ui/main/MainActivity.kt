@@ -307,7 +307,7 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        handleOnBackNavigationCompat()
+        setOnBackNavigationCallback()
 
         super.onCreate(savedInstanceState)
 
@@ -377,26 +377,22 @@ class MainActivity :
         }
     }
 
-    private fun handleOnBackNavigationCompat() {
-        if (VERSION.SDK_INT >= VERSION_CODES.BAKLAVA) {
-            onBackPressedDispatcher
-                .addCallback(this) {
-                    AnalyticsTracker.trackBackPressed(this@MainActivity)
-                    getActiveChildFragment()?.let { fragment ->
-                        if (fragment is BackPressListener &&
-                            !(fragment as BackPressListener).onRequestAllowBackPress()
-                        ) {
-                            return@addCallback
-                        }
-                    }
-                    supportFragmentManager.primaryNavigationFragment?.let { fragment ->
-                        updateAppBarVisibility(fragment)
-                    }
-                    if (isAtNavigationRoot()) {
-                        remove() // Remove callback to avoid infinite recursion from onBackPressed() call below
-                        onBackPressedDispatcher.onBackPressed()
-                    }
-                }
+    private fun setOnBackNavigationCallback() {
+        onBackPressedDispatcher.addCallback(this) {
+            AnalyticsTracker.trackBackPressed(this@MainActivity)
+            val fragment = getActiveChildFragment()
+            if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+                return@addCallback
+            }
+            supportFragmentManager.primaryNavigationFragment?.let {
+                updateAppBarVisibility(it)
+            }
+            // Disable this callback temporarily to prevent infinite recursion from onBackPressed() call below.
+            isEnabled = false
+            // Trigger the default back press behavior.
+            onBackPressedDispatcher.onBackPressed()
+            // Re-enable the callback for future custom back presses handling.
+            isEnabled = true
         }
     }
 
@@ -482,25 +478,6 @@ class MainActivity :
                 showOrderBadge(count)
             }
         }
-    }
-
-    /**
-     * The custom back navigation compatible with Android 33 onwards is provided in handleOnBackNavigationCompat()
-     * function from this class.
-     */
-    @Deprecated("This method has been deprecated in favor of using the OnBackPressedDispatcher")
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-        getActiveChildFragment()?.let { fragment ->
-            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                return
-            }
-        }
-
-        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
-            updateAppBarVisibility(fragment)
-        }
-        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
