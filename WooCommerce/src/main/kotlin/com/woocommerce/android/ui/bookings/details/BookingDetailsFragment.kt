@@ -7,8 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.base.BaseFragment
@@ -40,9 +42,11 @@ class BookingDetailsFragment : BaseFragment() {
                 viewModel = viewModel,
                 onBack = { findNavController().popBackStack() },
                 onViewOrder = { orderId ->
-                    findNavController().navigate(
-                        BookingDetailsFragmentDirections
-                            .actionBookingDetailsFragmentToOrderDetailFragment(orderId)
+                    requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
+                        NavGraphMainDirections.actionGlobalOrderDetailFragment(
+                            orderId = orderId,
+                            ignoreTwoPaneLayout = true
+                        )
                     )
                 },
                 onViewNotes = {

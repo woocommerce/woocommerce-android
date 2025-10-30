@@ -181,6 +181,10 @@
             android:name="startPaymentFlow"
             android:defaultValue="false"
             app:argType="boolean" />
+        <argument
+            android:name="ignoreTwoPaneLayout"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_orderDetailFragment_to_orderDetailFragment"
             app:destination="@+id/orderDetailFragment"
