@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import kotlin.time.TimeSource.Monotonic
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
@@ -14,6 +13,14 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -28,18 +35,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
-import org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY
+import kotlin.time.TimeSource.Monotonic
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -117,9 +117,11 @@ class WooPosOrdersViewModel @Inject constructor(
         crossinline block: (meta: OrderTrackingMeta, daysSince: Int) -> Unit
     ) {
         val meta = trackingMeta[orderId] ?: return
-        val daysSince = (((System.currentTimeMillis() - meta.createdAtMillis) / MILLIS_PER_DAY)
-            .toInt()
-            .coerceAtLeast(0))
+        val daysSince = (
+            ((System.currentTimeMillis() - meta.createdAtMillis) / MILLIS_PER_DAY)
+                .toInt()
+                .coerceAtLeast(0)
+            )
         viewModelScope.launch { block(meta, daysSince) }
     }
 
@@ -135,7 +137,9 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun trackOrdersListRowTapped(orderId: Long, position: Int) = retrieveOrderTrackingData(orderId) { meta, days ->
+    private fun trackOrdersListRowTapped(orderId: Long, position: Int) = retrieveOrderTrackingData(
+        orderId
+    ) { meta, days ->
         viewModelScope.launch {
             analyticsTracker.track(
                 OrdersListRowTapped(

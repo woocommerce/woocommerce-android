@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
-import java.util.Date
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -127,19 +126,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
-        data object GoToOrdersTapped: Event() {
+        data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
         }
 
-        data object OrdersListPullToRefreshTriggered: Event() {
+        data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }
 
-        data object OrdersListNextPageLoaded: Event() {
+        data object OrdersListNextPageLoaded : Event() {
             override val name: String = "orders_list_next_page_loaded"
         }
 
-        data object OrderDetailsEmailReceiptTapped: Event() {
+        data object OrderDetailsEmailReceiptTapped : Event() {
             override val name: String = "order_details_email_receipt_tapped"
         }
 
@@ -181,7 +180,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data class OrdersListFetched(val milimetersSinceRequestSent: Long): Event()  {
+        data class OrdersListFetched(val milimetersSinceRequestSent: Long) : Event() {
             override val name: String = "orders_list_fetched"
 
             init {
@@ -193,7 +192,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data class OrdersListSearchResultsFetched(val milimetersSinceRequestSent: Long): Event()  {
+        data class OrdersListSearchResultsFetched(val milimetersSinceRequestSent: Long) : Event() {
             override val name: String = "pos_orders_list_search_results_fetched"
 
             init {
@@ -205,7 +204,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object OrdersListSearchButtonTapped: Event() {
+        data object OrdersListSearchButtonTapped : Event() {
             override val name: String = "pos_orders_list_search_button_tapped"
         }
 
