@@ -97,7 +97,8 @@ private fun WooPosSettingsHardwareCardReaderContent(
                         ),
                         isSoftwareUpdateAvailable = state.isSoftwareUpdateAvailable,
                         onDisconnectClicked = onDisconnectClicked,
-                        onUpdateClick = onUpdateClick
+                        onUpdateClick = onUpdateClick,
+                        onDocumentationClicked = onDocumentationClicked,
                     )
                 }
 
