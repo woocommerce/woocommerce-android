@@ -78,7 +78,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         identifier: String
     ): Result<WooPosProductEntity?> =
-        coroutineEngine.withDefaultContext(API, this, "findProductByIdentifier") {
+        coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedProductByIdentifier") {
             val product = posProductDao.findProductByIdentifier(siteId, identifier)
             Result.success(product)
         }
@@ -305,7 +305,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         identifier: String
     ): Result<WooPosVariationEntity?> =
-        coroutineEngine.withDefaultContext(API, this, "findVariationByIdentifier") {
+        coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedVariationByIdentifier") {
             val variation = posVariationsDao.findVariationByIdentifier(siteId, identifier)
             Result.success(variation)
         }
