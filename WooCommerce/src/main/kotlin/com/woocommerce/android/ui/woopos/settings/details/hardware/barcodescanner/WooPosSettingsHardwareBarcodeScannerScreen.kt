@@ -4,9 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -56,14 +53,12 @@ fun WooPosSettingsHardwareBarcodeScannerContent(
             .verticalScroll(rememberScrollState())
     ) {
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Settings,
             title = stringResource(R.string.woopos_settings_barcode_scanner_setup_title),
             subtitle = stringResource(R.string.woopos_settings_barcode_scanner_setup_subtitle),
             onClick = onSetupScannerClicked
         )
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Description,
             title = stringResource(R.string.woopos_settings_barcode_scanner_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_barcode_scanner_documentation_subtitle),
             onClick = onDocumentationClicked

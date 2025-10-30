@@ -16,15 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Battery0Bar
-import androidx.compose.material.icons.filled.Battery1Bar
-import androidx.compose.material.icons.filled.Battery2Bar
-import androidx.compose.material.icons.filled.Battery3Bar
-import androidx.compose.material.icons.filled.Battery4Bar
-import androidx.compose.material.icons.filled.Battery5Bar
-import androidx.compose.material.icons.filled.Battery6Bar
-import androidx.compose.material.icons.filled.BatteryFull
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -163,12 +153,12 @@ private fun ConnectedContent(
 
     if (batteryLevel != null) {
         WooPosSettingsDetailsMenuItem(
-            icon = getBatteryIcon(batteryLevel),
             title = stringResource(R.string.woopos_settings_card_reader_battery_title),
             subtitle = stringResource(
                 R.string.card_reader_detail_connected_battery_percentage,
                 (batteryLevel * 100).toInt()
-            )
+            ),
+            onClick = { }
         )
     }
 
@@ -239,7 +229,6 @@ private fun NotConnectedContent(
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Description,
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
             onClick = onDocumentationClicked
@@ -322,20 +311,6 @@ private fun ConnectionHint(text: String) {
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant
     )
-}
-
-@Composable
-private fun getBatteryIcon(batteryLevel: Float): ImageVector {
-    return when {
-        batteryLevel >= 1.0f -> Icons.Default.BatteryFull
-        batteryLevel >= 0.86f -> Icons.Default.Battery6Bar
-        batteryLevel >= 0.71f -> Icons.Default.Battery5Bar
-        batteryLevel >= 0.57f -> Icons.Default.Battery4Bar
-        batteryLevel >= 0.43f -> Icons.Default.Battery3Bar
-        batteryLevel >= 0.29f -> Icons.Default.Battery2Bar
-        batteryLevel >= 0.14f -> Icons.Default.Battery1Bar
-        else -> Icons.Default.Battery0Bar
-    }
 }
 
 @WooPosPreview

@@ -28,7 +28,6 @@ fun WooPosHardwareSettingsScreen(
     ) {
         state.items.forEach { item ->
             WooPosSettingsDetailsMenuItem(
-                icon = item.icon,
                 title = stringResource(item.titleRes),
                 subtitle = stringResource(item.subtitleRes),
                 onClick = {

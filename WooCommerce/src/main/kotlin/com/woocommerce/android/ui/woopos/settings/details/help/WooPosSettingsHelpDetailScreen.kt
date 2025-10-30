@@ -4,10 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -40,21 +36,18 @@ fun WooPosHelpDetailScreen(
             .verticalScroll(rememberScrollState())
     ) {
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.SearchOff,
             title = stringResource(R.string.woopos_product_limitations_title),
             subtitle = stringResource(R.string.woopos_settings_help_product_limitations_subtitle),
             onClick = { onShowProductInfoDialog() }
         )
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Description,
             title = stringResource(R.string.woopos_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_help_documentation_subtitle),
             onClick = { viewModel.onDocumentationClicked() }
         )
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.AutoMirrored.Filled.Help,
             title = stringResource(R.string.woopos_get_support_title),
             subtitle = stringResource(R.string.woopos_settings_help_get_support_subtitle),
             onClick = { viewModel.onGetSupportClicked() }
@@ -70,21 +63,18 @@ fun WooPosHelpDetailScreenPreview() {
             modifier = Modifier.fillMaxSize()
         ) {
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.Default.SearchOff,
                 title = "Where are my products?",
                 subtitle = "Learn about which products are supported in POS",
                 onClick = { }
             )
 
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.Default.Description,
                 title = "Documentation",
                 subtitle = "View guides and tutorials",
                 onClick = { }
             )
 
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.AutoMirrored.Filled.Help,
                 title = "Get Support",
                 subtitle = "Contact our support team",
                 onClick = { }
