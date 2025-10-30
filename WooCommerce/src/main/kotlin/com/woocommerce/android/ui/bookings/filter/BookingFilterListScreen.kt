@@ -137,7 +137,7 @@ private fun FiltersNavHost(
 }
 
 private val BookingFilterPage.route: String
-    get() = this::class.java.simpleName
+    get() = name
 
 private fun slideIn(popNavigation: Boolean): EnterTransition {
     return slideInHorizontally(animationSpec = tween(durationMillis = TRANSITION_DURATION)) { fullWidth ->
