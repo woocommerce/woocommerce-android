@@ -378,7 +378,7 @@ class MainActivity :
     }
 
     private fun handleOnBackNavigationCompat() {
-        if (VERSION.SDK_INT >= 33) {
+        if (VERSION.SDK_INT >= VERSION_CODES.BAKLAVA) {
             onBackPressedDispatcher
                 .addCallback(this) {
                     AnalyticsTracker.trackBackPressed(this@MainActivity)
