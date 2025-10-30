@@ -11,7 +11,6 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     WOO_POS_SURVEYS,
-    WOO_POS_HISTORICAL_ORDERS_M1,
     WOO_POS_LOCAL_CATALOG_M1,
     BOOKINGS_MVP;
 
@@ -21,7 +20,6 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
-            WOO_POS_HISTORICAL_ORDERS_M1,
             WC_SHIPPING_BANNER,
             WOO_POS_SURVEYS,
             BETTER_CUSTOMER_SEARCH_M2,
