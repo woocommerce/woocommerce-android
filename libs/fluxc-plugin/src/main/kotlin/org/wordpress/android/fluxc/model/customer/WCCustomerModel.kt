@@ -8,8 +8,9 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 /**
  * Single Woo customer - see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-properties
  */
+@ConsistentCopyVisibility
 @Entity(tableName = "CustomerEntity")
-data class WCCustomerModel(
+data class WCCustomerModel internal constructor(
     /**
      * Deterministic primary key used to uniquely identify a customer across refreshes.
      *
