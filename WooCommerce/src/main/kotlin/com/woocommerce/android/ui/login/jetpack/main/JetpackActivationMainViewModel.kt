@@ -293,7 +293,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
 
                 is PluginInstallFailed -> {
-                    trackSetupFlow(failure =  "Jetpack installation failed: $status")
+                    trackSetupFlow(failure = "Jetpack installation failed: $status")
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
 
@@ -302,7 +302,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 }
 
                 is PluginActivationFailed -> {
-                    trackSetupFlow(failure =  "Jetpack activation failed: $status")
+                    trackSetupFlow(failure = "Jetpack activation failed: $status")
                     currentStep.update { state -> state.copy(state = StepState.Error(status.errorCode)) }
                 }
             }
