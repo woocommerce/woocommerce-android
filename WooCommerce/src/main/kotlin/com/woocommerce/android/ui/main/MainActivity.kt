@@ -113,7 +113,6 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -384,7 +383,9 @@ class MainActivity :
                 .addCallback(this) {
                     AnalyticsTracker.trackBackPressed(this@MainActivity)
                     getActiveChildFragment()?.let { fragment ->
-                        if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
+                        if (fragment is BackPressListener &&
+                            !(fragment as BackPressListener).onRequestAllowBackPress()
+                        ) {
                             return@addCallback
                         }
                     }
@@ -392,7 +393,7 @@ class MainActivity :
                         updateAppBarVisibility(fragment)
                     }
                     if (isAtNavigationRoot()) {
-                        remove() //Remove callback to avoid infinite recursion from onBackPressed() call below
+                        remove() // Remove callback to avoid infinite recursion from onBackPressed() call below
                         onBackPressedDispatcher.onBackPressed()
                     }
                 }
