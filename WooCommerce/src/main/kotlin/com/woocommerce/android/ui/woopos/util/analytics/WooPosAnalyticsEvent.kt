@@ -159,6 +159,24 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class OrderDetailsLoaded(
+            val orderId: Long,
+            val orderStatus: String,
+            val daysSinceCreated: Int
+        ) : Event() {
+            override val name: String = "pos_order_details_loaded"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "order_id" to orderId.toString(),
+                        "order_status" to orderStatus,
+                        "days_since_created" to daysSinceCreated.toString()
+                    )
+                )
+            }
+        }
+
         data class OrdersListFetched(val milimetersSinceRequestSent: Long): Event()  {
             override val name: String = "orders_list_fetched"
 

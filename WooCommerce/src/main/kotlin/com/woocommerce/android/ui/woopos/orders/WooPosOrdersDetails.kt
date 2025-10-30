@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,8 +47,13 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState,
-    onEmailReceiptButtonClicked: (Long) -> Unit
+    onEmailReceiptButtonClicked: (Long) -> Unit,
+    onShown: (Long) -> Unit
 ) {
+    LaunchedEffect(details.id) {
+        onShown(details.id)
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -376,7 +382,8 @@ fun WooPosOrderDetailsPreview() {
     WooPosTheme {
         WooPosOrderDetails(
             details = orderDetails,
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onShown = {}
         )
     }
 }

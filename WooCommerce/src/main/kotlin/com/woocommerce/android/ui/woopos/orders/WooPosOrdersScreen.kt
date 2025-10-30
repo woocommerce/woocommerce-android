@@ -109,6 +109,7 @@ fun WooPosOrdersScreen(
         onSearchErrorRetry = viewModel::onSearchErrorRetry,
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
+        onDetailsShown = viewModel::onOrdersDetailsShown,
         onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked
     )
 }
@@ -126,6 +127,7 @@ private fun WooPosOrdersScreen(
     onSearchErrorRetry: () -> Unit,
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
+    onDetailsShown: (Long) -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit,
 ) {
     BackHandler { onBackClicked() }
@@ -140,6 +142,7 @@ private fun WooPosOrdersScreen(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
+                onDetailsShown = onDetailsShown,
                 onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
             )
 
@@ -173,6 +176,7 @@ private fun OrdersContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
+    onDetailsShown: (Long) -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -200,7 +204,8 @@ private fun OrdersContent(
                 modifier = Modifier
                     .fillMaxHeight(),
                 details = state.selectedDetails,
-                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
+                onShown = onDetailsShown
             )
         }
     }
@@ -556,7 +561,8 @@ fun WooPosOrdersScreenPreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onDetailsShown = {}
         )
     }
 }
@@ -589,7 +595,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onDetailsShown = {}
         )
     }
 }
@@ -622,7 +629,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onDetailsShown = {}
         )
     }
 }

@@ -13,7 +13,6 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -35,6 +34,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
+import org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -103,20 +104,41 @@ class WooPosOrdersViewModel @Inject constructor(
         )
     }
 
-    private fun trackOrdersListRowTapped(orderId: Long, position: Int) {
+    fun onOrdersDetailsShown(orderId: Long) {
+        trackOrderDetailsShown(orderId)
+    }
+
+    private inline fun retrieveOrderTrackingData(
+        orderId: Long,
+        crossinline block: (meta: OrderTrackingMeta, daysSince: Int) -> Unit
+    ) {
         val meta = trackingMeta[orderId] ?: return
-
-        val daysSince = ((System.currentTimeMillis() - meta.createdAtMillis) / 86_400_000L)
+        val daysSince = (((System.currentTimeMillis() - meta.createdAtMillis) / MILLIS_PER_DAY)
             .toInt()
-            .coerceAtLeast(0)
+            .coerceAtLeast(0))
+        viewModelScope.launch { block(meta, daysSince) }
+    }
 
+    private fun trackOrderDetailsShown(orderId: Long) = retrieveOrderTrackingData(orderId) { meta, days ->
+        viewModelScope.launch {
+            analyticsTracker.track(
+                OrderDetailsLoaded(
+                    orderId = orderId,
+                    orderStatus = meta.statusSlug,
+                    daysSinceCreated = days
+                )
+            )
+        }
+    }
+
+    private fun trackOrdersListRowTapped(orderId: Long, position: Int) = retrieveOrderTrackingData(orderId) { meta, days ->
         viewModelScope.launch {
             analyticsTracker.track(
                 OrdersListRowTapped(
                     orderId = orderId,
                     orderStatus = meta.statusSlug,
                     listPosition = position,
-                    daysSinceCreated = daysSince
+                    daysSinceCreated = days
                 )
             )
         }
