@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.woocommerce.android.ui.woopos.emailreceipt.EMAIL_RECEIPT_SENT
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
@@ -40,9 +42,16 @@ fun NavGraphBuilder.ordersScreen(
                 targetOffsetX = { fullWidth -> fullWidth },
             )
         },
-    ) {
+    ) { backStackEntry ->
+        val navigatedFromEmailReceiptSent = backStackEntry.savedStateHandle
+            .getStateFlow(EMAIL_RECEIPT_SENT, false)
+            .collectAsState()
+
+        backStackEntry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
+
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
+            navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value
         )
     }
 }

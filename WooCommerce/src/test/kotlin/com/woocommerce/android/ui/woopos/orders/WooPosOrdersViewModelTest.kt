@@ -698,4 +698,56 @@ class WooPosOrdersViewModelTest {
         assertThat(content.selectedDetails.breakdown.refunds).containsExactly("-$10.00", "-$5.00")
         assertThat(content.selectedDetails.breakdown.netPayment).isNotNull()
     }
+
+    @Test
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(100), order(200)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(200L)
+        advanceUntilIdle()
+
+        whenever(dataSource.refreshOrderById(200L)).thenReturn(Result.success(order(200)))
+
+        // WHEN
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+
+        assertThat(state.selectedDetails.id).isEqualTo(200L)
+        verify(dataSource).refreshOrderById(200L)
+    }
+
+    @Test
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(1L)
+        advanceUntilIdle()
+        val before = viewModel.state.value as WooPosOrdersState.Content
+        val beforeDetails = before.selectedDetails
+
+        whenever(dataSource.refreshOrderById(1L)).thenReturn(Result.failure(RuntimeException("boom")))
+
+        // WHEN
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+        advanceUntilIdle()
+
+        // THEN
+        val after = viewModel.state.value as WooPosOrdersState.Content
+
+        assertThat(after.selectedDetails).isEqualTo(beforeDetails)
+        verify(dataSource).refreshOrderById(1L)
+    }
 }

@@ -81,9 +81,14 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    navigatedFromEmailReceiptSent: Boolean,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    if (navigatedFromEmailReceiptSent) {
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+    }
 
     val context = LocalContext.current
 
