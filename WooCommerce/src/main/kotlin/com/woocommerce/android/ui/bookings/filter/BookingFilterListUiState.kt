@@ -6,16 +6,16 @@ import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
-sealed interface BookingFilterPage {
-    data object List : BookingFilterPage
-    data object DateTime : BookingFilterPage
-    data object TeamMember : BookingFilterPage
-    data object AttendanceStatus : BookingFilterPage
-    data object PaymentStatus : BookingFilterPage
-    data object BookingType : BookingFilterPage
-    data object Customer : BookingFilterPage
-    data object ServiceEvent : BookingFilterPage
-    data object Location : BookingFilterPage
+enum class BookingFilterPage {
+    List,
+    DateTime,
+    TeamMember,
+    AttendanceStatus,
+    PaymentStatus,
+    BookingType,
+    Customer,
+    ServiceEvent,
+    Location,
 }
 
 data class BookingFilterListUiState(
@@ -37,7 +37,7 @@ data class BookingFilterListUiState(
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
-        is BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
+        BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
         else -> R.drawable.ic_back_24dp
     }
 
