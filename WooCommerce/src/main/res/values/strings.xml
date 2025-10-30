@@ -1644,7 +1644,7 @@
     <string name="card_reader_detail_connected_firmware_version">Firmware: %s</string>
     <string name="card_reader_detail_connected_update_software">Update reader\'s software</string>
     <string name="card_reader_detail_connected_enforced_update_software">Please update your reader software to keep accepting payments</string>
-    <string name="card_reader_detail_connected_disconnect_reader">Disconnect</string>
+    <string name="card_reader_detail_connected_disconnect_reader">Disconnect reader</string>
     <string name="card_reader_detail_connected_reader_unknown">UNKNOWN CARD READER\'s NAME</string>
     <string name="card_reader_detail_connected_update_success">Reader\’s software updated</string>
     <string name="card_reader_detail_connected_update_failed">Reader\'s software update has failed</string>

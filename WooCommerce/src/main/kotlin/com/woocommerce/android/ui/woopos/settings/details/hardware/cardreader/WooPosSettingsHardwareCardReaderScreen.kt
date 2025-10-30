@@ -157,7 +157,7 @@ private fun ConnectedContent(
                     )
                 }
 
-                if (batteryLevel != null || firmwareVersion.isNotEmpty()) {
+                if (batteryLevel != null) {
                     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                     HorizontalDivider()
                 }
@@ -181,46 +181,42 @@ private fun ConnectedContent(
                         )
                     }
 
-                    if (firmwareVersion.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                        HorizontalDivider()
-                    }
+                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    HorizontalDivider()
                 }
 
-                if (firmwareVersion.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.weight(1f),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            WooPosText(
-                                text = stringResource(R.string.woopos_settings_card_reader_firmware_title),
-                                style = WooPosTypography.BodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            WooPosText(
-                                text = stringResource(
-                                    R.string.card_reader_detail_connected_firmware_version,
-                                    firmwareVersion
-                                ),
-                                style = WooPosTypography.BodyMedium,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
+                        WooPosText(
+                            text = stringResource(R.string.woopos_settings_card_reader_firmware_title),
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        WooPosText(
+                            text = stringResource(
+                                R.string.card_reader_detail_connected_firmware_version,
+                                firmwareVersion
+                            ),
+                            style = WooPosTypography.BodyMedium,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
 
-                        if (isSoftwareUpdateAvailable) {
-                            Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
-                            WooPosButtonSmall(
-                                text = stringResource(R.string.woopos_settings_card_reader_update_button),
-                                onClick = onUpdateClick
-                            )
-                        }
+                    if (isSoftwareUpdateAvailable) {
+                        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+                        WooPosButtonSmall(
+                            text = stringResource(R.string.woopos_settings_card_reader_update_button),
+                            onClick = onUpdateClick
+                        )
                     }
                 }
             }
