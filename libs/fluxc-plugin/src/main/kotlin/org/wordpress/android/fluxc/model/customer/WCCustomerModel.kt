@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.model.customer
 
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
@@ -9,16 +8,19 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
  * Single Woo customer - see https://woocommerce.github.io/woocommerce-rest-api-docs/#customer-properties
  */
 @ConsistentCopyVisibility
-@Entity(tableName = "CustomerEntity")
+@Entity(
+    tableName = "CustomerEntity",
+    primaryKeys = ["localSiteId", "stableId"]
+)
 data class WCCustomerModel internal constructor(
     /**
      * Deterministic primary key used to uniquely identify a customer across refreshes.
      *
      * Format examples:
-     * - "site:<localSiteId>|wp:<remoteCustomerId>" for registered users (remote > 0)
-     * - "site:<localSiteId>|analytics:<analyticsCustomerId>" for analytics guests
+     * - "wp:<remoteCustomerId>" for registered users (remote > 0)
+     * - "analytics:<analyticsCustomerId>" for analytics guests
      */
-    @PrimaryKey val stableId: String = "",
+    val stableId: String = "",
     val localSiteId: LocalId = LocalId(0),
     val remoteCustomerId: RemoteId = RemoteId(0),
     val avatarUrl: String = "",
@@ -93,7 +95,7 @@ data class WCCustomerModel internal constructor(
         shippingState: String = "",
         analyticsCustomerId: Long? = 0,
     ) : this(
-        stableId = buildStableId(localSiteId.value, remoteCustomerId.value, analyticsCustomerId),
+        stableId = buildStableId(remoteCustomerId.value, analyticsCustomerId),
         localSiteId = localSiteId,
         remoteCustomerId = remoteCustomerId,
         avatarUrl = avatarUrl,
@@ -135,21 +137,21 @@ data class WCCustomerModel internal constructor(
          * Builds deterministic primary key used to uniquely identify a customer across refreshes.
          *
          * Format examples:
-         * - "site:<localSiteId>|wp:<remoteCustomerId>" for registered users (remote > 0)
-         * - "site:<localSiteId>|analytics:<analyticsCustomerId>" for analytics guests
+         * - "wp:<remoteCustomerId>" for registered users (remote > 0)
+         * - "analytics:<analyticsCustomerId>" for analytics guests
          *
          * @param siteId local site id
          * @param remoteId remote customer id
          * @param analyticsId analytics customer id
          * @return stable id
          */
-        private fun buildStableId(siteId: Int, remoteId: Long?, analyticsId: Long?): String {
+        private fun buildStableId(remoteId: Long?, analyticsId: Long?): String {
             val rid = remoteId ?: 0L
             return if (rid > 0L) {
-                "site:$siteId|wp:$rid"
+                "wp:$rid"
             } else {
                 val aid = analyticsId ?: 0L
-                if (aid > 0L) "site:$siteId|analytics:$aid" else ""
+                if (aid > 0L) "analytics:$aid" else ""
             }
         }
     }

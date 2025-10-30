@@ -1128,7 +1128,7 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
               `shippingPostcode` TEXT NOT NULL,
               `shippingState` TEXT NOT NULL,
               `analyticsCustomerId` INTEGER,
-              PRIMARY KEY(`stableId`)
+              PRIMARY KEY(`localSiteId`, `stableId`)
             )
             """.trimIndent()
         )
@@ -1149,8 +1149,8 @@ internal val MIGRATION_71_72 = object : Migration(71, 72) {
             SELECT stableId, MAX(id) AS keepId FROM (
               SELECT `id`,
                 CASE
-                  WHEN `remoteCustomerId` > 0 THEN 'site:' || `localSiteId` || '|wp:' || `remoteCustomerId`
-                  WHEN `analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0 THEN 'site:' || `localSiteId` || '|analytics:' || `analyticsCustomerId`
+                  WHEN `remoteCustomerId` > 0 THEN 'wp:' || `remoteCustomerId`
+                  WHEN `analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0 THEN 'analytics:' || `analyticsCustomerId`
                 END AS `stableId`
               FROM `CustomerEntity`
               WHERE `remoteCustomerId` > 0 OR (`analyticsCustomerId` IS NOT NULL AND `analyticsCustomerId` > 0)

@@ -440,7 +440,7 @@ class MigrationTests {
             val remoteId1 = cursor.getLong(2)
             val analyticsId1 = if (!cursor.isNull(3)) cursor.getLong(3) else null
             val username1 = cursor.getString(4)
-            assertThat(stableId1).isEqualTo("site:10|analytics:555")
+            assertThat(stableId1).isEqualTo("analytics:555")
             assertThat(siteId1).isEqualTo(10)
             assertThat(remoteId1).isEqualTo(0)
             assertThat(analyticsId1).isEqualTo(555)
@@ -453,7 +453,7 @@ class MigrationTests {
             val remoteId2 = cursor.getLong(2)
             val analyticsId2 = if (!cursor.isNull(3)) cursor.getLong(3) else null
             val username2 = cursor.getString(4)
-            assertThat(stableId2).isEqualTo("site:10|wp:123")
+            assertThat(stableId2).isEqualTo("wp:123")
             assertThat(siteId2).isEqualTo(10)
             assertThat(remoteId2).isEqualTo(123)
             assertThat(analyticsId2).isNull()

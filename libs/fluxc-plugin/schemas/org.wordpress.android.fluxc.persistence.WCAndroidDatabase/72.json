@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 72,
-    "identityHash": "ac32e20c89d1549b8a1f06ac715177e0",
+    "identityHash": "e94f8b70f90756ca710f86422b5924d6",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3022,7 +3022,7 @@
       },
       {
         "tableName": "CustomerEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`stableId` TEXT NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteCustomerId` INTEGER NOT NULL, `avatarUrl` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateCreatedGmt` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `dateModifiedGmt` TEXT NOT NULL, `email` TEXT NOT NULL, `firstName` TEXT NOT NULL, `isPayingCustomer` INTEGER NOT NULL, `lastName` TEXT NOT NULL, `role` TEXT NOT NULL, `username` TEXT NOT NULL, `billingAddress1` TEXT NOT NULL, `billingAddress2` TEXT NOT NULL, `billingCity` TEXT NOT NULL, `billingCompany` TEXT NOT NULL, `billingCountry` TEXT NOT NULL, `billingEmail` TEXT NOT NULL, `billingFirstName` TEXT NOT NULL, `billingLastName` TEXT NOT NULL, `billingPhone` TEXT NOT NULL, `billingPostcode` TEXT NOT NULL, `billingState` TEXT NOT NULL, `shippingAddress1` TEXT NOT NULL, `shippingAddress2` TEXT NOT NULL, `shippingCity` TEXT NOT NULL, `shippingCompany` TEXT NOT NULL, `shippingCountry` TEXT NOT NULL, `shippingFirstName` TEXT NOT NULL, `shippingLastName` TEXT NOT NULL, `shippingPostcode` TEXT NOT NULL, `shippingState` TEXT NOT NULL, `analyticsCustomerId` INTEGER, PRIMARY KEY(`stableId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`stableId` TEXT NOT NULL, `localSiteId` INTEGER NOT NULL, `remoteCustomerId` INTEGER NOT NULL, `avatarUrl` TEXT NOT NULL, `dateCreated` TEXT NOT NULL, `dateCreatedGmt` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `dateModifiedGmt` TEXT NOT NULL, `email` TEXT NOT NULL, `firstName` TEXT NOT NULL, `isPayingCustomer` INTEGER NOT NULL, `lastName` TEXT NOT NULL, `role` TEXT NOT NULL, `username` TEXT NOT NULL, `billingAddress1` TEXT NOT NULL, `billingAddress2` TEXT NOT NULL, `billingCity` TEXT NOT NULL, `billingCompany` TEXT NOT NULL, `billingCountry` TEXT NOT NULL, `billingEmail` TEXT NOT NULL, `billingFirstName` TEXT NOT NULL, `billingLastName` TEXT NOT NULL, `billingPhone` TEXT NOT NULL, `billingPostcode` TEXT NOT NULL, `billingState` TEXT NOT NULL, `shippingAddress1` TEXT NOT NULL, `shippingAddress2` TEXT NOT NULL, `shippingCity` TEXT NOT NULL, `shippingCompany` TEXT NOT NULL, `shippingCountry` TEXT NOT NULL, `shippingFirstName` TEXT NOT NULL, `shippingLastName` TEXT NOT NULL, `shippingPostcode` TEXT NOT NULL, `shippingState` TEXT NOT NULL, `analyticsCustomerId` INTEGER, PRIMARY KEY(`localSiteId`, `stableId`))",
         "fields": [
           {
             "fieldPath": "stableId",
@@ -3237,6 +3237,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
+            "localSiteId",
             "stableId"
           ]
         }
@@ -4310,7 +4311,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ac32e20c89d1549b8a1f06ac715177e0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e94f8b70f90756ca710f86422b5924d6')"
     ]
   }
 }
