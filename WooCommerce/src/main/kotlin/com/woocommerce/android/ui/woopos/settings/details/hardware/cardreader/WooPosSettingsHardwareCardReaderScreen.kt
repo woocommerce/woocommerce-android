@@ -119,7 +119,8 @@ private fun ConnectedContent(
     firmwareVersion: String,
     isSoftwareUpdateAvailable: Boolean,
     onDisconnectClicked: () -> Unit,
-    onUpdateClick: () -> Unit
+    onUpdateClick: () -> Unit,
+    onDocumentationClicked: () -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
@@ -226,7 +227,7 @@ private fun ConnectedContent(
             modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
-            onClick = {}
+            onClick = onDocumentationClicked
         )
     }
 }
