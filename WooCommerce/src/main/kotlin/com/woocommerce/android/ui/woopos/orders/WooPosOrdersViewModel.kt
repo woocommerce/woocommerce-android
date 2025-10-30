@@ -1,6 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import android.os.SystemClock
+import kotlin.time.TimeSource.Monotonic
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
@@ -69,9 +69,6 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
-
-    private var ordersLoadStartMs: Long? = null
-    private var searchStartMs: Long? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -364,11 +361,10 @@ class WooPosOrdersViewModel @Inject constructor(
                 )
             }
 
-            searchStartMs = SystemClock.elapsedRealtime()
+            val mark = Monotonic.markNow()
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
-                    searchStartMs = null
                     _state.value = WooPosOrdersState.Content(
                         items = WooPosOrdersState.Content.Items.Error(
                             title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
@@ -382,11 +378,8 @@ class WooPosOrdersViewModel @Inject constructor(
                 }
 
                 is SearchOrdersResult.Success -> {
-                    searchStartMs?.let { start ->
-                        val elapsed = SystemClock.elapsedRealtime() - start
-                        analyticsTracker.track(OrdersListSearchResultsFetched(elapsed))
-                    }
-                    searchStartMs = null
+                    val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+                    analyticsTracker.track(OrdersListSearchResultsFetched(elapsedMs))
 
                     if (result.orders.isEmpty()) {
                         _state.value = WooPosOrdersState.Content(
@@ -409,12 +402,11 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun loadOrders() {
         cancelJobs()
-        ordersLoadStartMs = SystemClock.elapsedRealtime()
+        val mark = Monotonic.markNow()
         loadingJob = viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
-                        ordersLoadStartMs = null
                         _state.value = WooPosOrdersState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
@@ -432,11 +424,8 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
-                        ordersLoadStartMs?.let { start ->
-                            val elapsed = SystemClock.elapsedRealtime() - start
-                            analyticsTracker.track(OrdersListFetched(elapsed))
-                        }
-                        ordersLoadStartMs = null
+                        val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+                        analyticsTracker.track(OrdersListFetched(elapsedMs))
 
                         if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersState.Empty(
