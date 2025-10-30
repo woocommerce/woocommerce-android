@@ -46,10 +46,7 @@ class WooPosActivity : AppCompatActivity() {
 
         setContent {
             WooPosTheme {
-                WooPosRootScreen(
-                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
-                    wooPosAnalyticsTracker = wooPosAnalyticsTracker
-                )
+                WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
         }
     }

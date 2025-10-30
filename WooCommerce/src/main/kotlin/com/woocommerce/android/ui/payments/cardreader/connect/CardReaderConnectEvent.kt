@@ -43,9 +43,5 @@ sealed class CardReaderConnectEvent : MultiLiveEvent.Event() {
 
     data class ShowToastString(val message: String) : CardReaderConnectEvent()
 
-    data class OpenAuthenticatedWebView(val url: String) : CardReaderConnectEvent()
-
-    data class OpenGenericWebView(val url: String) : CardReaderConnectEvent()
-
     data object ReturnToWooPos : MultiLiveEvent.Event()
 }

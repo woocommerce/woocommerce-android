@@ -13,6 +13,8 @@ data class BookingDetailsViewState(
     val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
     val onCancelBooking: () -> Unit = {},
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onMarkAsPaid: () -> Unit = {},
+    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
     val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
@@ -43,4 +45,9 @@ sealed interface CancelStatus {
 sealed interface AttendanceUpdateStatus {
     data object Idle : AttendanceUpdateStatus
     data object InProgress : AttendanceUpdateStatus
+}
+
+sealed interface PaymentUpdateStatus {
+    data object Idle : PaymentUpdateStatus
+    data object InProgress : PaymentUpdateStatus
 }

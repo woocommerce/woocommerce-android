@@ -28,8 +28,7 @@ sealed class PosLocalCatalogSyncResult {
 
 @Singleton
 class WooPosLocalCatalogSyncRepository @Inject constructor(
-    private val posSyncProductsAction: WooPosSyncProductsAction,
-    private val posSyncVariationsAction: WooPosSyncVariationsAction,
+    private val posSyncAction: WooPosSyncAction,
     private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val preferencesRepository: WooPosPreferencesRepository,
@@ -120,7 +119,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): WooPosSyncProductsResult {
-        val result = posSyncProductsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+        val result = posSyncAction.syncProducts(site, modifiedAfterGmt, pageSize, maxPages)
 
         if (result is WooPosSyncProductsResult.Success) {
             result.serverDate?.let { serverDate ->
@@ -140,7 +139,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         pageSize: Int,
         maxPages: Int
     ): WooPosSyncVariationsResult {
-        val result = posSyncVariationsAction.execute(site, modifiedAfterGmt, pageSize, maxPages)
+        val result = posSyncAction.syncVariations(site, modifiedAfterGmt, pageSize, maxPages)
 
         if (result is WooPosSyncVariationsResult.Success) {
             result.serverDate?.let { serverDate ->

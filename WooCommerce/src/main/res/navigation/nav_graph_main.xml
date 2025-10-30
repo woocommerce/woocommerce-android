@@ -473,8 +473,7 @@
     <fragment
         android:id="@+id/AuthenticatedWebViewFragment"
         android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
-        android:label="AuthenticatedWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
+        android:label="AuthenticatedWebViewFragment">
         <argument
             android:name="urlToLoad"
             app:argType="string" />

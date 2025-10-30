@@ -14,13 +14,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import com.google.android.material.textview.MaterialTextView
-import com.woocommerce.android.NavGraphPaymentFlowDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.databinding.FragmentPaymentsHubBinding
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams
@@ -40,6 +40,9 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -86,13 +89,8 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         )
                     )
                 }
-                is PaymentsHubViewModel.PaymentsHubEvents.NavigateToPurchaseCardReaderFlow -> {
-                    findNavController().navigate(
-                        NavGraphPaymentFlowDirections.actionGlobalAuthenticatedWebViewFragment(
-                            urlToLoad = event.url,
-                            title = resources.getString(event.titleRes)
-                        )
-                    )
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView -> {
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
                 }
                 is PaymentsHubViewModel.PaymentsHubEvents.NavigateToCardReaderManualsScreen -> {
                     findNavController().navigate(
@@ -112,7 +110,7 @@ class PaymentsHubFragment : BaseFragment(R.layout.fragment_payments_hub) {
                         )
                     )
                 }
-                is PaymentsHubViewModel.PaymentsHubEvents.OpenGenericWebView -> {
+                is MultiLiveEvent.Event.LaunchUrlInChromeTab -> {
                     ChromeCustomTabUtils.launchUrl(
                         context = requireContext(),
                         url = event.url,

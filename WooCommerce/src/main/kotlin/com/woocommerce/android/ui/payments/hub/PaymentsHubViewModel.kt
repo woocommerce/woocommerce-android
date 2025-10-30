@@ -325,9 +325,9 @@ class PaymentsHubViewModel @Inject constructor(
     private fun onPurchaseCardReaderClicked() {
         trackEvent(AnalyticsEvent.PAYMENTS_HUB_ORDER_CARD_READER_TAPPED)
         triggerEvent(
-            PaymentsHubEvents.NavigateToPurchaseCardReaderFlow(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
                 url = paymentMenuUtmProvider.getUrlWithUtmParams(cardReaderPurchaseUrl),
-                titleRes = R.string.card_reader_purchase_card_reader
+                screenTitle = UiStringRes(R.string.card_reader_purchase_card_reader)
             )
         )
     }
@@ -335,7 +335,7 @@ class PaymentsHubViewModel @Inject constructor(
     private fun onLearnMoreCodClicked() {
         paymentsFlowTracker.trackCashOnDeliveryLearnMoreTapped()
         triggerEvent(
-            PaymentsHubEvents.OpenGenericWebView(
+            MultiLiveEvent.Event.LaunchUrlInChromeTab(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
                     CASH_ON_DELIVERY
                 )
@@ -346,7 +346,7 @@ class PaymentsHubViewModel @Inject constructor(
     private fun onLearnMoreIppClicked() {
         paymentsFlowTracker.trackIPPLearnMoreClicked(SOURCE)
         triggerEvent(
-            PaymentsHubEvents.OpenGenericWebView(
+            MultiLiveEvent.Event.LaunchUrlInChromeTab(
                 learnMoreUrlProvider.provideLearnMoreUrlFor(
                     LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
                 )
@@ -481,7 +481,7 @@ class PaymentsHubViewModel @Inject constructor(
 
         PaymentsHubTapToPayUnavailableHandler.ActionType.TAP_TO_PAY_REQUIREMENTS -> {
             triggerEvent(
-                PaymentsHubEvents.OpenGenericWebView(
+                MultiLiveEvent.Event.LaunchUrlInChromeTab(
                     STRIPE_TAP_TO_PAY_DEVICE_REQUIREMENTS
                 )
             )
@@ -511,10 +511,6 @@ class PaymentsHubViewModel @Inject constructor(
 
     sealed class PaymentsHubEvents : MultiLiveEvent.Event() {
         data class NavigateToCardReaderDetail(val cardReaderFlowParam: CardReaderFlowParam) : PaymentsHubEvents()
-        data class NavigateToPurchaseCardReaderFlow(
-            val url: String,
-            @StringRes val titleRes: Int
-        ) : PaymentsHubEvents()
 
         data object NavigateToTapToPaySummaryScreen : PaymentsHubEvents()
         data class NavigateToCardReaderManualsScreen(
@@ -528,7 +524,6 @@ class PaymentsHubViewModel @Inject constructor(
             val countryConfig: CardReaderConfigForSupportedCountry
         ) : PaymentsHubEvents()
 
-        data class OpenGenericWebView(val url: String) : PaymentsHubEvents()
         data class ShowToastString(val message: String) : PaymentsHubEvents()
         data class ShowToast(@StringRes val message: Int) : PaymentsHubEvents()
 

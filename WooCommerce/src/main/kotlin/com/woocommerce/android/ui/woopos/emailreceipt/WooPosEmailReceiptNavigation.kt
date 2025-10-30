@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
+const val EMAIL_RECEIPT_SENT = "email_receipt_sent"
 const val EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY = "orderId"
 private const val EMAIL_RECEIPT_ROUTE = "$HOME_ROUTE/email_receipt/{$EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY}"
 

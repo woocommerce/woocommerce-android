@@ -10,13 +10,16 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogFetchProductsResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
@@ -36,6 +39,7 @@ class WooPosSyncProductsActionTest {
             id = 1
             siteId = 123L
         }
+        givenSinglePageCatalog(productsCount = 10)
         givenTransactionSuccess()
     }
 
@@ -269,15 +273,167 @@ class WooPosSyncProductsActionTest {
         assertThat((result as WooPosSyncProductsResult.Failed).error).contains(errorMessage)
     }
 
+    @Test
+    fun `given incremental sync, when sync products called, then fetches trash products`() = runTest {
+        // GIVEN
+        val modifiedAfter = "2024-01-01T00:00:00Z"
+        givenSinglePageCatalog(productsCount = 10)
+        givenSinglePageTrashCatalog(productsCount = 5)
+
+        // WHEN
+        sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = 2)
+
+        // THEN
+        verify(posLocalCatalogStore, times(1)).fetchRecentlyModifiedProducts(
+            any(),
+            anyOrNull(),
+            any(),
+            any(),
+            includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+        )
+    }
+
+    @Test
+    fun `given incremental sync with multiple trash pages, when sync products called, then fetches all trash pages`() =
+        runTest {
+            // GIVEN
+            val modifiedAfter = "2024-01-01T00:00:00Z"
+            givenSinglePageCatalog(productsCount = 10)
+            givenMultiPageTrashCatalog()
+
+            // WHEN
+            sut.execute(site, modifiedAfterGmt = modifiedAfter, pageSize = 100, maxPages = 2)
+
+            // THEN
+            verify(posLocalCatalogStore, times(3)).fetchRecentlyModifiedProducts(
+                any(),
+                anyOrNull(),
+                any(),
+                any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        }
+
+    @Test
+    fun `given full sync, when sync products called, then does not fetch trash products`() = runTest {
+        // GIVEN
+        givenSinglePageCatalog(productsCount = 50)
+
+        // WHEN
+        sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 2)
+
+        // THEN
+        verify(posLocalCatalogStore, never()).fetchRecentlyModifiedProducts(
+            any(),
+            anyOrNull(),
+            any(),
+            any(),
+            includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+        )
+    }
+
+    private suspend fun givenSinglePageTrashCatalog(productsCount: Int) {
+        val trashProducts = createMockProducts(101, 101 + productsCount - 1)
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                page = eq(1),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashProducts,
+                    syncedCount = productsCount,
+                    hasMore = false,
+                    nextPage = 1,
+                    totalPages = 1,
+                    serverDate = ""
+                )
+            )
+        )
+    }
+
+    @Suppress("LongMethod")
+    private suspend fun givenMultiPageTrashCatalog() {
+        val trashPage1 = createMockProducts(101, 110)
+        val trashPage2 = createMockProducts(111, 120)
+        val trashPage3 = createMockProducts(121, 125)
+
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                page = eq(1),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage1,
+                    syncedCount = 10,
+                    hasMore = true,
+                    nextPage = 2,
+                    totalPages = 3,
+                    serverDate = ""
+                )
+            )
+        )
+
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                page = eq(2),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage2,
+                    syncedCount = 10,
+                    hasMore = true,
+                    nextPage = 3,
+                    totalPages = 3,
+                    serverDate = ""
+                )
+            )
+        )
+
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = eq(null),
+                page = eq(3),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = trashPage3,
+                    syncedCount = 5,
+                    hasMore = false,
+                    nextPage = 3,
+                    totalPages = 3,
+                    serverDate = ""
+                )
+            )
+        )
+    }
+
     private suspend fun givenSinglePageCatalog(productsCount: Int = PAGE_SIZE / 2) {
         val mockProducts = createMockProducts(1, productsCount)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockProducts,
             syncedCount = productsCount,
             hasMore = false,
-            nextOffset = 0,
             totalPages = 1,
         )
     }
@@ -291,51 +447,47 @@ class WooPosSyncProductsActionTest {
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockPage1Products,
             syncedCount = page1Count,
             hasMore = true,
-            nextOffset = page1Count,
             totalPages = totalPages,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = page1Count,
+            page = 2,
             mockProducts = mockPage2Products,
             syncedCount = page2Count,
             hasMore = true,
-            nextOffset = page1Count + page2Count,
             totalPages = totalPages,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = page1Count + page2Count,
+            page = 3,
             mockProducts = mockPage3Products,
             syncedCount = page3Count,
             hasMore = false,
-            nextOffset = 0,
             totalPages = totalPages,
         )
     }
 
     private suspend fun givenEmptyCatalog() {
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = emptyList(),
             syncedCount = 0,
             hasMore = false,
-            nextOffset = 0,
             totalPages = 1,
         )
     }
 
     private suspend fun givenFirstPageFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), eq(null)))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenFirstPageFailsWithNullMessage() {
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), any(), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), any(), any(), eq(null)))
             .thenReturn(KotlinResult.failure(Exception()))
     }
 
@@ -343,15 +495,14 @@ class WooPosSyncProductsActionTest {
         val mockPage1Products = createMockProducts(1, 100)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = mockPage1Products,
             syncedCount = 100,
             hasMore = true,
-            nextOffset = 100,
             totalPages = 2,
         )
 
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(100), any()))
+        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(2), any(), eq(null)))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
@@ -359,20 +510,18 @@ class WooPosSyncProductsActionTest {
         val mockPage2Products = createMockProducts(1, 50)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts = emptyList(),
             syncedCount = 0,
             hasMore = true,
-            nextOffset = 100,
             totalPages = 2,
         )
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 100,
+            page = 2,
             mockProducts = mockPage2Products,
             syncedCount = 50,
             hasMore = true,
-            nextOffset = 0,
             totalPages = 2,
         )
     }
@@ -381,10 +530,9 @@ class WooPosSyncProductsActionTest {
         val mockProducts = createMockProducts(1, PAGE_SIZE)
 
         mockFetchRecentlyModifiedProductsSuccess(
-            offset = 0,
+            page = 1,
             mockProducts,
             totalPages,
-            nextOffset = PAGE_SIZE,
             syncedCount = PAGE_SIZE,
             hasMore = true
         )
@@ -392,26 +540,54 @@ class WooPosSyncProductsActionTest {
 
     @Suppress("LongParameterList")
     private suspend fun mockFetchRecentlyModifiedProductsSuccess(
-        offset: Int,
+        page: Int,
         mockProducts: List<WooPosProductEntity>,
         totalPages: Int,
-        nextOffset: Int,
         syncedCount: Int,
         hasMore: Boolean
     ) {
-        whenever(posLocalCatalogStore.fetchRecentlyModifiedProducts(any(), anyOrNull(), eq(offset), any()))
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = anyOrNull(),
+                page = eq(page),
+                pageSize = any(),
+                includeStatus = eq(null)
+            )
+        )
             .thenReturn(
                 KotlinResult.success(
                     WooPosLocalCatalogFetchProductsResult(
                         products = mockProducts,
                         syncedCount = syncedCount,
                         hasMore = hasMore,
-                        nextOffset = nextOffset,
+                        nextPage = if (hasMore) page + 1 else page,
                         totalPages = totalPages,
                         serverDate = ""
                     )
                 )
             )
+
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                site = any(),
+                modifiedAfterGmt = anyOrNull(),
+                page = eq(page),
+                pageSize = any(),
+                includeStatus = argThat { this.contains(CoreProductStatus.TRASH) }
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosLocalCatalogFetchProductsResult(
+                    products = mockProducts,
+                    syncedCount = syncedCount,
+                    hasMore = hasMore,
+                    nextPage = if (hasMore) page + 1 else page,
+                    totalPages = totalPages,
+                    serverDate = ""
+                )
+            )
+        )
     }
 
     private fun createMockProducts(start: Int = 1, end: Int): List<WooPosProductEntity> {
