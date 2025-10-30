@@ -293,6 +293,24 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Finds a variation by its unique identifier (globalUniqueId) from the local database. It returns even variations
+     * that are not supported in the POS, so the business logic can display Unsupported Variation message instead of
+     * displaying Not Found message.
+     *
+     * @param [siteId] The local site ID
+     * @param [identifier] The unique identifier to search for
+     * @return Result containing the variation if found, null if not found, or error
+     */
+    suspend fun findVariationEvenUnsupportedByIdentifier(
+        siteId: LocalOrRemoteId.LocalId,
+        identifier: String
+    ): Result<WooPosVariationEntity?> =
+        coroutineEngine.withDefaultContext(API, this, "findVariationByIdentifier") {
+            val variation = posVariationsDao.findVariationByIdentifier(siteId, identifier)
+            Result.success(variation)
+        }
+
+    /**
      * Fetches only the total count of variations without fetching the actual variation data.
      * Makes a minimal API call with per_page=1 to get the count from response headers.
      *
