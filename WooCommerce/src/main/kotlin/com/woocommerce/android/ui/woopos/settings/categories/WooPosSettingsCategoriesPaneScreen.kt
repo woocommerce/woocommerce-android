@@ -148,6 +148,7 @@ private fun FixedCategoryItem(
         WooPosText(
             text = stringResource(item.titleRes),
             style = WooPosTypography.BodyMedium,
+            fontWeight = FontWeight.Bold,
         )
     }
 }
