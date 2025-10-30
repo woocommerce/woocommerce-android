@@ -171,6 +171,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class OrdersListSearchResultsFetched(val milimetersSinceRequestSent: Long): Event()  {
+            override val name: String = "pos_orders_list_search_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to milimetersSinceRequestSent.toString()
+                    )
+                )
+            }
+        }
+
         data object OrdersListSearchButtonTapped: Event() {
             override val name: String = "pos_orders_list_search_button_tapped"
         }

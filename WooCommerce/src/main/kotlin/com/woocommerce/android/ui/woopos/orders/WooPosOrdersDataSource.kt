@@ -4,8 +4,8 @@ import android.os.SystemClock
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -66,7 +66,12 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
+        val startMs = SystemClock.elapsedRealtime()
         val result = loadFirstPage(searchQuery)
+        val elapsedMs = SystemClock.elapsedRealtime() - startMs
+
+        analyticsTracker.track(OrdersListSearchResultsFetched(elapsedMs))
+
         return result.fold(
             onSuccess = { SearchOrdersResult.Success(it) },
             onFailure = { SearchOrdersResult.Error(it.message ?: UNKNOWN_ERROR) }
