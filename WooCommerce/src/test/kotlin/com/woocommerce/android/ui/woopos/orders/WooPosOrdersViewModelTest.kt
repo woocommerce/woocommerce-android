@@ -13,6 +13,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -32,6 +34,13 @@ import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
+import org.mockito.kotlin.argThat
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosOrdersViewModelTest {
@@ -50,6 +59,7 @@ class WooPosOrdersViewModelTest {
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -59,7 +69,8 @@ class WooPosOrdersViewModelTest {
             getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
-            getOrderRefunds = getOrderRefunds
+            getOrderRefunds = getOrderRefunds,
+            analyticsTracker = analyticsTracker
         )
     }
 
@@ -284,6 +295,9 @@ class WooPosOrdersViewModelTest {
         val hint = openState.input as WooPosSearchInputState.Open.Input.Hint
         assertThat(hint.hint).isEqualTo("Search orders")
         assertThat(openState.requestFocus).isTrue()
+        verify(analyticsTracker).track(argThat {
+            this is OrdersListSearchButtonTapped
+        })
     }
 
     @Test
@@ -375,6 +389,9 @@ class WooPosOrdersViewModelTest {
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
+        verify(analyticsTracker).track(argThat {
+            this is OrdersListNextPageLoaded
+        })
     }
 
     @Test
@@ -615,6 +632,9 @@ class WooPosOrdersViewModelTest {
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
         assertThat(content.selectedDetails.id).isEqualTo(300L)
+        verify(analyticsTracker).track(argThat {
+            this is OrdersListPullToRefreshTriggered
+        })
     }
 
     @Test
@@ -632,6 +652,9 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(123L))
+        verify(analyticsTracker).track(argThat {
+            this is OrderDetailsEmailReceiptTapped
+        })
     }
 
     @Test
@@ -749,5 +772,40 @@ class WooPosOrdersViewModelTest {
 
         assertThat(after.selectedDetails).isEqualTo(beforeDetails)
         verify(dataSource).refreshOrderById(1L)
+    }
+
+    @Test
+    fun `given orders loaded, when selecting an order, then tracks OrdersListRowTapped`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2), order(3)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(3L)
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(argThat {
+            this is OrdersListRowTapped
+        })
+    }
+
+    @Test
+    fun `given selected order, when details shown, then tracks OrderDetailsLoaded`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(10), order(20)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(20L)
+        advanceUntilIdle()
+
+        viewModel.onOrdersDetailsShown(20L)
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(argThat {
+            this is com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
+        })
     }
 }

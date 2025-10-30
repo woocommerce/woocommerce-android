@@ -4,11 +4,13 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -37,12 +39,14 @@ class WooPosOrdersDataSourceTest {
     private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(siteModel) }
     private val orderMapper: OrderMapper = mock()
     private val ordersCache: WooPosOrdersInMemoryCache = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = Mockito.mock()
 
     private val sut = WooPosOrdersDataSource(
         restClient = orderRestClient,
         selectedSite = selectedSite,
         orderMapper = orderMapper,
-        ordersCache = ordersCache
+        ordersCache = ordersCache,
+        analyticsTracker = analyticsTracker
     )
 
     @Test
