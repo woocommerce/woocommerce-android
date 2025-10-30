@@ -3,14 +3,20 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.6
 -----
-
+- [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
+- [Internal] Update In-Person Payments setup flow to use Authenticated WebView [https://github.com/woocommerce/woocommerce-android/pull/14827]
+- [*] Improved the Filters button colors on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/14832]
+- [*] Fixed an issue when images for the card reader flows were not shown on tablets [https://github.com/woocommerce/woocommerce-android/pull/14849]
+- [*] Fixed an issue where the count of the filters applied to the orders was not updated correctly [https://github.com/woocommerce/woocommerce-android/pull/14844]
 
 23.5
 -----
 - [Internal][Wear] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
 - [Internal] Remove unused dependencies and optimize dependency scopes [https://github.com/woocommerce/woocommerce-android/pull/14710]
+- [Internal][Wear] Override Horologist’s transitive protolayout-expression dependency to fix known issues [https://github.com/woocommerce/woocommerce-android/pull/14797]
 - [*] Fix a rare crash in order refund flow [https://github.com/woocommerce/woocommerce-android/pull/14742]
 - [*] Fix customer name display when filtering orders from order details  [https://github.com/woocommerce/woocommerce-android/pull/14761]
+- [*] Fixed a rare media upload error [https://github.com/woocommerce/woocommerce-android/pull/14813]
 
 23.4
 -----

@@ -66,6 +66,10 @@ data class BookingEntity(
             override val key = "complete"
         }
 
+        data object InCart : Status {
+            override val key = "in-cart"
+        }
+
         data class Unknown(override val key: String) : Status
 
         companion object Companion {
@@ -77,6 +81,7 @@ data class BookingEntity(
                     Paid.key -> Paid
                     Cancelled.key -> Cancelled
                     Complete.key -> Complete
+                    InCart.key -> InCart
                     else -> Unknown(key)
                 }
             }
@@ -134,3 +139,13 @@ internal class BookingEntityConverters {
         return BookingEntity.AttendanceStatus.fromKey(key)
     }
 }
+
+val BookingEntity.isCancellable: Boolean
+    get() = status !in listOf(
+        BookingEntity.Status.Cancelled,
+        BookingEntity.Status.InCart,
+        BookingEntity.Status.Complete
+    )
+
+val BookingEntity.isAttendanceStatusEditable: Boolean
+    get() = status != BookingEntity.Status.Cancelled

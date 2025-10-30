@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -32,7 +31,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
-import java.time.Duration
+import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,6 +59,8 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
     private val showCancelBookingDialog = MutableStateFlow(false)
+
+    private val paymentUpdateStatus = MutableStateFlow<PaymentUpdateStatus>(PaymentUpdateStatus.Idle)
 
     private val cancelBookingDialogState = combine(
         booking,
@@ -103,7 +104,8 @@ class BookingDetailsViewModel @Inject constructor(
         bookingUiStateFlow,
         loadingState,
         cancelBookingDialogState,
-    ) { booking, bookingUiState, loadingState, cancelBookingDialog ->
+        paymentUpdateStatus,
+    ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
@@ -116,6 +118,8 @@ class BookingDetailsViewModel @Inject constructor(
                         onAttendanceStatusSelected(attendanceStatus)
                     }
                 },
+                onMarkAsPaid = ::onMarkAsPaid,
+                paymentUpdateStatus = paymentUpdateStatus,
                 dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
@@ -189,11 +193,26 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onConfirmCancelBooking() = launch {
-        // TODO Add logic to Cancel booking action
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        delay(Duration.ofSeconds(1).toMillis())
+        bookingsRepository.cancelBooking(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
+            }
         cancelStatusState.value = CancelStatus.Idle
+    }
+
+    private fun onMarkAsPaid() = launch {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return@launch
+        }
+        paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
+        bookingsRepository.markAsPaid(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
+            }
+        paymentUpdateStatus.value = PaymentUpdateStatus.Idle
     }
 
     private suspend fun BookingMapper.buildBookingUiState(
@@ -215,7 +234,8 @@ class BookingDetailsViewModel @Inject constructor(
         ),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
         bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
-        note = booking.note
+        note = booking.note,
+        isAttendanceStatusEditable = booking.isAttendanceStatusEditable
     )
 
     private fun buildStaffMemberStatus(

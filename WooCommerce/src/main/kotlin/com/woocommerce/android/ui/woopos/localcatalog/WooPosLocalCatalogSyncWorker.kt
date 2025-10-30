@@ -5,9 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.assisted.Assisted
@@ -22,15 +20,13 @@ class WooPosLocalCatalogSyncWorker
 constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val accountRepository: AccountRepository,
     private val selectedSite: SelectedSite,
-    private val featureFlagM1Enabled: WooPosLocalCatalogM1Enabled,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
     private val timeProvider: DateTimeProvider,
     private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
-    private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -104,29 +100,14 @@ constructor(
 
     @Suppress("ReturnCount")
     private suspend fun isCatalogSyncSupported(): SiteModel? {
-        if (!featureFlagM1Enabled.invoke()) {
-            logger.d("Feature flag disabled, skipping local catalog sync")
-            return null
-        }
-
-        if (!isVariationsEndpointAvailable()) {
-            logger.d("Variations endpoint not available, skipping local catalog sync")
-            return null
-        }
-
-        if (!accountRepository.isUserLoggedIn()) {
-            logger.d("User not logged in, skipping local catalog sync")
-            return null
-        }
-
         val site = selectedSite.getOrNull()
         if (site == null) {
             logger.w("No selected WooCommerce site found, skipping local catalog sync")
             return null
         }
 
-        if (!preferencesRepository.isPeriodicSyncEnabledForSite(site.siteId)) {
-            logger.w("Periodic sync permanently disabled for site ${site.url}, skipping local catalog sync.")
+        if (!isLocalCatalogSupported(site.siteId)) {
+            logger.d("Local catalog not supported for site")
             return null
         }
 

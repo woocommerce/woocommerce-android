@@ -13,8 +13,7 @@ import org.wordpress.android.fluxc.network.MemorizingTrustManager;
 import org.wordpress.android.fluxc.network.OkHttpStack;
 import org.wordpress.android.fluxc.network.OpenJdkCookieManager;
 import org.wordpress.android.fluxc.network.RetryOnRedirectBasicNetwork;
-import org.wordpress.android.fluxc.network.rest.JsonObjectOrEmptyArray;
-import org.wordpress.android.fluxc.network.rest.JsonObjectOrEmptyArrayDeserializer;
+import org.wordpress.android.fluxc.network.rest.JsonObjectOrNullAdapterFactory;
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrFalse;
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrFalseDeserializer;
 
@@ -132,8 +131,7 @@ public class ReleaseNetworkModule {
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.setLenient();
         gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrFalse.class, new JsonObjectOrFalseDeserializer());
-        gsonBuilder.registerTypeHierarchyAdapter(JsonObjectOrEmptyArray.class,
-                new JsonObjectOrEmptyArrayDeserializer());
+        gsonBuilder.registerTypeAdapterFactory(new JsonObjectOrNullAdapterFactory());
         return gsonBuilder.create();
     }
 }

@@ -295,7 +295,7 @@ class WooPosSyncVariationsActionTest {
     @Test
     fun `given full sync with null modifiedAfterGmt, when sync variations called, then deletes variations not in list`() = runTest {
         // GIVEN
-        val variations = createMockVariations(1, 50)
+        createMockVariations(1, 50)
         givenSinglePageCatalog(variationsCount = 50)
 
         // WHEN

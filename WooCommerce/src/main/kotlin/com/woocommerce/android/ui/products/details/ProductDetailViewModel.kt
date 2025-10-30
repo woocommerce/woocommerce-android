@@ -1231,12 +1231,8 @@ class ProductDetailViewModel @Inject constructor(
 
     fun onViewProductOnStoreLinkClicked() {
         tracker.track(AnalyticsEvent.PRODUCT_DETAIL_VIEW_EXTERNAL_TAPPED)
-        viewState.productDraft?.permalink?.let { url ->
-            if (canAutoAuthenticateInWebView(url)) {
-                triggerEvent(Event.LaunchUrlInAuthenticatedWebView(url))
-            } else {
-                triggerEvent(Event.LaunchUrlInChromeTab(url))
-            }
+        viewState.productDraft?.let { product ->
+            triggerEvent(Event.LaunchUrlInAuthenticatedWebView(product.permalink, UiStringText(product.name)))
         }
     }
 

@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -18,8 +19,11 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -41,6 +45,9 @@ class WooPosOrdersViewModel @Inject constructor(
         WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
     )
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
+
+    private val _openUrlEvent = MutableSharedFlow<String>()
+    val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
@@ -129,7 +136,9 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrdersEmptyActionClicked() {
-        // Action to be defined
+        viewModelScope.launch {
+            _openUrlEvent.emit(AppUrls.URL_LEARN_MORE_ORDERS)
+        }
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
@@ -221,7 +230,7 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    fun onBackFromSuccesfullySendingEmailReceipt() {
+    fun onBackFromSuccessfullySendingEmailReceipt() {
         refreshSelectedOrder()
     }
 
@@ -230,17 +239,8 @@ class WooPosOrdersViewModel @Inject constructor(
         val selectedOrderId = current.selectedDetails.id
 
         viewModelScope.launch {
-            setRefreshingOrderDetails(true)
             ordersDataSource.refreshOrderById(selectedOrderId)
                 .onSuccess { applyOrderUpdate(it) }
-            setRefreshingOrderDetails(false)
-        }
-    }
-
-    private fun setRefreshingOrderDetails(value: Boolean) {
-        val current = _state.value
-        if (current is WooPosOrdersState.Content) {
-            _state.value = current.copy(isRefreshingSelectedDetails = value)
         }
     }
 
@@ -252,19 +252,14 @@ class WooPosOrdersViewModel @Inject constructor(
         val newItem = mapOrderItem(updated, selectedId)
         val newDetails = mapOrderDetails(updated)
 
-        val newMap = buildMap<OrderItemViewState, OrderDetailsViewState> {
-            loaded.items.forEach { (item, details) ->
-                if (item.id == updated.id) put(newItem, newDetails) else put(item, details)
-            }
+        val newMap = loaded.items.entries.associate { (item, details) ->
+            if (item.id == updated.id) newItem to newDetails else item to details
         }
 
-        var newState = current.copy(
-            items = WooPosOrdersState.Content.Items.Loaded(newMap)
+        _state.value = current.copy(
+            items = WooPosOrdersState.Content.Items.Loaded(newMap),
+            selectedDetails = if (selectedId == updated.id) newDetails else current.selectedDetails
         )
-        if (selectedId == updated.id) {
-            newState = newState.copy(selectedDetails = newDetails)
-        }
-        _state.value = newState
     }
 
     private fun updateSearchState(searchState: WooPosSearchInputState) {

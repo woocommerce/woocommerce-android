@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentTapped
@@ -142,6 +143,12 @@ class WooPosCashPaymentViewModel @Inject constructor(
         }
         val event = CashCollectPaymentSuccess.apply { addProperties(props) }
         analyticsTracker.track(event)
+    }
+
+    fun onBackClicked() {
+        viewModelScope.launch {
+            analyticsTracker.track(BackToCheckoutFromCash)
+        }
     }
 
     private companion object {

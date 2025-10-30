@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.details
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -40,6 +40,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
@@ -107,6 +108,8 @@ fun BookingDetailsScreen(
                             onViewOrder = onViewOrder,
                             onAttendanceStatusClicked = { showAttendanceSheet.value = true },
                             onViewNotes = onViewNotes,
+                            onMarkAsPaid = viewState.onMarkAsPaid,
+                            markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
                         )
                     }
                 }
@@ -131,6 +134,8 @@ private fun BookingDetailsContent(
     onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
     onViewNotes: () -> Unit,
+    onMarkAsPaid: () -> Unit,
+    markAsPaidInProgress: Boolean,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -145,20 +150,22 @@ private fun BookingDetailsContent(
         model = booking.bookingCustomerDetails,
         modifier = Modifier.fillMaxWidth()
     )
-    BookingAttendanceSection(
-        status = booking.bookingSummary.attendanceStatus,
-        attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
-        onClick = onAttendanceStatusClicked,
-        modifier = Modifier.fillMaxWidth()
-    )
+    AnimatedVisibility(booking.isAttendanceStatusEditable) {
+        BookingAttendanceSection(
+            status = booking.bookingSummary.attendanceStatus,
+            attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
+            onClick = onAttendanceStatusClicked,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
             status = booking.bookingSummary.status,
-            onMarkAsPaid = { onViewOrder(booking.orderId) },
+            onMarkAsPaid = onMarkAsPaid,
             onViewOrder = { onViewOrder(booking.orderId) },
-            onMarkAsRefunded = { onViewOrder(booking.orderId) },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            markAsPaidInProgress = markAsPaidInProgress,
         )
     }
     BookingNoteSection(
@@ -171,18 +178,7 @@ private fun BookingDetailsContent(
 @Composable
 private fun BookingDetailsLoading() {
     Column {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceContainer)
-                .padding(16.dp)
-        ) {
-            SkeletonView(Modifier.size(200.dp, 20.dp))
-            Spacer(Modifier.height(4.dp))
-            SkeletonView(Modifier.size(250.dp, 15.dp))
-            Spacer(Modifier.height(8.dp))
-            SkeletonView(Modifier.size(150.dp, 25.dp))
-        }
+        BookingSummaryLoading()
         Spacer(Modifier.height(40.dp))
         Column(
             modifier = Modifier
@@ -245,6 +241,7 @@ private fun BookingDetailsPreview() {
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
                         price = "$55.00",
+                        cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,
                     ),
                     bookingCustomerDetails = BookingCustomerDetailsModel(
@@ -263,7 +260,8 @@ private fun BookingDetailsPreview() {
                         discount = "-",
                         total = "$59.50"
                     ),
-                    note = ""
+                    note = "",
+                    isAttendanceStatusEditable = true
                 ),
             ),
             onBack = {},

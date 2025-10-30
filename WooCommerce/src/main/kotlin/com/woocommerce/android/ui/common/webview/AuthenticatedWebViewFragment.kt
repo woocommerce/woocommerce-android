@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateBackWithNotice
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -17,10 +16,10 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ExitWithResult
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
- * This fragments allows loading specific pages from WordPress.com with the current user logged in.
+ * This fragments allows loading URLs inside a WebView with authentication handled automatically when possible.
  */
 @AndroidEntryPoint
-class AuthenticatedWebViewFragment : BaseFragment(R.layout.fragment_wpcom_webview) {
+class AuthenticatedWebViewFragment : BaseFragment() {
     companion object {
         const val WEBVIEW_RESULT = "webview-result"
         const val WEBVIEW_DISMISSED = "webview-dismissed"

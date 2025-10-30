@@ -1,3 +1,3 @@
 package org.wordpress.android.fluxc.network.rest;
 
-public abstract class JsonObjectOrEmptyArray {}
+public abstract class JsonObjectOrNull {}

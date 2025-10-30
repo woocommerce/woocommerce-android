@@ -700,7 +700,7 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given selected order, when onBackFromSuccesfullySendingEmailReceipt succeeds, then refreshes details and resets isRefreshingSelectedDetails`() = runTest {
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(100), order(200)))) }
@@ -714,19 +714,18 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.refreshOrderById(200L)).thenReturn(Result.success(order(200)))
 
         // WHEN
-        viewModel.onBackFromSuccesfullySendingEmailReceipt()
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
         advanceUntilIdle()
 
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
 
-        assertThat(state.isRefreshingSelectedDetails).isFalse()
         assertThat(state.selectedDetails.id).isEqualTo(200L)
         verify(dataSource).refreshOrderById(200L)
     }
 
     @Test
-    fun `given selected order, when onBackFromSuccesfullySendingEmailReceipt fails, then subtle flag resets and details unchanged`() = runTest {
+    fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2)))) }
@@ -742,13 +741,12 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.refreshOrderById(1L)).thenReturn(Result.failure(RuntimeException("boom")))
 
         // WHEN
-        viewModel.onBackFromSuccesfullySendingEmailReceipt()
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
         advanceUntilIdle()
 
         // THEN
         val after = viewModel.state.value as WooPosOrdersState.Content
 
-        assertThat(after.isRefreshingSelectedDetails).isFalse()
         assertThat(after.selectedDetails).isEqualTo(beforeDetails)
         verify(dataSource).refreshOrderById(1L)
     }

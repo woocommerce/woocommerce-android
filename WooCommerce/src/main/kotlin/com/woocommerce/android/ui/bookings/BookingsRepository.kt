@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.bookings
 
 import com.woocommerce.android.WooException
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
@@ -14,7 +17,8 @@ import javax.inject.Inject
 
 class BookingsRepository @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val bookingsStore: BookingsStore
+    private val bookingsStore: BookingsStore,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
     suspend fun fetchBookings(
         page: Int,
@@ -112,34 +116,66 @@ class BookingsRepository @Inject constructor(
     suspend fun updateAttendanceStatus(
         bookingId: Long,
         attendanceStatus: BookingEntity.AttendanceStatus,
-    ): Result<Unit> {
+    ): Result<Unit> = appCoroutineScope.async {
         val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
             bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = attendanceStatus)
         )
-        return if (result.isError) {
+        if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
             Result.success(Unit)
         }
-    }
+    }.await()
 
     suspend fun updateNote(
         bookingId: Long,
         note: String,
-    ): Result<Unit> {
+    ): Result<Unit> = appCoroutineScope.async {
         val result = bookingsStore.updateBooking(
             site = selectedSite.get(),
             bookingId = bookingId,
             bookingUpdatePayload = BookingUpdatePayload(note = note)
         )
-        return if (result.isError) {
+        if (result.isError) {
             Result.failure(WooException(result.error))
         } else {
             Result.success(Unit)
         }
-    }
+    }.await()
+
+    suspend fun cancelBooking(
+        bookingId: Long,
+    ): Result<Unit> = appCoroutineScope.async {
+        val result = bookingsStore.updateBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId,
+            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Cancelled),
+            refreshOrder = true,
+        )
+        if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }.await()
+
+    suspend fun markAsPaid(
+        bookingId: Long,
+    ): Result<Unit> = appCoroutineScope.async {
+        val result = bookingsStore.updateBooking(
+            site = selectedSite.get(),
+            bookingId = bookingId,
+            bookingUpdatePayload = BookingUpdatePayload(status = BookingEntity.Status.Paid),
+            refreshOrder = true,
+        )
+        if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }.await()
 
     data class FetchResult(
         val bookings: List<Booking>,
