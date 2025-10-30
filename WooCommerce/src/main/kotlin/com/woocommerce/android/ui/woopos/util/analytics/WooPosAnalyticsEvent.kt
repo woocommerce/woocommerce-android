@@ -134,6 +134,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "orders_list_pull_to_refresh"
         }
 
+        data object OrdersListNextPageLoaded: Event() {
+            override val name: String = "orders_list_next_page_loaded"
+        }
+
         data class OrdersListFetched(val milimetersSinceRequestSent: Long): Event()  {
             override val name: String = "orders_list_fetched"
 

@@ -32,6 +32,7 @@ import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -179,6 +180,7 @@ class WooPosOrdersViewModel @Inject constructor(
             val result = ordersDataSource.loadMore(normalizedQuery)
 
             if (result.isSuccess) {
+                analyticsTracker.track(OrdersListNextPageLoaded)
                 appendOrders(result.getOrThrow())
             } else {
                 _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
