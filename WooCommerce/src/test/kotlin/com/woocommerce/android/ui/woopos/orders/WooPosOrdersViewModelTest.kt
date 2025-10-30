@@ -38,8 +38,10 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
+
 import org.mockito.kotlin.argThat
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -807,5 +809,44 @@ class WooPosOrdersViewModelTest {
         verify(analyticsTracker).track(argThat {
             this is com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
         })
+    }
+
+    @Test
+    fun `when remote load succeeds, then tracks OrdersListFetched`() = runTest {
+        val cached = listOf(order(1))
+        val remote = listOf(order(2), order(3))
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow {
+                emit(LoadOrdersResult.SuccessCache(cached))
+                emit(LoadOrdersResult.SuccessRemote(remote))
+            }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(
+            argThat { this is OrdersListFetched }
+        )
+    }
+
+    @Test
+    fun `when search succeeds, then tracks OrdersListSearchResultsFetched`() = runTest {
+        val query = "abc"
+        val searchResult = listOf(order(10), order(20))
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
+        )
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Success(searchResult))
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        verify(analyticsTracker).track(
+            argThat { this is OrdersListSearchResultsFetched }
+        )
     }
 }
