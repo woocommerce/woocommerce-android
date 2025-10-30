@@ -30,7 +30,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersInMemoryCache
+    private val ordersCache: WooPosOrdersInMemoryCache,
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val page = AtomicInteger(1)
@@ -48,6 +48,7 @@ class WooPosOrdersDataSource @Inject constructor(
         if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
 
         val result = loadFirstPage()
+
         result.onSuccess {
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
@@ -72,10 +73,24 @@ class WooPosOrdersDataSource @Inject constructor(
         val payload = restClient.fetchSingleOrder(site, orderId)
         return if (payload.error == null) {
             val entity = payload.orderWithMeta.first
-            Result.success(orderMapper.toAppModel(entity))
+            val order = orderMapper.toAppModel(entity)
+
+            updateCachedOrderIfPresent(order)
+
+            Result.success(order)
         } else {
             Result.failure(Throwable("[${payload.error.type}] ${payload.error.message}"))
         }
+    }
+
+    private fun updateCachedOrderIfPresent(order: Order) {
+        val current = ordersCache.getAll()
+        val idx = current.indexOfFirst { it.id == order.id }
+        if (idx < 0) return
+
+        val updated = current.toMutableList()
+        updated[idx] = order
+        ordersCache.setAll(updated)
     }
 
     private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
