@@ -108,7 +108,7 @@ private fun SyncingCatalog(
             ) {
                 Text(
                     text = stringResource(R.string.woopos_home_syncing_catalog_exit_button),
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     textDecoration = TextDecoration.Underline
                 )
