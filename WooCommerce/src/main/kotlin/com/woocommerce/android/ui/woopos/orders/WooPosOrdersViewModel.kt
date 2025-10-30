@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -89,6 +91,10 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onRefresh() {
+        viewModelScope.launch {
+            analyticsTracker.track(OrdersListPullToRefreshTriggered)
+        }
+
         val currentState = _state.value
         _state.value = when (currentState) {
             is WooPosOrdersState.Content -> currentState.copy(
