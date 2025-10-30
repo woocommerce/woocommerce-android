@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -14,15 +13,14 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val variationsCache: WooPosVariationsLRUCache,
     private val localCatalogStore: WooPosLocalCatalogStore,
-    private val localCatalogSupported: WooPosIsLocalCatalogSupported,
     private val productModelMapper: WooPosProductModelMapper,
     private val variationMapper: WooPosVariationMapper,
     private val selectedSite: SelectedSite,
 ) {
-    suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
+    suspend operator fun invoke(identifier: String, isLocalCatalogSupported: Boolean): WooPosSearchByIdentifierResult {
         val siteId = selectedSite.get().localId()
 
-        return if (localCatalogSupported(selectedSite.get().siteId)) {
+        return if (isLocalCatalogSupported) {
             searchInLocalCatalog(identifier, siteId)
         } else {
             searchInMemoryCache(identifier)

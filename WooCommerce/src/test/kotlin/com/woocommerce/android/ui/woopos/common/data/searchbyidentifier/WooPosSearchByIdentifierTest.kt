@@ -54,7 +54,7 @@ class WooPosSearchByIdentifierTest {
             val identifier = "123456"
             val localProduct = generateWooPosProduct()
             val localResult = WooPosSearchByIdentifierResult.Success(localProduct)
-            whenever(localSearcher(identifier)).thenReturn(localResult)
+            whenever(localSearcher(identifier, false)).thenReturn(localResult)
 
             // WHEN
             val result = sut(identifier)
@@ -70,7 +70,7 @@ class WooPosSearchByIdentifierTest {
         // GIVEN
         val identifier = "123456"
         val remoteProduct = generateWooPosProduct()
-        whenever(localSearcher(identifier)).thenReturn(
+        whenever(localSearcher(identifier, false)).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
         )
         whenever(remoteSearcher(identifier))
@@ -89,7 +89,7 @@ class WooPosSearchByIdentifierTest {
     fun `given product not found anywhere, when search called, then return failure`() = runTest {
         // GIVEN
         val identifier = "NOTFOUND"
-        whenever(localSearcher(identifier)).thenReturn(
+        whenever(localSearcher(identifier, false)).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
         )
         whenever(remoteSearcher(identifier))
@@ -110,7 +110,7 @@ class WooPosSearchByIdentifierTest {
     fun `given remote search returns network error, when search called, then return network error`() = runTest {
         // GIVEN
         val identifier = "123456"
-        whenever(localSearcher(identifier)).thenReturn(
+        whenever(localSearcher(identifier, false)).thenReturn(
             WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
         )
         whenever(remoteSearcher(identifier))
@@ -136,7 +136,7 @@ class WooPosSearchByIdentifierTest {
             status = WooPosProductModel.WooPosProductStatus.PUBLISH
         )
 
-        whenever(localSearcher(identifier))
+        whenever(localSearcher(identifier, false))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
@@ -153,7 +153,7 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = generateWooPosProduct(status = WooPosProductModel.WooPosProductStatus.DRAFT)
 
-        whenever(localSearcher(identifier))
+        whenever(localSearcher(identifier, false))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
@@ -173,7 +173,7 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = generateWooPosProduct(isDownloadable = true)
 
-        whenever(localSearcher(identifier))
+        whenever(localSearcher(identifier, false))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
@@ -193,7 +193,7 @@ class WooPosSearchByIdentifierTest {
         val identifier = "123456"
         val product = generateWooPosProduct(productType = WooPosProductModel.WooPosProductType.VARIABLE)
 
-        whenever(localSearcher(identifier))
+        whenever(localSearcher(identifier, false))
             .thenReturn(WooPosSearchByIdentifierResult.Success(product))
 
         // WHEN
@@ -213,7 +213,7 @@ class WooPosSearchByIdentifierTest {
             // GIVEN
             whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
             val identifier = "123456"
-            whenever(localSearcher(identifier)).thenReturn(
+            whenever(localSearcher(identifier, isLocalCatalogSupported = true)).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)
             )
 
