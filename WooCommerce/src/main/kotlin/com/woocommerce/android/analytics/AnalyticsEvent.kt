@@ -149,7 +149,6 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     LOGIN_JETPACK_SITE_CREDENTIAL_DID_FINISH_LOGIN(siteless = true),
     LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER(siteless = true),
     LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED(siteless = true),
-    LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED(siteless = true),
 
     // -- Dashboard
     DASHBOARD_PULLED_TO_REFRESH,

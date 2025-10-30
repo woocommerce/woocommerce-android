@@ -80,12 +80,13 @@ class JetpackActivationStartViewModel @Inject constructor(
     fun onContinueButtonClick() {
         if (isConnectionDismissed.value) {
             analyticsTrackerWrapper.track(
-                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
+                stat = AnalyticsEvent.JETPACK_SETUP_FLOW,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
-                        JetpackActivationMainViewModel.StepType.Connection.analyticsName
+                    AnalyticsTracker.KEY_STEP to JetpackActivationMainViewModel.StepType.Connection.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_CONTINUE_SETUP,
                 )
             )
+
             isConnectionDismissed.value = false
             triggerEvent(
                 ContinueJetpackConnection(
