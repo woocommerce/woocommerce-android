@@ -298,7 +298,6 @@ private fun UpdateFirmwareBanner(
     }
 }
 
-
 @WooPosPreview
 @Composable
 fun WooPosSettingsHardwareCardReaderScreenNotConnectedPreview() {
