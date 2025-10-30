@@ -152,7 +152,7 @@ class WooPosLocalCatalogStoreTest {
         val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
 
         // THEN
-        assertThat(syncResult.products.size).isEqualTo(remoteProducts.size)
+        assertThat(syncResult.items.size).isEqualTo(remoteProducts.size)
         assertThat(syncResult.syncedCount).isEqualTo(2)
         assertThat(syncResult.hasMore).isFalse()
         assertThat(syncResult.nextPage).isEqualTo(1)

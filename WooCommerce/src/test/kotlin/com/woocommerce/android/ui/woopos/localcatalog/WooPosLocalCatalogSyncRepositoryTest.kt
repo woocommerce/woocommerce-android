@@ -65,10 +65,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val productsSynced = 150
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(productsSynced, "2024-01-01T12:00:00Z")
             )
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -83,10 +83,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val productsSynced = 150
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(productsSynced, "2024-01-01T12:00:00Z")
             )
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -102,10 +102,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val productsSynced = 150
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(productsSynced, "2024-01-01T12:00:00Z")
             )
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -120,7 +120,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -135,7 +135,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -149,7 +149,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val errorMessage = "Network timeout"
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
+            .thenReturn(WooPosSyncResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -164,10 +164,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val productsSynced = 150
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(productsSynced, "2024-01-01T12:00:00Z")
             )
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -182,10 +182,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val productsSynced = 150
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(productsSynced, "2024-01-01T12:00:00Z")
             )
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogIncremental(site)
@@ -200,7 +200,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -214,7 +214,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val errorMessage = "Network timeout"
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
+            .thenReturn(WooPosSyncResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -241,9 +241,9 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `given catalog size is exactly at limit, when sync starts, then proceeds with sync`() = testBlocking {
         // GIVEN
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(600, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(600, "2024-01-01T12:00:00Z"))
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(400, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(400, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -257,9 +257,9 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         givenCatalogSizeUnknown()
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(100, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(100, "2024-01-01T12:00:00Z"))
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -273,9 +273,9 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         givenCatalogSizeUnknown()
         whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(500, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(500, "2024-01-01T12:00:00Z"))
         whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(200, "2024-01-01T12:00:00Z"))
+            .thenReturn(WooPosSyncResult.Success(200, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
