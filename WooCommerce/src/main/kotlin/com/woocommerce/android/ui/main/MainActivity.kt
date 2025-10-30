@@ -113,7 +113,6 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -382,8 +381,6 @@ class MainActivity :
         if (VERSION.SDK_INT >= 33) {
             onBackPressedDispatcher
                 .addCallback(this) {
-                    WooLog.d(WooLog.T.UTILS, "Predictive back: New back navigation callback")
-
                     AnalyticsTracker.trackBackPressed(this@MainActivity)
                     getActiveChildFragment()?.let { fragment ->
                         if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
@@ -491,9 +488,7 @@ class MainActivity :
      */
     @Deprecated("This method has been deprecated in favor of using the OnBackPressedDispatcher")
     override fun onBackPressed() {
-        WooLog.d(WooLog.T.UTILS, "Predictive back: Legacy OnBackPressed called")
         AnalyticsTracker.trackBackPressed(this)
-
         getActiveChildFragment()?.let { fragment ->
             if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
                 return
