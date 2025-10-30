@@ -16,7 +16,10 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
+import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import kotlin.test.assertTrue
 
@@ -30,7 +33,9 @@ class WooPosSearchByIdentifierLocalTest {
     private val productModelMapper: WooPosProductModelMapper = mock()
     private val variationMapper: WooPosVariationMapper = mock()
     private val selectedSite: SelectedSite = mock()
+
     private val testSite = SiteModel().apply { siteId = 123L }
+    private val localSiteId = LocalOrRemoteId.LocalId(123)
 
     @Before
     fun setup() = runTest {
@@ -38,7 +43,13 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(localCatalogSupported.invoke(any())).thenReturn(false)
         whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(variationsCache.getAll()).thenReturn(emptyList())
-        whenever(productsCache.getProductById(any())).thenReturn(generateWooPosProduct())
+        whenever(productsCache.getProductById(any())).thenReturn(null)
+        whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(any(), any()))
+            .thenReturn(Result.failure(Exception("Not found")))
+        whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(any(), any()))
+            .thenReturn(Result.failure(Exception("Not found")))
+        whenever(localCatalogStore.getProduct(any(), any()))
+            .thenReturn(Result.failure(Exception("Not found")))
 
         sut = WooPosSearchByIdentifierLocal(
             productsCache,
@@ -57,7 +68,6 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "1234567890123"
         val product = generateWooPosProduct(globalUniqueId = identifier)
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut(identifier)
@@ -86,7 +96,6 @@ class WooPosSearchByIdentifierLocalTest {
         val identifier = "ABC123"
         val product = generateWooPosProduct(globalUniqueId = "abc123")
         whenever(productsCache.getAll()).thenReturn(listOf(product))
-        whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
         val result = sut(identifier)
@@ -109,7 +118,6 @@ class WooPosSearchByIdentifierLocalTest {
             remoteProductId = productId,
             globalUniqueId = identifier
         )
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
@@ -141,7 +149,6 @@ class WooPosSearchByIdentifierLocalTest {
             remoteProductId = productId,
             globalUniqueId = identifier
         )
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation1, variation2))
 
@@ -168,7 +175,6 @@ class WooPosSearchByIdentifierLocalTest {
             remoteProductId = productId,
             globalUniqueId = "var-upper"
         )
-        whenever(productsCache.getAll()).thenReturn(listOf(product))
         whenever(productsCache.getProductById(productId)).thenReturn(product)
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
@@ -191,9 +197,123 @@ class WooPosSearchByIdentifierLocalTest {
             remoteProductId = productId,
             globalUniqueId = identifier
         )
-        whenever(productsCache.getAll()).thenReturn(emptyList())
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
         whenever(productsCache.getProductById(productId)).thenReturn(null)
+
+        // WHEN
+        val result = sut(identifier)
+
+        // THEN
+        assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+        assertEquals(WooPosSearchByIdentifierResult.Error.NotFound, result.error)
+    }
+
+    @Test
+    fun `given local catalog enabled and product found, when search called, then return product from local catalog`() =
+        runTest {
+            // GIVEN
+            val identifier = "PRODUCT123"
+            val productEntity = WooPosProductEntity(
+                localSiteId = localSiteId,
+                remoteId = LocalOrRemoteId.RemoteId(1),
+                globalUniqueId = identifier,
+                name = "Test Product"
+            )
+            val productModel = generateWooPosProduct(globalUniqueId = identifier)
+
+            whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
+            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+                .thenReturn(Result.success(productEntity))
+            whenever(productModelMapper.fromEntity(productEntity)).thenReturn(productModel)
+
+            // WHEN
+            val result = sut(identifier)
+
+            // THEN
+            assertEquals(WooPosSearchByIdentifierResult.Success(productModel), result)
+        }
+
+    @Test
+    fun `given local catalog enabled and variation found, when search called, then return variation from catalog`() =
+        runTest {
+            // GIVEN
+            val identifier = "VAR123"
+            val productId = 1L
+            val variationId = 10L
+
+            val variationEntity = WooPosVariationEntity(
+                localSiteId = localSiteId,
+                remoteProductId = LocalOrRemoteId.RemoteId(productId),
+                remoteVariationId = LocalOrRemoteId.RemoteId(variationId),
+                globalUniqueId = identifier
+            )
+            val parentEntity = WooPosProductEntity(
+                localSiteId = localSiteId,
+                remoteId = LocalOrRemoteId.RemoteId(productId),
+                name = "Parent Product"
+            )
+
+            val variation = generateWooPosVariation(globalUniqueId = identifier)
+            val parentProduct = generateWooPosProduct()
+
+            whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
+            whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+                .thenReturn(Result.failure(Exception("Not found")))
+            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+                .thenReturn(Result.success(variationEntity))
+            whenever(localCatalogStore.getProduct(localSiteId, LocalOrRemoteId.RemoteId(productId)))
+                .thenReturn(Result.success(parentEntity))
+            whenever(variationMapper.fromWooPosVariationEntity(variationEntity)).thenReturn(variation)
+            whenever(productModelMapper.fromEntity(parentEntity)).thenReturn(parentProduct)
+
+            // WHEN
+            val result = sut(identifier)
+
+            // THEN
+            assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
+            assertEquals(variation, result.variation)
+            assertEquals(parentProduct, result.parentProduct)
+        }
+
+    @Test
+    fun `given catalog supported and variation found but parent not found, when search called, then return failure`() =
+        runTest {
+            // GIVEN
+            val identifier = "VAR123"
+            val productId = 1L
+            val variationId = 10L
+
+            val variationEntity = WooPosVariationEntity(
+                localSiteId = localSiteId,
+                remoteProductId = LocalOrRemoteId.RemoteId(productId),
+                remoteVariationId = LocalOrRemoteId.RemoteId(variationId),
+                globalUniqueId = identifier
+            )
+
+            whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
+            whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+                .thenReturn(Result.success(variationEntity))
+            whenever(localCatalogStore.getProduct(localSiteId, LocalOrRemoteId.RemoteId(productId)))
+                .thenReturn(Result.failure(Exception("Parent not found")))
+
+            // WHEN
+            val result = sut(identifier)
+
+            // THEN
+            assertTrue(result is WooPosSearchByIdentifierResult.Failure)
+            assertEquals(WooPosSearchByIdentifierResult.Error.NotFound, result.error)
+        }
+
+    @Test
+    fun `given local catalog supported but product not found, when search called, then return failure`() = runTest {
+        // GIVEN
+        val identifier = "NOTFOUND"
+
+        whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
+        whenever(localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier))
+            .thenReturn(Result.failure(Exception("Not found")))
+        whenever(localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier))
+            .thenReturn(Result.failure(Exception("Not found")))
 
         // WHEN
         val result = sut(identifier)
