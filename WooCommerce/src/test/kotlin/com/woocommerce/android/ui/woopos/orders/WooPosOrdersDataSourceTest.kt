@@ -39,14 +39,12 @@ class WooPosOrdersDataSourceTest {
     private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(siteModel) }
     private val orderMapper: OrderMapper = mock()
     private val ordersCache: WooPosOrdersInMemoryCache = mock()
-    private val analyticsTracker: WooPosAnalyticsTracker = Mockito.mock()
 
     private val sut = WooPosOrdersDataSource(
         restClient = orderRestClient,
         selectedSite = selectedSite,
         orderMapper = orderMapper,
-        ordersCache = ordersCache,
-        analyticsTracker = analyticsTracker
+        ordersCache = ordersCache
     )
 
     @Test
