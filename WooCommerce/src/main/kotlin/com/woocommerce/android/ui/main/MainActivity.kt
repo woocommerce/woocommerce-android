@@ -26,7 +26,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
-import androidx.core.os.BuildCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
@@ -380,7 +379,7 @@ class MainActivity :
     }
 
     private fun handleOnBackNavigationCompat() {
-        if (BuildCompat.isAtLeastT()) {
+        if (VERSION.SDK_INT >= 33) {
             onBackPressedDispatcher
                 .addCallback(this) {
                     WooLog.d(WooLog.T.UTILS, "Predictive back: New back navigation callback")
@@ -490,12 +489,7 @@ class MainActivity :
      * The custom back navigation compatible with Android 33 onwards is provided in handleOnBackNavigationCompat()
      * function from this class.
      */
-    @Deprecated(
-        """This method has been deprecated in favor of using the
-      {@link OnBackPressedDispatcher} via {@link #getOnBackPressedDispatcher()}.
-      The OnBackPressedDispatcher controls how back button events are dispatched
-      to one or more {@link OnBackPressedCallback} objects."""
-    )
+    @Deprecated("This method has been deprecated in favor of using the OnBackPressedDispatcher")
     override fun onBackPressed() {
         WooLog.d(WooLog.T.UTILS, "Predictive back: Legacy OnBackPressed called")
         AnalyticsTracker.trackBackPressed(this)
