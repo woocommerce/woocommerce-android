@@ -48,7 +48,7 @@ fun WooPosSettingsDetailsMenuItem(
             Spacer(modifier = Modifier.size(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = subtitle,
-                style = WooPosTypography.BodySmall,
+                style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
             )
         }
