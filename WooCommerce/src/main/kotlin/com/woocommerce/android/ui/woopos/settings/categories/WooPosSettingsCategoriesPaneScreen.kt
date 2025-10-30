@@ -38,21 +38,21 @@ fun WooPosSettingsCategoriesPaneScreen(
     val state by viewModel.state.collectAsState()
 
     WooPosSettingsCategoriesPaneScreenContent(
+        modifier = modifier,
         scrollableCategories = state.scrollableCategories,
         fixedCategories = state.fixedCategories,
         selectedCategory = selectedCategory,
         onCategorySelected = onCategorySelected,
-        modifier = modifier
     )
 }
 
 @Composable
 private fun WooPosSettingsCategoriesPaneScreenContent(
+    modifier: Modifier = Modifier,
     scrollableCategories: List<WooPosSettingsCategory>,
     fixedCategories: List<WooPosSettingsCategory>,
     selectedCategory: WooPosSettingsCategory,
     onCategorySelected: (WooPosSettingsCategory) -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(
         modifier = modifier.fillMaxSize()
