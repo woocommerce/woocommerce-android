@@ -113,6 +113,7 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
 import com.woocommerce.android.util.WooAnimUtils.animateBottomBar
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooPermissionUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.widgets.AppRatingDialog
@@ -391,7 +392,7 @@ class MainActivity :
                         updateAppBarVisibility(fragment)
                     }
                     if (isAtNavigationRoot()) {
-                        remove() //Remove callback to avoid infinite recursion
+                        remove() //Remove callback to avoid infinite recursion from onBackPressed() call below
                         onBackPressedDispatcher.onBackPressed()
                     }
                 }
