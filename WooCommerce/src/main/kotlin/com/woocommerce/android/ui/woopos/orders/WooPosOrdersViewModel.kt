@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
 import org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY
 
 @HiltViewModel
@@ -191,6 +192,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
     fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
+            analyticsTracker.track(OrderDetailsEmailReceiptTapped)
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(orderId)
             )

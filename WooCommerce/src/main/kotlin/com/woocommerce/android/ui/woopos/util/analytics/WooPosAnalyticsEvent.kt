@@ -139,6 +139,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "orders_list_next_page_loaded"
         }
 
+        data object OrderDetailsEmailReceiptTapped: Event() {
+            override val name: String = "order_details_email_receipt_tapped"
+        }
+
         data class OrdersListRowTapped(
             val orderId: Long,
             val orderStatus: String,
