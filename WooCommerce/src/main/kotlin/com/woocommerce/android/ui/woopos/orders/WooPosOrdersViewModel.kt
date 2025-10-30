@@ -34,6 +34,7 @@ import javax.inject.Inject
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -221,6 +222,10 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onSearchEvent(event: WooPosSearchUIEvent) {
         when (event) {
             is WooPosSearchUIEvent.SearchIconClicked -> {
+                viewModelScope.launch {
+                    analyticsTracker.track(OrdersListSearchButtonTapped)
+                }
+
                 updateSearchState(
                     WooPosSearchInputState.Open(
                         input = WooPosSearchInputState.Open.Input.Hint(

@@ -171,6 +171,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data object OrdersListSearchButtonTapped: Event() {
+            override val name: String = "pos_orders_list_search_button_tapped"
+        }
+
         data class BarcodeScanned(
             val scanDurationMs: Long,
             val barcodeLength: Int,
