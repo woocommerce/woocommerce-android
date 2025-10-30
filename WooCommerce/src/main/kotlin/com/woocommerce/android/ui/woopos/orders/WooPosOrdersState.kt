@@ -63,7 +63,7 @@ sealed class WooPosOrdersState {
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState,
-        val paginationState: WooPosPaginationState,
+        val paginationState: WooPosPaginationState
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()

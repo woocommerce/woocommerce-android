@@ -47,6 +47,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -56,9 +58,9 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
+import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
-import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -88,7 +90,8 @@ fun BookingListScreen(state: BookingListViewState) {
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
-                        areFiltersActive = state.areFiltersActive || state.tabState.selectedTab != BookingListTab.All
+                        areFiltersActive = state.controlsState.areFiltersActive ||
+                            state.tabState.selectedTab != BookingListTab.All
                     )
                 }
             )
@@ -258,17 +261,7 @@ private fun BookingListLoading(controlsState: BookingListControlsState) {
     ) {
         BookingListControls(controlsState)
         repeat(7) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ) {
-                SkeletonView(Modifier.size(173.dp, 22.dp))
-                Spacer(Modifier.height(2.dp))
-                SkeletonView(Modifier.size(256.dp, 18.dp))
-                Spacer(Modifier.height(8.dp))
-                SkeletonView(Modifier.size(138.dp, 22.dp))
-            }
+            BookingSummaryLoading()
             HorizontalDivider(Modifier.padding(start = 16.dp))
         }
     }
@@ -308,12 +301,28 @@ private fun BookingListControls(
                 modifier = Modifier.defaultMinSize(minWidth = 88.dp, minHeight = 36.dp),
                 contentPadding = PaddingValues(horizontal = 16.dp),
                 colors = ButtonDefaults.outlinedButtonColors().copy(
-                    contentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    containerColor = if (state.areFiltersActive) {
+                        colorResource(R.color.primary_colored_button_background)
+                    } else {
+                        MaterialTheme.colorScheme.surface
+                    },
+                    contentColor = if (state.areFiltersActive) {
+                        Color.White
+                    } else {
+                        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    }
                 ),
                 onClick = state.onFilterClick,
             ) {
                 Text(
-                    text = stringResource(R.string.bookings_filters_default_title),
+                    text = if (state.areFiltersActive) {
+                        stringResource(
+                            id = R.string.bookings_filters_enabled_title,
+                            state.enabledFiltersCount
+                        )
+                    } else {
+                        stringResource(R.string.bookings_filters_default_title)
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                 )
             }
@@ -339,13 +348,15 @@ private fun EmptyView(
 
         if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
-                areFiltersActive = state.areFiltersActive,
+                areFiltersActive = state.controlsState.areFiltersActive,
                 modifier = innerEmptyViewModifier
             )
         } else {
             EmptyListView(
                 selectedTab = state.tabState.selectedTab,
-                areFiltersActive = state.areFiltersActive,
+                areFiltersActive = state.controlsState.areFiltersActive,
+                onChangeFiltersClick = state.controlsState.onFilterClick,
+                onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
         }
@@ -356,6 +367,8 @@ private fun EmptyView(
 private fun EmptyListView(
     selectedTab: BookingListTab,
     areFiltersActive: Boolean,
+    onChangeFiltersClick: () -> Unit,
+    onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -404,13 +417,13 @@ private fun EmptyListView(
             Spacer(Modifier.height(24.dp))
             WCColoredButton(
                 text = stringResource(R.string.bookings_empty_state_change_filters_button),
-                onClick = { TODO() },
+                onClick = onChangeFiltersClick,
                 modifier = Modifier.fillMaxWidth()
             )
             Spacer(Modifier.height(8.dp))
             WCOutlinedButton(
                 text = stringResource(R.string.bookings_empty_state_clear_filters_button),
-                onClick = { TODO() },
+                onClick = onClearFiltersClick,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -488,8 +501,10 @@ private fun BookingListPreview() {
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
                     isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
-                    onFilterClick = {}
+                    onFilterClick = {},
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
@@ -520,9 +535,11 @@ private fun EmptyViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
-                    isFilterButtonVisible = true
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
@@ -553,9 +570,11 @@ private fun EmptySearchResultsViewPreview() {
                 ),
                 controlsState = BookingListControlsState(
                     selectedSortOption = BookingListSortOption.NewestToOldest,
+                    isFilterButtonVisible = true,
+                    enabledFiltersCount = 0,
                     onSortClick = {},
                     onFilterClick = {},
-                    isFilterButtonVisible = true
+                    onClearFiltersClick = {},
                 ),
                 sortBottomSheetState = null,
                 searchState = BookingListSearchState(
