@@ -86,6 +86,10 @@ class WooPosHomeFloatingToolbarViewModelTest {
                 WooPosHomeFloatingToolbarState.Menu.Visible(
                     listOf(
                         WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                            title = R.string.woopos_orders_title,
+                            icon = Icons.Default.Description,
+                        ),
+                        WooPosHomeFloatingToolbarState.Menu.MenuItem(
                             title = R.string.woopos_settings_title,
                             icon = Icons.Default.Settings,
                         ),
