@@ -163,7 +163,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         includeStatus: List<CoreProductStatus>? = null,
-    ): Result<WooPosLocalCatalogFetchProductsResult> =
+    ): Result<WooPosPaginatedFetchResult<WooPosProductEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
@@ -185,8 +185,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 response.model.isNullOrEmpty() -> Result.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = emptyList(),
+                    WooPosPaginatedFetchResult(
+                        items = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
                         nextPage = page,
@@ -211,8 +211,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosLocalCatalogFetchProductsResult(
-                            products = products,
+                        WooPosPaginatedFetchResult(
+                            items = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) page + 1 else page,
@@ -319,7 +319,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
      * @param page Starting page for pagination (1-based)
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
-     * @return [Result] containing [WooPosVariationsFetchResult] with pagination info or error
+     * @return [Result] containing [WooPosPaginatedFetchResult] with pagination info or error
      */
     @Suppress("LongMethod")
     suspend fun fetchRecentlyModifiedVariations(
@@ -327,7 +327,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<WooPosVariationsFetchResult> =
+    ): Result<WooPosPaginatedFetchResult<WooPosVariationEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
             require(page > 0) { "Page number must be 1 or greater" }
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -354,8 +354,8 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page,
@@ -385,8 +385,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations,
+                        WooPosPaginatedFetchResult(
+                            items = variations,
                             syncedCount = variations.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) {

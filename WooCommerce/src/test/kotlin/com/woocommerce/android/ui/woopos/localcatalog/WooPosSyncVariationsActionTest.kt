@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository.Companion.PAGE_SIZE
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationsAction.WooPosSyncVariationsResult
 import com.woocommerce.android.util.InlineClassesAnswer
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
@@ -22,7 +21,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
-import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosVariationsFetchResult
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosPaginatedFetchResult
 import kotlin.Result as KotlinResult
 
 class WooPosSyncVariationsActionTest {
@@ -51,8 +50,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, pageSize = 100, maxPages = 2)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).variationsSynced).isEqualTo(50)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+        assertThat((result as WooPosSyncResult.Success).syncedCount).isEqualTo(50)
     }
 
     @Test
@@ -65,8 +64,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, pageSize = 100, maxPages = 2)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(expectedServerDate)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+        assertThat((result as WooPosSyncResult.Success).serverDate).isEqualTo(expectedServerDate)
     }
 
     @Test
@@ -84,8 +83,8 @@ class WooPosSyncVariationsActionTest {
             val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-            assertThat((result as WooPosSyncVariationsResult.Success).variationsSynced).isEqualTo(250)
+            assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+            assertThat((result as WooPosSyncResult.Success).syncedCount).isEqualTo(250)
         }
 
     @Test
@@ -98,8 +97,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).variationsSynced).isEqualTo(0)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+        assertThat((result as WooPosSyncResult.Success).syncedCount).isEqualTo(0)
     }
 
     @Test
@@ -120,7 +119,7 @@ class WooPosSyncVariationsActionTest {
                 page = eq(1),
                 pageSize = eq(100)
             )
-            assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+            assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
         }
 
     @Test
@@ -139,7 +138,7 @@ class WooPosSyncVariationsActionTest {
             page = eq(1),
             pageSize = eq(100)
         )
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
     }
 
     @Test
@@ -156,8 +155,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).variationsSynced).isEqualTo(300)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+        assertThat((result as WooPosSyncResult.Success).syncedCount).isEqualTo(300)
     }
 
     @Test
@@ -176,8 +175,8 @@ class WooPosSyncVariationsActionTest {
             val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.CatalogTooLarge::class.java)
-            val failureResult = result as WooPosSyncVariationsResult.Failed.CatalogTooLarge
+            assertThat(result).isInstanceOf(WooPosSyncResult.Failed.CatalogTooLarge::class.java)
+            val failureResult = result as WooPosSyncResult.Failed.CatalogTooLarge
             assertThat(failureResult.totalPages).isEqualTo(3)
             assertThat(failureResult.maxPages).isEqualTo(maxPages)
         }
@@ -192,8 +191,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = 10)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo(errorMessage)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncResult.Failed).error).isEqualTo(errorMessage)
     }
 
     @Test
@@ -207,8 +206,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo(errorMessage)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncResult.Failed).error).isEqualTo(errorMessage)
     }
 
     @Test
@@ -221,8 +220,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Failed.UnexpectedError::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Failed).error).isEqualTo("Failed to sync variations")
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.UnexpectedError::class.java)
+        assertThat((result as WooPosSyncResult.Failed).error).isEqualTo("Failed to sync variations")
     }
 
     @Test
@@ -236,7 +235,7 @@ class WooPosSyncVariationsActionTest {
             val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+            assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
             verify(posLocalCatalogStore, times(1))
                 .fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
         }
@@ -251,7 +250,7 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
         verify(posLocalCatalogStore, times(1))
             .fetchRecentlyModifiedVariations(any(), anyOrNull(), any(), any())
     }
@@ -272,8 +271,8 @@ class WooPosSyncVariationsActionTest {
         val result = sut.execute(site, modifiedAfterGmt = null, pageSize = 100, maxPages = maxPages)
 
         // THEN
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
-        assertThat((result as WooPosSyncVariationsResult.Success).serverDate).isEqualTo(firstServerDate)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
+        assertThat((result as WooPosSyncResult.Success).serverDate).isEqualTo(firstServerDate)
     }
 
     @Test
@@ -289,7 +288,7 @@ class WooPosSyncVariationsActionTest {
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(1), any())
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(2), any())
         verify(posLocalCatalogStore).fetchRecentlyModifiedVariations(any(), anyOrNull(), eq(3), any())
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
     }
 
     @Test
@@ -303,7 +302,7 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         verify(posLocalCatalogStore).deleteAllVariations(siteId = eq(site.localId()))
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
     }
 
     @Test
@@ -317,7 +316,7 @@ class WooPosSyncVariationsActionTest {
 
         // THEN
         verify(posLocalCatalogStore, times(0)).deleteAllVariations(any())
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
     }
 
     @Test
@@ -332,7 +331,7 @@ class WooPosSyncVariationsActionTest {
         verify(posLocalCatalogStore).deleteAllVariations(
             siteId = eq(site.localId())
         )
-        assertThat(result).isInstanceOf(WooPosSyncVariationsResult.Success::class.java)
+        assertThat(result).isInstanceOf(WooPosSyncResult.Success::class.java)
     }
 
     // Helper functions
@@ -345,8 +344,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations,
+                        WooPosPaginatedFetchResult(
+                            items = variations,
                             syncedCount = variationsCount,
                             hasMore = false,
                             nextPage = 2,
@@ -373,8 +372,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = page1Count,
                             hasMore = true,
                             nextPage = 2,
@@ -389,8 +388,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations2,
+                        WooPosPaginatedFetchResult(
+                            items = variations2,
                             syncedCount = page2Count,
                             hasMore = page3Count > 0,
                             nextPage = 3,
@@ -412,8 +411,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations3,
+                        WooPosPaginatedFetchResult(
+                            items = variations3,
                             syncedCount = page3Count,
                             hasMore = false,
                             nextPage = 4,
@@ -430,8 +429,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList<WooPosVariationEntity>(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = 1,
@@ -459,8 +458,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 2,
@@ -480,8 +479,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList<WooPosVariationEntity>(),
                             syncedCount = 0,
                             hasMore = false, // Changed to false so it stops fetching after zero items
                             nextPage = 1,
@@ -502,8 +501,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations1,
+                        WooPosPaginatedFetchResult(
+                            items = variations1,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 2,
@@ -518,8 +517,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations2,
+                        WooPosPaginatedFetchResult(
+                            items = variations2,
                             syncedCount = 100,
                             hasMore = true,
                             nextPage = 3,
@@ -534,8 +533,8 @@ class WooPosSyncVariationsActionTest {
             .doAnswer(
                 InlineClassesAnswer {
                     KotlinResult.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations3,
+                        WooPosPaginatedFetchResult(
+                            items = variations3,
                             syncedCount = 50,
                             hasMore = false,
                             nextPage = 4,
