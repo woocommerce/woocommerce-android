@@ -391,7 +391,7 @@ class MainActivity :
                         updateAppBarVisibility(fragment)
                     }
                     if (isAtNavigationRoot()) {
-                        remove()
+                        remove() //Remove callback to avoid infinite recursion
                         onBackPressedDispatcher.onBackPressed()
                     }
                 }
