@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -101,34 +102,37 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        WCPullToRefreshBox(
-            isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-            onRefresh = viewState.onRefresh,
-            state = rememberPullToRefreshState(),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .detailsPanePadding(),
-        ) {
-            Column(
+        if (viewState.shouldShowEmptyState) {
+            BookingDetailsEmptyScreen()
+        } else {
+            WCPullToRefreshBox(
+                isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                onRefresh = viewState.onRefresh,
+                state = rememberPullToRefreshState(),
                 modifier = Modifier
-                    .verticalScroll(rememberScrollState())
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .detailsPanePadding(),
             ) {
-                when {
-                    viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                    viewState.bookingUiState != null -> {
-                        BookingDetailsContent(
-                            booking = viewState.bookingUiState,
-                            onCancelBooking = viewState.onCancelBooking,
-                            onViewOrder = onViewOrder,
-                            onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                            onViewNotes = onViewNotes,
-                            onMarkAsPaid = viewState.onMarkAsPaid,
-                            markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
-                        )
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    when {
+                        viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                        viewState.bookingUiState != null -> {
+                            BookingDetailsContent(
+                                booking = viewState.bookingUiState,
+                                onCancelBooking = viewState.onCancelBooking,
+                                onViewOrder = onViewOrder,
+                                onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                                onViewNotes = onViewNotes,
+                                onMarkAsPaid = viewState.onMarkAsPaid,
+                                markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
+                            )
+                        }
                     }
-
-                    else -> BookingDetailsEmptyScreen()
                 }
             }
         }
@@ -235,18 +239,24 @@ private fun BookingDetailsLoading() {
 }
 
 @Composable
-fun BookingDetailsEmptyScreen() {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+fun BookingDetailsEmptyScreen(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_woo_generic_error),
-            contentDescription = null
-        )
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-        Text(text = stringResource(R.string.booking_not_selected))
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_woo_generic_error),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            Text(text = stringResource(R.string.booking_not_selected))
+        }
     }
 }
 
@@ -312,6 +322,7 @@ private fun BookingDetailsLoadingPreview() {
             viewState = BookingDetailsViewState(
                 toolbarTitle = "",
                 bookingUiState = null,
+                loadingState = BookingDetailsLoadingState.Refreshing,
             ),
             onBack = {},
             onViewOrder = {},

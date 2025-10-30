@@ -19,6 +19,7 @@ data class BookingDetailsViewState(
     val onRefresh: () -> Unit = {},
 ) {
     val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
+    val shouldShowEmptyState: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Idle
 }
 
 data class BookingUiState(

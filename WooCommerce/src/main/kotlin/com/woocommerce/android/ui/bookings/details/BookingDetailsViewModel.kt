@@ -25,7 +25,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -139,6 +138,9 @@ class BookingDetailsViewModel @Inject constructor(
 
     private fun fetchBooking(initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
         launch {
+            if (navArgs.mode !is BookingDetailsFragment.Mode.ShowBooking) {
+                return@launch
+            }
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
                 return@launch
