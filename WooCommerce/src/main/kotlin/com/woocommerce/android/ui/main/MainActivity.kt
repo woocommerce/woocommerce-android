@@ -541,7 +541,7 @@ class MainActivity :
     /**
      * Get the actual primary navigation Fragment from the support manager
      */
-    fun getHostChildFragment(): Fragment? {
+    private fun getHostChildFragment(): Fragment? {
         val navHostFragment = supportFragmentManager.primaryNavigationFragment
         if (navHostFragment?.childFragmentManager?.fragments?.isNotEmpty() == true) {
             return navHostFragment.childFragmentManager.fragments[0]
