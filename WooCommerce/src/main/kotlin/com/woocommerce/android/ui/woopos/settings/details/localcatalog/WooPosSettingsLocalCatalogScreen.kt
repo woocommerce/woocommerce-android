@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -36,9 +37,10 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -74,25 +76,21 @@ private fun WooPosSettingsLocalCatalogScreen(
         modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(WooPosSpacing.Medium.value)
+            .padding(horizontal = WooPosSpacing.Medium.value),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         CatalogStatusSection(
             catalogStatus = state.catalogStatus
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        SettingsSection(
+        CellularDataSection(
             allowCellularDataUpdate = state.allowCellularDataUpdate,
             onToggleCellularData = onToggleCellularData,
             isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        RefreshSection(
-            onRefreshCatalog = onRefreshCatalog,
-            catalogStatus = state.catalogStatus
+        ManualUpdateSection(
+            onRefreshCatalog = onRefreshCatalog
         )
     }
 }
@@ -101,86 +99,78 @@ private fun WooPosSettingsLocalCatalogScreen(
 private fun CatalogStatusSection(
     catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Large.value))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(WooPosSpacing.Medium.value)
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        SectionTitle(stringResource(R.string.woopos_settings_local_catalog_status))
+        Column(
+            modifier = Modifier.padding(WooPosSpacing.Medium.value)
+        ) {
+            when (catalogStatus) {
+                is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_size),
+                        value = stringResource(
+                            R.string.woopos_settings_local_catalog_size_format,
+                            catalogStatus.productCount,
+                            catalogStatus.variationCount
+                        ),
+                        isLoading = false
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_last_update),
+                        value = catalogStatus.lastUpdate,
+                        isLoading = false
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
+                        value = catalogStatus.lastFullUpdate,
+                        isLoading = false
+                    )
+                }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        when (catalogStatus) {
-            is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = stringResource(
-                        R.string.woopos_settings_local_catalog_size_format,
-                        catalogStatus.productCount,
-                        catalogStatus.variationCount
-                    ),
-                    isLoading = false
-                )
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_last_update),
-                    value = catalogStatus.lastUpdate,
-                    isLoading = false
-                )
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
-                    value = catalogStatus.lastFullUpdate,
-                    isLoading = false
-                )
-            }
-            is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
-            is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_size),
-                    value = null,
-                    isLoading = true
-                )
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_last_update),
-                    value = null,
-                    isLoading = true
-                )
-                StatusRow(
-                    label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
-                    value = null,
-                    isLoading = true
-                )
+                is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
+                is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_size),
+                        value = null,
+                        isLoading = true
+                    )
+                    HorizontalDivider()
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_last_update),
+                        value = null,
+                        isLoading = true
+                    )
+                    HorizontalDivider()
+                    StatusRow(
+                        label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
+                        value = null,
+                        isLoading = true
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SettingsSection(
+private fun CellularDataSection(
     allowCellularDataUpdate: Boolean,
     onToggleCellularData: (Boolean) -> Unit,
     isLoading: Boolean
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Large.value))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(WooPosSpacing.Medium.value)
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        SectionTitle(stringResource(R.string.woopos_settings_local_catalog_settings))
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .clickable(enabled = !isLoading) {
                     onToggleCellularData(!allowCellularDataUpdate)
                 }
-                .padding(WooPosSpacing.Small.value),
+                .padding(WooPosSpacing.Medium.value),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -190,13 +180,14 @@ private fun SettingsSection(
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_local_catalog_cellular_data),
                     style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
                 )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_local_catalog_cellular_data_subtitle),
-                    style = WooPosTypography.BodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
                 )
             }
 
@@ -214,38 +205,43 @@ private fun SettingsSection(
 }
 
 @Composable
-private fun RefreshSection(
-    onRefreshCatalog: () -> Unit,
-    catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus
+private fun ManualUpdateSection(
+    onRefreshCatalog: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Large.value))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(WooPosSpacing.Medium.value)
+    WooPosCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        SectionTitle(stringResource(R.string.woopos_settings_local_catalog_actions))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.Medium.value),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                WooPosText(
+                    text = stringResource(R.string.woopos_settings_local_catalog_manual_update),
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                WooPosText(
+                    text = stringResource(R.string.woopos_settings_local_catalog_refresh_description),
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
+                )
+            }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
-        WooPosText(
-            text = stringResource(R.string.woopos_settings_local_catalog_refresh_description),
-            style = WooPosTypography.BodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
-        )
-
-        WooPosButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = onRefreshCatalog,
-            state = when (catalogStatus) {
-                is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> WooPosButtonState.ENABLED
-                WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus -> WooPosButtonState.DISABLED
-                WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> WooPosButtonState.LOADING
-            },
-            text = stringResource(R.string.woopos_settings_local_catalog_refresh_button)
-        )
+            WooPosOutlinedButtonSmall(
+                text = stringResource(R.string.woopos_settings_local_catalog_refresh_button),
+                onClick = onRefreshCatalog
+            )
+        }
     }
 }
 
@@ -255,44 +251,34 @@ private fun StatusRow(
     value: String?,
     isLoading: Boolean
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = WooPosSpacing.Small.value),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
     ) {
         WooPosText(
             text = label,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+            style = WooPosTypography.BodyLarge,
+            color = MaterialTheme.colorScheme.onSurface,
+            fontWeight = FontWeight.Bold
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
         if (isLoading) {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .width(100.dp)
-                    .height(20.dp),
+                    .width(200.dp)
+                    .height(23.dp)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
             )
         } else {
             WooPosText(
                 text = value ?: "-",
                 style = WooPosTypography.BodyMedium,
-                fontWeight = FontWeight.Medium,
-                color = MaterialTheme.colorScheme.onSurface
+                color = WooPosTheme.colors.onSurfaceVariantHighest
             )
         }
     }
-}
-
-@Composable
-private fun SectionTitle(title: String) {
-    WooPosText(
-        text = title,
-        style = WooPosTypography.BodyXLarge,
-        fontWeight = FontWeight.SemiBold,
-        color = MaterialTheme.colorScheme.onSurface
-    )
 }
 
 @Composable
