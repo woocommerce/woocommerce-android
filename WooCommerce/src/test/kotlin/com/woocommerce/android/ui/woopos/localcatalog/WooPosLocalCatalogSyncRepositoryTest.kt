@@ -30,6 +30,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
 
     @Before
@@ -48,6 +49,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             logger = logger,
             preferencesRepository = preferencesRepository,
             posLocalCatalogStore = posLocalCatalogStore,
+            dateTimeProvider = dateTimeProvider,
         )
 
         site = SiteModel().apply {

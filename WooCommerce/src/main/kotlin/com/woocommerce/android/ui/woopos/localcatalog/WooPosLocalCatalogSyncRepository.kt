@@ -33,6 +33,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val dateTimeProvider: DateTimeProvider,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -50,7 +51,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
         ).also {
             if (it is PosLocalCatalogSyncResult.Success) {
-                syncTimestampManager.storeFullSyncLastCompletedTimestamp(System.currentTimeMillis())
+                syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
             }
             if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
                 preferencesRepository.disablePeriodicSyncForSite(site.siteId)
@@ -79,7 +80,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         maxTotalItems: Int,
         modifiedAfterGmt: String? = null,
     ): PosLocalCatalogSyncResult {
-        val startTime = System.currentTimeMillis()
+        val startTime = dateTimeProvider.now()
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
@@ -113,7 +114,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             }
         }
 
-        val syncDuration = System.currentTimeMillis() - startTime
+        val syncDuration = dateTimeProvider.now() - startTime
 
         return PosLocalCatalogSyncResult.Success(
             productsSynced = successResult.productsSynced,
