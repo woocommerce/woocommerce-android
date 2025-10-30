@@ -29,6 +29,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
     private val logger: WooPosLogWrapper,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val applicationScope: CoroutineScope,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) {
 
     private companion object {
@@ -68,23 +69,38 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
 
     fun triggerManualFullCatalogSync() {
         applicationScope.launch {
-            val constraints = getConstraintsBasedOnPreference()
-            val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
-                .setConstraints(constraints)
-                .setBackoffCriteria(
-                    BackoffPolicy.EXPONENTIAL,
-                    1,
-                    TimeUnit.MINUTES
-                )
-                .build()
+            val syncRequirement = syncStatusChecker.checkSyncRequirement()
+            when (syncRequirement) {
+                is WooPosFullSyncRequirement.BlockingRequired,
+                is WooPosFullSyncRequirement.Overdue -> {
+                    val constraints = getConstraintsBasedOnPreference()
+                    val oneTimeWorkRequest = OneTimeWorkRequestBuilder<WooPosLocalCatalogSyncWorker>()
+                        .setConstraints(constraints)
+                        .setBackoffCriteria(
+                            BackoffPolicy.EXPONENTIAL,
+                            1,
+                            TimeUnit.MINUTES
+                        )
+                        .build()
 
-            workManager.enqueueUniqueWork(
-                ONE_TIME_WORK_NAME,
-                ExistingWorkPolicy.REPLACE,
-                oneTimeWorkRequest
-            )
+                    workManager.enqueueUniqueWork(
+                        ONE_TIME_WORK_NAME,
+                        ExistingWorkPolicy.REPLACE,
+                        oneTimeWorkRequest
+                    )
 
-            logger.d("Manual POS local catalog sync triggered")
+                    logger.d("Manual POS local catalog sync triggered (requirement: $syncRequirement)")
+                }
+                is WooPosFullSyncRequirement.NotRequired -> {
+                    logger.d("Manual full sync skipped: Catalog is up to date")
+                }
+                is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
+                    logger.d("Manual full sync skipped: Local catalog disabled (${syncRequirement.message})")
+                }
+                is WooPosFullSyncRequirement.Error -> {
+                    logger.e("Manual full sync skipped: ${syncRequirement.message}")
+                }
+            }
         }
     }
 
