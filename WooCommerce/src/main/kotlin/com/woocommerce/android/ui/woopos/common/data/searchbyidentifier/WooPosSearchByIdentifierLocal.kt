@@ -1,14 +1,67 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
+import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
 class WooPosSearchByIdentifierLocal @Inject constructor(
     private val productsCache: WooPosProductsCache,
     private val variationsCache: WooPosVariationsLRUCache,
+    private val localCatalogStore: WooPosLocalCatalogStore,
+    private val localCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val productModelMapper: WooPosProductModelMapper,
+    private val variationMapper: WooPosVariationMapper,
+    private val selectedSite: SelectedSite,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
+        val siteId = selectedSite.get().siteId
+
+        return if (localCatalogSupported(siteId)) {
+            searchInLocalCatalog(identifier, siteId)
+        } else {
+            searchInMemoryCache(identifier)
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun searchInLocalCatalog(identifier: String, siteId: Long): WooPosSearchByIdentifierResult {
+        val localSiteId = LocalOrRemoteId.LocalId(siteId.toInt())
+
+        localCatalogStore.findEvenUnsupportedProductByIdentifier(localSiteId, identifier).getOrNull()
+            ?.let { productEntity ->
+                val productModel = productModelMapper.fromEntity(productEntity)
+                return WooPosSearchByIdentifierResult.Success(productModel)
+            }
+
+        localCatalogStore.findEvenUnsupportedVariationByIdentifier(localSiteId, identifier)
+            .getOrNull()?.let { variationEntity ->
+                val variation = variationMapper.fromWooPosVariationEntity(variationEntity)
+
+                val parentProductResult = localCatalogStore.getProduct(
+                    localSiteId,
+                    LocalOrRemoteId.RemoteId(variationEntity.remoteProductId.value)
+                )
+
+                return parentProductResult.getOrNull()?.let { parentEntity ->
+                    val parentProduct = productModelMapper.fromEntity(parentEntity)
+                    WooPosSearchByIdentifierResult.VariationSuccess(variation, parentProduct)
+                } ?: WooPosSearchByIdentifierResult.Failure(
+                    WooPosSearchByIdentifierResult.Error.NotFound
+                )
+            }
+
+        return WooPosSearchByIdentifierResult.Failure(
+            WooPosSearchByIdentifierResult.Error.NotFound
+        )
+    }
+
+    private suspend fun searchInMemoryCache(identifier: String): WooPosSearchByIdentifierResult {
         findProductByIdentifier(identifier)?.let {
             return WooPosSearchByIdentifierResult.Success(it)
         }

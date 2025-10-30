@@ -74,7 +74,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param [identifier] The unique identifier to search for
      * @return Result containing the product if found, null if not found, or error
      */
-    suspend fun findProductEvenUnsupportedByIdentifier(
+    suspend fun findEvenUnsupportedProductByIdentifier(
         siteId: LocalOrRemoteId.LocalId,
         identifier: String
     ): Result<WooPosProductEntity?> =
@@ -301,7 +301,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param [identifier] The unique identifier to search for
      * @return Result containing the variation if found, null if not found, or error
      */
-    suspend fun findVariationEvenUnsupportedByIdentifier(
+    suspend fun findEvenUnsupportedVariationByIdentifier(
         siteId: LocalOrRemoteId.LocalId,
         identifier: String
     ): Result<WooPosVariationEntity?> =
