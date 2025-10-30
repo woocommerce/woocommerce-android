@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import java.util.Date
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -136,6 +137,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data object OrdersListNextPageLoaded: Event() {
             override val name: String = "orders_list_next_page_loaded"
+        }
+
+        data class OrdersListRowTapped(
+            val orderId: Long,
+            val orderStatus: String,
+            val listPosition: Int,
+            val daysSinceCreated: Int
+        ) : Event() {
+            override val name: String = "orders_list_row_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "order_id" to orderId.toString(),
+                        "order_status" to orderStatus,
+                        "list_position" to listPosition.toString(),
+                        "days_since_created" to daysSinceCreated.toString()
+                    )
+                )
+            }
         }
 
         data class OrdersListFetched(val milimetersSinceRequestSent: Long): Event()  {

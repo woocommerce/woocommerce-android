@@ -33,6 +33,7 @@ import java.util.Locale
 import javax.inject.Inject
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -50,6 +51,11 @@ class WooPosOrdersViewModel @Inject constructor(
         WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
     )
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
+    private data class OrderTrackingMeta(
+        val createdAtMillis: Long,
+        val statusSlug: String
+    )
+    private val trackingMeta = mutableMapOf<Long, OrderTrackingMeta>()
 
     private val _openUrlEvent = MutableSharedFlow<String>()
     val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
@@ -77,6 +83,11 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
+        val keys = loadedItems.items.keys.toList()
+        val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
+
+        trackOrdersListRowTapped(orderId, position)
+
         val updatedItems = loadedItems.items.mapKeys { (item, _) ->
             item.copy(isSelected = item.id == orderId)
         }
@@ -89,6 +100,25 @@ class WooPosOrdersViewModel @Inject constructor(
             ),
             selectedDetails = selectedEntry.value
         )
+    }
+
+    private fun trackOrdersListRowTapped(orderId: Long, position: Int) {
+        val meta = trackingMeta[orderId] ?: return
+
+        val daysSince = ((System.currentTimeMillis() - meta.createdAtMillis) / 86_400_000L)
+            .toInt()
+            .coerceAtLeast(0)
+
+        viewModelScope.launch {
+            analyticsTracker.track(
+                OrdersListRowTapped(
+                    orderId = orderId,
+                    orderStatus = meta.statusSlug,
+                    listPosition = position,
+                    daysSinceCreated = daysSince
+                )
+            )
+        }
     }
 
     fun onRefresh() {
@@ -257,6 +287,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private suspend fun applyOrderUpdate(updated: Order) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+
+        cacheOrderTrackingMeta(updated)
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = mapOrderItem(updated, selectedId)
@@ -427,6 +459,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private suspend fun mapOrderItem(order: Order, selectedId: Long?): OrderItemViewState {
         val statusText = order.status.localizedLabel(resourceProvider, locale)
 
+        cacheOrderTrackingMeta(order)
+
         return OrderItemViewState(
             id = order.id,
             title = "#${order.number}",
@@ -440,6 +474,13 @@ class WooPosOrdersViewModel @Inject constructor(
                 text = statusText,
                 colorKey = OrderStatusColorKey.fromStatus(order.status)
             )
+        )
+    }
+
+    private fun cacheOrderTrackingMeta(order: Order) {
+        trackingMeta[order.id] = OrderTrackingMeta(
+            createdAtMillis = order.dateCreated.time,
+            statusSlug = order.status.toString()
         )
     }
 
