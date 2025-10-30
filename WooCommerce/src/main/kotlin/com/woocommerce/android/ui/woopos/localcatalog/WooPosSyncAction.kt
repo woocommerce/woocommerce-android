@@ -25,7 +25,7 @@ class WooPosSyncAction @Inject constructor(
             val isFullSync = modifiedAfterGmt == null
             val fetchResults = fetchAllCatalogData(site, modifiedAfterGmt, pageSize, maxPages, isFullSync)
 
-            executeDatabaseTransaction(site, fetchResults, isFullSync)
+            updateDatabaseWithFetchedItems(site, fetchResults, isFullSync)
         }.fold(
             onSuccess = { result -> result },
             onFailure = { error -> handleSyncError(error) }
@@ -61,7 +61,7 @@ class WooPosSyncAction @Inject constructor(
         FetchResults(products, trashProducts, productsServerDate, variations, variationsServerDate)
     }
 
-    private suspend fun executeDatabaseTransaction(
+    private suspend fun updateDatabaseWithFetchedItems(
         site: SiteModel,
         fetchResults: FetchResults,
         isFullSync: Boolean
