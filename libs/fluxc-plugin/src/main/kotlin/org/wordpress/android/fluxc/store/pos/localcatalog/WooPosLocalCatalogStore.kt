@@ -66,6 +66,24 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Finds a product by its unique identifier (globalUniqueId) from the local database. It returns even products
+     * that are not supported in the POS, so the business logic can display Unsupported Product message instead of
+     * displaying Not Found message.
+     *
+     * @param [siteId] The local site ID
+     * @param [identifier] The unique identifier to search for
+     * @return Result containing the product if found, null if not found, or error
+     */
+    suspend fun findProductEvenUnsupportedByIdentifier(
+        siteId: LocalOrRemoteId.LocalId,
+        identifier: String
+    ): Result<WooPosProductEntity?> =
+        coroutineEngine.withDefaultContext(API, this, "findProductByIdentifier") {
+            val product = posProductDao.findProductByIdentifier(siteId, identifier)
+            Result.success(product)
+        }
+
+    /**
      * Gets the count of products in the local database for a given site.
      *
      * @param [siteId] The local site ID
