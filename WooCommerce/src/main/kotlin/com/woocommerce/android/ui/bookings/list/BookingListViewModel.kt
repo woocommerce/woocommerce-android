@@ -8,6 +8,7 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -30,6 +31,7 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -40,7 +42,7 @@ class BookingListViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
-    private val isWindowClassLargeThanCompact: com.woocommerce.android.util.IsWindowClassLargeThanCompact,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedStateHandle) {
 
     companion object {
@@ -73,7 +75,7 @@ class BookingListViewModel @Inject constructor(
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
-    private fun openFirstLoadedBookingOnTablet(bookings: List<com.woocommerce.android.ui.bookings.Booking>) {
+    private fun openFirstLoadedBookingOnTablet(bookings: List<BookingEntity>) {
         if (isWindowClassLargeThanCompact()) {
             if (bookings.isNotEmpty()) {
                 if (selectedBookingIdOnBigScreen == null) {
