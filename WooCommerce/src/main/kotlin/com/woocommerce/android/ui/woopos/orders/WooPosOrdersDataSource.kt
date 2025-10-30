@@ -1,12 +1,8 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import android.os.SystemClock
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -34,8 +30,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersInMemoryCache,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val ordersCache: WooPosOrdersInMemoryCache
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val page = AtomicInteger(1)
@@ -52,12 +47,8 @@ class WooPosOrdersDataSource @Inject constructor(
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
 
-        val startMs = SystemClock.elapsedRealtime()
         val result = loadFirstPage()
-        val elapsedMs = SystemClock.elapsedRealtime() - startMs
-
         result.onSuccess {
-            analyticsTracker.track(OrdersListFetched(elapsedMs))
             ordersCache.setAll(it)
             emit(LoadOrdersResult.SuccessRemote(it))
         }.onFailure {
@@ -66,12 +57,7 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
-        val startMs = SystemClock.elapsedRealtime()
         val result = loadFirstPage(searchQuery)
-        val elapsedMs = SystemClock.elapsedRealtime() - startMs
-
-        analyticsTracker.track(OrdersListSearchResultsFetched(elapsedMs))
-
         return result.fold(
             onSuccess = { SearchOrdersResult.Success(it) },
             onFailure = { SearchOrdersResult.Error(it.message ?: UNKNOWN_ERROR) }
@@ -86,24 +72,10 @@ class WooPosOrdersDataSource @Inject constructor(
         val payload = restClient.fetchSingleOrder(site, orderId)
         return if (payload.error == null) {
             val entity = payload.orderWithMeta.first
-            val order = orderMapper.toAppModel(entity)
-
-            updateCachedOrderIfPresent(order)
-
-            Result.success(order)
+            Result.success(orderMapper.toAppModel(entity))
         } else {
             Result.failure(Throwable("[${payload.error.type}] ${payload.error.message}"))
         }
-    }
-
-    private fun updateCachedOrderIfPresent(order: Order) {
-        val current = ordersCache.getAll()
-        val idx = current.indexOfFirst { it.id == order.id }
-        if (idx < 0) return
-
-        val updated = current.toMutableList()
-        updated[idx] = order
-        ordersCache.setAll(updated)
     }
 
     private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {

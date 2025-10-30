@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import android.os.SystemClock
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
@@ -36,6 +37,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
 import org.apache.commons.lang3.time.DateUtils.MILLIS_PER_DAY
 
 @HiltViewModel
@@ -66,6 +69,9 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
+
+    private var ordersLoadStartMs: Long? = null
+    private var searchStartMs: Long? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -357,9 +363,12 @@ class WooPosOrdersViewModel @Inject constructor(
                     paginationState = WooPosPaginationState.None
                 )
             }
+
+            searchStartMs = SystemClock.elapsedRealtime()
             val result = ordersDataSource.searchOrders(query)
             when (result) {
                 is SearchOrdersResult.Error -> {
+                    searchStartMs = null
                     _state.value = WooPosOrdersState.Content(
                         items = WooPosOrdersState.Content.Items.Error(
                             title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
@@ -373,6 +382,12 @@ class WooPosOrdersViewModel @Inject constructor(
                 }
 
                 is SearchOrdersResult.Success -> {
+                    searchStartMs?.let { start ->
+                        val elapsed = SystemClock.elapsedRealtime() - start
+                        analyticsTracker.track(OrdersListSearchResultsFetched(elapsed))
+                    }
+                    searchStartMs = null
+
                     if (result.orders.isEmpty()) {
                         _state.value = WooPosOrdersState.Content(
                             items = WooPosOrdersState.Content.Items.NothingFound(
@@ -394,10 +409,12 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun loadOrders() {
         cancelJobs()
+        ordersLoadStartMs = SystemClock.elapsedRealtime()
         loadingJob = viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
+                        ordersLoadStartMs = null
                         _state.value = WooPosOrdersState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
@@ -415,6 +432,12 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
+                        ordersLoadStartMs?.let { start ->
+                            val elapsed = SystemClock.elapsedRealtime() - start
+                            analyticsTracker.track(OrdersListFetched(elapsed))
+                        }
+                        ordersLoadStartMs = null
+
                         if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersState.Empty(
                                 searchInputState = WooPosSearchInputState.Closed
