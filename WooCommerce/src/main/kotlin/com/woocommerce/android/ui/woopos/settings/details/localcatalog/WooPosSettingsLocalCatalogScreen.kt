@@ -137,13 +137,13 @@ private fun CatalogStatusSection(
                         value = null,
                         isLoading = true
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
                     StatusRow(
                         label = stringResource(R.string.woopos_settings_local_catalog_last_update),
                         value = null,
                         isLoading = true
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
                     StatusRow(
                         label = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
                         value = null,
