@@ -24,7 +24,7 @@ class WooPosSearchByIdentifier @Inject constructor(
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
         val localResult = localSearcher(identifier)
-        // Don't search in remote when local catalog enabled, just return NotFound instantly
+        // When product not found in local catalog, immediately return "not found" to avoid unnecessary remote call
         if (localResult.isSuccess || localCatalogSupported.invoke(selectedSite.get().siteId)) {
             return filterUnsupportedProductResult(localResult)
         }
