@@ -28,8 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterPage
-import com.woocommerce.android.ui.bookings.filter.type.DUMMY_BOOKING_TYPE_FILTER_UI_STATE
+import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -124,7 +123,9 @@ private fun FiltersNavHost(
             TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
-            BookingTypeFilterPage(DUMMY_BOOKING_TYPE_FILTER_UI_STATE)
+            BookingTypeFilterRoute(initialType = state.currentBookingType) { type ->
+                state.onUpdateFilterOption(type)
+            }
         }
         composable(BookingFilterPage.Customer.route) {
             TODO()
