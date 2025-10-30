@@ -9,7 +9,11 @@ sealed interface BookingsFilterOption {
 
     object PaymentStatus : BookingsFilterOption
 
-    object BookingType : BookingsFilterOption
+    sealed interface BookingType : BookingsFilterOption {
+        object Any : BookingType
+        object Service : BookingType
+        object Event : BookingType
+    }
 
     data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
 
