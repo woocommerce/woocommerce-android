@@ -17,8 +17,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +34,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -131,13 +130,10 @@ private fun ConnectedContent(
             )
         }
 
-        Card(
+        WooPosCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.Medium.value),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-            )
         ) {
             Column(
                 modifier = Modifier
@@ -267,12 +263,7 @@ private fun NotConnectedContent(
 private fun UpdateFirmwareBanner(
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        )
-    ) {
+    WooPosCard(modifier = modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -284,13 +275,10 @@ private fun UpdateFirmwareBanner(
                 imageVector = Icons.Outlined.Info,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(48.dp)
+                modifier = Modifier.size(32.dp)
             )
 
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_card_reader_update_firmware_title),
                     style = WooPosTypography.BodyLarge,
@@ -298,7 +286,7 @@ private fun UpdateFirmwareBanner(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.size(WooPosSpacing.XSmall.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_card_reader_update_firmware_message),
