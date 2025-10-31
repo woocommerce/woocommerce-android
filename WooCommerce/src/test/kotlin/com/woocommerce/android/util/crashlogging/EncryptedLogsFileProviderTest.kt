@@ -28,7 +28,8 @@ class EncryptedLogsFileProviderTest : BaseUnitTest() {
 
         val resultFile = sut.provide()
 
-        assertThat(resultFile).exists()
+        assertThat(resultFile).isNotNull
+        assertThat(resultFile!!).exists()
             .canRead()
             .isFile
             .hasContent(testLog.toString())
@@ -43,7 +44,8 @@ class EncryptedLogsFileProviderTest : BaseUnitTest() {
 
         val resultFile = sut.provide()
 
-        val fileContent = resultFile.readLines()
+        assertThat(resultFile).isNotNull
+        val fileContent = resultFile!!.readLines()
         assertThat(fileContent).hasSize(1000)
         assertThat(fileContent.first()).contains("Log entry 501")
         assertThat(fileContent.last()).contains("Log entry 1500")
