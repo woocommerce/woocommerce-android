@@ -32,6 +32,36 @@ class WooPosProductsInDbDataSourceTest {
         id = 1
     }
 
+    @Test
+    fun `given no site selected, when refreshProducts called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshProducts()
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
+    }
+
+    @Test
+    fun `given no site selected, when refreshVariations called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshVariations(123L)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
+    }
+
     @Before
     fun setUp() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
