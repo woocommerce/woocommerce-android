@@ -321,6 +321,8 @@ class WooPosOrdersViewModel @Inject constructor(
 
             val mark = Monotonic.markNow()
             val result = ordersDataSource.searchOrders(query)
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+            ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
             when (result) {
                 is SearchOrdersResult.Error -> {
                     _state.value = WooPosOrdersState.Content(
@@ -336,9 +338,6 @@ class WooPosOrdersViewModel @Inject constructor(
                 }
 
                 is SearchOrdersResult.Success -> {
-                    val elapsedMs = mark.elapsedNow().inWholeMilliseconds
-                    ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
-
                     if (result.orders.isEmpty()) {
                         _state.value = WooPosOrdersState.Content(
                             items = WooPosOrdersState.Content.Items.NothingFound(
@@ -365,6 +364,9 @@ class WooPosOrdersViewModel @Inject constructor(
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
+                        val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+                        ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
+
                         _state.value = WooPosOrdersState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
