@@ -26,6 +26,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -50,6 +51,7 @@ class WooPosOrdersViewModelTest {
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -59,7 +61,8 @@ class WooPosOrdersViewModelTest {
             getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
-            getOrderRefunds = getOrderRefunds
+            getOrderRefunds = getOrderRefunds,
+            ordersAnalyticsTracker = ordersAnalyticsTracker
         )
     }
 
@@ -284,6 +287,7 @@ class WooPosOrdersViewModelTest {
         val hint = openState.input as WooPosSearchInputState.Open.Input.Hint
         assertThat(hint.hint).isEqualTo("Search orders")
         assertThat(openState.requestFocus).isTrue()
+        verify(ordersAnalyticsTracker).trackOrdersListSearchButtonTapped()
     }
 
     @Test
@@ -375,6 +379,7 @@ class WooPosOrdersViewModelTest {
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(1L, 2L, 3L, 4L)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
+        verify(ordersAnalyticsTracker).trackOrdersListNextPageLoaded()
     }
 
     @Test
@@ -615,6 +620,7 @@ class WooPosOrdersViewModelTest {
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
         assertThat(content.selectedDetails.id).isEqualTo(300L)
+        verify(ordersAnalyticsTracker).trackOrdersListPullToRefreshTriggered()
     }
 
     @Test
@@ -632,6 +638,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         verify(childrenToParentEventSender).sendToParent(ToEmailReceipt(123L))
+        verify(ordersAnalyticsTracker).trackOrderDetailsEmailReceiptTapped()
     }
 
     @Test
@@ -749,5 +756,65 @@ class WooPosOrdersViewModelTest {
 
         assertThat(after.selectedDetails).isEqualTo(beforeDetails)
         verify(dataSource).refreshOrderById(1L)
+    }
+
+    @Test
+    fun `given orders loaded, when selecting an order, then tracks OrdersListRowTapped and OrderDetailsLoaded`() = runTest {
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1), order(2), order(3)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(3L)
+        advanceUntilIdle()
+
+        verify(ordersAnalyticsTracker).trackOrdersListRowTapped(
+            orderId = eq(3L),
+            orderStatus = any(),
+            listPosition = eq(2),
+            createdAtMillis = any()
+        )
+
+        verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
+            orderId = eq(3L),
+            orderStatus = any(),
+            createdAtMillis = any()
+        )
+    }
+
+    @Test
+    fun `when remote load succeeds, then tracks OrdersListFetched`() = runTest {
+        val cached = listOf(order(1))
+        val remote = listOf(order(2), order(3))
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow {
+                emit(LoadOrdersResult.SuccessCache(cached))
+                emit(LoadOrdersResult.SuccessRemote(remote))
+            }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        verify(ordersAnalyticsTracker).trackOrdersListFetched(any())
+    }
+
+    @Test
+    fun `when search succeeds, then tracks OrdersListSearchResultsFetched`() = runTest {
+        val query = "abc"
+        val searchResult = listOf(order(10), order(20))
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
+        )
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Success(searchResult))
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        verify(ordersAnalyticsTracker).trackOrdersListSearchResultsFetched(any())
     }
 }

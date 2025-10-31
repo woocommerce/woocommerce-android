@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_3_4
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_4_5
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_5_6
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_6_7
+import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_71_72
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
@@ -184,7 +185,7 @@ class MigrationTests {
                         2,
                         "/$",
                         11.0,
-                        1666727639491 
+                        1666727639491
                     )
                     """.trimIndent()
                 )
@@ -328,6 +329,139 @@ class MigrationTests {
         helper.apply {
             createDatabase(TEST_DB, 35).close()
             runMigrationsAndValidate(TEST_DB, 36, false)
+        }
+    }
+
+    @Suppress("LongMethod")
+    @Test
+    fun testMigration71to72_deduplicates_and_builds_stableId() {
+        // 1) Create a v71 database and seed legacy rows, including duplicates
+        helper.createDatabase(TEST_DB, 71).apply {
+            // Insert two duplicate registered customers (same siteId + remoteCustomerId), differing only by id and username
+            execSQL(
+                """
+                INSERT INTO CustomerEntity (
+                  id, localSiteId, remoteCustomerId, avatarUrl, dateCreated, dateCreatedGmt, dateModified, dateModifiedGmt,
+                  email, firstName, isPayingCustomer, lastName, role, username,
+                  billingAddress1, billingAddress2, billingCity, billingCompany, billingCountry, billingEmail, billingFirstName,
+                  billingLastName, billingPhone, billingPostcode, billingState,
+                  shippingAddress1, shippingAddress2, shippingCity, shippingCompany, shippingCountry, shippingFirstName,
+                  shippingLastName, shippingPostcode, shippingState, analyticsCustomerId
+                ) VALUES (
+                  100, 10, 123, '', '', '', '', '',
+                  'a@example.com', 'A', 0, 'B', '', 'user_low',
+                  '', '', '', '', '', '', '',
+                  '', '', '', '',
+                  '', '', '', '', '', '',
+                  '', '', '', NULL
+                )
+                """.trimIndent()
+            )
+            execSQL(
+                """
+                INSERT INTO CustomerEntity (
+                  id, localSiteId, remoteCustomerId, avatarUrl, dateCreated, dateCreatedGmt, dateModified, dateModifiedGmt,
+                  email, firstName, isPayingCustomer, lastName, role, username,
+                  billingAddress1, billingAddress2, billingCity, billingCompany, billingCountry, billingEmail, billingFirstName,
+                  billingLastName, billingPhone, billingPostcode, billingState,
+                  shippingAddress1, shippingAddress2, shippingCity, shippingCompany, shippingCountry, shippingFirstName,
+                  shippingLastName, shippingPostcode, shippingState, analyticsCustomerId
+                ) VALUES (
+                  200, 10, 123, '', '', '', '', '',
+                  'a2@example.com', 'A2', 1, 'B2', '', 'user_high',
+                  '', '', '', '', '', '', '',
+                  '', '', '', '',
+                  '', '', '', '', '', '',
+                  '', '', '', NULL
+                )
+                """.trimIndent()
+            )
+
+            // Insert one analytics/guest row (remoteCustomerId = 0, analyticsCustomerId > 0)
+            execSQL(
+                """
+                INSERT INTO CustomerEntity (
+                  id, localSiteId, remoteCustomerId, avatarUrl, dateCreated, dateCreatedGmt, dateModified, dateModifiedGmt,
+                  email, firstName, isPayingCustomer, lastName, role, username,
+                  billingAddress1, billingAddress2, billingCity, billingCompany, billingCountry, billingEmail, billingFirstName,
+                  billingLastName, billingPhone, billingPostcode, billingState,
+                  shippingAddress1, shippingAddress2, shippingCity, shippingCompany, shippingCountry, shippingFirstName,
+                  shippingLastName, shippingPostcode, shippingState, analyticsCustomerId
+                ) VALUES (
+                  300, 10, 0, '', '', '', '', '',
+                  'guest@example.com', 'G', 0, 'U', '', 'guest',
+                  '', '', '', '', '', '', '',
+                  '', '', '', '',
+                  '', '', '', '', '', '',
+                  '', '', '', 555
+                )
+                """.trimIndent()
+            )
+
+            // Insert invalid row (remoteCustomerId = 0, analyticsCustomerId = NULL)
+            execSQL(
+                """
+                INSERT INTO CustomerEntity (
+                  id, localSiteId, remoteCustomerId, avatarUrl, dateCreated, dateCreatedGmt, dateModified, dateModifiedGmt,
+                  email, firstName, isPayingCustomer, lastName, role, username,
+                  billingAddress1, billingAddress2, billingCity, billingCompany, billingCountry, billingEmail, billingFirstName,
+                  billingLastName, billingPhone, billingPostcode, billingState,
+                  shippingAddress1, shippingAddress2, shippingCity, shippingCompany, shippingCountry, shippingFirstName,
+                  shippingLastName, shippingPostcode, shippingState, analyticsCustomerId
+                ) VALUES (
+                  400, 10, 0, '', '', '', '', '',
+                  'a2@example.com', 'A2', 1, 'B2', '', 'user_high',
+                  '', '', '', '', '', '', '',
+                  '', '', '', '',
+                  '', '', '', '', '', '',
+                  '', '', '', NULL
+                )
+                """.trimIndent()
+            )
+        }.close()
+
+        // 2) Run the migration and validate
+        val migratedDb = helper.runMigrationsAndValidate(TEST_DB, 72, true, MIGRATION_71_72)
+
+        // 3) Query results and assert deduplication and stableId correctness
+        migratedDb.query(
+            """
+            SELECT stableId, localSiteId, remoteCustomerId, analyticsCustomerId, username
+            FROM CustomerEntity
+            ORDER BY stableId
+            """.trimIndent()
+        ).use { cursor ->
+            assertThat(cursor.count).isEqualTo(2)
+
+            // Move to first row (analytics guest): stableId should be site:10|analytics:555
+            cursor.moveToFirst()
+            val stableId1 = cursor.getString(0)
+            val siteId1 = cursor.getInt(1)
+            val remoteId1 = cursor.getLong(2)
+            val analyticsId1 = if (!cursor.isNull(3)) cursor.getLong(3) else null
+            val username1 = cursor.getString(4)
+            assertThat(stableId1).isEqualTo("analytics:555")
+            assertThat(siteId1).isEqualTo(10)
+            assertThat(remoteId1).isEqualTo(0)
+            assertThat(analyticsId1).isEqualTo(555)
+            assertThat(username1).isEqualTo("guest")
+
+            // Move to second row (registered user deduped): stableId should be site:10|wp:123 and username from higher id row
+            cursor.moveToNext()
+            val stableId2 = cursor.getString(0)
+            val siteId2 = cursor.getInt(1)
+            val remoteId2 = cursor.getLong(2)
+            val analyticsId2 = if (!cursor.isNull(3)) cursor.getLong(3) else null
+            val username2 = cursor.getString(4)
+            assertThat(stableId2).isEqualTo("wp:123")
+            assertThat(siteId2).isEqualTo(10)
+            assertThat(remoteId2).isEqualTo(123)
+            assertThat(analyticsId2).isNull()
+            // We kept the row with MAX(id)=200, so its username should be 'user_high'
+            assertThat(username2).isEqualTo("user_high")
+
+            // Verify the invalid row was filtered out
+            assertThat(cursor.moveToNext()).isFalse
         }
     }
 
