@@ -1,0 +1,2 @@
+23.5:
+¡Hemos perfeccionado tu experiencia en WooCommerce! Esta actualización soluciona un fallo poco frecuente durante los reembolsos de pedidos y corrige cómo aparecen los nombres de los clientes al filtrar pedidos. Disfruta de un rendimiento más fluido y una gestión de pedidos más fiable con esta versión.
