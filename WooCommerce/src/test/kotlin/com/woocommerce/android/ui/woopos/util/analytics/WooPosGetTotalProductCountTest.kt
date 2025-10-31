@@ -135,4 +135,3 @@ class WooPosGetTotalProductCountTest {
         verify(productStore, times(1)).fetchProductsCount(any())
     }
 }
-

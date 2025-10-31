@@ -19,8 +19,11 @@ class WooPosGetTotalProductCount @Inject constructor(
 ) {
     private val mutex = Mutex()
 
-    @Volatile private var totalProductCount: Int? = null
-    @Volatile private var cacheTimestamp: Long = 0
+    @Volatile
+    private var totalProductCount: Int? = null
+
+    @Volatile
+    private var cacheTimestamp: Long = 0
 
     suspend operator fun invoke(): Int? = withContext(dispatchers.io) {
         mutex.withLock {
