@@ -12,7 +12,6 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.WooPosHistoricalOrdersM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
@@ -35,8 +34,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val analyticsTracker: WooPosAnalyticsTracker,
-    private val wooPosHistoricalOrdersM1Enabled: WooPosHistoricalOrdersM1Enabled,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
@@ -138,17 +136,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems by lazy {
         buildList {
-            if (wooPosHistoricalOrdersM1Enabled()) {
-                add(
+            addAll(
+                listOf(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
                         icon = Icons.Default.Description,
-                    )
-                )
-            }
-
-            addAll(
-                listOf(
+                    ),
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_settings_title,
                         icon = Icons.Default.Settings,
