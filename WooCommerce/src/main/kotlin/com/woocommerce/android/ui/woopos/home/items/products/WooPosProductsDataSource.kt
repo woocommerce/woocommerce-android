@@ -246,7 +246,9 @@ class WooPosProductsInDbDataSource @Inject constructor(
         } ?: Result.failure(IllegalStateException("No site selected"))
     }
 
-    override suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult> = withContext(Dispatchers.IO) {
+    override suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult> = withContext(
+        Dispatchers.IO
+    ) {
         selectedSite.getOrNull()?.let { site ->
             val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
             Result.success(PosLocalCatalogVariationSyncResult(syncResult))
