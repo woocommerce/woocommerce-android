@@ -13,21 +13,6 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStor
 import javax.inject.Inject
 import javax.inject.Singleton
 
-sealed class WooPosSyncResult
-
-sealed class PosLocalCatalogSyncResult : WooPosSyncResult() {
-    data class Success(
-        val productsSynced: Int,
-        val variationsSynced: Int,
-        val syncDurationMs: Long
-    ) : PosLocalCatalogSyncResult()
-
-    sealed class Failure(val error: String) : PosLocalCatalogSyncResult() {
-        class CatalogTooLarge(error: String, val totalPages: Int, val maxPages: Int) : Failure(error)
-        class UnexpectedError(error: String) : Failure(error)
-    }
-}
-
 @Singleton
 class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncProductsAction: WooPosSyncProductsAction,

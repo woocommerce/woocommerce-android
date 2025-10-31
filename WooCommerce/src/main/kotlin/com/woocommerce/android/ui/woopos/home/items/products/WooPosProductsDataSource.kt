@@ -14,14 +14,16 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMa
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
-import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -132,11 +134,11 @@ class WooPosProductsDataSource @Inject constructor(
         activeSource?.canLoadMoreVariations(numOfVariations)
             ?: error("canLoadMoreVariations - Data source not selected")
 
-    suspend fun refreshProducts(): Result<WooPosSyncResult> =
+    suspend fun refreshProducts(): Result<WooPosSyncProductResult> =
         activeSource?.refreshProducts()
             ?: error("refreshProducts - Data source not selected")
 
-    suspend fun refreshVariations(productId: Long): Result<WooPosSyncResult> =
+    suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult> =
         activeSource?.refreshVariations(productId)
             ?: error("refreshVariations - Data source not selected")
 
@@ -237,17 +239,17 @@ class WooPosProductsInDbDataSource @Inject constructor(
         return result.getOrNull()?.toWooPosVariation(variationMapper)
     }
 
-    override suspend fun refreshProducts(): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+    override suspend fun refreshProducts(): Result<WooPosSyncProductResult> = withContext(Dispatchers.IO) {
         selectedSite.getOrNull()?.let { site ->
             val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-            Result.success(syncResult)
+            Result.success(PosLocalCatalogProductSyncResult(syncResult))
         } ?: Result.failure(IllegalStateException("No site selected"))
     }
 
-    override suspend fun refreshVariations(productId: Long): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+    override suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult> = withContext(Dispatchers.IO) {
         selectedSite.getOrNull()?.let { site ->
             val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-            Result.success(syncResult)
+            Result.success(PosLocalCatalogVariationSyncResult(syncResult))
         } ?: Result.failure(IllegalStateException("No site selected"))
     }
 }
@@ -506,7 +508,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             ?.toWooPosVariation(variationMapper)
     }
 
-    override suspend fun refreshProducts(): Result<WooPosSyncResult> = withContext(
+    override suspend fun refreshProducts(): Result<WooPosSyncProductResult> = withContext(
         Dispatchers.IO
     ) {
         // We can return the last-emitted result which will always be the instance of [ProductsResult.Remote] because
@@ -517,7 +519,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
 
     override suspend fun refreshVariations(
         productId: Long
-    ): Result<WooPosSyncResult> = withContext(Dispatchers.IO) {
+    ): Result<WooPosSyncVariationResult> = withContext(Dispatchers.IO) {
         // We can return the last-emitted result which will always be the instance of [VariationsResult.Remote] because
         // when forceRefresh = true the in-memory cache gets wiped out and the flow fetches from remote only.
         val variationsResult = fetchFirstVariationsPage(productId, forceRefresh = true).last()

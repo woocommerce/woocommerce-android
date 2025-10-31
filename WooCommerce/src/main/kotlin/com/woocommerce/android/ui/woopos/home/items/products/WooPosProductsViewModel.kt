@@ -13,9 +13,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemCli
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
-import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -308,18 +308,22 @@ class WooPosProductsViewModel @Inject constructor(
             _viewState.value = buildReloadingState()
 
             val result = dataSource.refreshProducts()
-            result.onSuccess { posSyncResult ->
-                when (posSyncResult) {
-                    is PosLocalCatalogSyncResult.Success -> {
-                        _viewState.value = hidePTRIndicator()
-                    }
-                    is PosLocalCatalogSyncResult.Failure -> {
-                        handlePTRError()
+            result.onSuccess { syncResult ->
+                when (syncResult) {
+                    is PosLocalCatalogProductSyncResult -> {
+                        when (syncResult.value) {
+                            is PosLocalCatalogSyncResult.Success -> {
+                                _viewState.value = hidePTRIndicator()
+                            }
+                            is PosLocalCatalogSyncResult.Failure -> {
+                                handlePTRError()
+                            }
+                        }
                     }
                     is ProductsResult.Cached -> Unit // PTR is not expected to deliver cached result
                     is ProductsResult.Remote -> {
-                        if (posSyncResult.productsResult.isSuccess) {
-                            val products = posSyncResult.productsResult.getOrThrow()
+                        if (syncResult.productsResult.isSuccess) {
+                            val products = syncResult.productsResult.getOrThrow()
                             _viewState.value = if (products.isNotEmpty()) {
                                 products.toContentState()
                             } else {
@@ -328,9 +332,6 @@ class WooPosProductsViewModel @Inject constructor(
                         } else {
                             handlePTRError()
                         }
-                    }
-                    is VariationsResult -> {
-                        error("Unexpected variations result in products refresh")
                     }
                 }
             }.onFailure { exception ->

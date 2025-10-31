@@ -4,7 +4,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
@@ -34,7 +35,7 @@ interface WooPosProductsDataSourceInterface {
 
     suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation?
 
-    suspend fun refreshProducts(): Result<WooPosSyncResult>
+    suspend fun refreshProducts(): Result<WooPosSyncProductResult>
 
-    suspend fun refreshVariations(productId: Long): Result<WooPosSyncResult>
+    suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult>
 }
