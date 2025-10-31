@@ -39,6 +39,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
@@ -126,6 +127,7 @@ class RefundSummaryViewModel @Inject constructor(
         if (wasConfirmed) {
             if (networkStatus.isConnected()) {
                 refundJob = launch {
+                    yield() // ensure the navigation component completes navigation before proceeding
                     val order = order.await()
                     refundSummaryState = refundSummaryState.copy(
                         isFormEnabled = false

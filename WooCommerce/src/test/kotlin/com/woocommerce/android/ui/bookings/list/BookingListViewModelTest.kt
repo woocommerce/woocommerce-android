@@ -11,6 +11,7 @@ import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
@@ -52,7 +53,8 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val getLocations = mock<GetLocations>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations)
+    private val resourceProvider = mock<ResourceProvider>()
+    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
     private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
@@ -328,6 +330,24 @@ class BookingListViewModelTest : BaseUnitTest() {
         )
     }
 
+    @Test
+    fun `given enabled filters, when controls state is observed, then enabledFiltersCount is correct`() = testBlocking {
+        // GIVEN
+        setup()
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.All)
+
+        // THEN
+        val controlsState = viewModel.state.getOrAwaitValue().controlsState
+        assertThat(controlsState.enabledFiltersCount).isEqualTo(1)
+    }
+
     private fun getSampleBooking(id: Int): Booking {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(id.toLong()),
@@ -349,6 +369,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
+            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
             order = BookingOrderInfo()
         )
     }

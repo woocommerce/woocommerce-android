@@ -12,7 +12,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider
 import com.woocommerce.android.ui.payments.cardreader.LearnMoreUrlProvider.LearnMoreUrlType.IN_PERSON_PAYMENTS
-import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingEvent.NavigateToUrlInBrowser
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Check
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingParams.Failed
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState.ChoosePaymentGatewayProvider
@@ -134,7 +133,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
                 }
 
                 is CardReaderOnboardingErrorCtaClickHandler.Reaction.OpenBrowser -> {
-                    triggerEvent(NavigateToUrlInBrowser(reaction.url))
+                    triggerEvent(Event.LaunchUrlInAuthenticatedWebView(reaction.url))
                     viewState.value = prevState!!
                 }
             }
@@ -438,7 +437,7 @@ class CardReaderOnboardingViewModel @Inject constructor(
 
     private fun onLearnMoreClicked() {
         paymentsFlowTracker.trackOnboardingLearnMoreTapped()
-        triggerEvent(NavigateToUrlInBrowser(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
+        triggerEvent(Event.LaunchUrlInChromeTab(learnMoreUrlProvider.provideLearnMoreUrlFor(IN_PERSON_PAYMENTS)))
     }
 
     private fun onSkipPendingRequirementsClicked() {

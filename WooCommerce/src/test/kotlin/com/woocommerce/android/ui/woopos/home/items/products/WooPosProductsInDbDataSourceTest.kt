@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
@@ -24,9 +26,40 @@ class WooPosProductsInDbDataSourceTest {
     private val posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val mapper: WooPosProductModelMapper = mock()
+    private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync = mock()
 
     private val siteModel = SiteModel().apply {
         id = 1
+    }
+
+    @Test
+    fun `given no site selected, when refreshProducts called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshProducts()
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
+    }
+
+    @Test
+    fun `given no site selected, when refreshVariations called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshVariations(123L)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
     }
 
     @Before
@@ -35,12 +68,15 @@ class WooPosProductsInDbDataSourceTest {
         sut = WooPosProductsInDbDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
             selectedSite = selectedSite,
-            mapper = mapper
+            productMapper = mapper,
+            performInstantCatalogFullSync = performInstantCatalogFullSync,
+            variationMapper = mock(),
+            localCatalogSyncRepository = mock(),
         )
     }
 
     @Test
-    fun `given products in database, when fetchFirstPage called, then emits products from db`() = runTest {
+    fun `given products in database, when fetchFirstProductsPage called, then emits products from db`() = runTest {
         // Given
         val productEntity = createProductEntity(remoteId = 123L, name = "Test Product")
         val productModel = createProductModel(remoteId = 123L, name = "Test Product")
@@ -51,20 +87,20 @@ class WooPosProductsInDbDataSourceTest {
             .thenReturn(productModel)
 
         // When
-        val results = sut.fetchFirstPage(forceRefresh = false).toList()
+        val results = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(productModel)
     }
 
     @Test
-    fun `given products in database, when fetchFirstPage called, then returns all products`() = runTest {
+    fun `given products in database, when fetchFirstProductsPage called, then returns all products`() = runTest {
         // Given
         val product1 = createProductEntity(remoteId = 1L, name = "Apple iPhone", sku = "ABC123")
         val product2 = createProductEntity(remoteId = 2L, name = "Samsung Galaxy", sku = "XYZ789")
@@ -77,51 +113,51 @@ class WooPosProductsInDbDataSourceTest {
         whenever(mapper.fromEntity(product2)).thenReturn(model2)
 
         // When
-        val results = sut.fetchFirstPage(forceRefresh = false).toList()
+        val results = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model1, model2)
     }
 
     @Test
-    fun `given no site selected, when fetchFirstPage called, then returns empty list`() = runTest {
+    fun `given no site selected, when fetchFirstProductsPage called, then returns empty list`() = runTest {
         // Given
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         // When
-        val results = sut.fetchFirstPage(forceRefresh = false).toList()
+        val results = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }
 
     @Test
-    fun `given db error, when fetchFirstPage called, then returns empty list`() = runTest {
+    fun `given db error, when fetchFirstProductsPage called, then returns empty list`() = runTest {
         // Given
         whenever(posLocalCatalogStore.observeProducts(any()))
             .thenReturn(flowOf(Result.failure(Exception("DB Error"))))
 
         // When
-        val results = sut.fetchFirstPage(forceRefresh = false).toList()
+        val results = sut.fetchFirstProductsPage(forceRefresh = false).toList()
 
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }
@@ -129,7 +165,7 @@ class WooPosProductsInDbDataSourceTest {
     @Test
     fun `when loadMore called, then returns empty list`() = runTest {
         // When
-        val result = sut.loadMore()
+        val result = sut.loadMoreProducts()
 
         // Then
         assertThat(result.isSuccess).isTrue()
@@ -139,7 +175,7 @@ class WooPosProductsInDbDataSourceTest {
     @Test
     fun `when hasMorePages called, then returns false`() {
         // Then
-        assertThat(sut.hasMorePages).isFalse()
+        assertThat(sut.hasMoreProductsPages).isFalse()
     }
 
     private fun createProductEntity(

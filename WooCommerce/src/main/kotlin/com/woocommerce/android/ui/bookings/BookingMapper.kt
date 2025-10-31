@@ -12,14 +12,19 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.normalizeDuration
+import com.woocommerce.android.util.toHumanReadableFormat
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.ZoneOffset
@@ -29,7 +34,8 @@ import javax.inject.Inject
 
 class BookingMapper @Inject constructor(
     private val currencyFormatter: CurrencyFormatter,
-    private val getLocations: GetLocations
+    private val getLocations: GetLocations,
+    private val resourceProvider: ResourceProvider
 ) {
     private val summaryDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(
         FormatStyle.MEDIUM,
@@ -41,20 +47,21 @@ class BookingMapper @Inject constructor(
     private val timeRangeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         .withZone(ZoneOffset.UTC)
 
-    fun Booking.toBookingSummaryModel(): BookingSummaryModel {
+    fun Booking.toBookingSummaryModel(attendanceUpdateStatus: AttendanceUpdateStatus): BookingSummaryModel {
         return BookingSummaryModel(
             date = summaryDateFormatter.format(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
-            attendanceStatus = BookingAttendanceStatus.BOOKED,
-            status = status.toUiModel()
+            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
+            attendanceStatus = attendanceStatus.toUiModel(),
+            attendanceUpdateStatus = attendanceUpdateStatus,
         )
     }
 
     fun Booking.toListItem(): BookingListItem {
         return BookingListItem(
             id = id.value,
-            summary = toBookingSummaryModel()
+            summary = toBookingSummaryModel(AttendanceUpdateStatus.Idle)
         )
     }
 
@@ -62,16 +69,19 @@ class BookingMapper @Inject constructor(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
     ): BookingAppointmentDetailsModel {
-        val durationMinutes = Duration.between(start, end).toMinutes()
+        val duration = Duration.between(start, end)
+            .normalizeDuration()
+            .toHumanReadableFormat(resourceProvider)
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
             time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
-            duration = "$durationMinutes min",
             price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
+            cancelButtonVisible = isCancellable,
+            duration = duration,
         )
     }
 
@@ -100,14 +110,31 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    private fun BookingEntity.Status.toUiModel(): BookingStatus = when (this) {
-        BookingEntity.Status.Paid -> BookingStatus.Paid
-        BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
-        BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-        BookingEntity.Status.Complete -> BookingStatus.Complete
-        BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
-        BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
-        is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+    private fun BookingEntity.Status.toUiModel(
+        orderStatus: String?,
+        paymentMethod: String?,
+    ): BookingStatus {
+        return if (orderStatus == "on-hold" && paymentMethod == "cod") {
+            BookingStatus.PayOnSite
+        } else {
+            when (this) {
+                BookingEntity.Status.Paid -> BookingStatus.Paid
+                BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
+                BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
+                BookingEntity.Status.Complete -> BookingStatus.Complete
+                BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
+                BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
+                BookingEntity.Status.InCart -> BookingStatus.InCart
+                is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
+            }
+        }
+    }
+
+    private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus? = when (this) {
+        BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
+        BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
+        BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
+        is BookingEntity.AttendanceStatus.Unknown -> null
     }
 
     private fun BookingCustomerInfo.fullName(): String? {

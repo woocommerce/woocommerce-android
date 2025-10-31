@@ -35,6 +35,9 @@ abstract class WooPosVariationsDao {
         variationId: Long
     ): WooPosVariationEntity?
 
+    @Query("SELECT COUNT(*) FROM PosVariationEntity WHERE localSiteId = :localSiteId")
+    abstract suspend fun getVariationCount(localSiteId: LocalId): Int
+
     @Upsert
     abstract suspend fun upsertVariations(variations: List<WooPosVariationEntity>)
 

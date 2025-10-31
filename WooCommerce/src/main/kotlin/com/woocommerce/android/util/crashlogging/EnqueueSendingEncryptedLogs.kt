@@ -21,19 +21,22 @@ class EnqueueSendingEncryptedLogs @Inject constructor(
         eventLevel: EventLevel
     ) {
         if (eventLevel == FATAL) {
-            val logs = runBlocking { encryptedLogsFileProvider.provide() }
-            encryptedLogging.enqueueSendingEncryptedLogs(
-                uuid = uuid,
-                file = logs,
-                shouldUploadImmediately = false
-            )
-        } else {
-            appCoroutineScope.launch {
+            runBlocking { encryptedLogsFileProvider.provide() }?.let { logs ->
                 encryptedLogging.enqueueSendingEncryptedLogs(
                     uuid = uuid,
-                    file = encryptedLogsFileProvider.provide(),
-                    shouldUploadImmediately = networkStatus.isConnected()
+                    file = logs,
+                    shouldUploadImmediately = false
                 )
+            }
+        } else {
+            appCoroutineScope.launch {
+                encryptedLogsFileProvider.provide()?.let { logs ->
+                    encryptedLogging.enqueueSendingEncryptedLogs(
+                        uuid = uuid,
+                        file = logs,
+                        shouldUploadImmediately = networkStatus.isConnected()
+                    )
+                }
             }
         }
     }

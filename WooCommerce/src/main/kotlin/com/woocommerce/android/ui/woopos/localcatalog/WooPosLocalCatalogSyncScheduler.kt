@@ -14,7 +14,9 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -86,16 +88,24 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
         }
     }
 
-    fun isPeriodicWorkRunning(): Boolean {
-        val periodicWork = workManager.getWorkInfosForUniqueWork(WooPosLocalCatalogSyncWorker.WORK_NAME).get()
-
-        return periodicWork.any { it.state == WorkInfo.State.RUNNING }
+    fun observePeriodicWorkStatus(): Flow<Boolean> {
+        return workManager.getWorkInfosForUniqueWorkFlow(WooPosLocalCatalogSyncWorker.WORK_NAME)
+            .map { workInfos -> workInfos.any { it.state == WorkInfo.State.RUNNING } }
     }
 
-    fun isOneTimeWorkRunning(): Boolean {
-        val oneTimeWork = workManager.getWorkInfosForUniqueWork(ONE_TIME_WORK_NAME).get()
+    fun observeOneTimeWorkStatus(): Flow<Boolean> {
+        return workManager.getWorkInfosForUniqueWorkFlow(ONE_TIME_WORK_NAME)
+            .map { workInfos -> workInfos.any { it.state == WorkInfo.State.RUNNING } }
+    }
 
-        return oneTimeWork.any { it.state == WorkInfo.State.RUNNING }
+    fun observeOneTimeWorkInfo(): Flow<WorkInfo?> {
+        return workManager.getWorkInfosForUniqueWorkFlow(ONE_TIME_WORK_NAME)
+            .map { workInfos -> workInfos.firstOrNull() }
+    }
+
+    fun observePeriodicWorkInfo(): Flow<WorkInfo?> {
+        return workManager.getWorkInfosForUniqueWorkFlow(WooPosLocalCatalogSyncWorker.WORK_NAME)
+            .map { workInfos -> workInfos.firstOrNull() }
     }
 
     fun updateWorkConstraints() {

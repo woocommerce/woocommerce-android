@@ -22,7 +22,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -31,7 +30,8 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
-import java.time.Duration
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -55,11 +55,12 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val loadingState = MutableStateFlow<BookingDetailsLoadingState>(BookingDetailsLoadingState.Idle)
 
-    // Temporary, the booking status should come from the stored object
-    private val bookingAttendanceStatus = MutableStateFlow<BookingAttendanceStatus?>(null)
+    private val attendanceUpdateStatus = MutableStateFlow<AttendanceUpdateStatus>(AttendanceUpdateStatus.Idle)
 
     private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
     private val showCancelBookingDialog = MutableStateFlow(false)
+
+    private val paymentUpdateStatus = MutableStateFlow<PaymentUpdateStatus>(PaymentUpdateStatus.Idle)
 
     private val cancelBookingDialogState = combine(
         booking,
@@ -86,13 +87,13 @@ class BookingDetailsViewModel @Inject constructor(
 
     private val bookingUiStateFlow = combine(
         booking,
-        bookingAttendanceStatus,
+        attendanceUpdateStatus,
         loadingState,
         resource,
         cancelStatusState,
-    ) { booking, attendanceStatus, loadingState, resource, cancelStatus ->
+    ) { booking, attendanceUpdate, loadingState, resource, cancelStatus ->
         if (booking != null) {
-            bookingMapper.buildBookingUiState(booking, attendanceStatus, resource, loadingState, cancelStatus)
+            bookingMapper.buildBookingUiState(booking, attendanceUpdate, resource, loadingState, cancelStatus)
         } else {
             null
         }
@@ -103,7 +104,8 @@ class BookingDetailsViewModel @Inject constructor(
         bookingUiStateFlow,
         loadingState,
         cancelBookingDialogState,
-    ) { booking, bookingUiState, loadingState, cancelBookingDialog ->
+        paymentUpdateStatus,
+    ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
         with(bookingMapper) {
             BookingDetailsViewState(
                 toolbarTitle = booking?.id?.value?.let { id ->
@@ -111,7 +113,13 @@ class BookingDetailsViewModel @Inject constructor(
                 } ?: "",
                 bookingUiState = bookingUiState,
                 onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = ::onAttendanceStatusSelected,
+                onAttendanceStatusSelected = { attendanceStatus ->
+                    if (attendanceStatus.toDataModel() != booking?.attendanceStatus) {
+                        onAttendanceStatusSelected(attendanceStatus)
+                    }
+                },
+                onMarkAsPaid = ::onMarkAsPaid,
+                paymentUpdateStatus = paymentUpdateStatus,
                 dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
@@ -152,8 +160,28 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
-        // Temporary, the booking status should come from the stored object
-        bookingAttendanceStatus.value = status
+        launch {
+            if (!networkStatus.isConnected()) {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+                return@launch
+            }
+            attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
+            val attendanceStatus = status.toDataModel() ?: return@launch
+            bookingsRepository.updateAttendanceStatus(
+                bookingId = navArgs.bookingId,
+                attendanceStatus = attendanceStatus
+            ).onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
+            }
+            attendanceUpdateStatus.value = AttendanceUpdateStatus.Idle
+        }
+    }
+
+    private fun BookingAttendanceStatus.toDataModel(): BookingEntity.AttendanceStatus? = when (this) {
+        BookingAttendanceStatus.Booked -> BookingEntity.AttendanceStatus.Booked
+        BookingAttendanceStatus.CheckedIn -> BookingEntity.AttendanceStatus.CheckedIn
+        BookingAttendanceStatus.NoShow -> BookingEntity.AttendanceStatus.NoShow
+        BookingAttendanceStatus.Cancelled -> null
     }
 
     private fun onCancelBooking() {
@@ -165,28 +193,37 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun onConfirmCancelBooking() = launch {
-        // TODO Add logic to Cancel booking action
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        delay(Duration.ofSeconds(1).toMillis())
+        bookingsRepository.cancelBooking(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
+            }
         cancelStatusState.value = CancelStatus.Idle
+    }
+
+    private fun onMarkAsPaid() = launch {
+        if (!networkStatus.isConnected()) {
+            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
+            return@launch
+        }
+        paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
+        bookingsRepository.markAsPaid(navArgs.bookingId)
+            .onFailure {
+                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
+            }
+        paymentUpdateStatus.value = PaymentUpdateStatus.Idle
     }
 
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
-        attendanceStatus: BookingAttendanceStatus?,
+        attendanceUpdateStatus: AttendanceUpdateStatus,
         resource: BookingResource?,
         loadingState: BookingDetailsLoadingState,
         cancelStatus: CancelStatus,
     ): BookingUiState = BookingUiState(
         orderId = booking.orderId,
-        bookingSummary = booking.toBookingSummaryModel().let {
-            if (attendanceStatus != null) {
-                it.copy(attendanceStatus = attendanceStatus)
-            } else {
-                it
-            }
-        },
+        bookingSummary = booking.toBookingSummaryModel(attendanceUpdateStatus),
         bookingsAppointmentDetails = booking.toAppointmentDetailsModel(
             staffMemberStatus = buildStaffMemberStatus(
                 resourceId = booking.resourceId,
@@ -196,7 +233,9 @@ class BookingDetailsViewModel @Inject constructor(
             cancelStatus = cancelStatus
         ),
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
-        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency)
+        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
+        note = booking.note,
+        isAttendanceStatusEditable = booking.isAttendanceStatusEditable
     )
 
     private fun buildStaffMemberStatus(

@@ -4,9 +4,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 
 sealed class CardReaderOnboardingEvent : MultiLiveEvent.Event() {
     object NavigateToSupport : MultiLiveEvent.Event()
-
-    data class NavigateToUrlInBrowser(val url: String) : MultiLiveEvent.Event()
-
     data class ContinueToHub(val cardReaderFlowParam: CardReaderFlowParam) : MultiLiveEvent.Event()
     data class ContinueToConnection(
         val cardReaderFlowParam: CardReaderFlowParam,

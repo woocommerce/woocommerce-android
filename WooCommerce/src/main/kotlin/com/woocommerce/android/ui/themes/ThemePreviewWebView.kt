@@ -27,7 +27,7 @@ fun ThemePreviewWebView(
     url: String,
     userAgent: UserAgent,
     modifier: Modifier = Modifier,
-    authenticator: WebViewAuthenticator? = null,
+    authenticator: WebViewAuthenticator,
     previewType: PreviewType
 ) {
     val screen = rememberScreen()

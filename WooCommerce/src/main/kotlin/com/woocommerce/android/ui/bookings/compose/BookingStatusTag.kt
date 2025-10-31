@@ -2,12 +2,13 @@ package com.woocommerce.android.ui.bookings.compose
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCTag
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
@@ -17,7 +18,7 @@ fun BookingStatusTag(
 ) {
     WCTag(
         text = state.text(),
-        backgroundColor = colorResource(R.color.tagView_bg),
+        backgroundColor = state.backgroundColor(),
         textColor = colorResource(R.color.tagView_text),
         fontWeight = FontWeight.Normal,
         modifier = modifier
@@ -25,12 +26,14 @@ fun BookingStatusTag(
 }
 
 sealed interface BookingStatus {
+    data object PayOnSite : BookingStatus
     data object Unpaid : BookingStatus
     data object PendingConfirmation : BookingStatus
     data object Confirmed : BookingStatus
     data object Paid : BookingStatus
     data object Cancelled : BookingStatus
     data object Complete : BookingStatus
+    data object InCart : BookingStatus
     data class Unknown(val key: String) : BookingStatus
 }
 
@@ -43,11 +46,21 @@ private fun BookingStatus.text(): String {
         BookingStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
         BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
         BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
+        BookingStatus.PayOnSite -> stringResource(R.string.booking_payment_status_pay_on_site)
+        BookingStatus.InCart -> stringResource(R.string.booking_payment_status_in_cart)
         is BookingStatus.Unknown -> key
     }
 }
 
-@Preview
+@Composable
+fun BookingStatus.backgroundColor(): Color {
+    return when (this) {
+        BookingStatus.PayOnSite -> R.color.tag_bg_booking_yellow
+        else -> R.color.tagView_bg
+    }.let { colorResource(it) }
+}
+
+@LightDarkThemePreviews
 @Composable
 private fun PaymentStatusTagPreview() {
     WooThemeWithBackground {
@@ -57,12 +70,12 @@ private fun PaymentStatusTagPreview() {
     }
 }
 
-@Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@LightDarkThemePreviews
 @Composable
-private fun PaymentStatusTagDarkPreview() {
+private fun PaymentStatusTagPayOnSitePreview() {
     WooThemeWithBackground {
         BookingStatusTag(
-            state = BookingStatus.Complete
+            state = BookingStatus.PayOnSite
         )
     }
 }

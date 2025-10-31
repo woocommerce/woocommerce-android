@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
+import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,6 +27,8 @@ class TaxRateSelectorViewModel @Inject constructor(
     private val prefs: AppPrefs,
     savedState: SavedStateHandle,
 ) : ScopedViewModel(savedState) {
+    private val args: TaxRateSelectorFragmentArgs by savedState.navArgs()
+
     private val isLoading = MutableStateFlow(false)
     private val autoRateSwitchState = savedState.getStateFlow(this, false, "autoRateSwitchState")
     val viewState: StateFlow<ViewState> = combine(
@@ -58,7 +61,11 @@ class TaxRateSelectorViewModel @Inject constructor(
     }
 
     fun onEditTaxRatesInAdminClicked() {
-        triggerEvent(EditTaxRatesInAdmin)
+        triggerEvent(
+            MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                url = args.dialogState.taxRatesSettingsUrl
+            )
+        )
         tracker.track(AnalyticsEvent.TAX_RATE_SELECTOR_EDIT_IN_ADMIN_TAPPED)
     }
 
@@ -113,7 +120,6 @@ class TaxRateSelectorViewModel @Inject constructor(
     ) : Parcelable
 
     data class TaxRateSelected(val taxRate: TaxRate) : MultiLiveEvent.Event()
-    object EditTaxRatesInAdmin : MultiLiveEvent.Event()
     object ShowTaxesInfoDialog : MultiLiveEvent.Event()
 
     fun hasAddress(taxRate: TaxRate): Boolean {

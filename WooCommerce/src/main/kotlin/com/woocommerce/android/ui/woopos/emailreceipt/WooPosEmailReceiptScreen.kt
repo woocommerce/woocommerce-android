@@ -47,7 +47,7 @@ fun WooPosEmailReceiptScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit)
         onEmailAddressChanged = { viewModel.onUIEvent(WooPosEmailReceiptUIEvent.EmailChanged(it)) },
         onSendReceiptClicked = { viewModel.onUIEvent(WooPosEmailReceiptUIEvent.SendEmailClicked) },
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onEmailSent = { onNavigationEvent(WooPosNavigationEvent.GoBack) }
+        onEmailSent = { onNavigationEvent(WooPosNavigationEvent.GoBackWithResult(key = EMAIL_RECEIPT_SENT, true)) }
     )
 }
 

@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import app.cash.turbine.test
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -13,7 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -55,12 +53,6 @@ class WooPosProductsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
-    private val productsInDbDataSource: WooPosProductsInDbDataSource = mock()
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled = mock {
-        on { invoke() }.thenReturn(false)
-    }
-    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository = mock()
-    private val selectedSite: SelectedSite = mock()
     private val resourceProvider: ResourceProvider = mock()
 
     @Before
@@ -77,14 +69,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
-                    Result.success(products)
-                )
-            )
-        )
-        whenever(productsInDbDataSource.fetchFirstPage(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -117,7 +102,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -146,7 +131,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -169,7 +154,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.failure(Exception())
                 )
             )
@@ -188,15 +173,34 @@ class WooPosProductsViewModelTest {
     }
 
     @Test
-    fun `given products from data source, when pulled to refresh, then should remove products and fetch again`() =
+    fun `given products from data source, when pulled to refresh, then should call refreshProducts`() =
         runTest {
+            // GIVEN
+            whenever(productsDataSource.refreshProducts()).thenReturn(
+                Result.success(
+                    ProductsResult.Remote(
+                        Result.success(
+                            listOf(
+                                generateWooPosProduct(
+                                    productId = 1,
+                                    productName = "Product 1",
+                                    amount = "10.0",
+                                    productType = WooPosProductModel.WooPosProductType.SIMPLE,
+                                    isDownloadable = false,
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
             // WHEN
             val viewModel = createViewModel()
             viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
 
             // THEN
             viewModel.viewState.test {
-                verify(productsDataSource).fetchFirstPage(forceRefresh = true)
+                verify(productsDataSource).refreshProducts()
                 cancelAndConsumeRemainingEvents()
             }
         }
@@ -270,7 +274,7 @@ class WooPosProductsViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            verify(productsDataSource).fetchFirstPage(forceRefresh = false)
+            verify(productsDataSource, times(1)).fetchFirstPage(forceRefresh = false)
             cancelAndConsumeRemainingEvents()
         }
     }
@@ -305,9 +309,9 @@ class WooPosProductsViewModelTest {
     fun `given no products, when pull to refresh, then state is Empty`() = runTest {
         // GIVEN
         val viewModel = createViewModel()
-        whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
-            flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+        whenever(productsDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                ProductsResult.Remote(
                     Result.success(emptyList())
                 )
             )
@@ -326,6 +330,13 @@ class WooPosProductsViewModelTest {
     @Test
     fun `when pull to refresh, then should track event`() = runTest {
         // GIVEN
+        whenever(productsDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                ProductsResult.Remote(
+                    Result.success(emptyList())
+                )
+            )
+        )
         val viewModel = createViewModel()
 
         // WHEN
@@ -365,7 +376,7 @@ class WooPosProductsViewModelTest {
 
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(
             flowOf(
-                WooPosProductsDataSource.ProductsResult.Remote(
+                ProductsResult.Remote(
                     Result.success(products)
                 )
             )
@@ -402,7 +413,7 @@ class WooPosProductsViewModelTest {
 
             val productsFlow = flow {
                 emit(
-                    WooPosProductsDataSource.ProductsResult.Remote(
+                    ProductsResult.Remote(
                         Result.success(
                             listOf(
                                 generateWooPosProduct(
@@ -435,7 +446,7 @@ class WooPosProductsViewModelTest {
         // GIVEN
         whenever(productsDataSource.hasMorePages).thenReturn(true)
 
-        val productsFlow = MutableSharedFlow<WooPosProductsDataSource.ProductsResult>()
+        val productsFlow = MutableSharedFlow<ProductsResult>()
         whenever(productsDataSource.fetchFirstPage(any())).thenReturn(productsFlow)
 
         val viewModel = createViewModel()
@@ -445,7 +456,7 @@ class WooPosProductsViewModelTest {
 
         // Then
         productsFlow.emit(
-            WooPosProductsDataSource.ProductsResult.Remote(
+            ProductsResult.Remote(
                 Result.failure(Exception("Test error"))
             )
         )
@@ -550,9 +561,6 @@ class WooPosProductsViewModelTest {
             parentToChildrenEventReceiver = parentToChildrenEventReceiver,
             priceFormat = priceFormat,
             analyticsTracker = analyticsTracker,
-            wooPosLocalCatalogM1Enabled = wooPosLocalCatalogM1Enabled,
-            localCatalogSyncRepository = localCatalogSyncRepository,
-            selectedSite = selectedSite,
             resourceProvider = resourceProvider,
         )
     }

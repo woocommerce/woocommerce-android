@@ -35,6 +35,9 @@ class WooPosActivity : AppCompatActivity() {
     @Inject
     lateinit var wooPosCouponCreationFacade: WooPosCouponCreationFacade
 
+    @Inject
+    lateinit var wooPosPeriodicSyncFacade: WooPosPeriodicSyncFacade
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -43,13 +46,11 @@ class WooPosActivity : AppCompatActivity() {
         lifecycle.addObserver(wooPosCardReaderFacade)
         lifecycle.addObserver(wooPosGetSupportFacade)
         lifecycle.addObserver(wooPosCouponCreationFacade)
+        lifecycle.addObserver(wooPosPeriodicSyncFacade)
 
         setContent {
             WooPosTheme {
-                WooPosRootScreen(
-                    modifier = Modifier.gesturesOrButtonsNavigationPadding(),
-                    wooPosAnalyticsTracker = wooPosAnalyticsTracker
-                )
+                WooPosRootScreen(modifier = Modifier.gesturesOrButtonsNavigationPadding())
             }
         }
     }

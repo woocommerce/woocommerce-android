@@ -12,20 +12,26 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
-import kotlinx.coroutines.flow.drop
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
+@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -42,6 +48,10 @@ class BookingListViewModel @Inject constructor(
         clazz = String::class.java,
         key = "searchQuery"
     )
+    private val filters = bookingFilterRepository.bookingFiltersFlow
+        .shareIn(viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
+
+    private val refreshTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
@@ -59,7 +69,7 @@ class BookingListViewModel @Inject constructor(
         BookingListContentState(
             bookings = bookings,
             loadingState = loadingState,
-            onRefresh = { fetchBookings(BookingListLoadingState.Refreshing) },
+            onRefresh = { refreshTrigger.tryEmit(Unit) },
             onLoadMore = ::loadMore,
             onBookingClick = ::onBookingClick
         )
@@ -72,35 +82,53 @@ class BookingListViewModel @Inject constructor(
             }
         )
     }
+    private val tabsState = selectedTab.map {
+        BookingListTabState(
+            selectedTab = it,
+            onTabChanged = ::onTabChanged
+        )
+    }
+    private val controlsState = combine(
+        selectedTab,
+        sortOption,
+        filters
+    ) { tab, sort, filters ->
+        BookingListControlsState(
+            selectedSortOption = sort,
+            isFilterButtonVisible = tab == BookingListTab.All,
+            enabledFiltersCount = filters.enabledFiltersCount,
+            onSortClick = ::onSortClicked,
+            onFilterClick = ::onFilterClicked,
+            onClearFiltersClick = ::onClearFiltersClicked
+        )
+    }
+    private val listSortBottomSheetState = combine(
+        sortOption,
+        isSortSheetVisible
+    ) { sortOption, sheetVisible ->
+        if (sheetVisible) {
+            BookingListSortBottomSheetState(
+                selectedOption = sortOption,
+                onSelect = ::onSortOptionSelected,
+                onDismiss = ::onSortDismiss
+            )
+        } else {
+            null
+        }
+    }
 
     val state = combine(
         contentState,
-        selectedTab,
-        sortOption,
-        isSortSheetVisible,
+        tabsState,
+        controlsState,
+        listSortBottomSheetState,
         searchState
-    ) { contentState, selectedTab, sortOption, sheetVisible, searchState ->
+    ) { contentState, tabsState, controlsState, listSortBottomSheetState, searchState ->
         BookingListViewState(
             contentState = contentState,
-            tabState = BookingListTabState(
-                selectedTab = selectedTab,
-                onTabChanged = ::onTabChanged
-            ),
-            controlsState = BookingListControlsState(
-                selectedSortOption = sortOption,
-                isFilterButtonVisible = selectedTab == BookingListTab.All,
-                onSortClick = ::onSortClicked,
-                onFilterClick = ::onFilterClicked
-            ),
-            sortBottomSheetState = if (sheetVisible) {
-                BookingListSortBottomSheetState(
-                    selectedOption = sortOption,
-                    onSelect = ::onSortOptionSelected,
-                    onDismiss = ::onSortDismiss
-                )
-            } else {
-                null
-            },
+            tabState = tabsState,
+            controlsState = controlsState,
+            sortBottomSheetState = listSortBottomSheetState,
             searchState = searchState
         )
     }.asLiveData()
@@ -112,40 +140,69 @@ class BookingListViewModel @Inject constructor(
         monitorSearchAndFilterChanges()
     }
 
-    @OptIn(FlowPreview::class)
     private fun monitorSearchAndFilterChanges() {
         launch {
+            var lastFetchParams: FetchParams? = null
             val queryFlow = searchQuery
-                .drop(1) // Skip the initial value to avoid double fetch on init
-                .debounce {
-                    if (it.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
+                .withIndex()
+                .debounce { (index, query) ->
+                    // Skip debounce for the initial value or when the query is cleared
+                    if (index == 0 || query.isNullOrEmpty()) 0L else AppConstants.SEARCH_TYPING_DELAY_MS
                 }
-            val sortFlow = sortOption.drop(1) // Skip the initial value to avoid double fetch on init
-            val bookingFilterFlow =
-                bookingFilterRepository.bookingFiltersFlow.drop(1) // Skip initial to avoid double fetch on init
+                .map { it.value }
 
-            merge(selectedTab, queryFlow, sortFlow, bookingFilterFlow).collectLatest {
+            combine(
+                selectedTab,
+                queryFlow,
+                sortOption,
+                filters
+            ) { tab, query, sort, filters ->
+                FetchParams(
+                    searchQuery = query,
+                    sortOption = sort,
+                    selectedTab = tab,
+                    filters = filters
+                )
+            }.flatMapLatest { fetchParams ->
+                refreshTrigger.map { true }
+                    .onStart { emit(false) }
+                    .map { isRefreshing -> Pair(fetchParams, isRefreshing) }
+            }.collectLatest { (fetchParams, isRefreshing) ->
                 // Cancel any ongoing fetch or load more operations
                 bookingsFetchJob?.cancel()
                 bookingsLoadMoreJob?.cancel()
 
-                bookingsFetchJob = fetchBookings(
-                    initialLoadingState = if (it is BookingListSortOption) {
-                        BookingListLoadingState.Refreshing
-                    } else {
-                        BookingListLoadingState.Loading
+                val initialLoadingState = if (isRefreshing) {
+                    BookingListLoadingState.Refreshing
+                } else {
+                    lastFetchParams.let { lastFetchParams ->
+                        if (lastFetchParams != null && lastFetchParams.sortOption != fetchParams.sortOption) {
+                            // When sort option changes, force refreshing state to indicate data reload
+                            BookingListLoadingState.Refreshing
+                        } else {
+                            BookingListLoadingState.Loading
+                        }
                     }
+                }
+
+                lastFetchParams = fetchParams
+                fetchBookings(
+                    initialLoadingState = initialLoadingState,
+                    fetchParams = fetchParams
                 )
             }
         }
     }
 
-    private fun fetchBookings(initialLoadingState: BookingListLoadingState) = launch {
+    private suspend fun fetchBookings(
+        initialLoadingState: BookingListLoadingState,
+        fetchParams: FetchParams,
+    ) {
         loadingState.value = initialLoadingState
         bookingListHandler.loadBookings(
-            searchQuery = searchQuery.value,
-            filters = prepareFilters(),
-            sortBy = sortOption.value
+            searchQuery = fetchParams.searchQuery,
+            filters = fetchParams.prepareFilters(),
+            sortBy = fetchParams.sortOption
         ).onFailure {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
         }
@@ -192,16 +249,29 @@ class BookingListViewModel @Inject constructor(
         triggerEvent(NavigateToFilters)
     }
 
-    private suspend fun prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
-        when (selectedTab.value) {
-            BookingListTab.Today,
-            BookingListTab.Upcoming -> listOfNotNull(
-                selectedTab.value.asDateRangeFilter()
-            )
-
-            BookingListTab.All -> bookingFilterRepository.bookingFiltersFlow.first().asList()
+    private fun onClearFiltersClicked() {
+        launch {
+            bookingFilterRepository.save(BookingFilters.EMPTY)
         }
     }
+
+    private fun FetchParams.prepareFilters(): List<BookingsFilterOption> = with(filtersBuilder) {
+        when (selectedTab) {
+            BookingListTab.Today,
+            BookingListTab.Upcoming -> listOfNotNull(
+                selectedTab.asDateRangeFilter()
+            )
+
+            BookingListTab.All -> filters.asList()
+        }
+    }
+
+    private data class FetchParams(
+        val searchQuery: String?,
+        val sortOption: BookingListSortOption,
+        val selectedTab: BookingListTab,
+        val filters: BookingFilters
+    )
 
     data class NavigateToBookingDetails(val bookingId: Long) : MultiLiveEvent.Event()
     object NavigateToFilters : MultiLiveEvent.Event()

@@ -30,6 +30,7 @@ sealed class SelectPaymentMethodViewState {
 
         data class LearnMoreIpp(
             val label: UiString,
+            val isVisible: Boolean,
             val onClick: () -> Unit,
         )
     }
