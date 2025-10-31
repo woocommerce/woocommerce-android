@@ -1,17 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-08 09:54:09+0000
+Translation-Revision-Date: 2025-10-21 15:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_confirm">Ja, annuleren</string>
+    <string name="booking_cancel_dialog_keep">Nee, houden</string>
+    <string name="booking_cancel_dialog_message">%1$s kan niet meer deelnemen aan \'%2$s\' op %3$s om %4$s.</string>
+    <string name="booking_cancel_dialog_title">Boeking annuleren</string>
+    <string name="booking_fetch_error">Fout bij het ophalen van de boeking</string>
+    <string name="bookings_filter_default">Alle</string>
+    <string name="bookings_filter_title_service_event">Service/evenement</string>
+    <string name="bookings_filter_title_date">Datum en tijd</string>
+    <string name="bookings_filter_location">Locatie</string>
+    <string name="bookings_filter_customer_name">Naam klant</string>
+    <string name="bookings_filter_title_type">Type boeking</string>
+    <string name="bookings_filter_title_payment_status">Betaalstatus</string>
+    <string name="bookings_filter_title_attendance_status">Aanwezigheidsstatus</string>
+    <string name="bookings_filter_title_team_member">Toegewezen teamlid</string>
+    <string name="bookings_filters_show_bookings">Boekingen weergeven</string>
+    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_empty_state_clear_filters_button">Filters wissen</string>
+    <string name="bookings_empty_state_change_filters_button">Filters wijzigen</string>
+    <string name="bookings_empty_state_description_with_filters">Er zijn geen boekingen die overeenkomen met je filters. Probeer ze aan te passen om meer resultaten te zien.</string>
+    <string name="bookings_search_no_results_with_filters">We konden geen boekingen vinden met die naam. Probeer je zoekterm of je filters aan te passen om meer resultaten te zien.</string>
+    <string name="bookings_search_no_results_without_filters">We konden geen boekingen vinden met die naam. Probeer je zoekterm aan te passen om meer resultaten te zien.</string>
+    <string name="bookings_empty_state_description_upcoming">Je hebt nog geen toekomstige afspraken of evenementen gepland.</string>
+    <string name="bookings_empty_state_description_today">Je hebt voor vandaag geen afspraken of evenementen gepland.</string>
+    <string name="bookings_empty_state_description_default">Inkomende boekingen verschijnen hier, waar je ze kan bekijken en beheren.</string>
+    <string name="bookings_empty_state_title_upcoming">Geen aankomende boekingen</string>
+    <string name="bookings_empty_state_title_today">Geen boekingen vandaag</string>
+    <string name="bookings_empty_state_title_default">Geen boekingen gevonden</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">Nieuwste</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">Oudste</string>
+    <string name="bookings_sort_by_newest_to_oldest">Nieuwste naar oudste</string>
+    <string name="bookings_sort_by_oldest_to_newest">Oudste naar nieuwste</string>
+    <string name="bookings_search_with_filters_hint">Gefilterde boekingen zoeken</string>
+    <string name="bookings_search_hint">Boekingen zoeken</string>
+    <string name="woopos_orders_status_refunded">Terugbetaald</string>
+    <string name="woopos_orders_status_completed">Voltooid</string>
+    <string name="woopos_orders_status_cancelled">Geannuleerd</string>
+    <string name="woopos_orders_status_failed">Mislukt</string>
+    <string name="woopos_orders_status_on_hold">In de wacht</string>
+    <string name="woopos_orders_status_processing">Bezig met verwerken</string>
+    <string name="woopos_orders_status_pending">Betaling in behandeling</string>
+    <string name="woopos_orders_status_auto_draft">Concept</string>
+    <string name="woopos_orders_pagination_error_content_description">Probeer het nog eens.</string>
+    <string name="woopos_orders_pagination_error_title">Kan niet meer bestellingen laden</string>
+    <string name="woopos_orders_loading_error_message">Controleer je verbinding en probeer het nog eens.</string>
+    <string name="woopos_orders_loading_error_title">Kan bestellingen niet laden</string>
+    <string name="woopos_orders_empty_list_image_description">Geen bestellingen</string>
+    <string name="woopos_orders_empty_action_label">Meer informatie</string>
+    <string name="woopos_orders_empty_list_message">Ontdek hoe je de verkoop van je winkel kan verhogen.</string>
+    <string name="woopos_orders_empty_list_title">Geen bestellingen gevonden</string>
+    <string name="woopos_date_yesterday_at">Gisteren om %s</string>
+    <string name="woopos_date_today_at">Vandaag om %s</string>
+    <string name="woopos_date_just_now">Zojuist</string>
+    <string name="woopos_date_never">Nooit</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Catalogus vernieuwen</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Gebruik vernieuwen alleen als iets niet lijkt te kloppen – POS houdt gegevens automatisch actueel.</string>
+    <string name="woopos_settings_local_catalog_actions">Handmatige catalogus-update</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Catalogus-updates downloaden met mobiele data</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Volledige update met mobiele data toestaan</string>
+    <string name="woopos_settings_local_catalog_settings">Dataverbruik beheren</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Laatste volledige update</string>
+    <string name="woopos_settings_local_catalog_last_update">Laatste update</string>
+    <string name="woopos_settings_local_catalog_size">Catalogusgrootte</string>
+    <string name="woopos_settings_local_catalog_status">Catalogusstatus</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">Catalogus-instellingen beheren</string>
+    <string name="woopos_settings_local_catalog_category">Catalogus</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Deel je ervaring in een korte enquête van 2 minuten en help ons te verbeteren.</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">Hoe werkt POS voor jou?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Doe mee aan een korte enquête van 2 minuten om ons te helpen functies te ontwikkelen waar je van zal houden.</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">Denk je na over persoonlijke verkoop?</string>
+    <string name="product_type_booking">Boekbaar product</string>
+    <string name="date_time_connector">om</string>
     <string name="booking_payment_view_order">Bestelling bekijken</string>
     <string name="booking_payment_mark_as_paid">Markeren als betaald</string>
     <string name="booking_payment_label_service">Dienst</string>
     <string name="booking_payment_header">BETALING</string>
     <string name="booking_attendance_status_no_show_desc">De klant heeft de afspraak gemist zonder op voorhand te annuleren.</string>
-    <string name="booking_attendance_status_cancelled_desc">De klant kan niet meer aanwezig zijn.</string>
     <string name="booking_attendance_status_checked_in_desc">De klant kwam aan en de sessie vond plaats zoals gepland.</string>
     <string name="booking_attendance_status_booked_desc">De afspraak is gepland, maar is nog niet gebeurd.</string>
     <string name="booking_attendance_update_title">Aanwezigheidsstatus updaten</string>
@@ -284,6 +355,7 @@ Language: nl
     <string name="woo_shipping_labels_package_creation_starred">Dit item aan favorieten toevoegen</string>
     <string name="woopos_coupons_pagination_error_title">Meer coupons kunnen niet worden geladen</string>
     <string name="woopos_coupons_pagination_try_again_label">Opnieuw proberen</string>
+    <string name="woopos_orders_loading_error_retry_button">Opnieuw proberen</string>
     <string name="woopos_coupons_loading_error_title">Coupons kunnen niet worden geladen</string>
     <string name="woopos_coupons_empty_list_title">Geen coupons gevonden</string>
     <string name="woopos_coupons_empty_list_image_description">Geen coupons</string>
