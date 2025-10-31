@@ -37,6 +37,8 @@ data class BookingUiState(
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
     val onMarkAsPaid: () -> Unit = {},
     val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
+    val onNoteClicked: () -> Unit = {},
+    val onViewOrderClicked: () -> Unit = {},
 )
 
 sealed interface BookingDetailsLoadingState {

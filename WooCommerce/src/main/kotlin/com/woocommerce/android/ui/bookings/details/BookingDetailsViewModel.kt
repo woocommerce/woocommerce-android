@@ -252,6 +252,14 @@ class BookingDetailsViewModel @Inject constructor(
         paymentUpdateStatus.value = PaymentUpdateStatus.Idle
     }
 
+    private fun openBookingNote(bookingId: Long) {
+        triggerEvent(NavigateToBookingNote(bookingId))
+    }
+
+    private fun openOrderDetails(orderId: Long) {
+        triggerEvent(NavigateToOrder(orderId))
+    }
+
     @Suppress("LongParameterList")
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
@@ -260,30 +268,36 @@ class BookingDetailsViewModel @Inject constructor(
         loadingState: BookingDetailsLoadingState,
         cancelStatus: CancelStatus,
         paymentUpdateStatus: PaymentUpdateStatus,
-    ): BookingUiState = BookingUiState(
-        orderId = booking.orderId,
-        bookingSummary = booking.toBookingSummaryModel(attendanceUpdateStatus),
-        bookingsAppointmentDetails = booking.toAppointmentDetailsModel(
-            staffMemberStatus = buildStaffMemberStatus(
-                resourceId = booking.resourceId,
-                resource = resource,
-                loadingState = loadingState
+    ): BookingUiState {
+        val bookingId = booking.id.value
+        val orderId = booking.orderId
+        return BookingUiState(
+            orderId = orderId,
+            bookingSummary = booking.toBookingSummaryModel(attendanceUpdateStatus),
+            bookingsAppointmentDetails = booking.toAppointmentDetailsModel(
+                staffMemberStatus = buildStaffMemberStatus(
+                    resourceId = booking.resourceId,
+                    resource = resource,
+                    loadingState = loadingState
+                ),
+                cancelStatus = cancelStatus
             ),
-            cancelStatus = cancelStatus
-        ),
-        bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
-        bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
-        note = booking.note,
-        isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
-        onCancelBooking = ::onCancelBooking,
-        onAttendanceStatusSelected = { attendanceStatus ->
-            if (attendanceStatus.toDataModel() != booking.attendanceStatus) {
-                onAttendanceStatusSelected(booking.id.value, attendanceStatus)
-            }
-        },
-        onMarkAsPaid = { onMarkAsPaid(booking.id.value) },
-        paymentUpdateStatus = paymentUpdateStatus,
-    )
+            bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
+            bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
+            note = booking.note,
+            isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
+            onCancelBooking = ::onCancelBooking,
+            onAttendanceStatusSelected = { attendanceStatus ->
+                if (attendanceStatus.toDataModel() != booking.attendanceStatus) {
+                    onAttendanceStatusSelected(bookingId, attendanceStatus)
+                }
+            },
+            onMarkAsPaid = { onMarkAsPaid(bookingId) },
+            paymentUpdateStatus = paymentUpdateStatus,
+            onViewOrderClicked = { openOrderDetails(orderId) },
+            onNoteClicked = { openBookingNote(bookingId) }
+        )
+    }
 
     private fun buildStaffMemberStatus(
         resourceId: Long,
@@ -299,4 +313,7 @@ class BookingDetailsViewModel @Inject constructor(
             else -> BookingStaffMemberStatus.Unavailable
         }
     }
+
+    data class NavigateToOrder(val orderId: Long) : MultiLiveEvent.Event()
+    data class NavigateToBookingNote(val bookingId: Long) : MultiLiveEvent.Event()
 }

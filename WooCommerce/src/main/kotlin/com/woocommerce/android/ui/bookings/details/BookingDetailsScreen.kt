@@ -67,8 +67,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -76,8 +74,6 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onViewOrder = onViewOrder,
-            onViewNotes = onViewNotes,
         )
     }
 }
@@ -87,8 +83,6 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
     val context = LocalContext.current
     val showAttendanceSheet = remember { mutableStateOf(false) }
@@ -125,9 +119,7 @@ fun BookingDetailsScreen(
                                 BookingDetailsContent(
                                     booking = viewState.bookingUiState,
                                     onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                    onViewOrder = onViewOrder,
                                     onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                                    onViewNotes = onViewNotes,
                                     onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                 )
                                 if (showAttendanceSheet.value) {
@@ -152,9 +144,7 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
-    onViewNotes: () -> Unit,
     onMarkAsPaid: () -> Unit,
 ) {
     BookingSummary(
@@ -183,14 +173,14 @@ private fun BookingDetailsContent(
             model = it,
             status = booking.bookingSummary.status,
             onMarkAsPaid = onMarkAsPaid,
-            onViewOrder = { onViewOrder(booking.orderId) },
+            onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
             markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(
         note = booking.note,
-        onClick = onViewNotes,
+        onClick = booking.onNoteClicked,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -310,8 +300,6 @@ private fun BookingDetailsPreview() {
                 ),
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
@@ -327,8 +315,6 @@ private fun BookingDetailsLoadingPreview() {
                 loadingState = BookingDetailsLoadingState.Refreshing,
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
@@ -340,8 +326,6 @@ private fun BookingDetailsEmptyPreview() {
         BookingDetailsScreen(
             viewState = BookingDetailsViewState.Empty,
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
