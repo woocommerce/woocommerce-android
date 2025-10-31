@@ -3604,7 +3604,9 @@
     <!--
     Woo POS
     -->
-    <string name="woopos_home_syncing_catalog_title">Syncing product catalog</string>
+    <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
@@ -4228,6 +4230,7 @@
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_enabled_title">Filters • %d</string>
     <string name="bookings_filters_count_title">Filters (%d)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>

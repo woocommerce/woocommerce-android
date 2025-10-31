@@ -230,6 +230,38 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun onBackFromSuccessfullySendingEmailReceipt() {
+        refreshSelectedOrder()
+    }
+
+    private fun refreshSelectedOrder() {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val selectedOrderId = current.selectedDetails.id
+
+        viewModelScope.launch {
+            ordersDataSource.refreshOrderById(selectedOrderId)
+                .onSuccess { applyOrderUpdate(it) }
+        }
+    }
+
+    private suspend fun applyOrderUpdate(updated: Order) {
+        val current = _state.value as? WooPosOrdersState.Content ?: return
+        val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+
+        val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
+        val newItem = mapOrderItem(updated, selectedId)
+        val newDetails = mapOrderDetails(updated)
+
+        val newMap = loaded.items.entries.associate { (item, details) ->
+            if (item.id == updated.id) newItem to newDetails else item to details
+        }
+
+        _state.value = current.copy(
+            items = WooPosOrdersState.Content.Items.Loaded(newMap),
+            selectedDetails = if (selectedId == updated.id) newDetails else current.selectedDetails
+        )
+    }
+
     private fun updateSearchState(searchState: WooPosSearchInputState) {
         _state.value = when (val currentState = _state.value) {
             is WooPosOrdersState.Content -> currentState.copy(searchInputState = searchState)

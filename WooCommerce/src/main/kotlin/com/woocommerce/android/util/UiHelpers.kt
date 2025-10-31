@@ -110,8 +110,14 @@ object UiHelpers {
     @Suppress("MagicNumber")
     private fun isFontScaleIncreased(fontScale: Float): Boolean = fontScale > 1.5f
 
-    private fun Context.isDisplaySizeScaleIncreased(): Boolean =
-        resources.displayMetrics.densityDpi > DisplayMetrics.DENSITY_DEVICE_STABLE
+    @Suppress("MagicNumber")
+    private fun Context.isDisplaySizeScaleIncreased(): Boolean {
+        val densityDpi = resources.displayMetrics.densityDpi
+        val deviceStableDensity = DisplayMetrics.DENSITY_DEVICE_STABLE
+        val increasePercentage = ((densityDpi - deviceStableDensity).toFloat() / deviceStableDensity) * 100
+        // require a >15% increase in density rather than any increase.
+        return increasePercentage > 15f
+    }
 
     /**
      * Returns View.GONE if either the font scale is large or the accessibility display size is changed, otherwise View.VISIBLE.

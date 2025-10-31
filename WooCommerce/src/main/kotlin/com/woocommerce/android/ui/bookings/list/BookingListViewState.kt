@@ -7,12 +7,8 @@ data class BookingListViewState(
     val tabState: BookingListTabState,
     val controlsState: BookingListControlsState,
     val sortBottomSheetState: BookingListSortBottomSheetState?,
-    val searchState: BookingListSearchState
-) {
-    // TODO use filters when available
-    val areFiltersActive: Boolean
-        get() = false
-}
+    val searchState: BookingListSearchState,
+)
 
 data class BookingListContentState(
     val bookings: List<BookingListItem>,
@@ -40,9 +36,14 @@ data class BookingListTabState(
 data class BookingListControlsState(
     val selectedSortOption: BookingListSortOption,
     val isFilterButtonVisible: Boolean,
+    val enabledFiltersCount: Int,
     val onSortClick: () -> Unit,
-    val onFilterClick: () -> Unit
-)
+    val onFilterClick: () -> Unit,
+    val onClearFiltersClick: () -> Unit
+) {
+    val areFiltersActive: Boolean
+        get() = enabledFiltersCount > 0
+}
 
 data class BookingListItem(
     val id: Long,
