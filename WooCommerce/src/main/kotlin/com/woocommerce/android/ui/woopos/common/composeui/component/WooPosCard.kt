@@ -25,6 +25,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Density
@@ -48,9 +49,9 @@ fun WooPosCard(
     shape: Shape = MaterialTheme.shapes.medium,
     backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
     contentColor: Color = contentColorFor(backgroundColor),
-    border: BorderStroke? = null,
     elevation: WooPosElevation = WooPosElevation.Medium,
     shadowType: ShadowType = ShadowType.Normal,
+    isSelected: Boolean = false,
     content: @Composable () -> Unit
 ) {
     CompositionLocalProvider(
@@ -61,13 +62,21 @@ fun WooPosCard(
                 .surface(
                     shape = shape,
                     backgroundColor = backgroundColor,
-                    border = border,
+                    border = if (isSelected) {
+                        BorderStroke(
+                            width = 2.dp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                    } else {
+                        null
+                    },
                     elevation = elevation.value,
                     shadowType = shadowType
                 )
                 .semantics(mergeDescendants = false) {
                     isTraversalGroup = true
                 }
+                .semantics { selected = isSelected }
                 .pointerInput(Unit) {},
             propagateMinConstraints = true
         ) {

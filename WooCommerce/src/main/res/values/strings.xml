@@ -3604,7 +3604,9 @@
     <!--
     Woo POS
     -->
-    <string name="woopos_home_syncing_catalog_title">Syncing product catalog</string>
+    <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
@@ -4240,6 +4242,8 @@
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>
+    <string name="bookings_filter_type_service">Service</string>
+    <string name="bookings_filter_type_event">Event</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
