@@ -11,6 +11,7 @@
 - [*] Fixed an issue where the count of the filters applied to the orders was not updated correctly [https://github.com/woocommerce/woocommerce-android/pull/14844]
 - [**] Fix the refund flow for Interac cards [https://github.com/woocommerce/woocommerce-android/pull/14874]
 - [**] POS: Allow merchants to view, search, and manage POS orders directly within the POS interface. [https://github.com/woocommerce/woocommerce-android/pull/14866]
+- [*] Improved the Filters and Add button colors [https://github.com/woocommerce/woocommerce-android/pull/14872]
 
 23.5
 -----
