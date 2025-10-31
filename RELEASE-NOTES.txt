@@ -1,6 +1,10 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+23.7
+-----
+
+
 23.6
 -----
 - [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
@@ -9,7 +13,9 @@
 - [*] Fixed an issue with inconsistent data on the Customers screen [https://github.com/woocommerce/woocommerce-android/pull/14839]
 - [*] Fixed an issue when images for the card reader flows were not shown on tablets [https://github.com/woocommerce/woocommerce-android/pull/14849]
 - [*] Fixed an issue where the count of the filters applied to the orders was not updated correctly [https://github.com/woocommerce/woocommerce-android/pull/14844]
+- [**] Fix the refund flow for Interac cards [https://github.com/woocommerce/woocommerce-android/pull/14874]
 - [**] POS: Allow merchants to view, search, and manage POS orders directly within the POS interface. [https://github.com/woocommerce/woocommerce-android/pull/14866]
+- [*] Improved the Filters and Add button colors [https://github.com/woocommerce/woocommerce-android/pull/14872]
 
 23.5
 -----
