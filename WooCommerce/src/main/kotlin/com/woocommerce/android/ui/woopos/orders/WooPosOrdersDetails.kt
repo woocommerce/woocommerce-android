@@ -47,13 +47,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState,
-    onEmailReceiptButtonClicked: (Long) -> Unit,
-    onShown: (Long) -> Unit
+    onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
-    LaunchedEffect(details.id) {
-        onShown(details.id)
-    }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -382,8 +377,7 @@ fun WooPosOrderDetailsPreview() {
     WooPosTheme {
         WooPosOrderDetails(
             details = orderDetails,
-            onEmailReceiptButtonClicked = {},
-            onShown = {}
+            onEmailReceiptButtonClicked = {}
         )
     }
 }

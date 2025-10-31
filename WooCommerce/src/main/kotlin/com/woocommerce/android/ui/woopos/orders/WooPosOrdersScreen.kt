@@ -109,7 +109,6 @@ fun WooPosOrdersScreen(
         onSearchErrorRetry = viewModel::onSearchErrorRetry,
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
-        onDetailsShown = viewModel::onOrdersDetailsShown,
         onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked
     )
 }
@@ -127,7 +126,6 @@ private fun WooPosOrdersScreen(
     onSearchErrorRetry: () -> Unit,
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
-    onDetailsShown: (Long) -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit,
 ) {
     BackHandler { onBackClicked() }
@@ -142,7 +140,6 @@ private fun WooPosOrdersScreen(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
-                onDetailsShown = onDetailsShown,
                 onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
             )
 
@@ -176,7 +173,6 @@ private fun OrdersContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onDetailsShown: (Long) -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -204,8 +200,7 @@ private fun OrdersContent(
                 modifier = Modifier
                     .fillMaxHeight(),
                 details = state.selectedDetails,
-                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
-                onShown = onDetailsShown
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
             )
         }
     }
@@ -520,7 +515,9 @@ fun WooPosOrdersScreenPreview() {
         status = PosOrderStatus(
             text = "Completed",
             colorKey = OrderStatusColorKey.COMPLETED
-        )
+        ),
+        statusSlug = "Completed",
+        createdAtMillis = 1
     )
     val item2 = OrderItemViewState(
         id = 2,
@@ -532,7 +529,9 @@ fun WooPosOrdersScreenPreview() {
         status = PosOrderStatus(
             text = "Processing",
             colorKey = OrderStatusColorKey.PROCESSING
-        )
+        ),
+        statusSlug = "Completed",
+        createdAtMillis = 1
     )
 
     val details1 = sampleOrderDetails(id = 1L, number = "#014")
@@ -561,8 +560,7 @@ fun WooPosOrdersScreenPreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {},
-            onDetailsShown = {}
+            onEmailReceiptButtonClicked = {}
         )
     }
 }
@@ -595,8 +593,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {},
-            onDetailsShown = {}
+            onEmailReceiptButtonClicked = {}
         )
     }
 }
@@ -629,8 +626,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {},
-            onDetailsShown = {}
+            onEmailReceiptButtonClicked = {}
         )
     }
 }
