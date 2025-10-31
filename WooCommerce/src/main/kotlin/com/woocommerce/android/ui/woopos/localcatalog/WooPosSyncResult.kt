@@ -3,9 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 
-sealed class WooPosSyncResult
-
-sealed class PosLocalCatalogSyncResult : WooPosSyncResult() {
+sealed class PosLocalCatalogSyncResult {
     data class Success(
         val productsSynced: Int,
         val variationsSynced: Int,
