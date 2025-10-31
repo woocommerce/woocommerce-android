@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -235,10 +236,10 @@ class WooPosVariationsViewModel @Inject constructor(
             val result = dataSource.refreshVariations(productId)
             result.onSuccess { posSyncResult ->
                 when (posSyncResult) {
-                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success -> {
+                    is PosLocalCatalogSyncResult.Success -> {
                         _viewState.value = hidePTRIndicator()
                     }
-                    is com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure -> {
+                    is PosLocalCatalogSyncResult.Failure -> {
                         sendEventToParent(
                             ChildToParentEvent.ToastMessageDisplayed(
                                 message = resourceProvider.getString(R.string.offline_error)
