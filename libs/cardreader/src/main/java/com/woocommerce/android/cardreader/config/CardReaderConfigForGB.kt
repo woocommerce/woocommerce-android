@@ -16,6 +16,10 @@ object CardReaderConfigForGB : CardReaderConfigForSupportedCountry(
     paymentMethodTypes = listOf(PaymentMethodType.CARD_PRESENT),
     supportedExtensions = listOf(
         SupportedExtension(
+            type = SupportedExtensionType.STRIPE,
+            supportedSince = "6.2.0"
+        ),
+        SupportedExtension(
             type = SupportedExtensionType.WC_PAY,
             supportedSince = "4.4.0"
         ),
