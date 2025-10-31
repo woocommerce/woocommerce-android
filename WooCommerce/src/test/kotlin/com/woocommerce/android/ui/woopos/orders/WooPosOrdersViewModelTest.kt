@@ -13,14 +13,6 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrderDetailsEmailReceiptTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListNextPageLoaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListPullToRefreshTriggered
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListRowTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchButtonTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.OrdersListSearchResultsFetched
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -34,7 +26,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mockito.mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.argThat
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
