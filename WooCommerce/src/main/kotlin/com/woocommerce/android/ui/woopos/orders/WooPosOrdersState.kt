@@ -49,7 +49,9 @@ data class OrderItemViewState(
     val total: String,
     val customerEmail: String?,
     val isSelected: Boolean,
-    val status: PosOrderStatus
+    val status: PosOrderStatus,
+    val statusSlug: String,
+    val createdAtMillis: Long
 )
 
 @Immutable

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,6 +25,7 @@ class BookingFilterListViewModel @Inject constructor(
             onClose = ::onClose,
             onShowBookings = ::onShowBookings,
             openPage = ::onOpenPage,
+            onUpdateFilterOption = ::onUpdateFilterOption,
         )
     )
     val uiState = _uiState.asLiveData()
@@ -35,6 +37,23 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onOpenPage(page: BookingFilterPage) {
         _uiState.update { current ->
             current.copy(currentPage = page)
+        }
+    }
+
+    private fun onUpdateFilterOption(option: BookingsFilterOption) {
+        _uiState.update { current ->
+            val filtered = when (option) {
+                is BookingsFilterOption.BookingType -> {
+                    current.newBookingFilters.filterNot { it is BookingsFilterOption.BookingType }
+                }
+
+                else -> current.newBookingFilters.filterNot { it::class == option::class }
+            }
+            current.copy(
+                newBookingFilters = filtered
+                    .plus(option)
+                    .toSet()
+            )
         }
     }
 

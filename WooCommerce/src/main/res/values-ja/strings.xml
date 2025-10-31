@@ -1,17 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-08 09:54:08+0000
+Translation-Revision-Date: 2025-10-21 09:54:39+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_confirm">はい、キャンセルします</string>
+    <string name="booking_cancel_dialog_keep">いいえ、そのままにします</string>
+    <string name="booking_cancel_dialog_message">%1$sが %3$s、%4$sの「%2$s」に出席できなくなりました。</string>
+    <string name="booking_cancel_dialog_title">予約をキャンセル</string>
+    <string name="booking_fetch_error">予約取得時のエラー</string>
+    <string name="bookings_filter_default">すべて</string>
+    <string name="bookings_filter_title_service_event">サービス / イベント</string>
+    <string name="bookings_filter_title_date">日付と時刻</string>
+    <string name="bookings_filter_location">場所</string>
+    <string name="bookings_filter_customer_name">顧客名</string>
+    <string name="bookings_filter_title_type">予約タイプ</string>
+    <string name="bookings_filter_title_payment_status">支払いステータス</string>
+    <string name="bookings_filter_title_attendance_status">出席状況</string>
+    <string name="bookings_filter_title_team_member">アサインされたチームメンバー</string>
+    <string name="bookings_filters_show_bookings">予約を表示</string>
+    <string name="bookings_filters_count_title">フィルター (%d)</string>
+    <string name="bookings_filters_default_title">フィルター</string>
+    <string name="bookings_empty_state_clear_filters_button">フィルターをクリア</string>
+    <string name="bookings_empty_state_change_filters_button">フィルターを変更</string>
+    <string name="bookings_empty_state_description_with_filters">フィルターに一致する予約がありません。 より多くの結果を表示するには、調整してみてください。</string>
+    <string name="bookings_search_no_results_with_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索語句またはフィルターを調整してみてください。</string>
+    <string name="bookings_search_no_results_without_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索キーワードを調整してみてください。</string>
+    <string name="bookings_empty_state_description_upcoming">予定された今後の予約やイベントはまだありません。</string>
+    <string name="bookings_empty_state_description_today">今日予定された予約やイベントはありません。</string>
+    <string name="bookings_empty_state_description_default">追加された予約がこちらに表示され、閲覧および管理できます。</string>
+    <string name="bookings_empty_state_title_upcoming">今後の予約はありません</string>
+    <string name="bookings_empty_state_title_today">今日の予約はありません</string>
+    <string name="bookings_empty_state_title_default">予約はありません</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">最新</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">最も古い</string>
+    <string name="bookings_sort_by_newest_to_oldest">新しい順</string>
+    <string name="bookings_sort_by_oldest_to_newest">古い順</string>
+    <string name="bookings_search_with_filters_hint">フィルターした予約を検索</string>
+    <string name="bookings_search_hint">予約を検索</string>
+    <string name="woopos_orders_status_refunded">返金済み</string>
+    <string name="woopos_orders_status_completed">完了</string>
+    <string name="woopos_orders_status_cancelled">キャンセル済み</string>
+    <string name="woopos_orders_status_failed">失敗</string>
+    <string name="woopos_orders_status_on_hold">保留中</string>
+    <string name="woopos_orders_status_processing">処理中</string>
+    <string name="woopos_orders_status_pending">支払い待ち</string>
+    <string name="woopos_orders_status_auto_draft">下書き</string>
+    <string name="woopos_orders_pagination_error_content_description">もう一度お試しください。</string>
+    <string name="woopos_orders_pagination_error_title">これ以上注文を読み込めません</string>
+    <string name="woopos_orders_loading_error_message">接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_orders_loading_error_title">注文を読み込めません</string>
+    <string name="woopos_orders_empty_list_image_description">注文はありません</string>
+    <string name="woopos_orders_empty_action_label">さらに詳しく</string>
+    <string name="woopos_orders_empty_list_message">ストアの売り上げを伸ばす方法を見つけましょう。</string>
+    <string name="woopos_orders_empty_list_title">注文がありません</string>
+    <string name="woopos_date_yesterday_at">昨日 %s</string>
+    <string name="woopos_date_today_at">本日 %s</string>
+    <string name="woopos_date_just_now">たった今</string>
+    <string name="woopos_date_never">なし</string>
+    <string name="woopos_settings_local_catalog_refresh_button">カタログを再読み込み</string>
+    <string name="woopos_settings_local_catalog_refresh_description">POS はデータを自動的に最新の状態に保つため、この読み込みは何か問題があると思われる場合にのみ使用します。</string>
+    <string name="woopos_settings_local_catalog_actions">カタログの手動更新</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">モバイルデータを使用してカタログの更新をダウンロード</string>
+    <string name="woopos_settings_local_catalog_cellular_data">携帯データでのフル更新を許可</string>
+    <string name="woopos_settings_local_catalog_settings">データ使用量を管理</string>
+    <string name="woopos_settings_local_catalog_last_full_update">最終フル更新</string>
+    <string name="woopos_settings_local_catalog_last_update">最終更新</string>
+    <string name="woopos_settings_local_catalog_size">カタログのサイズ</string>
+    <string name="woopos_settings_local_catalog_status">カタログのステータス</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">カタログ設定を管理</string>
+    <string name="woopos_settings_local_catalog_category">カタログ</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">2分間の簡単なアンケートで体験を共有し、改善にご協力ください。</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">POS 機能はいかがですか ?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">よりよい機能を実現するため、2分間の簡単なアンケートにご協力ください。</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">オフラインでの販売についてお考えですか ?</string>
+    <string name="product_type_booking">予約商品</string>
+    <string name="date_time_connector">\@</string>
     <string name="booking_payment_view_order">注文を表示</string>
     <string name="booking_payment_mark_as_paid">支払い済みとしてマーク</string>
     <string name="booking_payment_label_service">サービス</string>
     <string name="booking_payment_header">支払い</string>
     <string name="booking_attendance_status_no_show_desc">クライアントが事前にキャンセルの連絡をせずに、予約を欠席しました。</string>
-    <string name="booking_attendance_status_cancelled_desc">今後クライアントは出席できなくなります。</string>
     <string name="booking_attendance_status_checked_in_desc">お客様が到着し、セッションは予定どおりに行われました。</string>
     <string name="booking_attendance_status_booked_desc">予約はありますが、まだ行われていません。</string>
     <string name="booking_attendance_update_title">出席率ステータスを更新</string>
@@ -284,6 +355,7 @@ Language: ja_JP
     <string name="woo_shipping_labels_package_creation_starred">このアイテムにスターを付ける</string>
     <string name="woopos_coupons_pagination_error_title">クーポンをこれ以上読み込めません</string>
     <string name="woopos_coupons_pagination_try_again_label">再試行</string>
+    <string name="woopos_orders_loading_error_retry_button">再試行</string>
     <string name="woopos_coupons_loading_error_title">クーポンを読み込めません</string>
     <string name="woopos_coupons_empty_list_title">クーポンが見つかりません</string>
     <string name="woopos_coupons_empty_list_image_description">クーポンがありません</string>
