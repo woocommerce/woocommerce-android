@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
 Base Woo Styles. Use these styles as a base for custom component styles and override only the
 properties necessary. The goal is to make as few modifications as possible to keep a consistent
 theme across the entire app. Overridden versions should be added to the styles.xml file.
 -->
-<resources
-    xmlns:tools="http://schemas.android.com/tools">
-    <style name="Woo"/>
-    <style name="Widget"/>
-    <style name="Widget.Woo"/>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Woo" />
+
+    <style name="Widget" />
+
+    <style name="Widget.Woo" />
 
     <!--
         Toolbar Styles
@@ -21,18 +22,22 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingStart">0dp</item>
         <item name="android:paddingLeft">0dp</item>
     </style>
+
     <style name="Widget.Woo.Toolbar.Surface" parent="ThemeOverlay.MaterialComponents.Toolbar.Surface">
         <item name="actionMenuTextColor">@color/color_primary_selector</item>
     </style>
+
     <style name="TextAppearance.Woo.CollapsingToolbar.Expanded" parent="TextAppearance.MaterialComponents.Headline4">
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_height">@dimen/expanded_toolbar_height</item>
     </style>
+
     <style name="TextAppearance.Woo.CollapsingToolbar.Collapsed" parent="TextAppearance.MaterialComponents.Headline6">
         <item name="android:textColor">@color/color_on_surface</item>
         <item name="android:layout_height">@dimen/toolbar_height</item>
     </style>
+
     <style name="Woo.CollapsedToolbarLayout" parent="@style/Widget.Design.CollapsingToolbar">
         <item name="layout_scrollFlags">scroll|exitUntilCollapsed</item>
         <item name="android:background">@color/color_toolbar</item>
@@ -47,10 +52,12 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="expandedTitleMarginEnd">16dp</item>
         <item name="android:paddingEnd">4dp</item>
     </style>
+
     <style name="Woo.ActionMode.OverflowButtonStyle" parent="Widget.AppCompat.ActionButton.Overflow">
         <item name="tint">@color/color_primary</item>
         <item name="android:paddingEnd">16dp</item>
     </style>
+
     <style name="Woo.TextView.Subtitle1.ToolbarSubtitle">
         <item name="android:layout_gravity">bottom</item>
         <item name="android:layout_marginStart">16dp</item>
@@ -189,7 +196,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:textColor">@color/color_on_surface_high</item>
     </style>
 
-    <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1"/>
+    <style name="Woo.Card.StatusMessage" parent="Woo.TextView.Subtitle1" />
 
     <style name="Woo.Card.ListHeader" parent="Woo.TextView.Body2">
         <item name="android:layout_marginBottom">@dimen/major_75</item>
@@ -363,8 +370,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         TextInputLayout styles
     -->
-    <style name="Woo.TextInputLayout"
-        parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+    <style name="Woo.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_marginStart">@dimen/major_100</item>
         <item name="android:layout_marginEnd">@dimen/major_100</item>
         <item name="android:layout_marginTop">@dimen/minor_00</item>
@@ -372,8 +378,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="helperTextTextAppearance">@style/TextAppearance.Woo.Caption</item>
     </style>
 
-    <style name="Woo.TextInputEditText"
-        parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
+    <style name="Woo.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
         <item name="android:textAppearance">?attr/textAppearanceSubtitle1</item>
         <item name="android:textColor">@color/color_on_surface_high</item>
         <item name="android:gravity">center_vertical|start</item>
@@ -608,7 +613,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
     <!--
         List Styles
     -->
-    <style name="Woo.ListHeader" parent="Woo.TextView.Subtitle2"/>
+    <style name="Woo.ListHeader" parent="Woo.TextView.Subtitle2" />
 
     <!--  Use with a list item container -->
     <style name="Woo.ListItem">
@@ -619,11 +624,16 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingTop">@dimen/minor_100</item>
         <item name="android:paddingBottom">@dimen/minor_100</item>
     </style>
-    <style name="Woo.ListItem.Title" parent="Woo.TextView.Subtitle1"/>
-    <style name="Woo.ListItem.Subtitle" parent="Woo.TextView.Subtitle2"/>
-    <style name="Woo.ListItem.Overline" parent="Woo.TextView.Overline"/>
-    <style name="Woo.ListItem.Caption" parent="Woo.TextView.Caption"/>
-    <style name="Woo.ListItem.Body" parent="Woo.TextView.Body2"/>
+
+    <style name="Woo.ListItem.Title" parent="Woo.TextView.Subtitle1" />
+
+    <style name="Woo.ListItem.Subtitle" parent="Woo.TextView.Subtitle2" />
+
+    <style name="Woo.ListItem.Overline" parent="Woo.TextView.Overline" />
+
+    <style name="Woo.ListItem.Caption" parent="Woo.TextView.Caption" />
+
+    <style name="Woo.ListItem.Body" parent="Woo.TextView.Body2" />
 
     <!--
         FlowLayout Style
@@ -695,7 +705,7 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:paddingEnd">@dimen/major_100</item>
     </style>
 
-    <style name="Widget.Woo.Settings.OptionValue"/>
+    <style name="Widget.Woo.Settings.OptionValue" />
 
     <style name="Widget.Woo.Settings.OptionToggle">
         <item name="android:paddingStart">@dimen/major_100</item>
@@ -726,7 +736,8 @@ theme across the entire app. Overridden versions should be added to the styles.x
         <item name="android:layout_marginBottom">@dimen/major_75</item>
     </style>
 
-    <style name="Woo.Skeleton.ListItem"/>
+    <style name="Woo.Skeleton.ListItem" />
+
     <style name="Woo.Skeleton.ListItem.Single">
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">@dimen/skeleton_text_height_200</item>
