@@ -1,2 +1,0 @@
-23.5:
-Wir haben dein WooCommerce-Erlebnis optimiert! Diese Aktualisierung behebt einen seltenen Absturz bei der Rückerstattung von Bestellungen und korrigiert, wie Kundennamen beim Filtern von Bestellungen angezeigt werden. Profitiere mit diesem Release von einer reibungsloseren Performance und einer zuverlässigeren Bestellverwaltung.
