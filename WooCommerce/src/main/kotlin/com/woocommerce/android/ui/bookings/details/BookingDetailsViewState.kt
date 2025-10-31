@@ -11,10 +11,6 @@ data class BookingDetailsViewState(
     val toolbarTitle: String = "",
     val bookingUiState: BookingUiState? = null,
     val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
-    val onCancelBooking: () -> Unit = {},
-    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
-    val onMarkAsPaid: () -> Unit = {},
-    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
     val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
@@ -29,7 +25,11 @@ data class BookingUiState(
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
     val note: String,
-    val isAttendanceStatusEditable: Boolean
+    val isAttendanceStatusEditable: Boolean,
+    val onCancelBooking: () -> Unit = {},
+    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onMarkAsPaid: () -> Unit = {},
+    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
 )
 
 sealed interface BookingDetailsLoadingState {

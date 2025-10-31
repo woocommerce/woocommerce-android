@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,7 +60,7 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            if (status == BookingStatus.Unpaid) {
+            AnimatedVisibility(status == BookingStatus.Unpaid) {
                 WCColoredButton(
                     onClick = onMarkAsPaid,
                     text = stringResource(id = R.string.booking_payment_mark_as_paid),

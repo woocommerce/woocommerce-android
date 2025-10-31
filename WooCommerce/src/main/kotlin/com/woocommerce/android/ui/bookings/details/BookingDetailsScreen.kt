@@ -124,25 +124,24 @@ fun BookingDetailsScreen(
                         viewState.bookingUiState != null -> {
                             BookingDetailsContent(
                                 booking = viewState.bookingUiState,
-                                onCancelBooking = viewState.onCancelBooking,
+                                onCancelBooking = viewState.bookingUiState.onCancelBooking,
                                 onViewOrder = onViewOrder,
                                 onAttendanceStatusClicked = { showAttendanceSheet.value = true },
                                 onViewNotes = onViewNotes,
-                                onMarkAsPaid = viewState.onMarkAsPaid,
-                                markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
+                                onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                             )
+                            if (showAttendanceSheet.value) {
+                                BookingAttendanceStatusBottomSheet(
+                                    onSelect = { status ->
+                                        viewState.bookingUiState.onAttendanceStatusSelected(status)
+                                    },
+                                    onDismiss = { showAttendanceSheet.value = false }
+                                )
+                            }
                         }
                     }
                 }
             }
-        }
-        if (showAttendanceSheet.value) {
-            BookingAttendanceStatusBottomSheet(
-                onSelect = { status ->
-                    viewState.onAttendanceStatusSelected(status)
-                },
-                onDismiss = { showAttendanceSheet.value = false }
-            )
         }
         viewState.dialogState?.Render()
     }
@@ -156,7 +155,6 @@ private fun BookingDetailsContent(
     onAttendanceStatusClicked: () -> Unit,
     onViewNotes: () -> Unit,
     onMarkAsPaid: () -> Unit,
-    markAsPaidInProgress: Boolean,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -186,7 +184,7 @@ private fun BookingDetailsContent(
             onMarkAsPaid = onMarkAsPaid,
             onViewOrder = { onViewOrder(booking.orderId) },
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = markAsPaidInProgress,
+            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(

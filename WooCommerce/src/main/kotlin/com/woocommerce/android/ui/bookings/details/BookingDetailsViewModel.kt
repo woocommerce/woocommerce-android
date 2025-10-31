@@ -37,6 +37,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import javax.inject.Inject
+import com.woocommerce.android.extensions.combine as woocombine
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -102,15 +103,23 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private val bookingUiStateFlow = combine(
+    private val bookingUiStateFlow = woocombine(
         booking,
         attendanceUpdateStatus,
         loadingState,
         resource,
         cancelStatusState,
-    ) { booking, attendanceUpdate, loadingState, resource, cancelStatus ->
+        paymentUpdateStatus,
+    ) { booking, attendanceUpdate, loadingState, resource, cancelStatus, paymentUpdate ->
         if (booking != null) {
-            bookingMapper.buildBookingUiState(booking, attendanceUpdate, resource, loadingState, cancelStatus)
+            bookingMapper.buildBookingUiState(
+                booking = booking,
+                attendanceUpdateStatus = attendanceUpdate,
+                resource = resource,
+                loadingState = loadingState,
+                cancelStatus = cancelStatus,
+                paymentUpdateStatus = paymentUpdate,
+            )
         } else {
             null
         }
@@ -129,14 +138,6 @@ class BookingDetailsViewModel @Inject constructor(
                     resourceProvider.getString(R.string.booking_details_title, id)
                 } ?: "",
                 bookingUiState = bookingUiState,
-                onCancelBooking = ::onCancelBooking,
-                onAttendanceStatusSelected = { attendanceStatus ->
-                    if (attendanceStatus.toDataModel() != booking?.attendanceStatus) {
-                        onAttendanceStatusSelected(attendanceStatus)
-                    }
-                },
-                onMarkAsPaid = ::onMarkAsPaid,
-                paymentUpdateStatus = paymentUpdateStatus,
                 dialogState = cancelBookingDialog,
                 loadingState = loadingState,
                 onRefresh = ::fetchBooking,
@@ -234,12 +235,14 @@ class BookingDetailsViewModel @Inject constructor(
         paymentUpdateStatus.value = PaymentUpdateStatus.Idle
     }
 
+    @Suppress("LongParameterList")
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
         attendanceUpdateStatus: AttendanceUpdateStatus,
         resource: BookingResource?,
         loadingState: BookingDetailsLoadingState,
         cancelStatus: CancelStatus,
+        paymentUpdateStatus: PaymentUpdateStatus,
     ): BookingUiState = BookingUiState(
         orderId = booking.orderId,
         bookingSummary = booking.toBookingSummaryModel(attendanceUpdateStatus),
@@ -254,7 +257,15 @@ class BookingDetailsViewModel @Inject constructor(
         bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
         bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
         note = booking.note,
-        isAttendanceStatusEditable = booking.isAttendanceStatusEditable
+        isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
+        onCancelBooking = ::onCancelBooking,
+        onAttendanceStatusSelected = { attendanceStatus ->
+            if (attendanceStatus.toDataModel() != booking.attendanceStatus) {
+                onAttendanceStatusSelected(attendanceStatus)
+            }
+        },
+        onMarkAsPaid = ::onMarkAsPaid,
+        paymentUpdateStatus = paymentUpdateStatus,
     )
 
     private fun buildStaffMemberStatus(

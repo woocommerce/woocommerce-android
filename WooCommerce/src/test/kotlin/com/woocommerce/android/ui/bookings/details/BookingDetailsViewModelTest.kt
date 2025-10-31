@@ -96,7 +96,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.onAttendanceStatusSelected(BookingAttendanceStatus.NoShow)
+        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.NoShow)
 
         // Then
         verify(bookingsRepository, times(1)).updateAttendanceStatus(
@@ -211,7 +211,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
 
         // When
-        state.onCancelBooking()
+        state.bookingUiState?.onCancelBooking()
 
         // Then
         val updated = viewModel.state.getOrAwaitValue()
@@ -223,7 +223,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
-        state.onCancelBooking()
+        state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
         assertThat(stateWithDialog.dialogState).isNotNull
 
@@ -240,7 +240,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         // Given
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
-        state.onCancelBooking()
+        state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
         assertThat(stateWithDialog.dialogState).isNotNull()
 
@@ -261,7 +261,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         }
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
-        state.onCancelBooking()
+        state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
 
         // When
@@ -284,7 +284,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         whenever(bookingsRepository.cancelBooking(any())).thenReturn(Result.failure(Exception("Cancel failed")))
         val viewModel = createViewModel()
         val state = viewModel.state.getOrAwaitValue()
-        state.onCancelBooking()
+        state.bookingUiState?.onCancelBooking()
         val stateWithDialog = viewModel.state.getOrAwaitValue()
 
         // When
@@ -309,17 +309,17 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
 
         // When
-        state.onMarkAsPaid()
+        state.bookingUiState?.onMarkAsPaid()
 
         // Then: immediately after click (operation in progress)
         val during = viewModel.state.getOrAwaitValue()
-        assertThat(during.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.InProgress)
+        assertThat(during.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.InProgress)
         verify(bookingsRepository, times(1)).markAsPaid(bookingId)
 
         // And after operation completes, status returns to idle
         advanceUntilIdle()
         val after = viewModel.state.getOrAwaitValue()
-        assertThat(after.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
+        assertThat(after.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
     }
 
     @Test
@@ -330,7 +330,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
 
         // When
-        state.onMarkAsPaid()
+        state.bookingUiState?.onMarkAsPaid()
 
         // Then
         val event = viewModel.event.getOrAwaitValue()
@@ -346,14 +346,14 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         val state = viewModel.state.getOrAwaitValue()
 
         // When
-        state.onMarkAsPaid()
+        state.bookingUiState?.onMarkAsPaid()
 
         // Then
         val event = viewModel.event.getOrAwaitValue()
         assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
         advanceUntilIdle()
         val after = viewModel.state.getOrAwaitValue()
-        assertThat(after.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
+        assertThat(after.bookingUiState?.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
     }
 
     @Test
