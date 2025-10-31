@@ -537,6 +537,7 @@ class AnalyticsTracker private constructor(
         const val VALUE_JETPACK_SETUP_TAP_GO_TO_STORE = "go_to_store"
         const val VALUE_JETPACK_SETUP_TAP_SUPPORT = "support"
         const val VALUE_JETPACK_SETUP_TAP_TRY_AGAIN = "try_again"
+        const val VALUE_JETPACK_SETUP_TAP_CONTINUE_SETUP = "continue_setup"
         const val KEY_CONNECTION_TYPE = "connection_type"
         const val VALUE_CONNECTION_TYPE_NATIVE = "native"
         const val VALUE_CONNECTION_TYPE_WEB = "web"
