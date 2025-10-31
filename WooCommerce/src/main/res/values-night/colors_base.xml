@@ -93,7 +93,6 @@
     -->
     <color name="product_status_fg_other">@color/woo_blue_30</color>
     <color name="product_status_fg_pending">@color/woo_orange_30</color>
-    <color name="product_filer_bg_selected">@color/color_secondary</color>
 
     <!--
         Aztec Editor

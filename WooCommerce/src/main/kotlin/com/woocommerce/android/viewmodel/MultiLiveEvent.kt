@@ -214,7 +214,5 @@ open class MultiLiveEvent<T : Event> : MutableLiveData<T>() {
                 )
             }
         }
-
-        data class OpenUrl(val url: String) : Event()
     }
 }

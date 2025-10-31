@@ -59,11 +59,15 @@ class JetpackActivationStartViewModel @Inject constructor(
 
     fun onHelpButtonClick() {
         analyticsTrackerWrapper.track(
-            stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_GET_SUPPORT_BUTTON_TAPPED,
+            stat = AnalyticsEvent.JETPACK_SETUP_FLOW,
             properties = mapOf(
-                AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
+                AnalyticsTracker.KEY_STEP to if (navArgs.jetpackStatus.isJetpackInstalled) {
                     JetpackActivationMainViewModel.StepType.Connection.analyticsName
-            ),
+                } else {
+                    JetpackActivationMainViewModel.StepType.Installation.analyticsName
+                },
+                AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_SUPPORT,
+            )
         )
         triggerEvent(NavigateToHelpScreen(JETPACK_INSTALLATION))
     }
@@ -80,12 +84,13 @@ class JetpackActivationStartViewModel @Inject constructor(
     fun onContinueButtonClick() {
         if (isConnectionDismissed.value) {
             analyticsTrackerWrapper.track(
-                stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_TRY_AGAIN_BUTTON_TAPPED,
+                stat = AnalyticsEvent.JETPACK_SETUP_FLOW,
                 properties = mapOf(
-                    AnalyticsTracker.KEY_JETPACK_INSTALLATION_STEP to
-                        JetpackActivationMainViewModel.StepType.Connection.analyticsName
+                    AnalyticsTracker.KEY_STEP to JetpackActivationMainViewModel.StepType.Connection.analyticsName,
+                    AnalyticsTracker.KEY_TAP to AnalyticsTracker.VALUE_JETPACK_SETUP_TAP_CONTINUE_SETUP,
                 )
             )
+
             isConnectionDismissed.value = false
             triggerEvent(
                 ContinueJetpackConnection(

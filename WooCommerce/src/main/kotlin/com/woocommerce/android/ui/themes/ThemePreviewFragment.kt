@@ -20,7 +20,6 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class ThemePreviewFragment : BaseFragment() {
     companion object {
-        const val STORE_CREATION_THEME_SELECTED_NOTICE = "store-creation-theme-selected"
         const val CURRENT_THEME_UPDATED = "current-theme-updated"
     }
 

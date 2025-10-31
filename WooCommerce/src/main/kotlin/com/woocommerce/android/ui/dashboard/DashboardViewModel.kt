@@ -212,6 +212,10 @@ class DashboardViewModel @Inject constructor(
         triggerEvent(Event.ShowSnackbar(message))
     }
 
+    fun onLaunchUrlInAuthenticatedWebView(event: Event.LaunchUrlInAuthenticatedWebView) {
+        triggerEvent(event)
+    }
+
     fun trackCardInteracted(type: String) {
         analyticsTrackerWrapper.track(
             DYNAMIC_DASHBOARD_CARD_INTERACTED,

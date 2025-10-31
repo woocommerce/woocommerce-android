@@ -64,7 +64,6 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.A
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError.Unknown
 import com.woocommerce.android.ui.payments.cardreader.payment.PlayChaChing
 import com.woocommerce.android.ui.payments.cardreader.payment.PrintReceipt
-import com.woocommerce.android.ui.payments.cardreader.payment.PurchaseCardReader
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCapturingPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderCollectPaymentState
 import com.woocommerce.android.ui.payments.cardreader.payment.ViewState.BuiltInReaderFailedPaymentState
@@ -1235,8 +1234,8 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             viewModel.start()
             (viewModel.viewStateData.value as BuiltInReaderFailedPaymentState).onPrimaryActionClicked.invoke()
 
-            assertThat(viewModel.event.value).isInstanceOf(PurchaseCardReader::class.java)
-            assertThat((viewModel.event.value as PurchaseCardReader).url).isEqualTo(
+            assertThat(viewModel.event.value).isInstanceOf(Event.LaunchUrlInAuthenticatedWebView::class.java)
+            assertThat((viewModel.event.value as Event.LaunchUrlInAuthenticatedWebView).url).isEqualTo(
                 "https://woocommerce.com/products/hardware/US"
             )
         }

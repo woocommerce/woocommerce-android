@@ -109,8 +109,8 @@ class WooPosProductsDataSource @Inject constructor(
         get() = activeSource?.hasMoreProductsPages ?: error("hasMorePages - Data source not selected")
 
     suspend fun getProductById(productId: LocalOrRemoteId.RemoteId): WooPosProductModel? {
+        checkNotNull(activeSource) { "GetProductById - Data source not selected" }
         return activeSource?.getProductById(productId)
-            ?: error("GetProductById - Data source not selected")
     }
 
     suspend fun resetVariationsListHandler() {
@@ -146,8 +146,8 @@ class WooPosProductsDataSource @Inject constructor(
         productId: Long,
         variationId: Long
     ): WooPosVariation? {
+        checkNotNull(activeSource) { "GetVariationById - Data source not selected" }
         return activeSource?.getVariationById(productId, variationId)
-            ?: error("GetVariationById - Data source not selected")
     }
 
     sealed class WooPosPrepopulatingDataStatus {

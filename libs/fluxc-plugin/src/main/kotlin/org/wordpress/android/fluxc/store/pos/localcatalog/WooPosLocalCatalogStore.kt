@@ -125,7 +125,7 @@ class WooPosLocalCatalogStore @Inject constructor(
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = 0,
+                page = 1,
                 pageSize = 1,
                 includeStatus = null
             )
@@ -153,24 +153,24 @@ class WooPosLocalCatalogStore @Inject constructor(
      *
      * @param [site] The site to sync products for
      * @param [modifiedAfterGmt] ISO 8601 formatted date string (GMT)
-     * @param [offset] Starting offset for pagination
+     * @param [page] Page for pagination.
      * @param [pageSize] Number of products to fetch per page (default: 100, max: 100)
      * @return Result containing SyncResponse with pagination info or error
      */
     suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
         modifiedAfterGmt: String?,
-        offset: Int = 0,
+        page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         includeStatus: List<CoreProductStatus>? = null,
-    ): Result<WooPosLocalCatalogFetchProductsResult> =
+    ): Result<WooPosPaginatedFetchResult<WooPosProductEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
 
             val response = posProductRestClient.fetchProducts(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
-                offset = offset,
+                page = page,
                 pageSize = validPageSize,
                 includeStatus = includeStatus
             )
@@ -185,11 +185,11 @@ class WooPosLocalCatalogStore @Inject constructor(
                 )
 
                 response.model.isNullOrEmpty() -> Result.success(
-                    WooPosLocalCatalogFetchProductsResult(
-                        products = emptyList(),
+                    WooPosPaginatedFetchResult(
+                        items = emptyList(),
                         syncedCount = 0,
                         hasMore = false,
-                        nextOffset = offset,
+                        nextPage = page,
                         totalPages = 0,
                         serverDate = serverDate
                     )
@@ -211,11 +211,11 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosLocalCatalogFetchProductsResult(
-                            products = products,
+                        WooPosPaginatedFetchResult(
+                            items = products,
                             syncedCount = products.size,
                             hasMore = hasMore,
-                            nextOffset = if (hasMore) offset + products.size else offset,
+                            nextPage = if (hasMore) page + 1 else page,
                             totalPages = totalPages,
                             serverDate = serverDate,
                         )
@@ -319,7 +319,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param modifiedAfterGmt ISO 8601 formatted date string (GMT)
      * @param page Starting page for pagination (1-based)
      * @param pageSize Number of variations to fetch per page (default: 100, max: 100)
-     * @return [Result] containing [WooPosVariationsFetchResult] with pagination info or error
+     * @return [Result] containing [WooPosPaginatedFetchResult] with pagination info or error
      */
     @Suppress("LongMethod")
     suspend fun fetchRecentlyModifiedVariations(
@@ -327,7 +327,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
-    ): Result<WooPosVariationsFetchResult> =
+    ): Result<WooPosPaginatedFetchResult<WooPosVariationEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
             require(page > 0) { "Page number must be 1 or greater" }
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -354,8 +354,8 @@ class WooPosLocalCatalogStore @Inject constructor(
 
                 response.model.isNullOrEmpty() -> {
                     Result.success(
-                        WooPosVariationsFetchResult(
-                            variations = emptyList(),
+                        WooPosPaginatedFetchResult(
+                            items = emptyList(),
                             syncedCount = 0,
                             hasMore = false,
                             nextPage = page,
@@ -385,8 +385,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                     }
 
                     Result.success(
-                        WooPosVariationsFetchResult(
-                            variations = variations,
+                        WooPosPaginatedFetchResult(
+                            items = variations,
                             syncedCount = variations.size,
                             hasMore = hasMore,
                             nextPage = if (hasMore) {
