@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.emailreceipt
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
 import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -13,12 +14,15 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.regex.Pattern
 
@@ -83,10 +87,7 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = mock {
-            on { billingAddress }.thenReturn(mock())
-            on { customer }.thenReturn(mock())
-        }
+        val mockOrder: Order = OrderTestUtils.generateTestOrder()
 
         whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
@@ -113,10 +114,7 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = mock {
-            on { billingAddress }.thenReturn(mock())
-            on { customer }.thenReturn(mock())
-        }
+        val mockOrder: Order = OrderTestUtils.generateTestOrder()
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
@@ -146,6 +144,11 @@ class WooPosEmailReceiptRepositoryTest {
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
 
+        val onOrderChangedError = WCOrderStore.OnOrderChanged(
+            orderError = WCOrderStore.OrderError()
+        )
+        whenever(orderStore.fetchSingleOrder(siteModel, orderId)).thenReturn(onOrderChangedError)
+
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
@@ -158,10 +161,7 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val email = "test@example.com"
         val orderId = 1L
-        val mockOrder: Order = mock {
-            on { billingAddress }.thenReturn(mock())
-            on { customer }.thenReturn(mock())
-        }
+        val mockOrder: Order = OrderTestUtils.generateTestOrder()
 
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
@@ -188,10 +188,7 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = mock {
-            on { billingAddress }.thenReturn(mock())
-            on { customer }.thenReturn(mock())
-        }
+        val mockOrder: Order = OrderTestUtils.generateTestOrder()
         whenever(selectedSite.get()).thenReturn(siteModel)
         whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
         whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
@@ -217,5 +214,51 @@ class WooPosEmailReceiptRepositoryTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given order not in DB, when sendReceiptByEmail, then fetches remotely and succeeds`() = runTest {
+        // GIVEN
+        val orderId = 123L
+        val email = "test@example.com"
+
+        val mockOrder: Order = OrderTestUtils.generateTestOrder()
+
+        whenever(selectedSite.get()).thenReturn(siteModel)
+
+        val dbEntity = OrderEntity(LocalOrRemoteId.LocalId(1), orderId = orderId)
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel))
+            .thenReturn(null, dbEntity)
+
+        val onOrderChangedSuccess = WCOrderStore.OnOrderChanged()
+
+        whenever(orderStore.fetchSingleOrder(siteModel, orderId)).thenReturn(onOrderChangedSuccess)
+
+        whenever(orderMapper.toAppModel(dbEntity)).thenReturn(mockOrder)
+
+        whenever(
+            orderCreateEditRepository.createOrUpdateOrder(
+                any(),
+                eq(OrderCreationSource.POINT_OF_SALE),
+                eq("")
+            )
+        ).thenReturn(
+            Result.success(mockOrder)
+        )
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+
+        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
+        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+
+        verify(orderStore).fetchSingleOrder(siteModel, orderId)
+        verify(orderStore, org.mockito.kotlin.times(2)).getOrderByIdAndSite(orderId, siteModel)
+        verify(orderStore).sendOrderReceipt(siteModel, orderId)
     }
 }

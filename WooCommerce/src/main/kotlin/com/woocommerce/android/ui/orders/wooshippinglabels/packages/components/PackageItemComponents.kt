@@ -55,12 +55,7 @@ fun WooShippingPackageListItem(
                 onPackageStarred = onPackageStarred
             )
         } else {
-            val swipeToDismissBoxState = rememberSwipeToDismissBoxState(
-                confirmValueChange = {
-                    if (it == SwipeToDismissBoxValue.EndToStart) onPackageRemoved(packageData)
-                    it != SwipeToDismissBoxValue.EndToStart
-                }
-            )
+            val swipeToDismissBoxState = rememberSwipeToDismissBoxState()
 
             SwipeToDismissBox(
                 state = swipeToDismissBoxState,
@@ -79,6 +74,10 @@ fun WooShippingPackageListItem(
                             tint = colorResource(R.color.woo_white)
                         )
                     }
+                },
+                onDismiss = {
+                    if (it == SwipeToDismissBoxValue.EndToStart) onPackageRemoved(packageData)
+                    it != SwipeToDismissBoxValue.EndToStart
                 }
             ) {
                 WooShippingPackageListItemContent(
