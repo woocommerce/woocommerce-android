@@ -3933,11 +3933,13 @@
 
     <string name="woopos_settings_store_information_title">Store information</string>
     <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_store_general_title">General</string>
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
-    <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_physical_address_label">Physical address</string>
+    <string name="woopos_settings_store_phone_label">Phone number</string>
     <string name="woopos_settings_store_email_label">Email</string>
-    <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
+    <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
