@@ -85,10 +85,10 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Large.value)
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Column(
-            modifier = Modifier.padding(WooPosSpacing.Large.value)
+            modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
             StoreSectionTitle(R.string.woopos_settings_store_general_title)
 
@@ -114,10 +114,10 @@ private fun StoreInformationLoadingSection() {
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Large.value)
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Column(
-            modifier = Modifier.padding(WooPosSpacing.Large.value)
+            modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
             StoreSectionTitle(R.string.woopos_settings_store_general_title)
 
@@ -137,10 +137,10 @@ private fun ReceiptLoadingSection() {
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Large.value)
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Column(
-            modifier = Modifier.padding(WooPosSpacing.Large.value)
+            modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
             StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
 
@@ -161,10 +161,10 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
     WooPosCard(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.Large.value)
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Column(
-            modifier = Modifier.padding(WooPosSpacing.Large.value)
+            modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
             StoreSectionTitle(R.string.woopos_settings_receipt_information_title)
 
