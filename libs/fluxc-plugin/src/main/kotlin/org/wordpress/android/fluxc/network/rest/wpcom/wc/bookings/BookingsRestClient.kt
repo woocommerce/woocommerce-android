@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooNetwork
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
+import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,6 +30,25 @@ class BookingsRestClient @Inject constructor(
             path = endpoint,
             clazz = BookingDto::class.java,
             params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    suspend fun updateBooking(
+        site: SiteModel,
+        bookingId: Long,
+        payload: BookingUpdatePayload,
+    ): WooPayload<BookingDto> {
+        val endpoint = WOOCOMMERCE.bookings.id(bookingId).pathV2Bookings
+        val body = payload.asMap
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = BookingDto::class.java,
+            body = body,
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -69,7 +89,7 @@ class BookingsRestClient @Inject constructor(
         site: SiteModel,
         resourceId: Long
     ): WooPayload<BookingResourceDto> {
-        val endpoint = WOOCOMMERCE.resources.id(resourceId).pathV2Bookings
+        val endpoint = WOOCOMMERCE.resources.team_members.id(resourceId).pathV2Bookings
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -89,8 +109,8 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.TeamMember -> TODO()
                 BookingsFilterOption.AttendanceStatus -> TODO()
                 BookingsFilterOption.PaymentStatus -> TODO()
-                BookingsFilterOption.BookingType -> TODO()
-                is BookingsFilterOption.Customer -> filter.customerId?.let { set("customer", it.toString()) }
+                is BookingsFilterOption.BookingType -> TODO()
+                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
 
                 BookingsFilterOption.Location -> TODO()
                 is BookingsFilterOption.DateRange -> {
@@ -103,3 +123,10 @@ class BookingsRestClient @Inject constructor(
         }
     }
 }
+
+private val BookingUpdatePayload.asMap: Map<String, Any>
+    get() = mutableMapOf<String, Any>().putIfNotNull(
+        "attendance_status" to attendanceStatus?.key,
+        "note" to note,
+        "status" to status?.key
+    )

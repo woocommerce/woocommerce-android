@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.onboarding.aboutyourstore
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -42,10 +41,10 @@ fun AboutYourStoreScreen(
                     )
                 }
                 is WebViewState -> {
-                    WpAdmin(
-                        state,
-                        userAgent,
-                        if (state.shouldAuthenticate) authenticator else null,
+                    WCWebView(
+                        url = state.url,
+                        userAgent = userAgent,
+                        authenticator = authenticator,
                         modifier = Modifier
                             .background(MaterialTheme.colors.surface)
                             .fillMaxSize()
@@ -69,20 +68,4 @@ private fun ProgressIndicator(modifier: Modifier) {
                 .align(Alignment.Center)
         )
     }
-}
-
-@Composable
-@SuppressLint("SetJavaScriptEnabled", "ClickableViewAccessibility")
-private fun WpAdmin(
-    viewState: WebViewState,
-    userAgent: UserAgent,
-    authenticator: WebViewAuthenticator?,
-    modifier: Modifier
-) {
-    WCWebView(
-        url = viewState.url,
-        userAgent = userAgent,
-        authenticator = authenticator,
-        modifier = modifier
-    )
 }

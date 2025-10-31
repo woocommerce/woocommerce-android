@@ -5,12 +5,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
-
-sealed interface BookingDetailsLoadingState {
-    data object Idle : BookingDetailsLoadingState
-    data object Loading : BookingDetailsLoadingState
-    data object Refreshing : BookingDetailsLoadingState
-}
+import com.woocommerce.android.ui.compose.DialogState
 
 data class BookingDetailsViewState(
     val toolbarTitle: String = "",
@@ -18,6 +13,9 @@ data class BookingDetailsViewState(
     val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
     val onCancelBooking: () -> Unit = {},
     val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onMarkAsPaid: () -> Unit = {},
+    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
+    val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
     val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
@@ -29,4 +27,27 @@ data class BookingUiState(
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel,
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
+    val note: String,
+    val isAttendanceStatusEditable: Boolean
 )
+
+sealed interface BookingDetailsLoadingState {
+    data object Idle : BookingDetailsLoadingState
+    data object Loading : BookingDetailsLoadingState
+    data object Refreshing : BookingDetailsLoadingState
+}
+
+sealed interface CancelStatus {
+    data object Idle : CancelStatus
+    data object InProgress : CancelStatus
+}
+
+sealed interface AttendanceUpdateStatus {
+    data object Idle : AttendanceUpdateStatus
+    data object InProgress : AttendanceUpdateStatus
+}
+
+sealed interface PaymentUpdateStatus {
+    data object Idle : PaymentUpdateStatus
+    data object InProgress : PaymentUpdateStatus
+}

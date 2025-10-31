@@ -7,11 +7,12 @@ interface MainNavigationRouter {
     fun isAtNavigationRoot(): Boolean
     fun isChildFragmentShowing(): Boolean
 
-    fun showProductDetail(remoteProductId: Long, popUpToProductList: Boolean = false)
-    fun showProductDetailWithSharedTransition(
+    fun showProductDetail(
         remoteProductId: Long,
-        sharedView: View,
+        popUpToProductList: Boolean = false,
+        sharedView: View? = null
     )
+
     fun showProductVariationDetail(remoteProductId: Long, remoteVariationId: Long)
 
     fun showOrderDetail(
@@ -36,6 +37,7 @@ interface MainNavigationRouter {
         launchedFromNotification: Boolean,
         tempStatus: String? = null
     )
+
     fun showReviewDetailWithSharedTransition(
         remoteReviewId: Long,
         launchedFromNotification: Boolean,

@@ -1,16 +1,16 @@
 [versions]
-agp = '8.12.0'
+agp = '8.13.0'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
 androidx-appcompat = '1.7.1'
-androidx-arch-core = '2.1.0'
-androidx-browser = '1.5.0'
+androidx-arch-core = '2.2.0'
+androidx-browser = '1.9.0'
 androidx-camera = '1.5.1'
 androidx-cardview = '1.0.0'
 androidx-compose-bom = '2025.06.01'
 androidx-constraintlayout-compose = '1.0.1'
 androidx-constraintlayout-main = '2.2.1'
-androidx-core-main = '1.13.1'
+androidx-core-main = '1.17.0'
 androidx-core-splashscreen = '1.0.1'
 androidx-credentials = '1.5.0'
 androidx-datastore = '1.1.7'
@@ -23,18 +23,18 @@ androidx-paging-runtime = "2.1.2"
 androidx-preference = '1.2.1'
 androidx-recyclerview-main = '1.4.0'
 androidx-recyclerview-selection = '1.1.0'
-androidx-room = "2.7.2"
+androidx-room = "2.8.2"
 androidx-security-crypto = "1.1.0"
 androidx-test-core = '1.6.1'
 androidx-test-espresso = '3.7.0'
-androidx-test-ext = '1.2.1'
+androidx-test-ext = '1.3.0'
 androidx-test-rules = '1.6.1'
 androidx-test-runner = '1.6.2'
-androidx-test-orchestrator = '1.5.1'
+androidx-test-orchestrator = '1.6.1'
 androidx-test-uiautomator = '2.3.0'
 androidx-transition = '1.6.0'
 androidx-wear-compose = '1.4.0'
-androidx-wear-tiles = '1.3.0'
+androidx-wear-protolayout = '1.2.1'
 androidx-wear-tooling = '1.0.0'
 androidx-wear-watchface = '1.2.1'
 androidx-work = '2.10.5'
@@ -46,7 +46,7 @@ automattic-measure-builds = '3.2.1'
 automattic-tracks = '6.0.6'
 assertj = '3.27.3'
 bumptech-glide = '5.0.5'
-cashapp-turbine = '1.0.0'
+cashapp-turbine = '1.2.1'
 coil = '2.7.0'
 commons-fileupload = '1.6.0'
 dependency-analysis = '3.0.2'
@@ -60,10 +60,10 @@ google-autoService = "1.0-rc4"
 google-dagger = "2.57.2"
 google-firebase-bom = '34.2.0'
 google-gson = '2.13.2'
-google-guava = '33.3.1-android'
+google-guava = '33.5.0-android'
 google-horologist = '0.7.15'
 google-material = '1.12.0'
-google-compose-material3 = '1.3.2'
+google-compose-material3 = '1.4.0'
 google-mlkit-barcode-scanning = '17.3.0'
 google-mlkit-subject-segmentation = '16.0.0-beta1'
 google-mlkit-text-recognition = '16.0.1'
@@ -84,18 +84,18 @@ json-path = '2.9.0'
 json-smart = '2.6.0'
 junit = '4.13.2'
 lottie = '6.6.7'
-kotlin = '2.1.10'
+kotlin = '2.2.21'
 kotlinx-coroutines = '1.10.2'
-ksp = '2.1.10-1.0.29'
-mockito-kotlin = '5.4.0'
+ksp = '2.2.21-2.0.4'
+mockito-kotlin = '6.1.0'
 mpandroidchart = 'v3.1.0'
 photoview = '2.3.0'
 robolectric = "4.16"
 sentry = '5.8.0'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
-squareup-okhttp3 = "5.1.0"
-stripe-terminal = '4.6.0'
+squareup-okhttp3 = "5.2.1"
+stripe-terminal = '4.7.4'
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
 wellsql = "2.0.0"
@@ -177,8 +177,7 @@ androidx-test-uiautomator = { group = "androidx.test.uiautomator", name = "uiaut
 androidx-transition = { group = "androidx.transition", name = "transition", version.ref = "androidx-transition" }
 androidx-wear-compose-material = { group = "androidx.wear.compose", name = "compose-material", version.ref = "androidx-wear-compose" }
 androidx-wear-compose-foundation = { group = "androidx.wear.compose", name = "compose-foundation", version.ref = "androidx-wear-compose" }
-androidx-wear-tiles-main = { group = "androidx.wear.tiles", name = "tiles", version.ref = "androidx-wear-tiles" }
-androidx-wear-tiles-material = { group = "androidx.wear.tiles", name = "tiles-material", version.ref = "androidx-wear-tiles" }
+androidx-wear-protolayout-expression = { group = "androidx.wear.protolayout", name = "protolayout-expression", version.ref = "androidx-wear-protolayout" }
 androidx-wear-tooling-preview = { group = "androidx.wear", name = "wear-tooling-preview", version.ref = "androidx-wear-tooling" }
 androidx-wear-watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "androidx-wear-watchface" }
 androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "androidx-work" }
@@ -220,8 +219,6 @@ google-firebase-messaging = { group = "com.google.firebase", name = "firebase-me
 google-gson = { group = "com.google.code.gson", name = "gson", version.ref = "google-gson" }
 google-guava = { group = "com.google.guava", name = "guava", version.ref = "google-guava" }
 google-horologist-compose-layout = { group = "com.google.android.horologist", name = "horologist-compose-layout", version.ref = "google-horologist" }
-google-horologist-compose-tools = { group = "com.google.android.horologist", name = "horologist-compose-tools", version.ref = "google-horologist" }
-google-horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "google-horologist" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "google-material" }
 google-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "google-compose-material3" }
 google-mlkit-barcode-scanning = { group = "com.google.mlkit", name = "barcode-scanning", version.ref = "google-mlkit-barcode-scanning" }
@@ -235,7 +232,7 @@ google-play-services-auth = { group = "com.google.android.gms", name = "play-ser
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "google-play-services-code-scanner" }
 google-play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "google-play-services-wearable" }
 google-play-services-mlkit-subject-segmentation = { group = "com.google.android.gms", name = "play-services-mlkit-subject-segmentation", version.ref = "google-mlkit-subject-segmentation" }
-google-protobuf-javalite = { group = "com.google.protobuf", name = "protobuf-javalite", version.ref = "google-protobuf-library" }
+google-protobuf-kotlinlite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "google-protobuf-library" }
 google-protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "google-protobuf-library" }
 google-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "google-zxing" }
 gravatar = { group = "com.gravatar", name = "gravatar", version.ref = "gravatar" }

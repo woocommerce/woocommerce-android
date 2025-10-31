@@ -5,6 +5,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.takeIfNotEqualTo
 import com.woocommerce.android.media.MediaFilesRepository
 import com.woocommerce.android.media.ProductImagesServiceWrapper
@@ -35,6 +36,7 @@ import com.woocommerce.android.ui.products.variations.domain.GenerateVariationCa
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.ProductUtils
+import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -149,7 +151,6 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     private var selectedSite: SelectedSite = mock {
         on { get() } doReturn SiteModel().apply { setIsPrivate(false) }
     }
-
     private val productWithParameters = ProductDetailViewModel.ProductDetailViewState(
         productAggregateDraft = productAggregate,
         auxiliaryState = ProductDetailViewModel.ProductDetailViewState.AuxiliaryState.None,
@@ -253,6 +254,9 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             )
         )
     )
+
+    private val productsDraft
+        get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 
     @Before
     fun setup() {
@@ -1400,33 +1404,20 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given we can authenticate the user in WebView, when tapping on view product, then show authenticated webview`() =
+    fun `when tapping on view product, then show authenticated webview`() =
         testBlocking {
-            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(true)
             given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
 
             viewModel.start()
             viewModel.onViewProductOnStoreLinkClicked()
 
-            Assertions.assertThat(viewModel.event.value)
-                .isEqualTo(MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(productAggregate.product.permalink))
+            Assertions.assertThat(viewModel.event.value).isEqualTo(
+                MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView(
+                    url = productAggregate.product.permalink,
+                    screenTitle = UiStringText(productAggregate.product.name)
+                )
+            )
         }
-
-    @Test
-    fun `given we can't authenticate the user in WebView, when tapping on view product, then show Chrome Custom Tab`() =
-        testBlocking {
-            given(canAutoAuthenticateInWebView.invoke(any())).willReturn(false)
-            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
-
-            viewModel.start()
-            viewModel.onViewProductOnStoreLinkClicked()
-
-            Assertions.assertThat(viewModel.event.value)
-                .isEqualTo(MultiLiveEvent.Event.LaunchUrlInChromeTab(productAggregate.product.permalink))
-        }
-
-    private val productsDraft
-        get() = viewModel.productDetailViewStateData.liveData.value?.productDraft
 
     @Test
     fun `given add new product flow, when trash action becomes possible, then trashOption remains hidden`() =
@@ -1514,5 +1505,61 @@ class ProductDetailViewModelTest : BaseUnitTest() {
 
         // THEN: once the product is stored, trash option should be visible
         Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
+    }
+
+    @Test
+    fun `given CIAB site and bookable product, when product detail is opened, then show WebView`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+            }
+        )
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        val testProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(type = ProductType.BOOKING.value)
+        )
+        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
+
+        setup()
+        viewModel.start()
+
+        // WHEN
+        val event = viewModel.event.getOrAwaitValue()
+
+        // THEN
+        Assertions.assertThat(event).isEqualTo(
+            ProductDetailViewModel.OpenProductInWebView(testProductAggregate.product.remoteId)
+        )
+    }
+
+    @Test
+    fun `given CIAB site and non-bookable product, when product detail is opened, then don't show WebView`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.get()).thenReturn(
+            SiteModel().apply {
+                setIsGardenSite(true)
+                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+            }
+        )
+        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+            .toSavedStateHandle()
+        val testProductAggregate = productAggregate.copy(
+            product = productAggregate.product.copy(type = ProductType.SIMPLE.value)
+        )
+        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
+
+        setup()
+        viewModel.start()
+
+        // WHEN
+        val events = viewModel.event.captureValues()
+
+        // THEN
+        Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
     }
 }

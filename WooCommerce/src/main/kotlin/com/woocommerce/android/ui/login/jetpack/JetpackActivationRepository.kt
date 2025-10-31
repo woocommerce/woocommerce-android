@@ -2,8 +2,6 @@ package com.woocommerce.android.ui.login.jetpack
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.WooException
-import com.woocommerce.android.analytics.AnalyticsEvent
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -26,8 +24,7 @@ class JetpackActivationRepository @Inject constructor(
     private val siteStore: SiteStore,
     private val jetpackStore: JetpackStore,
     private val wooCommerceStore: WooCommerceStore,
-    private val selectedSite: SelectedSite,
-    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private val selectedSite: SelectedSite
 ) {
     companion object {
         private const val DEFAULT_MAX_RETRY = 2
@@ -134,9 +131,6 @@ class JetpackActivationRepository @Inject constructor(
             }
 
             result.data?.currentUser?.wpcomEmail.isNullOrEmpty() -> {
-                analyticsTrackerWrapper.track(
-                    stat = AnalyticsEvent.LOGIN_JETPACK_SETUP_CANNOT_FIND_WPCOM_USER
-                )
                 WooLog.w(WooLog.T.LOGIN, "Cannot find Jetpack Email in response")
                 Result.failure(JetpackMissingConnectionEmailException())
             }

@@ -75,7 +75,7 @@ class BlazeCampaignCreationPreviewViewModelTests : BaseUnitTest() {
         on { formatCurrency(amount = any(), any(), any()) }.doAnswer { it.getArgument<BigDecimal>(0).toString() }
     }
     private val resourceProvider: ResourceProvider = mock {
-        on { getString(any()) } doAnswer { it.getArgument<Any?>(0).toString() }
+        on { getString(any()) } doAnswer { it.getArgument<Any>(0).toString() }
         on { getString(any(), anyVararg()) } doAnswer { it.arguments.joinToString { it.toString() } }
     }
     private val blazeRepository: BlazeRepository = mock {

@@ -17,6 +17,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
 import com.woocommerce.android.ui.blaze.BlazeUrlsHelper.BlazeFlowSource
 import com.woocommerce.android.ui.blaze.creation.BlazeCampaignCreationDispatcher
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewLauncher
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewViewModel
@@ -27,16 +28,14 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptions
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewAdminEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewInboxEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewPayments
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewReviewsEvent
-import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewStoreEvent
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
-import com.woocommerce.android.util.ChromeCustomTabUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -48,6 +47,9 @@ class MoreMenuFragment : TopLevelFragment() {
 
     @Inject
     lateinit var blazeCampaignCreationDispatcher: BlazeCampaignCreationDispatcher
+
+    @Inject
+    lateinit var authenticatedWebViewLauncher: AuthenticatedWebViewLauncher
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -100,8 +102,6 @@ class MoreMenuFragment : TopLevelFragment() {
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
                 is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.isCreationFlow)
-                is ViewAdminEvent -> openInBrowser(event.url)
-                is ViewStoreEvent -> openInBrowser(event.url)
                 is ViewReviewsEvent -> navigateToReviews()
                 is ViewInboxEvent -> navigateToInbox()
                 is ViewCouponsEvent -> navigateToCoupons()
@@ -109,6 +109,8 @@ class MoreMenuFragment : TopLevelFragment() {
                 is ViewPayments -> navigateToPayments()
                 is OpenBlazeCampaignCreationEvent -> openBlazeCreationFlow()
                 is OpenBlazeCampaignListEvent -> openBlazeCampaignList()
+                is MultiLiveEvent.Event.LaunchUrlInAuthenticatedWebView ->
+                    authenticatedWebViewLauncher.showAuthenticatedWebView(event)
             }
         }
     }
@@ -158,10 +160,6 @@ class MoreMenuFragment : TopLevelFragment() {
 
     private fun startSitePicker() {
         (requireActivity() as MainActivity).startSitePicker()
-    }
-
-    private fun openInBrowser(url: String) {
-        ChromeCustomTabUtils.launchUrl(requireContext(), url)
     }
 
     private fun navigateToReviews() {

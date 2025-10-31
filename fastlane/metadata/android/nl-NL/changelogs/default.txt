@@ -1,0 +1,2 @@
+23.5:
+We hebben je WooCommerce-ervaring opgepoetst! Deze update verhelpt een zeldzame crash tijdens terugbetalingen van bestellingen en corrigeert hoe klantnamen worden weergegeven bij het filteren van bestellingen. Geniet met deze release van soepelere prestaties en betrouwbaarder beheer van bestellingen.

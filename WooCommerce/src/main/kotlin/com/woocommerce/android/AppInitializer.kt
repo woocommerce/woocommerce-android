@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
+import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
 import com.woocommerce.android.ui.woopos.common.util.WooPosSurveysNotificationScheduler
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
 import com.woocommerce.android.util.AppThemeUtils
@@ -96,7 +97,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         private const val SECONDS_BETWEEN_SITE_UPDATE = 60 * 60 // 1 hour
         private const val UNAUTHORIZED_STATUS_CODE = 401
         private const val CARD_READER_USAGE_THIRTY_DAYS = 30
-        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS = 20000L
+        private const val POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_MILLISECONDS = 2000L
     }
 
     @Inject lateinit var crashLogging: CrashLogging
@@ -167,6 +168,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var posLocalCatalogScheduler: WooPosLocalCatalogSyncScheduler
 
     @Inject lateinit var wooPosSurveysNotificationScheduler: Lazy<WooPosSurveysNotificationScheduler>
+
+    @Inject lateinit var appShortcutsHandler: AppShortcutsHandler
 
     private var connectionReceiverRegistered = false
 
@@ -253,6 +256,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
         posLocalCatalogScheduler.schedulePeriodicFullCatalogSync()
         observeSiteChangesForCatalogSync()
+
+        appShortcutsHandler.init()
     }
 
     @Suppress("DEPRECATION")
@@ -448,7 +453,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 .drop(1) // invoke only on site change not on app initialization
                 .collect { selectedSite ->
                     if (selectedSite != null) {
-                        delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_SECONDS)
+                        delay(POS_LOCAL_CATALOG_SYNC_INITIAL_DELAY_MILLISECONDS)
                         posLocalCatalogScheduler.triggerManualFullCatalogSync()
                     }
                 }

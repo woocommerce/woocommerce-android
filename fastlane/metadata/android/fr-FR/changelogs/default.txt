@@ -1,0 +1,2 @@
+23.5 :
+Nous avons dépoussiéré votre expérience WooCommerce ! Cette mise à jour corrige un plantage rare lors des remboursements de commande et corrige l’apparence des noms de clients lors du filtrage des commandes. Profitez de performances plus fluides et d’une gestion des commandes plus fiable avec cette version.

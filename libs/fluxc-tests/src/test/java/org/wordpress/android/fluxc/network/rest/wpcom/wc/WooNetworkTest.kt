@@ -3,6 +3,8 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -14,10 +16,12 @@ import org.wordpress.android.fluxc.network.rest.wpapi.WPAPINetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsNetwork
+import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsStore
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsErrorHandler
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.JetpackApplicationPasswordsSupport
 import org.wordpress.android.fluxc.network.rest.wpcom.JetpackTunnelWPAPINetwork
 import org.wordpress.android.fluxc.test
+import java.security.GeneralSecurityException
 
 @RunWith(RobolectricTestRunner::class)
 class WooNetworkTest {
@@ -136,6 +140,33 @@ class WooNetworkTest {
         )
 
         verify(jetpackApplicationPasswordsErrorHandler).handleError(testSite, appPasswordsNetworkError)
+    }
+
+    @Test
+    fun `when a KeyStore error occurs, then fallback to Jetpack Tunnel`() = test {
+        given(jetpackApplicationPasswordsSupport.supportsAppPasswords(testSite)).willReturn(true)
+        given(
+            applicationPasswordsNetwork.executeGetGsonRequest(
+                testSite,
+                testPath,
+                SampleResponse::class.java
+            )
+        ).willAnswer {
+            throw GeneralSecurityException()
+        }
+        givenJetpackTunnelResponse(WPAPIResponse.Success(SampleResponse("value"), emptyList()))
+
+        val response = sut.executeGetGsonRequest(
+            site = testSite,
+            path = testPath,
+            clazz = SampleResponse::class.java
+        )
+
+        assertThat((response as WPAPIResponse.Success).data).isEqualTo(SampleResponse("value"))
+        verify(jetpackApplicationPasswordsErrorHandler).handleError(
+            eq(testSite),
+            argThat { errorCode == ApplicationPasswordsStore.APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR }
+        )
     }
 
     private suspend fun givenAppPasswordsResponse(response: WPAPIResponse<SampleResponse>) {

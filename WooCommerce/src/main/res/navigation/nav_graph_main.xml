@@ -411,23 +411,6 @@
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
     <action
-        android:id="@+id/action_global_productDetailFragment_popUpTo_product_list"
-        app:destination="@id/nav_graph_products"
-        app:popUpTo="@id/products">
-        <argument
-            android:name="mode"
-            app:argType="com.woocommerce.android.ui.products.details.ProductDetailFragment$Mode" />
-        <argument
-            android:name="images"
-            android:defaultValue="@null"
-            app:argType="string[]"
-            app:nullable="true" />
-        <argument
-            android:name="source"
-            android:defaultValue="PRODUCT_TAB"
-            app:argType="com.woocommerce.android.ui.products.AddProductSource" />
-    </action>
-    <action
         android:id="@+id/action_global_reviewDetailFragment"
         app:destination="@id/reviewDetailFragment" />
     <fragment
@@ -490,8 +473,7 @@
     <fragment
         android:id="@+id/AuthenticatedWebViewFragment"
         android:name="com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment"
-        android:label="AuthenticatedWebViewFragment"
-        tools:layout="@layout/fragment_wpcom_webview">
+        android:label="AuthenticatedWebViewFragment">
         <argument
             android:name="urlToLoad"
             app:argType="string" />

@@ -14,7 +14,6 @@ class CardReaderInteracRefundErrorMapper @Inject constructor() {
             CardInteracRefundStatus.RefundStatusErrorType.NonRetryable -> InteracRefundFlowError.NonRetryableGeneric
             CardInteracRefundStatus.RefundStatusErrorType.Server -> InteracRefundFlowError.Server
             CardInteracRefundStatus.RefundStatusErrorType.Cancelled -> InteracRefundFlowError.Cancelled
-            else -> InteracRefundFlowError.Generic
         }
 
     @Suppress("ComplexMethod")

@@ -2,7 +2,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:state_selected="true"
-        android:color="@color/product_filer_bg_selected"/>
+        android:color="@color/primary_colored_button_background"/>
     <item
         android:state_selected="false"
         android:color="@android:color/transparent"/>

@@ -20,5 +20,7 @@ data class BookingDto(
     @SerializedName("order_item_id") val orderItemId: Long,
     @SerializedName("parent_id") val parentId: Long,
     @SerializedName("person_counts") val personCounts: List<Int>?,
-    @SerializedName("local_timezone") val localTimezone: String
+    @SerializedName("local_timezone") val localTimezone: String,
+    @SerializedName("attendance_status") val attendanceStatus: String = "",
+    @SerializedName("note") val note: String? = null,
 )

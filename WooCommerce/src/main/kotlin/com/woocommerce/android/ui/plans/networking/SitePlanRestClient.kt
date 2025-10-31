@@ -47,7 +47,7 @@ class SitePlanRestClient @Inject constructor(
             when (originalResponse) {
                 is Success -> {
                     Success(
-                        data = gson.fromJson<Map<Int, SitePlanDto>?>(originalResponse.data, type)
+                        data = gson.fromJson<Map<Int, SitePlanDto>>(originalResponse.data, type)
                             .filterValues { it.currentPlan == true }
                             .toList()
                             .firstOrNull()
@@ -85,7 +85,7 @@ class SitePlanRestClient @Inject constructor(
             when (originalResponse) {
                 is Success -> {
                     Success(
-                        data = gson.fromJson<Map<Int, SitePlanDto>?>(originalResponse.data, type)
+                        data = gson.fromJson<Map<Int, SitePlanDto>>(originalResponse.data, type)
                             .mapValues { (id, sitePlanDto) ->
                                 if (sitePlanDto.expirationDate == null) {
                                     null

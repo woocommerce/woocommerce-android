@@ -126,6 +126,87 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
+        data object GoToOrdersTapped : Event() {
+            override val name: String = "orders_menu_item_tapped"
+        }
+
+        data object OrdersListPullToRefreshTriggered : Event() {
+            override val name: String = "orders_list_pull_to_refresh"
+        }
+
+        data object OrdersListNextPageLoaded : Event() {
+            override val name: String = "orders_list_next_page_loaded"
+        }
+
+        data object OrderDetailsEmailReceiptTapped : Event() {
+            override val name: String = "order_details_email_receipt_tapped"
+        }
+
+        data class OrdersListRowTapped(
+            val orderId: Long,
+            val orderStatus: String,
+            val listPosition: Int,
+            val daysSinceCreated: Int
+        ) : Event() {
+            override val name: String = "orders_list_row_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "order_id" to orderId.toString(),
+                        "order_status" to orderStatus,
+                        "list_position" to listPosition.toString(),
+                        "days_since_created" to daysSinceCreated.toString()
+                    )
+                )
+            }
+        }
+
+        data class OrderDetailsLoaded(
+            val orderId: Long,
+            val orderStatus: String,
+            val daysSinceCreated: Int
+        ) : Event() {
+            override val name: String = "pos_order_details_loaded"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "order_id" to orderId.toString(),
+                        "order_status" to orderStatus,
+                        "days_since_created" to daysSinceCreated.toString()
+                    )
+                )
+            }
+        }
+
+        data class OrdersListFetched(val milimetersSinceRequestSent: Long) : Event() {
+            override val name: String = "orders_list_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to milimetersSinceRequestSent.toString()
+                    )
+                )
+            }
+        }
+
+        data class OrdersListSearchResultsFetched(val milimetersSinceRequestSent: Long) : Event() {
+            override val name: String = "pos_orders_list_search_results_fetched"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "milliseconds_since_request_sent" to milimetersSinceRequestSent.toString()
+                    )
+                )
+            }
+        }
+
+        data object OrdersListSearchButtonTapped : Event() {
+            override val name: String = "pos_orders_list_search_button_tapped"
+        }
 
         data class BarcodeScanned(
             val scanDurationMs: Long,

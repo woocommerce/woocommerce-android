@@ -61,6 +61,9 @@
     <string name="this_month">This Month</string>
     <string name="this_year">This Year</string>
     <string name="discard">Discard</string>
+    <!-- Booking note discard changes dialog -->
+    <string name="booking_note_discard_changes_message">Are you sure you want to discard these changes?</string>
+    <string name="booking_note_discard_changes_discard">Discard changes</string>
     <string name="products">Products</string>
     <string name="point_of_sale">Point of Sale</string>
     <string name="custom_amounts">Custom Amounts</string>
@@ -2541,6 +2544,7 @@
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
+    <string name="product_type_booking">Bookable product</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -3600,6 +3604,16 @@
     <!--
     Woo POS
     -->
+    <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
+    <string name="woopos_home_sync_failed_title">Unable to sync</string>
+    <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
+    <string name="woopos_home_sync_failed_retry_button">Retry</string>
+    <string name="woopos_refresh_catalog_banner_title">Refresh catalog</string>
+    <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
+
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -3658,6 +3672,12 @@
     <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
     <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
     <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Please check your internet connection and try again.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Retry</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Cancel</string>
 
     <string name="woopos_date_never">Never</string>
     <string name="woopos_date_just_now">Just now</string>
@@ -3793,6 +3813,26 @@
     <string name="woopos_orders_loading_error_retry_button">Retry</string>
     <string name="woopos_orders_pagination_error_title">Unable to load more orders</string>
     <string name="woopos_orders_pagination_error_content_description">Please try again.</string>
+    <string name="woopos_orders_pagination_try_again_label">Retry</string>
+
+    <string name="woopos_orders_email_receipt">Email receipt</string>
+    <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
+    <string name="woopos_orders_details_placeholder_title">Select an order</string>
+    <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
+    <string name="woopos_orders_details_products_title">Products</string>
+    <string name="woopos_orders_details_totals_title">Totals</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_breakdown_products_label">Products</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
+    <string name="woopos_orders_details_total_label">Total</string>
+    <string name="woopos_orders_details_total_paid_label">Total paid</string>
+    <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_net_payment_label">Net Payment</string>
+    <string name="woopos_orders_details_products_list_content_description">Order products list</string>
+    <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
 
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
@@ -3820,16 +3860,21 @@
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
     <string name="woopos_search_coupons">Search coupons</string>
+    <string name="woopos_search_orders">Search orders</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
     <string name="woopos_search_recent_searches_title">Recent searches</string>
     <string name="woopos_search_items_empty_title">No products found</string>
     <string name="woopos_search_coupons_empty_title">No coupons found</string>
     <string name="woopos_search_empty_description">We couldn\'t find any matching products – try adjusting your search term.</string>
     <string name="woopos_search_empty_coupons_description">We couldn\'t find any matching coupons – try adjusting your search term.</string>
+    <string name="woopos_search_orders_empty_title">No orders found</string>
+    <string name="woopos_search_orders_empty_description">We couldn\'t find any matching orders – try adjusting your search term.</string>
     <string name="woopos_search_empty_image_content_description">No items found</string>
     <string name="woopos_search_items_error_title">Unable to load products</string>
     <string name="woopos_search_coupons_error_title">Unable to load coupons</string>
+    <string name="woopos_search_orders_error_title">Unable to load orders</string>
     <string name="woopos_search_items_error_description">Please try again.</string>
+    <string name="woopos_search_orders_error_description">Please try again.</string>
 
     <string name="woopos_eligibility_exit_pos_label">Exit POS</string>
     <string name="woopos_eligibility_retry_check_label">Retry</string>
@@ -4178,12 +4223,14 @@
     <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
     <string name="bookings_empty_state_description_default">Incoming bookings will appear here, where you can view and manage them.</string>
     <string name="bookings_empty_state_description_today">You don’t have any appointments or events scheduled for today.</string>
-    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled scheduled yet.</string>
-    <string name="bookings_search_no_results"><![CDATA[We’re sorry, we couldn’t find results for <b>\"%s\"</b>]]></string>
+    <string name="bookings_empty_state_description_upcoming">You don’t have any future appointments or events scheduled yet.</string>
+    <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
+    <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
     <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_enabled_title">Filters • %d</string>
     <string name="bookings_filters_count_title">Filters (%d)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>
@@ -4195,6 +4242,8 @@
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>
+    <string name="bookings_filter_type_service">Service</string>
+    <string name="bookings_filter_type_event">Event</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4209,8 +4258,10 @@
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
     <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
+    <string name="booking_payment_status_pay_on_site">Pay on site</string>
     <string name="booking_attendance_status_booked">Booked</string>
     <string name="booking_attendance_status_checked_in">Checked-in</string>
     <string name="booking_attendance_status_cancelled">Cancelled</string>
@@ -4227,13 +4278,33 @@
     <string name="booking_attendance_update_title">Update attendance status</string>
     <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
     <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
-    <string name="booking_attendance_status_cancelled_desc">The client will no longer be able to attend.</string>
     <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
     <string name="booking_payment_header">PAYMENT</string>
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
     <string name="booking_payment_view_order">View order</string>
     <string name="booking_fetch_error">Error fetching booking</string>
+    <string name="booking_attendance_status_error">Error changing the attendance status</string>
+    <string name="booking_duration_minute">%1$d minute</string>
+    <string name="booking_duration_minutes">%1$d minutes</string>
+    <string name="booking_duration_hour">%1$d hour</string>
+    <string name="booking_duration_hours">%1$d hours</string>
+    <string name="booking_duration_day">%1$d day</string>
+    <string name="booking_duration_days">%1$d days</string>
+    <string name="booking_duration_second">%1$d second</string>
+    <string name="booking_duration_seconds">%1$d seconds</string>
+    <string name="booking_note_header">BOOKING NOTE</string>
+    <string name="booking_note_label_add_note">Add note</string>
+    <string name="booking_note_description_private">This is a private note. It’ll not be shared with the customer.</string>
+    <string name="booking_cancel_dialog_title">Cancel booking</string>
+    <string name="booking_cancel_dialog_message">%1$s will no longer be able to attend “%2$s” on %3$s at %4$s.</string>
+    <string name="booking_cancel_dialog_keep">No, keep it</string>
+    <string name="booking_cancel_dialog_confirm">Yes, cancel it</string>
+    <string name="booking_note_screen_title">Booking note</string>
+    <string name="booking_note_screen_done">DONE</string>
+    <string name="booking_note_screen_update_error">Error saving booking note</string>
+    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

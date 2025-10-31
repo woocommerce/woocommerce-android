@@ -10,13 +10,16 @@ class EncryptedLogsFileProvider @Inject constructor(
     private val wooLog: WooLog,
     private val dispatchers: CoroutineDispatchers
 ) {
-    suspend fun provide(): File {
+    suspend fun provide(): File? {
         return withContext(dispatchers.io) {
-            val logs = wooLog.getCurrentLogEntries().take(LOG_ENTRIES_LIMIT)
-
-            File.createTempFile("log", "").apply {
-                appendText(logs.joinToString("\n"))
-            }
+            runCatching {
+                val logs = wooLog.getCurrentLogEntries().takeLast(LOG_ENTRIES_LIMIT)
+                File.createTempFile("log", "").apply {
+                    appendText(logs.joinToString("\n"))
+                }
+            }.onFailure { exception ->
+                WooLog.e(WooLog.T.UTILS, "Could not create log file: ${exception.message}")
+            }.getOrNull()
         }
     }
 

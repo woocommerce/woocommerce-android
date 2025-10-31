@@ -19,6 +19,7 @@ class ApplicationPasswordsStore @Inject constructor(
         private const val USERNAME_PREFERENCE_KEY_PREFIX = "username_"
         private const val PASSWORD_PREFERENCE_KEY_PREFIX = "app_password_"
         private const val UUID_PREFERENCE_KEY_PREFIX = "app_password_uuid_"
+        const val APPLICATION_PASSWORDS_KEYSTORE_ENCRYPTION_ERROR = "application_passwords_keystore_encryption_error"
     }
 
     @Inject internal lateinit var configuration: ApplicationPasswordsConfiguration

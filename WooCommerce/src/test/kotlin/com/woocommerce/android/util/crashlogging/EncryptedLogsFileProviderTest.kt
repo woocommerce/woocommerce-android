@@ -28,9 +28,26 @@ class EncryptedLogsFileProviderTest : BaseUnitTest() {
 
         val resultFile = sut.provide()
 
-        assertThat(resultFile).exists()
+        assertThat(resultFile).isNotNull
+        assertThat(resultFile!!).exists()
             .canRead()
             .isFile
             .hasContent(testLog.toString())
+    }
+
+    @Test
+    fun `when requesting log files, then it should limit the number of log entries`() = testBlocking {
+        val logEntries = (1..1500).map {
+            LogEntry(WooLog.T.WP, WooLog.LogLevel.i, "Log entry $it")
+        }
+        whenever(wooLog.getCurrentLogEntries()).thenReturn(logEntries)
+
+        val resultFile = sut.provide()
+
+        assertThat(resultFile).isNotNull
+        val fileContent = resultFile!!.readLines()
+        assertThat(fileContent).hasSize(1000)
+        assertThat(fileContent.first()).contains("Log entry 501")
+        assertThat(fileContent.last()).contains("Log entry 1500")
     }
 }

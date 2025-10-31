@@ -33,6 +33,8 @@
 /products/tags/<id>/
 /products/tags/batch/
 
+/variations/
+
 /catalog/
 /catalog/status/<id>#String/
 
@@ -135,4 +137,4 @@
 
 /bookings
 /bookings/<id>/
-/resources/<id>/
+/resources/team-members/<id>/

@@ -70,7 +70,11 @@ private fun BookingAttendanceStatusSelection(
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(bottom = 22.dp)
         )
-        BookingAttendanceStatus.entries.forEachIndexed { index, status ->
+        listOf(
+            BookingAttendanceStatus.Booked,
+            BookingAttendanceStatus.CheckedIn,
+            BookingAttendanceStatus.NoShow,
+        ).forEachIndexed { index, status ->
             AttendanceStatusRow(
                 status = status,
                 onClick = { onSelect(status) }
@@ -92,12 +96,14 @@ private fun AttendanceStatusRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Icon(
-            painter = painterResource(status.iconRes),
-            contentDescription = status.text(),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp)
-        )
+        status.iconRes?.let { iconRes ->
+            Icon(
+                painter = painterResource(iconRes),
+                contentDescription = status.text(),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = status.text(),
@@ -116,18 +122,18 @@ private fun AttendanceStatusRow(
 
 @Composable
 private fun BookingAttendanceStatus.description(): String = when (this) {
-    BookingAttendanceStatus.BOOKED -> R.string.booking_attendance_status_booked_desc
-    BookingAttendanceStatus.CHECKED_IN -> R.string.booking_attendance_status_checked_in_desc
-    BookingAttendanceStatus.CANCELLED -> R.string.booking_attendance_status_cancelled_desc
-    BookingAttendanceStatus.NO_SHOW -> R.string.booking_attendance_status_no_show_desc
-}.let { stringResource(it) }
+    BookingAttendanceStatus.Booked -> R.string.booking_attendance_status_booked_desc
+    BookingAttendanceStatus.CheckedIn -> R.string.booking_attendance_status_checked_in_desc
+    BookingAttendanceStatus.NoShow -> R.string.booking_attendance_status_no_show_desc
+    else -> null
+}?.let { stringResource(it) } ?: ""
 
-private val BookingAttendanceStatus.iconRes: Int
+private val BookingAttendanceStatus.iconRes: Int?
     get() = when (this) {
-        BookingAttendanceStatus.BOOKED -> R.drawable.ic_attendance_booked
-        BookingAttendanceStatus.CHECKED_IN -> R.drawable.ic_attendance_checked_in
-        BookingAttendanceStatus.CANCELLED -> R.drawable.ic_attendance_cancelled
-        BookingAttendanceStatus.NO_SHOW -> R.drawable.ic_attendance_no_show
+        BookingAttendanceStatus.Booked -> R.drawable.ic_attendance_booked
+        BookingAttendanceStatus.CheckedIn -> R.drawable.ic_attendance_checked_in
+        BookingAttendanceStatus.NoShow -> R.drawable.ic_attendance_no_show
+        else -> null
     }
 
 @LightDarkThemePreviews
@@ -145,7 +151,7 @@ private fun BookingAttendanceStatusBottomSheetPreview() {
 private fun AttendanceStatusRowPreview() {
     WooThemeWithBackground {
         AttendanceStatusRow(
-            status = BookingAttendanceStatus.CHECKED_IN,
+            status = BookingAttendanceStatus.CheckedIn,
             onClick = {}
         )
     }
