@@ -307,10 +307,8 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-        setOnBackNavigationCallback()
-
         super.onCreate(savedInstanceState)
-
+        setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
