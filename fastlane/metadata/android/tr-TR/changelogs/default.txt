@@ -1,0 +1,2 @@
+23.5:
+WooCommerce deneyiminizi yeniledik! Bu güncelleme, sipariş iadeleri sırasında meydana gelen nadir bir çökmeyi düzeltir ve siparişleri filtrelerken müşteri adlarının nasıl görüneceğini düzeltir. Bu sürümle daha sorunsuz performans ve daha güvenilir sipariş yönetiminin keyfini çıkarın.

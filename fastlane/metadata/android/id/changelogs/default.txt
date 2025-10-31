@@ -1,0 +1,2 @@
+23.5:
+Menggunakan WooCommerce kini jadi lebih nyaman! Pembaruan ini mengatasi crash selama pengembalian dana pesanan dan memperbaiki tampilan nama pelanggan saat menyaring pesanan. Nikmati performa yang lebih lancar dan manajemen pesanan yang lebih andal dengan rilis ini.
