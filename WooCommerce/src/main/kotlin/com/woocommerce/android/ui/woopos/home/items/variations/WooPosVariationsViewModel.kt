@@ -4,12 +4,10 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.getNameForPOS
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
@@ -19,7 +17,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.WooPosVariationsViewState
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ItemsNextPageLoaded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -43,10 +42,7 @@ class WooPosVariationsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
     private val mapper: WooPosVariationMapper,
-    private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
-    private val selectedSite: SelectedSite,
 ) : ViewModel() {
 
     private val _viewState =
@@ -74,7 +70,6 @@ class WooPosVariationsViewModel @Inject constructor(
         }
         loadVariations(
             productId = productId,
-            withPullToRefresh = false,
             forceRefresh = false
         )
     }
@@ -82,25 +77,20 @@ class WooPosVariationsViewModel @Inject constructor(
     private fun loadVariations(
         productId: Long,
         forceRefresh: Boolean,
-        withPullToRefresh: Boolean,
     ) {
         fetchJob?.cancel()
         fetchJob = viewModelScope.launch {
-            _viewState.value = if (withPullToRefresh) {
-                buildReloadingState()
-            } else {
-                WooPosVariationsViewState.Loading()
-            }
+            _viewState.value = WooPosVariationsViewState.Loading()
 
             dataSource.fetchVariationsFirstPage(productId, forceRefresh = forceRefresh).collect { result ->
                 when (result) {
-                    is WooPosProductsDataSource.VariationsResult.Cached -> {
+                    is VariationsResult.Cached -> {
                         if (result.data.isNotEmpty()) {
                             updateViewStateWithVariations(result.data, productId)
                         }
                     }
 
-                    is WooPosProductsDataSource.VariationsResult.Remote -> {
+                    is VariationsResult.Remote -> {
                         _viewState.value = when {
                             result.result.isSuccess -> {
                                 val variations = result.result.getOrThrow()
@@ -200,34 +190,19 @@ class WooPosVariationsViewModel @Inject constructor(
             }
 
             is WooPosVariationsUIEvents.PullToRefreshTriggered -> {
-                when {
-                    wooPosLocalCatalogM1Enabled() -> {
-                        performIncrementalSync()
-                        viewModelScope.launch {
-                            analyticsTracker.track(
-                                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
-                                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                                    sourceType = sourceType,
-                                )
-                            )
-                        }
-                    }
-                    else -> {
-                        loadVariations(event.productId, forceRefresh = true, withPullToRefresh = true)
-                        viewModelScope.launch {
-                            analyticsTracker.track(
-                                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
-                                    source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                                    sourceType = sourceType,
-                                )
-                            )
-                        }
-                    }
+                handlePullToRefresh(event.productId)
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                            source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                            sourceType = sourceType,
+                        )
+                    )
                 }
             }
 
             is WooPosVariationsUIEvents.VariationsLoadingErrorRetryButtonClicked -> {
-                loadVariations(event.productId, forceRefresh = true, withPullToRefresh = false)
+                loadVariations(event.productId, forceRefresh = true)
             }
 
             is WooPosVariationsUIEvents.OnItemClicked -> {
@@ -254,32 +229,61 @@ class WooPosVariationsViewModel @Inject constructor(
         viewModelScope.launch { fromChildToParentEventSender.sendToParent(event) }
     }
 
-    private fun performIncrementalSync() {
-        _viewState.value = buildReloadingState()
-
+    private fun handlePullToRefresh(productId: Long) {
         viewModelScope.launch {
-            selectedSite.getOrNull()?.let { site ->
-                val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-                _viewState.value = buildViewStateForSyncResult(syncResult)
-            }
-        }
-    }
+            _viewState.value = buildReloadingState()
 
-    private fun buildViewStateForSyncResult(syncResult: PosLocalCatalogSyncResult): WooPosVariationsViewState =
-        when (syncResult) {
-            is PosLocalCatalogSyncResult.Success -> {
-                hidePTRIndicator()
-            }
-
-            is PosLocalCatalogSyncResult.Failure -> {
+            val result = dataSource.refreshVariations(productId)
+            result.onSuccess { syncResult ->
+                when (syncResult) {
+                    is PosLocalCatalogVariationSyncResult -> {
+                        when (syncResult.value) {
+                            is PosLocalCatalogSyncResult.Success -> {
+                                _viewState.value = hidePTRIndicator()
+                            }
+                            is PosLocalCatalogSyncResult.Failure -> {
+                                sendEventToParent(
+                                    ChildToParentEvent.ToastMessageDisplayed(
+                                        message = resourceProvider.getString(R.string.offline_error)
+                                    )
+                                )
+                                _viewState.value = hidePTRIndicator()
+                            }
+                        }
+                    }
+                    is VariationsResult.Cached -> {
+                        if (syncResult.data.isNotEmpty()) {
+                            _viewState.value = createContentState(syncResult.data, productId)
+                        }
+                    }
+                    is VariationsResult.Remote -> {
+                        if (syncResult.result.isSuccess) {
+                            val variations = syncResult.result.getOrThrow()
+                            _viewState.value = if (variations.isNotEmpty()) {
+                                createContentState(variations, productId)
+                            } else {
+                                WooPosVariationsViewState.Empty()
+                            }
+                        } else {
+                            sendEventToParent(
+                                ChildToParentEvent.ToastMessageDisplayed(
+                                    message = resourceProvider.getString(R.string.offline_error)
+                                )
+                            )
+                            _viewState.value = hidePTRIndicator()
+                        }
+                    }
+                }
+            }.onFailure { exception ->
                 sendEventToParent(
                     ChildToParentEvent.ToastMessageDisplayed(
                         message = resourceProvider.getString(R.string.offline_error)
                     )
                 )
-                hidePTRIndicator()
+                _viewState.value = hidePTRIndicator()
             }
         }
+    }
 
     private fun hidePTRIndicator(): WooPosVariationsViewState = when (val currentState = _viewState.value) {
         is WooPosVariationsViewState.Content -> currentState.copy(

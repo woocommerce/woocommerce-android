@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -31,6 +32,36 @@ class WooPosProductsInDbDataSourceTest {
         id = 1
     }
 
+    @Test
+    fun `given no site selected, when refreshProducts called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshProducts()
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
+    }
+
+    @Test
+    fun `given no site selected, when refreshVariations called, then returns failure`() = runTest {
+        // Given
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+
+        // When
+        val result = sut.refreshVariations(123L)
+
+        // Then
+        assertThat(result.isFailure).isTrue()
+        val exception = result.exceptionOrNull()
+        assertThat(exception).isInstanceOf(IllegalStateException::class.java)
+        assertThat(exception?.message).isEqualTo("No site selected")
+    }
+
     @Before
     fun setUp() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
@@ -39,7 +70,8 @@ class WooPosProductsInDbDataSourceTest {
             selectedSite = selectedSite,
             productMapper = mapper,
             performInstantCatalogFullSync = performInstantCatalogFullSync,
-            variationMapper = mock()
+            variationMapper = mock(),
+            localCatalogSyncRepository = mock(),
         )
     }
 
@@ -60,9 +92,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(productModel)
     }
@@ -86,9 +118,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).containsExactly(model1, model2)
     }
@@ -104,9 +136,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }
@@ -123,9 +155,9 @@ class WooPosProductsInDbDataSourceTest {
         // Then
         assertThat(results).hasSize(1)
         val result = results.first()
-        assertThat(result).isInstanceOf(WooPosProductsDataSource.ProductsResult.Remote::class.java)
+        assertThat(result).isInstanceOf(ProductsResult.Remote::class.java)
 
-        val remoteResult = result as WooPosProductsDataSource.ProductsResult.Remote
+        val remoteResult = result as ProductsResult.Remote
         assertThat(remoteResult.productsResult.isSuccess).isTrue()
         assertThat(remoteResult.productsResult.getOrThrow()).isEmpty()
     }
