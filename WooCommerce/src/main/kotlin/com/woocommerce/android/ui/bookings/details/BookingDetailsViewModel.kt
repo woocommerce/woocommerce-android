@@ -132,16 +132,21 @@ class BookingDetailsViewModel @Inject constructor(
         cancelBookingDialogState,
         paymentUpdateStatus,
     ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
-        with(bookingMapper) {
-            BookingDetailsViewState(
-                toolbarTitle = booking?.id?.value?.let { id ->
-                    resourceProvider.getString(R.string.booking_details_title, id)
-                } ?: "",
-                bookingUiState = bookingUiState,
-                dialogState = cancelBookingDialog,
-                loadingState = loadingState,
-                onRefresh = ::fetchBooking,
-            )
+        when (navArgs.mode) {
+            BookingDetailsFragment.Mode.Empty -> BookingDetailsViewState.Empty
+            is BookingDetailsFragment.Mode.ShowBooking -> {
+                with(bookingMapper) {
+                    BookingDetailsViewState.ShowBooking(
+                        toolbarTitle = booking?.id?.value?.let { id ->
+                            resourceProvider.getString(R.string.booking_details_title, id)
+                        } ?: "",
+                        bookingUiState = bookingUiState,
+                        dialogState = cancelBookingDialog,
+                        loadingState = loadingState,
+                        onRefresh = ::fetchBooking,
+                    )
+                }
+            }
         }
     }.asLiveData()
 

@@ -102,48 +102,49 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        if (viewState.shouldShowEmptyState) {
-            BookingDetailsEmptyScreen()
-        } else {
-            WCPullToRefreshBox(
-                isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-                onRefresh = viewState.onRefresh,
-                state = rememberPullToRefreshState(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .detailsPanePadding(),
-            ) {
-                Column(
+        when (viewState) {
+            BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
+            is BookingDetailsViewState.ShowBooking -> {
+                WCPullToRefreshBox(
+                    isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                    onRefresh = viewState.onRefresh,
+                    state = rememberPullToRefreshState(),
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .detailsPanePadding(),
                 ) {
-                    when {
-                        viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                        viewState.bookingUiState != null -> {
-                            BookingDetailsContent(
-                                booking = viewState.bookingUiState,
-                                onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                onViewOrder = onViewOrder,
-                                onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                                onViewNotes = onViewNotes,
-                                onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
-                            )
-                            if (showAttendanceSheet.value) {
-                                BookingAttendanceStatusBottomSheet(
-                                    onSelect = { status ->
-                                        viewState.bookingUiState.onAttendanceStatusSelected(status)
-                                    },
-                                    onDismiss = { showAttendanceSheet.value = false }
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        when {
+                            viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                            viewState.bookingUiState != null -> {
+                                BookingDetailsContent(
+                                    booking = viewState.bookingUiState,
+                                    onCancelBooking = viewState.bookingUiState.onCancelBooking,
+                                    onViewOrder = onViewOrder,
+                                    onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                                    onViewNotes = onViewNotes,
+                                    onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                 )
+                                if (showAttendanceSheet.value) {
+                                    BookingAttendanceStatusBottomSheet(
+                                        onSelect = { status ->
+                                            viewState.bookingUiState.onAttendanceStatusSelected(status)
+                                        },
+                                        onDismiss = { showAttendanceSheet.value = false }
+                                    )
+                                }
                             }
                         }
                     }
                 }
+                viewState.dialogState?.Render()
             }
         }
-        viewState.dialogState?.Render()
     }
 }
 
@@ -266,7 +267,7 @@ fun BookingDetailsEmptyScreen(
 private fun BookingDetailsPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "Booking #12345",
                 bookingUiState = BookingUiState(
                     orderId = 1L,
@@ -320,7 +321,7 @@ private fun BookingDetailsPreview() {
 private fun BookingDetailsLoadingPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "",
                 bookingUiState = null,
                 loadingState = BookingDetailsLoadingState.Refreshing,
@@ -337,10 +338,7 @@ private fun BookingDetailsLoadingPreview() {
 private fun BookingDetailsEmptyPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
-                toolbarTitle = "",
-                bookingUiState = null,
-            ),
+            viewState = BookingDetailsViewState.Empty,
             onBack = {},
             onViewOrder = {},
             onViewNotes = {},
