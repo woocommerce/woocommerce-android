@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,12 +37,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.selected
-import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -379,25 +374,12 @@ private fun LoadedOrdersList(
                 backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
                 elevation = WooPosElevation.Medium,
                 shadowType = ShadowType.Soft,
+                isSelected = item.isSelected,
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.medium)
-                        .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-                        .then(
-                            if (item.isSelected) {
-                                Modifier.border(
-                                    width = 2.dp,
-                                    color = Color.Black,
-                                    shape = MaterialTheme.shapes.medium
-                                )
-                            } else {
-                                Modifier
-                            }
-                        )
                         .clickable { onOrderSelected(item.id) }
-                        .semantics { selected = item.isSelected }
                         .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
