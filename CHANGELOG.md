@@ -2,7 +2,7 @@
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
 ## 23.6
-Did you give Woo POS a try? It’s now even better because you can view orders right inside it. What else? Interac refunds are smoother, filters and buttons got a fresh look, and tablet images finally behave. Customer data quirks? Fixed. Selling in-person? Try out Woo Point Of Sale.
+Did you give Woo POS a try? It’s now even better because you can view orders right inside it. What else? Interac refunds are smoother, filters and buttons got a fresh look, and tablet UI got better. Customer data quirks? Fixed. Selling in-person? Try out Woo Point Of Sale.
 
 ## 23.5
 We’ve polished your WooCommerce experience! This update fixes a rare crash during order refunds and corrects how customer names appear when filtering orders. Enjoy smoother performance and more reliable order management with this release.
