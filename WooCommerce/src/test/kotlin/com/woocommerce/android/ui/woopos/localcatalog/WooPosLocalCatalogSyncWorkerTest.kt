@@ -66,7 +66,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(true)
+        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
 
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
@@ -107,7 +107,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `given local catalog not supported, when sync is attempted, then returns failure`() = testBlocking {
         // GIVEN
-        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(false)
+        whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
         val worker = createWorker()
 
         // WHEN

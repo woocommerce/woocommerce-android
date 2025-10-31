@@ -54,7 +54,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
             }
             if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
-                preferencesRepository.disablePeriodicSyncForSite(site.siteId)
+                preferencesRepository.disablePeriodicSyncForSite(site.localId())
             }
         }
     }
