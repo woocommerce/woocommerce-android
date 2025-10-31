@@ -59,7 +59,7 @@ class BookingDetailsViewModel @Inject constructor(
             .distinctUntilChanged()
             .onEach {
                 if (it == null) {
-                    fetchBooking(BookingDetailsLoadingState.Loading)
+                    fetchBooking(bookingId, BookingDetailsLoadingState.Loading)
                 }
             }
             .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
@@ -91,7 +91,7 @@ class BookingDetailsViewModel @Inject constructor(
                 message = message,
                 positiveButton = DialogState.DialogButton(
                     text = UiString.UiStringRes(R.string.booking_cancel_dialog_confirm),
-                    onClick = ::onConfirmCancelBooking
+                    onClick = { onConfirmCancelBooking(booking.id.value) }
                 ),
                 negativeButton = DialogState.DialogButton(
                     text = UiString.UiStringRes(R.string.booking_cancel_dialog_keep),
@@ -132,7 +132,7 @@ class BookingDetailsViewModel @Inject constructor(
         cancelBookingDialogState,
         paymentUpdateStatus,
     ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
-        when (navArgs.mode) {
+        when (val mode = navArgs.mode) {
             BookingDetailsFragment.Mode.Empty -> BookingDetailsViewState.Empty
             is BookingDetailsFragment.Mode.ShowBooking -> {
                 with(bookingMapper) {
@@ -143,7 +143,7 @@ class BookingDetailsViewModel @Inject constructor(
                         bookingUiState = bookingUiState,
                         dialogState = cancelBookingDialog,
                         loadingState = loadingState,
-                        onRefresh = ::fetchBooking,
+                        onRefresh = { fetchBooking(mode.bookingId) },
                     )
                 }
             }
@@ -151,10 +151,19 @@ class BookingDetailsViewModel @Inject constructor(
     }.asLiveData()
 
     init {
-        fetchBooking(BookingDetailsLoadingState.Loading)
+        when (val mode = navArgs.mode) {
+            is BookingDetailsFragment.Mode.ShowBooking -> {
+                fetchBooking(mode.bookingId, BookingDetailsLoadingState.Loading)
+            }
+
+            else -> Unit
+        }
     }
 
-    private fun fetchBooking(initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
+    private fun fetchBooking(
+        bookingId: Long,
+        initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing
+    ) {
         bookingFetchJob?.cancel()
         bookingFetchJob = launch {
             if (navArgs.mode !is BookingDetailsFragment.Mode.ShowBooking) {
@@ -168,7 +177,7 @@ class BookingDetailsViewModel @Inject constructor(
 
             coroutineScope {
                 val bookingTask = async {
-                    bookingsRepository.fetchBooking(bookingId ?: 0L)
+                    bookingsRepository.fetchBooking(bookingId)
                 }
                 val resourceTask = async {
                     val booking = booking.first() ?: bookingTask.await().getOrNull()
@@ -184,7 +193,10 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun onAttendanceStatusSelected(status: BookingAttendanceStatus) {
+    private fun onAttendanceStatusSelected(
+        bookingId: Long,
+        status: BookingAttendanceStatus
+    ) {
         launch {
             if (!networkStatus.isConnected()) {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
@@ -193,7 +205,7 @@ class BookingDetailsViewModel @Inject constructor(
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
             val attendanceStatus = status.toDataModel() ?: return@launch
             bookingsRepository.updateAttendanceStatus(
-                bookingId = bookingId ?: 0L,
+                bookingId = bookingId,
                 attendanceStatus = attendanceStatus
             ).onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_attendance_status_error))
@@ -217,23 +229,23 @@ class BookingDetailsViewModel @Inject constructor(
         showCancelBookingDialog.value = false
     }
 
-    private fun onConfirmCancelBooking() = launch {
+    private fun onConfirmCancelBooking(bookingId: Long) = launch {
         showCancelBookingDialog.value = false
         cancelStatusState.value = CancelStatus.InProgress
-        bookingsRepository.cancelBooking(bookingId ?: 0L)
+        bookingsRepository.cancelBooking(bookingId)
             .onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_cancel_error))
             }
         cancelStatusState.value = CancelStatus.Idle
     }
 
-    private fun onMarkAsPaid() = launch {
+    private fun onMarkAsPaid(bookingId: Long) = launch {
         if (!networkStatus.isConnected()) {
             triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
             return@launch
         }
         paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
-        bookingsRepository.markAsPaid(bookingId ?: 0L)
+        bookingsRepository.markAsPaid(bookingId)
             .onFailure {
                 triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
             }
@@ -266,10 +278,10 @@ class BookingDetailsViewModel @Inject constructor(
         onCancelBooking = ::onCancelBooking,
         onAttendanceStatusSelected = { attendanceStatus ->
             if (attendanceStatus.toDataModel() != booking.attendanceStatus) {
-                onAttendanceStatusSelected(attendanceStatus)
+                onAttendanceStatusSelected(booking.id.value, attendanceStatus)
             }
         },
-        onMarkAsPaid = ::onMarkAsPaid,
+        onMarkAsPaid = { onMarkAsPaid(booking.id.value) },
         paymentUpdateStatus = paymentUpdateStatus,
     )
 
