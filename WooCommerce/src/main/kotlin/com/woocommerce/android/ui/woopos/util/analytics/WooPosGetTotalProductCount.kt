@@ -21,18 +21,18 @@ class WooPosGetTotalProductCount @Inject constructor(
     @Volatile private var totalProductCount: Int? = null
 
     suspend operator fun invoke(): Int? = withContext(dispatchers.io) {
-        totalProductCount?.let { return@withContext it }
-        fetchProductCount()
-        return@withContext totalProductCount
+        mutex.withLock {
+            totalProductCount?.let { return@withContext it }
+            fetchProductCount()
+            return@withContext totalProductCount
+        }
     }
 
     private suspend fun fetchProductCount() {
-        mutex.withLock {
-            val site = selectedSite.get()
-            val result = fetchTotalProductCount(site)
-            if (result.isSuccess) {
-                totalProductCount = result.getOrNull()
-            }
+        val site = selectedSite.get()
+        val result = fetchTotalProductCount(site)
+        if (result.isSuccess) {
+            totalProductCount = result.getOrNull()
         }
     }
 
