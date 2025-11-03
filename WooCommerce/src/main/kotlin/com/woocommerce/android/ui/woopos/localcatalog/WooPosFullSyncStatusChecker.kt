@@ -25,7 +25,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         val site = selectedSite.getOrNull()
             ?: error("No site selected")
 
-        if (!isLocalCatalogSupported(site.siteId)) {
+        if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
@@ -35,7 +35,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
             if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
-                prefsRepo.disablePeriodicSyncForSite(site.siteId)
+                prefsRepo.disablePeriodicSyncForSite(site.localId())
                 return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
             }
         }
