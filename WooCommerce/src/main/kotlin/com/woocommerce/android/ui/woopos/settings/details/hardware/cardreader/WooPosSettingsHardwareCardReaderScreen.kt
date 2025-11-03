@@ -41,6 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
+import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.roundToInt
@@ -124,34 +125,28 @@ private fun ConnectedContent(
     onDocumentationClicked: () -> Unit,
 ) {
     Column(
+        modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         if (isSoftwareUpdateAvailable) {
-            UpdateFirmwareBanner(
-                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
-            )
+            UpdateFirmwareBanner()
         }
 
         WooPosCard(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.Medium.value),
+                .fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(WooPosSpacing.Medium.value)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    WooPosText(
-                        text = readerName,
-                        style = WooPosTypography.BodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                Row {
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_device_name_title),
+                        subtitle = readerName,
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
 
                     WooPosOutlinedButtonSmall(
                         text = stringResource(R.string.card_reader_detail_connected_disconnect_reader),
@@ -159,59 +154,27 @@ private fun ConnectedContent(
                     )
                 }
 
-                if (batteryLevel != null) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                    HorizontalDivider()
-                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
                 if (batteryLevel != null) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_battery_title),
+                        subtitle = "${(batteryLevel * 100).roundToInt()}%",
+                    )
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_settings_card_reader_battery_title),
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        WooPosText(
-                            text = "${(batteryLevel * 100).roundToInt()}%",
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                    HorizontalDivider()
+                    HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
                 }
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                Row {
+                    WooPosSettingsDetailsMenuItemInfo(
+                        title = stringResource(R.string.woopos_settings_card_reader_firmware_title),
+                        subtitle = stringResource(
+                            R.string.card_reader_detail_connected_firmware_version,
+                            firmwareVersion
+                        ),
+                    )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_settings_card_reader_firmware_title),
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        WooPosText(
-                            text = stringResource(
-                                R.string.card_reader_detail_connected_firmware_version,
-                                firmwareVersion
-                            ),
-                            style = WooPosTypography.BodyMedium,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
+                    Spacer(modifier = Modifier.weight(1f))
 
                     if (isSoftwareUpdateAvailable) {
                         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
@@ -225,7 +188,6 @@ private fun ConnectedContent(
         }
 
         WooPosSettingsDetailsMenuItem(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_settings_card_reader_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_card_reader_documentation_subtitle),
             onClick = onDocumentationClicked
@@ -258,10 +220,8 @@ private fun NotConnectedContent(
 }
 
 @Composable
-private fun UpdateFirmwareBanner(
-    modifier: Modifier = Modifier
-) {
-    WooPosCard(modifier = modifier.fillMaxWidth()) {
+private fun UpdateFirmwareBanner() {
+    WooPosCard(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
