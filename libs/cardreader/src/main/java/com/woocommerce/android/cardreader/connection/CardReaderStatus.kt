@@ -7,6 +7,7 @@ sealed class CardReaderStatus {
     ) : CardReaderStatus() {
         enum class ErrorCode {
             BATTERY_CRITICALLY_LOW,
+            BLUETOOTH_PEER_REMOVED_PAIRING,
             OTHER,
         }
     }
