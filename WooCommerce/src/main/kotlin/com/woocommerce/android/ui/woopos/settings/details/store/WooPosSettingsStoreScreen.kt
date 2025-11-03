@@ -1,8 +1,6 @@
 package com.woocommerce.android.ui.woopos.settings.details.store
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,6 +26,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 
 @Composable
 fun WooPosSettingsStoreScreen(
@@ -94,14 +93,14 @@ private fun StoreInformationSection(storeInfo: WooPosSettingsStoreState.StoreInf
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_name_label),
                 subtitle = storeInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_address_label),
                 subtitle = storeInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
@@ -170,62 +169,39 @@ private fun ReceiptInformationSection(receiptInfo: WooPosSettingsStoreState.Rece
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_name_label),
                 subtitle = receiptInfo.storeName.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_physical_address_label),
                 subtitle = receiptInfo.address.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_phone_label),
                 subtitle = receiptInfo.phone.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_store_email_label),
                 subtitle = receiptInfo.email.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
 
             HorizontalDivider(modifier = Modifier.padding(vertical = WooPosSpacing.Medium.value))
 
-            SettingItem(
+            WooPosSettingsDetailsMenuItemInfo(
                 title = stringResource(R.string.woopos_settings_refund_policy_label),
                 subtitle = receiptInfo.refundPolicy.ifBlank { stringResource(R.string.woopos_settings_store_not_set) }
             )
         }
-    }
-}
-
-@Composable
-private fun SettingItem(
-    title: String,
-    subtitle: String
-) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        WooPosText(
-            text = title,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-        )
-
-        WooPosText(
-            text = subtitle,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
     }
 }
 
@@ -241,15 +217,16 @@ private fun StoreSectionTitle(title: Int) {
 
 @Composable
 private fun SettingItemShimmer() {
-    Row(
+    Column(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.3f)
                 .height(22.dp)
         )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
         WooPosShimmerBox(
             modifier = Modifier
