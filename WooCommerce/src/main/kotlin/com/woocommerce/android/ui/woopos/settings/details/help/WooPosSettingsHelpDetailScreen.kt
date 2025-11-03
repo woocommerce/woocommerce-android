@@ -1,13 +1,11 @@
 package com.woocommerce.android.ui.woopos.settings.details.help
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -16,6 +14,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItem
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -37,24 +36,25 @@ fun WooPosHelpDetailScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.SearchOff,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_product_limitations_title),
             subtitle = stringResource(R.string.woopos_settings_help_product_limitations_subtitle),
             onClick = { onShowProductInfoDialog() }
         )
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.Default.Description,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_documentation_title),
             subtitle = stringResource(R.string.woopos_settings_help_documentation_subtitle),
             onClick = { viewModel.onDocumentationClicked() }
         )
 
         WooPosSettingsDetailsMenuItem(
-            icon = Icons.AutoMirrored.Filled.Help,
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_get_support_title),
             subtitle = stringResource(R.string.woopos_settings_help_get_support_subtitle),
             onClick = { viewModel.onGetSupportClicked() }
@@ -70,21 +70,18 @@ fun WooPosHelpDetailScreenPreview() {
             modifier = Modifier.fillMaxSize()
         ) {
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.Default.SearchOff,
                 title = "Where are my products?",
                 subtitle = "Learn about which products are supported in POS",
                 onClick = { }
             )
 
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.Default.Description,
                 title = "Documentation",
                 subtitle = "View guides and tutorials",
                 onClick = { }
             )
 
             WooPosSettingsDetailsMenuItem(
-                icon = Icons.AutoMirrored.Filled.Help,
                 title = "Get Support",
                 subtitle = "Contact our support team",
                 onClick = { }
