@@ -25,14 +25,13 @@ import com.woocommerce.android.R
 @Composable
 fun SingleChoiceFilterPage(
     items: List<BookingFilterListItem>,
-    selectedValue: String?,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
         items(items) { item ->
             SingleChoiceRow(
                 text = stringResource(item.title),
-                selected = item.value == selectedValue,
+                selected = item.selected,
                 onClick = { item.onClick() }
             )
         }

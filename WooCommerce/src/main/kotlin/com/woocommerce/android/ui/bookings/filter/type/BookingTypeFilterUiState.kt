@@ -12,7 +12,7 @@ data class BookingTypeFilterUiState(
     val items: List<BookingFilterListItem> = availableBookingTypes().map { type ->
         BookingFilterListItem(
             title = type.titleRes,
-            value = type.filterValue,
+            selected = type == selectedType,
             onClick = { onTypeSelected(type) }
         )
     }
