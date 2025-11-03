@@ -209,7 +209,7 @@ class OrderDetailFragment :
          * during the payment collection process. If this is the case, it navigates to the
          * Select Payment screen on both phone and tablet devices.
          */
-        if (!navArgs.ignoreTwoPaneLayout) {
+        if (!navArgs.ignoreTwoPaneLayoutLogic) {
             if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
                 navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
                 return
@@ -300,7 +300,7 @@ class OrderDetailFragment :
 
     private fun setupToolbarMenu(menu: Menu) {
         onPrepareMenu(menu)
-        if (requireContext().isTwoPanesShouldBeUsed && !navArgs.ignoreTwoPaneLayout) {
+        if (requireContext().isTwoPanesShouldBeUsed && !navArgs.ignoreTwoPaneLayoutLogic) {
             binding.toolbar.navigationIcon = null
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)

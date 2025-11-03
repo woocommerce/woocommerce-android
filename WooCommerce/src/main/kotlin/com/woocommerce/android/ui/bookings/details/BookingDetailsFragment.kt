@@ -45,7 +45,7 @@ class BookingDetailsFragment : BaseFragment() {
                     requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
                         NavGraphMainDirections.actionGlobalOrderDetailFragment(
                             orderId = orderId,
-                            ignoreTwoPaneLayout = true
+                            ignoreTwoPaneLayoutLogic = true
                         )
                     )
                 },

@@ -182,7 +182,7 @@
             android:defaultValue="false"
             app:argType="boolean" />
         <argument
-            android:name="ignoreTwoPaneLayout"
+            android:name="ignoreTwoPaneLayoutLogic"
             android:defaultValue="false"
             app:argType="boolean" />
         <action
