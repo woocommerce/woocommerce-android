@@ -75,14 +75,6 @@ class BookingListViewModel @Inject constructor(
     private var bookingsFetchJob: Job? = null
     private var bookingsLoadMoreJob: Job? = null
 
-    private fun openFirstLoadedBookingOnTablet(bookings: List<BookingEntity>) {
-        if (isWindowClassLargeThanCompact() && bookings.isNotEmpty() && selectedBookingIdOnBigScreen == null) {
-            val firstId = bookings.first().id.value
-            selectedBookingIdOnBigScreen = firstId
-            triggerEvent(NavigateToBookingDetails(firstId))
-        }
-    }
-
     private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings ->
             openFirstLoadedBookingOnTablet(bookings)
@@ -279,6 +271,14 @@ class BookingListViewModel @Inject constructor(
     private fun onClearFiltersClicked() {
         launch {
             bookingFilterRepository.save(BookingFilters.EMPTY)
+        }
+    }
+
+    private fun openFirstLoadedBookingOnTablet(bookings: List<BookingEntity>) {
+        if (isWindowClassLargeThanCompact() && bookings.isNotEmpty() && selectedBookingIdOnBigScreen == null) {
+            val firstId = bookings.first().id.value
+            selectedBookingIdOnBigScreen = firstId
+            triggerEvent(NavigateToBookingDetails(firstId))
         }
     }
 

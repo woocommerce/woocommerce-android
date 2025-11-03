@@ -20,14 +20,18 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -44,11 +48,19 @@ class BookingDetailsViewModel @Inject constructor(
     private val networkStatus: NetworkStatus,
 ) : ScopedViewModel(savedState) {
 
+    private var bookingFetchJob: Job? = null
+
     private val navArgs: BookingDetailsFragmentArgs by savedState.navArgs()
 
     private val bookingId: Long? = (navArgs.mode as? BookingDetailsFragment.Mode.ShowBooking)?.bookingId
     private val booking = if (bookingId != null) {
         bookingsRepository.observeBooking(bookingId)
+            .distinctUntilChanged()
+            .onEach {
+                if (it == null) {
+                    fetchBooking(BookingDetailsLoadingState.Loading)
+                }
+            }
             .shareIn(scope = viewModelScope, started = SharingStarted.WhileSubscribed(), replay = 1)
     } else {
         flowOf(null)
@@ -137,7 +149,8 @@ class BookingDetailsViewModel @Inject constructor(
     }
 
     private fun fetchBooking(initialLoadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Refreshing) {
-        launch {
+        bookingFetchJob?.cancel()
+        bookingFetchJob = launch {
             if (navArgs.mode !is BookingDetailsFragment.Mode.ShowBooking) {
                 return@launch
             }
@@ -147,19 +160,20 @@ class BookingDetailsViewModel @Inject constructor(
             }
             loadingState.value = initialLoadingState
 
-            val bookingTask = async {
-                bookingsRepository.fetchBooking(bookingId ?: 0L)
-            }
-            val resourceTask = async {
-                val booking = booking.first() ?: bookingTask.await().getOrNull()
-                val resourceId = booking?.resourceId?.takeIf { it != 0L } ?: return@async Result.success(Unit)
-                bookingsRepository.fetchResource(resourceId)
-            }
+            coroutineScope {
+                val bookingTask = async {
+                    bookingsRepository.fetchBooking(bookingId ?: 0L)
+                }
+                val resourceTask = async {
+                    val booking = booking.first() ?: bookingTask.await().getOrNull()
+                    val resourceId = booking?.resourceId?.takeIf { it != 0L } ?: return@async Result.success(Unit)
+                    bookingsRepository.fetchResource(resourceId)
+                }
 
-            if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+                if (awaitAll(bookingTask, resourceTask).any { it.isFailure }) {
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_fetch_error))
+                }
             }
-
             loadingState.value = BookingDetailsLoadingState.Idle
         }
     }
