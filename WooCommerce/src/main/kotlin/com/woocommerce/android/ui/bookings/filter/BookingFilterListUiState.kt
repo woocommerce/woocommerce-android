@@ -39,7 +39,7 @@ data class BookingFilterListUiState(
     val currentBookingType: BookingsFilterOption.BookingType
         get() = newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
             initialBookingFilters?.bookingType
-        ) ?: BookingsFilterOption.BookingType.Any
+        ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
