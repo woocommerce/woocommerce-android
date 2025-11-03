@@ -71,7 +71,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                     "Full sync not required: Recent sync at $lastFullSyncTimestamp " +
                         "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
                 )
-                WooPosFullSyncRequirement.NotRequired
+                WooPosFullSyncRequirement.NotRequired(lastFullSyncTimestamp)
             }
         }
     }
@@ -89,7 +89,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 }
 
 sealed class WooPosFullSyncRequirement {
-    data object NotRequired : WooPosFullSyncRequirement()
+    data class NotRequired(val lastSyncTimestamp: Long) : WooPosFullSyncRequirement()
     data object Overdue : WooPosFullSyncRequirement()
     data object BlockingRequired : WooPosFullSyncRequirement()
     data class Error(val message: String) : WooPosFullSyncRequirement()

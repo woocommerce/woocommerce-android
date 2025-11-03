@@ -27,6 +27,7 @@ constructor(
     private val timeProvider: DateTimeProvider,
     private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -46,6 +47,8 @@ constructor(
             logger.d("POS has been inactive recently, skipping local catalog sync")
             return Result.success()
         }
+
+        checkSyncRequirement()?.let { return it }
 
         val site = isCatalogSyncSupported() ?: return Result.failure()
 
@@ -80,6 +83,33 @@ constructor(
                         "disabling periodic sync for site ${site.url}."
                 )
                 Result.failure()
+            }
+        }
+    }
+
+    @Suppress("ReturnCount")
+    private suspend fun checkSyncRequirement(): Result? {
+        val syncRequirement = syncStatusChecker.checkSyncRequirement()
+        return when (syncRequirement) {
+            is WooPosFullSyncRequirement.NotRequired -> {
+                logger.d(
+                    "Local catalog sync NotRequired: Catalog was last synced at " +
+                        "${syncRequirement.lastSyncTimestamp}"
+                )
+                Result.success()
+            }
+            is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
+                logger.d("Local catalog sync LocalCatalogDisabled: ${syncRequirement.message}")
+                Result.success()
+            }
+            is WooPosFullSyncRequirement.Error -> {
+                logger.e("Sync requirement check failed: ${syncRequirement.message}. Retrying...")
+                Result.retry()
+            }
+            is WooPosFullSyncRequirement.BlockingRequired,
+            is WooPosFullSyncRequirement.Overdue -> {
+                logger.d("Proceeding with sync (requirement: $syncRequirement)")
+                null
             }
         }
     }
