@@ -31,7 +31,7 @@ data class BookingFilterListUiState(
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
             title = page.titleRes,
-            value = page.filterValue,
+            subtitle = page.filterValue,
             onClick = { openPage(page) },
         )
     }
@@ -47,12 +47,14 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: String?
+    val BookingFilterPage.filterValue: BookingFilterListItem.BookingFilterListItemSubtitle?
         get() = when (this) {
             BookingFilterPage.Customer -> {
-                newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
-                    initialBookingFilters?.customer
-                )?.customerName
+                BookingFilterListItem.BookingFilterListItemSubtitle(
+                    valueString = newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
+                        initialBookingFilters?.customer
+                    )?.customerName
+                )
             }
 
             BookingFilterPage.DateTime,

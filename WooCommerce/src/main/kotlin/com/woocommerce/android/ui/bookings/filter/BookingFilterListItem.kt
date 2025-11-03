@@ -7,6 +7,8 @@ import androidx.annotation.StringRes
  */
 data class BookingFilterListItem(
     @StringRes val title: Int,
-    val value: String? = null,
+    val subtitle: BookingFilterListItemSubtitle? = null,
     val onClick: () -> Unit = {}
-)
+) {
+    data class BookingFilterListItemSubtitle(val valueString: String? = null, @StringRes val valueRes: Int? = null)
+}
