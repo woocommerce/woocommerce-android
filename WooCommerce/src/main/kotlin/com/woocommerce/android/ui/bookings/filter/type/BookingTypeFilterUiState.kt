@@ -17,13 +17,6 @@ data class BookingTypeFilterUiState(
         )
     }
 
-    val BookingType.titleRes: Int
-        @StringRes get() = when (this.value) {
-            BookingType.Type.ANY -> R.string.bookings_filter_default
-            BookingType.Type.SERVICE -> R.string.bookings_filter_type_service
-            BookingType.Type.EVENT -> R.string.bookings_filter_type_event
-        }
-
     private fun availableBookingTypes(): List<BookingType> = listOf(
         BookingType(BookingType.Type.ANY),
         BookingType(BookingType.Type.SERVICE),
@@ -37,4 +30,11 @@ val BookingType.filterValue: String?
         BookingType.Type.SERVICE -> "service"
         BookingType.Type.EVENT -> "event"
         BookingType.Type.ANY -> null
+    }
+
+val BookingType.titleRes: Int
+    @StringRes get() = when (this.value) {
+        BookingType.Type.ANY -> R.string.bookings_filter_default
+        BookingType.Type.SERVICE -> R.string.bookings_filter_type_service
+        BookingType.Type.EVENT -> R.string.bookings_filter_type_event
     }
