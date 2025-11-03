@@ -261,15 +261,15 @@ class WooPosLocalCatalogStore @Inject constructor(
     /**
      * Observes all variations for a given product from the local database.
      *
-     * @param siteId The local site ID
+     * @param localSiteId The local site ID
      * @param productId The remote product ID
      * @return [Flow] of [Result] containing list of variations or error
      */
     fun observeVariationsForProduct(
-        siteId: Int,
+        localSiteId: LocalOrRemoteId.LocalId,
         productId: Long,
     ): Flow<Result<List<WooPosVariationEntity>>> =
-        posVariationsDao.observeVariationsForProduct(siteId, productId)
+        posVariationsDao.observeVariationsForProduct(localSiteId.value, productId)
             .map { variations ->
                 Result.success(variations)
             }
@@ -277,18 +277,18 @@ class WooPosLocalCatalogStore @Inject constructor(
     /**
      * Gets a single variation from the local database.
      *
-     * @param siteId The local site ID
+     * @param localSiteId The local site ID
      * @param productId The remote product ID
      * @param variationId The remote variation ID
      * @return [Result] containing the variation if found, null if not found, or error
      */
     suspend fun getVariation(
-        siteId: Int,
+        localSiteId: LocalOrRemoteId.LocalId,
         productId: Long,
         variationId: Long
     ): Result<WooPosVariationEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
-            val variation = posVariationsDao.getVariation(siteId, productId, variationId)
+            val variation = posVariationsDao.getVariation(localSiteId.value, productId, variationId)
             Result.success(variation)
         }
 
