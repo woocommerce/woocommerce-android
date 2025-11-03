@@ -96,6 +96,7 @@ squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.2.1"
 stripe-terminal = '4.6.0'
+swiperefreshlayout = "1.1.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
 wellsql = "2.0.0"
@@ -161,6 +162,7 @@ androidx-preference-main = { group = "androidx.preference", name = "preference",
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference" }
 androidx-recyclerview-main = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview-main" }
 androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "androidx-recyclerview-selection" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
