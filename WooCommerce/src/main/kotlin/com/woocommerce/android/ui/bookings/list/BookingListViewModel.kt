@@ -76,14 +76,10 @@ class BookingListViewModel @Inject constructor(
     private var bookingsLoadMoreJob: Job? = null
 
     private fun openFirstLoadedBookingOnTablet(bookings: List<BookingEntity>) {
-        if (isWindowClassLargeThanCompact()) {
-            if (bookings.isNotEmpty()) {
-                if (selectedBookingIdOnBigScreen == null) {
-                    val firstId = bookings.first().id.value
-                    selectedBookingIdOnBigScreen = firstId
-                    triggerEvent(NavigateToBookingDetails(firstId))
-                }
-            }
+        if (isWindowClassLargeThanCompact() && bookings.isNotEmpty() && selectedBookingIdOnBigScreen == null) {
+            val firstId = bookings.first().id.value
+            selectedBookingIdOnBigScreen = firstId
+            triggerEvent(NavigateToBookingDetails(firstId))
         }
     }
 
