@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.time.TimeSource.Monotonic
 
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
@@ -39,6 +40,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
     private val getOrderRefunds: WooPosGetOrderRefundsByOrderId,
+    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -72,6 +74,26 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
+        val keys = loadedItems.items.keys.toList()
+        val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
+        val selectedItem = keys.firstOrNull { it.id == orderId }
+
+        selectedItem?.let {
+            viewModelScope.launch {
+                ordersAnalyticsTracker.trackOrdersListRowTapped(
+                    orderId = it.id,
+                    orderStatus = it.statusSlug,
+                    listPosition = position,
+                    createdAtMillis = it.createdAtMillis
+                )
+                ordersAnalyticsTracker.trackOrderDetailsLoaded(
+                    orderId = it.id,
+                    orderStatus = it.statusSlug,
+                    createdAtMillis = it.createdAtMillis
+                )
+            }
+        }
+
         val updatedItems = loadedItems.items.mapKeys { (item, _) ->
             item.copy(isSelected = item.id == orderId)
         }
@@ -87,6 +109,10 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onRefresh() {
+        viewModelScope.launch {
+            ordersAnalyticsTracker.trackOrdersListPullToRefreshTriggered()
+        }
+
         val currentState = _state.value
         _state.value = when (currentState) {
             is WooPosOrdersState.Content -> currentState.copy(
@@ -129,6 +155,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
     fun onEmailReceiptButtonClicked(orderId: Long) {
         viewModelScope.launch {
+            ordersAnalyticsTracker.trackOrderDetailsEmailReceiptTapped()
             childrenToParentEventSender.sendToParent(
                 ToEmailReceipt(orderId)
             )
@@ -171,6 +198,7 @@ class WooPosOrdersViewModel @Inject constructor(
             val result = ordersDataSource.loadMore(normalizedQuery)
 
             if (result.isSuccess) {
+                ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
                 appendOrders(result.getOrThrow())
             } else {
                 _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
@@ -181,6 +209,10 @@ class WooPosOrdersViewModel @Inject constructor(
     fun onSearchEvent(event: WooPosSearchUIEvent) {
         when (event) {
             is WooPosSearchUIEvent.SearchIconClicked -> {
+                viewModelScope.launch {
+                    ordersAnalyticsTracker.trackOrdersListSearchButtonTapped()
+                }
+
                 updateSearchState(
                     WooPosSearchInputState.Open(
                         input = WooPosSearchInputState.Open.Input.Hint(
@@ -286,7 +318,11 @@ class WooPosOrdersViewModel @Inject constructor(
                     paginationState = WooPosPaginationState.None
                 )
             }
+
+            val mark = Monotonic.markNow()
             val result = ordersDataSource.searchOrders(query)
+            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+            ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
             when (result) {
                 is SearchOrdersResult.Error -> {
                     _state.value = WooPosOrdersState.Content(
@@ -323,10 +359,14 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun loadOrders() {
         cancelJobs()
+        val mark = Monotonic.markNow()
         loadingJob = viewModelScope.launch {
             ordersDataSource.loadOrders().collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
+                        val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+                        ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
+
                         _state.value = WooPosOrdersState.Error(
                             message = result.message,
                             searchInputState = WooPosSearchInputState.Closed
@@ -344,6 +384,9 @@ class WooPosOrdersViewModel @Inject constructor(
                     }
 
                     is LoadOrdersResult.SuccessRemote -> {
+                        val elapsedMs = mark.elapsedNow().inWholeMilliseconds
+                        ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
+
                         if (result.orders.isEmpty()) {
                             _state.value = WooPosOrdersState.Empty(
                                 searchInputState = WooPosSearchInputState.Closed
@@ -429,7 +472,9 @@ class WooPosOrdersViewModel @Inject constructor(
             status = PosOrderStatus(
                 text = statusText,
                 colorKey = OrderStatusColorKey.fromStatus(order.status)
-            )
+            ),
+            statusSlug = order.status.toString(),
+            createdAtMillis = order.dateCreated.time
         )
     }
 

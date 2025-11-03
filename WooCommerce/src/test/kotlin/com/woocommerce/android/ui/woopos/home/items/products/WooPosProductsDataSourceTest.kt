@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
-import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -214,6 +218,96 @@ class WooPosProductsDataSourceTest {
         // THEN
         verify(remoteDataSource).resetVariationsListHandler()
         verify(localDbDataSource).resetVariationsListHandler()
+    }
+
+    @Test
+    fun `given local catalog disabled, when refresh products, then delegates to remote data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
+        )
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                ProductsResult.Remote(Result.success(emptyList()))
+            )
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshProducts()
+
+        // THEN
+        verify(remoteDataSource).refreshProducts()
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given sync not required, when refresh products, then delegates to local db data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NotRequired
+        )
+        whenever(localDbDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
+            )
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshProducts()
+
+        // THEN
+        verify(localDbDataSource).refreshProducts()
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given local catalog disabled, when refresh variations, then delegates to remote data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog disabled")
+        )
+        whenever(remoteDataSource.prepopulateCache()).thenReturn(Result.success(Unit))
+        whenever(remoteDataSource.refreshVariations(123L)).thenReturn(
+            Result.success(
+                VariationsResult.Remote(Result.success(emptyList()))
+            )
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshVariations(123L)
+
+        // THEN
+        verify(remoteDataSource).refreshVariations(123L)
+        assertThat(result.isSuccess).isTrue()
+    }
+
+    @Test
+    fun `given sync not required, when refresh variations, then delegates to local db data source`() = runTest {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NotRequired
+        )
+        whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
+            Result.success(
+                PosLocalCatalogVariationSyncResult(PosLocalCatalogSyncResult.Success(0, 0, 0))
+            )
+        )
+        val sut = createSut()
+        sut.prepopulateCache().toList()
+
+        // WHEN
+        val result = sut.refreshVariations(123L)
+
+        // THEN
+        verify(localDbDataSource).refreshVariations(123L)
+        assertThat(result.isSuccess).isTrue()
     }
 
     private fun createSut() = WooPosProductsDataSource(

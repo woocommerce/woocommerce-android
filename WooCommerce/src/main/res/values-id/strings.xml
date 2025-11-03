@@ -1,17 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-08 09:54:08+0000
+Translation-Revision-Date: 2025-10-21 09:54:59+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_confirm">Ya, batalkan</string>
+    <string name="booking_cancel_dialog_keep">Tidak, simpan</string>
+    <string name="booking_cancel_dialog_message">%1$s tidak dapat lagi menghadiri “%2$s” pada %3$s pukul %4$s.</string>
+    <string name="booking_cancel_dialog_title">Batalkan pemesanan</string>
+    <string name="booking_fetch_error">Terjadi error saat mengambil pemesanan</string>
+    <string name="bookings_filter_default">Apa pun</string>
+    <string name="bookings_filter_title_service_event">Layanan / Acara</string>
+    <string name="bookings_filter_title_date">Tanggal dan waktu</string>
+    <string name="bookings_filter_location">Lokasi</string>
+    <string name="bookings_filter_customer_name">Nama pelanggan</string>
+    <string name="bookings_filter_title_type">Jenis pemesanan</string>
+    <string name="bookings_filter_title_payment_status">Status pembayaran</string>
+    <string name="bookings_filter_title_attendance_status">Status kehadiran</string>
+    <string name="bookings_filter_title_team_member">Anggota tim yang ditetapkan</string>
+    <string name="bookings_filters_show_bookings">Tampilkan pemesanan</string>
+    <string name="bookings_filters_count_title">Penyaring (%d)</string>
+    <string name="bookings_filters_default_title">Penyaring</string>
+    <string name="bookings_empty_state_clear_filters_button">Hapus penyaring</string>
+    <string name="bookings_empty_state_change_filters_button">Ubah penyaring</string>
+    <string name="bookings_empty_state_description_with_filters">Tidak ada pemesanan yang cocok dengan penyaring Anda. Coba sesuaikan untuk melihat hasil lainnya.</string>
+    <string name="bookings_search_no_results_with_filters">Kami tidak menemukan pemesanan dengan nama tersebut. Coba sesuaikan istilah pencarian atau penyaring untuk melihat hasil lainnya.</string>
+    <string name="bookings_search_no_results_without_filters">Kami tidak dapat menemukan pemesanan dengan nama tersebut. Coba sesuaikan istilah pencarian untuk melihat hasil lainnya.</string>
+    <string name="bookings_empty_state_description_upcoming">Anda belum memiliki janji temu atau acara mendatang yang dijadwalkan.</string>
+    <string name="bookings_empty_state_description_today">Anda tidak memiliki janji temu atau acara hari ini yang dijadwalkan.</string>
+    <string name="bookings_empty_state_description_default">Pemesanan masuk akan muncul di sini, tempat Anda dapat melihat dan mengelolanya.</string>
+    <string name="bookings_empty_state_title_upcoming">Tidak ada pemesanan mendatang</string>
+    <string name="bookings_empty_state_title_today">Tidak ada pemesanan hari ini</string>
+    <string name="bookings_empty_state_title_default">Pemesanan tidak ditemukan</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">Terbaru</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">Terlama</string>
+    <string name="bookings_sort_by_newest_to_oldest">Terbaru ke terlama</string>
+    <string name="bookings_sort_by_oldest_to_newest">Terlama ke terbaru</string>
+    <string name="bookings_search_with_filters_hint">Cari pemesanan yang disaring</string>
+    <string name="bookings_search_hint">Cari pemesanan</string>
+    <string name="woopos_orders_status_refunded">Dana dikembalikan</string>
+    <string name="woopos_orders_status_completed">Selesai</string>
+    <string name="woopos_orders_status_cancelled">Dibatalkan</string>
+    <string name="woopos_orders_status_failed">Gagal</string>
+    <string name="woopos_orders_status_on_hold">Ditangguhkan</string>
+    <string name="woopos_orders_status_processing">Pemrosesan</string>
+    <string name="woopos_orders_status_pending">Menunggu Pembayaran</string>
+    <string name="woopos_orders_status_auto_draft">Konsep</string>
+    <string name="woopos_orders_pagination_error_content_description">Coba lagi.</string>
+    <string name="woopos_orders_pagination_error_title">Tidak dapat memuat pesanan lainnya</string>
+    <string name="woopos_orders_loading_error_message">Periksa koneksi Anda dan coba lagi.</string>
+    <string name="woopos_orders_loading_error_title">Tidak dapat memuat pesanan</string>
+    <string name="woopos_orders_empty_list_image_description">Tidak ada pesanan</string>
+    <string name="woopos_orders_empty_action_label">Baca selengkapnya</string>
+    <string name="woopos_orders_empty_list_message">Cari tahu bagaimana Anda dapat meningkatkan penjualan toko Anda.</string>
+    <string name="woopos_orders_empty_list_title">Pesanan tidak ditemukan</string>
+    <string name="woopos_date_yesterday_at">Kemarin pukul %s</string>
+    <string name="woopos_date_today_at">Hari ini pukul %s</string>
+    <string name="woopos_date_just_now">Baru saja</string>
+    <string name="woopos_date_never">Tidak pernah</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Segarkan Katalog</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Gunakan opsi segarkan ini hanya jika ada data yang terlihat tidak sesuai. POS menyimpan data terkini secara otomatis.</string>
+    <string name="woopos_settings_local_catalog_actions">Pembaruan Katalog Manual</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Unduh pembaruan katalog menggunakan data seluler</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Izinkan pembaruan lengkap atas data seluler</string>
+    <string name="woopos_settings_local_catalog_settings">Kelola Penggunaan Data</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Pembaruan Lengkap Terakhir</string>
+    <string name="woopos_settings_local_catalog_last_update">Pembaruan Terakhir </string>
+    <string name="woopos_settings_local_catalog_size">Ukuran Katalog</string>
+    <string name="woopos_settings_local_catalog_status">Status Katalog</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">Kelola pengaturan katalog</string>
+    <string name="woopos_settings_local_catalog_category">Katalog</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Bagikan pengalaman Anda dengan survei cepat 2 menit dan bantu kami menjadi lebih baik.</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">Bagaimana performa POS menurut Anda?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Isi survei singkat 2 menit untuk membantu kami mengembangkan fitur yang Anda sukai</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">Ingin mencoba penjualan langsung?</string>
+    <string name="product_type_booking">Produk dapat dipesan</string>
+    <string name="date_time_connector">pada</string>
     <string name="booking_payment_view_order">Lihat pesanan</string>
     <string name="booking_payment_mark_as_paid">Tandai sudah dibayar</string>
     <string name="booking_payment_label_service">Layanan</string>
     <string name="booking_payment_header">PEMBAYARAN</string>
     <string name="booking_attendance_status_no_show_desc">Klien tidak hadir tanpa membatalkan sebelumnya.</string>
-    <string name="booking_attendance_status_cancelled_desc">Klien tidak akan bisa menghadiri lagi.</string>
     <string name="booking_attendance_status_checked_in_desc">Pelanggan hadir dan sesi berjalan sesuai rencana.</string>
     <string name="booking_attendance_status_booked_desc">Janji temu sudah dijadwalkan tetapi belum dilaksanakan.</string>
     <string name="booking_attendance_update_title">Perbarui status kehadiran</string>
@@ -284,6 +355,7 @@ Language: id
     <string name="woo_shipping_labels_package_creation_starred">Bintangi item ini</string>
     <string name="woopos_coupons_pagination_error_title">Gagal memuat kupon lainnya</string>
     <string name="woopos_coupons_pagination_try_again_label">Coba lagi</string>
+    <string name="woopos_orders_loading_error_retry_button">Coba lagi</string>
     <string name="woopos_coupons_loading_error_title">Tidak dapat memuat kupon</string>
     <string name="woopos_coupons_empty_list_title">Kupon tidak ditemukan</string>
     <string name="woopos_coupons_empty_list_image_description">Tidak ada kupon</string>
