@@ -17,6 +17,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
 import androidx.annotation.StringRes
@@ -306,9 +307,8 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
-
         super.onCreate(savedInstanceState)
-
+        setOnBackNavigationCallback()
         ChromeCustomTabUtils.registerForPartialTabUsage(this)
 
         // Verify authenticated session
@@ -372,6 +372,25 @@ class MainActivity :
             viewModel.handleIncomingAppLink(intent?.data)
             viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
+        }
+    }
+
+    private fun setOnBackNavigationCallback() {
+        onBackPressedDispatcher.addCallback(this) {
+            AnalyticsTracker.trackBackPressed(this@MainActivity)
+            val fragment = getActiveChildFragment()
+            if (fragment is BackPressListener && !fragment.onRequestAllowBackPress()) {
+                return@addCallback
+            }
+            supportFragmentManager.primaryNavigationFragment?.let {
+                updateAppBarVisibility(it)
+            }
+            // Disable this callback temporarily to prevent infinite recursion from onBackPressed() call below.
+            isEnabled = false
+            // Trigger the default back press behavior.
+            onBackPressedDispatcher.onBackPressed()
+            // Re-enable the callback for future custom back presses handling.
+            isEnabled = true
         }
     }
 
@@ -457,23 +476,6 @@ class MainActivity :
                 showOrderBadge(count)
             }
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        AnalyticsTracker.trackBackPressed(this)
-
-        getActiveChildFragment()?.let { fragment ->
-            if (fragment is BackPressListener && !(fragment as BackPressListener).onRequestAllowBackPress()) {
-                return
-            }
-        }
-
-        supportFragmentManager.primaryNavigationFragment?.let { fragment ->
-            updateAppBarVisibility(fragment)
-        }
-
-        super.onBackPressed()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

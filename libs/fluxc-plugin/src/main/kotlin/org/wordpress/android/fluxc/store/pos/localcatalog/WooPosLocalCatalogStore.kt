@@ -66,6 +66,24 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Finds a product by its unique identifier (globalUniqueId) from the local database. It returns even products
+     * that are not supported in the POS, so the business logic can display Unsupported Product message instead of
+     * displaying Not Found message.
+     *
+     * @param [siteId] The local site ID
+     * @param [identifier] The unique identifier to search for
+     * @return Result containing the product if found, null if not found, or error
+     */
+    suspend fun findEvenUnsupportedProductByIdentifier(
+        siteId: LocalOrRemoteId.LocalId,
+        identifier: String
+    ): Result<WooPosProductEntity?> =
+        coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedProductByIdentifier") {
+            val product = posProductDao.findProductByIdentifier(siteId, identifier)
+            Result.success(product)
+        }
+
+    /**
      * Gets the count of products in the local database for a given site.
      *
      * @param [siteId] The local site ID
@@ -243,15 +261,15 @@ class WooPosLocalCatalogStore @Inject constructor(
     /**
      * Observes all variations for a given product from the local database.
      *
-     * @param siteId The local site ID
+     * @param localSiteId The local site ID
      * @param productId The remote product ID
      * @return [Flow] of [Result] containing list of variations or error
      */
     fun observeVariationsForProduct(
-        siteId: Int,
+        localSiteId: LocalOrRemoteId.LocalId,
         productId: Long,
     ): Flow<Result<List<WooPosVariationEntity>>> =
-        posVariationsDao.observeVariationsForProduct(siteId, productId)
+        posVariationsDao.observeVariationsForProduct(localSiteId.value, productId)
             .map { variations ->
                 Result.success(variations)
             }
@@ -259,18 +277,36 @@ class WooPosLocalCatalogStore @Inject constructor(
     /**
      * Gets a single variation from the local database.
      *
-     * @param siteId The local site ID
+     * @param localSiteId The local site ID
      * @param productId The remote product ID
      * @param variationId The remote variation ID
      * @return [Result] containing the variation if found, null if not found, or error
      */
     suspend fun getVariation(
-        siteId: Int,
+        localSiteId: LocalOrRemoteId.LocalId,
         productId: Long,
         variationId: Long
     ): Result<WooPosVariationEntity?> =
         coroutineEngine.withDefaultContext(API, this, "getVariation") {
-            val variation = posVariationsDao.getVariation(siteId, productId, variationId)
+            val variation = posVariationsDao.getVariation(localSiteId.value, productId, variationId)
+            Result.success(variation)
+        }
+
+    /**
+     * Finds a variation by its unique identifier (globalUniqueId) from the local database. It returns even variations
+     * that are not supported in the POS, so the business logic can display Unsupported Variation message instead of
+     * displaying Not Found message.
+     *
+     * @param [siteId] The local site ID
+     * @param [identifier] The unique identifier to search for
+     * @return Result containing the variation if found, null if not found, or error
+     */
+    suspend fun findEvenUnsupportedVariationByIdentifier(
+        siteId: LocalOrRemoteId.LocalId,
+        identifier: String
+    ): Result<WooPosVariationEntity?> =
+        coroutineEngine.withDefaultContext(API, this, "findEvenUnsupportedVariationByIdentifier") {
+            val variation = posVariationsDao.findVariationByIdentifier(siteId, identifier)
             Result.success(variation)
         }
 
