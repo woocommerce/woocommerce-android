@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
 import com.woocommerce.android.ui.orders.Header
@@ -657,7 +658,8 @@ class OrderDetailFragment :
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            isReadOnly = false
+            isReadOnly = false,
+            viewOrdersButtonVissible = shouldShowViewCustomerOrdersButton()
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
@@ -674,6 +676,14 @@ class OrderDetailFragment :
                 viewModel.onPrintingInstructionsClicked()
             }
         )
+    }
+
+    private fun shouldShowViewCustomerOrdersButton(): Boolean {
+        val orderListInBackstack =
+            findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.ORDERS.id
+        val isInDetailPane =
+            requireContext().isTwoPanesShouldBeUsed && (parentFragment?.id == R.id.detailPaneContainer)
+        return orderListInBackstack || isInDetailPane
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {
