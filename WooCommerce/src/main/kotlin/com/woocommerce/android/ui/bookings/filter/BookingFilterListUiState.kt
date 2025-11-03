@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings.filter
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.filter.type.titleRes
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
@@ -54,6 +55,14 @@ data class BookingFilterListUiState(
                     valueString = newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
                         initialBookingFilters?.customer
                     )?.customerName
+                )
+            }
+
+            BookingFilterPage.BookingType -> {
+                BookingFilterListItem.BookingFilterListItemSubtitle(
+                    valueRes = newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
+                        initialBookingFilters?.bookingType
+                    )?.titleRes
                 )
             }
 
