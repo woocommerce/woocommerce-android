@@ -255,7 +255,10 @@ fun BookingDetailsEmptyScreen(
                 contentDescription = null
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-            Text(text = stringResource(R.string.booking_not_selected))
+            Text(
+                text = stringResource(R.string.booking_not_selected),
+                style = MaterialTheme.typography.titleLarge
+            )
         }
     }
 }
