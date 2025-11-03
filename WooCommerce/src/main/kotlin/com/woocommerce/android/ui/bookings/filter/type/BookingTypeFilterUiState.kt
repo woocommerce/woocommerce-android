@@ -24,7 +24,7 @@ data class BookingTypeFilterUiState(
     )
 }
 
-val BookingType.filterValue: String?
+val BookingType.remoteValue: String?
     // TODO Update this with actual endpoint values
     get() = when (this.value) {
         BookingType.Type.SERVICE -> "service"
