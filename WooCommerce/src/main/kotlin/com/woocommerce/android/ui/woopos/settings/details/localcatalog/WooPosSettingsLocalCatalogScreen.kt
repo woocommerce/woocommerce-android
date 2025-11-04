@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -27,6 +28,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +45,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialog
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -107,7 +110,7 @@ private fun CatalogStatusSection(
         Column(
             modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
-            when (catalogStatus) {,
+            when (catalogStatus) {
                 is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
                     WooPosSettingsDetailsMenuItemInfo(
                         title = stringResource(R.string.woopos_settings_local_catalog_size),
@@ -279,6 +282,7 @@ private fun SettingLocalCatalogItemShimmer() {
             modifier = Modifier
                 .fillMaxWidth(0.2f)
                 .height(24.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
@@ -286,7 +290,8 @@ private fun SettingLocalCatalogItemShimmer() {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.25f)
-                .height(24.dp)
+                .height(23.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
         )
     }
 }
