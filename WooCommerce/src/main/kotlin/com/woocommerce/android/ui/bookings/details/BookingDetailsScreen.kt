@@ -96,46 +96,49 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        when (viewState) {
-            BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
-            is BookingDetailsViewState.ShowBooking -> {
-                val state = rememberPullToRefreshState()
-                WCPullToRefreshBox(
-                    isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-                    onRefresh = viewState.onRefresh,
-                    state = state,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(innerPadding)
-                        .detailsPanePadding(),
-                ) {
-                    Column(
+        Box(
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
+        ) {
+            when (viewState) {
+                BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
+                is BookingDetailsViewState.ShowBooking -> {
+                    val state = rememberPullToRefreshState()
+                    WCPullToRefreshBox(
+                        isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                        onRefresh = viewState.onRefresh,
+                        state = state,
                         modifier = Modifier
                             .fillMaxSize()
-                            .verticalScroll(rememberScrollState())
+                            .detailsPanePadding(),
                     ) {
-                        when {
-                            viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                            viewState.bookingUiState != null -> {
-                                BookingDetailsContent(
-                                    booking = viewState.bookingUiState,
-                                    onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                    onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                                    onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
-                                )
-                                if (showAttendanceSheet.value) {
-                                    BookingAttendanceStatusBottomSheet(
-                                        onSelect = { status ->
-                                            viewState.bookingUiState.onAttendanceStatusSelected(status)
-                                        },
-                                        onDismiss = { showAttendanceSheet.value = false }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            when {
+                                viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                                viewState.bookingUiState != null -> {
+                                    BookingDetailsContent(
+                                        booking = viewState.bookingUiState,
+                                        onCancelBooking = viewState.bookingUiState.onCancelBooking,
+                                        onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                                        onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                     )
+                                    if (showAttendanceSheet.value) {
+                                        BookingAttendanceStatusBottomSheet(
+                                            onSelect = { status ->
+                                                viewState.bookingUiState.onAttendanceStatusSelected(status)
+                                            },
+                                            onDismiss = { showAttendanceSheet.value = false }
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                    viewState.dialogState?.Render()
                 }
-                viewState.dialogState?.Render()
             }
         }
     }
