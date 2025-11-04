@@ -220,7 +220,7 @@ class WooPosOrdersDataSourceTest {
                 page = 1,
                 orderBy = OrderRestClient.OrderBy.DATE,
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
-                statusFilter = null,
+                statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
                 createdVia = "pos-rest-api",
                 searchQuery = query
             )
@@ -240,7 +240,7 @@ class WooPosOrdersDataSourceTest {
             page = 1,
             orderBy = OrderRestClient.OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
-            statusFilter = null,
+            statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
             createdVia = "pos-rest-api",
             searchQuery = query
         )
@@ -265,7 +265,7 @@ class WooPosOrdersDataSourceTest {
                 page = 1,
                 orderBy = OrderRestClient.OrderBy.DATE,
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
-                statusFilter = null,
+                statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
                 createdVia = "pos-rest-api",
                 searchQuery = query
             )
@@ -295,7 +295,7 @@ class WooPosOrdersDataSourceTest {
                 page = 1,
                 orderBy = OrderRestClient.OrderBy.DATE,
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
-                statusFilter = null,
+                statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
                 createdVia = "pos-rest-api",
                 searchQuery = query
             )
@@ -419,7 +419,7 @@ class WooPosOrdersDataSourceTest {
                 page = 1,
                 orderBy = OrderRestClient.OrderBy.DATE,
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
-                statusFilter = null,
+                statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
                 createdVia = "pos-rest-api",
                 searchQuery = query
             )
@@ -445,7 +445,7 @@ class WooPosOrdersDataSourceTest {
                 page = 2,
                 orderBy = OrderRestClient.OrderBy.DATE,
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
-                statusFilter = null,
+                statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
                 createdVia = "pos-rest-api",
                 searchQuery = query
             )
@@ -464,7 +464,7 @@ class WooPosOrdersDataSourceTest {
             page = 2,
             orderBy = OrderRestClient.OrderBy.DATE,
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
-            statusFilter = null,
+            statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
             createdVia = "pos-rest-api",
             searchQuery = query
         )

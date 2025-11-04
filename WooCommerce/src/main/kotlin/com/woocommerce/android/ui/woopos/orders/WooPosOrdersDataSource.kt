@@ -122,7 +122,7 @@ class WooPosOrdersDataSource @Inject constructor(
         page = page,
         orderBy = OrderBy.DATE,
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
-        statusFilter = null,
+        statusFilter = "pending,processing,on-hold,completed,cancelled,refunded,failed",
         createdVia = "pos-rest-api",
         searchQuery = searchQuery
     )
