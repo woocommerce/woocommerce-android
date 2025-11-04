@@ -9,6 +9,14 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
+sealed class SearchProductsResult {
+    data class Local(val products: List<WooPosProductModel>) : SearchProductsResult()
+    data class Remote(
+        val productsResult: Result<List<WooPosProductModel>>,
+        val searchTimeMillis: Long = 0L
+    ) : SearchProductsResult()
+}
+
 interface WooPosProductsDataSourceInterface {
     fun fetchFirstProductsPage(
         forceRefresh: Boolean
@@ -38,4 +46,10 @@ interface WooPosProductsDataSourceInterface {
     suspend fun refreshProducts(): Result<WooPosSyncProductResult>
 
     suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult>
+
+    fun searchProducts(query: String): Flow<SearchProductsResult>
+    
+    suspend fun loadMoreSearchResults(query: String): Result<List<WooPosProductModel>>
+    
+    val hasMoreSearchPages: Boolean
 }
