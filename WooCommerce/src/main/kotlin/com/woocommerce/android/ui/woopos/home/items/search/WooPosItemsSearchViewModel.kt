@@ -114,6 +114,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             setEmptySearchQueryState()
         } else {
             searchJob = viewModelScope.launch {
+                _viewState.value = WooPosItemsSearchViewState.Loading
                 delay(SEARCH_DEBOUNCING_TIME)
 
                 if (query != currentQuery.get()) return@launch

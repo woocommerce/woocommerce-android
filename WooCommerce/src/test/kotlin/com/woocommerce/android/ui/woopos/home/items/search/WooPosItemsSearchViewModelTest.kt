@@ -521,13 +521,10 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            skipItems(1) // Skip initial EmptySearchQuery state
-
-            advanceUntilIdle()
-
             val loadingState = awaitItem()
             assertThat(loadingState).isInstanceOf(WooPosItemsSearchViewState.Loading::class.java)
 
+            advanceUntilIdle()
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(contentState.items).hasSize(1)
         }
