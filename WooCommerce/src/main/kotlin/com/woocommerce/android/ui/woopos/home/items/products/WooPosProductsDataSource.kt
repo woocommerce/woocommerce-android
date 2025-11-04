@@ -74,7 +74,7 @@ class WooPosProductsDataSource @Inject constructor(
             }
 
             is WooPosFullSyncRequirement.NotRequired,
-            is WooPosFullSyncRequirement.Overdue -> {
+            is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 activeSource = localDbDataSource
                 emit(WooPosPrepopulatingDataStatus.Completed)
             }

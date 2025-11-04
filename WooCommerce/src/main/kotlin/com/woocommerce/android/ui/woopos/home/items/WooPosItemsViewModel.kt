@@ -63,14 +63,20 @@ class WooPosItemsViewModel @Inject constructor(
             preferencesRepository.setWasOpenedOnce(true)
         }
 
-        checkSyncStatusAndUpdateBanner()
+        refreshSyncOverdueBannerState()
     }
 
-    private fun checkSyncStatusAndUpdateBanner() {
+    private fun refreshSyncOverdueBannerState() {
         viewModelScope.launch {
             val requirement = syncStatusChecker.checkSyncRequirement()
             _catalogSyncOverdueBannerState.value = when (requirement) {
-                is WooPosFullSyncRequirement.Overdue -> CatalogSyncOverdueBannerState.Visible
+                is WooPosFullSyncRequirement.NonBlockingRequired -> {
+                    if (requirement.isOverdue) {
+                        CatalogSyncOverdueBannerState.Visible
+                    } else {
+                        CatalogSyncOverdueBannerState.Hidden
+                    }
+                }
                 else -> CatalogSyncOverdueBannerState.Hidden
             }
         }
