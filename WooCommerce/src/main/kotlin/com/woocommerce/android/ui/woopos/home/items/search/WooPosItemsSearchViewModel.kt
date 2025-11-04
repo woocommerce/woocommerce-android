@@ -120,15 +120,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
                 childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-                var hasEmittedResult = false
-                
                 dataSource.searchProducts(query).collectLatest { searchResult ->
                     if (query != currentQuery.get()) {
                         childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
                         return@collectLatest
                     }
-                    
-                    hasEmittedResult = true
 
                     when (searchResult) {
                         is SearchProductsResult.Local -> {
@@ -156,13 +152,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             } else {
                                 _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
                             }
-                            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
                         }
                     }
                 }
-                
-                if (hasEmittedResult && query == currentQuery.get()) {
+
+                if (query == currentQuery.get()) {
                     childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                    if (_viewState.value is WooPosItemsSearchViewState.Loading) {
+                        _viewState.value = WooPosItemsSearchViewState.Empty
+                    }
                 }
             }
         }
