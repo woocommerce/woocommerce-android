@@ -1082,7 +1082,8 @@ class WooPosProductsRemoteDataSourceTest {
             variationsHandler,
             variationsCache,
             WooPosVariationsTypesFilterConfig(),
-            variationMapper
+            variationMapper,
+            mock()
         )
         return sut
     }
