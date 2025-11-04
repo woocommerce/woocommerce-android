@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
+import kotlin.system.measureTimeMillis
 import kotlin.time.TimeSource.Monotonic
 
 @HiltViewModel
@@ -410,19 +412,24 @@ class WooPosOrdersViewModel @Inject constructor(
         orders: List<Order>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
-        val newSelectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
-        val items = buildItemsMap(orders, newSelectedId)
-        val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
+        val selectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
 
-        _state.value = WooPosOrdersState.Content(
-            items = WooPosOrdersState.Content.Items.Loaded(
-                items = items
-            ),
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            selectedDetails = selectedEntry.value,
-            paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
-        )
+        val elapsed = measureTimeMillis {
+            val items = buildItemsMap(orders, selectedId)
+            val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
+
+            _state.value = WooPosOrdersState.Content(
+                items = WooPosOrdersState.Content.Items.Loaded(
+                    items = items
+                ),
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                selectedDetails = selectedEntry.value,
+                paginationState = paginationState,
+                searchInputState = _state.value.searchInputState
+            )
+        }
+
+        Log.d("WooPOS", "replaceOrders: buildItemsMap() took ${elapsed}ms for ${orders.size} orders")
     }
 
     private suspend fun appendOrders(
@@ -450,6 +457,31 @@ class WooPosOrdersViewModel @Inject constructor(
         orders: List<Order>,
         selectedId: Long?
     ): Map<OrderItemViewState, OrderDetailsViewState> {
+        val totalElapsed = measureTimeMillis {
+            return orders.associate { order ->
+                var item: OrderItemViewState
+                var details: OrderDetailsViewState
+
+                val itemTime = measureTimeMillis {
+                    item = mapOrderItem(order, selectedId)
+                }
+
+                val detailsTime = measureTimeMillis {
+                    details = mapOrderDetails(order)
+                }
+
+                Log.d(
+                    "WooPOS",
+                    "Order ${order.id} → mapOrderItem: ${itemTime}ms, mapOrderDetails: ${detailsTime}ms"
+                )
+
+                item to details
+            }
+        }
+
+        Log.d("WooPOS", "buildItemsMap() total time: ${totalElapsed}ms for ${orders.size} orders")
+
+        // the associate block already returned, so we re-measure outside the lambda
         return orders.associate { order ->
             val item = mapOrderItem(order, selectedId)
             val details = mapOrderDetails(order)
@@ -479,60 +511,120 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun mapOrderDetails(order: Order): OrderDetailsViewState {
-        val statusText = order.status.localizedLabel(resourceProvider, locale)
+        val tag = "WooPOS-Details"
+        val totalStart = System.currentTimeMillis()
 
+        val statusText = order.status.localizedLabel(resourceProvider, locale)
         val status = PosOrderStatus(
             text = statusText,
             colorKey = OrderStatusColorKey.fromStatus(order.status)
         )
 
+        // 1️⃣ Line items + getProductById + price formatting
+        val lineItemsStart = System.currentTimeMillis()
         val lineItems = order.items.map { item ->
-            val unitPrice = if (item.quantity == 0f) item.total else item.total / item.quantity.toBigDecimal()
+            val unitPrice = if (item.quantity == 0f) {
+                item.total
+            } else {
+                item.total / item.quantity.toBigDecimal()
+            }
+
+            val productStart = System.currentTimeMillis()
             val product = getProductById(item.productId)
+            val productDuration = System.currentTimeMillis() - productStart
+            Log.d(tag, "order ${order.id} - getProductById(${item.productId}) took ${productDuration}ms")
+
+            val priceFormatStart = System.currentTimeMillis()
+            val unitPriceFormatted = formatPrice(unitPrice)
+            val totalFormatted = formatPrice(item.total)
+            val priceFormatDuration = System.currentTimeMillis() - priceFormatStart
+            Log.d(tag, "order ${order.id} - formatPrice(line item ${item.itemId}) took ${priceFormatDuration}ms")
+
             OrderDetailsViewState.LineItemRow(
                 id = item.itemId,
                 name = item.name,
-                qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
-                lineTotal = formatPrice(item.total),
+                qtyAndUnitPrice = "${item.quantity.toInt()} x $unitPriceFormatted",
+                lineTotal = totalFormatted,
                 imageUrl = product?.firstImageUrl
             )
         }
+        val lineItemsDuration = System.currentTimeMillis() - lineItemsStart
+        Log.d(tag, "order ${order.id} - building line items took ${lineItemsDuration}ms")
 
-        val discountCode = order.couponLines.firstOrNull()?.code
-
+        // 2️⃣ Refunds
+        val refundsStart = System.currentTimeMillis()
         val refunds = getOrderRefunds(order.id)
-        val refundAmounts = refunds.map { "-${formatPrice(it.amount)}" }
-        val totalRefunded = refunds.sumOf { it.amount }
-        val netPayment = if (totalRefunded > BigDecimal.ZERO) {
-            formatPrice(order.total - totalRefunded)
-        } else {
-            null
+        val refundsDuration = System.currentTimeMillis() - refundsStart
+        Log.d(tag, "order ${order.id} - getOrderRefunds took ${refundsDuration}ms")
+
+        val refundAmounts = refunds.map {
+            val start = System.currentTimeMillis()
+            val formatted = formatPrice(it.amount)
+            Log.d(tag, "order ${order.id} - formatPrice(refund ${it.id}) took ${System.currentTimeMillis() - start}ms")
+            "-$formatted"
         }
 
+        val totalRefunded = refunds.sumOf { it.amount }
+        val netPayment = if (totalRefunded > BigDecimal.ZERO) {
+            val start = System.currentTimeMillis()
+            val formatted = formatPrice(order.total - totalRefunded)
+            Log.d(tag, "order ${order.id} - formatPrice(netPayment) took ${System.currentTimeMillis() - start}ms")
+            formatted
+        } else null
+
+        // 3️⃣ Breakdown + price formatting
+        val breakdownStart = System.currentTimeMillis()
+
+        suspend fun timedFormatPrice(label: String, amount: BigDecimal): String {
+            val start = System.currentTimeMillis()
+            val result = formatPrice(amount)
+            Log.d(tag, "order ${order.id} - formatPrice($label) took ${System.currentTimeMillis() - start}ms")
+            return result
+        }
+
+        val discountCode = order.couponLines.firstOrNull()?.code
         val breakdown = OrderDetailsViewState.TotalsBreakdown(
-            products = formatPrice(order.productsTotal),
-            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${formatPrice(it)}" },
+            products = timedFormatPrice("products", order.productsTotal),
+            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let {
+                "-${timedFormatPrice("discount", it)}"
+            },
             discountCode = discountCode,
-            taxes = formatPrice(order.totalTax),
-            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { formatPrice(it) },
+            taxes = timedFormatPrice("taxes", order.totalTax),
+            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let {
+                timedFormatPrice("shipping", it)
+            },
             refunds = refundAmounts,
             netPayment = netPayment
         )
+        val breakdownDuration = System.currentTimeMillis() - breakdownStart
+        Log.d(tag, "order ${order.id} - building breakdown took ${breakdownDuration}ms")
 
-        return OrderDetailsViewState(
+        // 4️⃣ Date formatting
+        val dateFormatStart = System.currentTimeMillis()
+        val formattedDate = order.dateCreated.formatToMMMddYYYYAtHHmm(
+            atWord = resourceProvider.getString(R.string.date_time_connector)
+        )
+        val dateFormatDuration = System.currentTimeMillis() - dateFormatStart
+        Log.d(tag, "order ${order.id} - date formatting took ${dateFormatDuration}ms")
+
+        // 5️⃣ Build result
+        val result = OrderDetailsViewState(
             id = order.id,
             number = "#${order.number}",
-            dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
-                atWord = resourceProvider.getString(R.string.date_time_connector)
-            ),
+            dateTime = formattedDate,
             customerEmail = order.customer?.email ?: order.billingAddress.email,
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,
-            total = formatPrice(order.total),
-            totalPaid = formatPrice(order.total),
+            total = timedFormatPrice("total", order.total),
+            totalPaid = timedFormatPrice("totalPaid", order.total),
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() }
         )
+
+        val totalDuration = System.currentTimeMillis() - totalStart
+        Log.d(tag, "order ${order.id} - mapOrderDetails TOTAL took ${totalDuration}ms")
+
+        return result
     }
 }
 
