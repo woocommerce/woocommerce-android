@@ -89,8 +89,8 @@ private fun WooPosSettingsLocalCatalogScreen(
         CellularDataSection(
             allowCellularDataUpdate = state.allowCellularDataUpdate,
             onToggleCellularData = onToggleCellularData,
-            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading
-                || state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
+            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading ||
+                state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
         )
 
         ManualUpdateSection(
