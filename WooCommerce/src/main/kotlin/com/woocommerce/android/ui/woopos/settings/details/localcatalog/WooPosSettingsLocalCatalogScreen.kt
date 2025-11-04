@@ -31,6 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -173,8 +174,8 @@ private fun CellularDataSection(
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    end.linkTo(switch.start, margin = 16.dp)
-                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                    end.linkTo(switch.start, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
                 }
             )
 
@@ -183,10 +184,10 @@ private fun CellularDataSection(
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
                 modifier = Modifier.constrainAs(subtitle) {
-                    top.linkTo(title.bottom, margin = 8.dp)
+                    top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
-                    end.linkTo(switch.start, margin = 16.dp)
-                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                    end.linkTo(switch.start, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
                 }
             )
 
@@ -200,6 +201,7 @@ private fun CellularDataSection(
                 ),
                 modifier = Modifier.constrainAs(switch) {
                     bottom.linkTo(subtitle.bottom)
+                    top.linkTo(subtitle.top)
                     end.linkTo(parent.end)
                 }
             )
@@ -229,8 +231,8 @@ private fun ManualUpdateSection(
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    end.linkTo(button.start, margin = 16.dp)
-                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                    end.linkTo(button.start, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
                 }
             )
 
@@ -239,10 +241,10 @@ private fun ManualUpdateSection(
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
                 modifier = Modifier.constrainAs(subtitle) {
-                    top.linkTo(title.bottom, margin = 4.dp)
+                    top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
-                    end.linkTo(button.start, margin = 16.dp)
-                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                    end.linkTo(button.start, margin = WooPosSpacing.Medium.value)
+                    width = Dimension.fillToConstraints
                 }
             )
 
@@ -251,6 +253,7 @@ private fun ManualUpdateSection(
                 onClick = onRefreshCatalog,
                 modifier = Modifier.constrainAs(button) {
                     bottom.linkTo(subtitle.bottom)
+                    top.linkTo(subtitle.top)
                     end.linkTo(parent.end)
                 }
             )
