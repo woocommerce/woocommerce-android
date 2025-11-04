@@ -107,7 +107,7 @@ private fun CatalogStatusSection(
         Column(
             modifier = Modifier.padding(WooPosSpacing.Medium.value)
         ) {
-            when (catalogStatus) {
+            when (catalogStatus) {,
                 is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> {
                     WooPosSettingsDetailsMenuItemInfo(
                         title = stringResource(R.string.woopos_settings_local_catalog_size),
@@ -278,7 +278,7 @@ private fun SettingLocalCatalogItemShimmer() {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.2f)
-                .height(23.dp)
+                .height(24.dp)
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
@@ -286,7 +286,7 @@ private fun SettingLocalCatalogItemShimmer() {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.25f)
-                .height(23.dp)
+                .height(24.dp)
         )
     }
 }
