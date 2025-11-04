@@ -34,10 +34,30 @@ class WooPosLocalCatalogSearchDataSourceTest {
     private val defaultProduct = generateWooPosProduct()
     private val defaultEntity = createProductEntity(1L)
 
+    private val firstPageEntities = (1..15).map { createProductEntity(it.toLong()) }
+    private val firstPageProducts = (1..15).map { generateWooPosProduct(productId = it.toLong()) }
+    private val secondPageEntities = (16..20).map { createProductEntity(it.toLong()) }
+    private val secondPageProducts = (16..20).map { generateWooPosProduct(productId = it.toLong()) }
+
     @Before
-    fun setup() {
+    fun setup() = runTest {
+        // Setup happy path mocks
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(productMapper.fromEntity(any())).thenReturn(defaultProduct)
+
+        // Setup mapping for pagination test data
+        firstPageEntities.forEachIndexed { index, entity ->
+            whenever(productMapper.fromEntity(entity)).thenReturn(firstPageProducts[index])
+        }
+        secondPageEntities.forEachIndexed { index, entity ->
+            whenever(productMapper.fromEntity(entity)).thenReturn(secondPageProducts[index])
+        }
+
+        // Setup happy path search results
+        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
+            .thenReturn(Result.success(firstPageEntities))
+        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 15))
+            .thenReturn(Result.success(secondPageEntities))
 
         sut = WooPosLocalCatalogSearchDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
@@ -47,27 +67,20 @@ class WooPosLocalCatalogSearchDataSourceTest {
     }
 
     @Test
-    fun `given successful search, when searchProducts called, then returns mapped products`() = runTest {
-        // GIVEN
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(listOf(defaultEntity)))
-
+    fun `when searchProducts called, then returns first page of results`() = runTest {
         // WHEN
         val result = sut.searchProducts("query")
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(1)
+        assertThat(result.getOrThrow()).hasSize(15)
+        assertThat(result.getOrThrow().map { it.remoteId }).containsExactlyInAnyOrder(
+            *((1L..15L).toList().toTypedArray())
+        )
     }
 
     @Test
     fun `given full page of results, when searchProducts called, then hasMorePages returns true`() = runTest {
-        // GIVEN
-        val entities = (1..15).map { createProductEntity(it.toLong()) }
-        whenever(productMapper.fromEntity(any())).thenReturn(generateWooPosProduct())
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(entities))
-
         // WHEN
         sut.searchProducts("query")
 
@@ -117,38 +130,56 @@ class WooPosLocalCatalogSearchDataSourceTest {
     }
 
     @Test
-    fun `given more pages available, when loadMore called, then loads next page`() = runTest {
+    fun `when loadMore called after initial search, then returns accumulated results`() = runTest {
         // GIVEN
-        val firstPageEntities = (1..15).map { createProductEntity(it.toLong()) }
-        val secondPageEntities = listOf(createProductEntity(16L))
-        whenever(productMapper.fromEntity(any())).thenReturn(generateWooPosProduct())
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(firstPageEntities))
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 15))
-            .thenReturn(Result.success(secondPageEntities))
+        sut.searchProducts("query")
 
         // WHEN
-        sut.searchProducts("query")
         val result = sut.loadMore("query")
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).hasSize(1)
+        assertThat(result.getOrThrow()).hasSize(20) // 15 from first page + 5 from second page
     }
 
     @Test
-    fun `given no more pages, when loadMore called, then returns empty list`() = runTest {
+    fun `when loadMore called, then accumulated results contain all products`() = runTest {
+        // GIVEN
+        sut.searchProducts("query")
+
+        // WHEN
+        val result = sut.loadMore("query")
+
+        // THEN
+        val productIds = result.getOrThrow().map { it.remoteId }
+        assertThat(productIds).containsExactlyInAnyOrder(*((1L..20L).toList().toTypedArray()))
+    }
+
+    @Test
+    fun `given last page has less than page size, when loadMore called, then hasMorePages returns false`() = runTest {
+        // GIVEN
+        sut.searchProducts("query")
+
+        // WHEN
+        sut.loadMore("query")
+
+        // THEN
+        assertThat(sut.hasMorePages).isFalse()
+    }
+
+    @Test
+    fun `given no more pages, when loadMore called, then returns current accumulated results`() = runTest {
         // GIVEN
         whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
             .thenReturn(Result.success(listOf(defaultEntity)))
+        sut.searchProducts("query")
 
         // WHEN
-        sut.searchProducts("query")
         val result = sut.loadMore("query")
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        assertThat(result.getOrThrow()).isEmpty()
+        assertThat(result.getOrThrow()).hasSize(1) // Returns the accumulated single item
     }
 
     @Test
@@ -178,19 +209,34 @@ class WooPosLocalCatalogSearchDataSourceTest {
     }
 
     @Test
-    fun `given multiple searches, when searchProducts called, then pagination resets`() = runTest {
+    fun `when new search started, then resets accumulated results`() = runTest {
         // GIVEN
-        val fullPageEntities = (1..15).map { createProductEntity(it.toLong()) }
-        val singleEntity = listOf(createProductEntity(1L))
-        whenever(productMapper.fromEntity(any())).thenReturn(generateWooPosProduct())
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query1", 15, 0))
-            .thenReturn(Result.success(fullPageEntities))
+        sut.searchProducts("query")
+        sut.loadMore("query")
+        val singleEntity = listOf(createProductEntity(99L))
+        val singleProduct = generateWooPosProduct(productId = 99L)
+        whenever(productMapper.fromEntity(singleEntity[0])).thenReturn(singleProduct)
+        whenever(posLocalCatalogStore.searchProducts(siteId, "newQuery", 15, 0))
+            .thenReturn(Result.success(singleEntity))
+
+        // WHEN
+        val result = sut.searchProducts("newQuery")
+
+        // THEN
+        assertThat(result.getOrThrow()).hasSize(1)
+        assertThat(result.getOrThrow()[0].remoteId).isEqualTo(99L)
+    }
+
+    @Test
+    fun `when new search started, then resets hasMorePages flag`() = runTest {
+        // GIVEN
+        sut.searchProducts("query")
+        assertThat(sut.hasMorePages).isTrue()
+        val singleEntity = listOf(createProductEntity(99L))
         whenever(posLocalCatalogStore.searchProducts(siteId, "query2", 15, 0))
             .thenReturn(Result.success(singleEntity))
 
         // WHEN
-        sut.searchProducts("query1")
-        assertThat(sut.hasMorePages).isTrue()
         sut.searchProducts("query2")
 
         // THEN

@@ -24,18 +24,22 @@ class WooPosLocalCatalogSearchDataSource @Inject constructor(
 
     private val searchOffset = AtomicInteger(0)
     private val canLoadMoreResults = AtomicBoolean(false)
+    private var currentQuery: String = ""
+    private val accumulatedResults = mutableListOf<WooPosProductModel>()
 
     val hasMorePages: Boolean
         get() = canLoadMoreResults.get()
 
     suspend fun searchProducts(query: String): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
         searchOffset.set(0)
+        currentQuery = query
+        accumulatedResults.clear()
         performSearch(query)
     }
 
     suspend fun loadMore(query: String): Result<List<WooPosProductModel>> = withContext(Dispatchers.IO) {
-        if (!canLoadMoreResults.get()) {
-            return@withContext Result.success(emptyList())
+        if (!canLoadMoreResults.get() || query != currentQuery) {
+            return@withContext Result.success(accumulatedResults.toList())
         }
 
         performSearch(query)
@@ -60,10 +64,11 @@ class WooPosLocalCatalogSearchDataSource @Inject constructor(
                     productMapper.fromEntity(entity)
                 }.sortedBy { it.name.lowercase() }
 
+                accumulatedResults.addAll(mappedProducts)
                 canLoadMoreResults.set(products.size == PAGE_SIZE)
                 searchOffset.addAndGet(PAGE_SIZE)
 
-                Result.success(mappedProducts)
+                Result.success(accumulatedResults)
             },
             onFailure = { error ->
                 Result.failure(error)
