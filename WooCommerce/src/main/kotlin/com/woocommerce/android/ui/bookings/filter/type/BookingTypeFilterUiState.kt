@@ -24,14 +24,6 @@ data class BookingTypeFilterUiState(
     )
 }
 
-val BookingType.remoteValue: String?
-    // TODO Update this with actual endpoint values
-    get() = when (this.value) {
-        BookingType.Type.SERVICE -> "service"
-        BookingType.Type.EVENT -> "event"
-        BookingType.Type.ANY -> null
-    }
-
 val BookingType.titleRes: Int
     @StringRes get() = when (this.value) {
         BookingType.Type.ANY -> R.string.bookings_filter_default
