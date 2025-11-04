@@ -47,8 +47,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     )
     private val catalogTooLargeResponse = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
         error = "Catalog too large: 29 pages exceed maximum of 10 pages",
-        totalPages = 29,
-        maxPages = 10
     )
     private val incrementalSuccessResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 5,
