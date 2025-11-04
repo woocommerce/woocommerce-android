@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -31,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -155,32 +155,40 @@ private fun CellularDataSection(
     WooPosCard(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable(enabled = !isLoading) {
                     onToggleCellularData(!allowCellularDataUpdate)
                 }
-                .padding(WooPosSpacing.Medium.value),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+                .padding(WooPosSpacing.Medium.value)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_cellular_data),
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_cellular_data_subtitle),
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest
-                )
-            }
+            val (title, subtitle, switch) = createRefs()
+
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_cellular_data),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.constrainAs(title) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(switch.start, margin = 16.dp)
+                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                }
+            )
+
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_cellular_data_subtitle),
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(subtitle) {
+                    top.linkTo(title.bottom, margin = 8.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(switch.start, margin = 16.dp)
+                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                }
+            )
 
             Switch(
                 checked = allowCellularDataUpdate,
@@ -189,7 +197,11 @@ private fun CellularDataSection(
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = MaterialTheme.colorScheme.surfaceBright,
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                modifier = Modifier.constrainAs(switch) {
+                    bottom.linkTo(subtitle.bottom)
+                    end.linkTo(parent.end)
+                }
             )
         }
     }
@@ -202,35 +214,45 @@ private fun ManualUpdateSection(
     WooPosCard(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Bottom
+                .padding(WooPosSpacing.Medium.value)
         ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_manual_update),
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.Bold
-                )
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_refresh_description),
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest
-                )
-            }
+            val (title, subtitle, button) = createRefs()
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_manual_update),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.constrainAs(title) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(button.start, margin = 16.dp)
+                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                }
+            )
+
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_refresh_description),
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(subtitle) {
+                    top.linkTo(title.bottom, margin = 4.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(button.start, margin = 16.dp)
+                    width = androidx.constraintlayout.compose.Dimension.fillToConstraints
+                }
+            )
 
             WooPosButtonSmall(
                 text = stringResource(R.string.woopos_settings_local_catalog_refresh_button),
-                onClick = onRefreshCatalog
+                onClick = onRefreshCatalog,
+                modifier = Modifier.constrainAs(button) {
+                    bottom.linkTo(subtitle.bottom)
+                    end.linkTo(parent.end)
+                }
             )
         }
     }
