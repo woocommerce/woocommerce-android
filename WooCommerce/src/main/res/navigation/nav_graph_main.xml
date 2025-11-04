@@ -411,6 +411,17 @@
             app:argType="com.woocommerce.android.ui.products.AddProductSource" />
     </action>
     <action
+        android:id="@+id/action_global_orderDetailFragment"
+        app:destination="@id/nav_graph_orders">
+        <argument
+            android:name="orderId"
+            app:argType="long" />
+        <argument
+            android:name="ignoreTwoPaneLayoutLogic"
+            android:defaultValue="false"
+            app:argType="boolean" />
+    </action>
+    <action
         android:id="@+id/action_global_reviewDetailFragment"
         app:destination="@id/reviewDetailFragment" />
     <fragment

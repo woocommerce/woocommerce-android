@@ -18,7 +18,8 @@ data class BookingDetailsViewState(
     val dialogState: DialogState? = null,
     val onRefresh: () -> Unit = {},
 ) {
-    val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
+    val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Loading
+    val shouldShowEmptyState: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Idle
 }
 
 data class BookingUiState(

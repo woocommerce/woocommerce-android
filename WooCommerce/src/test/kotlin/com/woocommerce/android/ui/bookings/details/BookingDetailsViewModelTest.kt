@@ -41,7 +41,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val bookingId = 1L
     private val initialBooking = getSampleBooking(bookingId)
     private val bookingFlow = MutableStateFlow(initialBooking)
-    private val savedStateHandle = SavedStateHandle(mapOf("bookingId" to bookingId))
+    private val savedStateHandle = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.ShowBooking(bookingId)))
 
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val resourceProvider = mock<ResourceProvider>()
@@ -354,6 +354,20 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         advanceUntilIdle()
         val after = viewModel.state.getOrAwaitValue()
         assertThat(after.paymentUpdateStatus).isEqualTo(PaymentUpdateStatus.Idle)
+    }
+
+    @Test
+    fun `given Empty mode, when ViewModel created, then state is empty`() = testBlocking {
+        // Given
+        val savedState = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.Empty))
+
+        // When
+        val viewModel = createViewModel(savedState)
+
+        // Then
+        val state = viewModel.state.getOrAwaitValue()
+        assertThat(state.bookingUiState).isNull()
+        assertThat(state.toolbarTitle).isEmpty()
     }
 
     private fun createViewModel(
