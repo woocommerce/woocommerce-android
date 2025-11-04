@@ -193,7 +193,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test
@@ -225,7 +225,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NotRequired::class.java)
         }
 
     @Test
@@ -266,7 +266,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test
@@ -286,7 +286,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test

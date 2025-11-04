@@ -31,6 +31,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var wooPosTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
     private var isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
+    private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -67,6 +68,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(WooPosFullSyncRequirement.BlockingRequired)
 
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
@@ -87,6 +89,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             timeProvider = mockTimeProvider,
             wooPosTabShouldBeVisible = wooPosTabShouldBeVisible,
             isLocalCatalogSupported = isLocalCatalogSupported,
+            syncStatusChecker = syncStatusChecker,
         )
     }
 
