@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosLocalCatalogSearchDataSource
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
@@ -74,7 +75,7 @@ class WooPosProductsInDbDataSourceTest {
             performInstantCatalogFullSync = performInstantCatalogFullSync,
             variationMapper = mock<WooPosVariationMapper>(),
             localCatalogSyncRepository = mock<WooPosLocalCatalogSyncRepository>(),
-            localCatalogSearchDataSource = mock<com.woocommerce.android.ui.woopos.home.items.search.WooPosLocalCatalogSearchDataSource>(),
+            localCatalogSearchDataSource = mock<WooPosLocalCatalogSearchDataSource>(),
         )
     }
 

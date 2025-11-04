@@ -48,8 +48,8 @@ interface WooPosProductsDataSourceInterface {
     suspend fun refreshVariations(productId: Long): Result<WooPosSyncVariationResult>
 
     fun searchProducts(query: String): Flow<SearchProductsResult>
-    
+
     suspend fun loadMoreSearchResults(query: String): Result<List<WooPosProductModel>>
-    
+
     val hasMoreSearchPages: Boolean
 }
