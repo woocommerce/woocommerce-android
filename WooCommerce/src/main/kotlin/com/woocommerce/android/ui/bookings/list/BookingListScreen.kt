@@ -48,6 +48,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,6 +56,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
@@ -206,6 +208,7 @@ private fun BookingList(
     listState: LazyListState,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     WCPullToRefreshBox(
         isRefreshing = state.loadingState == BookingListLoadingState.Refreshing,
         onRefresh = state.onRefresh,
@@ -222,10 +225,16 @@ private fun BookingList(
             }
 
             itemsIndexed(state.bookings) { _, booking ->
+                val backgroundColor = if (context.isTwoPanesShouldBeUsed && booking.id == state.selectedBooking) {
+                    colorResource(R.color.color_item_selected)
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainer
+                }
                 Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
                     BookingSummary(
                         model = booking.summary,
                         modifier = Modifier
+                            .background(backgroundColor)
                             .fillMaxWidth()
                             .clickable(onClick = { state.onBookingClick(booking.id) })
                     )
