@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -33,19 +35,17 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.mockito.kotlin.wheneverBlocking
 import java.math.BigDecimal
 
 @ExperimentalCoroutinesApi
 class WooPosItemsSearchViewModelTest {
 
-    @Rule
-    @JvmField
+    @Rule @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
     private val mockEmptyStateProvider: WooPosItemsSearchEmptyStateRepository = mock()
     private val mockPriceFormat: WooPosFormatPrice = mock()
-    private val mockDataSource: WooPosSearchProductsDataSource = mock()
+    private val mockDataSource: WooPosProductsDataSource = mock()
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
@@ -280,14 +280,13 @@ class WooPosItemsSearchViewModelTest {
     fun `given variable product in search results, when search performed, then mapped correctly to view state`() =
         runTest {
             // GIVEN
-            val variableProduct =
-                generateWooPosProduct(
-                    productId = 1,
-                    productName = "Variable Product",
-                    amount = "10.0",
-                    productType = WooPosProductModel.WooPosProductType.VARIABLE,
-                    variationIds = listOf(101L, 102L, 103L)
-                )
+            val variableProduct = generateWooPosProduct(
+                productId = 1,
+                productName = "Variable Product",
+                amount = "10.0",
+                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                variationIds = listOf(101L, 102L, 103L)
+            )
 
             mockSuccessfulSearch(defaultQuery, listOf(variableProduct))
 
@@ -414,6 +413,10 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
+            skipItems(1) // Skip initial EmptySearchQuery state
+
+            advanceUntilIdle()
+
             val cachedState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(cachedState.items).hasSize(1)
             assertThat((cachedState.items[0] as Product.Simple).name).isEqualTo("Cached Product")
@@ -445,10 +448,19 @@ class WooPosItemsSearchViewModelTest {
             )
         )
 
-        whenever(mockDataSource.searchLocalProducts(query1)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query1)).thenReturn(Result.success(emptyList()))
-        whenever(mockDataSource.searchLocalProducts(query2)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query2)).thenReturn(Result.success(products))
+        whenever(mockDataSource.searchProducts(query1)).thenReturn(
+            flowOf(
+                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Remote(Result.success(emptyList()), 100L)
+            )
+        )
+        whenever(mockDataSource.searchProducts(query2)).thenReturn(
+            flowOf(
+                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Remote(Result.success(products), 100L)
+            )
+        )
+        whenever(mockDataSource.hasMoreSearchPages).thenReturn(false)
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
 
@@ -462,11 +474,12 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        advanceTimeBy(600)
 
         // THEN
         viewModel.viewState.test {
-            skipItems(1)
+            skipItems(1) // Skip initial EmptySearchQuery state
+
+            advanceUntilIdle()
 
             val contentState = awaitItem() as WooPosItemsSearchViewState.Content
             assertThat(contentState.searchQuery).isEqualTo(query2)
@@ -490,8 +503,13 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
+        whenever(mockDataSource.searchProducts(query)).thenReturn(
+            flow {
+                emit(SearchProductsResult.Local(emptyList()))
+                delay(100)
+                emit(SearchProductsResult.Remote(Result.success(products), 100L))
+            }
+        )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -503,6 +521,10 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
+            skipItems(1) // Skip initial EmptySearchQuery state
+
+            advanceUntilIdle()
+
             val loadingState = awaitItem()
             assertThat(loadingState).isInstanceOf(WooPosItemsSearchViewState.Loading::class.java)
 
@@ -528,10 +550,12 @@ class WooPosItemsSearchViewModelTest {
             whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
             whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-            whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-            whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(Result.success(products))
-
-            whenever(mockDataSource.hasMorePages).thenReturn(false)
+            whenever(mockDataSource.searchProducts(query)).thenReturn(
+                flowOf(
+                    SearchProductsResult.Remote(Result.success(products), 100L)
+                )
+            )
+            whenever(mockDataSource.hasMoreSearchPages).thenReturn(false)
 
             whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
             whenever(mockParentToChildrenEventReceiver.events).thenReturn(
@@ -540,7 +564,7 @@ class WooPosItemsSearchViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
-            advanceTimeBy(600)
+            advanceUntilIdle()
 
             // THEN
             viewModel.viewState.test {
@@ -568,10 +592,14 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockEmptyStateProvider.getPopularItems()).thenReturn(emptyList())
         whenever(mockEmptyStateProvider.getLastSearches()).thenReturn(emptyList())
 
-        whenever(mockDataSource.searchLocalProducts(query)).thenReturn(emptyList())
-        whenever(mockDataSource.searchRemoteProducts(query)).thenReturn(
-            Result.failure(Exception("Search failed")),
-            Result.success(products)
+        whenever(mockDataSource.searchProducts(query)).thenReturn(
+            flowOf(
+                SearchProductsResult.Remote(Result.failure(Exception("Search failed")), 100L)
+            )
+        ).thenReturn(
+            flowOf(
+                SearchProductsResult.Remote(Result.success(products), 100L)
+            )
         )
 
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
@@ -581,7 +609,7 @@ class WooPosItemsSearchViewModelTest {
 
         // WHEN
         val viewModel = createViewModel()
-        advanceTimeBy(600)
+        advanceUntilIdle()
 
         // THEN
         viewModel.viewState.test {
@@ -684,7 +712,7 @@ class WooPosItemsSearchViewModelTest {
 
             // WHEN
             val viewModel = createViewModel()
-            advanceTimeBy(600)
+            advanceUntilIdle()
             viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(simpleProduct))
 
             // THEN
@@ -785,31 +813,39 @@ class WooPosItemsSearchViewModelTest {
         }
 
     private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
-        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
-        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.success(products))
+        whenever(mockDataSource.searchProducts(query)).thenReturn(
+            flowOf(
+                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Remote(Result.success(products), 100L)
+            )
+        )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
     }
 
     private fun mockFailedSearch(query: String, error: Exception) {
-        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(emptyList())
-        wheneverBlocking { mockDataSource.searchRemoteProducts(query) }.thenReturn(Result.failure(error))
+        whenever(mockDataSource.searchProducts(query)).thenReturn(
+            flowOf(
+                SearchProductsResult.Local(emptyList()),
+                SearchProductsResult.Remote(Result.failure(error), 100L)
+            )
+        )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
     }
 
     private suspend fun mockSuccessfulPagination(query: String, products: List<WooPosProductModel>) {
-        whenever(mockDataSource.hasMorePages).thenReturn(true)
-        whenever(mockDataSource.loadMore(query)).thenReturn(
+        whenever(mockDataSource.hasMoreSearchPages).thenReturn(true)
+        whenever(mockDataSource.loadMoreSearchResults(query)).thenReturn(
             Result.success(products)
         )
     }
 
     private suspend fun mockFailedPagination(query: String, error: Exception) {
-        whenever(mockDataSource.hasMorePages).thenReturn(true)
-        whenever(mockDataSource.loadMore(query)).thenReturn(
+        whenever(mockDataSource.hasMoreSearchPages).thenReturn(true)
+        whenever(mockDataSource.loadMoreSearchResults(query)).thenReturn(
             Result.failure(error)
         )
     }
@@ -819,12 +855,13 @@ class WooPosItemsSearchViewModelTest {
         cachedProduct: WooPosProductModel,
         remoteProduct: WooPosProductModel
     ) {
-        wheneverBlocking { mockDataSource.searchLocalProducts(query) }.thenReturn(listOf(cachedProduct))
-        wheneverBlocking {
-            mockDataSource.searchRemoteProducts(
-                query
-            )
-        }.thenReturn(Result.success(listOf(remoteProduct)))
+        whenever(mockDataSource.searchProducts(query)).thenReturn(
+            flow {
+                emit(SearchProductsResult.Local(listOf(cachedProduct)))
+                delay(100) // Small delay between emissions
+                emit(SearchProductsResult.Remote(Result.success(listOf(remoteProduct)), 100L))
+            }
+        )
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(
             flowOf(ParentToChildrenEvent.SearchEvent.ChangedQuery(query))
         )
