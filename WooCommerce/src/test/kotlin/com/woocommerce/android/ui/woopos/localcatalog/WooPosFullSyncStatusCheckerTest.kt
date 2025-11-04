@@ -149,7 +149,9 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
@@ -167,7 +169,9 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
@@ -187,7 +191,9 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
@@ -220,7 +226,9 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(exactThresholdTimestamp, isOverdue = false))
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(exactThresholdTimestamp, isOverdue = false))
         }
 
     @Test

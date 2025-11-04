@@ -92,9 +92,9 @@ sealed class WooPosFullSyncRequirement {
     data class NotRequired(val lastSyncTimestamp: Long) : WooPosFullSyncRequirement()
     data class NonBlockingRequired(
         val lastSyncTimestamp: Long,
-        val isOverdue: Boolean) : WooPosFullSyncRequirement()
+        val isOverdue: Boolean
+    ) : WooPosFullSyncRequirement()
     data object BlockingRequired : WooPosFullSyncRequirement()
     data class Error(val message: String) : WooPosFullSyncRequirement()
     data class LocalCatalogDisabled(val message: String) : WooPosFullSyncRequirement()
-
 }
