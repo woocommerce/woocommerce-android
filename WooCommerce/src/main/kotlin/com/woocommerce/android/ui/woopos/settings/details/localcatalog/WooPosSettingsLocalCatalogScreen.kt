@@ -163,7 +163,7 @@ private fun CellularDataSection(
                 }
                 .padding(WooPosSpacing.Medium.value),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Bottom
         ) {
             Column(
                 modifier = Modifier.weight(1f)
@@ -184,11 +184,11 @@ private fun CellularDataSection(
 
             Switch(
                 checked = allowCellularDataUpdate,
-                onCheckedChange = null, // Disable direct interaction since the entire row is clickable
+                onCheckedChange = null,
                 enabled = !isLoading,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                    checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)
+                    checkedThumbColor = MaterialTheme.colorScheme.surfaceBright,
+                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
                 )
             )
         }
@@ -207,7 +207,7 @@ private fun ManualUpdateSection(
                 .fillMaxWidth()
                 .padding(WooPosSpacing.Medium.value),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Bottom
         ) {
             Column(
                 modifier = Modifier.weight(1f)
