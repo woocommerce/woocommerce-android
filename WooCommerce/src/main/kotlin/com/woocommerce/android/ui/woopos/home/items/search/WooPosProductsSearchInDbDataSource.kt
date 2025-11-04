@@ -62,7 +62,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
             onSuccess = { products ->
                 val mappedProducts = products.map { entity ->
                     productMapper.fromEntity(entity)
-                }.sortedBy { it.name.lowercase() }
+                }
 
                 accumulatedResults.addAll(mappedProducts)
                 canLoadMoreResults.set(products.size == PAGE_SIZE)
