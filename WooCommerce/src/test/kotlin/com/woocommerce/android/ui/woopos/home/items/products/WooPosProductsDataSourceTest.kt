@@ -75,7 +75,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync overdue, when prepopulate cache, then uses local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.Overdue
+            WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp = 0L, isOverdue = true)
         )
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
