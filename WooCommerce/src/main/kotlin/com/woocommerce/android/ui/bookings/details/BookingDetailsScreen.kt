@@ -99,10 +99,11 @@ fun BookingDetailsScreen(
         when (viewState) {
             BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
             is BookingDetailsViewState.ShowBooking -> {
+                val state = rememberPullToRefreshState()
                 WCPullToRefreshBox(
                     isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
                     onRefresh = viewState.onRefresh,
-                    state = rememberPullToRefreshState(),
+                    state = state,
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding)
