@@ -41,22 +41,6 @@ class BookingDetailsFragment : BaseFragment() {
             BookingDetailsScreen(
                 viewModel = viewModel,
                 onBack = { findNavController().popBackStack() },
-                onViewOrder = { orderId ->
-                    requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
-                        NavGraphMainDirections.actionGlobalOrderDetailFragment(
-                            orderId = orderId,
-                            ignoreTwoPaneLayoutLogic = true
-                        )
-                    )
-                },
-                onViewNotes = {
-                    (args.mode as? Mode.ShowBooking)?.bookingId?.let {
-                        findNavController().navigate(
-                            BookingDetailsFragmentDirections
-                                .actionBookingDetailsFragmentToBookingNoteFragment(it)
-                        )
-                    }
-                },
             )
         }
     }
@@ -72,6 +56,20 @@ class BookingDetailsFragment : BaseFragment() {
             when (event) {
                 is MultiLiveEvent.Event.ShowSnackbar -> {
                     uiMessageResolver.showSnack(event.message)
+                }
+                is BookingDetailsViewModel.NavigateToBookingNote -> {
+                    findNavController().navigate(
+                        BookingDetailsFragmentDirections
+                            .actionBookingDetailsFragmentToBookingNoteFragment(event.bookingId)
+                    )
+                }
+                is BookingDetailsViewModel.NavigateToOrder -> {
+                    requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
+                        NavGraphMainDirections.actionGlobalOrderDetailFragment(
+                            orderId = event.orderId,
+                            ignoreTwoPaneLayoutLogic = true
+                        )
+                    )
                 }
             }
         }

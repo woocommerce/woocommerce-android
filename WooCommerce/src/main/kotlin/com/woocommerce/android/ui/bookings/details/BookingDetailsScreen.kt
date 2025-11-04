@@ -67,8 +67,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -76,8 +74,6 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onViewOrder = onViewOrder,
-            onViewNotes = onViewNotes,
         )
     }
 }
@@ -87,8 +83,6 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
     val context = LocalContext.current
     val showAttendanceSheet = remember { mutableStateOf(false) }
@@ -102,49 +96,48 @@ fun BookingDetailsScreen(
             )
         }
     ) { innerPadding ->
-        if (viewState.shouldShowEmptyState) {
-            BookingDetailsEmptyScreen()
-        } else {
-            WCPullToRefreshBox(
-                isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-                onRefresh = viewState.onRefresh,
-                state = rememberPullToRefreshState(),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding)
-                    .detailsPanePadding(),
-            ) {
-                Column(
+        when (viewState) {
+            BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
+            is BookingDetailsViewState.ShowBooking -> {
+                val state = rememberPullToRefreshState()
+                WCPullToRefreshBox(
+                    isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                    onRefresh = viewState.onRefresh,
+                    state = state,
                     modifier = Modifier
                         .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                        .padding(innerPadding)
+                        .detailsPanePadding(),
                 ) {
-                    when {
-                        viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                        viewState.bookingUiState != null -> {
-                            BookingDetailsContent(
-                                booking = viewState.bookingUiState,
-                                onCancelBooking = viewState.onCancelBooking,
-                                onViewOrder = onViewOrder,
-                                onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                                onViewNotes = onViewNotes,
-                                onMarkAsPaid = viewState.onMarkAsPaid,
-                                markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
-                            )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(rememberScrollState())
+                    ) {
+                        when {
+                            viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                            viewState.bookingUiState != null -> {
+                                BookingDetailsContent(
+                                    booking = viewState.bookingUiState,
+                                    onCancelBooking = viewState.bookingUiState.onCancelBooking,
+                                    onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                                    onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
+                                )
+                                if (showAttendanceSheet.value) {
+                                    BookingAttendanceStatusBottomSheet(
+                                        onSelect = { status ->
+                                            viewState.bookingUiState.onAttendanceStatusSelected(status)
+                                        },
+                                        onDismiss = { showAttendanceSheet.value = false }
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+                viewState.dialogState?.Render()
             }
         }
-        if (showAttendanceSheet.value) {
-            BookingAttendanceStatusBottomSheet(
-                onSelect = { status ->
-                    viewState.onAttendanceStatusSelected(status)
-                },
-                onDismiss = { showAttendanceSheet.value = false }
-            )
-        }
-        viewState.dialogState?.Render()
     }
 }
 
@@ -152,11 +145,8 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
-    onViewNotes: () -> Unit,
     onMarkAsPaid: () -> Unit,
-    markAsPaidInProgress: Boolean,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -184,14 +174,14 @@ private fun BookingDetailsContent(
             model = it,
             status = booking.bookingSummary.status,
             onMarkAsPaid = onMarkAsPaid,
-            onViewOrder = { onViewOrder(booking.orderId) },
+            onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = markAsPaidInProgress,
+            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(
         note = booking.note,
-        onClick = onViewNotes,
+        onClick = booking.onNoteClicked,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -268,7 +258,7 @@ fun BookingDetailsEmptyScreen(
 private fun BookingDetailsPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "Booking #12345",
                 bookingUiState = BookingUiState(
                     orderId = 1L,
@@ -311,8 +301,6 @@ private fun BookingDetailsPreview() {
                 ),
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
@@ -322,14 +310,12 @@ private fun BookingDetailsPreview() {
 private fun BookingDetailsLoadingPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "",
                 bookingUiState = null,
                 loadingState = BookingDetailsLoadingState.Refreshing,
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
@@ -339,13 +325,8 @@ private fun BookingDetailsLoadingPreview() {
 private fun BookingDetailsEmptyPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
-                toolbarTitle = "",
-                bookingUiState = null,
-            ),
+            viewState = BookingDetailsViewState.Empty,
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
