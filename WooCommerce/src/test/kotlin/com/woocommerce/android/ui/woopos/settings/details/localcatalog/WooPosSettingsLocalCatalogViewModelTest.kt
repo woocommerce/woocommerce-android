@@ -136,7 +136,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         val initialState = WooPosSettingsLocalCatalogState()
 
         // THEN
-        assertThat(initialState.catalogStatus).isEqualTo(WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus)
+        assertThat(initialState.catalogStatus).isEqualTo(WooPosSettingsLocalCatalogState.CatalogStatus.Loading)
     }
 
     @Test

@@ -37,6 +37,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -85,11 +86,13 @@ private fun WooPosSettingsLocalCatalogScreen(
         CellularDataSection(
             allowCellularDataUpdate = state.allowCellularDataUpdate,
             onToggleCellularData = onToggleCellularData,
-            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus
+            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading
+                || state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
         )
 
         ManualUpdateSection(
-            onRefreshCatalog = onRefreshCatalog
+            catalogStatus = state.catalogStatus,
+            onRefreshCatalog = onRefreshCatalog,
         )
     }
 }
@@ -130,7 +133,7 @@ private fun CatalogStatusSection(
                     )
                 }
 
-                is WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
+                is WooPosSettingsLocalCatalogState.CatalogStatus.Loading,
                 is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> {
                     SettingLocalCatalogItemShimmer()
 
@@ -211,6 +214,7 @@ private fun CellularDataSection(
 
 @Composable
 private fun ManualUpdateSection(
+    catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus,
     onRefreshCatalog: () -> Unit
 ) {
     WooPosCard(
@@ -251,6 +255,11 @@ private fun ManualUpdateSection(
             WooPosButtonSmall(
                 text = stringResource(R.string.woopos_settings_local_catalog_refresh_button),
                 onClick = onRefreshCatalog,
+                state = when (catalogStatus) {
+                    is WooPosSettingsLocalCatalogState.CatalogStatus.Available -> WooPosButtonState.ENABLED
+                    WooPosSettingsLocalCatalogState.CatalogStatus.Loading -> WooPosButtonState.DISABLED
+                    WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> WooPosButtonState.LOADING
+                },
                 modifier = Modifier.constrainAs(button) {
                     bottom.linkTo(subtitle.bottom)
                     top.linkTo(subtitle.top)
@@ -269,7 +278,7 @@ private fun SettingLocalCatalogItemShimmer() {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.2f)
-                .height(22.dp)
+                .height(23.dp)
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
@@ -277,7 +286,7 @@ private fun SettingLocalCatalogItemShimmer() {
         WooPosShimmerBox(
             modifier = Modifier
                 .fillMaxWidth(0.25f)
-                .height(22.dp)
+                .height(23.dp)
         )
     }
 }
@@ -397,7 +406,7 @@ fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
     WooPosTheme {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
-                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus,
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Loading,
                 allowCellularDataUpdate = true
             ),
             onToggleCellularData = {},
