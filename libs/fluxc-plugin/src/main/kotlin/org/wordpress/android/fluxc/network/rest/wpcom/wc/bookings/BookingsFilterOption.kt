@@ -9,10 +9,8 @@ sealed interface BookingsFilterOption {
 
     object PaymentStatus : BookingsFilterOption
 
-    sealed interface BookingType : BookingsFilterOption {
-        object Any : BookingType
-        object Service : BookingType
-        object Event : BookingType
+    data class BookingType(val value: Type) : BookingsFilterOption {
+        enum class Type { ANY, SERVICE, EVENT }
     }
 
     data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
@@ -45,7 +43,7 @@ data class BookingFilters(
             if (teamMember != null) count++
             if (attendanceStatus != null) count++
             if (paymentStatus != null) count++
-            if (bookingType != null) count++
+            if (bookingType != null && bookingType.value != BookingsFilterOption.BookingType.Type.ANY) count++
             if (location != null) count++
             if (serviceEvent != null) count++
             return count

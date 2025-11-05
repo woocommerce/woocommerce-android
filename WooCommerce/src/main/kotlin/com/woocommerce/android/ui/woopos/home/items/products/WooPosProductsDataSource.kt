@@ -74,7 +74,7 @@ class WooPosProductsDataSource @Inject constructor(
             }
 
             is WooPosFullSyncRequirement.NotRequired,
-            is WooPosFullSyncRequirement.Overdue -> {
+            is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 activeSource = localDbDataSource
                 emit(WooPosPrepopulatingDataStatus.Completed)
             }
@@ -214,7 +214,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
             emit(VariationsResult.Remote(Result.failure(Exception("Site not selected"))))
         }
 
-        return posLocalCatalogStore.observeVariationsForProduct(siteModel.id, productId)
+        return posLocalCatalogStore.observeVariationsForProduct(siteModel.localId(), productId)
             .map { result ->
                 val variations = result.getOrNull()?.map { it.toWooPosVariation(variationMapper) } ?: emptyList()
                 VariationsResult.Remote(Result.success(variations))
@@ -232,7 +232,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
         val siteModel = selectedSite.getOrNull() ?: return null
         val result = posLocalCatalogStore.getVariation(
-            siteId = siteModel.id,
+            localSiteId = siteModel.localId(),
             productId = productId,
             variationId = variationId
         )

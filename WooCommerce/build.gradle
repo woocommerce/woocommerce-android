@@ -221,6 +221,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout.main)
     implementation(libs.androidx.recyclerview.main)
     implementation(libs.androidx.recyclerview.selection)
+    implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.appcompat)
     implementation(libs.google.material)
     implementation(libs.google.compose.material3)

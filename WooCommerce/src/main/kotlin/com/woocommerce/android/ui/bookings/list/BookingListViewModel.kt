@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.list
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -7,6 +8,7 @@ import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getNullableStateFlow
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -39,7 +42,15 @@ class BookingListViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val filtersBuilder: BookingListFiltersBuilder,
     private val bookingMapper: BookingMapper,
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedStateHandle) {
+
+    companion object {
+        @VisibleForTesting
+        const val KEY_BOOKING_SELECTED_ON_BIG_SCREEN = "key_booking_selected_on_big_screen"
+    }
+
+    private val stateHandle = savedStateHandle
     private val loadingState = MutableStateFlow(BookingListLoadingState.Idle)
     private val selectedTab = savedStateHandle.getStateFlow(viewModelScope, BookingListTab.Today)
     private val searchQuery = savedStateHandle.getNullableStateFlow(
@@ -55,6 +66,10 @@ class BookingListViewModel @Inject constructor(
 
     private val sortOption = savedStateHandle.getStateFlow(viewModelScope, BookingListSortOption.NewestToOldest)
 
+    private var selectedBookingIdOnBigScreen: Long?
+        get() = stateHandle[KEY_BOOKING_SELECTED_ON_BIG_SCREEN]
+        set(value) = stateHandle.set(KEY_BOOKING_SELECTED_ON_BIG_SCREEN, value)
+
     private val isSortSheetVisible = MutableStateFlow(false)
 
     private var bookingsFetchJob: Job? = null
@@ -62,6 +77,7 @@ class BookingListViewModel @Inject constructor(
 
     private val contentState = combine(
         bookingListHandler.bookingsFlow.map { bookings ->
+            openFirstLoadedBookingOnTablet(bookings)
             with(bookingMapper) { bookings.map { it.toListItem() } }
         },
         loadingState
@@ -225,6 +241,9 @@ class BookingListViewModel @Inject constructor(
     }
 
     private fun onBookingClick(bookingId: Long) {
+        if (isWindowClassLargeThanCompact()) {
+            selectedBookingIdOnBigScreen = bookingId
+        }
         triggerEvent(NavigateToBookingDetails(bookingId))
     }
 
@@ -252,6 +271,14 @@ class BookingListViewModel @Inject constructor(
     private fun onClearFiltersClicked() {
         launch {
             bookingFilterRepository.save(BookingFilters.EMPTY)
+        }
+    }
+
+    private fun openFirstLoadedBookingOnTablet(bookings: List<BookingEntity>) {
+        if (isWindowClassLargeThanCompact() && bookings.isNotEmpty() && selectedBookingIdOnBigScreen == null) {
+            val firstId = bookings.first().id.value
+            selectedBookingIdOnBigScreen = firstId
+            triggerEvent(NavigateToBookingDetails(firstId))
         }
     }
 

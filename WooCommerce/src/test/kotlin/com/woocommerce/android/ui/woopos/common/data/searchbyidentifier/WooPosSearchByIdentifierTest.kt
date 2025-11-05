@@ -29,7 +29,10 @@ class WooPosSearchByIdentifierTest {
     private val localCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
-    private val testSite = SiteModel().apply { siteId = 123L }
+    private val testSite = SiteModel().apply {
+        siteId = 123L
+        id = 123
+    }
 
     @Before
     fun setup() = runTest {
@@ -211,7 +214,7 @@ class WooPosSearchByIdentifierTest {
     fun `given local catalog enabled and product not found locally, when search called, then don't search remotely`() =
         runTest {
             // GIVEN
-            whenever(localCatalogSupported.invoke(testSite.siteId)).thenReturn(true)
+            whenever(localCatalogSupported.invoke(testSite.localId())).thenReturn(true)
             val identifier = "123456"
             whenever(localSearcher(identifier, isLocalCatalogSupported = true)).thenReturn(
                 WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound)

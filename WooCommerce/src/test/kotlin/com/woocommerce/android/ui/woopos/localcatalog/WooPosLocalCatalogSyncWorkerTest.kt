@@ -30,7 +30,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var wooPosTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
-    private var isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
+    private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -66,7 +66,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         }
 
         whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(true)
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(WooPosFullSyncRequirement.BlockingRequired)
 
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
@@ -86,7 +86,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             logger = logger,
             timeProvider = mockTimeProvider,
             wooPosTabShouldBeVisible = wooPosTabShouldBeVisible,
-            isLocalCatalogSupported = isLocalCatalogSupported,
+            syncStatusChecker = syncStatusChecker,
         )
     }
 
@@ -105,30 +105,17 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given local catalog not supported, when sync is attempted, then returns failure`() = testBlocking {
+    fun `when no site selected, then returns retry`() = testBlocking {
         // GIVEN
-        whenever(isLocalCatalogSupported(site.siteId)).thenReturn(false)
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.Error("No site selected"))
         val worker = createWorker()
 
         // WHEN
         val result = worker.doWork()
 
         // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-    }
-
-    @Test
-    fun `when no site selected, then returns failure`() = testBlocking {
-        // GIVEN
-        whenever(selectedSite.getOrNull()).thenReturn(null)
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        assertThat(result).isEqualTo(ListenableWorker.Result.retry())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
     }
 
@@ -262,6 +249,93 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     fun `given POS tab availability check fails, when sync is attempted, then continues to attempt sync`() = testBlocking {
         // GIVEN
         whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.failure(Exception("Failed to check POS tab")))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
+    }
+
+    @Test
+    fun `given sync not required, when validateSyncStatus is called, then returns success without syncing`() = testBlocking {
+        // GIVEN
+        val lastSyncTimestamp = CURRENT_TIME_MILLIS - (3 * 24 * 60 * 60 * 1000L) // 3 days ago
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given local catalog disabled, when validateSyncStatus is called, then returns success without syncing`() = testBlocking {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large"))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given sync requirement check error, when validateSyncStatus is called, then returns retry`() = testBlocking {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.Error("No network connection"))
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.retry())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+    }
+
+    @Test
+    fun `given blocking sync required, when validateSyncStatus is called, then proceeds with sync`() = testBlocking {
+        // GIVEN
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.BlockingRequired)
+
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.success())
+        verify(syncRepository).syncLocalCatalogFull(eq(site))
+        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
+    }
+
+    @Test
+    fun `given sync overdue, when validateSyncStatus is called, then proceeds with sync`() = testBlocking {
+        // GIVEN
+        val lastSyncTimestamp = CURRENT_TIME_MILLIS - (8 * 24 * 60 * 60 * 1000L) // 8 days ago
+        whenever(syncStatusChecker.checkSyncRequirement())
+            .thenReturn(WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp, isOverdue = true))
 
         val worker = createWorker()
 

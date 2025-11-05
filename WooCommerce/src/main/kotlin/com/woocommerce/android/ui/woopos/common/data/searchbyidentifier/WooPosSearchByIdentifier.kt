@@ -23,7 +23,7 @@ class WooPosSearchByIdentifier @Inject constructor(
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
-        val isLocalCatalogSupported = localCatalogSupported.invoke(selectedSite.get().siteId)
+        val isLocalCatalogSupported = localCatalogSupported.invoke(selectedSite.get().localId())
         val localResult = localSearcher(identifier, isLocalCatalogSupported)
         // When product not found in local catalog, immediately return "not found" to avoid unnecessary remote call
         if (localResult.isSuccess || isLocalCatalogSupported) {
