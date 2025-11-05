@@ -788,7 +788,8 @@ private fun LoadingItem(
             ) {
                 WooPosShimmerText(
                     text = item.name,
-                    style = WooPosTypography.BodySmall.style
+                    style = WooPosTypography.BodySmall.style,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
