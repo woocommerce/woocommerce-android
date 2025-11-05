@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -28,7 +27,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,9 +42,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -279,20 +276,16 @@ private fun SettingLocalCatalogItemShimmer() {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        WooPosShimmerBox(
-            modifier = Modifier
-                .fillMaxWidth(0.2f)
-                .height(24.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        WooPosShimmerText(
+            text = stringResource(R.string.woopos_settings_local_catalog_size),
+            style = WooPosTypography.BodyMedium.style
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
-        WooPosShimmerBox(
-            modifier = Modifier
-                .fillMaxWidth(0.25f)
-                .height(23.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        WooPosShimmerText(
+            text = "2 hours ago",
+            style = WooPosTypography.BodyMedium.style
         )
     }
 }
