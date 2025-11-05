@@ -57,8 +57,6 @@ class WooPosProductsDataSource @Inject constructor(
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
-        emit(WooPosPrepopulatingDataStatus.Syncing)
-
         val requirement = syncStatusChecker.checkSyncRequirement()
         when (requirement) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
@@ -80,6 +78,7 @@ class WooPosProductsDataSource @Inject constructor(
             }
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
+                emit(WooPosPrepopulatingDataStatus.Syncing)
                 activeSource = localDbDataSource
                 localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
