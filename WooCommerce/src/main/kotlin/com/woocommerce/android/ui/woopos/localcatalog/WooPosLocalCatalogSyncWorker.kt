@@ -109,7 +109,7 @@ constructor(
                 Result.retry()
             }
             is WooPosFullSyncRequirement.BlockingRequired,
-            is WooPosFullSyncRequirement.Overdue -> {
+            is WooPosFullSyncRequirement.NonBlockingRequired -> {
                 logger.d("Proceeding with sync (requirement: $syncRequirement)")
                 null
             }

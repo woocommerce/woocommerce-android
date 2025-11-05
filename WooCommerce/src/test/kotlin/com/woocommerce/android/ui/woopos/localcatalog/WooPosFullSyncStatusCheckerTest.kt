@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 @ExperimentalCoroutinesApi
 class WooPosFullSyncStatusCheckerTest {
@@ -36,10 +37,15 @@ class WooPosFullSyncStatusCheckerTest {
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
+    private val time: DateTimeProvider = mock()
 
     private val siteModel = SiteModel().apply {
         id = 123
         siteId = 456L
+    }
+
+    companion object {
+        private const val NOW = 1609459200000L // 2021-01-01 00:00:00 UTC
     }
 
     private fun createSut() = WooPosFullSyncStatusChecker(
@@ -50,16 +56,18 @@ class WooPosFullSyncStatusCheckerTest {
         prefsRepo = prefsRepo,
         checkCatalogSizeAction = checkCatalogSizeAction,
         isLocalCatalogSupported = isLocalCatalogSupported,
-        wooPosLogWrapper = wooPosLogWrapper
+        wooPosLogWrapper = wooPosLogWrapper,
+        time = time
     )
 
     @Before
     fun setup() = runTest {
-        val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+        val recentTimestamp = NOW - 1.days.inWholeMilliseconds
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
         whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(true)
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(time.now()).thenReturn(NOW)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
             .thenReturn(Result.success(15))
         whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
@@ -129,10 +137,11 @@ class WooPosFullSyncStatusCheckerTest {
         }
 
     @Test
-    fun `given sync overdue and network connected, when checkSyncRequirement called, then should return Overdue`() =
+    fun `given sync overdue and network connected, when checkSyncRequirement called, then should return NonBlockingRequired with isOverdue true`() =
         runTest {
             // GIVEN
-            val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
+            val overdueTimestamp = NOW - 8.days.inWholeMilliseconds
+            whenever(time.now()).thenReturn(NOW)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(true)
 
@@ -142,14 +151,17 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.Overdue)
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
-    fun `given sync overdue and no network, when checkSyncRequirement called, then should return Overdue`() =
+    fun `given sync overdue and no network, when checkSyncRequirement called, then should return NonBlockingRequired with isOverdue true`() =
         runTest {
             // GIVEN
-            val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
+            val overdueTimestamp = NOW - 8.days.inWholeMilliseconds
+            whenever(time.now()).thenReturn(NOW)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(false)
 
@@ -159,14 +171,17 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.Overdue)
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
-    fun `given sync overdue with empty catalog and no network, when checkSyncRequirement called, then should return Overdue`() =
+    fun `given sync overdue with empty catalog and no network, when checkSyncRequirement called, then should return NonBlockingRequired with isOverdue true`() =
         runTest {
             // GIVEN
-            val overdueTimestamp = System.currentTimeMillis() - 8.days.inWholeMilliseconds
+            val overdueTimestamp = NOW - 8.days.inWholeMilliseconds
+            whenever(time.now()).thenReturn(NOW)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(overdueTimestamp)
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -178,14 +193,16 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.Overdue)
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(overdueTimestamp, isOverdue = true))
         }
 
     @Test
     fun `given sync not overdue, when checkSyncRequirement called, then should return NotRequired`() =
         runTest {
             // GIVEN
-            val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+            val recentTimestamp = NOW - 10.hours.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
             val sut = createSut()
@@ -198,10 +215,11 @@ class WooPosFullSyncStatusCheckerTest {
         }
 
     @Test
-    fun `given sync at exact threshold, when checkSyncRequirement called, then should return Overdue`() =
+    fun `given sync at exact threshold, when checkSyncRequirement called, then should return NonBlockingRequired with isOverdue false`() =
         runTest {
             // GIVEN
-            val exactThresholdTimestamp = System.currentTimeMillis() - 7.days.inWholeMilliseconds
+            val exactThresholdTimestamp = NOW - 7.days.inWholeMilliseconds
+            whenever(time.now()).thenReturn(NOW)
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(exactThresholdTimestamp)
 
             val sut = createSut()
@@ -210,7 +228,9 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.Overdue)
+            assertThat(
+                result
+            ).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(exactThresholdTimestamp, isOverdue = false))
         }
 
     @Test
@@ -226,7 +246,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NotRequired::class.java)
+            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NonBlockingRequired::class.java)
         }
 
     @Test
@@ -258,7 +278,7 @@ class WooPosFullSyncStatusCheckerTest {
                 .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
                 .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
-            val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
             val sut = createSut()
@@ -267,7 +287,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
         }
 
     @Test
@@ -278,7 +298,7 @@ class WooPosFullSyncStatusCheckerTest {
                 .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
                 .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeUnknown)
-            val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
             val sut = createSut()
@@ -287,7 +307,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
         }
 
     @Test
@@ -296,7 +316,7 @@ class WooPosFullSyncStatusCheckerTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(100))
-            val recentTimestamp = System.currentTimeMillis() - 1.days.inWholeMilliseconds
+            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
             val sut = createSut()
