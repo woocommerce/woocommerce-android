@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -25,6 +26,7 @@ fun WooPosShimmerText(
     modifier: Modifier = Modifier,
     text: String,
     style: TextStyle,
+    fontWeight: FontWeight? = null,
     cornerRadius: WooPosCornerRadius? = null
 ) {
     val textMeasurer = rememberTextMeasurer()
@@ -32,7 +34,7 @@ fun WooPosShimmerText(
 
     val measuredText = textMeasurer.measure(
         text = text,
-        style = style
+        style = style.copy(fontWeight = fontWeight)
     )
 
     val width = with(density) { measuredText.size.width.toDp() }
@@ -71,8 +73,9 @@ private fun WooPosShimmerTextPreview() {
             )
 
             WooPosShimmerText(
-                text = "Loading body large text",
+                text = "Loading body large bold text",
                 style = WooPosTypography.BodyLarge.style,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(bottom = WooPosSpacing.Small.value)
             )
 
