@@ -23,7 +23,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         val site = selectedSite.getOrNull()
-            ?: error("No site selected")
+        if (site == null) {
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
+        }
 
         if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
