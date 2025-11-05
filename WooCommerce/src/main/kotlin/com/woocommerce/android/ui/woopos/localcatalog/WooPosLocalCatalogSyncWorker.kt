@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import org.wordpress.android.fluxc.model.SiteModel
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltWorker
@@ -26,7 +25,7 @@ constructor(
     private val logger: WooPosLogWrapper,
     private val timeProvider: DateTimeProvider,
     private val wooPosTabShouldBeVisible: WooPosTabShouldBeVisible,
-    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -47,7 +46,13 @@ constructor(
             return Result.success()
         }
 
-        val site = isCatalogSyncSupported() ?: return Result.failure()
+        validateSyncStatus()?.let { return it }
+
+        // Site and catalog support already validated by validateSyncStatus()
+        val site = selectedSite.getOrNull() ?: run {
+            logger.e("Unexpected: Site is null after validation")
+            return Result.failure()
+        }
 
         logger.d("Starting FULL local catalog sync")
 
@@ -84,6 +89,33 @@ constructor(
         }
     }
 
+    @Suppress("ReturnCount")
+    private suspend fun validateSyncStatus(): Result? {
+        val syncRequirement = syncStatusChecker.checkSyncRequirement()
+        return when (syncRequirement) {
+            is WooPosFullSyncRequirement.NotRequired -> {
+                logger.d(
+                    "Local catalog sync NotRequired: Catalog was last synced at " +
+                        "${syncRequirement.lastSyncTimestamp}"
+                )
+                Result.success()
+            }
+            is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
+                logger.d("Local catalog sync LocalCatalogDisabled: ${syncRequirement.message}")
+                Result.success()
+            }
+            is WooPosFullSyncRequirement.Error -> {
+                logger.e("Sync requirement check failed: ${syncRequirement.message}. Retrying...")
+                Result.retry()
+            }
+            is WooPosFullSyncRequirement.BlockingRequired,
+            is WooPosFullSyncRequirement.Overdue -> {
+                logger.d("Proceeding with sync (requirement: $syncRequirement)")
+                null
+            }
+        }
+    }
+
     private suspend fun isPosInactive(): Boolean {
         val lastUsedTimestamp = preferencesRepository.getLastUsedTimestamp() ?: return false
         val daysSinceLastUse = (timeProvider.now() - lastUsedTimestamp).milliseconds.inWholeDays
@@ -96,21 +128,5 @@ constructor(
         } else {
             false
         }
-    }
-
-    @Suppress("ReturnCount")
-    private suspend fun isCatalogSyncSupported(): SiteModel? {
-        val site = selectedSite.getOrNull()
-        if (site == null) {
-            logger.w("No selected WooCommerce site found, skipping local catalog sync")
-            return null
-        }
-
-        if (!isLocalCatalogSupported(site.localId())) {
-            logger.d("Local catalog not supported for site")
-            return null
-        }
-
-        return site
     }
 }

@@ -81,18 +81,19 @@ class WooPosFullSyncStatusCheckerTest {
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
         }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given no site selected, when checkSyncRequirement called, then should throw error`() = runTest {
+    @Test
+    fun `given no site selected, when checkSyncRequirement called, then should return Error`() = runTest {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         val sut = createSut()
 
         // WHEN
-        sut.checkSyncRequirement()
+        val result = sut.checkSyncRequirement()
 
         // THEN
-        // Exception is expected
+        assertThat(result).isInstanceOf(WooPosFullSyncRequirement.Error::class.java)
+        assertThat((result as WooPosFullSyncRequirement.Error).message).isEqualTo("No site selected")
     }
 
     @Test
@@ -193,7 +194,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test
@@ -225,7 +226,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NotRequired::class.java)
         }
 
     @Test
@@ -266,7 +267,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test
@@ -286,7 +287,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired)
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
         }
 
     @Test

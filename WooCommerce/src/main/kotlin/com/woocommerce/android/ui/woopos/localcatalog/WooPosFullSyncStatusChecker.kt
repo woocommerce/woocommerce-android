@@ -23,7 +23,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         val site = selectedSite.getOrNull()
-            ?: error("No site selected")
+        if (site == null) {
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
+        }
 
         if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
@@ -71,7 +74,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                     "Full sync not required: Recent sync at $lastFullSyncTimestamp " +
                         "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
                 )
-                WooPosFullSyncRequirement.NotRequired
+                WooPosFullSyncRequirement.NotRequired(lastFullSyncTimestamp)
             }
         }
     }
@@ -89,7 +92,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 }
 
 sealed class WooPosFullSyncRequirement {
-    data object NotRequired : WooPosFullSyncRequirement()
+    data class NotRequired(val lastSyncTimestamp: Long) : WooPosFullSyncRequirement()
     data object Overdue : WooPosFullSyncRequirement()
     data object BlockingRequired : WooPosFullSyncRequirement()
     data class Error(val message: String) : WooPosFullSyncRequirement()
