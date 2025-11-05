@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class WooPosFullSyncStatusChecker @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
@@ -84,7 +85,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
     companion object {
         private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days.inWholeMilliseconds
-        private val FULL_SYNC_NOT_REQUIRED_THRESHOLD = 2.days.inWholeMilliseconds
+        private val FULL_SYNC_NOT_REQUIRED_THRESHOLD = 23.hours.inWholeMilliseconds
     }
 }
 
