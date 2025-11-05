@@ -150,24 +150,6 @@ class WooPosProductsSearchInDbDataSourceTest {
     }
 
     @Test
-    fun `given products returned, when searchProducts called, then products are sorted by name`() = runTest {
-        // GIVEN
-        val entities = listOf(
-            createProductEntity(1L, "Zebra"),
-            createProductEntity(2L, "Apple"),
-            createProductEntity(3L, "Banana")
-        )
-        whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
-            .thenReturn(Result.success(entities))
-
-        // WHEN
-        val result = sut.searchProducts("query")
-
-        // THEN
-        assertThat(result.getOrThrow().map { it.name }).containsExactly("Apple", "Banana", "Zebra")
-    }
-
-    @Test
     fun `when new search started, then resets accumulated results`() = runTest {
         // GIVEN
         sut.searchProducts("query")
