@@ -142,15 +142,15 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
                 WooPosShimmerText(
-                    text = "January 1, 2024",
+                    text = "Jul 28, 2025 at 10:31 PM",
                     style = WooPosTypography.BodyMedium.style
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
                 WooPosShimmerText(
-                    text = "customer@example.com",
-                    style = WooPosTypography.BodyMedium.style
+                    text = "Completed",
+                    style = WooPosTypography.BodyLarge.style
                 )
             }
 
