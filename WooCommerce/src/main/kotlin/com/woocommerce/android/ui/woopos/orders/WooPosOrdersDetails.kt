@@ -45,7 +45,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
-    details: OrderDetailsViewState,
+    details: OrderDetailsViewState.Computed.Details,
     onEmailReceiptButtonClicked: (Long) -> Unit
 ) {
     Column(
@@ -89,7 +89,7 @@ fun WooPosOrderDetails(
 }
 
 @Composable
-private fun OrdersHeader(details: OrderDetailsViewState) {
+private fun OrdersHeader(details: OrderDetailsViewState.Computed.Details) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosText(
             text = details.dateTime,
@@ -113,7 +113,7 @@ private fun OrdersHeader(details: OrderDetailsViewState) {
 }
 
 @Composable
-private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
+private fun OrdersProducts(lineItems: List<OrderDetailsViewState.Computed.Details.LineItemRow>) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -137,7 +137,7 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.LineItemRow>) {
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
+private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineItemRow) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -189,7 +189,7 @@ private fun OrderProductItem(row: OrderDetailsViewState.LineItemRow) {
 }
 
 @Composable
-private fun OrdersTotals(details: OrderDetailsViewState) {
+private fun OrdersTotals(details: OrderDetailsViewState.Computed.Details) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -348,18 +348,18 @@ private fun DividerWithSpacing() {
 @WooPosPreview
 @Composable
 fun WooPosOrderDetailsPreview() {
-    val orderDetails = OrderDetailsViewState(
+    val orderDetails = OrderDetailsViewState.Computed.Details(
         id = 1L,
         number = "#014",
         dateTime = "Aug 28, 2025 at 10:31 AM",
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
         lineItems = listOf(
-            OrderDetailsViewState.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
-            OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
-            OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $5.00", "$5.00", null)
+            OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
+            OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
+            OrderDetailsViewState.Computed.Details.LineItemRow(103, "Paper Filter", "1 x $5.00", "$5.00", null)
         ),
-        breakdown = OrderDetailsViewState.TotalsBreakdown(
+        breakdown = OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = "$23.00",
             discount = "-$5.00",
             discountCode = "SAVE5",
