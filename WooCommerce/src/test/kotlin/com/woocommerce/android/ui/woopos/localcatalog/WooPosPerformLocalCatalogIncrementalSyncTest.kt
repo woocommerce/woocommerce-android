@@ -141,8 +141,6 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         val site = SiteModel().apply { id = 789 }
         val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
             error = "Catalog exceeds limit",
-            totalPages = 15,
-            maxPages = 3
         )
 
         whenever(networkStatus.isConnected()).thenReturn(true)
