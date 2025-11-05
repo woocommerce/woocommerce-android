@@ -52,7 +52,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCProductStore
 
-class Blabla {
+class WooPosProductsRemoteDataSourceTest {
     @OptIn(ExperimentalCoroutinesApi::class)
     @Rule
     @JvmField
@@ -1049,7 +1049,6 @@ class Blabla {
 
             assertFalse(cachedResult.data.any { it.remoteVariationId == 1L })
         }
-
 
     @Test
     fun `when local products exist, then searchProducts emits Local then Remote success`() = runTest {
