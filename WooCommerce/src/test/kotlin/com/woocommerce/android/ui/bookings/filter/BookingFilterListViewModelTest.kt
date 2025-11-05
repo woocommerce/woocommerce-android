@@ -13,6 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
@@ -70,7 +71,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given current page is List, when onClose, then Exit event is emitted`() {
+    fun `given current page is List, and no changes, when onClose, then Exit event is emitted`() {
         // GIVEN
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
@@ -81,6 +82,60 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         initial.onClose()
 
         // THEN
+        assertThat(events).isNotEmpty
+        assertThat(events.last()).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    @Test
+    fun `given unsaved changes on Filters, when onClose, then dialog becomes visible`() {
+        // GIVEN
+        val initial = viewModel.uiState.getOrAwaitValue()
+        // introduce a change different from initial filters (which are empty)
+        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        val changed = viewModel.uiState.getOrAwaitValue()
+
+        // WHEN
+        changed.onClose()
+
+        // THEN
+        val afterClose = viewModel.uiState.getOrAwaitValue()
+        assertThat(afterClose.unsavedChangesDialog.isVisible).isTrue()
+    }
+
+    @Test
+    fun `given dialog visible, when Keep Changes tapped, then dialog hides`() {
+        // GIVEN
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
+
+        // WHEN: tap Keep Changes
+        val withDialog = viewModel.uiState.getOrAwaitValue()
+        withDialog.unsavedChangesDialog.onDismiss()
+
+        // THEN: dialog hidden
+        val afterDismiss = viewModel.uiState.getOrAwaitValue()
+        assertThat(afterDismiss.unsavedChangesDialog.isVisible).isFalse()
+    }
+
+    @Test
+    fun `given dialog visible, when Discard pressed, then dialog hides, and exit`() {
+        // GIVEN
+        val events = mutableListOf<MultiLiveEvent.Event>()
+        viewModel.event.observeForever { events.add(it) }
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
+
+        // WHEN: tap Discard
+        val withDialog = viewModel.uiState.getOrAwaitValue()
+        withDialog.unsavedChangesDialog.onDiscardChanges()
+
+        // THEN: dialog hidden and Exit event emitted
+        val afterDiscard = viewModel.uiState.getOrAwaitValue()
+        assertThat(afterDiscard.unsavedChangesDialog.isVisible).isFalse()
         assertThat(events).isNotEmpty
         assertThat(events.last()).isEqualTo(MultiLiveEvent.Event.Exit)
     }
