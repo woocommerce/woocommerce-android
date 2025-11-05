@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.bookings.filter
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.filter.type.titleRes
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
@@ -31,7 +33,7 @@ data class BookingFilterListUiState(
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
             title = page.titleRes,
-            value = page.filterValue,
+            subtitle = page.filterValue,
             onClick = { openPage(page) },
         )
     }
@@ -39,7 +41,7 @@ data class BookingFilterListUiState(
     val currentBookingType: BookingsFilterOption.BookingType
         get() = newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
             initialBookingFilters?.bookingType
-        ) ?: BookingsFilterOption.BookingType.Any
+        ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
@@ -47,18 +49,23 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: String?
+    val BookingFilterPage.filterValue: UiString?
         get() = when (this) {
             BookingFilterPage.Customer -> {
                 newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
                     initialBookingFilters?.customer
-                )?.customerName
+                )?.customerName?.let { name -> UiString.UiStringText(name) }
+            }
+
+            BookingFilterPage.BookingType -> {
+                newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
+                    initialBookingFilters?.bookingType
+                )?.titleRes?.let { res -> UiString.UiStringRes(res) }
             }
 
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.AttendanceStatus,
-            BookingFilterPage.BookingType,
             BookingFilterPage.PaymentStatus,
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.TeamMember,
