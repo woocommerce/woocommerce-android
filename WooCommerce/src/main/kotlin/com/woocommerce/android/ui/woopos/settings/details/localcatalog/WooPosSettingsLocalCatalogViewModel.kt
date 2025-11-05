@@ -58,7 +58,7 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
 
     private fun loadCatalogStatus() {
         viewModelScope.launch {
-            _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.LoadingStatus) }
+            _state.update { it.copy(catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Loading) }
 
             val productsLastSyncTimestamp = syncTimestampManager.getProductsLastSyncTimestamp()
             val variationsLastSyncTimestamp = syncTimestampManager.getVariationsLastSyncTimestamp()

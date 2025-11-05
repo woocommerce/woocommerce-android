@@ -73,7 +73,7 @@ private fun WooPosSettingsContent(
         Column(
             modifier = Modifier
                 .weight(0.3f)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceBright)
         ) {
             WooPosToolbar(
                 titleText = stringResource(R.string.woopos_settings_title),
@@ -95,7 +95,7 @@ private fun WooPosSettingsContent(
             onShowScanningSetupDialog = onShowScanningSetupDialog,
             modifier = Modifier
                 .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .background(MaterialTheme.colorScheme.surface)
         )
     }
 

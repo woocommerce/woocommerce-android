@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 @ExperimentalCoroutinesApi
 class WooPosFullSyncStatusCheckerTest {
@@ -88,18 +89,19 @@ class WooPosFullSyncStatusCheckerTest {
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
         }
 
-    @Test(expected = IllegalStateException::class)
-    fun `given no site selected, when checkSyncRequirement called, then should throw error`() = runTest {
+    @Test
+    fun `given no site selected, when checkSyncRequirement called, then should return Error`() = runTest {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         val sut = createSut()
 
         // WHEN
-        sut.checkSyncRequirement()
+        val result = sut.checkSyncRequirement()
 
         // THEN
-        // Exception is expected
+        assertThat(result).isInstanceOf(WooPosFullSyncRequirement.Error::class.java)
+        assertThat((result as WooPosFullSyncRequirement.Error).message).isEqualTo("No site selected")
     }
 
     @Test
@@ -200,7 +202,7 @@ class WooPosFullSyncStatusCheckerTest {
     fun `given sync not overdue, when checkSyncRequirement called, then should return NotRequired`() =
         runTest {
             // GIVEN
-            val recentTimestamp = NOW - 1.days.inWholeMilliseconds
+            val recentTimestamp = NOW - 10.hours.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
             val sut = createSut()
@@ -244,7 +246,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NotRequired::class.java)
+            assertThat(result).isInstanceOf(WooPosFullSyncRequirement.NonBlockingRequired::class.java)
         }
 
     @Test
@@ -285,7 +287,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
         }
 
     @Test
@@ -305,7 +307,7 @@ class WooPosFullSyncStatusCheckerTest {
             val result = sut.checkSyncRequirement()
 
             // THEN
-            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NotRequired(recentTimestamp))
+            assertThat(result).isEqualTo(WooPosFullSyncRequirement.NonBlockingRequired(recentTimestamp, false))
         }
 
     @Test

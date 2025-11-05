@@ -24,6 +24,7 @@ class BookingFilterRepository @Inject constructor(
     private val selectedSite: SelectedSite,
 ) {
     // Keys are built per-site to keep selections isolated across sites
+    private fun bookingTypeKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_booking_type")
     private fun customerIdKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_customer_id")
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
@@ -34,6 +35,7 @@ class BookingFilterRepository @Inject constructor(
     val bookingFiltersFlow: Flow<BookingFilters> = siteIdFlow.flatMapLatest { siteId ->
         dataStore.data.map { prefs ->
             BookingFilters(
+                bookingType = prefs.getBookingType(siteId),
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId)
             )
@@ -43,6 +45,16 @@ class BookingFilterRepository @Inject constructor(
     suspend fun save(bookingFilters: BookingFilters) {
         val siteId = selectedSite.getSelectedSiteId()
         dataStore.edit { prefs ->
+            // Booking type
+            val bookingTypeKey = bookingTypeKey(siteId)
+            val bookingType = bookingFilters.bookingType
+            if (bookingType != null) {
+                prefs[bookingTypeKey] = bookingType.value.name
+            } else {
+                // Clear if not provided
+                prefs.remove(bookingTypeKey)
+            }
+
             // Customer
             val customerIdKey = customerIdKey(siteId)
             val customerNameKey = customerNameKey(siteId)
@@ -75,6 +87,12 @@ class BookingFilterRepository @Inject constructor(
 
             // Other filters currently have no persisted payload; ignore for now
         }
+    }
+
+    private fun Preferences.getBookingType(siteId: Int): BookingsFilterOption.BookingType? {
+        val stored = this[bookingTypeKey(siteId)] ?: return null
+        val type = runCatching { BookingsFilterOption.BookingType.Type.valueOf(stored) }.getOrNull()
+        return type?.let { BookingsFilterOption.BookingType(value = it) }
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {

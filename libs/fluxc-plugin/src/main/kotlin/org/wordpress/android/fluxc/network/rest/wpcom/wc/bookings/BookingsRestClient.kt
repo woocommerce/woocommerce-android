@@ -109,7 +109,10 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.TeamMember -> TODO()
                 BookingsFilterOption.AttendanceStatus -> TODO()
                 BookingsFilterOption.PaymentStatus -> TODO()
-                is BookingsFilterOption.BookingType -> TODO()
+                is BookingsFilterOption.BookingType -> {
+                    // TODO add query for booking type filtering
+                }
+
                 is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
 
                 BookingsFilterOption.Location -> TODO()
