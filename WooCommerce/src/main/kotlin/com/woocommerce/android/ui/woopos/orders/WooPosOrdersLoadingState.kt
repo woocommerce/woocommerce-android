@@ -31,6 +31,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -76,23 +77,17 @@ fun WooPosOrdersOrderLoadingRow() {
             verticalAlignment = Alignment.Top
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.2f)
-                        .height(18.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "Order #123",
+                    style = WooPosTypography.BodySmall.style
                 )
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.35f)
-                        .height(14.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "January 1, 2024 at 12:00 PM",
+                    style = WooPosTypography.BodySmall.style
                 )
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.25f)
-                        .height(14.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "customer@example.com",
+                    style = WooPosTypography.BodySmall.style
                 )
                 Spacer(Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosShimmerBox(
@@ -105,12 +100,9 @@ fun WooPosOrdersOrderLoadingRow() {
 
             Spacer(Modifier.weight(1f))
 
-            WooPosShimmerBox(
-                modifier = Modifier
-                    .width(48.dp)
-                    .height(18.dp)
-                    .alignByBaseline()
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            WooPosShimmerText(
+                text = "$100.00",
+                style = WooPosTypography.BodySmall.style
             )
         }
     }
@@ -142,29 +134,23 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .width(96.dp)
-                        .height(28.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "Order #123",
+                    style = WooPosTypography.Heading.style
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .width(120.dp)
-                        .height(18.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "January 1, 2024",
+                    style = WooPosTypography.BodyMedium.style
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .width(80.dp)
-                        .height(18.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                WooPosShimmerText(
+                    text = "customer@example.com",
+                    style = WooPosTypography.BodyMedium.style
                 )
             }
 
@@ -261,37 +247,31 @@ private fun ProductLoadingItem() {
                 }
         )
 
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(120.dp)
-                .height(22.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-                .constrainAs(nameShimmer) {
-                    top.linkTo(image.top)
-                    start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
-                }
+        WooPosShimmerText(
+            text = "Product Name",
+            style = WooPosTypography.BodyLarge.style,
+            modifier = Modifier.constrainAs(nameShimmer) {
+                top.linkTo(image.top)
+                start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
+            }
         )
 
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(80.dp)
-                .height(18.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-                .constrainAs(qtyShimmer) {
-                    bottom.linkTo(image.bottom)
-                    start.linkTo(nameShimmer.start)
-                }
+        WooPosShimmerText(
+            text = "2 x $10.00",
+            style = WooPosTypography.BodyMedium.style,
+            modifier = Modifier.constrainAs(qtyShimmer) {
+                bottom.linkTo(image.bottom)
+                start.linkTo(nameShimmer.start)
+            }
         )
 
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(60.dp)
-                .height(18.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-                .constrainAs(totalShimmer) {
-                    top.linkTo(nameShimmer.top)
-                    end.linkTo(parent.end)
-                }
+        WooPosShimmerText(
+            text = "$20.00",
+            style = WooPosTypography.BodyMedium.style,
+            modifier = Modifier.constrainAs(totalShimmer) {
+                top.linkTo(nameShimmer.top)
+                end.linkTo(parent.end)
+            }
         )
     }
 }
@@ -302,18 +282,14 @@ private fun TotalLoadingItem() {
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        WooPosShimmerBox(
-            modifier = Modifier
-                .fillMaxWidth(0.3f)
-                .height(16.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        WooPosShimmerText(
+            text = "Subtotal",
+            style = WooPosTypography.BodyMedium.style
         )
 
-        WooPosShimmerBox(
-            modifier = Modifier
-                .width(60.dp)
-                .height(18.dp)
-                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+        WooPosShimmerText(
+            text = "$100.00",
+            style = WooPosTypography.BodyMedium.style
         )
     }
 }
