@@ -135,6 +135,7 @@ class ProductListFragment :
     override val detailPaneContainer: View
         get() = binding.detailNavContainer
     override var twoPanesWereShownBeforeConfigChange: Boolean = false
+    override val automaticallyAdjustLayoutAfterConfigChange: Boolean = true
     override val listFragment: Fragment
         get() = this
     override val navigation

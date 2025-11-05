@@ -108,8 +108,13 @@ internal class BluetoothReaderListenerImpl(
     }
 
     override fun onDisconnect(reason: DisconnectReason) {
-        logWrapper.d(LOG_TAG, "onDisconnect")
-        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
+        logWrapper.d(LOG_TAG, "onDisconnect: $reason")
+        val errorCode = when (reason) {
+            DisconnectReason.BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION ->
+                CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING
+            else -> null
+        }
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected(errorCode = errorCode))
     }
 
     fun resetConnectionState() {
