@@ -22,8 +22,5 @@ fun BookingTypeFilterRoute(
 
 @Composable
 fun BookingTypeFilterPage(state: BookingTypeFilterUiState) {
-    SingleChoiceFilterPage(
-        items = state.items,
-        selectedValue = state.selectedType.filterValue,
-    )
+    SingleChoiceFilterPage(items = state.items)
 }

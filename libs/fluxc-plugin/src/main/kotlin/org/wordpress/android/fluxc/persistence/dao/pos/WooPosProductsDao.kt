@@ -41,4 +41,31 @@ abstract class WooPosProductsDao {
 
     @Query("DELETE FROM PosProductEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun deleteAllProductsForSite(localSiteId: LocalId)
+
+    @Query(
+        "SELECT * FROM PosProductEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND globalUniqueId = :identifier COLLATE NOCASE " +
+            "LIMIT 1"
+    )
+    abstract suspend fun findProductByIdentifier(localSiteId: LocalId, identifier: String): WooPosProductEntity?
+
+    @Query(
+        "SELECT * FROM PosProductEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND status = '$PRODUCT_STATUS_PUBLISH' " +
+            "AND (type = '$PRODUCT_TYPE_SIMPLE' OR type = '$PRODUCT_TYPE_VARIABLE') " +
+            "AND downloadable = '$DOWNLOADABLE_FALSE' " +
+            "AND (name LIKE '%' || :searchQuery || '%' " +
+            "OR sku LIKE '%' || :searchQuery || '%' " +
+            "OR globalUniqueId LIKE '%' || :searchQuery || '%') " +
+            "ORDER BY LOWER(name) " +
+            "LIMIT :limit OFFSET :offset"
+    )
+    abstract suspend fun searchProducts(
+        localSiteId: LocalId,
+        searchQuery: String,
+        limit: Int,
+        offset: Int
+    ): List<WooPosProductEntity>
 }

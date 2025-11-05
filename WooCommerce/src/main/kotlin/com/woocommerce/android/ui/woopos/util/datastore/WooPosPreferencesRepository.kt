@@ -10,6 +10,7 @@ import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import javax.inject.Inject
 
 class WooPosPreferencesRepository @Inject constructor(
@@ -96,23 +97,23 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun isPeriodicSyncEnabledForSite(siteId: Long): Boolean {
+    suspend fun isPeriodicSyncEnabledForSite(siteId: LocalOrRemoteId.LocalId): Boolean {
         val key = buildPeriodicSyncEnabledKey(siteId)
         val preferences = dataStore.data.map { it[key] ?: true }.first()
         return preferences
     }
 
-    suspend fun disablePeriodicSyncForSite(siteId: Long) {
+    suspend fun disablePeriodicSyncForSite(siteId: LocalOrRemoteId.LocalId) {
         val key = buildPeriodicSyncEnabledKey(siteId)
         dataStore.edit { preferences ->
             preferences[key] = false
         }
     }
 
-    private fun buildPeriodicSyncEnabledKey(siteId: Long): Preferences.Key<Boolean> =
-        booleanPreferencesKey("pos_periodic_sync_enabled_$siteId")
+    private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
+        booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
-        stringPreferencesKey("${selectedSite.getOrNull()?.siteId}-$key")
+        stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 
     private companion object {
         const val RECENT_PRODUCT_SEARCHES_KEY = "recent_product_searches_key"

@@ -56,7 +56,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync not required, when prepopulate cache, then uses local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.NotRequired
+            WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
@@ -75,7 +75,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync overdue, when prepopulate cache, then uses local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.Overdue
+            WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp = 0L, isOverdue = true)
         )
         whenever(localDbDataSource.fetchFirstProductsPage(false)).thenReturn(
             flowOf(ProductsResult.Remote(Result.success(emptyList())))
@@ -175,7 +175,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync not required, when load more products, then delegates to local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.NotRequired
+            WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
         whenever(localDbDataSource.loadMoreProducts()).thenReturn(Result.success(emptyList()))
         val sut = createSut()
@@ -247,7 +247,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync not required, when refresh products, then delegates to local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.NotRequired
+            WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
         whenever(localDbDataSource.refreshProducts()).thenReturn(
             Result.success(
@@ -292,7 +292,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync not required, when refresh variations, then delegates to local db data source`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.NotRequired
+            WooPosFullSyncRequirement.NotRequired(lastSyncTimestamp = 0L)
         )
         whenever(localDbDataSource.refreshVariations(123L)).thenReturn(
             Result.success(

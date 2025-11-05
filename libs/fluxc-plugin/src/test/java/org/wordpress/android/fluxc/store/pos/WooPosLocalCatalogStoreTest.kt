@@ -315,7 +315,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(flowOf(variations))
 
         // WHEN
-        val result = store.observeVariationsForProduct(testSiteId.value, testRemoteId.value).first().getOrThrow()
+        val result = store.observeVariationsForProduct(testSiteId, testRemoteId.value).first().getOrThrow()
 
         // THEN
         assertThat(result).hasSize(2)
@@ -331,7 +331,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(expectedVariation)
 
         // WHEN
-        val variation = store.getVariation(testSiteId.value, testRemoteId.value, variationId.value).getOrThrow()
+        val variation = store.getVariation(testSiteId, testRemoteId.value, variationId.value).getOrThrow()
 
         // THEN
         assertThat(variation).isNotNull()
@@ -403,7 +403,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(null)
 
         // WHEN
-        val variation = store.getVariation(testSiteId.value, testRemoteId.value, variationId.value).getOrThrow()
+        val variation = store.getVariation(testSiteId, testRemoteId.value, variationId.value).getOrThrow()
 
         // THEN
         assertThat(variation).isNull()

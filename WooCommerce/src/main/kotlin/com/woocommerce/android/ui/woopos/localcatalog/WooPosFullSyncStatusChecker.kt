@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class WooPosFullSyncStatusChecker @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
@@ -18,14 +19,18 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val prefsRepo: WooPosPreferencesRepository,
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
-    private val wooPosLogWrapper: WooPosLogWrapper
+    private val wooPosLogWrapper: WooPosLogWrapper,
+    private val time: DateTimeProvider,
 ) {
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         val site = selectedSite.getOrNull()
-            ?: error("No site selected")
+        if (site == null) {
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
+        }
 
-        if (!isLocalCatalogSupported(site.siteId)) {
+        if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
@@ -35,7 +40,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
             if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
-                prefsRepo.disablePeriodicSyncForSite(site.siteId)
+                prefsRepo.disablePeriodicSyncForSite(site.localId())
                 return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
             }
         }
@@ -54,43 +59,45 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.BlockingRequired
         }
 
-        return when {
-            isFullSyncOverdue(lastFullSyncTimestamp) -> {
-                if (!networkStatus.isConnected()) {
-                    wooPosLogWrapper.d(
-                        "Full sync overdue but offline - allowing POS to load with cached data " +
-                            "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
-                    )
-                }
-                wooPosLogWrapper.d("Full sync overdue (last sync: $lastFullSyncTimestamp)")
-                WooPosFullSyncRequirement.Overdue
-            }
+        val now = time.now()
+        val timeElapsedSinceLastSync = now - lastFullSyncTimestamp
 
-            else -> {
+        return when {
+            timeElapsedSinceLastSync < FULL_SYNC_NOT_REQUIRED_THRESHOLD -> {
                 wooPosLogWrapper.d(
                     "Full sync not required: Recent sync at $lastFullSyncTimestamp " +
                         "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
                 )
-                WooPosFullSyncRequirement.NotRequired
+                WooPosFullSyncRequirement.NotRequired(lastFullSyncTimestamp)
+            }
+            else -> {
+                if (!networkStatus.isConnected()) {
+                    wooPosLogWrapper.d(
+                        "Full sync required but offline - allowing POS to load with cached data " +
+                            "(${if (catalogIsEmpty) "empty catalog" else "$productCount products"})"
+                    )
+                }
+                val isFullSyncOverdue = timeElapsedSinceLastSync > FULL_SYNC_OVERDUE_THRESHOLD
+                if (isFullSyncOverdue) {
+                    wooPosLogWrapper.d("Full sync overdue (last sync: $lastFullSyncTimestamp)")
+                }
+                WooPosFullSyncRequirement.NonBlockingRequired(lastFullSyncTimestamp, isFullSyncOverdue)
             }
         }
     }
 
-    private fun isFullSyncOverdue(lastSyncTimestamp: Long): Boolean {
-        val currentTime = System.currentTimeMillis()
-        val timeSinceLastSync = currentTime - lastSyncTimestamp
-        val overdueThreshold = FULL_SYNC_OVERDUE_THRESHOLD.inWholeMilliseconds
-        return timeSinceLastSync >= overdueThreshold
-    }
-
     companion object {
-        private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days
+        private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days.inWholeMilliseconds
+        private val FULL_SYNC_NOT_REQUIRED_THRESHOLD = 23.hours.inWholeMilliseconds
     }
 }
 
 sealed class WooPosFullSyncRequirement {
-    data object NotRequired : WooPosFullSyncRequirement()
-    data object Overdue : WooPosFullSyncRequirement()
+    data class NotRequired(val lastSyncTimestamp: Long) : WooPosFullSyncRequirement()
+    data class NonBlockingRequired(
+        val lastSyncTimestamp: Long,
+        val isOverdue: Boolean
+    ) : WooPosFullSyncRequirement()
     data object BlockingRequired : WooPosFullSyncRequirement()
     data class Error(val message: String) : WooPosFullSyncRequirement()
     data class LocalCatalogDisabled(val message: String) : WooPosFullSyncRequirement()

@@ -41,7 +41,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
             }
             if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
-                preferencesRepository.disablePeriodicSyncForSite(site.siteId)
+                preferencesRepository.disablePeriodicSyncForSite(site.localId())
             }
         }
     }
@@ -122,8 +122,6 @@ private fun WooPosSyncResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCata
         is WooPosSyncResult.Failed.CatalogTooLarge -> {
             PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
                 error = "Catalog too large: $totalPages pages exceed maximum of $maxPages pages",
-                totalPages = totalPages,
-                maxPages = maxPages
             )
         }
 
@@ -137,7 +135,5 @@ private fun WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogToo
     PosLocalCatalogSyncResult.Failure {
     return PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
         error = error,
-        totalPages = 0,
-        maxPages = 0
     )
 }

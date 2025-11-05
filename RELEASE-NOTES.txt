@@ -3,12 +3,13 @@
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 23.7
 -----
-
+- [Internal] Handle BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION disconnect reason from Stripe SDK [https://github.com/woocommerce/woocommerce-android/pull/14886]
 
 23.6
 -----
 - [Internal] Improve WebView experience by using Authenticated WebView for more scenarios [https://github.com/woocommerce/woocommerce-android/pull/14826]
 - [Internal] Update In-Person Payments setup flow to use Authenticated WebView [https://github.com/woocommerce/woocommerce-android/pull/14827]
+- [Internal] Upgrades app to target Android SDK 36 which impacts back navigation behaviors [https://github.com/woocommerce/woocommerce-android/pull/14861]
 - [*] Improved the Filters button colors on the Orders and Products screens [https://github.com/woocommerce/woocommerce-android/pull/14832]
 - [*] Fixed an issue with inconsistent data on the Customers screen [https://github.com/woocommerce/woocommerce-android/pull/14839]
 - [*] Fixed an issue when images for the card reader flows were not shown on tablets [https://github.com/woocommerce/woocommerce-android/pull/14849]
@@ -16,6 +17,7 @@
 - [**] Fix the refund flow for Interac cards [https://github.com/woocommerce/woocommerce-android/pull/14874]
 - [**] POS: Allow merchants to view, search, and manage POS orders directly within the POS interface. [https://github.com/woocommerce/woocommerce-android/pull/14866]
 - [*] Improved the Filters and Add button colors [https://github.com/woocommerce/woocommerce-android/pull/14872]
+- [**] We added support for collecting in-person payments (including Tap To Pay) using Stripe Payment Gateway extension in the UK [https://github.com/woocommerce/woocommerce-android/pull/14835]
 
 23.5
 -----
