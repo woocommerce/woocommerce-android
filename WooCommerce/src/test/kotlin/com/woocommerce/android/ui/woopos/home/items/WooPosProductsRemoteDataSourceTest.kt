@@ -16,8 +16,10 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.W
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel.WooPosProductType
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
+import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsIndex
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsRemoteDataSource
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
+import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
@@ -48,10 +51,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.store.WCProductStore
-import kotlin.test.Test
 
-@ExperimentalCoroutinesApi
 class WooPosProductsRemoteDataSourceTest {
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -101,6 +103,7 @@ class WooPosProductsRemoteDataSourceTest {
     )
 
     private val productStore: WCProductStore = mock()
+    private val searchProductsDataSource: WooPosSearchProductsDataSource = mock()
     private val siteModel: SiteModel = mock()
     private val productRestClient: ProductRestClient = mock()
     private val selectedSite: SelectedSite = mock {
@@ -1047,6 +1050,58 @@ class WooPosProductsRemoteDataSourceTest {
             assertFalse(cachedResult.data.any { it.remoteVariationId == 1L })
         }
 
+    @Test
+    fun `when local products exist, then searchProducts emits Local then Remote success`() = runTest {
+        // GIVEN
+        whenever(searchProductsDataSource.searchLocalProducts("query"))
+            .thenReturn(sampleProducts)
+        whenever(searchProductsDataSource.searchRemoteProducts("query"))
+            .thenReturn(Result.success(sampleProducts + additionalProducts))
+        val sut = createSUT()
+
+        // WHEN
+        val results = sut.searchProducts("query").toList()
+
+        // THEN
+        assertThat(results[0]).isInstanceOf(SearchProductsResult.Local::class.java)
+        assertThat(results[1]).isInstanceOf(SearchProductsResult.Remote::class.java)
+    }
+
+    @Test
+    fun `when no local products, then searchProducts emits only Remote`() = runTest {
+        // GIVEN
+        whenever(searchProductsDataSource.searchLocalProducts("query"))
+            .thenReturn(emptyList())
+        whenever(searchProductsDataSource.searchRemoteProducts("query"))
+            .thenReturn(Result.success(sampleProducts))
+        val sut = createSUT()
+
+        // WHEN
+        val results = sut.searchProducts("query").toList()
+
+        // THEN
+        assertThat(results[0]).isInstanceOf(SearchProductsResult.Remote::class.java)
+    }
+
+    @Test
+    fun `when remote fails, then searchProducts emits Remote failure`() = runTest {
+        // GIVEN
+        val exception = Exception("Network error")
+        whenever(searchProductsDataSource.searchLocalProducts("query"))
+            .thenReturn(sampleProducts)
+        whenever(searchProductsDataSource.searchRemoteProducts("query"))
+            .thenReturn(Result.failure(exception))
+        val sut = createSUT()
+
+        // WHEN
+        val results = sut.searchProducts("query").toList()
+
+        // THEN
+        val remoteResult = results[1] as SearchProductsResult.Remote
+        assertThat(remoteResult.productsResult.isFailure).isTrue()
+        assertThat(remoteResult.productsResult.exceptionOrNull()).isEqualTo(exception)
+    }
+
     private fun generateProduct(
         productId: Long = 1,
         productName: String = "Product 1",
@@ -1082,7 +1137,8 @@ class WooPosProductsRemoteDataSourceTest {
             variationsHandler,
             variationsCache,
             WooPosVariationsTypesFilterConfig(),
-            variationMapper
+            variationMapper,
+            searchProductsDataSource
         )
         return sut
     }
