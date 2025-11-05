@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.bookings.filter
+package com.woocommerce.android.ui.bookings.filter.customer
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
