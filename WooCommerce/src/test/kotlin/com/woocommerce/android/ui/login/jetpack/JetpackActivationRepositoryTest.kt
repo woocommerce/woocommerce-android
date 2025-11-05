@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.jetpack
 
-import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.tools.SelectedSite
@@ -29,15 +28,13 @@ class JetpackActivationRepositoryTest : BaseUnitTest() {
     }
     private val wooCommerceStore: WooCommerceStore = mock()
     private val selectedSite: SelectedSite = mock()
-    private val analyticsTracker: AnalyticsTrackerWrapper = mock()
 
     private val repository = JetpackActivationRepository(
         dispatcher = dispatcher,
         siteStore = siteStore,
         jetpackStore = jetpackStore,
         wooCommerceStore = wooCommerceStore,
-        selectedSite = selectedSite,
-        analyticsTrackerWrapper = analyticsTracker
+        selectedSite = selectedSite
     )
 
     @Test

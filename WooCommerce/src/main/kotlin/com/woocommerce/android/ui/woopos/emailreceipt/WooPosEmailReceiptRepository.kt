@@ -22,7 +22,7 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
-        val order = getOrderById(orderId)
+        val order = getOrderById(orderId) ?: fetchOrderById(orderId)
         if (order == null) {
             return@withContext Result.failure(Exception("Failed to get order"))
         }
@@ -64,6 +64,19 @@ class WooPosEmailReceiptRepository @Inject constructor(
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
             orderMapper.toAppModel(it)
         }
+
+    private suspend fun fetchOrderById(orderId: Long): Order? {
+        val result = orderStore.fetchSingleOrder(
+            selectedSite.get(),
+            orderId
+        )
+
+        return if (!result.isError) {
+            getOrderById(orderId)
+        } else {
+            null
+        }
+    }
 
     private fun isWooCoreSupportsPOSReceipts(): Boolean {
         val wooCoreVersion = getWooCoreVersion() ?: return false

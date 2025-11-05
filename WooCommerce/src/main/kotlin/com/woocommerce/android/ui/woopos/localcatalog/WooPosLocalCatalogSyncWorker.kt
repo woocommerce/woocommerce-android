@@ -106,7 +106,7 @@ constructor(
             return null
         }
 
-        if (!isLocalCatalogSupported(site.siteId)) {
+        if (!isLocalCatalogSupported(site.localId())) {
             logger.d("Local catalog not supported for site")
             return null
         }

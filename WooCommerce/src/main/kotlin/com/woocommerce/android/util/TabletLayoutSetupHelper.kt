@@ -161,7 +161,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
     }
 
     private fun adjustLayoutForNonTablet(screen: Screen) {
-        if (screen.twoPanesWereShownBeforeConfigChange) {
+        if (screen.twoPanesWereShownBeforeConfigChange && screen.automaticallyAdjustLayoutAfterConfigChange) {
             displayDetailPaneOnly(screen)
         } else {
             displayListPaneOnly(screen)
@@ -195,6 +195,7 @@ class TabletLayoutSetupHelper @Inject constructor(private val context: Context) 
         val navigation: Navigation
 
         val twoPanesWereShownBeforeConfigChange: Boolean
+        val automaticallyAdjustLayoutAfterConfigChange: Boolean
 
         val listFragment: Fragment
 

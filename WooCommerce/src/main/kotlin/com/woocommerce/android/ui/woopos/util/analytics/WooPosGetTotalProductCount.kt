@@ -14,25 +14,42 @@ import javax.inject.Singleton
 class WooPosGetTotalProductCount @Inject constructor(
     private val productStore: WCProductStore,
     private val selectedSite: SelectedSite,
+    private val currentTime: CurrentTimeProvider,
     private val dispatchers: CoroutineDispatchers
 ) {
     private val mutex = Mutex()
 
-    @Volatile private var totalProductCount: Int? = null
+    @Volatile
+    private var totalProductCount: Int? = null
+
+    @Volatile
+    private var cacheTimestamp: Long = 0
 
     suspend operator fun invoke(): Int? = withContext(dispatchers.io) {
-        totalProductCount?.let { return@withContext it }
-        fetchProductCount()
-        return@withContext totalProductCount
+        mutex.withLock {
+            return@withContext if (isCacheValid()) {
+                totalProductCount
+            } else {
+                fetchProductCount()
+            }
+        }
     }
 
-    private suspend fun fetchProductCount() {
-        mutex.withLock {
-            val site = selectedSite.get()
-            val result = fetchTotalProductCount(site)
-            if (result.isSuccess) {
-                totalProductCount = result.getOrNull()
-            }
+    private fun isCacheValid(): Boolean {
+        if (totalProductCount == null) return false
+        val elapsedTime = currentTime() - cacheTimestamp
+        return elapsedTime < CACHE_DURATION_ONE_HOUR_MS
+    }
+
+    private suspend fun fetchProductCount(): Int? {
+        val site = selectedSite.get()
+        val result = fetchTotalProductCount(site)
+        return if (result.isSuccess) {
+            totalProductCount = result.getOrNull()
+            cacheTimestamp = currentTime()
+            totalProductCount
+        } else {
+            null
         }
     }
 
@@ -45,5 +62,13 @@ class WooPosGetTotalProductCount @Inject constructor(
             val count = response.model?.toInt()
             Result.success(count)
         }
+    }
+
+    companion object {
+        private const val CACHE_DURATION_ONE_HOUR_MS = 60 * 60 * 1000L
+    }
+
+    class CurrentTimeProvider @Inject constructor() {
+        operator fun invoke(): Long = System.currentTimeMillis()
     }
 }

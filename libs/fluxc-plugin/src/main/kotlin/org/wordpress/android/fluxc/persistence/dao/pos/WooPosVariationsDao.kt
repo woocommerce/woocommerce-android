@@ -52,4 +52,12 @@ abstract class WooPosVariationsDao {
 
     @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun deleteAllVariationsForSite(localSiteId: LocalId)
+
+    @Query(
+        "SELECT * FROM PosVariationEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND globalUniqueId = :identifier COLLATE NOCASE " +
+            "LIMIT 1"
+    )
+    abstract suspend fun findVariationByIdentifier(localSiteId: LocalId, identifier: String): WooPosVariationEntity?
 }

@@ -41,4 +41,12 @@ abstract class WooPosProductsDao {
 
     @Query("DELETE FROM PosProductEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun deleteAllProductsForSite(localSiteId: LocalId)
+
+    @Query(
+        "SELECT * FROM PosProductEntity " +
+            "WHERE localSiteId = :localSiteId " +
+            "AND globalUniqueId = :identifier COLLATE NOCASE " +
+            "LIMIT 1"
+    )
+    abstract suspend fun findProductByIdentifier(localSiteId: LocalId, identifier: String): WooPosProductEntity?
 }

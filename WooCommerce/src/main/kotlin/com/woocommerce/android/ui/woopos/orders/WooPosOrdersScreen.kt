@@ -76,9 +76,14 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    navigatedFromEmailReceiptSent: Boolean,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    if (navigatedFromEmailReceiptSent) {
+        viewModel.onBackFromSuccessfullySendingEmailReceipt()
+    }
 
     val context = LocalContext.current
 
@@ -492,7 +497,9 @@ fun WooPosOrdersScreenPreview() {
         status = PosOrderStatus(
             text = "Completed",
             colorKey = OrderStatusColorKey.COMPLETED
-        )
+        ),
+        statusSlug = "Completed",
+        createdAtMillis = 1
     )
     val item2 = OrderItemViewState(
         id = 2,
@@ -504,7 +511,9 @@ fun WooPosOrdersScreenPreview() {
         status = PosOrderStatus(
             text = "Processing",
             colorKey = OrderStatusColorKey.PROCESSING
-        )
+        ),
+        statusSlug = "Completed",
+        createdAtMillis = 1
     )
 
     val details1 = sampleOrderDetails(id = 1L, number = "#014")

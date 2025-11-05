@@ -30,6 +30,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
 
     @Before
@@ -48,6 +49,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             logger = logger,
             preferencesRepository = preferencesRepository,
             posLocalCatalogStore = posLocalCatalogStore,
+            dateTimeProvider = dateTimeProvider,
         )
 
         site = SiteModel().apply {
@@ -63,12 +65,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync succeeds, then returns success`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(
+                    productsSynced = productsSynced,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
             )
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -81,18 +86,22 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync succeeds, then stores both last sync and last full sync timestamps`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(
+                    productsSynced = productsSynced,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
             )
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
 
         // THEN
         verify(syncTimestampManager).storeProductsLastSyncTimestamp(any())
+        verify(syncTimestampManager).storeVariationsLastSyncTimestamp(any())
         verify(syncTimestampManager).storeFullSyncLastCompletedTimestamp(any())
     }
 
@@ -100,12 +109,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync succeeds, then does not disable periodic sync`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(
+                    productsSynced = productsSynced,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
             )
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -119,8 +131,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -134,8 +146,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -148,8 +160,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync fails with unexpected error, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
         val errorMessage = "Network timeout"
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -162,12 +174,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync succeeds, then returns success`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(
+                    productsSynced = productsSynced,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
             )
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -180,18 +195,22 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync succeeds, then stores timestamp`() = testBlocking {
         // GIVEN
         val productsSynced = 150
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
-                WooPosSyncProductsAction.WooPosSyncProductsResult.Success(productsSynced, "2024-01-01T12:00:00Z")
+                WooPosSyncResult.Success(
+                    productsSynced = productsSynced,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
             )
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
 
         // WHEN
         sut.syncLocalCatalogIncremental(site)
 
         // THEN
         verify(syncTimestampManager).storeProductsLastSyncTimestamp(any())
+        verify(syncTimestampManager).storeVariationsLastSyncTimestamp(any())
     }
 
     @Test
@@ -199,8 +218,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         // GIVEN
         val totalPages = 15
         val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -213,8 +232,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when incremental sync fails with unexpected error, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
         val errorMessage = "Network timeout"
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Failed.UnexpectedError(errorMessage))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.UnexpectedError(errorMessage))
 
         // WHEN
         val result = sut.syncLocalCatalogIncremental(site)
@@ -240,10 +259,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `given catalog size is exactly at limit, when sync starts, then proceeds with sync`() = testBlocking {
         // GIVEN
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(600, "2024-01-01T12:00:00Z"))
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(400, "2024-01-01T12:00:00Z"))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 600,
+                    variationsSynced = 400,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -256,10 +280,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `given products count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
         // GIVEN
         givenCatalogSizeUnknown()
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(100, "2024-01-01T12:00:00Z"))
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(50, "2024-01-01T12:00:00Z"))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 100,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -272,10 +301,15 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `given variations count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
         // GIVEN
         givenCatalogSizeUnknown()
-        whenever(posSyncAction.syncProducts(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncProductsAction.WooPosSyncProductsResult.Success(500, "2024-01-01T12:00:00Z"))
-        whenever(posSyncAction.syncVariations(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncVariationsAction.WooPosSyncVariationsResult.Success(200, "2024-01-01T12:00:00Z"))
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 500,
+                    variationsSynced = 200,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)

@@ -1,17 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-10 09:54:04+0000
+Translation-Revision-Date: 2025-10-22 10:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: de
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_confirm">Ja, bitte stornieren</string>
+    <string name="booking_cancel_dialog_keep">Nein, behalten</string>
+    <string name="booking_cancel_dialog_message">%1$s kann nicht mehr am %3$s um %4$s an „%2$s“ teilnehmen.</string>
+    <string name="booking_cancel_dialog_title">Buchung stornieren</string>
+    <string name="booking_fetch_error">Fehler beim Abrufen der Buchung</string>
+    <string name="bookings_filter_default">Alle</string>
+    <string name="bookings_filter_title_service_event">Service/Veranstaltung</string>
+    <string name="bookings_filter_title_date">Datum und Uhrzeit</string>
+    <string name="bookings_filter_location">Ort</string>
+    <string name="bookings_filter_customer_name">Kundenname</string>
+    <string name="bookings_filter_title_type">Buchungstyp</string>
+    <string name="bookings_filter_title_payment_status">Zahlungsstatus</string>
+    <string name="bookings_filter_title_attendance_status">Anwesenheitsstatus</string>
+    <string name="bookings_filter_title_team_member">Zugewiesenes Teammitglied</string>
+    <string name="bookings_filters_show_bookings">Buchungen anzeigen</string>
+    <string name="bookings_filters_count_title">Filter (%d)</string>
+    <string name="bookings_filters_default_title">Filter</string>
+    <string name="bookings_empty_state_clear_filters_button">Filter löschen</string>
+    <string name="bookings_empty_state_change_filters_button">Filter ändern</string>
+    <string name="bookings_empty_state_description_with_filters">Zu deinen Filtern gibt es keine Buchungen. Versuche, sie anzupassen, um weitere Ergebnisse zu erhalten.</string>
+    <string name="bookings_search_no_results_with_filters">Wir konnten keine Buchungen mit diesem Namen finden – passe deinen Suchbegriff oder deine Filter an, um weitere Ergebnisse zu erhalten.</string>
+    <string name="bookings_search_no_results_without_filters">Wir konnten keine Buchungen mit diesem Namen finden – passe deinen Suchbegriff an, um weitere Ergebnisse zu erhalten.</string>
+    <string name="bookings_empty_state_description_upcoming">Es sind noch keine zukünftigen Termine oder Veranstaltungen geplant.</string>
+    <string name="bookings_empty_state_description_today">Für heute sind keine Termine oder Veranstaltungen geplant.</string>
+    <string name="bookings_empty_state_description_default">Eingehende Buchungen werden hier angezeigt, wo du sie anzeigen und verwalten kannst.</string>
+    <string name="bookings_empty_state_title_upcoming">Keine bevorstehenden Buchungen</string>
+    <string name="bookings_empty_state_title_today">Keine Buchungen heute</string>
+    <string name="bookings_empty_state_title_default">Keine Buchungen gefunden</string>
+    <string name="bookings_sort_by_newest_to_oldest_short">Neueste</string>
+    <string name="bookings_sort_by_oldest_to_newest_short">Älteste</string>
+    <string name="bookings_sort_by_newest_to_oldest">Neu nach alt</string>
+    <string name="bookings_sort_by_oldest_to_newest">Alt nach neu</string>
+    <string name="bookings_search_with_filters_hint">Gefilterte Buchungen suchen</string>
+    <string name="bookings_search_hint">Buchungen suchen</string>
+    <string name="woopos_orders_status_refunded">Rückerstattet</string>
+    <string name="woopos_orders_status_completed">Abgeschlossen</string>
+    <string name="woopos_orders_status_cancelled">Storniert</string>
+    <string name="woopos_orders_status_failed">Fehlgeschlagen</string>
+    <string name="woopos_orders_status_on_hold">In Wartestellung</string>
+    <string name="woopos_orders_status_processing">In Bearbeitung</string>
+    <string name="woopos_orders_status_pending">Zahlung ausstehend</string>
+    <string name="woopos_orders_status_auto_draft">Entwurf</string>
+    <string name="woopos_orders_pagination_error_content_description">Bitte versuche es erneut.</string>
+    <string name="woopos_orders_pagination_error_title">Es konnten keine weiteren Bestellungen geladen werden</string>
+    <string name="woopos_orders_loading_error_message">Bitte überprüfe deine Verbindung und versuche es erneut.</string>
+    <string name="woopos_orders_loading_error_title">Bestellungen konnten nicht geladen werden</string>
+    <string name="woopos_orders_empty_list_image_description">Keine Bestellungen</string>
+    <string name="woopos_orders_empty_action_label">Weitere Informationen</string>
+    <string name="woopos_orders_empty_list_message">Erkundige dich, wie du deine Shop-Verkäufe steigern kannst.</string>
+    <string name="woopos_orders_empty_list_title">Keine Bestellungen gefunden</string>
+    <string name="woopos_date_yesterday_at">Gestern um %s</string>
+    <string name="woopos_date_today_at">Heute um %s</string>
+    <string name="woopos_date_just_now">Gerade eben</string>
+    <string name="woopos_date_never">Nie</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Katalog aktualisieren</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Verwende diese Aktualisierung nur, wenn etwas nicht zu funktionieren scheint – POS hält die Daten automatisch auf dem neuesten Stand.</string>
+    <string name="woopos_settings_local_catalog_actions">Manuelle Katalogaktualisierung</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Katalogaktualisierungen mit mobilen Daten herunterladen</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Vollständige Aktualisierung über Mobilfunkdaten erlauben</string>
+    <string name="woopos_settings_local_catalog_settings">Datennutzung verwalten</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Letzte vollständige Aktualisierung</string>
+    <string name="woopos_settings_local_catalog_last_update">Letzte Aktualisierung</string>
+    <string name="woopos_settings_local_catalog_size">Kataloggröße</string>
+    <string name="woopos_settings_local_catalog_status">Katalogstatus</string>
+    <string name="woopos_settings_local_catalog_category_subtitle">Katalogeinstellungen verwalten</string>
+    <string name="woopos_settings_local_catalog_category">Katalog</string>
+    <string name="local_notification_woo_pos_survey_current_user_description">Teile deine Erfahrungen in einer kurzen zweiminütigen Umfrage und hilf uns, uns zu verbessern.</string>
+    <string name="local_notification_woo_pos_survey_current_user_title">Wie funktioniert POS für dich?</string>
+    <string name="local_notification_woo_pos_survey_potential_user_description">Nimm an einer kurzen zweiminütigen Umfrage teil, um uns dabei zu helfen, deine Lieblingsfunktionen zu gestalten.</string>
+    <string name="local_notification_woo_pos_survey_potential_user_title">Du denkst über persönliche Verkäufe nach?</string>
+    <string name="product_type_booking">Buchbares Produkt</string>
+    <string name="date_time_connector">um</string>
     <string name="booking_payment_view_order">Bestellung anzeigen</string>
     <string name="booking_payment_mark_as_paid">Als bezahlt markieren</string>
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_header">ZAHLUNG</string>
     <string name="booking_attendance_status_no_show_desc">Der Kunde hat den Termin nicht wahrgenommen, ohne im Voraus zu stornieren.</string>
-    <string name="booking_attendance_status_cancelled_desc">Der Kunde kann nicht mehr teilnehmen.</string>
     <string name="booking_attendance_status_checked_in_desc">Der Kunde ist gekommen und die Sitzung hat wie geplant stattgefunden.</string>
     <string name="booking_attendance_status_booked_desc">Der Termin ist geplant, hat aber noch nicht stattgefunden.</string>
     <string name="booking_attendance_update_title">Teilnahmestatus aktualisieren</string>
@@ -284,6 +355,7 @@ Language: de
     <string name="woo_shipping_labels_package_creation_starred">Diesen Artikel mit Stern markieren</string>
     <string name="woopos_coupons_pagination_error_title">Es konnten keine weiteren Gutscheine geladen werden</string>
     <string name="woopos_coupons_pagination_try_again_label">Erneut versuchen</string>
+    <string name="woopos_orders_loading_error_retry_button">Erneut versuchen</string>
     <string name="woopos_coupons_empty_list_title">Keine Gutscheine gefunden</string>
     <string name="woopos_coupons_empty_list_image_description">Keine Gutscheine</string>
     <string name="woopos_coupons_loading_error_title">Gutscheine konnten nicht geladen werden</string>

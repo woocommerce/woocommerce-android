@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -59,21 +60,26 @@ class BookingListViewModelTest : BaseUnitTest() {
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
     }
+    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
 
     private lateinit var viewModel: BookingListViewModel
+    private lateinit var savedStateHandle: SavedStateHandle
 
     suspend fun setup(
         bookings: List<Booking> = emptyList(),
         prepareMocks: suspend () -> Unit = {}
     ) {
-        prepareMocks()
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
+        whenever(isWindowClassLargeThanCompact()).thenReturn(false)
+        prepareMocks()
+        savedStateHandle = SavedStateHandle()
         viewModel = BookingListViewModel(
-            savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
+            savedStateHandle = savedStateHandle,
             bookingListHandler = bookingListHandler,
             filtersBuilder = filtersBuilder,
             bookingMapper = bookingMapper,
+            isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
         )
     }
 
@@ -328,6 +334,79 @@ class BookingListViewModelTest : BaseUnitTest() {
             filters = eq(listOf(customerFilter)),
             sortBy = any()
         )
+    }
+
+    @Test
+    fun `given enabled filters, when controls state is observed, then enabledFiltersCount is correct`() = testBlocking {
+        // GIVEN
+        setup()
+        val customerFilter = BookingsFilterOption.Customer(1L, "Customer")
+        bookingFiltersFlow.emit(
+            BookingFilters(customer = customerFilter)
+        )
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        initialState.tabState.onTabChanged(BookingListTab.All)
+
+        // THEN
+        val controlsState = viewModel.state.getOrAwaitValue().controlsState
+        assertThat(controlsState.enabledFiltersCount).isEqualTo(1)
+    }
+
+    @Test
+    fun `given tablet, when bookings are loaded and none selected yet, then first is auto opened`() = testBlocking {
+        // GIVEN
+        val booking1 = getSampleBooking(11)
+        val booking2 = getSampleBooking(22)
+        setup(bookings = listOf(booking1, booking2)) {
+            whenever(isWindowClassLargeThanCompact()).thenReturn(true)
+        }
+
+        // WHEN
+        val events = viewModel.event.captureValues()
+        viewModel.state.getOrAwaitValue()
+        advanceUntilIdle()
+
+        // THEN
+        val navigations = events.filterIsInstance<BookingListViewModel.NavigateToBookingDetails>()
+        assertThat(navigations).hasSize(1)
+        assertThat(navigations.first().bookingId).isEqualTo(booking1.id.value)
+    }
+
+    @Test
+    fun `given phone, when bookings are loaded, then no auto navigation happens`() = testBlocking {
+        // GIVEN
+        val booking = getSampleBooking(33)
+        setup(bookings = listOf(booking))
+
+        // WHEN
+        val events = viewModel.event.captureValues()
+        viewModel.state.getOrAwaitValue()
+        advanceUntilIdle()
+
+        // THEN
+        val navigations = events.filterIsInstance<BookingListViewModel.NavigateToBookingDetails>()
+        assertThat(navigations).isEmpty()
+    }
+
+    @Test
+    fun `given tablet, when booking is clicked, then selection is saved and navigation emitted`() = testBlocking {
+        // GIVEN
+        setup(bookings = emptyList()) {
+            whenever(isWindowClassLargeThanCompact()).thenReturn(true)
+        }
+        val events = viewModel.event.captureValues()
+        val state = viewModel.state.getOrAwaitValue()
+
+        // WHEN
+        state.contentState.onBookingClick(1234L)
+        advanceUntilIdle()
+
+        // THEN
+        val navigations = events.filterIsInstance<BookingListViewModel.NavigateToBookingDetails>()
+        assertThat(navigations.last().bookingId).isEqualTo(1234L)
+        assertThat(savedStateHandle.get<Long>(BookingListViewModel.KEY_BOOKING_SELECTED_ON_BIG_SCREEN)).isEqualTo(1234L)
     }
 
     private fun getSampleBooking(id: Int): Booking {

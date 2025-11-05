@@ -1628,6 +1628,7 @@
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
     <string name="card_reader_connect_failed_battery_low_hint">The reader battery is low. Please charge the reader and try again</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Forget the reader in Android Bluetooth Settings</string>
 
     <!--
         Card Reader Detail
@@ -3604,7 +3605,9 @@
     <!--
     Woo POS
     -->
-    <string name="woopos_home_syncing_catalog_title">Syncing product catalog</string>
+    <string name="woopos_home_syncing_catalog_title">Syncing catalog</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Syncing will continue in the background.</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Exit POS</string>
     <string name="woopos_home_sync_failed_title">Unable to sync</string>
     <string name="woopos_home_sync_failed_message">We are unable to sync your product catalog. Please check your internet connection and retry.</string>
     <string name="woopos_home_sync_failed_retry_button">Retry</string>
@@ -4232,6 +4235,7 @@
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
+    <string name="bookings_filters_enabled_title">Filters • %d</string>
     <string name="bookings_filters_count_title">Filters (%d)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>
@@ -4243,6 +4247,8 @@
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>
+    <string name="bookings_filter_type_service">Service</string>
+    <string name="bookings_filter_type_event">Event</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4304,6 +4310,7 @@
     <string name="booking_note_screen_update_error">Error saving booking note</string>
     <string name="booking_cancel_error">Error cancelling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
+    <string name="booking_not_selected">Booking not selected</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

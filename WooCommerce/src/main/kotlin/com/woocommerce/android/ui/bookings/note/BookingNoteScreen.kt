@@ -32,6 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.modifier.detailsPanePadding
 
 @Composable
 fun BookingNoteScreen(
@@ -87,8 +88,9 @@ fun BookingNoteScreen(
     ) { innerPadding ->
         Box(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(top = innerPadding.calculateTopPadding())
+                .detailsPanePadding()
         ) {
             viewState.editedNote?.let {
                 NoteTextField(
@@ -96,6 +98,7 @@ fun BookingNoteScreen(
                     onValueChange = viewState.onNoteChange,
                     enabled = viewState.noteEditable,
                     modifier = Modifier
+                        .background(MaterialTheme.colorScheme.surface)
                         .fillMaxSize()
                         .padding(horizontal = 16.dp, vertical = 12.dp)
                         .focusRequester(focusRequester)
