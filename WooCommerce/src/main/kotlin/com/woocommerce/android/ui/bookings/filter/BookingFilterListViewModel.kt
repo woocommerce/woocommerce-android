@@ -101,10 +101,7 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onDiscardChanges() {
         // Hide dialog and exit without saving
         _uiState.update { current ->
-            current.copy(
-                unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false),
-                newBookingFilters = emptySet()
-            )
+            current.copy(unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false))
         }
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
