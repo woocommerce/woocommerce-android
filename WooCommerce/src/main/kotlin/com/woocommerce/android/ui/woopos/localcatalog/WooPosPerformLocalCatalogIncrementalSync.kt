@@ -6,10 +6,8 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.SiteModel
 import javax.inject.Inject
 
@@ -19,7 +17,6 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
-    private val dispatchers: CoroutineDispatchers,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     fun execute(reason: WooPosIncrementalSyncReason) {
@@ -46,21 +43,19 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     }
 
     private suspend fun performSync(site: SiteModel, reasonDescription: String) {
-        withContext(dispatchers.io) {
-            wooPosLogWrapper.d("Starting incremental sync $reasonDescription")
-            val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
-            when (syncResult) {
-                is Success -> {
-                    wooPosLogWrapper.d(
-                        "Sync $reasonDescription completed successfully: " +
-                            "${syncResult.productsSynced} products, " +
-                            "${syncResult.variationsSynced} variations synced " +
-                            "in ${syncResult.syncDurationMs}ms"
-                    )
-                }
-                is Failure -> {
-                    wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
-                }
+        wooPosLogWrapper.d("Starting incremental sync $reasonDescription")
+        val syncResult = localCatalogSyncRepository.syncLocalCatalogIncremental(site)
+        when (syncResult) {
+            is Success -> {
+                wooPosLogWrapper.d(
+                    "Sync $reasonDescription completed successfully: " +
+                        "${syncResult.productsSynced} products, " +
+                        "${syncResult.variationsSynced} variations synced " +
+                        "in ${syncResult.syncDurationMs}ms"
+                )
+            }
+            is Failure -> {
+                wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
             }
         }
     }
