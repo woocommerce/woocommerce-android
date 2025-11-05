@@ -506,7 +506,8 @@ private fun ItemsLoadingItem() {
             ) {
                 WooPosShimmerText(
                     text = "Product Name",
-                    style = WooPosTypography.BodyLarge.style
+                    style = WooPosTypography.BodyLarge.style,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.size(WooPosSpacing.XSmall.value))
