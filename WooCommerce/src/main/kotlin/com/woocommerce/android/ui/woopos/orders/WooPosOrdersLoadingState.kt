@@ -79,7 +79,8 @@ fun WooPosOrdersOrderLoadingRow() {
             Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
                 WooPosShimmerText(
                     text = "Order #123",
-                    style = WooPosTypography.BodySmall.style
+                    style = WooPosTypography.BodySmall.style,
+                    fontWeight = FontWeight.Bold
                 )
                 WooPosShimmerText(
                     text = "January 1, 2024 at 12:00 PM",
@@ -136,7 +137,8 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             Column {
                 WooPosShimmerText(
                     text = "Order #123",
-                    style = WooPosTypography.Heading.style
+                    style = WooPosTypography.Heading.style,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
@@ -250,6 +252,7 @@ private fun ProductLoadingItem() {
         WooPosShimmerText(
             text = "Product Name",
             style = WooPosTypography.BodyLarge.style,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameShimmer) {
                 top.linkTo(image.top)
                 start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
