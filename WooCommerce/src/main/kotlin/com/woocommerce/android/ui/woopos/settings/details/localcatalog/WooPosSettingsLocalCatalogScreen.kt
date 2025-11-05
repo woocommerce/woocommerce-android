@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -188,7 +189,7 @@ private fun CellularDataSection(
             WooPosText(
                 text = stringResource(R.string.woopos_settings_local_catalog_cellular_data_subtitle),
                 style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(subtitle) {
                     top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
@@ -202,7 +203,7 @@ private fun CellularDataSection(
                 onCheckedChange = null,
                 enabled = !isLoading,
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = MaterialTheme.colorScheme.surfaceBright,
+                    checkedThumbColor = Color(0xFFFFFFFF),
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 modifier = Modifier.constrainAs(switch) {
@@ -246,7 +247,7 @@ private fun ManualUpdateSection(
             WooPosText(
                 text = stringResource(R.string.woopos_settings_local_catalog_refresh_description),
                 style = WooPosTypography.BodyMedium,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(subtitle) {
                     top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
