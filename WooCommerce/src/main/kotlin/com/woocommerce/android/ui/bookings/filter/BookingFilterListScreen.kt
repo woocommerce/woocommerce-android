@@ -28,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -134,6 +135,7 @@ private fun FiltersNavHost(
                     BookingsFilterOption.Customer(
                         customerId = customer.customerId ?: 0L,
                         customerName = "${customer.firstName} ${customer.lastName}".trim()
+                            .ifBlank { customer.email }.orEmpty()
                     )
                 )
                 state.onClose()

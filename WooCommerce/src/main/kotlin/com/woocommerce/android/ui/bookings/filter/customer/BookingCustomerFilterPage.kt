@@ -17,6 +17,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 
+@Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = BookingCustomerFilterViewModel.Factory::class)
 class BookingCustomerFilterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
