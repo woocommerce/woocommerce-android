@@ -15,6 +15,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
+import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
 fun BookingFilterRootPage(
@@ -34,7 +35,7 @@ private fun BookingFilterListRow(item: BookingFilterListItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WCListItemWithInlineSubtitle(
             text = stringResource(item.title),
-            subtitle = item.value ?: stringResource(id = R.string.bookings_filter_default),
+            subtitle = item.subtitle?.getText() ?: stringResource(id = R.string.bookings_filter_default),
             modifier = Modifier
                 .defaultMinSize(minHeight = 64.dp)
                 .clickable { item.onClick() }

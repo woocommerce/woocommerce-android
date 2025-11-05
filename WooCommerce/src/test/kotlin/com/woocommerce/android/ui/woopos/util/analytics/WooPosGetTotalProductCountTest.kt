@@ -22,32 +22,27 @@ import kotlin.test.assertNull
 
 @ExperimentalCoroutinesApi
 class WooPosGetTotalProductCountTest {
-
-    private lateinit var productStore: WCProductStore
-    private lateinit var selectedSite: SelectedSite
-    private lateinit var dispatchers: CoroutineDispatchers
-    private lateinit var sut: WooPosGetTotalProductCount
-    private lateinit var site: SiteModel
-
-    private val testDispatchers = CoroutineDispatchers(
+    private val productStore: WCProductStore = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val dispatchers: CoroutineDispatchers = CoroutineDispatchers(
         main = Dispatchers.Unconfined,
         computation = Dispatchers.Unconfined,
         io = Dispatchers.Unconfined
     )
+    private val currentTime: WooPosGetTotalProductCount.CurrentTimeProvider = mock()
+    private val site: SiteModel = mock()
+
+    private lateinit var sut: WooPosGetTotalProductCount
 
     @Before
     fun setup() {
-        productStore = mock()
-        selectedSite = mock()
-        dispatchers = testDispatchers
-        site = mock()
-
         whenever(selectedSite.get()).thenReturn(site)
 
         sut = WooPosGetTotalProductCount(
             productStore = productStore,
             selectedSite = selectedSite,
-            dispatchers = dispatchers
+            currentTime = currentTime,
+            dispatchers = dispatchers,
         )
     }
 
@@ -91,10 +86,52 @@ class WooPosGetTotalProductCountTest {
         whenever(productStore.fetchProductsCount(any())).thenReturn(successResult)
 
         // WHEN
-        sut.invoke() // First call
-        sut.invoke() // Second call
+        sut.invoke()
+        sut.invoke()
 
         // THEN
+        verify(productStore, times(1)).fetchProductsCount(any())
+    }
+
+    @Test
+    fun `given cached result expired, when invoke called, then fetches from network again`() = runTest {
+        // GIVEN
+        whenever(currentTime()).thenReturn(0L)
+        val firstCount = 42L
+        val secondCount = 100L
+        whenever(productStore.fetchProductsCount(any()))
+            .thenReturn(WooResult(model = firstCount))
+            .thenReturn(WooResult(model = secondCount))
+
+        // WHEN
+        val firstResult = sut.invoke()
+        whenever(currentTime()).thenReturn(60 * 60 * 1000L + 1L)
+        val secondResult = sut.invoke()
+
+        // THEN
+        assertEquals(firstCount.toInt(), firstResult)
+        assertEquals(secondCount.toInt(), secondResult)
+        verify(productStore, times(2)).fetchProductsCount(any())
+    }
+
+    @Test
+    fun `given cached result is not expired, when invoke called, then fetches from network once`() = runTest {
+        // GIVEN
+        whenever(currentTime()).thenReturn(0L)
+        val firstCount = 42L
+        val secondCount = 100L
+        whenever(productStore.fetchProductsCount(any()))
+            .thenReturn(WooResult(model = firstCount))
+            .thenReturn(WooResult(model = secondCount))
+
+        // WHEN
+        val firstResult = sut.invoke()
+        whenever(currentTime()).thenReturn(60 * 60 * 1000L - 1L)
+        val secondResult = sut.invoke()
+
+        // THEN
+        assertEquals(firstCount.toInt(), firstResult)
+        assertEquals(firstCount.toInt(), secondResult)
         verify(productStore, times(1)).fetchProductsCount(any())
     }
 }

@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
+import kotlin.time.Duration.Companion.hours
 
 class WooPosFullSyncStatusChecker @Inject constructor(
     private val syncTimestampManager: WooPosSyncTimestampManager,
@@ -24,7 +25,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         val site = selectedSite.getOrNull()
-            ?: error("No site selected")
+        if (site == null) {
+            wooPosLogWrapper.e("Full sync check failed: No site selected")
+            return WooPosFullSyncRequirement.Error("No site selected")
+        }
 
         if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
@@ -84,7 +88,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
     companion object {
         private val FULL_SYNC_OVERDUE_THRESHOLD = 7.days.inWholeMilliseconds
-        private val FULL_SYNC_NOT_REQUIRED_THRESHOLD = 2.days.inWholeMilliseconds
+        private val FULL_SYNC_NOT_REQUIRED_THRESHOLD = 23.hours.inWholeMilliseconds
     }
 }
 

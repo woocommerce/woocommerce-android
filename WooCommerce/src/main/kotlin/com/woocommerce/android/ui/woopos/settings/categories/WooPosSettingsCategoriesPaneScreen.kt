@@ -1,16 +1,14 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -19,13 +17,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
@@ -37,6 +37,23 @@ fun WooPosSettingsCategoriesPaneScreen(
 ) {
     val state by viewModel.state.collectAsState()
 
+    WooPosSettingsCategoriesPaneScreenContent(
+        modifier = modifier,
+        scrollableCategories = state.scrollableCategories,
+        fixedCategories = state.fixedCategories,
+        selectedCategory = selectedCategory,
+        onCategorySelected = onCategorySelected,
+    )
+}
+
+@Composable
+private fun WooPosSettingsCategoriesPaneScreenContent(
+    modifier: Modifier = Modifier,
+    scrollableCategories: List<WooPosSettingsCategory>,
+    fixedCategories: List<WooPosSettingsCategory>,
+    selectedCategory: WooPosSettingsCategory,
+    onCategorySelected: (WooPosSettingsCategory) -> Unit,
+) {
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -44,30 +61,25 @@ fun WooPosSettingsCategoriesPaneScreen(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
+                .padding(WooPosSpacing.Medium.value)
         ) {
-            state.scrollableCategories.forEach { item ->
+            scrollableCategories.forEach { item ->
                 CategoryItem(
                     item = item,
                     isSelected = item == selectedCategory,
                     onClick = {
                         onCategorySelected(item)
                     },
-                    modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value)
                 )
+
+                Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
             }
         }
 
-        state.fixedCategories.forEach { item ->
-            CategoryItem(
+        fixedCategories.forEach { item ->
+            FixedCategoryItem(
                 item = item,
-                isSelected = item == selectedCategory,
-                onClick = {
-                    onCategorySelected(item)
-                },
-                modifier = Modifier.padding(
-                    horizontal = WooPosSpacing.Medium.value,
-                    vertical = WooPosSpacing.Medium.value
-                )
+                onClick = { onCategorySelected(item) }
             )
         }
     }
@@ -78,48 +90,82 @@ private fun CategoryItem(
     item: WooPosSettingsCategory,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier
+    WooPosCard(
+        modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(WooPosCornerRadius.Large.value))
-            .background(
-                if (isSelected) {
-                    MaterialTheme.colorScheme.secondary.copy(alpha = 0.5f)
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
-            )
-            .clickable { onClick() }
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value
-            ),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+            .clickable { onClick() },
+        isSelected = isSelected,
     ) {
-        Icon(
-            imageVector = item.icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(28.dp)
-        )
-
         Column(
-            modifier = Modifier.padding(start = WooPosSpacing.Medium.value)
+            modifier = Modifier
+                .padding(WooPosSpacing.Medium.value)
         ) {
             WooPosText(
                 text = stringResource(item.titleRes),
                 style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
             )
-            WooPosText(
-                text = stringResource(item.subtitleRes),
-                style = WooPosTypography.BodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
-            )
+            item.subtitleRes?.let {
+                WooPosText(
+                    text = stringResource(item.subtitleRes),
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.padding(top = WooPosSpacing.XSmall.value)
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun FixedCategoryItem(
+    item: WooPosSettingsCategory,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Large.value
+            ),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        item.icon?.let {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.size(32.dp)
+            )
+
+            Spacer(modifier = Modifier.size(WooPosSpacing.Small.value))
+        }
+
+        WooPosText(
+            text = stringResource(item.titleRes),
+            style = WooPosTypography.BodyMedium,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsCategoriesPaneScreenPreview() {
+    WooPosTheme {
+        WooPosSettingsCategoriesPaneScreenContent(
+            scrollableCategories = listOf(
+                WooPosSettingsCategory.STORE,
+                WooPosSettingsCategory.HARDWARE,
+                WooPosSettingsCategory.LOCAL_CATALOG,
+            ),
+            fixedCategories = listOf(WooPosSettingsCategory.HELP),
+            selectedCategory = WooPosSettingsCategory.LOCAL_CATALOG,
+            onCategorySelected = {}
+        )
     }
 }

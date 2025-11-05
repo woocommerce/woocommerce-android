@@ -96,6 +96,7 @@ squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.2.1"
 stripe-terminal = '4.7.4'
+swiperefreshlayout = "1.1.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
 wellsql = "2.0.0"
@@ -105,7 +106,7 @@ wordpress-libaddressinput = '0.0.2'
 wordpress-lint = "2.2.0"
 wordpress-mediapicker = '0.3.4'
 wordpress-utils = '3.15.0'
-zendesk = '5.0.8'
+zendesk = '5.5.1'
 
 [libraries]
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
@@ -145,7 +146,6 @@ androidx-hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", vers
 androidx-hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "androidx-hilt" }
 androidx-hilt-navigation-fragment = { group = "androidx.hilt", name = "hilt-navigation-fragment", version.ref = "androidx-hilt" }
 androidx-hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "androidx-hilt" }
-androidx-lifecycle-livedata-ktx = { group = "androidx.lifecycle", name = "lifecycle-livedata-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-process = { group = "androidx.lifecycle", name = "lifecycle-process", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-testing = { group = "androidx.lifecycle", name = "lifecycle-runtime-testing", version.ref = "androidx-lifecycle" }
@@ -161,8 +161,8 @@ androidx-preference-main = { group = "androidx.preference", name = "preference",
 androidx-preference-ktx = { group = "androidx.preference", name = "preference-ktx", version.ref = "androidx-preference" }
 androidx-recyclerview-main = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "androidx-recyclerview-main" }
 androidx-recyclerview-selection = { group = "androidx.recyclerview", name = "recyclerview-selection", version.ref = "androidx-recyclerview-selection" }
+androidx-swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-room-testing = { module = "androidx.room:room-testing", version.ref = "androidx-room" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-security-crypto" }
@@ -193,7 +193,6 @@ bumptech-glide-main = { group = "com.github.bumptech.glide", name = "glide", ver
 bumptech-glide-compiler = { group = "com.github.bumptech.glide", name = "compiler", version.ref = "bumptech-glide" }
 bumptech-glide-ksp = { group = "com.github.bumptech.glide", name = "ksp", version.ref = "bumptech-glide" }
 bumptech-glide-volley-integration = { group = "com.github.bumptech.glide", name = "volley-integration", version.ref = "bumptech-glide" }
-bumptech-glide-avif-integration = { group = "com.github.bumptech.glide", name = "avif-integration", version.ref = "bumptech-glide" }
 cashapp-turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "cashapp-turbine" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil" }
 coil-svg = { group = "io.coil-kt", name = "coil-svg", version.ref = "coil" }
