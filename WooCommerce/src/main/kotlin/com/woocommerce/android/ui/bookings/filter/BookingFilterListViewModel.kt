@@ -26,6 +26,11 @@ class BookingFilterListViewModel @Inject constructor(
             onShowBookings = ::onShowBookings,
             openPage = ::onOpenPage,
             onUpdateFilterOption = ::onUpdateFilterOption,
+            unsavedChangesDialog = UnsavedChangesDialogState(
+                isVisible = false,
+                onDismiss = ::onDismissUnsavedChangesDialog,
+                onDiscardChanges = ::onDiscardChanges,
+            )
         )
     )
     val uiState = _uiState.asLiveData()
@@ -66,8 +71,15 @@ class BookingFilterListViewModel @Inject constructor(
                 current.copy(currentPage = BookingFilterPage.List)
             }
         } else {
-            // TODO Verify unsaved changes and close
-            triggerEvent(MultiLiveEvent.Event.Exit)
+            if (hasUnsavedChanges()) {
+                _uiState.update { current ->
+                    current.copy(
+                        unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = true)
+                    )
+                }
+            } else {
+                triggerEvent(MultiLiveEvent.Event.Exit)
+            }
         }
     }
 
@@ -76,6 +88,31 @@ class BookingFilterListViewModel @Inject constructor(
             bookingFilterRepository.save(_uiState.value.updatedBookingFilters)
         }
         triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun onDismissUnsavedChangesDialog() {
+        _uiState.update { current ->
+            current.copy(
+                unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false)
+            )
+        }
+    }
+
+    private fun onDiscardChanges() {
+        // Hide dialog and exit without saving
+        _uiState.update { current ->
+            current.copy(
+                unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false),
+                newBookingFilters = emptySet()
+            )
+        }
+        triggerEvent(MultiLiveEvent.Event.Exit)
+    }
+
+    private fun hasUnsavedChanges(): Boolean {
+        val initial = _uiState.value.initialBookingFilters ?: BookingFilters()
+        val updated = _uiState.value.updatedBookingFilters
+        return updated != initial
     }
 }
 
