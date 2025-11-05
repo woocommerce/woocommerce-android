@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -31,6 +32,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -72,6 +74,25 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                 .fillMaxSize()
                 .padding(innerPadding)
         )
+
+        if (state.unsavedChangesDialog.isVisible) {
+            AlertDialog(
+                onDismissRequest = state.unsavedChangesDialog.onDismiss,
+                text = { Text(stringResource(id = R.string.discard_message)) },
+                dismissButton = {
+                    WCTextButton(
+                        text = stringResource(id = R.string.keep_changes),
+                        onClick = state.unsavedChangesDialog.onDismiss
+                    )
+                },
+                confirmButton = {
+                    WCTextButton(
+                        text = stringResource(id = R.string.discard),
+                        onClick = state.unsavedChangesDialog.onDiscardChanges
+                    )
+                }
+            )
+        }
 
         // The navigation is driven by the state, so we handle back navigation by calling onClose
         // We need to ensure that this called after NavHost to make sure we receive back events
