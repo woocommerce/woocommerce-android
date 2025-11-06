@@ -18,46 +18,35 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
-import com.woocommerce.android.ui.compose.component.Time
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import java.text.DateFormat
-import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.Calendar
-import java.util.Locale
 
 @Composable
 fun DateTimeFilterPage() {
-    val now = remember { Calendar.getInstance() }
-    var fromCal by remember {
-        mutableStateOf(now.clone() as Calendar)
-    }
-    var toCal by remember {
-        mutableStateOf((now.clone() as Calendar).apply { add(Calendar.HOUR_OF_DAY, 1) })
-    }
+    val viewModel: DateTimeFilterViewModel = hiltViewModel()
+    val state by viewModel.uiState.observeAsState()
+    state?.let { DateTimeFilterPage(it) }
+}
 
-    var showDateDialog by rememberSaveable { mutableStateOf(false) }
-    var showTimeDialog by rememberSaveable { mutableStateOf(false) }
-    var targetIsFrom by rememberSaveable { mutableStateOf(true) }
-
-    val dateFormatter = remember {
-        SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM, Locale.getDefault()) as DateFormat
-    }
-    val timeFormatter = remember {
-        SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT, Locale.getDefault()) as DateFormat
-    }
-
+@Composable
+fun DateTimeFilterPage(
+    state: DateTimeFilterUiState
+) {
     Column(
         modifier = Modifier
             .background(MaterialTheme.colorScheme.background)
@@ -67,76 +56,43 @@ fun DateTimeFilterPage() {
     ) {
         DateTimeSection(
             label = stringResource(id = R.string.bookings_filter_date_from),
-            dateReadable = dateFormatter.format(fromCal.time),
-            timeReadable = timeFormatter.format(fromCal.time),
-            onDateClick = {
-                targetIsFrom = true
-                showDateDialog = true
-            },
-            onTimeClick = {
-                targetIsFrom = true
-                showTimeDialog = true
-            },
+            dateReadable = state.formattedFromDate,
+            timeReadable = state.formattedFromTime,
+            onDateClick = { state.onDateClick(DateBoundary.FROM) },
+            onTimeClick = { state.onTimeClick(DateBoundary.FROM) },
         )
         DateTimeSection(
             label = stringResource(id = R.string.bookings_filter_date_to),
-            dateReadable = dateFormatter.format(toCal.time),
-            timeReadable = timeFormatter.format(toCal.time),
-            onDateClick = {
-                targetIsFrom = false
-                showDateDialog = true
-            },
-            onTimeClick = {
-                targetIsFrom = false
-                showTimeDialog = true
-            },
+            dateReadable = state.formattedToDate,
+            timeReadable = state.formattedToTime,
+            onDateClick = { state.onDateClick(DateBoundary.TO) },
+            onTimeClick = { state.onTimeClick(DateBoundary.TO) },
         )
     }
 
-    // Render dialogs at the top level so state is controlled here
-    if (showDateDialog) {
-        val currentMillis = if (targetIsFrom) fromCal.timeInMillis else toCal.timeInMillis
-        DatePickerDialog(
-            currentDate = Calendar.getInstance().apply { timeInMillis = currentMillis },
-            onDateSelected = { selected ->
-                if (targetIsFrom) {
-                    fromCal = (fromCal.clone() as Calendar).apply { timeInMillis = selected.timeInMillis }
-                } else {
-                    toCal = (toCal.clone() as Calendar).apply { timeInMillis = selected.timeInMillis }
-                }
-                showDateDialog = false
-            },
-            onDismissRequest = { showDateDialog = false },
-        )
-    }
-    if (showTimeDialog) {
-        val currentTime = if (targetIsFrom) {
-            Time(fromCal.get(Calendar.HOUR_OF_DAY), fromCal.get(Calendar.MINUTE))
-        } else {
-            Time(toCal.get(Calendar.HOUR_OF_DAY), toCal.get(Calendar.MINUTE))
+    // Render dialogs at the top level so state is controlled by the ViewModel
+    state.pickerDialogState?.let { dialogState ->
+        when (dialogState) {
+            is PickerDialogState.DateDialog -> {
+                DatePickerDialog(
+                    currentDate = dialogState.date?.let { Calendar.getInstance().apply { timeInMillis = it } },
+                    onDateSelected = { calendar ->
+                        dialogState.onDateSelected(calendar.timeInMillis)
+                    },
+                    onDismissRequest = dialogState.onDismiss,
+                )
+            }
+
+            is PickerDialogState.TimeDialog -> {
+                TimePickerDialog(
+                    time = dialogState.time,
+                    onTimeSelected = { time ->
+                        dialogState.onTimeSelected(time)
+                    },
+                    onDismissRequest = dialogState.onDismiss,
+                )
+            }
         }
-        TimePickerDialog(
-            time = currentTime,
-            onTimeSelected = { selected ->
-                if (targetIsFrom) {
-                    fromCal = (fromCal.clone() as Calendar).apply {
-                        set(Calendar.HOUR_OF_DAY, selected.hour)
-                        set(Calendar.MINUTE, selected.minute)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }
-                } else {
-                    toCal = (toCal.clone() as Calendar).apply {
-                        set(Calendar.HOUR_OF_DAY, selected.hour)
-                        set(Calendar.MINUTE, selected.minute)
-                        set(Calendar.SECOND, 0)
-                        set(Calendar.MILLISECOND, 0)
-                    }
-                }
-                showTimeDialog = false
-            },
-            onDismissRequest = { showTimeDialog = false },
-        )
     }
 }
 
@@ -207,6 +163,21 @@ private fun DateTimeRow(label: String, value: String, onClick: () -> Unit) {
 @Composable
 private fun DateTimeFilterPagePreview() {
     WooTheme {
-        DateTimeFilterPage()
+        val now = LocalDateTime.ofInstant(Instant.ofEpochMilli(1762445828L), ZoneId.systemDefault())
+        val later = now.withHour(now.hour + 1)
+        DateTimeFilterPage(
+            state = DateTimeFilterUiState(
+                fromDateTime = now,
+                toDateTime = later,
+                formattedFromDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                    .format(now),
+                formattedFromTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+                    .format(now),
+                formattedToDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
+                    .format(later),
+                formattedToTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+                    .format(later),
+            )
+        )
     }
 }
