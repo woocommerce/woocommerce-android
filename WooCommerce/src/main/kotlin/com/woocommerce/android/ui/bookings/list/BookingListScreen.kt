@@ -230,11 +230,12 @@ private fun BookingList(
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer
                 }
-                Column(modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)) {
+                Column(
+                    modifier = Modifier.background(backgroundColor)
+                ) {
                     BookingSummary(
                         model = booking.summary,
                         modifier = Modifier
-                            .background(backgroundColor)
                             .fillMaxWidth()
                             .clickable(onClick = { state.onBookingClick(booking.id) })
                     )
