@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
+import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -72,6 +73,8 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                 .fillMaxSize()
                 .padding(innerPadding)
         )
+
+        state.dialogState?.Render()
 
         // The navigation is driven by the state, so we handle back navigation by calling onClose
         // We need to ensure that this called after NavHost to make sure we receive back events
