@@ -127,7 +127,7 @@ private fun AttendanceStatusRow(
             if (isSelected) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_done_secondary),
-                    contentDescription = null,
+                    contentDescription = stringResource(R.string.bookings_filters_selected_option_content_description),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
