@@ -2,27 +2,42 @@ package com.woocommerce.android.ui.woopos.settings.categories
 
 import android.content.Context
 import androidx.lifecycle.ViewModel
-import com.woocommerce.android.util.FeatureFlag
+import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosSettingsCategoriesViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    selectedSite: SelectedSite,
+    private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
 ) : ViewModel() {
     private val _state = MutableStateFlow(createInitialState())
     val state: StateFlow<WooPosSettingsCategoriesState> = _state.asStateFlow()
-    private fun createInitialState(): WooPosSettingsCategoriesState {
-        val allCategories = WooPosSettingsCategory.entries
-        val visibleCategories = if (FeatureFlag.WOO_POS_LOCAL_CATALOG_M1.isEnabled(context)) {
-            allCategories
-        } else {
-            allCategories.filter { it != WooPosSettingsCategory.LOCAL_CATALOG }
+
+    init {
+        viewModelScope.launch {
+            val categories = WooPosSettingsCategory.entries.filter {
+                if (!isLocalCatalogSupported(selectedSite.get().localId())) {
+                    it != WooPosSettingsCategory.LOCAL_CATALOG
+                } else {
+                    true
+                }
+            }
+            _state.value = WooPosSettingsCategoriesState(categories)
         }
-        return WooPosSettingsCategoriesState(categories = visibleCategories)
+    }
+
+    private fun createInitialState(): WooPosSettingsCategoriesState {
+        return WooPosSettingsCategoriesState(
+            categories = WooPosSettingsCategory.entries.filter { it != WooPosSettingsCategory.LOCAL_CATALOG }
+        )
     }
 }
