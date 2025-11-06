@@ -7,8 +7,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -42,7 +42,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
-    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId,
+    private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker
 ) : ViewModel() {
 
@@ -542,7 +542,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
         val discountCode = order.couponLines.firstOrNull()?.code
 
-        val refundsDeferred = async { getOrderRefunds(order.id) }
+        val refundsDeferred = async { retrieveOrderRefunds(order) }
 
         val lineItems = lineItemsDeferred.awaitAll()
         val refunds = refundsDeferred.await()

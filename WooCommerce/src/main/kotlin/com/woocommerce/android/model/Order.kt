@@ -28,7 +28,7 @@ data class Order(
     val totalTax: BigDecimal,
     val shippingTotal: BigDecimal,
     val discountTotal: BigDecimal,
-    val refundTotal: BigDecimal,
+    var refundTotal: BigDecimal,
     val currency: String,
     val orderKey: String,
     val customerNote: String,

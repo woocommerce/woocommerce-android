@@ -6,8 +6,8 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetOrderRefundsByOrderId
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
+import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -48,7 +48,7 @@ class WooPosOrdersViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val getProductById: WooPosGetProductById = mock()
     private val formatPrice: WooPosFormatPrice = mock()
-    private val getOrderRefunds: WooPosGetOrderRefundsByOrderId = mock()
+    private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
@@ -61,7 +61,7 @@ class WooPosOrdersViewModelTest {
             getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
-            getOrderRefunds = getOrderRefunds,
+            retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker
         )
     }
@@ -90,7 +90,7 @@ class WooPosOrdersViewModelTest {
 
         runBlocking {
             whenever(getProductById.invoke(any())).thenReturn(null)
-            whenever(getOrderRefunds.invoke(any())).thenReturn(emptyList())
+            whenever(retrieveOrderRefunds.invoke(any())).thenReturn(emptyList())
         }
     }
 
@@ -648,7 +648,7 @@ class WooPosOrdersViewModelTest {
             flow { emit(LoadOrdersResult.SuccessRemote(listOf(order(1)))) }
         )
         runBlocking {
-            whenever(getOrderRefunds.invoke(1L)).thenReturn(emptyList())
+            whenever(retrieveOrderRefunds.invoke(order())).thenReturn(emptyList())
         }
 
         // WHEN
@@ -691,7 +691,7 @@ class WooPosOrdersViewModelTest {
         )
 
         runBlocking {
-            whenever(getOrderRefunds.invoke(1L)).thenReturn(listOf(refund1, refund2))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(listOf(refund1, refund2))
             whenever(formatPrice.invoke(java.math.BigDecimal("10.00"))).thenReturn("$10.00")
             whenever(formatPrice.invoke(java.math.BigDecimal("5.00"))).thenReturn("$5.00")
         }
