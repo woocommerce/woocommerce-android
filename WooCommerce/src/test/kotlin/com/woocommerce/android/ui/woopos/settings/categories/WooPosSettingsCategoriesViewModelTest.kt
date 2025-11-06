@@ -106,7 +106,6 @@ class WooPosSettingsCategoriesViewModelTest {
     }
 
     private fun createViewModel() = WooPosSettingsCategoriesViewModel(
-        context = mock(),
         selectedSite = selectedSite,
         isLocalCatalogSupported = isLocalCatalogSupported,
     )
