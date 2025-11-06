@@ -2,7 +2,10 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
+import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,12 +28,7 @@ class BookingFilterListViewModel @Inject constructor(
             onClose = ::onClose,
             onShowBookings = ::onShowBookings,
             openPage = ::onOpenPage,
-            onUpdateFilterOption = ::onUpdateFilterOption,
-            unsavedChangesDialog = UnsavedChangesDialogState(
-                isVisible = false,
-                onDismiss = ::onDismissUnsavedChangesDialog,
-                onDiscardChanges = ::onDiscardChanges,
-            )
+            onUpdateFilterOption = ::onUpdateFilterOption
         )
     )
     val uiState = _uiState.asLiveData()
@@ -74,7 +72,17 @@ class BookingFilterListViewModel @Inject constructor(
             if (hasUnsavedChanges()) {
                 _uiState.update { current ->
                     current.copy(
-                        unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = true)
+                        unsavedChangesDialogState = DialogState(
+                            message = R.string.discard_message,
+                            positiveButton = DialogState.DialogButton(
+                                text = UiString.UiStringRes(R.string.discard),
+                                onClick = ::onDiscardChanges
+                            ),
+                            negativeButton = DialogState.DialogButton(
+                                text = UiString.UiStringRes(R.string.keep_changes),
+                                onClick = ::onDismissUnsavedChangesDialog
+                            ),
+                        )
                     )
                 }
             } else {
@@ -91,18 +99,12 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onDismissUnsavedChangesDialog() {
-        _uiState.update { current ->
-            current.copy(
-                unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false)
-            )
-        }
+        _uiState.update { current -> current.copy(unsavedChangesDialogState = null) }
     }
 
     private fun onDiscardChanges() {
         // Hide dialog and exit without saving
-        _uiState.update { current ->
-            current.copy(unsavedChangesDialog = current.unsavedChangesDialog.copy(isVisible = false))
-        }
+        _uiState.update { current -> current.copy(unsavedChangesDialogState = null) }
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 

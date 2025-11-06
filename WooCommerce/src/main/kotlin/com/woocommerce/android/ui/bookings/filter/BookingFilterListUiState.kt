@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
+import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
@@ -20,17 +21,11 @@ enum class BookingFilterPage {
     Location,
 }
 
-data class UnsavedChangesDialogState(
-    val isVisible: Boolean = false,
-    val onDismiss: () -> Unit = {},
-    val onDiscardChanges: () -> Unit = {},
-)
-
 data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters? = null,
     val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
-    val unsavedChangesDialog: UnsavedChangesDialogState = UnsavedChangesDialogState(),
+    val unsavedChangesDialogState: DialogState? = null,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
