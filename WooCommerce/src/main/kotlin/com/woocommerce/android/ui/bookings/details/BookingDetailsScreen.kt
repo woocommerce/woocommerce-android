@@ -130,7 +130,8 @@ fun BookingDetailsScreen(
                                             onSelect = { status ->
                                                 viewState.bookingUiState.onAttendanceStatusSelected(status)
                                             },
-                                            onDismiss = { showAttendanceSheet.value = false }
+                                            onDismiss = { showAttendanceSheet.value = false },
+                                            selected = viewState.bookingUiState.bookingSummary.attendanceStatus
                                         )
                                     }
                                 }
