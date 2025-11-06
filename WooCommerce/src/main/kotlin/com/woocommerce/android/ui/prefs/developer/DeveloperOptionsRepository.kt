@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.prefs.developer
 
+import com.automattic.android.tracks.crashlogging.CrashLogging
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.di.AppCoroutineScope
@@ -16,6 +17,7 @@ class DeveloperOptionsRepository @Inject constructor(
     private val appPrefs: AppPrefs,
     private val clearCardReaderDataAction: ClearCardReaderDataAction,
     private val cardReaderManager: CardReaderManager,
+    private val crashLogging: CrashLogging,
     @AppCoroutineScope appScope: CoroutineScope
 ) {
     private val appPrefsTrigger = appPrefs.observePrefs().shareIn(appScope, started = SharingStarted.WhileSubscribed())
@@ -70,5 +72,15 @@ class DeveloperOptionsRepository @Inject constructor(
                 useInterac = appPrefs.isInteracEnabled
             )
         }
+    }
+
+    fun sendTestSentryReport() {
+        appPrefs.setCrashReportingEnabled(true)
+
+        crashLogging.sendReport(
+            exception = Exception("Test Sentry report from Developer Options"),
+            tags = mapOf("source" to "developer_options"),
+            message = "This is a test report triggered from Developer Options"
+        )
     }
 }

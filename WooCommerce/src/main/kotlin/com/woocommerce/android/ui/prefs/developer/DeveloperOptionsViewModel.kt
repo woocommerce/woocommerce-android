@@ -90,12 +90,23 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val sendSentryReportFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_email,
+            iconTint = R.color.color_primary,
+            label = UiString.UiStringText("Send Sentry Report"),
+            isEnabled = true,
+            onClick = ::onSendSentryReportClicked
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
         savedPrivacySettingsOnDialogFlow,
-        apiFakerFlow
+        apiFakerFlow,
+        sendSentryReportFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -131,8 +142,16 @@ class DeveloperOptionsViewModel @Inject constructor(
         developerOptionsRepository.updateSimulatedReaderOption(selectedOption.toDomainModel())
     }
 
+    private fun onSendSentryReportClicked() {
+        developerOptionsRepository.sendTestSentryReport()
+        triggerEvent(
+            DeveloperOptionsEvents.ShowToastText("Sentry report sent")
+        )
+    }
+
     sealed class DeveloperOptionsEvents : MultiLiveEvent.Event() {
         data class ShowToastString(val message: Int) : DeveloperOptionsEvents()
+        data class ShowToastText(val message: String) : DeveloperOptionsEvents()
         data class ShowUpdateOptionsDialog(
             val options: List<UpdateFrequencyUiModel>,
             var selectedValue: UpdateFrequencyUiModel,
