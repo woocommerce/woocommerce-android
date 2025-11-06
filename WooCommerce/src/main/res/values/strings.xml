@@ -2422,7 +2422,6 @@
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
 
 
-
     <string name="login_site_address_more_help">Need more help?</string>
     <string name="login_checking_site_address">Checking site address</string>
     <string name="login_error_while_adding_site">Error while adding site. Error code: %s</string>
@@ -2808,35 +2807,13 @@
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
 
-
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
 
-
     // C
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     <!-- Z -->
@@ -4250,6 +4227,10 @@
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
     <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
+    <string name="bookings_filter_date_label">Date</string>
+    <string name="bookings_filter_time_label">Time</string>
+    <string name="bookings_filter_date_from">FROM</string>
+    <string name="bookings_filter_date_to">TO</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
