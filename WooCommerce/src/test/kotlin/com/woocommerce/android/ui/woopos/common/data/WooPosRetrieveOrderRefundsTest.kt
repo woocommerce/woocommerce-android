@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.common.data
 
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import kotlinx.coroutines.test.runTest
@@ -41,7 +40,7 @@ class WooPosRetrieveOrderRefundsTest {
     @Test
     fun `given refunds exist locally, when invoke called, then returns mapped refunds`() = runTest {
         // GIVEN
-        val order = order(id = 123L, refundTotal = BigDecimal.TEN)
+        val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
         val fluxCRefunds = listOf(
             WCRefundModel(
@@ -81,7 +80,7 @@ class WooPosRetrieveOrderRefundsTest {
     @Test
     fun `given no refunds exist locally, when invoke called, then fetches and returns mapped refunds`() = runTest {
         // GIVEN
-        val order = order(id = 123L, refundTotal = BigDecimal.TEN)
+        val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
         whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
 
@@ -115,21 +114,20 @@ class WooPosRetrieveOrderRefundsTest {
     @Test
     fun `given order refundTotal is zero, when invoke called, then returns empty list and does not hit store`() = runTest {
         // GIVEN
-        val order = order(id = 999L, refundTotal = BigDecimal.ZERO)
+        val order = OrderTestUtils.generateTestOrder(orderId = 999L, refundTotal = BigDecimal.ZERO)
 
         // WHEN
         val result = sut.invoke(order)
 
         // THEN
         assertThat(result).isEmpty()
-        // no calls to store
         verify(refundStore, org.mockito.kotlin.never()).getAllRefunds(any(), any())
     }
 
     @Test
     fun `given order provided, when invoke called, then passes correct orderId to store`() = runTest {
         // GIVEN
-        val order = order(id = 456L, refundTotal = BigDecimal.ONE)
+        val order = OrderTestUtils.generateTestOrder(orderId = 456L, refundTotal = BigDecimal.ONE)
         whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
         whenever(refundStore.fetchAllRefunds(any(), any(), any(), any())).thenReturn(
             WooResult(emptyList())
@@ -140,14 +138,5 @@ class WooPosRetrieveOrderRefundsTest {
 
         // THEN
         verify(refundStore).getAllRefunds(site, order.id)
-    }
-
-    private fun order(
-        id: Long,
-        refundTotal: BigDecimal
-    ): Order {
-        val order = OrderTestUtils.generateTestOrder(orderId = id)
-        order.refundTotal = refundTotal
-        return order
     }
 }
