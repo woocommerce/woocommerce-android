@@ -114,22 +114,3 @@ class BookingFilterListViewModel @Inject constructor(
         return updated != initial
     }
 }
-
-private val BookingFilterListUiState.updatedBookingFilters: BookingFilters
-    get() {
-        val initial = initialBookingFilters ?: BookingFilters()
-        val updates = this@updatedBookingFilters.newBookingFilters
-
-        return BookingFilters(
-            dateRange = updates.getOrDefault(initial.dateRange),
-            customer = updates.getOrDefault(initial.customer),
-            teamMember = updates.getOrDefault(
-                initial.teamMember
-            ),
-            attendanceStatus = updates.getOrDefault(initial.attendanceStatus),
-            paymentStatus = updates.getOrDefault(initial.paymentStatus),
-            bookingType = updates.getOrDefault(initial.bookingType),
-            location = updates.getOrDefault(initial.location),
-            serviceEvent = updates.getOrDefault(initial.serviceEvent),
-        )
-    }

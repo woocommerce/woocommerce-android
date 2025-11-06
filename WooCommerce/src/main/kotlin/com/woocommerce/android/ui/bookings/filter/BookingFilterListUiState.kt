@@ -45,6 +45,21 @@ data class BookingFilterListUiState(
             initialBookingFilters?.bookingType
         ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
 
+    val updatedBookingFilters: BookingFilters
+        get() {
+            val initial = initialBookingFilters ?: BookingFilters()
+            return BookingFilters(
+                dateRange = newBookingFilters.getOrDefault(initial.dateRange),
+                customer = newBookingFilters.getOrDefault(initial.customer),
+                teamMember = newBookingFilters.getOrDefault(initial.teamMember),
+                attendanceStatus = newBookingFilters.getOrDefault(initial.attendanceStatus),
+                paymentStatus = newBookingFilters.getOrDefault(initial.paymentStatus),
+                bookingType = newBookingFilters.getOrDefault(initial.bookingType),
+                location = newBookingFilters.getOrDefault(initial.location),
+                serviceEvent = newBookingFilters.getOrDefault(initial.serviceEvent),
+            )
+        }
+
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
         BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
