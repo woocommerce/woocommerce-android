@@ -277,14 +277,14 @@ private fun SettingLocalCatalogItemShimmer() {
         modifier = Modifier.fillMaxWidth()
     ) {
         WooPosShimmerText(
-            text = stringResource(R.string.woopos_settings_local_catalog_size),
+            text = stringResource(R.string.woopos_settings_local_catalog_last_full_update),
             style = WooPosTypography.BodyMedium.style
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
         WooPosShimmerText(
-            text = "2 hours ago",
+            text = "Yesterday at 3:45 PM",
             style = WooPosTypography.BodyMedium.style
         )
     }
