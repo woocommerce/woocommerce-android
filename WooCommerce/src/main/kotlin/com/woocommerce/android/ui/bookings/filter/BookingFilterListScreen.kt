@@ -131,13 +131,15 @@ private fun FiltersNavHost(
         }
         composable(BookingFilterPage.Customer.route) {
             BookingCustomerFilterPage { customer ->
-                state.onUpdateFilterOption(
-                    BookingsFilterOption.Customer(
-                        customerId = customer.customerId ?: 0L,
-                        customerName = "${customer.firstName} ${customer.lastName}".trim()
-                            .ifBlank { customer.email }.orEmpty()
+                customer.customerId?.let { id ->
+                    state.onUpdateFilterOption(
+                        BookingsFilterOption.Customer(
+                            customerId = id,
+                            customerName = "${customer.firstName} ${customer.lastName}".trim()
+                                .ifBlank { customer.email }.orEmpty()
+                        )
                     )
-                )
+                }
                 state.onClose()
             }
         }
