@@ -60,6 +60,8 @@ data class BookingFilterListUiState(
             )
         }
 
+    val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
+
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
         BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
@@ -87,6 +89,18 @@ data class BookingFilterListUiState(
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
+        }
+
+    val title: UiString
+        get() = if (currentPage != BookingFilterPage.List) {
+            UiString.UiStringRes(currentPage.titleRes)
+        } else if (updatedBookingFiltersCount > 0) {
+            UiString.UiStringRes(
+                stringRes = R.string.bookings_filters_title_with_count,
+                params = listOf(UiString.UiStringText(updatedBookingFiltersCount.toString()))
+            )
+        } else {
+            UiString.UiStringRes(R.string.bookings_filters_default_title)
         }
 }
 
