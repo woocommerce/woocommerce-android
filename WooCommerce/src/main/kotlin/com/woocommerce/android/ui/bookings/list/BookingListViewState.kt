@@ -13,6 +13,7 @@ data class BookingListViewState(
 data class BookingListContentState(
     val bookings: List<BookingListItem>,
     val loadingState: BookingListLoadingState,
+    val selectedBooking: Long? = null,
     val onRefresh: () -> Unit,
     val onLoadMore: () -> Unit,
     val onBookingClick: (Long) -> Unit,

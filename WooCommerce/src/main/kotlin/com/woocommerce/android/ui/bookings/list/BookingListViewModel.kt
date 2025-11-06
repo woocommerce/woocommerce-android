@@ -17,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -70,6 +71,9 @@ class BookingListViewModel @Inject constructor(
         get() = stateHandle[KEY_BOOKING_SELECTED_ON_BIG_SCREEN]
         set(value) = stateHandle.set(KEY_BOOKING_SELECTED_ON_BIG_SCREEN, value)
 
+    private val selectedBookingIdFlow: Flow<Long?> =
+        stateHandle.getStateFlow(KEY_BOOKING_SELECTED_ON_BIG_SCREEN, null)
+
     private val isSortSheetVisible = MutableStateFlow(false)
 
     private var bookingsFetchJob: Job? = null
@@ -80,11 +84,13 @@ class BookingListViewModel @Inject constructor(
             openFirstLoadedBookingOnTablet(bookings)
             with(bookingMapper) { bookings.map { it.toListItem() } }
         },
-        loadingState
-    ) { bookings, loadingState ->
+        loadingState,
+        selectedBookingIdFlow,
+    ) { bookings, loadingState, selectedBookingId ->
         BookingListContentState(
             bookings = bookings,
             loadingState = loadingState,
+            selectedBooking = selectedBookingId,
             onRefresh = { refreshTrigger.tryEmit(Unit) },
             onLoadMore = ::loadMore,
             onBookingClick = ::onBookingClick

@@ -153,7 +153,9 @@ private fun BookingDetailsContent(
 ) {
     BookingSummary(
         model = booking.bookingSummary,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
     )
     BookingAppointmentDetails(
         model = booking.bookingsAppointmentDetails,
