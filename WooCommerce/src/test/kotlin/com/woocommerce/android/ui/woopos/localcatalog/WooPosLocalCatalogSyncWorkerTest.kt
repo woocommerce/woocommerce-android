@@ -333,11 +333,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `given sync overdue, when validateSyncStatus is called, then proceeds with sync`() = testBlocking {
         // GIVEN
-        val lastSyncTimestamp = CURRENT_TIME_MILLIS - (8 * 24 * 60 * 60 * 1000L) // 8 days ago
         whenever(syncStatusChecker.checkSyncRequirement())
-            .thenReturn(
-                WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp, isOverdue = true)
-            )
+            .thenReturn(WooPosFullSyncRequirement.Overdue)
 
         val worker = createWorker()
 
