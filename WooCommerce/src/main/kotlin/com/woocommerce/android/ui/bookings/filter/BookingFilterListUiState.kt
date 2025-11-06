@@ -29,7 +29,7 @@ data class BookingFilterListUiState(
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
-    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {}
+    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
@@ -81,7 +81,7 @@ val BookingFilterPage.titleRes: Int
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
-        BookingFilterPage.Customer -> R.string.bookings_filter_customer_name
+        BookingFilterPage.Customer -> R.string.bookings_filter_customer
         BookingFilterPage.Location -> R.string.bookings_filter_location
         BookingFilterPage.DateTime -> R.string.bookings_filter_title_date
         BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service_event
