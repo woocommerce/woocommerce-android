@@ -99,7 +99,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
         // THEN
         val afterClose = viewModel.uiState.getOrAwaitValue()
-        assertThat(afterClose.unsavedChangesDialogState).isNotNull()
+        assertThat(afterClose.dialogState).isNotNull()
     }
 
     @Test
@@ -113,11 +113,11 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
         // WHEN: tap Keep Changes
         val withDialog = viewModel.uiState.getOrAwaitValue()
-        withDialog.unsavedChangesDialogState?.negativeButton?.onClick()
+        withDialog.dialogState?.negativeButton?.onClick()
 
         // THEN: dialog hidden
         val afterDismiss = viewModel.uiState.getOrAwaitValue()
-        assertThat(afterDismiss.unsavedChangesDialogState).isNull()
+        assertThat(afterDismiss.dialogState).isNull()
     }
 
     @Test
@@ -131,11 +131,11 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
         // WHEN: tap Discard
         val withDialog = viewModel.uiState.getOrAwaitValue()
-        withDialog.unsavedChangesDialogState?.positiveButton?.onClick()
+        withDialog.dialogState?.positiveButton?.onClick()
 
         // THEN: dialog hidden and Exit event emitted
         val afterDiscard = viewModel.uiState.getOrAwaitValue()
-        assertThat(afterDiscard.unsavedChangesDialogState).isNull()
+        assertThat(afterDiscard.dialogState).isNull()
         assertThat(events).isNotEmpty
         assertThat(events.last()).isEqualTo(MultiLiveEvent.Event.Exit)
     }

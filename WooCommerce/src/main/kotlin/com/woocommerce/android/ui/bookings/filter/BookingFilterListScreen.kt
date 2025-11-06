@@ -74,7 +74,7 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                 .padding(innerPadding)
         )
 
-        state.unsavedChangesDialogState?.Render()
+        state.dialogState?.Render()
 
         // The navigation is driven by the state, so we handle back navigation by calling onClose
         // We need to ensure that this called after NavHost to make sure we receive back events

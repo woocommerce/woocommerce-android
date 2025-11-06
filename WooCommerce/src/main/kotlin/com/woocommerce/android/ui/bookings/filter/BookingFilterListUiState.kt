@@ -25,7 +25,7 @@ data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters? = null,
     val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
-    val unsavedChangesDialogState: DialogState? = null,
+    val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},

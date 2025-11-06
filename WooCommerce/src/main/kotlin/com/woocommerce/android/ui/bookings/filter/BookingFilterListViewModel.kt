@@ -72,7 +72,7 @@ class BookingFilterListViewModel @Inject constructor(
             if (hasUnsavedChanges()) {
                 _uiState.update { current ->
                     current.copy(
-                        unsavedChangesDialogState = DialogState(
+                        dialogState = DialogState(
                             message = R.string.discard_message,
                             positiveButton = DialogState.DialogButton(
                                 text = UiString.UiStringRes(R.string.discard),
@@ -99,12 +99,12 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onDismissUnsavedChangesDialog() {
-        _uiState.update { current -> current.copy(unsavedChangesDialogState = null) }
+        _uiState.update { current -> current.copy(dialogState = null) }
     }
 
     private fun onDiscardChanges() {
         // Hide dialog and exit without saving
-        _uiState.update { current -> current.copy(unsavedChangesDialogState = null) }
+        _uiState.update { current -> current.copy(dialogState = null) }
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
