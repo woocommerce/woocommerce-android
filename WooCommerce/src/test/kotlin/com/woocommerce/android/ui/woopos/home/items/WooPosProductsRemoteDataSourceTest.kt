@@ -1240,7 +1240,7 @@ class WooPosProductsRemoteDataSourceTest {
         runTest {
             // GIVEN
             val productId = 1L
-            val variationId = 99L // Different from cached variations
+            val variationId = 99L
             val wcVariation = WCProductVariationModel(LocalId(1)).copy(
                 remoteVariationId = RemoteId(variationId),
                 remoteProductId = RemoteId(productId)
@@ -1258,10 +1258,9 @@ class WooPosProductsRemoteDataSourceTest {
             val remotePayload = WCProductStore.RemoteProductVariationsPayload(
                 site = siteModel,
                 remoteProductId = productId,
-                variations = listOf(wcVariation) // Returns the new variation
+                variations = listOf(wcVariation)
             )
 
-            // Mock cache with existing variations (but not the one we're looking for)
             whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
             whenever(productRestClient.fetchProductVariations(siteModel, productId))
                 .thenReturn(remotePayload)
