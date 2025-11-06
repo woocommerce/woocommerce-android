@@ -538,10 +538,30 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
+    @Suppress("ReturnCount")
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
-        val siteModel = selectedSite.getOrNull() ?: return null
-        return productStore.getVariationByRemoteId(siteModel, productId, variationId)
-            ?.toWooPosVariation(variationMapper)
+        val cachedVariations = getCachedVariations(productId)
+        val cachedVariation = cachedVariations.find { it.remoteVariationId == variationId }
+        if (cachedVariation != null) {
+            return cachedVariation
+        }
+
+        return if (cachedVariations.isNotEmpty()) {
+            val remoteVariationsResult = productRestClient.fetchProductVariations(
+                site = selectedSite.get(),
+                productId = productId,
+            )
+
+            if (!remoteVariationsResult.isError) {
+                val variations = remoteVariationsResult.variations.map { it.toWooPosVariation(variationMapper) }
+                updateVariationsCache(productId, variations)
+                variations.find { it.remoteVariationId == variationId }
+            } else {
+                null
+            }
+        } else {
+            null
+        }
     }
 
     override suspend fun refreshProducts(): Result<WooPosSyncProductResult> = withContext(
