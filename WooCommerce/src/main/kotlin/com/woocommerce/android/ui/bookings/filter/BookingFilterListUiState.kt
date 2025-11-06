@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
+import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
@@ -24,10 +25,11 @@ data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters? = null,
     val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
+    val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
-    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {}
+    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
@@ -79,7 +81,7 @@ val BookingFilterPage.titleRes: Int
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
-        BookingFilterPage.Customer -> R.string.bookings_filter_customer_name
+        BookingFilterPage.Customer -> R.string.bookings_filter_customer
         BookingFilterPage.Location -> R.string.bookings_filter_location
         BookingFilterPage.DateTime -> R.string.bookings_filter_title_date
         BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service_event
