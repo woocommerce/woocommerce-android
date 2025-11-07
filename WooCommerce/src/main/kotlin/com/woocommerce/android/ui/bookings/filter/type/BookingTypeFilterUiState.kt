@@ -6,7 +6,7 @@ import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
 
 data class BookingTypeFilterUiState(
-    val selectedType: BookingType = BookingType(BookingType.Type.ANY),
+    val selectedType: BookingType = BookingType.DEFAULT,
     val onTypeSelected: (BookingType) -> Unit = {},
 ) {
     val items: List<BookingFilterListItem> = availableBookingTypes().map { type ->
