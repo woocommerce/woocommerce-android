@@ -3,7 +3,6 @@ package com.woocommerce.android.e2e.tests.screenshot
 import android.Manifest
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -76,12 +75,12 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         TabNavComponent()
             .gotoPosScreen()
             .waitForLoad()
-            .addProductsToCart()
+            .addProductsToCart(composeTestRule)
             .thenTakeScreenshot<WooPosHomeScreen>("pos-home")
-            .proceedToCheckout()
+            .proceedToCheckout(composeTestRule)
             .thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
-            .selectCashPayment()
-            .completePayment()
+            .selectCashPayment(composeTestRule)
+            .completePayment(composeTestRule)
             .thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
     }
 
