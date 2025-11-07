@@ -45,6 +45,23 @@ data class BookingFilterListUiState(
             initialBookingFilters?.bookingType
         ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
 
+    val updatedBookingFilters: BookingFilters
+        get() {
+            val initial = initialBookingFilters ?: BookingFilters()
+            return BookingFilters(
+                dateRange = newBookingFilters.getOrDefault(initial.dateRange),
+                customer = newBookingFilters.getOrDefault(initial.customer),
+                teamMember = newBookingFilters.getOrDefault(initial.teamMember),
+                attendanceStatus = newBookingFilters.getOrDefault(initial.attendanceStatus),
+                paymentStatus = newBookingFilters.getOrDefault(initial.paymentStatus),
+                bookingType = newBookingFilters.getOrDefault(initial.bookingType),
+                location = newBookingFilters.getOrDefault(initial.location),
+                serviceEvent = newBookingFilters.getOrDefault(initial.serviceEvent),
+            )
+        }
+
+    val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
+
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
         BookingFilterPage.List -> R.drawable.ic_gridicons_cross_24dp
@@ -72,6 +89,18 @@ data class BookingFilterListUiState(
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
+        }
+
+    val title: UiString
+        get() = if (currentPage != BookingFilterPage.List) {
+            UiString.UiStringRes(currentPage.titleRes)
+        } else if (updatedBookingFiltersCount > 0) {
+            UiString.UiStringRes(
+                stringRes = R.string.bookings_filters_title_with_count,
+                params = listOf(UiString.UiStringText(updatedBookingFiltersCount.toString()))
+            )
+        } else {
+            UiString.UiStringRes(R.string.bookings_filters_default_title)
         }
 }
 

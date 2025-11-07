@@ -33,6 +33,7 @@ import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -43,7 +44,7 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
         topBar = {
             Column {
                 Toolbar(
-                    title = stringResource(state.currentPage.titleRes),
+                    title = state.title.getText(),
                     onNavigationButtonClick = state.onClose,
                     navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
                 )

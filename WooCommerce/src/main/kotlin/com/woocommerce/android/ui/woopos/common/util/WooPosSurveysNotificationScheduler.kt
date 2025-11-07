@@ -5,7 +5,6 @@ import com.woocommerce.android.notifications.local.LocalNotification
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.concurrent.TimeUnit
@@ -26,7 +25,7 @@ class WooPosSurveysNotificationScheduler @Inject constructor(
     suspend fun schedulePotentialUserSurveyNotification() {
         if (!appPrefs.isWooPosSurveyNotificationPotentialUserShown &&
             !wooPosPreferencesRepository.wasOpenedOnce.first() &&
-            areNotificationsAllowed()
+            isAllowedCountry()
         ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyPotentialUserNotification(
@@ -39,7 +38,7 @@ class WooPosSurveysNotificationScheduler @Inject constructor(
     suspend fun scheduleCurrentUserSurveyNotification() {
         if (!appPrefs.isWooPosSurveyNotificationCurrentUserShown &&
             wooPosPreferencesRepository.wasOpenedOnce.first() &&
-            areNotificationsAllowed()
+            isAllowedCountry()
         ) {
             localNotificationScheduler.scheduleNotification(
                 LocalNotification.WooPosSurveyCurrentUserNotification(
@@ -49,9 +48,6 @@ class WooPosSurveysNotificationScheduler @Inject constructor(
             )
         }
     }
-
-    private suspend fun areNotificationsAllowed(): Boolean =
-        isAllowedCountry() && FeatureFlag.WOO_POS_SURVEYS.isEnabled()
 
     private suspend fun isAllowedCountry(): Boolean {
         val countryCode = wooCommerceStore.getSiteSettingsAsync(selectedSite.get())?.countryCode
