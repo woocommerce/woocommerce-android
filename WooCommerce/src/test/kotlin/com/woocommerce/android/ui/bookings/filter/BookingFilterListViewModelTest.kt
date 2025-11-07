@@ -13,7 +13,7 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
@@ -91,7 +91,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // GIVEN
         val initial = viewModel.uiState.getOrAwaitValue()
         // introduce a change different from initial filters (which are empty)
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         val changed = viewModel.uiState.getOrAwaitValue()
 
         // WHEN
@@ -108,7 +108,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
         val initial = viewModel.uiState.getOrAwaitValue()
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
 
         // WHEN: tap Keep Changes
@@ -126,7 +126,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
         val initial = viewModel.uiState.getOrAwaitValue()
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
 
         // WHEN: tap Discard
