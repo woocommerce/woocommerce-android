@@ -53,6 +53,7 @@ class BookingFilterListViewModel @Inject constructor(
     }
 
     private fun onClear() {
+        _uiState.update { it.copy(updatedBookingFilters = BookingFilters()) }
     }
 
     private fun getBookingFilter() {
