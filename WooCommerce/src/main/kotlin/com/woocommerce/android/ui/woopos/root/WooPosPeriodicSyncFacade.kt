@@ -51,7 +51,7 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private fun startPeriodicSync(owner: LifecycleOwner) {
         periodicSyncJob = owner.lifecycleScope.launch {
             val site = selectedSite.getOrNull() ?: return@launch
-            if (!isLocalCatalogSupported(site.siteId)) return@launch
+            if (!isLocalCatalogSupported(site.localId())) return@launch
 
             while (isActive) {
                 delay(SYNC_STATUS_CHECK_INTERVAL)

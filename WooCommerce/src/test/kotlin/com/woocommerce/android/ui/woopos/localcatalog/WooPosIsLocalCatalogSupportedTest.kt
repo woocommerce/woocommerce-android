@@ -12,6 +12,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 
 @ExperimentalCoroutinesApi
 class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
@@ -24,7 +25,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     private lateinit var isLocalCatalogSupported: WooPosIsLocalCatalogSupported
 
     companion object {
-        private const val SITE_ID = 123L
+        private val SITE_ID = LocalOrRemoteId.LocalId(123)
     }
 
     @Before
@@ -35,7 +36,8 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         val variationsEndpointChecker = WooPosIsLocalCatalogVariationsEndpointAvailable(
             getWooVersion = getWooVersion,
-            logger = logger
+            logger = logger,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(

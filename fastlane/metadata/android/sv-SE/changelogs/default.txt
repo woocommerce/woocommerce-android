@@ -1,2 +1,0 @@
-23.5:
-Vi har piffat till din WooCommerce-upplevelse. Den här uppdateringen åtgärdar en sällsynt krasch som kunde uppstå vid återbetalning av beställningar och korrigerar hur kundnamn visas vid filtrering av beställningar. Njut av smidigare prestanda och mer tillförlitlig beställningshantering med denna version.

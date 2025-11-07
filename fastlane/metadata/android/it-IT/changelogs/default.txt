@@ -1,2 +1,0 @@
-23.5:
-abbiamo migliorato la tua esperienza su WooCommerce! Questo aggiornamento corregge un raro arresto anomalo che si verificava durante la procedura di rimborso degli ordini e corregge il modo in cui vengono visualizzati i nomi dei clienti durante il filtraggio degli ordini. Goditi prestazioni più fluide e una gestione degli ordini più affidabile con questa versione.

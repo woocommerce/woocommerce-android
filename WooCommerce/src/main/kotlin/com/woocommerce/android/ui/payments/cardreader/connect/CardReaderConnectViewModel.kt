@@ -499,6 +499,8 @@ class CardReaderConnectViewModel @Inject constructor(
         val hintLabel = when (errorCode) {
             CardReaderStatus.NotConnected.ErrorCode.BATTERY_CRITICALLY_LOW ->
                 R.string.card_reader_connect_failed_battery_low_hint
+            CardReaderStatus.NotConnected.ErrorCode.BLUETOOTH_PEER_REMOVED_PAIRING ->
+                R.string.card_reader_connect_failed_bluetooth_pairing_removed_hint
             CardReaderStatus.NotConnected.ErrorCode.OTHER -> null
             null -> null
         }

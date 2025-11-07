@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import javax.inject.Inject
 
 /**
@@ -13,7 +14,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
     private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
 ) {
     @Suppress("ReturnCount")
-    suspend operator fun invoke(siteId: Long): Boolean {
+    suspend operator fun invoke(localSiteId: LocalOrRemoteId.LocalId): Boolean {
         if (!wooPosLocalCatalogM1Enabled()) {
             return false
         }
@@ -22,7 +23,7 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             return false
         }
 
-        if (!prefsRepo.isPeriodicSyncEnabledForSite(siteId)) {
+        if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
             return false
         }
 

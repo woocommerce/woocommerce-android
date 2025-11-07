@@ -64,7 +64,8 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
     fun updateCustomerInfo(
         order: Order,
         isVirtualOrder: Boolean, // don't display shipping section for virtual products
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        viewOrdersButtonVissible: Boolean = false,
     ) {
         val noBillingInfo = order.billingAddress.hasInfo().not() && order.formatBillingInformationForDisplay().isEmpty()
         val noShippingInfo = order.formatShippingInformationForDisplay().isEmpty()
@@ -80,7 +81,7 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         showCustomerNote(order, isReadOnly)
         showShippingAddress(order, isVirtualOrder, isReadOnly)
         showBillingInfo(order, isReadOnly)
-        showViewOrdersButton(order)
+        showViewOrdersButton(order, viewOrdersButtonVissible)
         restoreCustomerInfoViewExpandedOrCollapsedState()
     }
 
@@ -192,10 +193,10 @@ class OrderDetailCustomerInfoView @JvmOverloads constructor(
         }
     }
 
-    private fun showViewOrdersButton(order: Order) {
+    private fun showViewOrdersButton(order: Order, viewOrdersButtonVisible: Boolean) {
         val hasCustomerId = order.customer?.customerId != null && order.customer.customerId > 0
 
-        if (hasCustomerId) {
+        if (hasCustomerId && viewOrdersButtonVisible) {
             binding.customerInfoViewOrdersBtn.visibility = VISIBLE
             binding.customerInfoViewOrdersBtn.setOnClickListener {
                 viewCustomerOrdersListener?.invoke(order)

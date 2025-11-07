@@ -12,6 +12,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -22,17 +24,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.util.concurrent.atomic.AtomicReference
 import javax.inject.Inject
-import kotlin.system.measureTimeMillis
 
 @HiltViewModel
 class WooPosItemsSearchViewModel @Inject constructor(
     private val emptyStateRepository: WooPosItemsSearchEmptyStateRepository,
     private val priceFormat: WooPosFormatPrice,
-    private val dataSource: WooPosSearchProductsDataSource,
+    private val dataSource: WooPosProductsDataSource,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val searchHelper: WooPosItemsSearchHelper,
@@ -53,8 +55,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         )
 
     private var loadMoreJob: Job? = null
-    private var localSearchJob: Job? = null
-    private var remoteSearchJob: Job? = null
+    private var searchJob: Job? = null
 
     private val currentQuery = AtomicReference("")
 
@@ -101,76 +102,68 @@ class WooPosItemsSearchViewModel @Inject constructor(
         val currentState = _viewState.value as? WooPosItemsSearchViewState.Error ?: return
 
         _viewState.value = WooPosItemsSearchViewState.Loading
-        performRemoteSearch(currentState.searchQuery)
+        performSearch(currentState.searchQuery)
     }
 
     private fun performSearch(query: String) {
-        localSearchJob?.cancel()
-        remoteSearchJob?.cancel()
+        searchJob?.cancel()
 
         currentQuery.set(query)
 
         if (query.isEmpty()) {
             setEmptySearchQueryState()
         } else {
-            performLocalSearch(query)
-            performRemoteSearch(query)
-        }
-    }
-
-    private fun performLocalSearch(query: String) {
-        localSearchJob?.cancel()
-        localSearchJob = viewModelScope.launch {
-            val localProducts = dataSource.searchLocalProducts(query)
-
-            if (query != currentQuery.get()) return@launch
-
-            analyticsTracker.storedLocalSearchResultIds(localProducts.map { it.remoteId })
-
-            if (localProducts.isEmpty()) {
+            searchJob = viewModelScope.launch {
                 _viewState.value = WooPosItemsSearchViewState.Loading
-            } else {
-                _viewState.value = localProducts.toContentState(
-                    searchQuery = query,
-                )
-            }
-        }
-    }
+                delay(SEARCH_DEBOUNCING_TIME)
 
-    private fun performRemoteSearch(query: String) {
-        remoteSearchJob?.cancel()
-        remoteSearchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCING_TIME)
+                if (query != currentQuery.get()) return@launch
 
-            if (query != currentQuery.get()) {
-                return@launch
-            }
+                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
-            var result: Result<List<WooPosProductModel>>
-            val searchTimeMillis = measureTimeMillis {
-                result = dataSource.searchRemoteProducts(query)
-            }
+                dataSource.searchProducts(query).collectLatest { searchResult ->
+                    if (query != currentQuery.get()) {
+                        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                        return@collectLatest
+                    }
 
-            if (query != currentQuery.get()) {
-                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                return@launch
-            }
+                    when (searchResult) {
+                        is SearchProductsResult.Local -> {
+                            analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
 
-            if (result.isSuccess) {
-                val searchResult = result.getOrThrow()
-                if (searchResult.isEmpty()) {
-                    _viewState.value = WooPosItemsSearchViewState.Empty
-                } else {
-                    _viewState.value = searchResult.toContentState(searchQuery = query)
+                            if (searchResult.products.isEmpty()) {
+                                _viewState.value = WooPosItemsSearchViewState.Loading
+                            } else {
+                                _viewState.value = searchResult.products.toContentState(
+                                    searchQuery = query,
+                                )
+                            }
+                        }
+
+                        is SearchProductsResult.Remote -> {
+                            if (searchResult.productsResult.isSuccess) {
+                                val products = searchResult.productsResult.getOrThrow()
+                                if (products.isEmpty()) {
+                                    _viewState.value = WooPosItemsSearchViewState.Empty
+                                } else {
+                                    _viewState.value = products.toContentState(searchQuery = query)
+                                }
+
+                                analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
+                            } else {
+                                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
+                            }
+                        }
+                    }
                 }
 
-                analyticsTracker.trackSearchPerformance(searchTimeMillis)
-            } else {
-                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
+                if (query == currentQuery.get()) {
+                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                    if (_viewState.value is WooPosItemsSearchViewState.Loading) {
+                        _viewState.value = WooPosItemsSearchViewState.Empty
+                    }
+                }
             }
-
-            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
         }
     }
 
@@ -210,7 +203,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
             return
         }
 
-        if (!dataSource.hasMorePages) {
+        if (!dataSource.hasMoreSearchPages) {
             return
         }
 
@@ -218,7 +211,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
         loadMoreJob?.cancel()
         loadMoreJob = viewModelScope.launch {
-            val result = dataSource.loadMore(query = currentState.searchQuery)
+            val result = dataSource.loadMoreSearchResults(currentState.searchQuery)
             _viewState.value = if (result.isSuccess) {
                 analyticsTracker.trackItemsNextPageLoaded()
                 result.getOrThrow().toContentState(
@@ -330,6 +323,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
     private companion object {
         const val MAX_ITEMS_COUNT = 10
-        const val SEARCH_DEBOUNCING_TIME = 500L
+        const val SEARCH_DEBOUNCING_TIME = 250L
     }
 }

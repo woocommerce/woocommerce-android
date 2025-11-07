@@ -63,6 +63,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.ui.main.BottomNavigationPosition
 import com.woocommerce.android.ui.main.MainNavigationRouter
 import com.woocommerce.android.ui.orders.CustomAmountCard
 import com.woocommerce.android.ui.orders.Header
@@ -209,12 +210,14 @@ class OrderDetailFragment :
          * during the payment collection process. If this is the case, it navigates to the
          * Select Payment screen on both phone and tablet devices.
          */
-        if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
-            navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
-            return
-        } else if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && navArgs.startPaymentFlow) {
-            navigateBackWithResult(KEY_START_PAYMENT_FLOW, navArgs.orderId)
-            return
+        if (!navArgs.ignoreTwoPaneLayoutLogic) {
+            if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && !navArgs.startPaymentFlow) {
+                navigateBackWithResult(KEY_ORDER_ID, navArgs.orderId)
+                return
+            } else if (isOrderListFragmentNotVisible() && isScreenLargerThanCompact && navArgs.startPaymentFlow) {
+                navigateBackWithResult(KEY_START_PAYMENT_FLOW, navArgs.orderId)
+                return
+            }
         }
 
         if (navArgs.startPaymentFlow) {
@@ -298,7 +301,7 @@ class OrderDetailFragment :
 
     private fun setupToolbarMenu(menu: Menu) {
         onPrepareMenu(menu)
-        if (requireContext().isTwoPanesShouldBeUsed) {
+        if (requireContext().isTwoPanesShouldBeUsed && !navArgs.ignoreTwoPaneLayoutLogic) {
             binding.toolbar.navigationIcon = null
         } else {
             binding.toolbar.navigationIcon = AppCompatResources.getDrawable(requireActivity(), R.drawable.ic_back_24dp)
@@ -655,7 +658,8 @@ class OrderDetailFragment :
         binding.orderDetailCustomerInfo.updateCustomerInfo(
             order = order,
             isVirtualOrder = viewModel.hasVirtualProductsOnly(),
-            isReadOnly = false
+            isReadOnly = false,
+            viewOrdersButtonVissible = shouldShowViewCustomerOrdersButton()
         )
         binding.orderDetailPaymentInfo.updatePaymentInfo(
             order = order,
@@ -672,6 +676,14 @@ class OrderDetailFragment :
                 viewModel.onPrintingInstructionsClicked()
             }
         )
+    }
+
+    private fun shouldShowViewCustomerOrdersButton(): Boolean {
+        val orderListInBackstack =
+            findNavController().previousBackStackEntry?.destination?.id == BottomNavigationPosition.ORDERS.id
+        val isInDetailPane =
+            requireContext().isTwoPanesShouldBeUsed && (parentFragment?.id == R.id.detailPaneContainer)
+        return orderListInBackstack || isInDetailPane
     }
 
     private fun showOrderStatus(orderStatus: OrderStatus) {

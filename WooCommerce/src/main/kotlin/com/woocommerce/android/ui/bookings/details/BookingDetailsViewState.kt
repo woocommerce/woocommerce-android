@@ -7,18 +7,22 @@ import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.DialogState
 
-data class BookingDetailsViewState(
-    val toolbarTitle: String = "",
-    val bookingUiState: BookingUiState? = null,
-    val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
-    val onCancelBooking: () -> Unit = {},
-    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
-    val onMarkAsPaid: () -> Unit = {},
-    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
-    val dialogState: DialogState? = null,
-    val onRefresh: () -> Unit = {},
+sealed class BookingDetailsViewState(
+    open val toolbarTitle: String = "",
 ) {
-    val shouldShowSkeleton: Boolean = bookingUiState == null && loadingState == BookingDetailsLoadingState.Refreshing
+    data object Empty : BookingDetailsViewState()
+
+    data class ShowBooking(
+        override val toolbarTitle: String = "",
+        val bookingUiState: BookingUiState? = null,
+        val loadingState: BookingDetailsLoadingState = BookingDetailsLoadingState.Idle,
+        val dialogState: DialogState? = null,
+        val onRefresh: () -> Unit = {},
+    ) : BookingDetailsViewState() {
+
+        val shouldShowSkeleton: Boolean =
+            bookingUiState == null && loadingState == BookingDetailsLoadingState.Loading
+    }
 }
 
 data class BookingUiState(
@@ -28,7 +32,13 @@ data class BookingUiState(
     val bookingCustomerDetails: BookingCustomerDetailsModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
     val note: String,
-    val isAttendanceStatusEditable: Boolean
+    val isAttendanceStatusEditable: Boolean,
+    val onCancelBooking: () -> Unit = {},
+    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onMarkAsPaid: () -> Unit = {},
+    val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
+    val onNoteClicked: () -> Unit = {},
+    val onViewOrderClicked: () -> Unit = {},
 )
 
 sealed interface BookingDetailsLoadingState {

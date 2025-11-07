@@ -84,7 +84,7 @@ class WooPosLocalCatalogSyncScheduler @Inject constructor(
                 oneTimeWorkRequest
             )
 
-            logger.d("Manual POS local catalog sync triggered")
+            logger.d("Manual POS local catalog sync work enqueued")
         }
     }
 
