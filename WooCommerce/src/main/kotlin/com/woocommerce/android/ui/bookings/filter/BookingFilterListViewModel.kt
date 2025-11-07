@@ -47,9 +47,7 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onUpdateFilterOption(option: BookingsFilterOption) {
         _uiState.update { current ->
             current.copy(
-                newBookingFilters = current.newBookingFilters.filterNot { it::class == option::class }
-                    .plus(option)
-                    .toSet()
+                updatedBookingFilters = current.updatedBookingFilters.updateFilterOption(option)
             )
         }
     }
@@ -60,9 +58,9 @@ class BookingFilterListViewModel @Inject constructor(
     private fun getBookingFilter() {
         launch {
             // We don't observe changes here, just get the current value once
-            val bookingFilters = bookingFilterRepository.bookingFiltersFlow.firstOrNull()
+            val bookingFilters = bookingFilterRepository.bookingFiltersFlow.firstOrNull() ?: BookingFilters()
             _uiState.update { current ->
-                current.copy(initialBookingFilters = bookingFilters)
+                current.copy(initialBookingFilters = bookingFilters, updatedBookingFilters = bookingFilters)
             }
         }
     }
@@ -112,9 +110,5 @@ class BookingFilterListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    private fun hasUnsavedChanges(): Boolean {
-        val initial = _uiState.value.initialBookingFilters ?: BookingFilters()
-        val updated = _uiState.value.updatedBookingFilters
-        return updated != initial
-    }
+    private fun hasUnsavedChanges() = _uiState.value.initialBookingFilters != _uiState.value.updatedBookingFilters
 }

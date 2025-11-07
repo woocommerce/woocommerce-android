@@ -140,7 +140,7 @@ private fun FiltersNavHost(
             TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
-            BookingTypeFilterRoute(initialType = state.currentBookingType) { type ->
+            BookingTypeFilterRoute(initialType = state.initialBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
         }
@@ -190,7 +190,7 @@ private fun BookingFilterListScreenPreview() {
     WooThemeWithBackground {
         BookingFilterListScreen(
             state = BookingFilterListUiState(
-                initialBookingFilters = null,
+                initialBookingFilters = BookingFilters(),
             )
         )
     }
