@@ -19,10 +19,12 @@ class WooPosHomeScreen : Screen(R.id.point_of_sale) {
         }
 
         val clickableNodes = composeTestRule.onAllNodes(hasClickAction())
-        if (clickableNodes.fetchSemanticsNodes().isNotEmpty()) {
-            clickableNodes[0].performClick()
-            Thread.sleep(500)
-        }
+        val nodes = clickableNodes.fetchSemanticsNodes()
+
+        require(nodes.isNotEmpty()) { "No clickable products found in the product list" }
+
+        clickableNodes[0].performClick()
+        Thread.sleep(500)
 
         return this
     }
