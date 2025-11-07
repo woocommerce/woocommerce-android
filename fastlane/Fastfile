@@ -121,27 +121,16 @@ platform :android do
     # Check out the up-to-date default branch, the designated starting point for the code freeze
     Fastlane::Helper::GitHelper.checkout_and_pull(DEFAULT_BRANCH)
 
-    # Use provided version from release tool, or fall back to computed version
-    computed_version = release_version_next
-    new_version = version || computed_version
+    # If version provided by release tool, use it as source of truth
+    UI.important("Using provided version: #{version}") if version
 
-    # Fail if provided version differs from computed version
-    if version && version != computed_version
-      error_message = <<~ERROR
-        ❌ Version mismatch detected!
-
-        The explicitly-provided version from the release tool is '#{version}' but the computed version from the codebase is '#{computed_version}'.
-
-        This mismatch must be resolved before proceeding with the code freeze. Please investigate and ensure the versions are aligned.
-      ERROR
-      buildkite_annotate(style: 'error', context: 'start-code-freeze-version-mismatch', message: error_message) if is_ci
-      UI.user_error!(error_message)
-    end
+    new_version = version || release_version_next
+    new_release_branch = "release/#{new_version}"
 
     message = <<-MESSAGE
 
     Code Freeze:
-      • New release branch from #{DEFAULT_BRANCH}: release/#{new_version}
+      • New release branch from #{DEFAULT_BRANCH}: #{new_release_branch}
       • Current release version and build code: #{release_version_current} (#{build_code_current}).
       • New beta version and build code: #{beta_version_first} (#{build_code_next}).
 
@@ -151,7 +140,6 @@ platform :android do
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Create the release branch
-    new_release_branch = "release/#{new_version}"
     ensure_branch_does_not_exist!(new_release_branch)
 
     UI.message 'Creating release branch...'
