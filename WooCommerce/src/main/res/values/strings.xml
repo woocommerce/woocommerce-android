@@ -4236,7 +4236,7 @@
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_filters_enabled_title">Filters • %d</string>
-    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_title_with_count">Filters (%s)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>
     <string name="bookings_filter_title_attendance_status">Attendance status</string>
