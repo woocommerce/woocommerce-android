@@ -28,7 +28,8 @@ class BookingFilterListViewModel @Inject constructor(
             onClose = ::onClose,
             onShowBookings = ::onShowBookings,
             openPage = ::onOpenPage,
-            onUpdateFilterOption = ::onUpdateFilterOption
+            onUpdateFilterOption = ::onUpdateFilterOption,
+            onClear = ::onClear
         )
     )
     val uiState = _uiState.asLiveData()
@@ -51,6 +52,9 @@ class BookingFilterListViewModel @Inject constructor(
                     .toSet()
             )
         }
+    }
+
+    private fun onClear() {
     }
 
     private fun getBookingFilter() {

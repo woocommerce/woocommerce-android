@@ -30,6 +30,7 @@ data class BookingFilterListUiState(
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
     val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
+    val onClear: () -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
@@ -61,6 +62,9 @@ data class BookingFilterListUiState(
         }
 
     val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
+
+    val showClearButton: Boolean
+        get() = currentPage == BookingFilterPage.List && updatedBookingFiltersCount > 0
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
