@@ -1,15 +1,14 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
-
 # Nodes with values to reuse in the pipeline.
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &test_collector_common_params
-      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-      format: "junit"
+    files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+    format: "junit"
 
 agents:
-  queue: "android"
+  queue: "android-staging"
 
 steps:
   - label: Gradle Wrapper Validation
@@ -23,7 +22,6 @@ steps:
   ########################################
   - group: "🕵️ Linters"
     steps:
-
       - label: "☢️ Danger - PR Check"
         command: danger
         key: danger
@@ -67,7 +65,6 @@ steps:
   ########################################
   - group: "🛠 Prototype Builds"
     steps:
-
       - label: "🛠 Prototype Build: Mobile App"
         command: ".buildkite/commands/prototype-build.sh WooCommerce"
         if: build.pull_request.id != null
@@ -81,13 +78,12 @@ steps:
   ########################################
   - group: "🔬 Tests"
     steps:
-
       - label: "Unit tests"
         key: unit-tests
         command: .buildkite/commands/run-unit-tests.sh
         plugins:
           - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
+          - $TEST_COLLECTOR:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
           - $CLAUDE_PLUGIN:
@@ -108,12 +104,11 @@ steps:
         command: .buildkite/commands/run-instrumented-tests.sh
         plugins:
           - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
+          - $TEST_COLLECTOR:
               <<: *test_collector_common_params
               api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
         artifact_paths:
           - "**/build/instrumented-tests/**/*"
-
 
   - label: "🐘 Populate Gradle build cache"
     command: .buildkite/commands/gradle-cache-build.sh
