@@ -1,6 +1,9 @@
 package com.woocommerce.android.e2e.screens.woopos
 
-class WooPosHomeScreen {
+import com.woocommerce.android.R
+import com.woocommerce.android.e2e.helpers.util.Screen
+
+class WooPosHomeScreen : Screen(R.id.point_of_sale) {
     fun waitForLoad(): WooPosHomeScreen {
         Thread.sleep(5000)
         return this
@@ -14,10 +17,5 @@ class WooPosHomeScreen {
     fun proceedToCheckout(): WooPosTotalsScreen {
         Thread.sleep(1000)
         return WooPosTotalsScreen()
-    }
-
-    inline fun <reified T> thenTakeScreenshot(name: String): T {
-        tools.fastlane.screengrab.Screengrab.screenshot(name)
-        return this as T
     }
 }
