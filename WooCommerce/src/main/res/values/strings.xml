@@ -4250,6 +4250,7 @@
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
     <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
+    <string name="bookings_filters_clear_button">CLEAR</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
