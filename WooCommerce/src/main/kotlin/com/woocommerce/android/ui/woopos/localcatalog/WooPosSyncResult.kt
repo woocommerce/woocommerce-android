@@ -11,7 +11,7 @@ sealed class PosLocalCatalogSyncResult {
     ) : PosLocalCatalogSyncResult()
 
     sealed class Failure(val error: String) : PosLocalCatalogSyncResult() {
-        class CatalogTooLarge(error: String, val totalPages: Int, val maxPages: Int) : Failure(error)
+        class CatalogTooLarge(error: String) : Failure(error)
         class UnexpectedError(error: String) : Failure(error)
     }
 }

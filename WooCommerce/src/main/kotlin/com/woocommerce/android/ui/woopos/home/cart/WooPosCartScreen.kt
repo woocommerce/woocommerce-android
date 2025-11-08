@@ -56,7 +56,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -89,6 +88,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
@@ -785,20 +785,17 @@ private fun LoadingItem(
                     .weight(1f)
                     .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
             ) {
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(22.dp)
-                        .fillMaxWidth(0.95f)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                WooPosShimmerText(
+                    text = item.name,
+                    style = WooPosTypography.BodySmall.style,
+                    fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .height(22.dp)
-                        .fillMaxWidth(0.25f)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+                WooPosShimmerText(
+                    text = "$10.00",
+                    style = WooPosTypography.BodySmall.style
                 )
             }
 
