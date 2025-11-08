@@ -7,6 +7,7 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -56,6 +57,7 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
     private var progressDialog: CustomProgressDialog? = null
     private var surveyCompleted: Boolean = false
     private val surveyWebViewClient = SurveyWebViewClient()
+    private var backPressedCallback: OnBackPressedCallback? = null
     private val arguments: FeedbackSurveyFragmentArgs by navArgs()
     private val feedbackContext by lazy {
         when (arguments.surveyType) {
@@ -77,6 +79,7 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
         _binding = FragmentFeedbackSurveyBinding.bind(view)
 
         setupToolbar(binding.toolbar)
+        setupBackPressHandling()
 
         configureWebView()
         savedInstanceState?.let {
@@ -93,6 +96,21 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
             findNavController().navigateUp()
         }
         activity?.invalidateOptionsMenu()
+    }
+
+    private fun setupBackPressHandling() {
+        backPressedCallback = object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (binding.webView.canGoBack()) {
+                    binding.webView.goBack()
+                } else {
+                    isEnabled = false
+                    requireActivity().onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        }.also {
+            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, it)
+        }
     }
 
     private fun getSurveyUrlFromArguments(): String = arguments.customUrl ?: arguments.surveyType.url
@@ -112,6 +130,8 @@ class FeedbackSurveyFragment : BaseFragment(R.layout.fragment_feedback_survey) {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        backPressedCallback?.remove()
+        backPressedCallback = null
         _binding = null
     }
 
