@@ -18,11 +18,13 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -38,9 +40,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WooPosProductsViewModelTest {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -562,6 +564,11 @@ class WooPosProductsViewModelTest {
             priceFormat = priceFormat,
             analyticsTracker = analyticsTracker,
             resourceProvider = resourceProvider,
+            dispatchers = CoroutineDispatchers(
+                UnconfinedTestDispatcher(),
+                UnconfinedTestDispatcher(),
+                UnconfinedTestDispatcher()
+            )
         )
     }
 }
