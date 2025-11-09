@@ -24,7 +24,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -565,9 +564,9 @@ class WooPosProductsViewModelTest {
             analyticsTracker = analyticsTracker,
             resourceProvider = resourceProvider,
             dispatchers = CoroutineDispatchers(
-                UnconfinedTestDispatcher(),
-                UnconfinedTestDispatcher(),
-                UnconfinedTestDispatcher()
+                coroutinesTestRule.testDispatcher,
+                coroutinesTestRule.testDispatcher,
+                coroutinesTestRule.testDispatcher
             )
         )
     }
