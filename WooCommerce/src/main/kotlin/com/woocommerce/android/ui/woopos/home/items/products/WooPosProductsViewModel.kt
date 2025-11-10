@@ -21,6 +21,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -39,6 +40,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
+    private val dispatchers: CoroutineDispatchers,
 ) : ViewModel() {
 
     private var loadMoreProductsJob: Job? = null
@@ -146,7 +148,7 @@ class WooPosProductsViewModel @Inject constructor(
     private fun loadProducts(forceRefreshProducts: Boolean) {
         loadProductsJob?.cancel()
         loadMoreProductsJob?.cancel()
-        loadProductsJob = viewModelScope.launch {
+        loadProductsJob = viewModelScope.launch(dispatchers.io) {
             _viewState.value = WooPosProductsViewState.Loading()
 
             dataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->

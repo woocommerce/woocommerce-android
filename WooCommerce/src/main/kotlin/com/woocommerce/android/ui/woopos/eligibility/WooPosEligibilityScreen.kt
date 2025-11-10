@@ -60,7 +60,7 @@ fun WooPosEligibilityScreen(
 ) {
     LaunchedEffect(retryState) {
         if (retryState is WooPosEligibilityRetryState.Eligible) {
-            onNavigationEvent(WooPosNavigationEvent.OpenHomeFromSplash)
+            onNavigationEvent(WooPosNavigationEvent.OpenSplashScreen)
         }
     }
 
