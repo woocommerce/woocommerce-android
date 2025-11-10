@@ -3,7 +3,9 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncStarted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -58,8 +60,11 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 }
                 is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
                     preferencesRepository.disablePeriodicSyncForSite(site.localId())
+                    trackSyncFailed(SyncType.FULL, result)
                 }
-                is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {}
+                is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
+                    trackSyncFailed(SyncType.FULL, result)
+                }
             }
         }
     }
@@ -82,8 +87,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
             maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
         ).also { result ->
-            if (result is PosLocalCatalogSyncResult.Success) {
-                trackSyncCompleted(site, SyncType.INCREMENTAL, result)
+            when (result) {
+                is PosLocalCatalogSyncResult.Success -> {
+                    trackSyncCompleted(site, SyncType.INCREMENTAL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure -> {
+                    trackSyncFailed(SyncType.INCREMENTAL, result)
+                }
             }
         }
     }
@@ -104,6 +114,25 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 totalProducts = totalProducts,
                 totalVariations = totalVariations,
                 syncDurationMs = result.syncDurationMs
+            )
+        )
+    }
+
+    private suspend fun trackSyncFailed(
+        syncType: SyncType,
+        result: PosLocalCatalogSyncResult.Failure
+    ) {
+        val errorType = when (result) {
+            is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> SyncErrorType.CATALOG_TOO_LARGE
+            is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
+        }
+
+        analyticsTracker.track(
+            LocalCatalogSyncFailed(
+                syncType = syncType,
+                errorContext = "WooPosLocalCatalogSyncRepository",
+                errorType = errorType,
+                errorDescription = result.error
             )
         )
     }

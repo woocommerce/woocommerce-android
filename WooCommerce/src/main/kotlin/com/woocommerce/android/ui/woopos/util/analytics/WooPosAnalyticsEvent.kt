@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import kotlin.reflect.KClass
 
@@ -429,6 +430,26 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                         "total_products" to totalProducts.toString(),
                         "total_variations" to totalVariations.toString(),
                         "sync_duration_ms" to syncDurationMs.toString()
+                    )
+                )
+            }
+        }
+
+        data class LocalCatalogSyncFailed(
+            val syncType: SyncType,
+            val errorContext: String,
+            val errorType: SyncErrorType,
+            val errorDescription: String
+        ) : Event() {
+            override val name: String = "local_catalog_sync_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
+                        "error_context" to errorContext,
+                        SyncErrorType.ERROR_TYPE to errorType.toString(),
+                        "error_description" to errorDescription
                     )
                 )
             }
