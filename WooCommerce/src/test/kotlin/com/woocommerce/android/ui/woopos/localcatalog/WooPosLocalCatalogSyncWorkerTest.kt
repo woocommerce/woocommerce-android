@@ -46,8 +46,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     )
     private val catalogTooLargeResponse = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
         error = "Catalog too large: 29 pages exceed maximum of 10 pages",
-        totalPages = 29,
-        maxPages = 10
     )
     private val incrementalSuccessResponse = PosLocalCatalogSyncResult.Success(
         productsSynced = 5,
@@ -333,8 +331,9 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     @Test
     fun `given sync overdue, when validateSyncStatus is called, then proceeds with sync`() = testBlocking {
         // GIVEN
+        val lastSyncTimestamp = CURRENT_TIME_MILLIS - (8 * 24 * 60 * 60 * 1000L) // 8 days ago
         whenever(syncStatusChecker.checkSyncRequirement())
-            .thenReturn(WooPosFullSyncRequirement.Overdue)
+            .thenReturn(WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTimestamp, isOverdue = true))
 
         val worker = createWorker()
 

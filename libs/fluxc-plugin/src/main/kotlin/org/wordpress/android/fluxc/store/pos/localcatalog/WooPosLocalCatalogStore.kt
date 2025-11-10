@@ -98,6 +98,31 @@ class WooPosLocalCatalogStore @Inject constructor(
         }
 
     /**
+     * Searches products in the local database by name, SKU, or global unique ID.
+     *
+     * @param [siteId] The local site ID
+     * @param [searchQuery] The search query string
+     * @param [pageSize] The number of results to return
+     * @param [offset] The offset for pagination
+     * @return Result containing the list of matching products or error
+     */
+    suspend fun searchProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        searchQuery: String,
+        pageSize: Int = DEFAULT_PAGE_SIZE,
+        offset: Int = 0
+    ): Result<List<WooPosProductEntity>> =
+        coroutineEngine.withDefaultContext(API, this, "searchProducts") {
+            val products = posProductDao.searchProducts(
+                localSiteId = siteId,
+                searchQuery = searchQuery,
+                limit = pageSize.coerceAtMost(MAX_PAGE_SIZE),
+                offset = offset
+            )
+            Result.success(products)
+        }
+
+    /**
      * Gets the count of variations in the local database for a given site.
      *
      * @param [siteId] The local site ID

@@ -4236,19 +4236,20 @@
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_filters_enabled_title">Filters • %d</string>
-    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_title_with_count">Filters (%s)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>
     <string name="bookings_filter_title_attendance_status">Attendance status</string>
     <string name="bookings_filter_title_payment_status">Payment status</string>
     <string name="bookings_filter_title_type">Booking type</string>
-    <string name="bookings_filter_customer_name">Customer name</string>
+    <string name="bookings_filter_customer">Customer</string>
     <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
+    <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>

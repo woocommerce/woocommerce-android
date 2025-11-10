@@ -35,15 +35,17 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
  *  bug https://issuetracker.google.com/issues/411868840 the insets are re-applied when the keyboard is shown.
  */
 @Composable
-fun OrderCustomerListScreen(
+fun CustomerListSelectionScreen(
     viewModel: CustomerListSelectionViewModel,
-    handleInsets: Boolean
+    handleInsets: Boolean,
+    showToolbar: Boolean = true
 ) {
     val state by viewModel.viewState.observeAsState()
     state?.let {
-        OrderCustomerListScreen(
+        CustomerListSelectionScreen(
             state = it,
             handleInsets = handleInsets,
+            showToolbar = showToolbar,
             onNavigateBack = viewModel::onNavigateBack,
             onAddCustomerClicked = viewModel::onAddCustomerClicked,
             onCustomerSelected = viewModel::onCustomerSelected,
@@ -55,9 +57,10 @@ fun OrderCustomerListScreen(
 }
 
 @Composable
-fun OrderCustomerListScreen(
+private fun CustomerListSelectionScreen(
     state: CustomerListViewState,
     handleInsets: Boolean,
+    showToolbar: Boolean,
     onNavigateBack: () -> Unit,
     onAddCustomerClicked: () -> Unit,
     onCustomerSelected: (WCCustomerModel) -> Unit,
@@ -68,12 +71,14 @@ fun OrderCustomerListScreen(
 ) {
     Scaffold(
         topBar = {
-            Toolbar(
-                title = stringResource(id = R.string.order_creation_add_customer),
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationButtonClick = onNavigateBack,
-                windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
-            )
+            if (showToolbar) {
+                Toolbar(
+                    title = stringResource(id = R.string.order_creation_add_customer),
+                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                    onNavigationButtonClick = onNavigateBack,
+                    windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
+                )
+            }
         },
         floatingActionButton = {
             if (state.showFab) CustomerListAddCustomerButton(onAddCustomerClicked)
@@ -111,7 +116,7 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
 @Composable
 fun OrderCustomerListScreenPreview() {
     WooThemeWithBackground {
-        OrderCustomerListScreen(
+        CustomerListSelectionScreen(
             state = CustomerListViewState(
                 searchHint = R.string.order_creation_customer_search_hint,
                 searchQuery = "",
@@ -171,6 +176,7 @@ fun OrderCustomerListScreenPreview() {
                 ),
             ),
             handleInsets = false,
+            showToolbar = true,
             onNavigateBack = {},
             onAddCustomerClicked = {},
             onCustomerSelected = {},
