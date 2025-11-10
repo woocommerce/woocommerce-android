@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -329,6 +330,84 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 
+    @Test
+    fun `when full sync starts, then tracks sync started event`() = testBlocking {
+        // GIVEN
+        givenFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncStarted>())
+    }
+
+    @Test
+    fun `when full sync completes successfully, then tracks sync completed event`() = testBlocking {
+        // GIVEN
+        givenFullSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted>())
+    }
+
+    @Test
+    fun `when full sync fails, then tracks sync failed event`() = testBlocking {
+        // GIVEN
+        val totalPages = 15
+        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
+    }
+
+    @Test
+    fun `when incremental sync starts, then tracks sync started event`() = testBlocking {
+        // GIVEN
+        givenIncrementalSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogIncremental(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncStarted>())
+    }
+
+    @Test
+    fun `when incremental sync completes successfully, then tracks sync completed event`() = testBlocking {
+        // GIVEN
+        givenIncrementalSyncSucceeds()
+
+        // WHEN
+        sut.syncLocalCatalogIncremental(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted>())
+    }
+
+    @Test
+    fun `when incremental sync fails, then tracks sync failed event`() = testBlocking {
+        // GIVEN
+        whenever(syncTimestampManager.getProductsLastSyncTimestamp()).thenReturn(123456L)
+        whenever(syncTimestampManager.formatTimestampForApi(any())).thenReturn("2024-01-01T12:00:00Z")
+        whenever(posSyncAction.syncCatalog(any(), any(), any(), any()))
+            .thenReturn(WooPosSyncResult.Failed.UnexpectedError("Network error"))
+
+        // WHEN
+        sut.syncLocalCatalogIncremental(site)
+
+        // THEN
+        verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
+    }
+
     private fun givenCatalogSizeAcceptable() = runBlocking {
         whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
             .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
@@ -342,5 +421,31 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private fun givenCatalogTooLarge(errorMessage: String) = runBlocking {
         whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
             .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge(errorMessage))
+    }
+
+    private suspend fun givenFullSyncSucceeds() {
+        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 150,
+                    variationsSynced = 50,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
+    }
+
+    private suspend fun givenIncrementalSyncSucceeds() {
+        whenever(syncTimestampManager.getProductsLastSyncTimestamp()).thenReturn(123456L)
+        whenever(syncTimestampManager.formatTimestampForApi(any())).thenReturn("2024-01-01T12:00:00Z")
+        whenever(posSyncAction.syncCatalog(any(), any(), any(), any()))
+            .thenReturn(
+                WooPosSyncResult.Success(
+                    productsSynced = 20,
+                    variationsSynced = 10,
+                    productsServerDate = "2024-01-01T12:00:00Z",
+                    variationsServerDate = "2024-01-01T12:00:00Z"
+                )
+            )
     }
 }
