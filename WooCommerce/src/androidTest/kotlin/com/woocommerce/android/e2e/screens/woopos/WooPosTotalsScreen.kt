@@ -4,10 +4,9 @@ import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.performClick
-import com.woocommerce.android.R
-import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.e2e.helpers.util.ComposeScreen
 
-class WooPosTotalsScreen : Screen(R.id.point_of_sale) {
+class WooPosTotalsScreen : ComposeScreen() {
     fun selectCashPayment(composeTestRule: ComposeTestRule): WooPosTotalsScreen {
         composeTestRule.waitUntil(timeoutMillis = 15000) {
             composeTestRule.onAllNodes(hasText("Cash payment") and hasClickAction())
