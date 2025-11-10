@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.ConnectionType
+import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -8,6 +11,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -32,9 +36,11 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
+    private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
+    private var analyticsTracker: WooPosAnalyticsTracker = mock()
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         dispatchers = CoroutineDispatchers(
             main = UnconfinedTestDispatcher(),
             io = UnconfinedTestDispatcher(),
@@ -50,6 +56,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             preferencesRepository = preferencesRepository,
             posLocalCatalogStore = posLocalCatalogStore,
             dateTimeProvider = dateTimeProvider,
+            analyticsTracker = analyticsTracker,
+            connectionTypeProvider = connectionTypeProvider,
         )
 
         site = SiteModel().apply {
@@ -59,6 +67,9 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         // Default: catalog size is acceptable
         givenCatalogSizeAcceptable()
+        whenever(connectionTypeProvider.getConnectionType()).thenReturn(ConnectionType.WIFI)
+        whenever(posLocalCatalogStore.getProductCount(any())).thenReturn(Result.success(9))
+        whenever(posLocalCatalogStore.getVariationCount(any())).thenReturn(Result.success(9))
     }
 
     @Test
