@@ -65,7 +65,10 @@ data class BookingFilterListUiState(
                 UiString.UiStringText(name)
             }
 
-            BookingFilterPage.BookingType -> UiString.UiStringRes(updatedBookingFilters.bookingType.titleRes)
+            BookingFilterPage.BookingType -> {
+                updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
+            }
+
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.AttendanceStatus,

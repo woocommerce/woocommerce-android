@@ -146,13 +146,13 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val initial = viewModel.uiState.getOrAwaitValue()
         initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         val changed = viewModel.uiState.getOrAwaitValue()
-        assertThat(changed.updatedBookingFilters.bookingType).isNotEqualTo(BookingType.DEFAULT)
+        assertThat(changed.updatedBookingFilters.bookingType).isNotEqualTo(null)
 
         // WHEN: clear is invoked
         changed.onClear()
 
         // THEN: updated filters become the default
         val afterClear = viewModel.uiState.getOrAwaitValue()
-        assertThat(afterClear.updatedBookingFilters.bookingType).isEqualTo(BookingType.DEFAULT)
+        assertThat(afterClear.updatedBookingFilters.bookingType).isEqualTo(null)
     }
 }

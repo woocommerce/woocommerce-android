@@ -48,7 +48,12 @@ class BookingFilterRepository @Inject constructor(
             // Booking type
             val bookingTypeKey = bookingTypeKey(siteId)
             val bookingType = bookingFilters.bookingType
-            prefs[bookingTypeKey] = bookingType.value.name
+            if (bookingType != null) {
+                prefs[bookingTypeKey] = bookingType.value.name
+            } else {
+                // Clear if not provided
+                prefs.remove(bookingTypeKey)
+            }
 
             // Customer
             val customerIdKey = customerIdKey(siteId)
@@ -84,12 +89,10 @@ class BookingFilterRepository @Inject constructor(
         }
     }
 
-    private fun Preferences.getBookingType(siteId: Int): BookingsFilterOption.BookingType {
-        val stored = this[bookingTypeKey(siteId)] ?: return BookingsFilterOption.BookingType.DEFAULT
-        val type = runCatching {
-            BookingsFilterOption.BookingType.Type.valueOf(stored)
-        }.getOrElse { BookingsFilterOption.BookingType.DEFAULT.value }
-        return BookingsFilterOption.BookingType(value = type)
+    private fun Preferences.getBookingType(siteId: Int): BookingsFilterOption.BookingType? {
+        val stored = this[bookingTypeKey(siteId)] ?: return null
+        val type = runCatching { BookingsFilterOption.BookingType.Type.valueOf(stored) }.getOrNull()
+        return type?.let { BookingsFilterOption.BookingType(value = it) }
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {

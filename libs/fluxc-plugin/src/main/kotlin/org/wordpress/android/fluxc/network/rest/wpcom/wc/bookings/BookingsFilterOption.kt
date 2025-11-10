@@ -19,10 +19,6 @@ sealed interface BookingsFilterOption {
 
     data class BookingType(val value: Type) : BookingsFilterOption {
         enum class Type { ANY, SERVICE, EVENT }
-
-        companion object {
-            val DEFAULT = BookingType(Type.ANY)
-        }
     }
 
     data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
@@ -43,7 +39,7 @@ data class BookingFilters(
     val teamMember: TeamMember? = null,
     val attendanceStatus: AttendanceStatus? = null,
     val paymentStatus: PaymentStatus? = null,
-    val bookingType: BookingType = BookingType.DEFAULT,
+    val bookingType: BookingType? = null,
     val location: Location? = null,
     val serviceEvent: ServiceEvent? = null,
 ) {
@@ -55,7 +51,7 @@ data class BookingFilters(
             if (teamMember != null) count++
             if (attendanceStatus != null) count++
             if (paymentStatus != null) count++
-            if (bookingType.value != BookingType.DEFAULT.value) count++
+            if (bookingType != null && bookingType.value != BookingType.Type.ANY) count++
             if (location != null) count++
             if (serviceEvent != null) count++
             return count
