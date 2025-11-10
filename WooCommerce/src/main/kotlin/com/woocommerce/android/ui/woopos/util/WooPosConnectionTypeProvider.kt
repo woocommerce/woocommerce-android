@@ -21,14 +21,13 @@ class WooPosConnectionTypeProvider @Inject constructor(
 ) {
     fun getConnectionType(): ConnectionType {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-            ?: return ConnectionType.UNKNOWN
-
-        val activeNetwork = connectivityManager.activeNetwork ?: return ConnectionType.UNKNOWN
-        val networkCapabilities = connectivityManager.getNetworkCapabilities(activeNetwork) ?: return ConnectionType.UNKNOWN
+        val networkCapabilities = connectivityManager
+            ?.activeNetwork
+            ?.let { connectivityManager.getNetworkCapabilities(it) }
 
         return when {
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> ConnectionType.WIFI
-            networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> ConnectionType.CELLULAR
+            networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true -> ConnectionType.WIFI
+            networkCapabilities?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) == true -> ConnectionType.CELLULAR
             else -> ConnectionType.UNKNOWN
         }
     }
