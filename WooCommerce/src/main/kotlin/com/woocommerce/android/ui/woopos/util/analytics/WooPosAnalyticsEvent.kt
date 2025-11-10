@@ -410,6 +410,30 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data class LocalCatalogSyncCompleted(
+            val syncType: SyncType,
+            val productsSynced: Int,
+            val variationsSynced: Int,
+            val totalProducts: Int,
+            val totalVariations: Int,
+            val syncDurationMs: Long
+        ) : Event() {
+            override val name: String = "local_catalog_sync_completed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
+                        "products_synced" to productsSynced.toString(),
+                        "variations_synced" to variationsSynced.toString(),
+                        "total_products" to totalProducts.toString(),
+                        "total_variations" to totalVariations.toString(),
+                        "sync_duration_ms" to syncDurationMs.toString()
+                    )
+                )
+            }
+        }
+
         data object OrderCreationSuccess : Event() {
             override val name: String = "order_creation_success"
         }
