@@ -679,6 +679,22 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data object LocalCatalogDownloadingScreenShown : Event() {
+            override val name: String = "local_catalog_downloading_screen_shown"
+        }
+
+        data object LocalCatalogDownloadingScreenExitPosTapped : Event() {
+            override val name: String = "local_catalog_downloading_screen_exit_pos_tapped"
+        }
+
+        data object LocalCatalogDownloadingFailedScreenShown : Event() {
+            override val name: String = "local_catalog_downloading_failed_screen_shown"
+        }
+
+        data object LocalCatalogDownloadingFailedRetryTapped : Event() {
+            override val name: String = "local_catalog_downloading_failed_retry_tapped"
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
