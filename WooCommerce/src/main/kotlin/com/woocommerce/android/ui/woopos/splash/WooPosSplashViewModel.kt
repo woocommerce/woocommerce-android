@@ -69,6 +69,7 @@ class WooPosSplashViewModel @Inject constructor(
         when (state) {
             WooPosPrepopulatingDataStatus.Syncing -> {
                 _state.value = WooPosSplashState.Syncing
+                analyticsTracker.track(LocalCatalogDownloadingScreenShown)
             }
 
             WooPosPrepopulatingDataStatus.Completed -> {
