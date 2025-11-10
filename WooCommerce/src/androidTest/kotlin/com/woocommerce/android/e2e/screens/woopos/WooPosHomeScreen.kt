@@ -29,9 +29,6 @@ class WooPosHomeScreen : ComposeScreen() {
         productNodes[2].performClick()
         Thread.sleep(200)
 
-        productNodes[5].performClick()
-        Thread.sleep(500)
-
         return this
     }
 
