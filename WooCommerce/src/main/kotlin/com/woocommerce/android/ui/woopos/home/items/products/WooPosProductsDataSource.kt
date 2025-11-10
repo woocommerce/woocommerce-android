@@ -13,6 +13,8 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.data.toWooPosVariation
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosSearchProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogVariationSyncResult
@@ -47,6 +49,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlin.system.measureTimeMillis
 
 @Singleton
 class WooPosProductsDataSource @Inject constructor(
@@ -57,8 +60,6 @@ class WooPosProductsDataSource @Inject constructor(
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
-        emit(WooPosPrepopulatingDataStatus.Syncing)
-
         val requirement = syncStatusChecker.checkSyncRequirement()
         when (requirement) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
@@ -80,6 +81,7 @@ class WooPosProductsDataSource @Inject constructor(
             }
 
             is WooPosFullSyncRequirement.BlockingRequired -> {
+                emit(WooPosPrepopulatingDataStatus.Syncing)
                 activeSource = localDbDataSource
                 localDbDataSource.prepopulateCache().fold(
                     onSuccess = {
@@ -150,6 +152,17 @@ class WooPosProductsDataSource @Inject constructor(
         return activeSource?.getVariationById(productId, variationId)
     }
 
+    fun searchProducts(query: String): Flow<SearchProductsResult> =
+        activeSource?.searchProducts(query)
+            ?: error("searchProducts - Data source not selected")
+
+    suspend fun loadMoreSearchResults(query: String): Result<List<WooPosProductModel>> =
+        activeSource?.loadMoreSearchResults(query)
+            ?: error("loadMoreSearchResults - Data source not selected")
+
+    val hasMoreSearchPages: Boolean
+        get() = activeSource?.hasMoreSearchPages ?: error("hasMoreSearchPages - Data source not selected")
+
     sealed class WooPosPrepopulatingDataStatus {
         data object Syncing : WooPosPrepopulatingDataStatus()
         data object Completed : WooPosPrepopulatingDataStatus()
@@ -164,6 +177,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val variationMapper: WooPosVariationMapper,
     private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
+    private val localCatalogSearchDataSource: WooPosProductsSearchInDbDataSource,
 ) : WooPosProductsDataSourceInterface {
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
@@ -254,6 +268,25 @@ class WooPosProductsInDbDataSource @Inject constructor(
             Result.success(PosLocalCatalogVariationSyncResult(syncResult))
         } ?: Result.failure(IllegalStateException("No site selected"))
     }
+
+    override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
+        val result = localCatalogSearchDataSource.searchProducts(query)
+
+        result.fold(
+            onSuccess = { products ->
+                emit(SearchProductsResult.Local(products))
+            },
+            onFailure = { error ->
+                emit(SearchProductsResult.Remote(Result.failure(error), 0L))
+            }
+        )
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun loadMoreSearchResults(query: String): Result<List<WooPosProductModel>> =
+        localCatalogSearchDataSource.loadMore(query)
+
+    override val hasMoreSearchPages: Boolean
+        get() = localCatalogSearchDataSource.hasMorePages
 }
 
 class WooPosProductsRemoteDataSource @Inject constructor(
@@ -268,6 +301,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
     private val variationCache: WooPosVariationsLRUCache,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
     private val variationMapper: WooPosVariationMapper,
+    private val searchProductsDataSource: WooPosSearchProductsDataSource,
 ) : WooPosProductsDataSourceInterface {
     private val canLoadMore = AtomicBoolean(false)
     private val offset = AtomicInteger(0)
@@ -527,6 +561,27 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         val variationsResult = fetchFirstVariationsPage(productId, forceRefresh = true).last()
         Result.success(variationsResult)
     }
+
+    override fun searchProducts(query: String): Flow<SearchProductsResult> = flow {
+        val localProducts = searchProductsDataSource.searchLocalProducts(query)
+        if (localProducts.isNotEmpty()) {
+            emit(SearchProductsResult.Local(localProducts))
+        }
+
+        var remoteResult: Result<List<WooPosProductModel>>
+        val searchTimeMillis = measureTimeMillis {
+            remoteResult = searchProductsDataSource.searchRemoteProducts(query)
+        }
+        emit(SearchProductsResult.Remote(remoteResult, searchTimeMillis))
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun loadMoreSearchResults(query: String): Result<List<WooPosProductModel>> =
+        withContext(Dispatchers.IO) {
+            searchProductsDataSource.loadMore(query)
+        }
+
+    override val hasMoreSearchPages: Boolean
+        get() = searchProductsDataSource.hasMorePages
 
     companion object {
         private const val NORMAL_PAGE_SIZE = 25

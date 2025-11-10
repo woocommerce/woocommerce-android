@@ -5,6 +5,7 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
+import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
@@ -24,10 +25,11 @@ data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters? = null,
     val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
+    val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
-    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {}
+    val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
 ) {
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
@@ -42,6 +44,23 @@ data class BookingFilterListUiState(
         get() = newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
             initialBookingFilters?.bookingType
         ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
+
+    val updatedBookingFilters: BookingFilters
+        get() {
+            val initial = initialBookingFilters ?: BookingFilters()
+            return BookingFilters(
+                dateRange = newBookingFilters.getOrDefault(initial.dateRange),
+                customer = newBookingFilters.getOrDefault(initial.customer),
+                teamMember = newBookingFilters.getOrDefault(initial.teamMember),
+                attendanceStatus = newBookingFilters.getOrDefault(initial.attendanceStatus),
+                paymentStatus = newBookingFilters.getOrDefault(initial.paymentStatus),
+                bookingType = newBookingFilters.getOrDefault(initial.bookingType),
+                location = newBookingFilters.getOrDefault(initial.location),
+                serviceEvent = newBookingFilters.getOrDefault(initial.serviceEvent),
+            )
+        }
+
+    val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
@@ -71,6 +90,18 @@ data class BookingFilterListUiState(
             BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
         }
+
+    val title: UiString
+        get() = if (currentPage != BookingFilterPage.List) {
+            UiString.UiStringRes(currentPage.titleRes)
+        } else if (updatedBookingFiltersCount > 0) {
+            UiString.UiStringRes(
+                stringRes = R.string.bookings_filters_title_with_count,
+                params = listOf(UiString.UiStringText(updatedBookingFiltersCount.toString()))
+            )
+        } else {
+            UiString.UiStringRes(R.string.bookings_filters_default_title)
+        }
 }
 
 val BookingFilterPage.titleRes: Int
@@ -79,7 +110,7 @@ val BookingFilterPage.titleRes: Int
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
-        BookingFilterPage.Customer -> R.string.bookings_filter_customer_name
+        BookingFilterPage.Customer -> R.string.bookings_filter_customer
         BookingFilterPage.Location -> R.string.bookings_filter_location
         BookingFilterPage.DateTime -> R.string.bookings_filter_title_date
         BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service_event

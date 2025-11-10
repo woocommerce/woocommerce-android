@@ -130,7 +130,8 @@ fun BookingDetailsScreen(
                                             onSelect = { status ->
                                                 viewState.bookingUiState.onAttendanceStatusSelected(status)
                                             },
-                                            onDismiss = { showAttendanceSheet.value = false }
+                                            onDismiss = { showAttendanceSheet.value = false },
+                                            selected = viewState.bookingUiState.bookingSummary.attendanceStatus
                                         )
                                     }
                                 }
@@ -153,7 +154,9 @@ private fun BookingDetailsContent(
 ) {
     BookingSummary(
         model = booking.bookingSummary,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
     )
     BookingAppointmentDetails(
         model = booking.bookingsAppointmentDetails,
