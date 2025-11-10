@@ -140,7 +140,7 @@ private fun FiltersNavHost(
             TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
-            BookingTypeFilterRoute(initialType = state.initialBookingFilters.bookingType) { type ->
+            BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
         }
