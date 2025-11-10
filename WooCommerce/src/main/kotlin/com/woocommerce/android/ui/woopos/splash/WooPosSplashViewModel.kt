@@ -78,6 +78,9 @@ class WooPosSplashViewModel @Inject constructor(
             }
 
             is WooPosPrepopulatingDataStatus.Failed -> {
+                if (_state.value is WooPosSplashState.Syncing) {
+                    analyticsTracker.track(LocalCatalogDownloadingFailedScreenShown)
+                }
                 _state.value = WooPosSplashState.SyncFailed(state.error)
             }
         }
