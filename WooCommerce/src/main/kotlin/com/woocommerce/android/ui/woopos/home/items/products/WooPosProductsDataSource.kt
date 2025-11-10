@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepo
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,6 +59,13 @@ class WooPosProductsDataSource @Inject constructor(
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) {
     private var activeSource: WooPosProductsDataSourceInterface? = null
+
+    fun getCurrentSyncStrategy(): WooPosAnalyticsEventConstant.SyncStrategy {
+        return when (activeSource) {
+            localDbDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.LOCAL_CATALOG
+            else -> WooPosAnalyticsEventConstant.SyncStrategy.REMOTE
+        }
+    }
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
         val requirement = syncStatusChecker.checkSyncRequirement()

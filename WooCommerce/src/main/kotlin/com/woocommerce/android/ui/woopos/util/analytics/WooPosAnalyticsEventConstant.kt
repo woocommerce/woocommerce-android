@@ -83,4 +83,17 @@ object WooPosAnalyticsEventConstant {
             const val CART_SOURCE = "source"
         }
     }
+
+    enum class SyncStrategy(val value: String) {
+        REMOTE("remote"),
+        LOCAL_CATALOG("local_catalog");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SYNC_STRATEGY = "sync_strategy"
+        }
+    }
 }

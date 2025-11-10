@@ -380,8 +380,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object Loaded : Event() {
+        data class Loaded(val syncStrategy: WooPosAnalyticsEventConstant.SyncStrategy) : Event() {
             override val name: String = "loaded"
+
+            init {
+                addProperties(
+                    mapOf(
+                        WooPosAnalyticsEventConstant.SyncStrategy.SYNC_STRATEGY to syncStrategy.toString()
+                    )
+                )
+            }
         }
 
         data object OrderCreationSuccess : Event() {
