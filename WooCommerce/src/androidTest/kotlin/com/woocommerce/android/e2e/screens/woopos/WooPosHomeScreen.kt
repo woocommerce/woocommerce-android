@@ -14,35 +14,24 @@ class WooPosHomeScreen : ComposeScreen() {
     }
 
     fun addProductsToCart(composeTestRule: ComposeTestRule): WooPosHomeScreen {
-        println("WooPosTest: Starting addProductsToCart")
-
-        println("WooPosTest: Waiting for product items to appear...")
         composeTestRule.waitUntil(timeoutMillis = 10000) {
-            val found = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
-            println("WooPosTest: Wait loop - products found: $found")
-            found
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
         }
-        println("WooPosTest: Wait completed - products should be available")
 
         val productNodes = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM)
         val nodes = productNodes.fetchSemanticsNodes()
-        println("WooPosTest: Found ${nodes.size} product nodes")
 
         require(nodes.isNotEmpty()) { "No clickable products found in the product list" }
 
-        println("WooPosTest: Clicking product at index 0")
         productNodes[0].performClick()
         Thread.sleep(200)
 
-        println("WooPosTest: Clicking product at index 2")
         productNodes[2].performClick()
         Thread.sleep(200)
 
-        println("WooPosTest: Clicking product at index 5")
         productNodes[5].performClick()
         Thread.sleep(500)
 
-        println("WooPosTest: addProductsToCart completed")
         return this
     }
 
