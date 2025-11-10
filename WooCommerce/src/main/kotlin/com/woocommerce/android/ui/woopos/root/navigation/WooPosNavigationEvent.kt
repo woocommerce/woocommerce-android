@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.root.navigation
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 sealed class WooPosNavigationEvent {
+    data object OpenSplashScreen : WooPosNavigationEvent()
     data object ExitPosClicked : WooPosNavigationEvent()
     data object BackFromSplashClicked : WooPosNavigationEvent()
     data object OpenHomeFromSplash : WooPosNavigationEvent()
