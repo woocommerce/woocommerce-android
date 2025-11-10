@@ -17,7 +17,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -225,7 +224,7 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `given local catalog sync fails, when vm created, then tracks LocalCatalogDownloadingFailedScreenShown`() = runTest {
+    fun `given local catalog sync fails, when vm created, then tracks SplashScreenErrorShown`() = runTest {
         // GIVEN
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Syncing, WooPosPrepopulatingDataStatus.Failed("Sync error"))
@@ -235,21 +234,7 @@ class WooPosSplashViewModelTest {
         createSut()
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown)
-    }
-
-    @Test
-    fun `given legacy sync fails, when vm created, then does NOT track LocalCatalogDownloadingFailedScreenShown`() = runTest {
-        // GIVEN
-        whenever(productsDataSource.prepopulateCache()).thenReturn(
-            flowOf(WooPosPrepopulatingDataStatus.Failed("Sync error"))
-        )
-
-        // WHEN
-        createSut()
-
-        // THEN
-        verify(analyticsTracker, never()).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.SplashScreenErrorShown)
     }
 
     @Test

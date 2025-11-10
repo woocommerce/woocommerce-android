@@ -9,9 +9,9 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenShown
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SplashScreenErrorShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SplashScreenRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -91,9 +91,7 @@ class WooPosSplashViewModel @Inject constructor(
             }
 
             is WooPosPrepopulatingDataStatus.Failed -> {
-                if (_state.value is WooPosSplashState.Syncing) {
-                    analyticsTracker.track(LocalCatalogDownloadingFailedScreenShown)
-                }
+                analyticsTracker.track(SplashScreenErrorShown)
                 _state.value = WooPosSplashState.SyncFailed(state.error)
             }
         }
