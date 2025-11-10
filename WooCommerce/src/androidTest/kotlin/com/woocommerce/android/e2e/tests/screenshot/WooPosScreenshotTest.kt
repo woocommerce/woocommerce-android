@@ -1,18 +1,19 @@
+@file:Suppress("DEPRECATION")
 package com.woocommerce.android.e2e.tests.screenshot
 
-import android.Manifest
-import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.test.ext.junit.rules.ActivityScenarioRule
-import androidx.test.rule.GrantPermissionRule
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
+import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosHomeScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosPaymentSuccessScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosTotalsScreen
-import com.woocommerce.android.ui.main.MainActivity
+import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -20,7 +21,6 @@ import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
-import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @HiltAndroidTest
 class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
@@ -28,32 +28,16 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val initRule = InitializationRule()
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
 
     @get:Rule(order = 2)
-    val composeTestRule = createComposeRule()
+    val initRule = InitializationRule()
 
     @get:Rule(order = 3)
-    val localeTestRule = LocaleTestRule()
+    var activityRule = ActivityTestRule(LoginActivity::class.java)
 
     @get:Rule(order = 4)
-    var locationPermissionRule: GrantPermissionRule? = GrantPermissionRule
-        .grant(Manifest.permission.ACCESS_FINE_LOCATION)
-
-    @get:Rule(order = 5)
-    var bluetoothConnectPermissionRule: GrantPermissionRule? = GrantPermissionRule
-        .grant(Manifest.permission.BLUETOOTH_CONNECT)
-
-    @get:Rule(order = 6)
-    var bluetoothScanPermissionRule: GrantPermissionRule? = GrantPermissionRule
-        .grant(Manifest.permission.BLUETOOTH_SCAN)
-
-    @get:Rule(order = 7)
-    var notificationsPermissionRule: GrantPermissionRule? = GrantPermissionRule
-        .grant(Manifest.permission.POST_NOTIFICATIONS)
-
-    @get:Rule(order = 8)
-    var activityRule = ActivityScenarioRule(MainActivity::class.java)
+    var retryTestRule = RetryTestRule()
 
     @Before
     fun setUp() {
@@ -66,7 +50,7 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         Screengrab.setDefaultScreenshotStrategy(UiAutomatorScreenshotStrategy())
 
         WelcomeScreen
-            .logoutIfNeeded(composeTestRule)
+            .skipCarouselIfNeeded()
             .selectLogin()
             .proceedWith(BuildConfig.SCREENSHOTS_URL)
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)

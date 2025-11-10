@@ -1,11 +1,12 @@
 package com.woocommerce.android.e2e.screens.woopos
 
-import androidx.compose.ui.test.hasClickAction
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.junit4.ComposeTestRule
+import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import com.woocommerce.android.R
 import com.woocommerce.android.e2e.helpers.util.Screen
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 class WooPosHomeScreen : Screen(R.id.point_of_sale) {
     fun waitForLoad(): WooPosHomeScreen {
@@ -15,15 +16,17 @@ class WooPosHomeScreen : Screen(R.id.point_of_sale) {
 
     fun addProductsToCart(composeTestRule: ComposeTestRule): WooPosHomeScreen {
         composeTestRule.waitUntil(timeoutMillis = 10000) {
-            composeTestRule.onAllNodes(hasClickAction()).fetchSemanticsNodes().isNotEmpty()
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
         }
 
-        val clickableNodes = composeTestRule.onAllNodes(hasClickAction())
-        val nodes = clickableNodes.fetchSemanticsNodes()
+        val productNodes = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM)
+        val nodes = productNodes.fetchSemanticsNodes()
 
         require(nodes.isNotEmpty()) { "No clickable products found in the product list" }
 
-        clickableNodes[0].performClick()
+        productNodes[0].performClick()
+        productNodes[2].performClick()
+        productNodes[5].performClick()
         Thread.sleep(500)
 
         return this
@@ -31,11 +34,11 @@ class WooPosHomeScreen : Screen(R.id.point_of_sale) {
 
     fun proceedToCheckout(composeTestRule: ComposeTestRule): WooPosTotalsScreen {
         composeTestRule.waitUntil(timeoutMillis = 10000) {
-            composeTestRule.onAllNodes(hasText("Check out") and hasClickAction())
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.CHECKOUT_BUTTON)
                 .fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeTestRule.onNode(hasText("Check out") and hasClickAction())
+        composeTestRule.onNodeWithTag(WooPosTestTags.CHECKOUT_BUTTON)
             .performClick()
 
         Thread.sleep(1000)
