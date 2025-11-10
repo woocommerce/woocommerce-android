@@ -692,8 +692,8 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_downloading_failed_screen_shown"
         }
 
-        data object LocalCatalogDownloadingFailedRetryTapped : Event() {
-            override val name: String = "local_catalog_downloading_failed_retry_tapped"
+        data object SplashScreenRetryTapped : Event() {
+            override val name: String = "splash_screen_retry_tapped"
         }
     }
 

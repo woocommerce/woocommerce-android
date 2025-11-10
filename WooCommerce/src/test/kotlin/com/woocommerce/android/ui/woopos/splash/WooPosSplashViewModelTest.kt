@@ -253,7 +253,7 @@ class WooPosSplashViewModelTest {
     }
 
     @Test
-    fun `when retry sync is clicked, then tracks LocalCatalogDownloadingFailedRetryTapped`() = runTest {
+    fun `when retry sync is clicked, then tracks SplashScreenRetryTapped`() = runTest {
         // GIVEN
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Failed(""))
@@ -268,7 +268,7 @@ class WooPosSplashViewModelTest {
         sut.onRetrySync()
 
         // THEN
-        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedRetryTapped)
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.SplashScreenRetryTapped)
     }
 
     @Test

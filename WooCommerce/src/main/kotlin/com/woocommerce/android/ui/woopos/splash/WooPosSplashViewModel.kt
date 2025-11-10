@@ -9,10 +9,10 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.Loaded
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenShown
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SplashScreenRetryTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,7 +62,7 @@ class WooPosSplashViewModel @Inject constructor(
 
     fun onRetrySync() {
         viewModelScope.launch {
-            analyticsTracker.track(LocalCatalogDownloadingFailedRetryTapped)
+            analyticsTracker.track(SplashScreenRetryTapped)
             val retryStartTime = System.currentTimeMillis()
             productsDataSource.prepopulateCache().collect(syncStateCollector(retryStartTime))
         }
