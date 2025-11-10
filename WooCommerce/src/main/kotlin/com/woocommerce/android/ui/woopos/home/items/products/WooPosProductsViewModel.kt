@@ -148,7 +148,7 @@ class WooPosProductsViewModel @Inject constructor(
     private fun loadProducts(forceRefreshProducts: Boolean) {
         loadProductsJob?.cancel()
         loadMoreProductsJob?.cancel()
-        loadProductsJob = viewModelScope.launch(dispatchers.computation) {
+        loadProductsJob = viewModelScope.launch(dispatchers.io) {
             _viewState.value = WooPosProductsViewState.Loading()
 
             dataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->
