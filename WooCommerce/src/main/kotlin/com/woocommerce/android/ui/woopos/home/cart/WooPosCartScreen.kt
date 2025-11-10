@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -98,6 +99,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -180,6 +182,7 @@ private fun WooPosCartScreen(
                 }
         ) {
             WooPosButton(
+                modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
                 text = stringResource(R.string.woopos_checkout_button),
                 onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
                 state = when (state.checkoutButtonState) {
