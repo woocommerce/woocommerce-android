@@ -20,7 +20,7 @@ class BookingTypeFilterViewModel @AssistedInject constructor(
 
     private val _uiState = MutableStateFlow(
         BookingTypeFilterUiState(
-            selectedType = initialType ?: BookingType(BookingType.Type.ANY),
+            selectedType = initialType ?: BookingType(null),
             onTypeSelected = ::onTypeSelected
         )
     )
