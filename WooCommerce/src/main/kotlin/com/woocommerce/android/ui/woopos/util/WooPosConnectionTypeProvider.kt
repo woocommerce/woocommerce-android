@@ -7,12 +7,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
-enum class ConnectionType(val value: String) {
-    WIFI("wifi"),
-    CELLULAR("cellular"),
-    UNKNOWN("unknown");
-
-    override fun toString(): String = value
+enum class ConnectionType {
+    WIFI,
+    CELLULAR,
+    UNKNOWN
 }
 
 @Singleton

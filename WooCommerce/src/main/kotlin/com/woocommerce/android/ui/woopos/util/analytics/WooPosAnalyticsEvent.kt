@@ -44,21 +44,27 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object BackToCartTapped : Event() {
             override val name: String = "back_to_cart_tapped"
         }
+
         data object BackToCheckoutFromCash : Event() {
             override val name: String = "back_to_checkout_from_cash"
         }
+
         data object CashCollectPaymentSuccess : Event() {
             override val name: String = "cash_collect_payment_success"
         }
+
         data object CheckoutCashPaymentTapped : Event() {
             override val name: String = "checkout_cash_payment_tapped"
         }
+
         data object CashPaymentTapped : Event() {
             override val name: String = "cash_payment_tapped"
         }
+
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
         }
+
         data class CheckoutTapped(val productsInCart: Int, val couponsInCart: Int) : Event() {
             override val name: String = "checkout_tapped"
 
@@ -71,15 +77,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
         }
+
         data object CreateNewOrderTapped : Event() {
             override val name: String = "create_new_order_tapped"
         }
+
         data object EmailReceiptTapped : Event() {
             override val name: String = "receipt_email_tapped"
         }
+
         data object EmailReceiptSendTapped : Event() {
             override val name: String = "receipt_email_send_tapped"
         }
@@ -95,6 +105,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
         data class EmailReceiptSendSuccess(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_success"
 
@@ -123,12 +134,15 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
         }
+
         data object ExitConfirmed : Event() {
             override val name: String = "exit_confirmed"
         }
+
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
+
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
         }
@@ -317,6 +331,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosCartItemViewState.Coupon,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
+
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                 },
@@ -405,7 +420,11 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         SyncType.SYNC_TYPE to syncType.toString(),
-                        "connection_type" to connectionType.toString()
+                        "connection_type" to when (connectionType) {
+                            ConnectionType.WIFI -> "wifi"
+                            ConnectionType.CELLULAR -> "cellular"
+                            ConnectionType.UNKNOWN -> "unknown"
+                        }
                     )
                 )
             }
