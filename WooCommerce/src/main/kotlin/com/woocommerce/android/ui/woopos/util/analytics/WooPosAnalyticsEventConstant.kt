@@ -96,4 +96,17 @@ object WooPosAnalyticsEventConstant {
             const val SYNC_STRATEGY = "sync_strategy"
         }
     }
+
+    enum class SyncType(val value: String) {
+        FULL("full"),
+        INCREMENTAL("incremental");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SYNC_TYPE = "sync_type"
+        }
+    }
 }

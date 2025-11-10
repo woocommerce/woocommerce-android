@@ -1,6 +1,10 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncStarted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -21,6 +25,8 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val logger: WooPosLogWrapper,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val dateTimeProvider: DateTimeProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val connectionTypeProvider: WooPosConnectionTypeProvider,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -31,6 +37,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
+        analyticsTracker.track(
+            LocalCatalogSyncStarted(
+                syncType = SyncType.FULL,
+                connectionType = connectionTypeProvider.getConnectionType()
+            )
+        )
+
         return@withContext performSync(
             site = site,
             pageSize = PAGE_SIZE,
@@ -47,6 +60,13 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
+        analyticsTracker.track(
+            LocalCatalogSyncStarted(
+                syncType = SyncType.INCREMENTAL,
+                connectionType = connectionTypeProvider.getConnectionType()
+            )
+        )
+
         val lastSyncTimestamp = syncTimestampManager.getProductsLastSyncTimestamp() ?: 0L
         val modifiedAfterGmt = syncTimestampManager.formatTimestampForApi(lastSyncTimestamp)
 
