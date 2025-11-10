@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -16,6 +17,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import kotlin.test.Test
@@ -206,6 +208,83 @@ class WooPosSplashViewModelTest {
 
         // THEN
         assertThat(sut.state.value).isEqualTo(WooPosSplashState.SyncFailed("Network error"))
+    }
+
+    @Test
+    fun `given local catalog enabled and sync required, when sync starts, then tracks LocalCatalogDownloadingScreenShown`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Syncing)
+        )
+
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenShown)
+    }
+
+    @Test
+    fun `given local catalog sync fails, when vm created, then tracks LocalCatalogDownloadingFailedScreenShown`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Syncing, WooPosPrepopulatingDataStatus.Failed("Sync error"))
+        )
+
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown)
+    }
+
+    @Test
+    fun `given legacy sync fails, when vm created, then does NOT track LocalCatalogDownloadingFailedScreenShown`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Failed("Sync error"))
+        )
+
+        // WHEN
+        createSut()
+
+        // THEN
+        verify(analyticsTracker, never()).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedScreenShown)
+    }
+
+    @Test
+    fun `when retry sync is clicked, then tracks LocalCatalogDownloadingFailedRetryTapped`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Failed(""))
+        )
+        val sut = createSut()
+
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Completed)
+        )
+
+        // WHEN
+        sut.onRetrySync()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingFailedRetryTapped)
+    }
+
+    @Test
+    fun `given state is Syncing, when exit POS is clicked, then tracks LocalCatalogDownloadingScreenExitPosTapped`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.prepopulateCache()).thenReturn(
+            flowOf(WooPosPrepopulatingDataStatus.Syncing)
+        )
+        val sut = createSut()
+        assertThat(sut.state.value).isEqualTo(WooPosSplashState.Syncing)
+
+        // WHEN
+        sut.onExitPosClicked()
+
+        // THEN
+        verify(analyticsTracker).track(WooPosAnalyticsEvent.Event.LocalCatalogDownloadingScreenExitPosTapped)
     }
 
     private fun createSut(): WooPosSplashViewModel {
