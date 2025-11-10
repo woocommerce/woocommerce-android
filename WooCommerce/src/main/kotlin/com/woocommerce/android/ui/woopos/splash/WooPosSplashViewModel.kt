@@ -58,6 +58,7 @@ class WooPosSplashViewModel @Inject constructor(
 
     fun onRetrySync() {
         viewModelScope.launch {
+            analyticsTracker.track(LocalCatalogDownloadingFailedRetryTapped)
             val retryStartTime = System.currentTimeMillis()
             productsDataSource.prepopulateCache().collect(syncStateCollector(retryStartTime))
         }
