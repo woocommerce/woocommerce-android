@@ -57,7 +57,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Skipping sync on POS home: Local catalog not supported for site")
+        verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
         verifyNoInteractions(localCatalogSyncRepository)
     }
 
@@ -111,7 +111,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
         verify(wooPosLogWrapper).d(
-            "Sync on POS home completed successfully: 15 products, 8 variations synced in 2500ms"
+            "Sync on POS product list completed successfully: 15 products, 8 variations synced in 2500ms"
         )
     }
 
