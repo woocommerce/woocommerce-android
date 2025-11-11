@@ -8,12 +8,13 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.PaymentStatus
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.ServiceEvent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.TeamMember
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Instant
 
 sealed interface BookingsFilterOption {
     object TeamMember : BookingsFilterOption
 
-    object AttendanceStatus : BookingsFilterOption
+    data class AttendanceStatus(val value: BookingEntity.AttendanceStatus?) : BookingsFilterOption
 
     object PaymentStatus : BookingsFilterOption
 
