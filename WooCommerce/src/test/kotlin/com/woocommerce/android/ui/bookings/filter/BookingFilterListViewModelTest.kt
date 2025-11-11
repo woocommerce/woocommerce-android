@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -13,7 +15,9 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
@@ -154,5 +158,22 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: updated filters become the default
         val afterClear = viewModel.uiState.getOrAwaitValue()
         assertThat(afterClear.updatedBookingFilters.bookingType).isEqualTo(null)
+    }
+
+    @Test
+    fun `when attendance status changed and leaving page, then root shows selected value subtitle`() {
+        // GIVEN: open Attendance Status page
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onAttendancePage = viewModel.uiState.getOrAwaitValue()
+
+        // WHEN: select a status and leave the page
+        onAttendancePage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Booked))
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: back on the root list and the Attendance Status row shows the selected value
+        val after = viewModel.uiState.getOrAwaitValue()
+        val attendanceRow = after.items.first { it.title == BookingFilterPage.AttendanceStatus.titleRes }
+        assertThat(attendanceRow.subtitle).isEqualTo(UiStringRes(R.string.booking_attendance_status_booked))
     }
 }
