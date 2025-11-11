@@ -349,6 +349,7 @@ dependencies {
         exclude group: 'asm', module: 'asm'
         exclude group: 'org.json', module: 'json'
     }
+    androidTestImplementation(libs.apache.http.client.android)
     constraints {
         androidTestImplementation(libs.wiremock) {
             because("newer versions of WireMock use Java APIs not available on Android")
