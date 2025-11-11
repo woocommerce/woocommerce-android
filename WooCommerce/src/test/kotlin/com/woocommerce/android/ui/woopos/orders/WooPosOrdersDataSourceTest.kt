@@ -219,8 +219,9 @@ class WooPosOrdersDataSourceTest {
         val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 11)
         val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 22)
         val entities = listOf(e1 to emptyList<WCMetaData>(), e2 to emptyList())
-        val mapped1 = OrderTestUtils.generateTestOrder()
-        val mapped2 = OrderTestUtils.generateTestOrder()
+
+        val mapped1 = OrderTestUtils.generateTestOrder(orderId = 11L)
+        val mapped2 = OrderTestUtils.generateTestOrder(orderId = 22L)
         whenever(orderMapper.toAppModel(e1)).thenReturn(mapped1)
         whenever(orderMapper.toAppModel(e2)).thenReturn(mapped2)
 
