@@ -109,7 +109,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
         verify(wooPosLogWrapper).d(
             "Sync on POS home completed successfully: 15 products, 8 variations synced in 2500ms"
         )
