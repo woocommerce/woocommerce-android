@@ -1,6 +1,13 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncStarted
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -21,6 +28,8 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val logger: WooPosLogWrapper,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val dateTimeProvider: DateTimeProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val connectionTypeProvider: WooPosConnectionTypeProvider,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -31,22 +40,43 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
+        analyticsTracker.track(
+            LocalCatalogSyncStarted(
+                syncType = SyncType.FULL,
+                connectionType = connectionTypeProvider.getConnectionType()
+            )
+        )
+
         return@withContext performSync(
             site = site,
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_FULL_SYNC,
             maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
-        ).also {
-            if (it is PosLocalCatalogSyncResult.Success) {
-                syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
-            }
-            if (it is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
-                preferencesRepository.disablePeriodicSyncForSite(site.localId())
+        ).also { result ->
+            when (result) {
+                is PosLocalCatalogSyncResult.Success -> {
+                    syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
+                    trackSyncCompleted(site, SyncType.FULL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
+                    preferencesRepository.disablePeriodicSyncForSite(site.localId())
+                    trackSyncFailed(SyncType.FULL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
+                    trackSyncFailed(SyncType.FULL, result)
+                }
             }
         }
     }
 
     suspend fun syncLocalCatalogIncremental(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
+        analyticsTracker.track(
+            LocalCatalogSyncStarted(
+                syncType = SyncType.INCREMENTAL,
+                connectionType = connectionTypeProvider.getConnectionType()
+            )
+        )
+
         val lastSyncTimestamp = syncTimestampManager.getProductsLastSyncTimestamp() ?: 0L
         val modifiedAfterGmt = syncTimestampManager.formatTimestampForApi(lastSyncTimestamp)
 
@@ -56,6 +86,54 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             pageSize = PAGE_SIZE,
             maxPages = MAX_PAGES_PER_INCREMENTAL_SYNC,
             maxTotalItems = MAX_TOTAL_ITEMS_INCREMENTAL_SYNC
+        ).also { result ->
+            when (result) {
+                is PosLocalCatalogSyncResult.Success -> {
+                    trackSyncCompleted(site, SyncType.INCREMENTAL, result)
+                }
+                is PosLocalCatalogSyncResult.Failure -> {
+                    trackSyncFailed(SyncType.INCREMENTAL, result)
+                }
+            }
+        }
+    }
+
+    private suspend fun trackSyncCompleted(
+        site: SiteModel,
+        syncType: SyncType,
+        result: PosLocalCatalogSyncResult.Success
+    ) {
+        val totalProducts = posLocalCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
+        val totalVariations = posLocalCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
+
+        analyticsTracker.track(
+            LocalCatalogSyncCompleted(
+                syncType = syncType,
+                productsSynced = result.productsSynced,
+                variationsSynced = result.variationsSynced,
+                totalProducts = totalProducts,
+                totalVariations = totalVariations,
+                syncDurationMs = result.syncDurationMs
+            )
+        )
+    }
+
+    private suspend fun trackSyncFailed(
+        syncType: SyncType,
+        result: PosLocalCatalogSyncResult.Failure
+    ) {
+        val errorType = when (result) {
+            is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> SyncErrorType.CATALOG_TOO_LARGE
+            is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
+        }
+
+        analyticsTracker.track(
+            LocalCatalogSyncFailed(
+                syncType = syncType,
+                errorContext = "WooPosLocalCatalogSyncRepository",
+                errorType = errorType,
+                errorDescription = result.error
+            )
         )
     }
 
