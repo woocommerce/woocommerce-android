@@ -170,7 +170,7 @@ private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineIte
             style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest,
             modifier = Modifier.constrainAs(qtyText) {
-                bottom.linkTo(image.bottom)
+                top.linkTo(nameText.bottom, margin = WooPosSpacing.XSmall.value)
                 start.linkTo(nameText.start)
                 end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
                 width = Dimension.fillToConstraints
