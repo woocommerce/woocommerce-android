@@ -111,7 +111,8 @@ class BookingFilterRepository @Inject constructor(
     private fun Preferences.getAttendanceStatus(siteId: Int): BookingsFilterOption.AttendanceStatus? {
         val stored = this[attendanceStatusKey(siteId)] ?: return null
         val value = runCatching { BookingEntity.AttendanceStatus.fromKey(stored) }.getOrNull()
-        return value?.let { BookingsFilterOption.AttendanceStatus(value = it) }
+        return value?.takeIf { it !is BookingEntity.AttendanceStatus.Unknown }
+            ?.let { BookingsFilterOption.AttendanceStatus(value = it) }
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {
