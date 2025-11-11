@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.filter.attendancestatus.titleRes
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
 import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
@@ -61,20 +62,23 @@ data class BookingFilterListUiState(
 
     val BookingFilterPage.filterValue: UiString?
         get() = when (this) {
-            BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
-                UiString.UiStringText(name)
-            }
-
             BookingFilterPage.BookingType -> {
                 updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
 
+            BookingFilterPage.AttendanceStatus -> {
+                updatedBookingFilters.attendanceStatus?.titleRes?.let { UiString.UiStringRes(it) }
+            }
+
+            BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
+                UiString.UiStringText(name)
+            }
+
+            BookingFilterPage.TeamMember,
+            BookingFilterPage.ServiceEvent,
+            BookingFilterPage.PaymentStatus,
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
-            BookingFilterPage.AttendanceStatus,
-            BookingFilterPage.PaymentStatus,
-            BookingFilterPage.ServiceEvent,
-            BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
         }
 
