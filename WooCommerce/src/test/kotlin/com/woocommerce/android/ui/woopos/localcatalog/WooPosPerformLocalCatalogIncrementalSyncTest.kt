@@ -53,7 +53,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
@@ -105,7 +105,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
@@ -175,9 +175,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN & THEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
 
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
         advanceUntilIdle()

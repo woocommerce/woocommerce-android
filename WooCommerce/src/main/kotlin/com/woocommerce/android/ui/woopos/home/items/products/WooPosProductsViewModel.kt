@@ -64,7 +64,7 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         loadProducts(forceRefreshProducts = false)
-        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
     }
 
     private fun listenEventsFromParent() {
