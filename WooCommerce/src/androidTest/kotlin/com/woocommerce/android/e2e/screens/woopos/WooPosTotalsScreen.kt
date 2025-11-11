@@ -17,7 +17,12 @@ class WooPosTotalsScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
             .performClick()
 
-        Thread.sleep(1000)
+        composeTestRule.waitUntil(timeoutMillis = 10000) {
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.COMPLETE_PAYMENT_BUTTON)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+
+        Thread.sleep(4000)
         return this
     }
 
@@ -30,7 +35,7 @@ class WooPosTotalsScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.COMPLETE_PAYMENT_BUTTON)
             .performClick()
 
-        Thread.sleep(2000)
+        Thread.sleep(10000)
         return WooPosPaymentSuccessScreen()
     }
 }

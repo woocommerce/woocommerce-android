@@ -56,16 +56,22 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
             .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
 
-        TabNavComponent()
+        val homeScreen = TabNavComponent()
             .gotoPosScreen()
             .waitForLoad()
             .addProductsToCart(composeTestRule)
-            .thenTakeScreenshot<WooPosHomeScreen>("pos-home")
-            .proceedToCheckout(composeTestRule)
-            .thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
-            .selectCashPayment(composeTestRule)
-            .completePayment(composeTestRule)
-            .thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
+
+        homeScreen.thenTakeScreenshot<WooPosHomeScreen>("pos-home")
+
+        val totalsScreen = homeScreen.proceedToCheckout(composeTestRule)
+
+        totalsScreen.thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
+
+        totalsScreen.selectCashPayment(composeTestRule)
+
+        val successScreen = totalsScreen.completePayment(composeTestRule)
+
+        successScreen.thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
     }
 
     private fun cleanStatusBar() {

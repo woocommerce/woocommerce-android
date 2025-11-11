@@ -41,7 +41,12 @@ class WooPosHomeScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.CHECKOUT_BUTTON)
             .performClick()
 
-        Thread.sleep(1000)
+        composeTestRule.waitUntil(timeoutMillis = 15000) {
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+                .fetchSemanticsNodes().isNotEmpty()
+        }
+
+        Thread.sleep(5000)
         return WooPosTotalsScreen()
     }
 }

@@ -1,0 +1,142 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "matches": "/wc/v3/orders/2201/&_method=get"
+      },
+      "query": {
+        "matches": ".*billing.*coupon_lines.*currency.*order_key.*customer_note.*date_created_gmt.*"
+      },
+      "locale": {
+        "matches": "(.*)"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "data": {
+        "id": 2201,
+        "status": "auto-draft",
+        "currency": "USD",
+        "prices_include_tax": false,
+        "discount_total": "0.00",
+        "shipping_total": "0.00",
+        "total": "210.00",
+        "total_tax": "0.00",
+        "order_key": "wc_order_itGmODLV25QAx",
+        "billing": {
+          "first_name": "",
+          "last_name": "",
+          "company": "",
+          "address_1": "",
+          "address_2": "",
+          "city": "",
+          "state": "",
+          "postcode": "",
+          "country": "",
+          "email": "",
+          "phone": ""
+        },
+        "shipping": {
+          "first_name": "",
+          "last_name": "",
+          "company": "",
+          "address_1": "",
+          "address_2": "",
+          "city": "",
+          "state": "",
+          "postcode": "",
+          "country": "",
+          "phone": ""
+        },
+        "payment_method": "",
+        "payment_method_title": "",
+        "customer_note": "",
+        "number": "2201",
+        "meta_data": [],
+        "line_items": [
+          {
+            "id": 34,
+            "name": "Akoya Pearl shades",
+            "product_id": 2129,
+            "variation_id": 0,
+            "quantity": 1,
+            "tax_class": "",
+            "subtotal": "110.00",
+            "subtotal_tax": "0.00",
+            "total": "110.00",
+            "total_tax": "0.00",
+            "taxes": [],
+            "meta_data": [],
+            "sku": "",
+            "price": 110,
+            "image": {
+              "id": "2127",
+              "src": "https:\/\/i0.wp.com\/automatticwidgets.wpcomstaging.com\/wp-content\/uploads\/2020\/01\/Mask-Group-2.png?fit=200%2C201&ssl=1"
+            },
+            "parent_name": null
+          },
+          {
+            "id": 35,
+            "name": "Colorado shades",
+            "product_id": 2131,
+            "variation_id": 0,
+            "quantity": 1,
+            "tax_class": "",
+            "subtotal": "100.00",
+            "subtotal_tax": "0.00",
+            "total": "100.00",
+            "total_tax": "0.00",
+            "taxes": [],
+            "meta_data": [],
+            "sku": "",
+            "price": 100,
+            "image": {
+              "id": "2130",
+              "src": "https:\/\/i0.wp.com\/automatticwidgets.wpcomstaging.com\/wp-content\/uploads\/2020\/01\/Mask-Group-2.png?fit=200%2C201&ssl=1"
+            },
+            "parent_name": null
+          }
+        ],
+        "tax_lines": [],
+        "shipping_lines": [],
+        "fee_lines": [],
+        "coupon_lines": [],
+        "refunds": [],
+        "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2201/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
+        "is_editable": true,
+        "needs_payment": true,
+        "needs_processing": false,
+        "shipping_tax": "0.00",
+        "created_via": "pos-rest-api",
+        "date_created": "{{#assign 'customformat'}}yyyy-MM-dd'T'HH:mm:ss{{/assign}}{{fnow offset='-10 minutes' format=customformat}}",
+        "date_modified": "{{fnow offset='-10 minutes' format=customformat}}",
+        "date_created_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
+        "date_modified_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
+        "date_paid_gmt": null,
+        "_links": {
+          "self": [
+            {
+              "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2201"
+            }
+          ],
+          "collection": [
+            {
+              "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders"
+            }
+          ]
+        }
+      }
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}
