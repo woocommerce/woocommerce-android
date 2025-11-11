@@ -1,13 +1,17 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
@@ -37,24 +41,35 @@ class WooPosOrdersDataSourceTest {
     private val selectedSite: SelectedSite = mock { on { get() }.thenReturn(siteModel) }
     private val orderMapper: OrderMapper = mock()
     private val ordersCache: WooPosOrdersInMemoryCache = mock()
+    private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
 
     private val sut = WooPosOrdersDataSource(
         restClient = orderRestClient,
         selectedSite = selectedSite,
         orderMapper = orderMapper,
-        ordersCache = ordersCache
+        ordersCache = ordersCache,
+        retrieveOrderRefunds = retrieveOrderRefunds
     )
+
+    @Before
+    fun setUp() {
+        runBlocking {
+            whenever(retrieveOrderRefunds.invoke(any<Order>())).thenReturn(Result.success(emptyList()))
+        }
+    }
 
     @Test
     fun `when cache has data and fetch succeeds, then emit SuccessCache then SuccessRemote and store mapped in cache`() = runTest {
-        val cachedOrder = OrderTestUtils.generateTestOrder()
+        // GIVEN
+        val cachedOrder = OrderTestUtils.generateTestOrder(orderId = 1L)
         whenever(ordersCache.getAll()).thenReturn(listOf(cachedOrder))
 
-        val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 11)
-        val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 22)
+        val e1 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 11L)
+        val e2 = OrderEntity(localSiteId = LocalOrRemoteId.LocalId(1), 22L)
         val entities = listOf(e1 to emptyList<WCMetaData>(), e2 to emptyList())
-        val mapped1 = OrderTestUtils.generateTestOrder()
-        val mapped2 = OrderTestUtils.generateTestOrder()
+
+        val mapped1 = OrderTestUtils.generateTestOrder(orderId = 11L)
+        val mapped2 = OrderTestUtils.generateTestOrder(orderId = 22L)
         whenever(orderMapper.toAppModel(e1)).thenReturn(mapped1)
         whenever(orderMapper.toAppModel(e2)).thenReturn(mapped2)
 
@@ -82,10 +97,10 @@ class WooPosOrdersDataSourceTest {
         assertThat(emissions).hasSize(2)
 
         val first = emissions[0] as LoadOrdersResult.SuccessCache
-        assertThat(first.orders).containsExactly(cachedOrder)
+        assertThat(first.ordersWithRefunds.keys).containsExactly(cachedOrder)
 
         val second = emissions[1] as LoadOrdersResult.SuccessRemote
-        assertThat(second.orders).containsExactly(mapped1, mapped2)
+        assertThat(second.ordersWithRefunds.keys).containsExactly(mapped1, mapped2)
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
@@ -135,7 +150,7 @@ class WooPosOrdersDataSourceTest {
         assertThat(emissions).hasSize(2)
 
         val first = emissions[0] as LoadOrdersResult.SuccessCache
-        assertThat(first.orders).containsExactly(cachedOrder)
+        assertThat(first.ordersWithRefunds.keys).containsExactly(cachedOrder)
 
         val second = emissions[1] as LoadOrdersResult.Error
         assertThat(second.message).isEqualTo("[GENERIC_ERROR] generic error")
@@ -180,7 +195,7 @@ class WooPosOrdersDataSourceTest {
         assertThat(emissions).hasSize(1)
 
         val first = emissions[0] as LoadOrdersResult.SuccessRemote
-        assertThat(first.orders).isEmpty()
+        assertThat(first.ordersWithRefunds).isEmpty()
 
         verify(selectedSite).get()
         verify(ordersCache).getAll()
@@ -232,7 +247,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(SearchOrdersResult.Success::class.java)
         val success = result as SearchOrdersResult.Success
-        assertThat(success.orders).containsExactly(mapped1, mapped2)
+        assertThat(success.ordersWithRefunds.keys).containsExactly(mapped1, mapped2)
 
         verify(orderRestClient).fetchOrders(
             site = siteModel,
@@ -307,7 +322,7 @@ class WooPosOrdersDataSourceTest {
         // THEN
         assertThat(result).isInstanceOf(SearchOrdersResult.Success::class.java)
         val success = result as SearchOrdersResult.Success
-        assertThat(success.orders).isEmpty()
+        assertThat(success.ordersWithRefunds).isEmpty()
     }
 
     @Test
@@ -329,7 +344,7 @@ class WooPosOrdersDataSourceTest {
 
         val emissions = sut.loadOrders().toList(mutableListOf())
         val remote = emissions.last() as LoadOrdersResult.SuccessRemote
-        assertThat(remote.orders.map { it.id }).containsExactly(1L, 2L)
+        assertThat(remote.ordersWithRefunds.keys.map { it.id }).containsExactly(1L, 2L)
         assertThat(sut.hasMorePages).isTrue
     }
 
@@ -362,7 +377,8 @@ class WooPosOrdersDataSourceTest {
 
         val result = sut.loadMore()
         assertThat(result.isSuccess).isTrue
-        assertThat(result.getOrThrow().map { it.id }).containsExactly(3L, 4L)
+        val ordersWithRefunds = result.getOrThrow()
+        assertThat(ordersWithRefunds.keys.map { it.id }).containsExactly(3L, 4L)
         assertThat(sut.hasMorePages).isFalse
     }
 
@@ -456,7 +472,8 @@ class WooPosOrdersDataSourceTest {
 
         // THEN
         assertThat(result.isSuccess).isTrue
-        assertThat(result.getOrThrow().map { it.id }).containsExactly(33L, 44L)
+        val ordersWithRefunds = result.getOrThrow()
+        assertThat(ordersWithRefunds.keys.map { it.id }).containsExactly(33L, 44L)
         assertThat(sut.hasMorePages).isFalse
         verify(orderRestClient).fetchOrders(
             site = siteModel,

@@ -12,6 +12,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
@@ -70,11 +73,13 @@ class WooPosRetrieveOrderRefundsTest {
         val result = sut.invoke(order)
 
         // THEN
-        assertThat(result).hasSize(2)
-        assertThat(result[0].id).isEqualTo(1L)
-        assertThat(result[0].amount).isEqualTo(BigDecimal.TEN)
-        assertThat(result[1].id).isEqualTo(2L)
-        assertThat(result[1].amount).isEqualTo(BigDecimal.valueOf(5))
+        assertThat(result.isSuccess).isTrue()
+        val refunds = result.getOrThrow()
+        assertThat(refunds).hasSize(2)
+        assertThat(refunds[0].id).isEqualTo(1L)
+        assertThat(refunds[0].amount).isEqualTo(BigDecimal.TEN)
+        assertThat(refunds[1].id).isEqualTo(2L)
+        assertThat(refunds[1].amount).isEqualTo(BigDecimal.valueOf(5))
     }
 
     @Test
@@ -104,9 +109,11 @@ class WooPosRetrieveOrderRefundsTest {
         val result = sut.invoke(order)
 
         // THEN
-        assertThat(result).hasSize(1)
-        assertThat(result[0].id).isEqualTo(10L)
-        assertThat(result[0].amount).isEqualTo(BigDecimal.ONE)
+        assertThat(result.isSuccess).isTrue()
+        val refunds = result.getOrThrow()
+        assertThat(refunds).hasSize(1)
+        assertThat(refunds[0].id).isEqualTo(10L)
+        assertThat(refunds[0].amount).isEqualTo(BigDecimal.ONE)
         verify(refundStore).getAllRefunds(site, order.id)
         verify(refundStore).fetchAllRefunds(site, order.id)
     }
@@ -120,7 +127,8 @@ class WooPosRetrieveOrderRefundsTest {
         val result = sut.invoke(order)
 
         // THEN
-        assertThat(result).isEmpty()
+        assertThat(result.isSuccess).isTrue()
+        assertThat(result.getOrThrow()).isEmpty()
         verify(refundStore, org.mockito.kotlin.never()).getAllRefunds(any(), any())
     }
 
@@ -138,5 +146,21 @@ class WooPosRetrieveOrderRefundsTest {
 
         // THEN
         verify(refundStore).getAllRefunds(site, order.id)
+    }
+
+    @Test
+    fun `given fetch refunds fails, when invoke called, then returns failure result`() = runTest {
+        // GIVEN
+        val order = OrderTestUtils.generateTestOrder(orderId = 789L, refundTotal = BigDecimal.ONE)
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        )
+
+        // WHEN
+        val result = sut.invoke(order)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
     }
 }
