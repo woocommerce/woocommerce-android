@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Instant
 import javax.inject.Inject
 
@@ -25,6 +26,7 @@ class BookingFilterRepository @Inject constructor(
 ) {
     // Keys are built per-site to keep selections isolated across sites
     private fun bookingTypeKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_booking_type")
+    private fun attendanceStatusKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_attendanceStatus")
     private fun customerIdKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_customer_id")
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
@@ -36,6 +38,7 @@ class BookingFilterRepository @Inject constructor(
         dataStore.data.map { prefs ->
             BookingFilters(
                 bookingType = prefs.getBookingType(siteId),
+                attendanceStatus = prefs.getAttendanceStatus(siteId),
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId)
             )
@@ -53,6 +56,16 @@ class BookingFilterRepository @Inject constructor(
             } else {
                 // Clear if not provided
                 prefs.remove(bookingTypeKey)
+            }
+
+            // Attendance status
+            val attendanceStatusKey = attendanceStatusKey(siteId)
+            val attendanceStatusValue = bookingFilters.attendanceStatus?.value
+            if (attendanceStatusValue != null) {
+                prefs[attendanceStatusKey] = attendanceStatusValue.key
+            } else {
+                // Clear if not provided
+                prefs.remove(attendanceStatusKey)
             }
 
             // Customer
@@ -91,8 +104,14 @@ class BookingFilterRepository @Inject constructor(
 
     private fun Preferences.getBookingType(siteId: Int): BookingsFilterOption.BookingType? {
         val stored = this[bookingTypeKey(siteId)] ?: return null
-        val type = runCatching { BookingsFilterOption.BookingType.Type.valueOf(stored) }.getOrNull()
-        return type?.let { BookingsFilterOption.BookingType(value = it) }
+        val value = runCatching { BookingsFilterOption.BookingType.Type.valueOf(stored) }.getOrNull()
+        return value?.let { BookingsFilterOption.BookingType(value = it) }
+    }
+
+    private fun Preferences.getAttendanceStatus(siteId: Int): BookingsFilterOption.AttendanceStatus? {
+        val stored = this[attendanceStatusKey(siteId)] ?: return null
+        val value = runCatching { BookingEntity.AttendanceStatus.fromKey(stored) }.getOrNull()
+        return value?.let { BookingsFilterOption.AttendanceStatus(value = it) }
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {
