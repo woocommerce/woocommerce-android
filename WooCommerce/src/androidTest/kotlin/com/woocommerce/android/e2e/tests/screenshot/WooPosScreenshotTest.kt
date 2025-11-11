@@ -1,4 +1,5 @@
 @file:Suppress("DEPRECATION")
+
 package com.woocommerce.android.e2e.tests.screenshot
 
 import androidx.activity.ComponentActivity
@@ -60,22 +61,20 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
             .gotoPosScreen()
             .waitForLoad()
             .addProductsToCart(composeTestRule)
-
-        homeScreen.thenTakeScreenshot<WooPosHomeScreen>("pos-home")
+            .thenTakeScreenshot<WooPosHomeScreen>("pos-home")
 
         val totalsScreen = homeScreen.proceedToCheckout(composeTestRule)
+            .thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
 
-        totalsScreen.thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
+        val cashPaymentScreen = totalsScreen.selectCashPayment(composeTestRule)
 
-        totalsScreen.selectCashPayment(composeTestRule)
-
-        val successScreen = totalsScreen.completePayment(composeTestRule)
-
-        successScreen.thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
+        cashPaymentScreen.completePayment(composeTestRule)
+            .thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
     }
 
     private fun cleanStatusBar() {
-        fun getSystemUiDemoIntent() = android.content.Intent("com.android.systemui.demo").setPackage("com.android.systemui")
+        fun getSystemUiDemoIntent() =
+            android.content.Intent("com.android.systemui.demo").setPackage("com.android.systemui")
         getSystemUiDemoIntent()
             .putExtra("command", "clock")
             .putExtra("hhmm", "1230").apply {

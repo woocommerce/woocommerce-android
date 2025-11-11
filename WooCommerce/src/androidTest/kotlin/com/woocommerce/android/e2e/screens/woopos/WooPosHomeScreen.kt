@@ -9,12 +9,12 @@ import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 class WooPosHomeScreen : ComposeScreen() {
     fun waitForLoad(): WooPosHomeScreen {
-        Thread.sleep(3000)
+        Thread.sleep(1000)
         return this
     }
 
     fun addProductsToCart(composeTestRule: ComposeTestRule): WooPosHomeScreen {
-        composeTestRule.waitUntil(timeoutMillis = 10000) {
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
             composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
         }
 
@@ -41,12 +41,7 @@ class WooPosHomeScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.CHECKOUT_BUTTON)
             .performClick()
 
-        composeTestRule.waitUntil(timeoutMillis = 15000) {
-            composeTestRule.onAllNodesWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
-                .fetchSemanticsNodes().isNotEmpty()
-        }
-
-        Thread.sleep(5000)
+        Thread.sleep(2000)
         return WooPosTotalsScreen()
     }
 }

@@ -7,16 +7,17 @@ import androidx.compose.ui.test.performClick
 import com.woocommerce.android.e2e.helpers.util.ComposeScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
-class WooPosTotalsScreen : ComposeScreen() {
-    fun selectCashPayment(composeTestRule: ComposeTestRule): WooPosCashPaymentScreen {
+class WooPosCashPaymentScreen : ComposeScreen() {
+    fun completePayment(composeTestRule: ComposeTestRule): WooPosPaymentSuccessScreen {
         composeTestRule.waitUntil(timeoutMillis = 5000) {
-            composeTestRule.onAllNodesWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.COMPLETE_PAYMENT_BUTTON)
                 .fetchSemanticsNodes().isNotEmpty()
         }
 
-        composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
+        composeTestRule.onNodeWithTag(WooPosTestTags.COMPLETE_PAYMENT_BUTTON)
             .performClick()
-        Thread.sleep(2000)
-        return WooPosCashPaymentScreen()
+
+        Thread.sleep(8000)
+        return WooPosPaymentSuccessScreen()
     }
 }
