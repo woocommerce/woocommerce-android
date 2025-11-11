@@ -69,7 +69,7 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         val cashPaymentScreen = totalsScreen.selectCashPayment(composeTestRule)
 
         cashPaymentScreen.completePayment(composeTestRule)
-            .waitForLoad(composeTestRule)
+            .waitForScreen(composeTestRule)
             .thenTakeScreenshot<WooPosPaymentSuccessScreen>("pos-payment-success")
     }
 

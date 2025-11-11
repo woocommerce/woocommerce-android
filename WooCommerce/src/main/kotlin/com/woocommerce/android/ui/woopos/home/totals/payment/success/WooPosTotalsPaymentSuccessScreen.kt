@@ -49,11 +49,21 @@ fun WooPosPaymentSuccessScreen(
     onReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
 ) {
-    val savedAnimationStage = rememberSaveable { mutableStateOf(AnimationStage.INITIAL) }
+    val isInstrumentedTest = remember {
+        try {
+            Class.forName("androidx.test.espresso.Espresso")
+            true
+        } catch (_: ClassNotFoundException) {
+            false
+        }
+    }
+
+    val initialStage = if (isInstrumentedTest) AnimationStage.FINISHED else AnimationStage.INITIAL
+    val savedAnimationStage = rememberSaveable { mutableStateOf(initialStage) }
     val animationStateFlow = remember { MutableStateFlow(savedAnimationStage.value) }
 
     LaunchedEffect(Unit) {
-        if (animationStateFlow.value != AnimationStage.FINISHED) {
+        if (!isInstrumentedTest && animationStateFlow.value != AnimationStage.FINISHED) {
             startAnimations(animationStateFlow)
         }
     }
@@ -189,6 +199,7 @@ private fun CheckMarkIcon(
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
             modifier = Modifier
                 .size(iconSize)
+                .testTag(WooPosTestTags.SUCCESS_CHECKMARK_ICON)
         )
     }
 }
