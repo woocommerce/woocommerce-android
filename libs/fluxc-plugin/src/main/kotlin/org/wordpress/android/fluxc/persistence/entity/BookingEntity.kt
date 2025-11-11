@@ -95,12 +95,16 @@ data class BookingEntity(
             override val key = "booked"
         }
 
+        data object CheckedIn : AttendanceStatus {
+            override val key = "checked-in"
+        }
+
         data object NoShow : AttendanceStatus {
             override val key = "no-show"
         }
 
-        data object CheckedIn : AttendanceStatus {
-            override val key = "checked-in"
+        data object Cancelled : AttendanceStatus {
+            override val key = "cancelled"
         }
 
         data class Unknown(override val key: String) : AttendanceStatus
@@ -109,8 +113,9 @@ data class BookingEntity(
             fun fromKey(key: String): AttendanceStatus {
                 return when (key) {
                     Booked.key -> Booked
-                    NoShow.key -> NoShow
                     CheckedIn.key -> CheckedIn
+                    NoShow.key -> NoShow
+                    Cancelled.key -> Cancelled
                     else -> Unknown(key)
                 }
             }
