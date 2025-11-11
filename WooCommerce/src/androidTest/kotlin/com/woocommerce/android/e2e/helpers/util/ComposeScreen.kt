@@ -29,7 +29,6 @@ open class ComposeScreen {
         screenshotCount += 1
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
-        idleFor(2000)
         Screengrab.screenshot(screenshotName)
         return this as T
     }
@@ -53,12 +52,5 @@ open class ComposeScreen {
                 }
             }
         return mCurrentActivity
-    }
-
-    fun idleFor(milliseconds: Int) {
-        try {
-            Thread.sleep(milliseconds.toLong())
-        } catch (ex: Exception) {
-        }
     }
 }

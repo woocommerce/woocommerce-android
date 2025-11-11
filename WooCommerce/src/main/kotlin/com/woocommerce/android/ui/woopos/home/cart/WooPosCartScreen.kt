@@ -420,6 +420,7 @@ private fun CartToolbar(
                 color = WooPosTheme.colors.onSurfaceVariantLowest,
                 maxLines = 1,
                 modifier = Modifier
+                    .testTag(WooPosTestTags.CART_ITEMS_COUNT)
                     .constrainAs(itemsCount) {
                         end.linkTo(
                             if (toolbar.isClearAllButtonVisible) {

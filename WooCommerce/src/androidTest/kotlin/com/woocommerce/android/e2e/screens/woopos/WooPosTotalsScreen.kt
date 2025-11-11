@@ -8,15 +8,17 @@ import com.woocommerce.android.e2e.helpers.util.ComposeScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 class WooPosTotalsScreen : ComposeScreen() {
-    fun selectCashPayment(composeTestRule: ComposeTestRule): WooPosCashPaymentScreen {
-        composeTestRule.waitUntil(timeoutMillis = 5000) {
+    fun waitForLoad(composeTestRule: ComposeTestRule): WooPosTotalsScreen {
+        composeTestRule.waitUntil(timeoutMillis = 10000) {
             composeTestRule.onAllNodesWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
                 .fetchSemanticsNodes().isNotEmpty()
         }
+        return this
+    }
 
+    fun selectCashPayment(composeTestRule: ComposeTestRule): WooPosCashPaymentScreen {
         composeTestRule.onNodeWithTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
             .performClick()
-        Thread.sleep(2000)
         return WooPosCashPaymentScreen()
     }
 }

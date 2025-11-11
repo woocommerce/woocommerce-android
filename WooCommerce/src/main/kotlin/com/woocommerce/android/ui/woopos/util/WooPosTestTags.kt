@@ -7,4 +7,5 @@ object WooPosTestTags {
     const val COMPLETE_PAYMENT_BUTTON = "woo_pos_complete_payment_button"
     const val NEW_ORDER_BUTTON = "woo_pos_new_order_button"
     const val SUCCESS_CHECKMARK_ICON = "woo_pos_success_checkmark_icon"
+    const val CART_ITEMS_COUNT = "woo_pos_cart_items_count"
 }

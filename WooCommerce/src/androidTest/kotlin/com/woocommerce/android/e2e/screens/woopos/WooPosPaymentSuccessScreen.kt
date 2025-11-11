@@ -11,7 +11,6 @@ class WooPosPaymentSuccessScreen : ComposeScreen() {
             composeTestRule.onAllNodesWithTag(WooPosTestTags.NEW_ORDER_BUTTON)
                 .fetchSemanticsNodes().isNotEmpty()
         }
-        Thread.sleep(1000)
         return this
     }
 }

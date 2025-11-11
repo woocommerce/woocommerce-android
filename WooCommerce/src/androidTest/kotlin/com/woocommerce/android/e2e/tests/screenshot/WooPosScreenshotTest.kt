@@ -59,11 +59,12 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
 
         val homeScreen = TabNavComponent()
             .gotoPosScreen()
-            .waitForLoad()
+            .waitForLoad(composeTestRule)
             .addProductsToCart(composeTestRule)
             .thenTakeScreenshot<WooPosHomeScreen>("pos-home")
 
         val totalsScreen = homeScreen.proceedToCheckout(composeTestRule)
+            .waitForLoad(composeTestRule)
             .thenTakeScreenshot<WooPosTotalsScreen>("pos-totals")
 
         val cashPaymentScreen = totalsScreen.selectCashPayment(composeTestRule)

@@ -8,26 +8,25 @@ import com.woocommerce.android.e2e.helpers.util.ComposeScreen
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 class WooPosHomeScreen : ComposeScreen() {
-    fun waitForLoad(): WooPosHomeScreen {
-        Thread.sleep(1000)
+    fun waitForLoad(composeTestRule: ComposeTestRule): WooPosHomeScreen {
+        composeTestRule.waitUntil(timeoutMillis = 5000) {
+            composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
+        }
         return this
     }
 
     fun addProductsToCart(composeTestRule: ComposeTestRule): WooPosHomeScreen {
-        composeTestRule.waitUntil(timeoutMillis = 5000) {
-            composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM).fetchSemanticsNodes().isNotEmpty()
-        }
+        val firstProductNodes = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM)
+        val firstNodes = firstProductNodes.fetchSemanticsNodes()
+        require(firstNodes.isNotEmpty()) { "No clickable products found in the product list" }
+        firstProductNodes[0].performClick()
 
-        val productNodes = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM)
-        val nodes = productNodes.fetchSemanticsNodes()
+        val secondProductNodes = composeTestRule.onAllNodesWithTag(WooPosTestTags.PRODUCT_ITEM)
+        val secondNodes = secondProductNodes.fetchSemanticsNodes()
+        require(secondNodes.size > 2) { "Not enough products in the list" }
+        secondProductNodes[2].performClick()
 
-        require(nodes.isNotEmpty()) { "No clickable products found in the product list" }
-
-        productNodes[0].performClick()
-        Thread.sleep(200)
-
-        productNodes[2].performClick()
-        Thread.sleep(200)
+        composeTestRule.waitForIdle()
 
         return this
     }
@@ -41,7 +40,6 @@ class WooPosHomeScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.CHECKOUT_BUTTON)
             .performClick()
 
-        Thread.sleep(2000)
         return WooPosTotalsScreen()
     }
 }
