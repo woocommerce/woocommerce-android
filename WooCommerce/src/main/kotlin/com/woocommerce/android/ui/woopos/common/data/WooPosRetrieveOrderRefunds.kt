@@ -10,15 +10,6 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import javax.inject.Inject
 
-/**
- * Use case that retrieves all refunds for the given [Order].
- *
- * - First attempts to load refunds from the local store.
- * - If none are found, fetches them from the remote source.
- * - If the order's [Order.refundTotal] is zero, returns an empty list without querying any source.
- *
- * This optimization prevents unnecessary store or network access for non-refunded orders.
- */
 class WooPosRetrieveOrderRefunds @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite
