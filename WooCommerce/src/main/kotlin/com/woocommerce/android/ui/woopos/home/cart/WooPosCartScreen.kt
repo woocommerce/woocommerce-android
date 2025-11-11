@@ -513,11 +513,7 @@ private fun ProductItem(
         modifier = modifier
             .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
-        backgroundColor = if (item.productDoesNotExist) {
-            WooPosTheme.colors.disabledContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerLowest
-        },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -550,11 +546,7 @@ private fun ProductItem(
                     Image(
                         imageVector = Icons.Outlined.Inventory2,
                         contentDescription = null,
-                        colorFilter = if (item.productDoesNotExist) {
-                            ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
-                        } else {
-                            ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
-                        },
+                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onDisabledContainer),
                         modifier = Modifier.size(36.dp)
                     )
                 }
@@ -565,7 +557,7 @@ private fun ProductItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(96.dp)
-                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                        .alpha(1f)
                 )
             }
 
@@ -583,11 +575,7 @@ private fun ProductItem(
                     style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (item.productDoesNotExist) {
-                        WooPosTheme.colors.onDisabledContainer
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .clearAndSetSemantics { }
                 )
@@ -596,11 +584,7 @@ private fun ProductItem(
                     WooPosText(
                         text = item.description ?: "",
                         style = WooPosTypography.BodySmall,
-                        color = if (item.productDoesNotExist) {
-                            WooPosTheme.colors.onDisabledContainer
-                        } else {
-                            WooPosTheme.colors.onSurfaceVariantHighest
-                        },
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -611,14 +595,22 @@ private fun ProductItem(
                 WooPosText(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
-                    color = if (item.productDoesNotExist) {
-                        WooPosTheme.colors.onDisabledContainer
-                    } else {
-                        WooPosTheme.colors.onSurfaceVariantHighest
-                    },
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                     modifier = Modifier
                         .clearAndSetSemantics { }
                 )
+
+                if (item.productDoesNotExist) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_product_unknown_item),
+                        style = WooPosTypography.BodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
             }
 
             if (canRemoveItems) {

@@ -3761,6 +3761,11 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_totals_invalid_coupon_error">Unable to apply coupons</string>
+    <string name="woopos_totals_product_not_found_error">Product not found</string>
+    <string name="woopos_totals_product_not_found_reason">A product in the cart is no longer available.</string>
+    <string name="woopos_totals_product_not_found_edit_order">Edit order</string>
+    <string name="woopos_totals_product_not_found_remove_products">Remove product</string>
+    <string name="woopos_cart_product_unknown_item">Unknown item</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
