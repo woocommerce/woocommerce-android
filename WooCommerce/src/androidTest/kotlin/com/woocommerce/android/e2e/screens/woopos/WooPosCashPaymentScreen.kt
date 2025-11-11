@@ -17,7 +17,6 @@ class WooPosCashPaymentScreen : ComposeScreen() {
         composeTestRule.onNodeWithTag(WooPosTestTags.COMPLETE_PAYMENT_BUTTON)
             .performClick()
 
-        Thread.sleep(8000)
         return WooPosPaymentSuccessScreen()
     }
 }

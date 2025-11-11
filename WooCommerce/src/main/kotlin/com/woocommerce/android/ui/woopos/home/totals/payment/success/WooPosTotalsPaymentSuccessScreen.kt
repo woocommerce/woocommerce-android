@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -134,7 +136,8 @@ private fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(80.dp)
-                    .width(604.dp),
+                    .width(604.dp)
+                    .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
             )

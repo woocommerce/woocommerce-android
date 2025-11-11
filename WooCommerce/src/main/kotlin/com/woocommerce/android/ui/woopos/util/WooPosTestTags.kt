@@ -5,4 +5,5 @@ object WooPosTestTags {
     const val CHECKOUT_BUTTON = "woo_pos_checkout_button"
     const val CASH_PAYMENT_BUTTON = "woo_pos_cash_payment_button"
     const val COMPLETE_PAYMENT_BUTTON = "woo_pos_complete_payment_button"
+    const val NEW_ORDER_BUTTON = "woo_pos_new_order_button"
 }
