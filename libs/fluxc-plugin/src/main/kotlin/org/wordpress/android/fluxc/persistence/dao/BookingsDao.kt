@@ -21,6 +21,7 @@ interface BookingsDao {
             AND (:startDateBefore IS NULL OR start < :startDateBefore)
             AND (:startDateAfter IS NULL OR start > :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
+            AND (:attendanceStatus IS NULL OR attendanceStatus = :attendanceStatus)
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -36,6 +37,7 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        attendanceStatus: String?,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
@@ -47,6 +49,7 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        attendanceStatus: String?,
         order: BookingsOrderOption
     ): List<BookingEntity>
 
@@ -76,6 +79,7 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
+        val attendanceFilter = filters.filterIsInstance<BookingsFilterOption.AttendanceStatus>().firstOrNull()
 
         return observeBookings(
             localSiteId = localSiteId,
@@ -83,6 +87,7 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            attendanceStatus = attendanceFilter?.value?.key,
             order = order
         )
     }
@@ -95,6 +100,7 @@ interface BookingsDao {
     ): List<BookingEntity> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
+        val attendanceFilter = filters.filterIsInstance<BookingsFilterOption.AttendanceStatus>().firstOrNull()
 
         return getBookings(
             localSiteId = localSiteId,
@@ -102,6 +108,7 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            attendanceStatus = attendanceFilter?.value?.key,
             order = order
         )
     }
