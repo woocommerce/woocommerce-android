@@ -63,7 +63,8 @@ class WooPosProductsDataSource @Inject constructor(
     fun getCurrentSyncStrategy(): WooPosAnalyticsEventConstant.SyncStrategy {
         return when (activeSource) {
             localDbDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.LOCAL_CATALOG
-            else -> WooPosAnalyticsEventConstant.SyncStrategy.REMOTE
+            remoteDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.REMOTE
+            else -> error("Unknown sync strategy")
         }
     }
 
