@@ -28,6 +28,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.filter.attendancestatus.BookingAttendanceStatusFilterRoute
 import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
@@ -127,22 +128,24 @@ private fun FiltersNavHost(
         composable(BookingFilterPage.List.route) {
             BookingFilterRootPage(state.items)
         }
-        composable(BookingFilterPage.DateTime.route) {
-            DateTimeFilterPicker()
-        }
         composable(BookingFilterPage.TeamMember.route) {
-            TODO()
-        }
-        composable(BookingFilterPage.AttendanceStatus.route) {
-            TODO()
-        }
-        composable(BookingFilterPage.PaymentStatus.route) {
             TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
             BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
+        }
+        composable(BookingFilterPage.ServiceEvent.route) {
+            TODO()
+        }
+        composable(BookingFilterPage.AttendanceStatus.route) {
+            BookingAttendanceStatusFilterRoute(
+                initialAttendanceStatus = state.updatedBookingFilters.attendanceStatus
+            ) { attendance -> state.onUpdateFilterOption(attendance) }
+        }
+        composable(BookingFilterPage.PaymentStatus.route) {
+            TODO()
         }
         composable(BookingFilterPage.Customer.route) {
             BookingCustomerFilterPage { customer ->
@@ -158,8 +161,8 @@ private fun FiltersNavHost(
                 state.onClose()
             }
         }
-        composable(BookingFilterPage.ServiceEvent.route) {
-            TODO()
+        composable(BookingFilterPage.DateTime.route) {
+            DateTimeFilterPicker()
         }
         composable(BookingFilterPage.Location.route) {
             TODO()
