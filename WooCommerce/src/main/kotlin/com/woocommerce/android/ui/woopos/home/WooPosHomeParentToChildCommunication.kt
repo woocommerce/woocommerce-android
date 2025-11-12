@@ -29,6 +29,8 @@ sealed class ParentToChildrenEvent {
     data class CouponsRemoved(
         val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ParentToChildrenEvent()
+    data object ProductsNotFound : ParentToChildrenEvent()
+    data object RemoveProductsClicked : ParentToChildrenEvent()
     data class ItemClickedInItemsList(
         val itemData: WooPosItemsViewModel.ItemClickedData,
         val eventForTracking: WooPosAnalyticsEvent.Event.ItemAddedToCart?
