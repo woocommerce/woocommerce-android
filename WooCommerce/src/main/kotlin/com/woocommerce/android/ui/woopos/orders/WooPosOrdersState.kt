@@ -14,7 +14,8 @@ sealed class OrderDetailsViewState {
     @Immutable
     data class Lazy(
         override val orderId: Long,
-        val order: Order
+        val order: Order,
+        val refundResult: RefundFetchResult
     ) : OrderDetailsViewState()
 
     @Immutable
