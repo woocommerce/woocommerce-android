@@ -242,11 +242,11 @@ class WooPosHomeViewModel @Inject constructor(
                     }
 
                     is ChildToParentEvent.RemoveProductsClicked -> {
-                        sendEventToChildren(ParentToChildrenEvent.RemoveProductsClicked)
+                        sendEventToChildren(ParentToChildrenEvent.RemoveProductsClicked(event.removedProductsIds))
                     }
 
-                    ChildToParentEvent.ProductsRemoved -> {
-                        sendEventToChildren(ParentToChildrenEvent.ProductsRemoved)
+                    is ChildToParentEvent.ProductsRemoved -> {
+                        sendEventToChildren(ParentToChildrenEvent.ProductsRemoved(event.cartDataList))
                     }
 
                     ChildToParentEvent.RefreshProductList -> {

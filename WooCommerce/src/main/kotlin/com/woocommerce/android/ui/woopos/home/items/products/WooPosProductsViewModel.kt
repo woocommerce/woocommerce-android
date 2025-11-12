@@ -82,8 +82,8 @@ class WooPosProductsViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
-                    ParentToChildrenEvent.RemoveProductsClicked,
-                    ParentToChildrenEvent.ProductsRemoved,
+                    is ParentToChildrenEvent.RemoveProductsClicked,
+                    is ParentToChildrenEvent.ProductsRemoved,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }

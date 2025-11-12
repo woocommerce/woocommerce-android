@@ -228,14 +228,14 @@ class WooPosCartViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.RemoveProductsClicked -> {
-                        removeNotFoundProductsFromCart()
+                        removeNotFoundProductsFromCart(event)
                     }
 
                     is ParentToChildrenEvent.BarcodeEvent -> {
                         onBarcodeEvent(event.result)
                     }
 
-                    ParentToChildrenEvent.ProductsRemoved -> Unit
+                    is ParentToChildrenEvent.ProductsRemoved -> Unit
                 }
             }
         }
@@ -294,15 +294,17 @@ class WooPosCartViewModel @Inject constructor(
         sendEventToParent(CouponsRemoved(getCartItemsDataList()))
     }
 
-    private fun removeNotFoundProductsFromCart() {
-        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
-        cartBody?.itemsInCart
-            ?.filterIsInstance<Product>()
-            ?.filter { it.productDoesNotExist }
-            ?.toSet()?.let { productsToRemove ->
-                removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
-                sendEventToParent(ChildToParentEvent.ProductsRemoved)
-            }
+    private fun removeNotFoundProductsFromCart(event: ParentToChildrenEvent.RemoveProductsClicked) {
+        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+
+        val productsToRemove = cartBody.itemsInCart
+            .filterIsInstance<Product.Simple>()
+            .filter { it.id in event.productIdsToRemove }
+            .toSet()
+
+        removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
+
+        sendEventToParent(ChildToParentEvent.ProductsRemoved(getCartItemsDataList()))
     }
 
     private fun handleBackFromCheckoutToCartClicked() {
