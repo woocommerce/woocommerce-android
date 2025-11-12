@@ -166,7 +166,7 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
     }
 
     companion object {
-        const val MINIMUM_SUPPORTED_WC_VERSION = "9.6.0"
+        const val MINIMUM_SUPPORTED_WC_VERSION = "9.7.0"
         val SUPPORTED_COUNTRY_CURRENCY_PAIRS = listOf("us" to "usd", "gb" to "gbp")
 
         private const val WC_VERSION_SUPPORTS_POS_PRODUCT_FILTERING = MINIMUM_SUPPORTED_WC_VERSION
