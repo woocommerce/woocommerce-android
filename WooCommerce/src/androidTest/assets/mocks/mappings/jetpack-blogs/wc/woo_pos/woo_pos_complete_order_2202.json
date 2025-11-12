@@ -10,7 +10,7 @@
     },
     "bodyPatterns": [
       {
-        "matchesJsonPath": "$[?(@.path == '/wc/v3/orders/2201/\\u0026_method\\u003dput')]"
+        "matchesJsonPath": "$[?(@.path == '/wc/v3/orders/2202/\\u0026_method\\u003dput')]"
       },
       {
         "matchesJsonPath": "$[?(@.body =~ /.*\\\"status\\\":\\\"completed\\\".*/)]"
@@ -24,7 +24,7 @@
     "status": 200,
     "jsonBody": {
       "data": {
-        "id": 2201,
+        "id": 2202,
         "parent_id": 0,
         "status": "completed",
         "currency": "USD",
@@ -76,7 +76,7 @@
         "date_completed": "{{fnow format=customformat}}",
         "date_paid": "{{fnow format=customformat}}",
         "cart_hash": "",
-        "number": "2201",
+        "number": "2202",
         "meta_data": [],
         "line_items": [
           {
@@ -119,7 +119,7 @@
         "_links": {
           "self": [
             {
-              "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2201"
+              "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2202"
             }
           ],
           "collection": [

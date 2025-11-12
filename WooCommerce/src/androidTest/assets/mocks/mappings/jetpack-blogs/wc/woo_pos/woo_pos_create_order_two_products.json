@@ -24,7 +24,7 @@
     "status": 200,
     "jsonBody": {
       "data": {
-        "id": 2201,
+        "id": 2202,
         "parent_id": 0,
         "status": "auto-draft",
         "currency": "USD",
@@ -76,7 +76,7 @@
         "date_completed": null,
         "date_paid": null,
         "cart_hash": "",
-        "number": "2201",
+        "number": "2202",
         "meta_data": [],
         "line_items": [
           {
@@ -109,7 +109,7 @@
         "fee_lines": [],
         "coupon_lines": [],
         "refunds": [],
-        "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2201/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
+        "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2202/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
         "is_editable": true,
         "date_created_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
         "date_modified_gmt": "{{fnow offset='-10 minutes' format=customformat}}",
@@ -119,7 +119,7 @@
         "_links": {
           "self": [
             {
-              "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2201"
+              "href": "https:\/\/automatticwidgets.wpcomstaging.com\/wp-json\/wc\/v3\/orders\/2202"
             }
           ],
           "collection": [

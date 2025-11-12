@@ -7,7 +7,7 @@
         "equalTo": "true"
       },
       "path": {
-        "matches": "/wc/v3/orders/2201/&_method=get"
+        "matches": "/wc/v3/orders/2202/&_method=get"
       },
       "query": {
         "matches": ".*billing.*coupon_lines.*currency.*order_key.*customer_note.*date_created_gmt.*"
@@ -21,7 +21,7 @@
     "status": 200,
     "jsonBody": {
       "data": {
-        "id": 2201,
+        "id": 2202,
         "status": "auto-draft",
         "currency": "USD",
         "prices_include_tax": false,
@@ -58,7 +58,7 @@
         "payment_method": "",
         "payment_method_title": "",
         "customer_note": "",
-        "number": "2201",
+        "number": "2202",
         "meta_data": [],
         "line_items": [
           {
@@ -109,7 +109,7 @@
         "fee_lines": [],
         "coupon_lines": [],
         "refunds": [],
-        "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2201/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
+        "payment_url": "https://automatticwidgets.wpcomstaging.com/checkout/order-pay/2202/?pay_for_order=true&key=wc_order_itGmODLV25QAx",
         "is_editable": true,
         "needs_payment": true,
         "needs_processing": false,
@@ -123,7 +123,7 @@
         "_links": {
           "self": [
             {
-              "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2201"
+              "href": "https://automatticwidgets.wpcomstaging.com/wp-json/wc/v3/orders/2202"
             }
           ],
           "collection": [
