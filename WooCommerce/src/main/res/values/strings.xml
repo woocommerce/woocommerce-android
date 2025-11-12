@@ -3826,8 +3826,8 @@
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount total</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount total (%1$s)</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
