@@ -336,7 +336,6 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.BarcodeEvent,
-                    is ParentToChildrenEvent.ProductsNotFound,
                     ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
@@ -509,9 +508,6 @@ class WooPosTotalsViewModel @Inject constructor(
             uiState.value = WooPosTotalsViewState.ProductNotFoundError(
                 message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
                 reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
-            )
-            childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.ProductsNotFound
             )
             return
         }

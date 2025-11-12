@@ -124,7 +124,6 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
                     is ParentToChildrenEvent.BarcodeEvent,
-                    is ParentToChildrenEvent.ProductsNotFound,
                     ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
 
