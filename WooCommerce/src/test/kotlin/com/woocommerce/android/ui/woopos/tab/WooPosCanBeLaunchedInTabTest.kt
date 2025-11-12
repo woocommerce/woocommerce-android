@@ -120,17 +120,17 @@ class WooPosCanBeLaunchedInTabTest : BaseUnitTest() {
         verify(appPrefs, times(1)).clearPOSLaunchableForSite(eq(siteModel.id))
     }
 
-    // Feature-switch unsupported (version >= 9_6_0 but  switch threshold not met)
+    // Feature-switch unsupported (version >= 9_7_0 but  switch threshold not met)
     @Test
-    fun `given WC 9_6_0 (switch unsupported) and supported settings, when invoked, then Launchable`() = testBlocking {
-        whenever(getWooCoreVersion()).thenReturn("9.6.0")
+    fun `given WC 9_7_0 (switch unsupported) and supported settings, when invoked, then Launchable`() = testBlocking {
+        whenever(getWooCoreVersion()).thenReturn("9.7.0")
         val result = sut()
         assertEquals(Launchable, result)
     }
 
     @Test
-    fun `given WC 9_6_0 (switch unsupported) and unsupported currency, when invoked, then NotLaunchable UnsupportedCurrency and clears cache`() = testBlocking {
-        whenever(getWooCoreVersion()).thenReturn("9.6.0")
+    fun `given WC 9_7_0 (switch unsupported) and unsupported currency, when invoked, then NotLaunchable UnsupportedCurrency and clears cache`() = testBlocking {
+        whenever(getWooCoreVersion()).thenReturn("9.7.0")
         val bad = buildSiteSettings(currencyCode = "EUR")
         whenever(wooCommerceStore.getSiteSettings(any())).thenReturn(bad)
         val result = sut()
