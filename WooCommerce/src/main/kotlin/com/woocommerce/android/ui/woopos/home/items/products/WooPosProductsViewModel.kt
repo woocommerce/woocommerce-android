@@ -16,6 +16,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -41,6 +43,7 @@ class WooPosProductsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
     private val dispatchers: CoroutineDispatchers,
+    incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
 ) : ViewModel() {
 
     private var loadMoreProductsJob: Job? = null
@@ -61,6 +64,7 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         loadProducts(forceRefreshProducts = false)
+        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
     }
 
     private fun listenEventsFromParent() {

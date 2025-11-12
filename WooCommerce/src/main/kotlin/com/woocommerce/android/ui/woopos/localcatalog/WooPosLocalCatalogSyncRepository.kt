@@ -34,9 +34,9 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     companion object {
         const val PAGE_SIZE = 100
         const val MAX_PAGES_PER_FULL_SYNC = 10
-        const val MAX_PAGES_PER_INCREMENTAL_SYNC = 3
+        const val MAX_PAGES_PER_INCREMENTAL_SYNC = Int.MAX_VALUE
         const val MAX_TOTAL_ITEMS_FULL_SYNC = 1000
-        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = 300
+        const val MAX_TOTAL_ITEMS_INCREMENTAL_SYNC = Int.MAX_VALUE
     }
 
     suspend fun syncLocalCatalogFull(site: SiteModel): PosLocalCatalogSyncResult = withContext(dispatchers.io) {
