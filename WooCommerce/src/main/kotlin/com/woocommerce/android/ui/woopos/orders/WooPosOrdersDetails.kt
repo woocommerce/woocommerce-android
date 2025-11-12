@@ -357,7 +357,7 @@ fun WooPosOrderDetailsPreview() {
         lineItems = listOf(
             OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
             OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
-            OrderDetailsViewState.Computed.Details.LineItemRow(103, "Paper Filter", "1 x $5.00", "$5.00", null)
+            OrderDetailsViewState.Computed.Details.LineItemRow(103, "A vey tasty coffee that incidentally has a very long name and should go over a few lines without overlapping anything", "1 x $5.00", "$5.00", null)
         ),
         breakdown = OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = "$23.00",
