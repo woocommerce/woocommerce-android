@@ -844,4 +844,57 @@ class WooPosOrdersViewModelTest {
         // THEN
         verify(ordersAnalyticsTracker).trackOrdersListSearchResultsFetched(any())
     }
+
+    @Test
+    fun `given order with zero discount and zero shipping, when mapped, then discount and shipping are absent`() = runTest {
+        // GIVEN
+        val base = order(1)
+        val withZeros = base.copy(
+            discountTotal = BigDecimal("0.00"),
+            shippingTotal = BigDecimal("0.00")
+        )
+
+        // WHEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withZeros))) }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        val breakdown = content.selectedDetails.breakdown
+        assertThat(breakdown.discount).isNull()
+        assertThat(breakdown.shipping).isNull()
+    }
+
+    @Test
+    fun `given order with non-zero discount and shipping, when mapped, then discount and shipping are formatted`() = runTest {
+        // GIVEN
+        val base = order(2)
+        val withValues = base.copy(
+            discountTotal = BigDecimal("3.50"),
+            shippingTotal = BigDecimal("4.00")
+        )
+
+        // WHEN
+        runBlocking {
+            whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
+            whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
+        }
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosOrdersState.Content
+        val breakdown = content.selectedDetails.breakdown
+        assertThat(breakdown.discount).isEqualTo("-$3.50")
+        assertThat(breakdown.shipping).isEqualTo("$4.00")
+    }
 }

@@ -527,7 +527,7 @@ class WooPosOrdersViewModel @Inject constructor(
             createdAtMillis = order.dateCreated.time
         )
     }
-    
+
     private suspend fun mapOrderDetails(
         order: Order,
         refundResult: RefundFetchResult
@@ -625,10 +625,10 @@ class WooPosOrdersViewModel @Inject constructor(
 
         return OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = formatPrice(order.productsTotal),
-            discount = order.discountTotal.takeIf { it != BigDecimal.ZERO }?.let { "-${formatPrice(it)}" },
+            discount = order.discountTotal.takeIf { !it.isZero() }?.let { "-${formatPrice(it)}" },
             discountCode = discountCode,
             taxes = formatPrice(order.totalTax),
-            shipping = order.shippingTotal.takeIf { it != BigDecimal.ZERO }?.let { formatPrice(it) },
+            shipping = order.shippingTotal.takeIf { !it.isZero() }?.let { formatPrice(it) },
             refunds = refundInfo.refundAmounts,
             netPayment = netPayment
         )
@@ -648,3 +648,5 @@ private fun Order.Status.localizedLabel(resourceProvider: ResourceProvider, loca
         Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
     }
 }
+
+private fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
