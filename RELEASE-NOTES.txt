@@ -1,6 +1,9 @@
 *** PLEASE FOLLOW THIS FORMAT: [<priority indicator, more stars = higher priority>] <description> [<PR URL>]
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
+23.8
+- [*][Woo POS] Minimum required version is raised up to 9.7.0 [https://github.com/woocommerce/woocommerce-android/pull/14941]
+
 23.7
 -----
 - [Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
