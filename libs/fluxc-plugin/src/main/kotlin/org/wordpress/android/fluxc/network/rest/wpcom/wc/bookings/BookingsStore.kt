@@ -127,6 +127,22 @@ class BookingsStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchResources(site: SiteModel): WooResult<Array<BookingResourceEntity>> {
+        val response = bookingsRestClient.fetchResources(site)
+        return when {
+            response.isError -> WooResult(response.error)
+            response.result != null -> {
+                val entities = with(bookingDtoMapper) {
+                    response.result.toEntities(site.localId())
+                }
+                bookingsDao.replaceAllResourcesForSite(site.localId(), entities)
+                WooResult(entities.toTypedArray())
+            }
+
+            else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long

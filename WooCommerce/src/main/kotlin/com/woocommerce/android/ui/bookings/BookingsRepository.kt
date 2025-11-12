@@ -88,6 +88,15 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchResources(): Result<Unit> {
+        val result = bookingsStore.fetchResources(site = selectedSite.get(),)
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
     suspend fun fetchResource(
         resourceId: Long
     ): Result<Unit> {

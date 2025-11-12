@@ -85,6 +85,21 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchResources(site: SiteModel): WooPayload<Array<BookingResourceDto>> {
+        val endpoint = WOOCOMMERCE.resources.team_members.pathV2Bookings
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = Array<BookingResourceDto>::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long
