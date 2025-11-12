@@ -502,6 +502,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun handleCreatedOrder(order: Order) {
+        notifyCartAboutOrderCreation(order)
         val notFoundProductIds = checkForNotFoundProducts(order)
 
         if (notFoundProductIds.isNotEmpty()) {
@@ -512,7 +513,6 @@ class WooPosTotalsViewModel @Inject constructor(
             return
         }
 
-        notifyCartAboutOrderCreation(order)
         dataState.value = dataState.value.copy(
             orderId = order.id,
             orderTotal = order.total
