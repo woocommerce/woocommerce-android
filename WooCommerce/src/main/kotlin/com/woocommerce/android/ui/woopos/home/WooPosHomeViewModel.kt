@@ -33,7 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
-    private val incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
+    incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
     private val _state = savedStateHandle.getStateFlow(
@@ -243,6 +243,10 @@ class WooPosHomeViewModel @Inject constructor(
 
                     is ChildToParentEvent.RemoveProductsClicked -> {
                         sendEventToChildren(ParentToChildrenEvent.RemoveProductsClicked)
+                    }
+
+                    ChildToParentEvent.ProductsRemoved -> {
+                        sendEventToChildren(ParentToChildrenEvent.ProductsRemoved)
                     }
 
                     ChildToParentEvent.RefreshProductList -> {

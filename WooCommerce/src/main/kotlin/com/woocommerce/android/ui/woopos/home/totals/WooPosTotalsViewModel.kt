@@ -326,6 +326,16 @@ class WooPosTotalsViewModel @Inject constructor(
                         onCartDataReceived(event.cartDataList)
                     }
 
+                    ParentToChildrenEvent.ProductsRemoved -> {
+                        if (dataState.value.itemClickedDataList.isNotEmpty()) {
+                            createOrderDraft(dataState.value.itemClickedDataList)
+                        } else {
+                            childrenToParentEventSender.sendToParent(
+                                ChildToParentEvent.BackFromCheckoutToCartClicked
+                            )
+                        }
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,

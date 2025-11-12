@@ -187,6 +187,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.RefreshProductList -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> Unit
                     is ParentToChildrenEvent.RemoveProductsClicked -> Unit
+                    ParentToChildrenEvent.ProductsRemoved -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> {
                         if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {

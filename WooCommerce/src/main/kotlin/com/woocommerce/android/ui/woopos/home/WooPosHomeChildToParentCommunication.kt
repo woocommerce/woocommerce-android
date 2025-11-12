@@ -45,6 +45,7 @@ sealed class ChildToParentEvent {
         val cartDataList: List<WooPosItemsViewModel.ItemClickedData>
     ) : ChildToParentEvent()
     data object RemoveProductsClicked : ChildToParentEvent()
+    data object ProductsRemoved : ChildToParentEvent()
 
     data class ToastMessageDisplayed(val message: String) : ChildToParentEvent()
     data object RefreshProductList : ChildToParentEvent()

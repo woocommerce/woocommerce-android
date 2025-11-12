@@ -234,6 +234,8 @@ class WooPosCartViewModel @Inject constructor(
                     is ParentToChildrenEvent.BarcodeEvent -> {
                         onBarcodeEvent(event.result)
                     }
+
+                    ParentToChildrenEvent.ProductsRemoved -> Unit
                 }
             }
         }
@@ -295,10 +297,11 @@ class WooPosCartViewModel @Inject constructor(
     private fun removeNotFoundProductsFromCart() {
         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems
         cartBody?.itemsInCart
-            ?.filterIsInstance<WooPosCartItemViewState.Product>()
+            ?.filterIsInstance<Product>()
             ?.filter { it.productDoesNotExist }
             ?.toSet()?.let { productsToRemove ->
                 removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
+                sendEventToParent(ChildToParentEvent.ProductsRemoved)
             }
     }
 
