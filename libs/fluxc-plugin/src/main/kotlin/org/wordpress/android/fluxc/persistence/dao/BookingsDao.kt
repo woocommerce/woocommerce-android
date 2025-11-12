@@ -130,4 +130,16 @@ interface BookingsDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(resource: BookingResourceEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplaceResources(resources: List<BookingResourceEntity>)
+
+    @Query("DELETE FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun deleteAllResourcesForSite(localSiteId: LocalId)
+
+    @Transaction
+    suspend fun replaceAllResourcesForSite(siteId: LocalId, resources: List<BookingResourceEntity>) {
+        deleteAllResourcesForSite(siteId)
+        insertOrReplaceResources(resources)
+    }
 }
