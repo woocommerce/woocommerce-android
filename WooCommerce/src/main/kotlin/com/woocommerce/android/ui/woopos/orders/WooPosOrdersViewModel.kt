@@ -527,7 +527,7 @@ class WooPosOrdersViewModel @Inject constructor(
             createdAtMillis = order.dateCreated.time
         )
     }
-    
+
     private suspend fun mapOrderDetails(
         order: Order,
         refundResult: RefundFetchResult
