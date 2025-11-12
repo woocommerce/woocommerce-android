@@ -6,6 +6,8 @@ sealed class WooPosTotalsUIEvent {
     data object GoBackToCheckoutAfterFailedPayment : WooPosTotalsUIEvent()
     data object GoBackToCheckoutAfterFailedCouponValidation : WooPosTotalsUIEvent()
     data object OnRemoveCouponsClicked : WooPosTotalsUIEvent()
+    data object GoBackToOrderEditAfterProductNotFound : WooPosTotalsUIEvent()
+    data object OnRemoveProductsClicked : WooPosTotalsUIEvent()
     data object RetryOrderCreationClicked : WooPosTotalsUIEvent()
     data object OnStartReceiptFlowClicked : WooPosTotalsUIEvent()
     data object OnCashPaymentClicked : WooPosTotalsUIEvent()

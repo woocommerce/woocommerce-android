@@ -174,6 +174,10 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
             WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
+
+            WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound -> handleEditOrderClicked()
+
+            WooPosTotalsUIEvent.OnRemoveProductsClicked -> handleRemoveProductsClicked()
         }
     }
 
@@ -254,6 +258,12 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun handleRemoveProductsClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.RemoveProductsClicked)
+        }
+    }
+
     private suspend fun retryPaymentCollectionFromScratch() {
         cancelPaymentAction()
         val order = totalsRepository.getOrderById(dataState.value.orderId)
@@ -326,6 +336,8 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.BarcodeEvent,
+                    is ParentToChildrenEvent.ProductsNotFound,
+                    ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }
@@ -491,6 +503,19 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun handleCreatedOrder(order: Order) {
+        val notFoundProductIds = checkForNotFoundProducts(order)
+
+        if (notFoundProductIds.isNotEmpty()) {
+            uiState.value = WooPosTotalsViewState.ProductNotFoundError(
+                message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
+                reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+            )
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.ProductsNotFound
+            )
+            return
+        }
+
         notifyCartAboutOrderCreation(order)
         dataState.value = dataState.value.copy(
             orderId = order.id,
@@ -499,6 +524,19 @@ class WooPosTotalsViewModel @Inject constructor(
         uiState.value = buildWooPosTotalsViewState(order)
         totalsAnalyticsTracker.trackOrderCreationSuccess()
         collectPayment()
+    }
+
+    private fun checkForNotFoundProducts(order: Order): List<Long> {
+        val productsInCart = dataState.value.itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
+        val orderProductIds = order.items.map { it.productId }.toSet()
+
+        return productsInCart.map {
+            when (it) {
+                is WooPosItemsViewModel.ItemClickedData.Product.Simple -> it.id
+                is WooPosItemsViewModel.ItemClickedData.Product.Variation -> it.productId
+            }
+        }.distinct().filterNot { orderProductIds.contains(it) }
     }
 
     private fun notifyCartAboutOrderCreation(order: Order) {
