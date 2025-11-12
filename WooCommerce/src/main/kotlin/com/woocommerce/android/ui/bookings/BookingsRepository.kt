@@ -122,6 +122,9 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    fun observeResources(): Flow<List<BookingResource>> =
+        bookingsStore.observeResources(site = selectedSite.get())
+
     suspend fun updateAttendanceStatus(
         bookingId: Long,
         attendanceStatus: BookingEntity.AttendanceStatus,

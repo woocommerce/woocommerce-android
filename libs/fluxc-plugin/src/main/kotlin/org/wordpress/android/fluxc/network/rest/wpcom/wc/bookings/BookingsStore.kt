@@ -167,6 +167,10 @@ class BookingsStore @Inject internal constructor(
         resourceId: Long
     ): Flow<BookingResourceEntity?> = bookingsDao.observeResource(site.localId(), resourceId)
 
+    fun observeResources(
+        site: SiteModel
+    ): Flow<List<BookingResourceEntity>> = bookingsDao.observeResources(site.localId())
+
     suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,

@@ -128,6 +128,12 @@ interface BookingsDao {
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
     fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>
 
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    fun observeResources(localSiteId: LocalId): Flow<List<BookingResourceEntity>>
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun getResources(localSiteId: LocalId): List<BookingResourceEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(resource: BookingResourceEntity): Long
 
