@@ -22,10 +22,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.compose.BookingLabel
 import com.woocommerce.android.ui.bookings.compose.BookingSectionHeader
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
@@ -110,7 +110,7 @@ private fun DateTimeSection(
         modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
         DateTimeRow(
-            label = stringResource(id = R.string.bookings_filter_date_label),
+            labelRes = R.string.bookings_filter_date_label,
             value = dateReadable,
             onClick = onDateClick
         )
@@ -119,7 +119,7 @@ private fun DateTimeSection(
             thickness = 0.5.dp
         )
         DateTimeRow(
-            label = stringResource(id = R.string.bookings_filter_time_label),
+            labelRes = R.string.bookings_filter_time_label,
             value = timeReadable,
             onClick = onTimeClick
         )
@@ -129,7 +129,7 @@ private fun DateTimeSection(
 }
 
 @Composable
-private fun DateTimeRow(label: String, value: String, onClick: () -> Unit) {
+private fun DateTimeRow(@StringRes labelRes: Int, value: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,10 +137,8 @@ private fun DateTimeRow(label: String, value: String, onClick: () -> Unit) {
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
+        BookingLabel(
+            label = labelRes,
             modifier = Modifier.weight(1f)
         )
         Text(

@@ -40,7 +40,7 @@ fun BookingNoteSection(
                     .padding(horizontal = 16.dp)
             ) {
                 if (note.isEmpty()) {
-                    BookingDetailsLabel(
+                    BookingLabel(
                         label = R.string.booking_note_label_add_note,
                         modifier = Modifier
                             .weight(1f)

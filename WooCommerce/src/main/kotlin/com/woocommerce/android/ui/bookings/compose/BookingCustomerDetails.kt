@@ -87,7 +87,7 @@ fun BookingCustomerDetails(
                     modifier = Modifier
                         .padding(vertical = 12.dp, horizontal = 16.dp)
                 ) {
-                    BookingDetailsLabel(label = R.string.booking_billing_address_label)
+                    BookingLabel(label = R.string.booking_billing_address_label)
                     Spacer(Modifier.height(4.dp))
                     Text(
                         text = billingAddress,

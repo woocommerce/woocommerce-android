@@ -82,7 +82,7 @@ private fun AttendanceRow(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 12.dp)
         ) {
-            BookingDetailsLabel(label)
+            BookingLabel(label)
             when (attendanceUpdateStatus) {
                 AttendanceUpdateStatus.InProgress -> {
                     SkeletonView(

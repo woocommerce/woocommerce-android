@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 
 @Composable
-fun BookingDetailsLabel(
+fun BookingLabel(
     @StringRes label: Int,
     modifier: Modifier = Modifier,
 ) {
