@@ -23,7 +23,8 @@ data class BookingAttendanceStatusFilterUiState(
         AttendanceStatus.Booked,
         AttendanceStatus.CheckedIn,
         AttendanceStatus.NoShow,
-        AttendanceStatus.Cancelled,
+        // The Cancelled status will be added when the backend implementation is complete (WOOBO0K-574)
+        // AttendanceStatus.Cancelled,
     )
 
     private fun isSelected(status: AttendanceStatus?): Boolean = if (status == AttendanceStatus.any) {
