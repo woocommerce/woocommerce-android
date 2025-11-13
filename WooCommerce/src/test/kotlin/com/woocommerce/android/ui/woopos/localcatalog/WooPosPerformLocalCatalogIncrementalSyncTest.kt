@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -25,6 +26,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val prefsRepo: WooPosPreferencesRepository = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
 
@@ -40,6 +42,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
             networkStatus = networkStatus,
             isLocalCatalogSupported = isLocalCatalogSupported,
             wooPosLogWrapper = wooPosLogWrapper,
+            prefsRepo = prefsRepo,
             appCoroutineScope = testScope
         )
     }
@@ -136,7 +139,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure`() = runTest(testScheduler) {
+    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(testScheduler) {
         // GIVEN
         val site = SiteModel().apply { id = 789 }
         val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
@@ -155,6 +158,8 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
+        verify(wooPosLogWrapper).e("Disabling Local Catalog periodic sync for site due to catalog size too large")
+        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
     }
 
     @Test
