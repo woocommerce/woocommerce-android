@@ -8,7 +8,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 data class BookingAttendanceStatusFilterUiState(
-    val selectedStatuses: AttendanceStatuses = AttendanceStatuses(emptySet()),
+    val selectedStatuses: AttendanceStatuses = AttendanceStatuses.DEFAULT,
     val onStatusSelected: (AttendanceStatus?) -> Unit = {},
 ) {
     val items: List<BookingFilterListItem> = availableAttendanceStatuses().map { status ->
