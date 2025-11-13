@@ -4,6 +4,7 @@ package com.woocommerce.android.e2e.tests.screenshot
 
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
@@ -22,6 +23,7 @@ import org.junit.Rule
 import org.junit.Test
 import tools.fastlane.screengrab.Screengrab
 import tools.fastlane.screengrab.UiAutomatorScreenshotStrategy
+import tools.fastlane.screengrab.locale.LocaleTestRule
 
 @HiltAndroidTest
 class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
@@ -29,21 +31,38 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
     val rule = HiltAndroidRule(this)
 
     @get:Rule(order = 1)
-    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
-
-    @get:Rule(order = 2)
     val initRule = InitializationRule()
 
+    @get:Rule(order = 2)
+    val composeTestRule = createAndroidComposeRule<ComponentActivity>()
+
     @get:Rule(order = 3)
-    var activityRule = ActivityTestRule(LoginActivity::class.java)
+    val localeTestRule = LocaleTestRule()
 
     @get:Rule(order = 4)
+    var activityRule = ActivityTestRule(LoginActivity::class.java)
+
+    @get:Rule(order = 5)
     var retryTestRule = RetryTestRule()
 
     @Before
     fun setUp() {
         cleanStatusBar()
+        lockLandscapeOrientation()
         rule.inject()
+    }
+
+    private fun lockLandscapeOrientation() {
+        InstrumentationRegistry
+            .getInstrumentation()
+            .uiAutomation
+            .executeShellCommand("settings put system user_rotation 1")
+            .close()
+        InstrumentationRegistry
+            .getInstrumentation()
+            .uiAutomation
+            .executeShellCommand("settings put system accelerometer_rotation 0")
+            .close()
     }
 
     @Test

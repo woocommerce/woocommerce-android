@@ -999,6 +999,49 @@ platform :android do
     )
   end
 
+  #####################################################################################
+  # take_pos_screenshots
+  # -----------------------------------------------------------------------------------
+  # fastlane take_pos_screenshots
+  #####################################################################################
+  desc 'Create raw POS screenshots for tablets'
+  lane :take_pos_screenshots do |options|
+    locales = options[:locales] || ['en-US', 'en-GB']
+
+    UI.message("Clearing previous POS screenshots...")
+    sh("rm -f ../fastlane/screenshots/raw/*-pos-*")
+
+    UI.message("Building APKs...")
+    gradle(task: 'assembleVanillaDebug assembleVanillaDebugAndroidTest')
+
+    UI.message("Attempting POS screenshots for locales: #{locales}")
+
+    screenshot_options = {
+      output_directory: RAW_SCREENSHOTS_DIR,
+      app_package_name: APP_PACKAGE_NAME,
+      app_apk_path: 'WooCommerce/build/outputs/apk/vanilla/debug/WooCommerce-vanilla-debug.apk',
+      tests_apk_path: 'WooCommerce/build/outputs/apk/androidTest/vanilla/debug/WooCommerce-vanilla-debug-androidTest.apk',
+      use_tests_in_classes: "#{APP_PACKAGE_NAME}.e2e.tests.screenshot.WooPosScreenshotTest",
+      reinstall_app: false,
+      clear_previous_screenshots: false,
+      use_adb_root: true,
+      locales: locales,
+      use_timestamp_suffix: false,
+      test_instrumentation_runner: "#{APP_PACKAGE_NAME}.WooCommerceTestRunner",
+      skip_open_summary: true
+    }
+
+    UI.message('Setting light theme...')
+    begin
+      adb(command: 'shell cmd uimode night no')
+    rescue StandardError => e
+      UI.error(e)
+    end
+
+    UI.message('Taking POS screenshots for light theme on Pixel Tablet...')
+    screengrab(screenshot_options)
+  end
+
   # This lane downloads the translated promo strings from the translation system.
   #
   lane :download_promo_strings do
