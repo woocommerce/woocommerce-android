@@ -103,7 +103,7 @@ data class BookingFilterListUiState(
 
 val BookingFilterPage.titleRes: Int
     @StringRes get() = when (this) {
-        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_team_member
+        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_member
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
