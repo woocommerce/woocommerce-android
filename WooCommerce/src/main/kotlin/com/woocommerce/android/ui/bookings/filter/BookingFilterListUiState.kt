@@ -68,12 +68,15 @@ data class BookingFilterListUiState(
             BookingFilterPage.BookingType -> {
                 updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
-
+            BookingFilterPage.ServiceEvent -> {
+                updatedBookingFilters.serviceEvents.values.map {
+                    UiString.UiStringText(it.productName)
+                }
+            }
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.AttendanceStatus,
             BookingFilterPage.PaymentStatus,
-            BookingFilterPage.ServiceEvent,
             BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
         }
@@ -128,5 +131,5 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
-        is BookingsFilterOption.ServiceEvent -> copy(serviceEvent = bookingsFilterOption)
+        is BookingsFilterOption.ServiceEvents -> copy(serviceEvents = bookingsFilterOption)
     }

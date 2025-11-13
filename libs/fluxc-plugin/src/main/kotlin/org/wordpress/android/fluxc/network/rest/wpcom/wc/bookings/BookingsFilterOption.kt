@@ -1,13 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.Customer
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.DateRange
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.Location
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.PaymentStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.ServiceEvent
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.TeamMember
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.*
 import java.time.Instant
 
 sealed interface BookingsFilterOption {
@@ -35,7 +28,16 @@ sealed interface BookingsFilterOption {
         val after: Instant?
     ) : BookingsFilterOption
 
-    object ServiceEvent : BookingsFilterOption
+    data class ServiceEvents(val values: Set<ProductInfo>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = ServiceEvents(emptySet())
+        }
+    }
+
+    data class ProductInfo(
+        val productId: Long,
+        val productName: String
+    )
 }
 
 data class BookingFilters(
@@ -46,8 +48,8 @@ data class BookingFilters(
     val paymentStatus: PaymentStatus? = null,
     val bookingType: BookingType? = null,
     val location: Location? = null,
-    val serviceEvent: ServiceEvent? = null,
-) {
+    val serviceEvents: ServiceEvents = ServiceEvents.DEFAULT,
+    ) {
     val enabledFiltersCount: Int
         get() {
             var count = 0
@@ -58,7 +60,7 @@ data class BookingFilters(
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
             if (location != null) count++
-            if (serviceEvent != null) count++
+            if (serviceEvents != ServiceEvents.DEFAULT) count++
             return count
         }
 

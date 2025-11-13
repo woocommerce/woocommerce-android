@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
+import com.woocommerce.android.ui.bookings.filter.productname.BookingProductNameFilterRoute
 import com.woocommerce.android.ui.bookings.filter.datetime.DateTimeFilterPage
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
@@ -134,14 +135,17 @@ private fun FiltersNavHost(
         }
         composable(BookingFilterPage.TeamMember.route) {
         }
-        composable(BookingFilterPage.AttendanceStatus.route) {
-        }
         composable(BookingFilterPage.PaymentStatus.route) {
         }
         composable(BookingFilterPage.BookingType.route) {
             BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
+        }
+        composable(BookingFilterPage.AttendanceStatus.route) {
+            BookingAttendanceStatusFilterRoute(
+                initialAttendanceStatuses = state.updatedBookingFilters.attendanceStatuses
+            ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
         }
         composable(BookingFilterPage.Customer.route) {
             BookingCustomerFilterPage { customer ->
@@ -158,6 +162,12 @@ private fun FiltersNavHost(
             }
         }
         composable(BookingFilterPage.ServiceEvent.route) {
+            BookingProductNameFilterRoute(
+                initialServiceEvents = state.updatedBookingFilters.serviceEvents,
+                onServiceEventsFilterChanged = { serviceEvents ->
+                    state.onUpdateFilterOption(serviceEvents)
+                }
+            )
         }
         composable(BookingFilterPage.Location.route) {
         }
