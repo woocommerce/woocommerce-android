@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.totals
 import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CreateNewOrderTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
@@ -16,6 +17,7 @@ import javax.inject.Inject
 class WooPosTotalsAnalyticsTracker @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val analyticsData: WooPosAnalyticsTrackingDataKeeper,
+    private val productsDataSource: WooPosProductsDataSource,
 ) {
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
@@ -98,5 +100,35 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
 
     suspend fun trackCashPaymentTapped() {
         analyticsTracker.track(WooPosAnalyticsEvent.Event.CheckoutCashPaymentTapped)
+    }
+
+    suspend fun trackCheckoutOutdatedItemDetectedScreenShown() {
+        val syncStrategy = productsDataSource.getCurrentSyncStrategy()
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedScreenShown(
+                reason = "deleted",
+                syncStrategy = syncStrategy
+            )
+        )
+    }
+
+    suspend fun trackCheckoutOutdatedItemDetectedEditOrderTapped() {
+        val syncStrategy = productsDataSource.getCurrentSyncStrategy()
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedEditOrderTapped(
+                reason = "deleted",
+                syncStrategy = syncStrategy
+            )
+        )
+    }
+
+    suspend fun trackCheckoutOutdatedItemDetectedRemoveTapped() {
+        val syncStrategy = productsDataSource.getCurrentSyncStrategy()
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedRemoveTapped(
+                reason = "deleted",
+                syncStrategy = syncStrategy
+            )
+        )
     }
 }

@@ -789,6 +789,63 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object SplashScreenRetryTapped : Event() {
             override val name: String = "splash_screen_retry_tapped"
         }
+
+        data class CheckoutOutdatedItemDetectedScreenShown(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_screen_shown"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to when (syncStrategy) {
+                            SyncStrategy.REMOTE -> "remote"
+                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+                        }
+                    )
+                )
+            }
+        }
+
+        data class CheckoutOutdatedItemDetectedEditOrderTapped(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_edit_order_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to when (syncStrategy) {
+                            SyncStrategy.REMOTE -> "remote"
+                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+                        }
+                    )
+                )
+            }
+        }
+
+        data class CheckoutOutdatedItemDetectedRemoveTapped(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_remove_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to when (syncStrategy) {
+                            SyncStrategy.REMOTE -> "remote"
+                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+                        }
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
