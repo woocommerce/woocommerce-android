@@ -405,7 +405,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(
                     mapOf(
-                        "sync_strategy" to when(syncStrategy) {
+                        "sync_strategy" to when (syncStrategy) {
                             SyncStrategy.REMOTE -> "remote"
                             SyncStrategy.LOCAL_CATALOG -> "local_catalog"
                         }
