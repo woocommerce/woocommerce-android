@@ -4231,6 +4231,7 @@
     <string name="bookings_filter_time_label">Time</string>
     <string name="bookings_filter_date_from">FROM</string>
     <string name="bookings_filter_date_to">TO</string>
+    <string name="bookings_filter_time_picker_title">Select time</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
