@@ -2806,17 +2806,11 @@
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
-
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
-
-    // C
-
-
-    <!-- Z -->
     <string name="send_link_by_email">Send link by email</string>
     <string name="create_account">Create account</string>
     <string name="or_type_your_password">Or type your password</string>
