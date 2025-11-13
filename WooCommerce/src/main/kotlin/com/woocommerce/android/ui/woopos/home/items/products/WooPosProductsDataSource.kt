@@ -59,7 +59,7 @@ class WooPosProductsDataSource @Inject constructor(
 ) {
     enum class SyncStrategy {
         REMOTE,
-        LOCAL_CATALOG;
+        LOCAL_CATALOG,
     }
 
     private var activeSource: WooPosProductsDataSourceInterface? = null
