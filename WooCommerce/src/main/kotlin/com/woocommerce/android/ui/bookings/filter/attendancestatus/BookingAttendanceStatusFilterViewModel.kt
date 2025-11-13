@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses.Companion.any
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @HiltViewModel(assistedFactory = BookingAttendanceStatusFilterViewModel.Factory::class)
