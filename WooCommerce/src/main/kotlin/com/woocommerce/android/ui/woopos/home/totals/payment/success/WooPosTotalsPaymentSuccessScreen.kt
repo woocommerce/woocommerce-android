@@ -20,6 +20,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -47,11 +49,21 @@ fun WooPosPaymentSuccessScreen(
     onReceiptClicked: () -> Unit,
     onNewTransactionClicked: () -> Unit,
 ) {
-    val savedAnimationStage = rememberSaveable { mutableStateOf(AnimationStage.INITIAL) }
+    val isInstrumentedTest = remember {
+        try {
+            Class.forName("androidx.test.espresso.Espresso")
+            true
+        } catch (_: ClassNotFoundException) {
+            false
+        }
+    }
+
+    val initialStage = if (isInstrumentedTest) AnimationStage.FINISHED else AnimationStage.INITIAL
+    val savedAnimationStage = rememberSaveable { mutableStateOf(initialStage) }
     val animationStateFlow = remember { MutableStateFlow(savedAnimationStage.value) }
 
     LaunchedEffect(Unit) {
-        if (animationStateFlow.value != AnimationStage.FINISHED) {
+        if (!isInstrumentedTest && animationStateFlow.value != AnimationStage.FINISHED) {
             startAnimations(animationStateFlow)
         }
     }
@@ -134,7 +146,8 @@ private fun WooPosPaymentSuccessScreen(
                         end.linkTo(parent.end)
                     }
                     .height(80.dp)
-                    .width(604.dp),
+                    .width(604.dp)
+                    .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
                 onClick = onNewTransactionClicked,
                 text = stringResource(R.string.woopos_new_order_button)
             )
@@ -186,6 +199,7 @@ private fun CheckMarkIcon(
             contentDescription = stringResource(id = R.string.woopos_payment_successful_label),
             modifier = Modifier
                 .size(iconSize)
+                .testTag(WooPosTestTags.SUCCESS_CHECKMARK_ICON)
         )
     }
 }
