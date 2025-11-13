@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -55,6 +56,7 @@ class WooPosProductsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val catalogIncrementalSync: WooPosPerformLocalCatalogIncrementalSync = mock()
 
     @Before
     fun setup() {
@@ -567,7 +569,8 @@ class WooPosProductsViewModelTest {
                 coroutinesTestRule.testDispatcher,
                 coroutinesTestRule.testDispatcher,
                 coroutinesTestRule.testDispatcher
-            )
+            ),
+            incrementalSync = catalogIncrementalSync,
         )
     }
 }

@@ -26,6 +26,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepo
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,6 +59,14 @@ class WooPosProductsDataSource @Inject constructor(
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) {
     private var activeSource: WooPosProductsDataSourceInterface? = null
+
+    fun getCurrentSyncStrategy(): WooPosAnalyticsEventConstant.SyncStrategy {
+        return when (activeSource) {
+            localDbDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.LOCAL_CATALOG
+            remoteDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.REMOTE
+            else -> error("Unknown sync strategy")
+        }
+    }
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
         val requirement = syncStatusChecker.checkSyncRequirement()
@@ -538,10 +547,30 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
+    @Suppress("ReturnCount")
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
-        val siteModel = selectedSite.getOrNull() ?: return null
-        return productStore.getVariationByRemoteId(siteModel, productId, variationId)
-            ?.toWooPosVariation(variationMapper)
+        val cachedVariations = getCachedVariations(productId)
+        val cachedVariation = cachedVariations.find { it.remoteVariationId == variationId }
+        if (cachedVariation != null) {
+            return cachedVariation
+        }
+
+        return if (cachedVariations.isNotEmpty()) {
+            val remoteVariationsResult = productRestClient.fetchProductVariations(
+                site = selectedSite.get(),
+                productId = productId,
+            )
+
+            if (!remoteVariationsResult.isError) {
+                val variations = remoteVariationsResult.variations.map { it.toWooPosVariation(variationMapper) }
+                updateVariationsCache(productId, variations)
+                variations.find { it.remoteVariationId == variationId }
+            } else {
+                null
+            }
+        } else {
+            null
+        }
     }
 
     override suspend fun refreshProducts(): Result<WooPosSyncProductResult> = withContext(

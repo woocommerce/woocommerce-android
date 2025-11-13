@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -23,6 +24,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private var fetchWooVersion: FetchActiveWCPluginVersion = mock()
     private var logger: WooPosLogWrapper = mock()
     private var posTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
     private var posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
@@ -43,6 +45,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         val variationsEndpointChecker = WooPosIsLocalCatalogVariationsEndpointAvailable(
             getWooVersion = getWooVersion,
+            fetchWooVersion = fetchWooVersion,
             logger = logger,
             dispatchers = coroutinesTestRule.testDispatchers
         )
