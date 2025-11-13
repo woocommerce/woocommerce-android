@@ -66,7 +66,7 @@ class BookingFilterRepository @Inject constructor(
                 prefs.remove(attendanceStatusesKey)
             } else {
                 prefs[attendanceStatusesKey] = attendanceStatusesValues
-                    .joinToString(ATTENDANCE_STATUSES_DELIMITER.toString()) { it.key }
+                    .joinToString(ATTENDANCE_STATUSES_DELIMITER) { it.key }
             }
 
             // Customer
@@ -139,6 +139,6 @@ class BookingFilterRepository @Inject constructor(
     }
 
     companion object {
-        private const val ATTENDANCE_STATUSES_DELIMITER = ','
+        private const val ATTENDANCE_STATUSES_DELIMITER = ","
     }
 }
