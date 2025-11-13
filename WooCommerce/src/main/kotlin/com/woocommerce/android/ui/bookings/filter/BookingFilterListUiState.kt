@@ -43,7 +43,7 @@ data class BookingFilterListUiState(
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
-            title = page.titleRes,
+            title = UiString.UiStringRes(page.titleRes),
             value = page.filterValue,
             onClick = { openPage(page) },
         )
@@ -88,8 +88,7 @@ data class BookingFilterListUiState(
             BookingFilterPage.List -> null
         } ?: UiString.UiStringRes(R.string.bookings_filter_default)
 
-    val title
-        : UiString
+    val title: UiString
         get() = if (currentPage != BookingFilterPage.List) {
             UiString.UiStringRes(currentPage.titleRes)
         } else if (updatedBookingFiltersCount > 0) {
