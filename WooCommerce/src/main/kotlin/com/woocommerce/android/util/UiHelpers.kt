@@ -2,6 +2,8 @@ package com.woocommerce.android.util
 
 import android.content.Context
 import android.graphics.drawable.Drawable
+import android.icu.text.ListFormatter
+import android.os.Build
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.ClickableSpan
@@ -45,6 +47,22 @@ object UiHelpers {
                 }.toTypedArray()
             )
         }
+
+    /**
+     * Formats a list of [UiString] into a localized (for Android 13+), human-readable list.
+     */
+    fun formatUiStringList(context: Context, values: List<UiString>): String {
+        val texts = values.map { getTextOfUiString(context, it) }
+        if (texts.isEmpty()) return ""
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val locales = context.resources.configuration.locales
+            ListFormatter
+                .getInstance(locales[0], ListFormatter.Type.AND, ListFormatter.Width.NARROW)
+                .format(texts)
+        } else {
+            texts.joinToString(separator = ",")
+        }
+    }
 
     fun updateVisibility(view: View, visible: Boolean, setInvisible: Boolean = false) {
         view.visibility = if (visible) {
