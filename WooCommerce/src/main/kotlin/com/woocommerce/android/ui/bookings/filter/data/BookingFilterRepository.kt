@@ -31,6 +31,7 @@ class BookingFilterRepository @Inject constructor(
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
     private fun dateAfterKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_after")
+    private fun serviceEventsKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_service_events")
 
     private val siteIdFlow = selectedSite.observe().map { it?.id ?: -1 }.distinctUntilChanged()
 
@@ -41,7 +42,9 @@ class BookingFilterRepository @Inject constructor(
                 attendanceStatuses = prefs.getAttendanceStatuses(siteId)
                     ?: BookingsFilterOption.AttendanceStatuses.DEFAULT,
                 customer = prefs.getCustomerValue(siteId),
-                dateRange = prefs.getDateRangeValue(siteId)
+                dateRange = prefs.getDateRangeValue(siteId),
+                serviceEvents = prefs.getServiceEventsValue(siteId)
+                    ?: BookingsFilterOption.ServiceEvents.DEFAULT
             )
         }
     }
@@ -99,6 +102,18 @@ class BookingFilterRepository @Inject constructor(
                 prefs.remove(afterKey)
             }
 
+            // Service events
+            val serviceEventsKey = serviceEventsKey(siteId)
+            val serviceEventsValues = bookingFilters.serviceEvents.values
+            if (serviceEventsValues.isEmpty()) {
+                prefs.remove(serviceEventsKey)
+            } else {
+                prefs[serviceEventsKey] = serviceEventsValues
+                    .joinToString(SERVICE_EVENTS_DELIMITER) {
+                        "${it.productId}${SERVICE_EVENTS_PRODUCT_DELIMITER}${it.productName}"
+                    }
+            }
+
             // Other filters currently have no persisted payload; ignore for now
         }
     }
@@ -138,7 +153,26 @@ class BookingFilterRepository @Inject constructor(
         }
     }
 
+    private fun Preferences.getServiceEventsValue(siteId: Int): BookingsFilterOption.ServiceEvents? {
+        val stored = this[serviceEventsKey(siteId)] ?: return null
+        val set = stored.split(SERVICE_EVENTS_DELIMITER)
+            .mapNotNull { entry ->
+                val parts = entry.split(SERVICE_EVENTS_PRODUCT_DELIMITER)
+                if (parts.size == 2) {
+                    val productId = parts[0].toLongOrNull()
+                    val productName = parts[1]
+                    if (productId != null) {
+                        BookingsFilterOption.ProductInfo(productId = productId, productName = productName)
+                    } else null
+                } else null
+            }
+            .toSet()
+        return BookingsFilterOption.ServiceEvents(set)
+    }
+
     companion object {
         private const val ATTENDANCE_STATUSES_DELIMITER = ","
+        private const val SERVICE_EVENTS_DELIMITER = ","
+        private const val SERVICE_EVENTS_PRODUCT_DELIMITER = ":"
     }
 }

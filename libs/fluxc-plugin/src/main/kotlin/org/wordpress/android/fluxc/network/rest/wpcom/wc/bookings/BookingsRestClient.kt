@@ -111,7 +111,10 @@ class BookingsRestClient @Inject constructor(
                     // TODO add query for booking type filtering
                 }
 
-                BookingsFilterOption.ServiceEvent -> TODO()
+                is BookingsFilterOption.ServiceEvents -> if (filter.values.isNotEmpty()) {
+                    set("product", filter.values.joinToString(",") { it.productId.toString() })
+                }
+
                 is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
                     set("attendance_status", filter.values.joinToString(",") { it.key })
                 }
