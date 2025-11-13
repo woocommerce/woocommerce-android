@@ -11,14 +11,6 @@ sealed interface BookingsFilterOption {
         }
     }
 
-    data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
-        companion object {
-            val DEFAULT = AttendanceStatuses(emptySet())
-        }
-    }
-
-    object PaymentStatus : BookingsFilterOption
-
     /**
      * Booking type filter.
      *
@@ -28,39 +20,47 @@ sealed interface BookingsFilterOption {
         enum class Type { SERVICE, EVENT }
     }
 
-    data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
+    object ServiceEvent : BookingsFilterOption
 
-    object Location : BookingsFilterOption
+    data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = AttendanceStatuses(emptySet())
+        }
+    }
+
+    object PaymentStatus : BookingsFilterOption
+
+    data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
 
     data class DateRange(
         val before: Instant?,
         val after: Instant?
     ) : BookingsFilterOption
 
-    object ServiceEvent : BookingsFilterOption
+    object Location : BookingsFilterOption
 }
 
 data class BookingFilters(
-    val dateRange: BookingsFilterOption.DateRange? = null,
-    val customer: BookingsFilterOption.Customer? = null,
     val teamMembers: BookingsFilterOption.TeamMembers = BookingsFilterOption.TeamMembers.DEFAULT,
+    val bookingType: BookingsFilterOption.BookingType? = null,
+    val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
     val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
-    val bookingType: BookingsFilterOption.BookingType? = null,
+    val customer: BookingsFilterOption.Customer? = null,
+    val dateRange: BookingsFilterOption.DateRange? = null,
     val location: BookingsFilterOption.Location? = null,
-    val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
 ) {
     val enabledFiltersCount: Int
         get() {
             var count = 0
-            if (dateRange != null) count++
-            if (customer != null) count++
             if (teamMembers.values != BookingsFilterOption.TeamMembers.DEFAULT) count++
+            if (bookingType?.value != null) count++
+            if (serviceEvent != null) count++
             if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
-            if (bookingType?.value != null) count++
+            if (customer != null) count++
+            if (dateRange != null) count++
             if (location != null) count++
-            if (serviceEvent != null) count++
             return count
         }
 
