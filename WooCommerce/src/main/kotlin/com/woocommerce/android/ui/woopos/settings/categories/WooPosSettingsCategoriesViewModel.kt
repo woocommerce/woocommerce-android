@@ -17,9 +17,10 @@ class WooPosSettingsCategoriesViewModel @Inject constructor(
 
     init {
         val categories = WooPosSettingsCategory.entries.filter {
-            when (productsDataSource.getCurrentSyncStrategy()) {
-                WooPosProductsDataSource.SyncStrategy.REMOTE -> it != WooPosSettingsCategory.LOCAL_CATALOG
-                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG -> true
+            if (it == WooPosSettingsCategory.LOCAL_CATALOG) {
+                productsDataSource.getCurrentSyncStrategy() == WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            } else {
+                true
             }
         }
         _state.value = WooPosSettingsCategoriesState(categories)
