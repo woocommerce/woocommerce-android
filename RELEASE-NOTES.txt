@@ -6,6 +6,7 @@
 -----
 - [Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
 - [Internal] Handle BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION disconnect reason from Stripe SDK [https://github.com/woocommerce/woocommerce-android/pull/14886]
+- [**] Faster POS performance - search, barcode scanning, and loading are now nearly instant. [https://github.com/woocommerce/woocommerce-android/pull/14926]
 
 23.6
 -----
