@@ -121,7 +121,9 @@ class BookingsRestClient @Inject constructor(
                     filter.after?.let { set("start_date_after", it.toString()) }
                 }
 
-                BookingsFilterOption.ServiceEvent -> TODO()
+                is BookingsFilterOption.ServiceEvents -> if (filter.values.isNotEmpty()) {
+                    set("product", filter.values.joinToString(",") { it.productId.toString() })
+                }
             }
         }
     }
