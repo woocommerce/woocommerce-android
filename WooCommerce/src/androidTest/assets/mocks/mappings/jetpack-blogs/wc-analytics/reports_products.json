@@ -1,0 +1,52 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/rest/v1.1/jetpack-blogs/161477129/rest-api/",
+    "queryParameters": {
+      "json": {
+        "equalTo": "true"
+      },
+      "path": {
+        "matches": "/wc-analytics/reports/products/(.*)"
+      },
+      "locale": {
+        "matches": "(.*)"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "data": [
+        {
+          "product_id": 2129,
+          "items_sold": 1,
+          "net_revenue": 110.00,
+          "orders_count": 1,
+          "extended_info": {
+            "name": "Akoya Pearl shades",
+            "sku": "",
+            "image": "https://i0.wp.com/automatticwidgets.wpcomstaging.com/wp-content/uploads/2020/01/Mask-Group-2.png",
+            "permalink": "https://automatticwidgets.wpcomstaging.com/product/akoya-pearl-shades/"
+          }
+        },
+        {
+          "product_id": 2131,
+          "items_sold": 1,
+          "net_revenue": 100.00,
+          "orders_count": 1,
+          "extended_info": {
+            "name": "Colorado shades",
+            "sku": "",
+            "image": "https://i0.wp.com/automatticwidgets.wpcomstaging.com/wp-content/uploads/2020/01/Mask-Group-4.png",
+            "permalink": "https://automatticwidgets.wpcomstaging.com/product/colorado-shades/"
+          }
+        }
+      ]
+    },
+    "headers": {
+      "Content-Type": "application/json",
+      "Connection": "keep-alive"
+    }
+  }
+}

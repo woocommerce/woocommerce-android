@@ -56,3 +56,14 @@ dependencies {
     testImplementation(libs.mockito.kotlin)
     testImplementation(libs.kotlinx.coroutines.test)
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.androidx.compose.material.icons.extended.get().module.toString())
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.androidx.hilt.navigation.compose.get().module.toString())
+        }
+    }
+}
