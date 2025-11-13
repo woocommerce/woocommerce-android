@@ -65,7 +65,8 @@ class BookingFilterRepository @Inject constructor(
             if (attendanceStatusesValues.isEmpty()) {
                 prefs.remove(attendanceStatusesKey)
             } else {
-                prefs[attendanceStatusesKey] = attendanceStatusesValues.joinToString(",") { it.key }
+                prefs[attendanceStatusesKey] = attendanceStatusesValues
+                    .joinToString(ATTENDANCE_STATUSES_DELIMITER.toString()) { it.key }
             }
 
             // Customer
@@ -110,7 +111,7 @@ class BookingFilterRepository @Inject constructor(
 
     private fun Preferences.getAttendanceStatuses(siteId: Int): BookingsFilterOption.AttendanceStatuses? {
         val stored = this[attendanceStatusesKey(siteId)] ?: return null
-        val set = stored.split(',')
+        val set = stored.split(ATTENDANCE_STATUSES_DELIMITER)
             .mapNotNull { runCatching { BookingEntity.AttendanceStatus.fromKey(it) }.getOrNull() }
             .filterNot { it is BookingEntity.AttendanceStatus.Unknown }
             .toSet()
@@ -135,5 +136,9 @@ class BookingFilterRepository @Inject constructor(
         } else {
             null
         }
+    }
+
+    companion object {
+        private const val ATTENDANCE_STATUSES_DELIMITER = ','
     }
 }
