@@ -405,10 +405,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(
                     mapOf(
-                        "sync_strategy" to when (syncStrategy) {
-                            SyncStrategy.REMOTE -> "remote"
-                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
-                        }
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
                     )
                 )
             }
@@ -800,10 +797,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "reason" to reason,
-                        "sync_strategy" to when (syncStrategy) {
-                            SyncStrategy.REMOTE -> "remote"
-                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
-                        }
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
                     )
                 )
             }
@@ -819,10 +813,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "reason" to reason,
-                        "sync_strategy" to when (syncStrategy) {
-                            SyncStrategy.REMOTE -> "remote"
-                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
-                        }
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
                     )
                 )
             }
@@ -838,10 +829,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 addProperties(
                     mapOf(
                         "reason" to reason,
-                        "sync_strategy" to when (syncStrategy) {
-                            SyncStrategy.REMOTE -> "remote"
-                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
-                        }
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
                     )
                 )
             }
@@ -1103,5 +1091,12 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+    }
+}
+
+internal fun SyncStrategy.toAnalyticsValue(): String {
+    return when (this) {
+        SyncStrategy.REMOTE -> "remote"
+        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
     }
 }
