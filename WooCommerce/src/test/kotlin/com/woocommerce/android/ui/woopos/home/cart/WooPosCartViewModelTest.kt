@@ -1446,6 +1446,36 @@ class WooPosCartViewModelTest {
         assertThat(variationItem.name).isEqualTo("Red Hoodie")
     }
 
+    @Test
+    fun `when remove products event received, then removes specified products from cart`() = runTest {
+        // GIVEN
+        val sut = createSut()
+        val states = sut.state.captureValues()
+
+        simulateProductClicked(23L)
+        simulateProductClicked(24L)
+        simulateVariationClicked(productId = 100L, variationId = 101L)
+        simulateVariationClicked(productId = 100L, variationId = 102L)
+        simulateCouponClicked()
+
+        sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+        assertThat(getItemsInCart(states)).hasSize(5)
+
+        // WHEN
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.RemoveProductsClicked(listOf(24L))
+        )
+
+        // THEN
+        val finalItems = getItemsInCart(states)
+        assertThat(finalItems).hasSize(4)
+
+        val remainingProductIds = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Simple>()
+            .map { it.id }
+        assertThat(remainingProductIds).containsExactly(23L)
+        verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ProductsRemoved>())
+    }
+
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = generateWooPosProduct(
             productId = 23L,
@@ -1495,6 +1525,37 @@ class WooPosCartViewModelTest {
                 eventForTracking = mockedEventForTracking
             )
         )
+    }
+
+    private suspend fun simulateVariationClicked(productId: Long, variationId: Long) {
+        val variation = ProductTestUtils.generateProductVariation(
+            productId = productId,
+            variationId = variationId,
+            amount = "10.0"
+        ).toWooPosVariation(variationMapper)
+
+        val parentProduct = generateWooPosProduct(
+            productId = productId,
+            productName = "Parent product",
+            amount = "10.0"
+        )
+
+        whenever(getProductById(eq(productId))).thenReturn(parentProduct)
+        whenever(getVariationsById(eq(productId), eq(variationId))).thenReturn(variation)
+
+        parentToChildrenMutableSharedFlow.emit(
+            ParentToChildrenEvent.ItemClickedInItemsList(
+                WooPosItemsViewModel.ItemClickedData.Product.Variation(
+                    id = variationId,
+                    productId = productId
+                ),
+                eventForTracking = mockedEventForTracking
+            )
+        )
+    }
+
+    private fun getItemsInCart(states: List<WooPosCartState>): List<WooPosCartItemViewState> {
+        return (states.last().body as? WooPosCartState.Body.WithItems)?.itemsInCart ?: emptyList()
     }
 
     private fun createSut(): WooPosCartViewModel {

@@ -1528,6 +1528,59 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `when product missing from order after creation, then show ProductNotFoundError state`() = runTest {
+        // GIVEN
+        val itemClickedData = listOf(
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L)
+        )
+        val parentToChildrenEventFlow = MutableStateFlow(
+            ParentToChildrenEvent.CheckoutClicked(itemClickedData)
+        )
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        whenever(resourceProvider.getString(any()))
+            .thenReturn("")
+
+        // Order only contains product 1, not product 999
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 1L,
+                    subtotal = BigDecimal("10.00"),
+                )
+            ),
+            productsTotal = BigDecimal("10.00"),
+            total = BigDecimal("10.00"),
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+        }
+
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(any()) }.thenReturn("$10.00")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosTotalsViewState.ProductNotFoundError::class.java)
+    }
+
+    @Test
     fun `given order draft creation in progress, when back clicked, then order draft job should be canceled`() =
         runTest {
             // GIVEN
