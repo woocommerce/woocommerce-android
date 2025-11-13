@@ -139,7 +139,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(testScheduler) {
+    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(
+        testScheduler
+    ) {
         // GIVEN
         val site = SiteModel().apply { id = 789 }
         val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(

@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
