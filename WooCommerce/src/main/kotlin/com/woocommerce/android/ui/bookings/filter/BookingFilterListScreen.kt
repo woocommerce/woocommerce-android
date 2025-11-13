@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import java.util.Locale
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -50,7 +51,7 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                         onNavigationButtonClick = state.onClose,
                         navigationIcon = ImageVector.vectorResource(id = state.navigationIcon),
                         onActionButtonClick = state.onClear,
-                        actionButtonText = stringResource(id = R.string.bookings_filters_clear_button)
+                        actionButtonText = stringResource(id = R.string.clear).uppercase(Locale.getDefault())
                     )
                 } else {
                     Toolbar(
