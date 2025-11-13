@@ -38,7 +38,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
         val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
         val itemsCount = productCount + variationsCount
-        if (productCount == 0 || itemsCount >= 1000) {
+        if (productCount == 0 || itemsCount >= WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC) {
             val size = checkCatalogSizeAction
                 .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
