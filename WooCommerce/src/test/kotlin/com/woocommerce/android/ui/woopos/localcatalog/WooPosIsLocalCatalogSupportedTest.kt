@@ -118,7 +118,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given POS tab visibility check fails, when check invoked, then returns true`() = testBlocking {
+    fun `given POS tab visibility check fails, when check invoked, then returns false`() = testBlocking {
         // GIVEN
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(
             Result.failure(Exception("Visibility check failed"))
@@ -128,7 +128,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         val result = isLocalCatalogSupported(SITE_ID)
 
         // THEN
-        assertThat(result).isTrue()
+        assertThat(result).isFalse()
     }
 
     @Test
