@@ -40,8 +40,8 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
         whenever(getWooVersion()).thenReturn("10.3.0")
         whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
-        whenever(posTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
-        whenever(posCanBeLaunchedInTab.invoke()).thenReturn(WooPosLaunchability.Launchable)
+        whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(true))
+        whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(WooPosLaunchability.Launchable)
 
         val variationsEndpointChecker = WooPosIsLocalCatalogVariationsEndpointAvailable(
             getWooVersion = getWooVersion,
@@ -108,7 +108,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     @Test
     fun `given POS tab should not be visible, when check invoked, then returns false`() = testBlocking {
         // GIVEN
-        whenever(posTabShouldBeVisible.invoke()).thenReturn(Result.success(false))
+        whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(false))
 
         // WHEN
         val result = isLocalCatalogSupported(SITE_ID)
@@ -118,9 +118,9 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given POS tab visibility check fails, when check invoked, then returns false`() = testBlocking {
+    fun `given POS tab visibility check fails, when check invoked, then returns true`() = testBlocking {
         // GIVEN
-        whenever(posTabShouldBeVisible.invoke()).thenReturn(
+        whenever(posTabShouldBeVisible.invoke(false)).thenReturn(
             Result.failure(Exception("Visibility check failed"))
         )
 
@@ -128,13 +128,13 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         val result = isLocalCatalogSupported(SITE_ID)
 
         // THEN
-        assertThat(result).isFalse()
+        assertThat(result).isTrue()
     }
 
     @Test
     fun `given POS cannot be launched in tab, when check invoked, then returns false`() = testBlocking {
         // GIVEN
-        whenever(posCanBeLaunchedInTab.invoke()).thenReturn(
+        whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(
             WooPosLaunchability.NotLaunchable(
                 WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
             )

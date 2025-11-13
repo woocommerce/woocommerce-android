@@ -66,15 +66,10 @@ class WooPosTabController @Inject constructor(
 
     private fun updateTabVisibilityFromRemoteAndPersist() {
         activity.lifecycleScope.launch {
-            val result = shouldPosTabBeVisible()
+            val result = shouldPosTabBeVisible(forceRefresh = true)
 
             result.onSuccess { tabShouldBeVisible ->
                 setPOSTabVisibility(tabShouldBeVisible)
-                if (tabShouldBeVisible) {
-                    appPrefs.setPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
-                } else {
-                    appPrefs.clearPOSTabVisibilityForSite(selectedSite.getSelectedSiteId())
-                }
             }
 
             result.onFailure { error ->
