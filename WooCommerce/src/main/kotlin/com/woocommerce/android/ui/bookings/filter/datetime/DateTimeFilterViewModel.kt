@@ -7,21 +7,26 @@ import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.Dat
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.TimeDialog
 import com.woocommerce.android.ui.compose.component.Time
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import javax.inject.Inject
 
-@HiltViewModel
-class DateTimeFilterViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DateTimeFilterViewModel.Factory::class)
+class DateTimeFilterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val clock: Clock,
+    @Assisted private val onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val zone: ZoneId = ZoneId.systemDefault()
@@ -114,6 +119,7 @@ class DateTimeFilterViewModel @Inject constructor(
                 }
             }
         }
+        emitTypeFilterChange()
     }
 
     private fun commitSelectedTime(dateBoundary: DateBoundary, time: Time) {
@@ -140,6 +146,23 @@ class DateTimeFilterViewModel @Inject constructor(
                 }
             }
         }
+        emitTypeFilterChange()
+    }
+
+    private fun emitTypeFilterChange() {
+        onTypeFilterChanged(
+            BookingsFilterOption.DateRange(
+                after = _uiState.value.fromDateTime?.toInstant(ZoneOffset.UTC),
+                before = _uiState.value.toDateTime?.toInstant(ZoneOffset.UTC),
+            )
+        )
+    }
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit
+        ): DateTimeFilterViewModel
     }
 }
 

@@ -184,6 +184,7 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
 
     private fun createVm(): DateTimeFilterViewModel {
         return DateTimeFilterViewModel(
+            onTypeFilterChanged = { _ -> },
             savedStateHandle = SavedStateHandle(),
             clock = clock,
         )
