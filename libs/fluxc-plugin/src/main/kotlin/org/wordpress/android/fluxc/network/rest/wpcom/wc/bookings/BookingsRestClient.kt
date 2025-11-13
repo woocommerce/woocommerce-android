@@ -18,6 +18,7 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
+        private const val FILTER_QUERY_PARAMETER_SEPERATOR = ","
     }
 
     suspend fun fetchBooking(
@@ -121,14 +122,19 @@ class BookingsRestClient @Inject constructor(
     private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
         this@toQueryParams.forEach { filter ->
             when (filter) {
-                BookingsFilterOption.TeamMember -> TODO()
+                is BookingsFilterOption.TeamMembers -> {
+                    set(
+                        "resource",
+                        filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.id.value.toString() })
+                }
+
                 is BookingsFilterOption.BookingType -> {
                     // TODO add query for booking type filtering
                 }
 
                 BookingsFilterOption.ServiceEvent -> TODO()
                 is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
-                    set("attendance_status", filter.values.joinToString(",") { it.key })
+                    set("attendance_status", filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
                 }
 
                 BookingsFilterOption.PaymentStatus -> TODO()
