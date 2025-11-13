@@ -23,13 +23,13 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
-fun SingleChoiceFilterPage(
+fun BookingsFilterSelectionPage(
     items: List<BookingFilterListItem>,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
         items(items) { item ->
-            SingleChoiceRow(
+            SelectionRow(
                 text = stringResource(item.title),
                 selected = item.selected,
                 onClick = { item.onClick() }
@@ -39,7 +39,7 @@ fun SingleChoiceFilterPage(
 }
 
 @Composable
-private fun SingleChoiceRow(
+private fun SelectionRow(
     text: String,
     selected: Boolean,
     onClick: () -> Unit,

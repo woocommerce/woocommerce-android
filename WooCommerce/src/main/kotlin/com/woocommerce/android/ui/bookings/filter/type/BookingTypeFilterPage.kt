@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.woocommerce.android.ui.bookings.filter.SingleChoiceFilterPage
+import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @Composable
@@ -22,5 +22,5 @@ fun BookingTypeFilterRoute(
 
 @Composable
 fun BookingTypeFilterPage(state: BookingTypeFilterUiState) {
-    SingleChoiceFilterPage(items = state.items)
+    BookingsFilterSelectionPage(items = state.items)
 }
