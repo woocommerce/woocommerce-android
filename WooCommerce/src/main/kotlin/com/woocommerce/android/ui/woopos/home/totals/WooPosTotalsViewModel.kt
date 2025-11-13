@@ -332,7 +332,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     is ParentToChildrenEvent.ProductsRemoved -> {
-                        if (dataState.value.itemClickedDataList.isNotEmpty()) {
+                        if (event.cartDataList.isNotEmpty()) {
                             onCartDataReceived(event.cartDataList)
                         } else {
                             childrenToParentEventSender.sendToParent(
