@@ -16,7 +16,11 @@ import java.time.ZoneOffset
 @OptIn(ExperimentalCoroutinesApi::class)
 class DateTimeFilterViewModelTest : BaseUnitTest() {
 
-    private val clock = Clock.fixed(Instant.ofEpochMilli(1762445828L), ZoneOffset.UTC)
+    private val clock = Clock.fixed(
+        LocalDateTime.of(2025, 11, 13, 10, 0)
+            .toInstant(ZoneOffset.UTC),
+        ZoneOffset.UTC
+    )
 
     @Test
     fun `given no existing FROM date, when onDateClick(FROM) called, then opens DateDialog with null date`() =

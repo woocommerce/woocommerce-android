@@ -29,9 +29,7 @@ import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
-import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Calendar
@@ -163,7 +161,7 @@ private fun DateTimeRow(label: String, value: String, onClick: () -> Unit) {
 @Composable
 private fun DateTimeFilterPagePreview() {
     WooTheme {
-        val now = LocalDateTime.ofInstant(Instant.ofEpochMilli(1762445828L), ZoneId.systemDefault())
+        val now = LocalDateTime.of(2025, 11, 13, 10, 0)
         val later = now.withHour(now.hour + 1)
         DateTimeFilterPage(
             state = DateTimeFilterUiState(
