@@ -83,4 +83,43 @@ object WooPosAnalyticsEventConstant {
             const val CART_SOURCE = "source"
         }
     }
+
+    enum class SyncStrategy(val value: String) {
+        REMOTE("remote"),
+        LOCAL_CATALOG("local_catalog");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SYNC_STRATEGY = "sync_strategy"
+        }
+    }
+
+    enum class SyncType(val value: String) {
+        FULL("full"),
+        INCREMENTAL("incremental");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SYNC_TYPE = "sync_type"
+        }
+    }
+
+    enum class SyncErrorType(val value: String) {
+        CATALOG_TOO_LARGE("catalog_too_large"),
+        UNEXPECTED_ERROR("unexpected_error");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val ERROR_TYPE = "error_type"
+        }
+    }
 }

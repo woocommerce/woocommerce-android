@@ -103,3 +103,12 @@ dependencies {
     androidTestImplementation libs.androidx.test.ext.junit
     androidTestImplementation libs.assertj.core
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise it will cause the app to fail to build.
+            exclude(libs.androidx.core.ktx.get().module.toString())
+        }
+    }
+}

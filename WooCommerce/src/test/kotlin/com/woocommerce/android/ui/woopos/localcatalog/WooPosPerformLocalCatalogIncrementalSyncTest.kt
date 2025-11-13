@@ -53,11 +53,11 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Skipping sync on POS home: Local catalog not supported for site")
+        verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
         verifyNoInteractions(localCatalogSyncRepository)
     }
 
@@ -105,13 +105,13 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
         verify(wooPosLogWrapper).d(
-            "Sync on POS home completed successfully: 15 products, 8 variations synced in 2500ms"
+            "Sync on POS product list completed successfully: 15 products, 8 variations synced in 2500ms"
         )
     }
 
@@ -175,9 +175,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN & THEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
 
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
         advanceUntilIdle()

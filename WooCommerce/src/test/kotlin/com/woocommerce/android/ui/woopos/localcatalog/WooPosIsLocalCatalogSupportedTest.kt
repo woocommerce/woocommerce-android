@@ -2,7 +2,11 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
+import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
+import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,7 +24,10 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var getWooVersion: GetWooCorePluginCachedVersion = mock()
+    private var fetchWooVersion: FetchActiveWCPluginVersion = mock()
     private var logger: WooPosLogWrapper = mock()
+    private var posTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
+    private var posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
 
     private lateinit var isLocalCatalogSupported: WooPosIsLocalCatalogSupported
 
@@ -33,9 +40,12 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
         whenever(getWooVersion()).thenReturn("10.3.0")
         whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(posTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
+        whenever(posCanBeLaunchedInTab.invoke()).thenReturn(WooPosLaunchability.Launchable)
 
         val variationsEndpointChecker = WooPosIsLocalCatalogVariationsEndpointAvailable(
             getWooVersion = getWooVersion,
+            fetchWooVersion = fetchWooVersion,
             logger = logger,
             dispatchers = coroutinesTestRule.testDispatchers
         )
@@ -43,7 +53,10 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
             wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
             prefsRepo = preferencesRepository,
-            isVariationsEndpointAvailable = variationsEndpointChecker
+            isVariationsEndpointAvailable = variationsEndpointChecker,
+            posTabShouldBeVisible = posTabShouldBeVisible,
+            posCanBeLaunchedInTab = posCanBeLaunchedInTab,
+            wooPosLogWrapper = logger,
         )
     }
 
@@ -84,6 +97,48 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     fun `given periodic sync disabled, when check invoked, then returns false`() = testBlocking {
         // GIVEN
         whenever(preferencesRepository.isPeriodicSyncEnabledForSite(SITE_ID)).thenReturn(false)
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given POS tab should not be visible, when check invoked, then returns false`() = testBlocking {
+        // GIVEN
+        whenever(posTabShouldBeVisible.invoke()).thenReturn(Result.success(false))
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given POS tab visibility check fails, when check invoked, then returns false`() = testBlocking {
+        // GIVEN
+        whenever(posTabShouldBeVisible.invoke()).thenReturn(
+            Result.failure(Exception("Visibility check failed"))
+        )
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given POS cannot be launched in tab, when check invoked, then returns false`() = testBlocking {
+        // GIVEN
+        whenever(posCanBeLaunchedInTab.invoke()).thenReturn(
+            WooPosLaunchability.NotLaunchable(
+                WooPosLaunchability.NonLaunchabilityReason.UnsupportedCurrency
+            )
+        )
 
         // WHEN
         val result = isLocalCatalogSupported(SITE_ID)

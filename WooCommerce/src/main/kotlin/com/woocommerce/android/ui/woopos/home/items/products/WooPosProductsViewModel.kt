@@ -16,11 +16,14 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.PullToRefreshTriggered
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -39,6 +42,8 @@ class WooPosProductsViewModel @Inject constructor(
     private val priceFormat: WooPosFormatPrice,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val resourceProvider: ResourceProvider,
+    private val dispatchers: CoroutineDispatchers,
+    incrementalSync: WooPosPerformLocalCatalogIncrementalSync,
 ) : ViewModel() {
 
     private var loadMoreProductsJob: Job? = null
@@ -59,6 +64,7 @@ class WooPosProductsViewModel @Inject constructor(
     init {
         listenEventsFromParent()
         loadProducts(forceRefreshProducts = false)
+        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
     }
 
     private fun listenEventsFromParent() {
@@ -146,7 +152,7 @@ class WooPosProductsViewModel @Inject constructor(
     private fun loadProducts(forceRefreshProducts: Boolean) {
         loadProductsJob?.cancel()
         loadMoreProductsJob?.cancel()
-        loadProductsJob = viewModelScope.launch {
+        loadProductsJob = viewModelScope.launch(dispatchers.io) {
             _viewState.value = WooPosProductsViewState.Loading()
 
             dataSource.fetchFirstPage(forceRefresh = forceRefreshProducts).collect { result ->
