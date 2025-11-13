@@ -176,7 +176,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
-        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.mapNotNull {
+        val itemClickedDataList = (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.mapNotNull {
             when (it) {
                 is Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
                 is Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
@@ -188,7 +188,7 @@ class WooPosCartViewModel @Inject constructor(
                 is WooPosCartItemViewState.Loading -> null
                 is WooPosCartItemViewState.Error -> null
             }
-        }
+        } ?: emptyList()
         return itemClickedDataList
     }
 

@@ -21,6 +21,7 @@ class BookingListFiltersBuilder @Inject constructor(
     fun BookingListTab.asDateRangeFilter(): BookingsFilterOption.DateRange? {
         fun todayAtMidnight() = LocalDate.now(clock).minusDays(1).atTime(LocalTime.MAX)
             .atOffset(ZoneOffset.UTC).toInstant()
+
         fun todayAtEndOfDay() = LocalDate.now(clock).atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant()
 
         return when (this) {

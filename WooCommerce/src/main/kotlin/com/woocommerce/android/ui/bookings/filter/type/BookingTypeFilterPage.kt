@@ -9,7 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 
 @Composable
 fun BookingTypeFilterRoute(
-    initialType: BookingsFilterOption.BookingType,
+    initialType: BookingsFilterOption.BookingType?,
     onTypeFilterChanged: (BookingsFilterOption.BookingType) -> Unit,
 ) {
     val viewModel = hiltViewModel<BookingTypeFilterViewModel, BookingTypeFilterViewModel.Factory> { factory ->

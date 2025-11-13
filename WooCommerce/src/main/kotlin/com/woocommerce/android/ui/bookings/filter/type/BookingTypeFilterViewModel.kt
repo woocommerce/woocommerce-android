@@ -9,21 +9,24 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
 
 @HiltViewModel(assistedFactory = BookingTypeFilterViewModel.Factory::class)
 class BookingTypeFilterViewModel @AssistedInject constructor(
-    @Assisted private val initialType: BookingsFilterOption.BookingType,
-    @Assisted private val onTypeFilterChanged: (BookingsFilterOption.BookingType) -> Unit,
+    @Assisted private val initialType: BookingType?,
+    @Assisted private val onTypeFilterChanged: (BookingType) -> Unit,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
-        BookingTypeFilterUiState(selectedType = initialType, onTypeSelected = ::onTypeSelected)
+        BookingTypeFilterUiState(
+            selectedType = initialType ?: BookingType(null),
+            onTypeSelected = ::onTypeSelected
+        )
     )
     val uiState: StateFlow<BookingTypeFilterUiState> = _uiState
 
-    private fun onTypeSelected(type: BookingsFilterOption.BookingType) {
+    private fun onTypeSelected(type: BookingType) {
         if (_uiState.value.selectedType != type) {
             _uiState.update { current -> current.copy(selectedType = type) }
         }
@@ -33,8 +36,8 @@ class BookingTypeFilterViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            initialType: BookingsFilterOption.BookingType,
-            onTypeFilterChanged: (BookingsFilterOption.BookingType) -> Unit
+            initialType: BookingType?,
+            onTypeFilterChanged: (BookingType) -> Unit
         ): BookingTypeFilterViewModel
     }
 }

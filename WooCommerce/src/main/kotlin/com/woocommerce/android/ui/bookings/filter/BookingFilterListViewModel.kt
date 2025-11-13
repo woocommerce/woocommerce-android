@@ -28,7 +28,8 @@ class BookingFilterListViewModel @Inject constructor(
             onClose = ::onClose,
             onShowBookings = ::onShowBookings,
             openPage = ::onOpenPage,
-            onUpdateFilterOption = ::onUpdateFilterOption
+            onUpdateFilterOption = ::onUpdateFilterOption,
+            onClear = ::onClear
         )
     )
     val uiState = _uiState.asLiveData()
@@ -46,19 +47,21 @@ class BookingFilterListViewModel @Inject constructor(
     private fun onUpdateFilterOption(option: BookingsFilterOption) {
         _uiState.update { current ->
             current.copy(
-                newBookingFilters = current.newBookingFilters.filterNot { it::class == option::class }
-                    .plus(option)
-                    .toSet()
+                updatedBookingFilters = current.updatedBookingFilters.updateFilterOption(option)
             )
         }
+    }
+
+    private fun onClear() {
+        _uiState.update { it.copy(updatedBookingFilters = BookingFilters()) }
     }
 
     private fun getBookingFilter() {
         launch {
             // We don't observe changes here, just get the current value once
-            val bookingFilters = bookingFilterRepository.bookingFiltersFlow.firstOrNull()
+            val bookingFilters = bookingFilterRepository.bookingFiltersFlow.firstOrNull() ?: BookingFilters()
             _uiState.update { current ->
-                current.copy(initialBookingFilters = bookingFilters)
+                current.copy(initialBookingFilters = bookingFilters, updatedBookingFilters = bookingFilters)
             }
         }
     }
@@ -108,9 +111,5 @@ class BookingFilterListViewModel @Inject constructor(
         triggerEvent(MultiLiveEvent.Event.Exit)
     }
 
-    private fun hasUnsavedChanges(): Boolean {
-        val initial = _uiState.value.initialBookingFilters ?: BookingFilters()
-        val updated = _uiState.value.updatedBookingFilters
-        return updated != initial
-    }
+    private fun hasUnsavedChanges() = _uiState.value.initialBookingFilters != _uiState.value.updatedBookingFilters
 }

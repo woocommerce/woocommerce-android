@@ -123,10 +123,12 @@ tasks.withType(KotlinCompile).configureEach {
 dependencyAnalysis {
     issues {
         onUnusedDependencies {
-            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            // This dependency is actually needed; otherwise, the app will crash with a runtime exception.
             exclude(libs.eventbus.android.get().module.toString())
-            // This dependency is actually needed otherwise UI tests will crash with a runtime exception.
+            // This dependency is actually needed; otherwise, UI tests will crash with a runtime exception.
             exclude(libs.apache.http.client.android.get().module.toString())
+            // This dependency is actually needed; otherwise, NoClassDefFoundError will be thrown during card reader connection flow.
+            exclude(libs.squareup.okhttp3.tls.get().module.toString())
         }
     }
 }

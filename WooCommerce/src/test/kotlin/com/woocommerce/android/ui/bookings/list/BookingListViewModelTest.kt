@@ -20,6 +20,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argThat
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
@@ -331,7 +332,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler).loadBookings(
             searchQuery = anyOrNull(),
-            filters = eq(listOf(customerFilter)),
+            filters = argThat { any { it == customerFilter } },
             sortBy = any()
         )
     }

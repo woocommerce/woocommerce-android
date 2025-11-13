@@ -36,18 +36,30 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import java.util.Locale
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
     Scaffold(
         topBar = {
             Column {
-                Toolbar(
-                    title = state.title.getText(),
-                    onNavigationButtonClick = state.onClose,
-                    navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
-                )
+                if (state.showClearButton) {
+                    Toolbar(
+                        title = state.title.getText(),
+                        onNavigationButtonClick = state.onClose,
+                        navigationIcon = ImageVector.vectorResource(id = state.navigationIcon),
+                        onActionButtonClick = state.onClear,
+                        actionButtonText = stringResource(id = R.string.clear).uppercase(Locale.getDefault())
+                    )
+                } else {
+                    Toolbar(
+                        title = state.title.getText(),
+                        onNavigationButtonClick = state.onClose,
+                        navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
+                    )
+                }
                 HorizontalDivider(thickness = 0.5.dp)
             }
         },
@@ -129,7 +141,7 @@ private fun FiltersNavHost(
             TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
-            BookingTypeFilterRoute(initialType = state.currentBookingType) { type ->
+            BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
         }
@@ -179,7 +191,7 @@ private fun BookingFilterListScreenPreview() {
     WooThemeWithBackground {
         BookingFilterListScreen(
             state = BookingFilterListUiState(
-                initialBookingFilters = null,
+                initialBookingFilters = BookingFilters(),
             )
         )
     }

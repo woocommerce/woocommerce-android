@@ -2,8 +2,13 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.OrderMapper
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
@@ -16,21 +21,27 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 sealed class LoadOrdersResult {
-    data class SuccessCache(val orders: List<Order>) : LoadOrdersResult()
-    data class SuccessRemote(val orders: List<Order>) : LoadOrdersResult()
+    data class SuccessCache(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
+    data class SuccessRemote(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
     data class Error(val message: String) : LoadOrdersResult()
 }
 
 sealed class SearchOrdersResult {
-    data class Success(val orders: List<Order>) : SearchOrdersResult()
+    data class Success(val ordersWithRefunds: Map<Order, RefundFetchResult>) : SearchOrdersResult()
     data class Error(val message: String) : SearchOrdersResult()
+}
+
+sealed class RefundFetchResult {
+    data class Success(val refunds: List<Refund>) : RefundFetchResult()
+    object Error : RefundFetchResult()
 }
 
 class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
     private val orderMapper: OrderMapper,
-    private val ordersCache: WooPosOrdersInMemoryCache
+    private val ordersCache: WooPosOrdersInMemoryCache,
+    private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds
 ) {
     private val canLoadMore = AtomicBoolean(false)
     private val page = AtomicInteger(1)
@@ -45,12 +56,16 @@ class WooPosOrdersDataSource @Inject constructor(
 
     fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
-        if (cached.isNotEmpty()) emit(LoadOrdersResult.SuccessCache(cached))
+        if (cached.isNotEmpty()) {
+            val cachedWithRefunds = fetchRefundsForOrders(cached)
+            emit(LoadOrdersResult.SuccessCache(cachedWithRefunds))
+        }
 
         val result = loadFirstPage()
-        result.onSuccess {
-            ordersCache.setAll(it)
-            emit(LoadOrdersResult.SuccessRemote(it))
+        result.onSuccess { orders ->
+            ordersCache.setAll(orders)
+            val ordersWithRefunds = fetchRefundsForOrders(orders)
+            emit(LoadOrdersResult.SuccessRemote(ordersWithRefunds))
         }.onFailure {
             emit(LoadOrdersResult.Error(it.message ?: UNKNOWN_ERROR))
         }
@@ -59,13 +74,20 @@ class WooPosOrdersDataSource @Inject constructor(
     suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
         val result = loadFirstPage(searchQuery)
         return result.fold(
-            onSuccess = { SearchOrdersResult.Success(it) },
+            onSuccess = { orders ->
+                val ordersWithRefunds = fetchRefundsForOrders(orders)
+                SearchOrdersResult.Success(ordersWithRefunds)
+            },
             onFailure = { SearchOrdersResult.Error(it.message ?: UNKNOWN_ERROR) }
         )
     }
 
-    suspend fun loadMore(searchQuery: String? = null): Result<List<Order>> =
-        withContext(Dispatchers.IO) { loadNextPage(searchQuery) }
+    suspend fun loadMore(searchQuery: String? = null): Result<Map<Order, RefundFetchResult>> =
+        withContext(Dispatchers.IO) {
+            loadNextPage(searchQuery).map { orders ->
+                fetchRefundsForOrders(orders)
+            }
+        }
 
     suspend fun refreshOrderById(orderId: Long): Result<Order> {
         val site = selectedSite.get()
@@ -135,4 +157,16 @@ class WooPosOrdersDataSource @Inject constructor(
 
     private fun WCOrderStore.OrderError.toThrowable(): Throwable =
         Throwable("[$type] $message")
+
+    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundFetchResult> =
+        coroutineScope {
+            orders.map { order ->
+                async {
+                    retrieveOrderRefunds(order).fold(
+                        onSuccess = { refunds -> order to RefundFetchResult.Success(refunds) },
+                        onFailure = { order to RefundFetchResult.Error }
+                    )
+                }
+            }.awaitAll().toMap()
+        }
 }
