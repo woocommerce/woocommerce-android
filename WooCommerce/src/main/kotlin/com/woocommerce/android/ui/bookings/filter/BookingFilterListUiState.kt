@@ -133,7 +133,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
     when (bookingsFilterOption) {
         is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
-        is BookingsFilterOption.TeamMember -> copy(teamMember = bookingsFilterOption)
+        is BookingsFilterOption.TeamMembers -> copy(teamMembers = bookingsFilterOption)
         is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)

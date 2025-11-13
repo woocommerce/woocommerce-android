@@ -1,10 +1,15 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.time.Instant
 
 sealed interface BookingsFilterOption {
-    object TeamMember : BookingsFilterOption
+    data class TeamMembers(val values: Set<BookingResourceEntity>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = TeamMembers(emptySet())
+        }
+    }
 
     data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
         companion object {
@@ -38,7 +43,7 @@ sealed interface BookingsFilterOption {
 data class BookingFilters(
     val dateRange: BookingsFilterOption.DateRange? = null,
     val customer: BookingsFilterOption.Customer? = null,
-    val teamMember: BookingsFilterOption.TeamMember? = null,
+    val teamMembers: BookingsFilterOption.TeamMembers = BookingsFilterOption.TeamMembers.DEFAULT,
     val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val bookingType: BookingsFilterOption.BookingType? = null,
@@ -50,7 +55,7 @@ data class BookingFilters(
             var count = 0
             if (dateRange != null) count++
             if (customer != null) count++
-            if (teamMember != null) count++
+            if (teamMembers.values != BookingsFilterOption.TeamMembers.DEFAULT) count++
             if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
