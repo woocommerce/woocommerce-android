@@ -17,9 +17,10 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         body: Map<String, String> = emptyMap(),
         enableCaching: Boolean = false,
         cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        nonce: String? = null
+        nonce: String? = null,
+        authHeader: String? = null
     ) = suspendCancellableCoroutine<WPAPIResponse<String>> { cont ->
-        callMethod(Method.GET, url, params, body, cont, enableCaching, cacheTimeToLive, nonce, restClient)
+        callMethod(Method.GET, url, params, body, cont, enableCaching, cacheTimeToLive, nonce, authHeader, restClient)
     }
 
     suspend fun syncPostRequest(
@@ -29,9 +30,10 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         body: Map<String, String> = emptyMap(),
         enableCaching: Boolean = false,
         cacheTimeToLive: Int = BaseRequest.DEFAULT_CACHE_LIFETIME,
-        nonce: String? = null
+        nonce: String? = null,
+        authHeader: String? = null
     ) = suspendCancellableCoroutine<WPAPIResponse<String>> { cont ->
-        callMethod(Method.POST, url, params, body, cont, enableCaching, cacheTimeToLive, nonce, restClient)
+        callMethod(Method.POST, url, params, body, cont, enableCaching, cacheTimeToLive, nonce, authHeader, restClient)
     }
 
     @Suppress("LongParameterList")
@@ -44,6 +46,7 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
         enableCaching: Boolean,
         cacheTimeToLive: Int,
         nonce: String?,
+        authHeader: String?,
         restClient: BaseWPAPIRestClient
     ) {
         val request = WPAPIEncodedBodyRequest(method, url, params, body, { response, headers ->
@@ -62,6 +65,10 @@ class WPAPIEncodedBodyRequestBuilder @Inject constructor() {
 
         if (nonce != null) {
             request.addHeader("x-wp-nonce", nonce)
+        }
+
+        if (authHeader != null) {
+            request.addHeader("Authorization", authHeader)
         }
 
         restClient.add(request)

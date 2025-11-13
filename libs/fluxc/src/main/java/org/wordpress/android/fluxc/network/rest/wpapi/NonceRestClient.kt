@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi
 
 import com.android.volley.NoConnectionError
 import com.android.volley.RequestQueue
+import okhttp3.Credentials
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.UserAgent
@@ -57,8 +58,14 @@ class NonceRestClient @Inject constructor(
             "pwd" to password,
             "redirect_to" to redirectUrl
         )
+        val authHeader = Credentials.basic(username, password)
         val response =
-            wpApiEncodedBodyRequestBuilder.syncPostRequest(this, wpLoginUrl, body = body)
+            wpApiEncodedBodyRequestBuilder.syncPostRequest(
+                this,
+                wpLoginUrl,
+                body = body,
+                authHeader = authHeader
+            )
         val nonce = when (response) {
             is Success -> {
                 // A success means we got 200 from the wp-login.php call, which means
@@ -92,7 +99,7 @@ class NonceRestClient @Inject constructor(
                 } else {
                     val networkResponse = response.error.volleyError?.networkResponse
                     if (networkResponse?.statusCode?.isRedirect() == true) {
-                        requestNonce(networkResponse.headers?.get("Location") ?: redirectUrl, username)
+                        requestNonceFromRedirect(networkResponse.headers?.get("Location") ?: redirectUrl, username, password)
                     } else {
                         FailedRequest(
                             timeOfResponse = currentTimeProvider.currentDate().time,
@@ -112,9 +119,14 @@ class NonceRestClient @Inject constructor(
         }
     }
 
-    private suspend fun requestNonce(redirectUrl: String, username: String): Nonce {
+    private suspend fun requestNonceFromRedirect(redirectUrl: String, username: String, password: String): Nonce {
+        val authHeader = Credentials.basic(username, password)
         return when (
-            val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(this, redirectUrl)
+            val response = wpApiEncodedBodyRequestBuilder.syncGetRequest(
+                this,
+                redirectUrl,
+                authHeader = authHeader
+            )
         ) {
             is Success -> {
                 if (response.data?.matches("[0-9a-zA-Z]{2,}".toRegex()) == true) {
