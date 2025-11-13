@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.bookings.filter.datetime
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.compose.BookingSectionHeader
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -53,14 +55,14 @@ fun DateTimeFilterPage(
         verticalArrangement = Arrangement.Top
     ) {
         DateTimeSection(
-            label = stringResource(id = R.string.bookings_filter_date_from),
+            header = R.string.bookings_filter_date_from,
             dateReadable = state.formattedFromDate,
             timeReadable = state.formattedFromTime,
             onDateClick = { state.onDateClick(DateBoundary.FROM) },
             onTimeClick = { state.onTimeClick(DateBoundary.FROM) },
         )
         DateTimeSection(
-            label = stringResource(id = R.string.bookings_filter_date_to),
+            header = R.string.bookings_filter_date_to,
             dateReadable = state.formattedToDate,
             timeReadable = state.formattedToTime,
             onDateClick = { state.onDateClick(DateBoundary.TO) },
@@ -96,23 +98,16 @@ fun DateTimeFilterPage(
 
 @Composable
 private fun DateTimeSection(
-    label: String,
+    @StringRes header: Int,
     dateReadable: String,
     timeReadable: String,
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit,
 ) {
-    Text(
-        text = label,
-        style = MaterialTheme.typography.titleMedium,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier
-            .padding(horizontal = 16.dp)
-            .padding(top = 16.dp, bottom = 8.dp)
-    )
+    BookingSectionHeader(header = header)
     HorizontalDivider(thickness = 0.5.dp)
     Column(
-        modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+        modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
     ) {
         DateTimeRow(
             label = stringResource(id = R.string.bookings_filter_date_label),
@@ -137,7 +132,6 @@ private fun DateTimeSection(
 private fun DateTimeRow(label: String, value: String, onClick: () -> Unit) {
     Row(
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.surface)
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 12.dp),
