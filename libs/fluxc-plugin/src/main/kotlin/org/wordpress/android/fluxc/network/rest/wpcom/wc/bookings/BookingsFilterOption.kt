@@ -41,7 +41,7 @@ data class BookingFilters(
     val dateRange: BookingsFilterOption.DateRange? = null,
     val customer: BookingsFilterOption.Customer? = null,
     val teamMember: BookingsFilterOption.TeamMember? = null,
-    val attendanceStatuses: BookingsFilterOption.AttendanceStatuses? = BookingsFilterOption.AttendanceStatuses.DEFAULT,
+    val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val bookingType: BookingsFilterOption.BookingType? = null,
     val location: BookingsFilterOption.Location? = null,
@@ -53,9 +53,7 @@ data class BookingFilters(
             if (dateRange != null) count++
             if (customer != null) count++
             if (teamMember != null) count++
-            if (attendanceStatuses != null && attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
-                count++
-            }
+            if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
             if (location != null) count++

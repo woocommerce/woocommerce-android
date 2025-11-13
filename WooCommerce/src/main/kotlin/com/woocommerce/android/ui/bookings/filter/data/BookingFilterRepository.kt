@@ -38,7 +38,8 @@ class BookingFilterRepository @Inject constructor(
         dataStore.data.map { prefs ->
             BookingFilters(
                 bookingType = prefs.getBookingType(siteId),
-                attendanceStatuses = prefs.getAttendanceStatuses(siteId),
+                attendanceStatuses = prefs.getAttendanceStatuses(siteId)
+                    ?: BookingsFilterOption.AttendanceStatuses.DEFAULT,
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId)
             )
@@ -60,8 +61,8 @@ class BookingFilterRepository @Inject constructor(
 
             // Attendance statuses
             val attendanceStatusesKey = attendanceStatusesKey(siteId)
-            val attendanceStatusesValues = bookingFilters.attendanceStatuses?.values
-            if (attendanceStatusesValues.isNullOrEmpty()) {
+            val attendanceStatusesValues = bookingFilters.attendanceStatuses.values
+            if (attendanceStatusesValues.isEmpty()) {
                 prefs.remove(attendanceStatusesKey)
             } else {
                 prefs[attendanceStatusesKey] = attendanceStatusesValues.joinToString(",") { it.key }
