@@ -32,7 +32,16 @@ sealed interface BookingsFilterOption {
         val after: Instant?
     ) : BookingsFilterOption
 
-    object ServiceEvent : BookingsFilterOption
+    data class ServiceEvents(val values: Set<ProductInfo>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = ServiceEvents(emptySet())
+        }
+    }
+
+    data class ProductInfo(
+        val productId: Long,
+        val productName: String
+    )
 }
 
 data class BookingFilters(
@@ -43,7 +52,7 @@ data class BookingFilters(
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val bookingType: BookingsFilterOption.BookingType? = null,
     val location: BookingsFilterOption.Location? = null,
-    val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
+    val serviceEvents: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
 ) {
     val enabledFiltersCount: Int
         get() {
@@ -55,7 +64,7 @@ data class BookingFilters(
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
             if (location != null) count++
-            if (serviceEvent != null) count++
+            if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) count++
             return count
         }
 
