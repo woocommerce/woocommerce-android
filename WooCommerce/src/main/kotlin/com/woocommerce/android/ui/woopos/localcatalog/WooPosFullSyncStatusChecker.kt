@@ -35,7 +35,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
 
-        if (localCatalogStore.getProductCount(site.localId()).getOrNull() == 0) {
+        val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
+        val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
+        val itemsCount = productCount + variationsCount
+        if (productCount == 0 || itemsCount >= 1000) {
             val size = checkCatalogSizeAction
                 .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
@@ -46,8 +49,6 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
-        val productCount = localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(site.id))
-            .getOrElse { 0 }
         val catalogIsEmpty = productCount == 0
 
         if (lastFullSyncTimestamp == null) {

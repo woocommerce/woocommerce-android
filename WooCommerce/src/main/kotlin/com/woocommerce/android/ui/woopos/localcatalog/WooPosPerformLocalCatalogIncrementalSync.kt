@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -17,6 +18,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
+    private val prefsRepo: WooPosPreferencesRepository,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     fun execute(reason: WooPosIncrementalSyncReason) {
@@ -56,6 +58,11 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
             }
             is Failure -> {
                 wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
+
+                if (syncResult is Failure.CatalogTooLarge) {
+                    wooPosLogWrapper.e("Disabling Local Catalog periodic sync for site due to catalog size too large")
+                    prefsRepo.disablePeriodicSyncForSite(site.localId())
+                }
             }
         }
     }
