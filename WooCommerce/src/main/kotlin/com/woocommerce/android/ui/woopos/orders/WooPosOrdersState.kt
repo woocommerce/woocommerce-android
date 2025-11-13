@@ -1,44 +1,63 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.runtime.Immutable
+import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
-data class OrderDetailsViewState(
-    val id: Long,
-    val number: String,
-    val dateTime: String,
-    val customerEmail: String?,
-    val status: PosOrderStatus,
-
-    val lineItems: List<LineItemRow>,
-    val breakdown: TotalsBreakdown,
-    val total: String,
-    val totalPaid: String,
-    val paymentMethodTitle: String?,
-) {
-    @Immutable
-    data class LineItemRow(
-        val id: Long,
-        val name: String,
-        val qtyAndUnitPrice: String,
-        val lineTotal: String,
-        val imageUrl: String?,
-    )
+sealed class OrderDetailsViewState {
+    abstract val orderId: Long
 
     @Immutable
-    data class TotalsBreakdown(
-        val products: String,
-        val discount: String?,
-        val discountCode: String?,
-        val taxes: String,
-        val shipping: String?,
-        val refunds: List<String>,
-        val netPayment: String?
-    )
+    data class Lazy(
+        override val orderId: Long,
+        val order: Order,
+        val refundResult: RefundFetchResult
+    ) : OrderDetailsViewState()
+
+    @Immutable
+    data class Computed(
+        override val orderId: Long,
+        val details: Details
+    ) : OrderDetailsViewState() {
+        @Immutable
+        data class Details(
+            val id: Long,
+            val number: String,
+            val dateTime: String,
+            val customerEmail: String?,
+            val status: PosOrderStatus,
+
+            val lineItems: List<LineItemRow>,
+            val breakdown: TotalsBreakdown,
+            val total: String,
+            val totalPaid: String,
+            val paymentMethodTitle: String?,
+        ) {
+            @Immutable
+            data class LineItemRow(
+                val id: Long,
+                val name: String,
+                val qtyAndUnitPrice: String,
+                val lineTotal: String,
+                val imageUrl: String?,
+            )
+
+            @Immutable
+            data class TotalsBreakdown(
+                val products: String,
+                val discount: String?,
+                val discountCode: String?,
+                val taxes: String,
+                val shipping: String?,
+                val refunds: List<String>,
+                val netPayment: String?
+            )
+        }
+    }
 }
 
 @Immutable
@@ -64,7 +83,7 @@ sealed class WooPosOrdersState {
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
-        val selectedDetails: OrderDetailsViewState,
+        val selectedDetails: OrderDetailsViewState.Computed.Details,
         val paginationState: WooPosPaginationState
     ) : WooPosOrdersState() {
         sealed class Items {
