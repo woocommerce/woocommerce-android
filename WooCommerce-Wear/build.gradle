@@ -219,3 +219,16 @@ static def loadPropertiesFromFile(inputFile) {
     }
     return properties
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.androidx.hilt.navigation.compose.get().module.toString())
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.androidx.preference.ktx.get().module.toString())
+            // This dependency is actually needed otherwise the app will crash with a runtime exception.
+            exclude(libs.androidx.work.runtime.ktx.get().module.toString())
+        }
+    }
+}
