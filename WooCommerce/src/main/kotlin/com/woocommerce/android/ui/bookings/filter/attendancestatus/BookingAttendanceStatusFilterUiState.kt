@@ -4,7 +4,6 @@ import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses.Companion.any
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 data class BookingAttendanceStatusFilterUiState(
@@ -42,3 +41,6 @@ val AttendanceStatus?.titleRes: Int
         AttendanceStatus.Cancelled -> R.string.booking_attendance_status_cancelled
         else -> R.string.bookings_filter_default
     }
+
+val AttendanceStatus.Companion.any: AttendanceStatus?
+    get() = null

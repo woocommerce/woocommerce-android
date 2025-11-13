@@ -9,8 +9,6 @@ sealed interface BookingsFilterOption {
     data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
         companion object {
             val DEFAULT = AttendanceStatuses(emptySet())
-            val BookingEntity.AttendanceStatus.Companion.any: BookingEntity.AttendanceStatus?
-                get() = null
         }
     }
 
