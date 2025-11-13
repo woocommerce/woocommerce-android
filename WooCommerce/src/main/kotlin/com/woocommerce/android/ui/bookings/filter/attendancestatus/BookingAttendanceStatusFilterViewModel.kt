@@ -9,35 +9,47 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatus
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses.Companion.any
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @HiltViewModel(assistedFactory = BookingAttendanceStatusFilterViewModel.Factory::class)
 class BookingAttendanceStatusFilterViewModel @AssistedInject constructor(
-    @Assisted private val initialStatus: AttendanceStatus?,
-    @Assisted private val onFilterChanged: (AttendanceStatus) -> Unit,
+    @Assisted private val initialStatuses: AttendanceStatuses?,
+    @Assisted private val onFilterChanged: (AttendanceStatuses) -> Unit,
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
         BookingAttendanceStatusFilterUiState(
-            selectedStatus = initialStatus ?: AttendanceStatus(null),
+            selectedStatuses = initialStatuses ?: AttendanceStatuses.DEFAULT,
             onStatusSelected = ::onStatusSelected
         )
     )
     val uiState: StateFlow<BookingAttendanceStatusFilterUiState> = _uiState
 
-    private fun onStatusSelected(status: AttendanceStatus) {
-        if (_uiState.value.selectedStatus != status) {
-            _uiState.update { it.copy(selectedStatus = status) }
+    private fun onStatusSelected(status: AttendanceStatus?) {
+        val newSelectedStatusesState = if (status == AttendanceStatus.any) {
+            AttendanceStatuses.DEFAULT
+        } else {
+            val statusSet = _uiState.value.selectedStatuses.values.toMutableSet()
+            if (statusSet.contains(status)) {
+                statusSet.remove(status)
+            } else {
+                status?.let { statusSet.add(it) }
+            }
+            AttendanceStatuses(statusSet)
         }
-        onFilterChanged(status)
+
+        _uiState.update { it.copy(selectedStatuses = newSelectedStatusesState) }
+        onFilterChanged(newSelectedStatusesState)
     }
 
     @AssistedFactory
     interface Factory {
         fun create(
-            initial: AttendanceStatus?,
-            onFilterChanged: (AttendanceStatus) -> Unit
+            initial: AttendanceStatuses?,
+            onFilterChanged: (AttendanceStatuses) -> Unit
         ): BookingAttendanceStatusFilterViewModel
     }
 }

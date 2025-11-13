@@ -161,19 +161,51 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when attendance status changed and leaving page, then root shows selected value subtitle`() {
-        // GIVEN: open Attendance Status page
+    fun `when attendance status changed and leaving page, then root shows selected value`() {
+        // GIVEN: navigate to Attendance Status page and select one status
         val initial = viewModel.uiState.getOrAwaitValue()
         initial.openPage(BookingFilterPage.AttendanceStatus)
-        val onAttendancePage = viewModel.uiState.getOrAwaitValue()
+        val onPage = viewModel.uiState.getOrAwaitValue()
 
-        // WHEN: select a status and leave the page
-        onAttendancePage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatus(AttendanceStatus.Booked))
+        // Select one attendance status (Booked)
+        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked)))
+
+        // WHEN: leave the page (go back to root list)
         viewModel.uiState.getOrAwaitValue().onClose()
 
-        // THEN: back on the root list and the Attendance Status row shows the selected value
-        val after = viewModel.uiState.getOrAwaitValue()
-        val attendanceRow = after.items.first { it.title == BookingFilterPage.AttendanceStatus.titleRes }
-        assertThat(attendanceRow.subtitle).isEqualTo(UiStringRes(R.string.booking_attendance_status_booked))
+        // THEN: root list shows the selected status as subtitle values
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val values = attendanceItem.values?.map { (it as UiStringRes).stringRes }
+
+        assertThat(values).containsExactly(R.string.booking_attendance_status_booked)
+    }
+
+    @Test
+    fun `when two attendance statuses selected and leaving page, then root shows selected both statuses`() {
+        // GIVEN: navigate to Attendance Status page and select two statuses
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onPage = viewModel.uiState.getOrAwaitValue()
+
+        // Select two attendance statuses (Booked and Cancelled)
+        onPage.onUpdateFilterOption(
+            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked, AttendanceStatus.Cancelled))
+        )
+
+        // WHEN: leave the page (go back to root list)
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: root list shows both selected statuses in subtitle values (order agnostic)
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val values = attendanceItem.values?.map { (it as UiStringRes).stringRes }
+
+        assertThat(values).containsExactlyInAnyOrder(
+            R.string.booking_attendance_status_booked,
+            R.string.booking_attendance_status_cancelled
+        )
     }
 }

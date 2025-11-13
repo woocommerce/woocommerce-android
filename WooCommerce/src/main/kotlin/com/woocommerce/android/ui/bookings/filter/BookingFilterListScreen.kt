@@ -141,8 +141,8 @@ private fun FiltersNavHost(
         }
         composable(BookingFilterPage.AttendanceStatus.route) {
             BookingAttendanceStatusFilterRoute(
-                initialAttendanceStatus = state.updatedBookingFilters.attendanceStatus
-            ) { attendance -> state.onUpdateFilterOption(attendance) }
+                initialAttendanceStatuses = state.updatedBookingFilters.attendanceStatuses
+            ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
         }
         composable(BookingFilterPage.PaymentStatus.route) {
             TODO()
