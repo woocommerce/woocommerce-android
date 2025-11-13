@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
@@ -398,13 +399,16 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data class Loaded(val syncStrategy: WooPosAnalyticsEventConstant.SyncStrategy) : Event() {
+        data class Loaded(val syncStrategy: SyncStrategy) : Event() {
             override val name: String = "loaded"
 
             init {
                 addProperties(
                     mapOf(
-                        WooPosAnalyticsEventConstant.SyncStrategy.SYNC_STRATEGY to syncStrategy.toString()
+                        "sync_strategy" to when (syncStrategy) {
+                            SyncStrategy.REMOTE -> "remote"
+                            SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+                        }
                     )
                 )
             }

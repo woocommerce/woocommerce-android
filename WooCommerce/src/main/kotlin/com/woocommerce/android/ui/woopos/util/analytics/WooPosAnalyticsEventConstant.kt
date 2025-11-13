@@ -84,19 +84,6 @@ object WooPosAnalyticsEventConstant {
         }
     }
 
-    enum class SyncStrategy(val value: String) {
-        REMOTE("remote"),
-        LOCAL_CATALOG("local_catalog");
-
-        override fun toString(): String {
-            return value
-        }
-
-        companion object {
-            const val SYNC_STRATEGY = "sync_strategy"
-        }
-    }
-
     enum class SyncType(val value: String) {
         FULL("full"),
         INCREMENTAL("incremental");

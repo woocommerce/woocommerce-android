@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -26,7 +25,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepo
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -58,19 +56,23 @@ class WooPosProductsDataSource @Inject constructor(
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) {
+    enum class SyncStrategy {
+        REMOTE,
+        LOCAL_CATALOG,
+    }
+
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
-    fun getCurrentSyncStrategy(): WooPosAnalyticsEventConstant.SyncStrategy {
+    fun getCurrentSyncStrategy(): SyncStrategy {
         return when (activeSource) {
-            localDbDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.LOCAL_CATALOG
-            remoteDataSource -> WooPosAnalyticsEventConstant.SyncStrategy.REMOTE
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            remoteDataSource -> SyncStrategy.REMOTE
             else -> error("Unknown sync strategy")
         }
     }
 
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
-        val requirement = syncStatusChecker.checkSyncRequirement()
-        when (requirement) {
+        when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
                 remoteDataSource.prepopulateCache().fold(
@@ -501,7 +503,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         )
         when {
             result.isSuccess -> {
-                val remoteVariations = variationHandler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
+                val remoteVariations = variationHandler.getVariationsFlow(productId).firstOrNull()?.map {
                     it.toWooPosVariation(variationMapper)
                 } ?: emptyList()
                 updateVariationsCache(productId, remoteVariations)
@@ -534,7 +536,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
                 result.isSuccess -> {
                     val fetchedVariations = variationHandler.getVariationsFlow(
                         productId
-                    ).first().applyFilter().map { it.toWooPosVariation(variationMapper) }
+                    ).first().map { it.toWooPosVariation(variationMapper) }
                     Result.success(fetchedVariations)
                 }
 
@@ -622,9 +624,4 @@ private fun Result<Unit>.logVariationFailure() {
     val error = exceptionOrNull()
     val errorMessage = error?.message ?: "Unknown error"
     WooLog.e(WooLog.T.POS, "Loading variations failed - $errorMessage", error)
-}
-
-private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
-    return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
-    // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
 }

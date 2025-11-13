@@ -47,9 +47,9 @@ class BookingFilterRepository @Inject constructor(
         dataStore.edit { prefs ->
             // Booking type
             val bookingTypeKey = bookingTypeKey(siteId)
-            val bookingType = bookingFilters.bookingType
-            if (bookingType != null) {
-                prefs[bookingTypeKey] = bookingType.value.name
+            val bookingTypeValue = bookingFilters.bookingType?.value?.name
+            if (bookingTypeValue != null) {
+                prefs[bookingTypeKey] = bookingTypeValue
             } else {
                 // Clear if not provided
                 prefs.remove(bookingTypeKey)

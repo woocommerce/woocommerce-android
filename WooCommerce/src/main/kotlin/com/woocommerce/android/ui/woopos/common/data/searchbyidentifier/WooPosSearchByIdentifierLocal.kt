@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
@@ -17,13 +18,15 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
     private val variationMapper: WooPosVariationMapper,
     private val selectedSite: SelectedSite,
 ) {
-    suspend operator fun invoke(identifier: String, isLocalCatalogSupported: Boolean): WooPosSearchByIdentifierResult {
+    suspend operator fun invoke(
+        identifier: String,
+        syncStrategy: SyncStrategy
+    ): WooPosSearchByIdentifierResult {
         val siteId = selectedSite.get().localId()
 
-        return if (isLocalCatalogSupported) {
-            searchInLocalCatalog(identifier, siteId)
-        } else {
-            searchInMemoryCache(identifier)
+        return when (syncStrategy) {
+            SyncStrategy.LOCAL_CATALOG -> searchInLocalCatalog(identifier, siteId)
+            SyncStrategy.REMOTE -> searchInMemoryCache(identifier)
         }
     }
 
