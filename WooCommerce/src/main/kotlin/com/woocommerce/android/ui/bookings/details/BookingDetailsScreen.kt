@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.bookings.details
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,20 +15,30 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.woocommerce.android.R
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
@@ -46,6 +58,7 @@ import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
+import com.woocommerce.android.ui.compose.modifier.detailsPanePadding
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
@@ -54,8 +67,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingDetailsScreen(
     viewModel: BookingDetailsViewModel,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
     val viewState by viewModel.state.observeAsState()
 
@@ -63,8 +74,6 @@ fun BookingDetailsScreen(
         BookingDetailsScreen(
             viewState = it,
             onBack = onBack,
-            onViewOrder = onViewOrder,
-            onViewNotes = onViewNotes,
         )
     }
 }
@@ -74,56 +83,65 @@ fun BookingDetailsScreen(
 fun BookingDetailsScreen(
     viewState: BookingDetailsViewState,
     onBack: () -> Unit,
-    onViewOrder: (Long) -> Unit,
-    onViewNotes: () -> Unit,
 ) {
+    val context = LocalContext.current
     val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Toolbar(
                 title = viewState.toolbarTitle,
+                navigationIcon = if (context.isTwoPanesShouldBeUsed) null else Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = onBack,
                 modifier = Modifier.shadow(4.dp)
             )
         }
     ) { innerPadding ->
-        WCPullToRefreshBox(
-            isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
-            onRefresh = viewState.onRefresh,
-            state = rememberPullToRefreshState(),
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
+        Box(
+            modifier = Modifier.padding(top = innerPadding.calculateTopPadding())
         ) {
-            Column(
-                modifier = Modifier
-                    .verticalScroll(rememberScrollState())
-            ) {
-                when {
-                    viewState.shouldShowSkeleton -> BookingDetailsLoading()
-                    viewState.bookingUiState != null -> {
-                        BookingDetailsContent(
-                            booking = viewState.bookingUiState,
-                            onCancelBooking = viewState.onCancelBooking,
-                            onViewOrder = onViewOrder,
-                            onAttendanceStatusClicked = { showAttendanceSheet.value = true },
-                            onViewNotes = onViewNotes,
-                            onMarkAsPaid = viewState.onMarkAsPaid,
-                            markAsPaidInProgress = viewState.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
-                        )
+            when (viewState) {
+                BookingDetailsViewState.Empty -> BookingDetailsEmptyScreen()
+                is BookingDetailsViewState.ShowBooking -> {
+                    val state = rememberPullToRefreshState()
+                    WCPullToRefreshBox(
+                        isRefreshing = viewState.loadingState == BookingDetailsLoadingState.Refreshing,
+                        onRefresh = viewState.onRefresh,
+                        state = state,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .detailsPanePadding(),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            when {
+                                viewState.shouldShowSkeleton -> BookingDetailsLoading()
+                                viewState.bookingUiState != null -> {
+                                    BookingDetailsContent(
+                                        booking = viewState.bookingUiState,
+                                        onCancelBooking = viewState.bookingUiState.onCancelBooking,
+                                        onAttendanceStatusClicked = { showAttendanceSheet.value = true },
+                                        onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
+                                    )
+                                    if (showAttendanceSheet.value) {
+                                        BookingAttendanceStatusBottomSheet(
+                                            onSelect = { status ->
+                                                viewState.bookingUiState.onAttendanceStatusSelected(status)
+                                            },
+                                            onDismiss = { showAttendanceSheet.value = false },
+                                            selected = viewState.bookingUiState.bookingSummary.attendanceStatus
+                                        )
+                                    }
+                                }
+                            }
+                        }
                     }
+                    viewState.dialogState?.Render()
                 }
             }
         }
-        if (showAttendanceSheet.value) {
-            BookingAttendanceStatusBottomSheet(
-                onSelect = { status ->
-                    viewState.onAttendanceStatusSelected(status)
-                },
-                onDismiss = { showAttendanceSheet.value = false }
-            )
-        }
-        viewState.dialogState?.Render()
     }
 }
 
@@ -131,15 +149,14 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onViewOrder: (Long) -> Unit,
     onAttendanceStatusClicked: () -> Unit,
-    onViewNotes: () -> Unit,
     onMarkAsPaid: () -> Unit,
-    markAsPaidInProgress: Boolean,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = MaterialTheme.colorScheme.surfaceContainer)
     )
     BookingAppointmentDetails(
         model = booking.bookingsAppointmentDetails,
@@ -163,14 +180,14 @@ private fun BookingDetailsContent(
             model = it,
             status = booking.bookingSummary.status,
             onMarkAsPaid = onMarkAsPaid,
-            onViewOrder = { onViewOrder(booking.orderId) },
+            onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = markAsPaidInProgress,
+            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(
         note = booking.note,
-        onClick = onViewNotes,
+        onClick = booking.onNoteClicked,
         modifier = Modifier.fillMaxWidth()
     )
 }
@@ -217,12 +234,37 @@ private fun BookingDetailsLoading() {
     }
 }
 
+@Composable
+fun BookingDetailsEmptyScreen(
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.img_woo_generic_error),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
+            Text(
+                text = stringResource(R.string.booking_not_selected),
+                style = MaterialTheme.typography.titleLarge
+            )
+        }
+    }
+}
+
 @LightDarkThemePreviews
 @Composable
 private fun BookingDetailsPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "Booking #12345",
                 bookingUiState = BookingUiState(
                     orderId = 1L,
@@ -265,8 +307,6 @@ private fun BookingDetailsPreview() {
                 ),
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
         )
     }
 }
@@ -276,13 +316,23 @@ private fun BookingDetailsPreview() {
 private fun BookingDetailsLoadingPreview() {
     WooThemeWithBackground {
         BookingDetailsScreen(
-            viewState = BookingDetailsViewState(
+            viewState = BookingDetailsViewState.ShowBooking(
                 toolbarTitle = "",
                 bookingUiState = null,
+                loadingState = BookingDetailsLoadingState.Refreshing,
             ),
             onBack = {},
-            onViewOrder = {},
-            onViewNotes = {},
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingDetailsEmptyPreview() {
+    WooThemeWithBackground {
+        BookingDetailsScreen(
+            viewState = BookingDetailsViewState.Empty,
+            onBack = {},
         )
     }
 }

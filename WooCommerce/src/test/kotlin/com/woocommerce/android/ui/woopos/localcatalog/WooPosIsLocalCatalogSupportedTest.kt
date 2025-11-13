@@ -35,7 +35,8 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         val variationsEndpointChecker = WooPosIsLocalCatalogVariationsEndpointAvailable(
             getWooVersion = getWooVersion,
-            logger = logger
+            logger = logger,
+            dispatchers = coroutinesTestRule.testDispatchers
         )
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(

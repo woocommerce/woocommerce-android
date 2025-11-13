@@ -57,13 +57,7 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch {
             soundHelper.preloadChaChing()
         }
-        performLocalCatalogIncrementalSync()
-    }
-
-    private fun performLocalCatalogIncrementalSync() {
-        viewModelScope.launch {
-            incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
-        }
+        incrementalSync.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
     }
 
     override fun onCleared() {
