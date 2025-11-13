@@ -1590,6 +1590,106 @@ class WooPosTotalsViewModelTest {
             verify(childrenToParentEventSender, never()).sendToParent(argThat { this is OrderCreated })
         }
 
+    @Test
+    fun `when product missing from order after creation, then tracks outdated item detected screen shown event`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+            val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+            val totalsRepository: WooPosTotalsRepository = mock {
+                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            }
+
+            // WHEN
+            createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event
+                    .CheckoutOutdatedItemDetectedScreenShown(
+                        reason = "deleted",
+                        syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                    )
+            )
+        }
+
+    @Test
+    fun `when edit order tapped after product not found, then tracks edit order tapped event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+        )
+        val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+        }
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedEditOrderTapped(
+                reason = "deleted",
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+        )
+    }
+
+    @Test
+    fun `when remove products tapped after product not found, then tracks remove tapped event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+        )
+        val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+        }
+
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedRemoveTapped(
+                reason = "deleted",
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+        )
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
