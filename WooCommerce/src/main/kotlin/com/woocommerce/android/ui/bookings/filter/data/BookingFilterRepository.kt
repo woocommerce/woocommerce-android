@@ -26,7 +26,7 @@ class BookingFilterRepository @Inject constructor(
 ) {
     // Keys are built per-site to keep selections isolated across sites
     private fun bookingTypeKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_booking_type")
-    private fun attendanceStatusKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_attendanceStatus")
+    private fun attendanceStatusesKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_attendance_statuses")
     private fun customerIdKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_customer_id")
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
@@ -38,7 +38,7 @@ class BookingFilterRepository @Inject constructor(
         dataStore.data.map { prefs ->
             BookingFilters(
                 bookingType = prefs.getBookingType(siteId),
-                attendanceStatus = prefs.getAttendanceStatus(siteId),
+                attendanceStatuses = prefs.getAttendanceStatuses(siteId),
                 customer = prefs.getCustomerValue(siteId),
                 dateRange = prefs.getDateRangeValue(siteId)
             )
@@ -58,14 +58,13 @@ class BookingFilterRepository @Inject constructor(
                 prefs.remove(bookingTypeKey)
             }
 
-            // Attendance status
-            val attendanceStatusKey = attendanceStatusKey(siteId)
-            val attendanceStatusValue = bookingFilters.attendanceStatus?.value
-            if (attendanceStatusValue != null) {
-                prefs[attendanceStatusKey] = attendanceStatusValue.key
+            // Attendance statuses
+            val attendanceStatusesKey = attendanceStatusesKey(siteId)
+            val attendanceStatusesValues = bookingFilters.attendanceStatuses?.values
+            if (attendanceStatusesValues.isNullOrEmpty()) {
+                prefs.remove(attendanceStatusesKey)
             } else {
-                // Clear if not provided
-                prefs.remove(attendanceStatusKey)
+                prefs[attendanceStatusesKey] = attendanceStatusesValues.joinToString(",") { it.key }
             }
 
             // Customer
@@ -108,11 +107,13 @@ class BookingFilterRepository @Inject constructor(
         return value?.let { BookingsFilterOption.BookingType(value = it) }
     }
 
-    private fun Preferences.getAttendanceStatus(siteId: Int): BookingsFilterOption.AttendanceStatus? {
-        val stored = this[attendanceStatusKey(siteId)] ?: return null
-        val value = runCatching { BookingEntity.AttendanceStatus.fromKey(stored) }.getOrNull()
-        return value?.takeIf { it !is BookingEntity.AttendanceStatus.Unknown }
-            ?.let { BookingsFilterOption.AttendanceStatus(value = it) }
+    private fun Preferences.getAttendanceStatuses(siteId: Int): BookingsFilterOption.AttendanceStatuses? {
+        val stored = this[attendanceStatusesKey(siteId)] ?: return null
+        val set = stored.split(',')
+            .mapNotNull { runCatching { BookingEntity.AttendanceStatus.fromKey(it) }.getOrNull() }
+            .filterNot { it is BookingEntity.AttendanceStatus.Unknown }
+            .toSet()
+        return BookingsFilterOption.AttendanceStatuses(set)
     }
 
     private fun Preferences.getCustomerValue(siteId: Int): BookingsFilterOption.Customer? {

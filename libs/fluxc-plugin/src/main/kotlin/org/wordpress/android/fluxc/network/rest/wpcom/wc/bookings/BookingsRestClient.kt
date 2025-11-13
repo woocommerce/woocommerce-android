@@ -112,8 +112,8 @@ class BookingsRestClient @Inject constructor(
                 }
 
                 BookingsFilterOption.ServiceEvent -> TODO()
-                is BookingsFilterOption.AttendanceStatus -> {
-                    filter.value?.let { set("attendance_status", it.key) }
+                is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
+                    set("attendance_status", filter.values.joinToString(",") { it.key })
                 }
 
                 BookingsFilterOption.PaymentStatus -> TODO()

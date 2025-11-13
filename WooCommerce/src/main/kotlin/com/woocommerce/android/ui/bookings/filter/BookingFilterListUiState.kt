@@ -44,7 +44,7 @@ data class BookingFilterListUiState(
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
             title = page.titleRes,
-            subtitle = page.filterValue,
+            values = page.filterValue,
             onClick = { openPage(page) },
         )
     }
@@ -60,18 +60,18 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: UiString?
+    val BookingFilterPage.filterValue: List<UiString>
         get() = when (this) {
             BookingFilterPage.BookingType -> {
-                updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
+                updatedBookingFilters.bookingType?.titleRes?.let { listOf(UiString.UiStringRes(it)) }
             }
 
             BookingFilterPage.AttendanceStatus -> {
-                updatedBookingFilters.attendanceStatus?.titleRes?.let { UiString.UiStringRes(it) }
+                updatedBookingFilters.attendanceStatuses?.values?.map { UiString.UiStringRes(it.titleRes) }
             }
 
             BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
-                UiString.UiStringText(name)
+                listOf(UiString.UiStringText(name))
             }
 
             BookingFilterPage.TeamMember,
@@ -80,7 +80,7 @@ data class BookingFilterListUiState(
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.List -> null
-        }
+        }.orEmpty().ifEmpty { listOf(UiString.UiStringRes(R.string.bookings_filter_default)) }
 
     val title: UiString
         get() = if (currentPage != BookingFilterPage.List) {
@@ -128,7 +128,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
         is BookingsFilterOption.TeamMember -> copy(teamMember = bookingsFilterOption)
-        is BookingsFilterOption.AttendanceStatus -> copy(attendanceStatus = bookingsFilterOption)
+        is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
