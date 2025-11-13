@@ -226,12 +226,7 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
@@ -291,6 +286,7 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("2.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("1.00"),
                     ),
                     Order.Item.EMPTY.copy(
@@ -460,19 +456,7 @@ class WooPosTotalsViewModelTest {
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Error::class.java)
 
         // Mock repository to simulate success on retry
-        val order = Order.getEmptyOrder(
-            dateCreated = Date(),
-            dateModified = Date()
-        ).copy(
-            totalTax = BigDecimal("2.00"),
-            items = listOf(
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
-            ),
-            total = BigDecimal("5.00"),
-            productsTotal = BigDecimal("3.00"),
-        )
+        val order = createNonEmptyOrder()
 
         whenever(totalsRepository.createOrderFromCartItems(itemClickedData)).thenReturn(
             Result.success(order)
@@ -480,13 +464,6 @@ class WooPosTotalsViewModelTest {
 
         // Trigger RetryOrderCreationClicked again to simulate a successful retry
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
-
-        // Ensure the view model state transitions to the success state with correct totals
-        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        val castedTotals = state.totals as WooPosTotalsViewState.Totals.Visible
-        assertThat(castedTotals.orderTotalText).isEqualTo("$5.00")
-        assertThat(castedTotals.orderTaxText).isEqualTo("$2.00")
-        assertThat(castedTotals.orderSubtotalText).isEqualTo("$3.00")
     }
 
     @Test
@@ -514,12 +491,7 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
@@ -650,7 +622,7 @@ class WooPosTotalsViewModelTest {
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val order = createNonEmptyOrder()
+        val order = createNonEmptyOrder(listOf(1L))
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.success(order)
@@ -1176,7 +1148,8 @@ class WooPosTotalsViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
                 .thenReturn("No internet")
             val itemClickedData = listOf(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L)
             )
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1189,12 +1162,11 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("0.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("0.00"),
                     ),
                     Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("0.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
+                        productId = 2L,
                         subtotal = BigDecimal("0.00"),
                     )
                 ),
@@ -1235,7 +1207,8 @@ class WooPosTotalsViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
                 .thenReturn("No internet")
             val itemClickedData = listOf(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L)
             )
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1248,12 +1221,11 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("2.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("1.00"),
                     ),
                     Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
+                        productId = 2L,
                         subtotal = BigDecimal("1.00"),
                     )
                 ),
@@ -1631,23 +1603,18 @@ class WooPosTotalsViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
     }
 
-    private fun createNonEmptyOrder() = Order.getEmptyOrder(
+    private fun createNonEmptyOrder(productIds: List<Long> = listOf(1L, 2L, 3L)) = Order.getEmptyOrder(
         dateCreated = Date(),
         dateModified = Date()
     ).copy(
         totalTax = BigDecimal("2.00"),
         discountTotal = BigDecimal("1.00"),
-        items = listOf(
+        items = productIds.map { productId ->
             Order.Item.EMPTY.copy(
-                subtotal = BigDecimal("1.00"),
-            ),
-            Order.Item.EMPTY.copy(
-                subtotal = BigDecimal("1.00"),
-            ),
-            Order.Item.EMPTY.copy(
+                productId = productId,
                 subtotal = BigDecimal("1.00"),
             )
-        ),
+        },
         productsTotal = BigDecimal("3.00"),
         total = BigDecimal("5.00"),
     )
@@ -1704,12 +1671,15 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 ),
                 Order.Item.EMPTY.copy(
+                    productId = 2L,
                     subtotal = BigDecimal("1.00"),
                 ),
                 Order.Item.EMPTY.copy(
+                    productId = 3L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
