@@ -67,7 +67,7 @@ data class BookingFilterListUiState(
             }
 
             BookingFilterPage.AttendanceStatus -> {
-                updatedBookingFilters.attendanceStatuses?.values?.map { UiString.UiStringRes(it.titleRes) }
+                updatedBookingFilters.attendanceStatuses.values.map { UiString.UiStringRes(it.titleRes) }
             }
 
             BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
