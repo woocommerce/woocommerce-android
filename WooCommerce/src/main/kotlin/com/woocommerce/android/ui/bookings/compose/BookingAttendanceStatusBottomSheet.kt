@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.compose
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +35,7 @@ fun BookingAttendanceStatusBottomSheet(
     onSelect: (BookingAttendanceStatus) -> Unit,
     onDismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    selected: BookingAttendanceStatus? = null,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val scope = rememberCoroutineScope()
@@ -48,6 +50,7 @@ fun BookingAttendanceStatusBottomSheet(
                 onSelect(status)
                 onDismiss()
             },
+            selected = selected,
             modifier = modifier
         )
     }
@@ -57,6 +60,7 @@ fun BookingAttendanceStatusBottomSheet(
 private fun BookingAttendanceStatusSelection(
     onSelect: (BookingAttendanceStatus) -> Unit,
     modifier: Modifier = Modifier,
+    selected: BookingAttendanceStatus? = null,
 ) {
     Column(
         modifier = modifier
@@ -74,9 +78,10 @@ private fun BookingAttendanceStatusSelection(
             BookingAttendanceStatus.Booked,
             BookingAttendanceStatus.CheckedIn,
             BookingAttendanceStatus.NoShow,
-        ).forEachIndexed { index, status ->
+        ).forEach { status ->
             AttendanceStatusRow(
                 status = status,
+                isSelected = status == selected,
                 onClick = { onSelect(status) }
             )
         }
@@ -86,6 +91,7 @@ private fun BookingAttendanceStatusSelection(
 @Composable
 private fun AttendanceStatusRow(
     status: BookingAttendanceStatus,
+    isSelected: Boolean,
     onClick: () -> Unit,
 ) {
     Row(
@@ -116,6 +122,15 @@ private fun AttendanceStatusRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+        Box(Modifier.size(26.dp)) {
+            if (isSelected) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_done_secondary),
+                    contentDescription = stringResource(R.string.bookings_filters_selected_option_content_description),
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }
@@ -152,6 +167,7 @@ private fun AttendanceStatusRowPreview() {
     WooThemeWithBackground {
         AttendanceStatusRow(
             status = BookingAttendanceStatus.CheckedIn,
+            isSelected = false,
             onClick = {}
         )
     }

@@ -30,7 +30,6 @@ fun BookingSummary(
 ) {
     Column(
         modifier = modifier
-            .background(color = MaterialTheme.colorScheme.surfaceContainer)
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {

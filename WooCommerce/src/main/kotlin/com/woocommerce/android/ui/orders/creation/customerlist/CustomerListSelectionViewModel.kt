@@ -15,7 +15,7 @@ import org.wordpress.android.fluxc.model.customer.WCCustomerModel
 import javax.inject.Inject
 
 @HiltViewModel
-class CustomerListSelectionViewModel @Inject constructor(
+open class CustomerListSelectionViewModel @Inject constructor(
     savedState: SavedStateHandle,
     private val repository: CustomerListRepository,
     private val mapper: CustomerListViewModelMapper,
@@ -85,26 +85,30 @@ class CustomerListSelectionViewModel @Inject constructor(
         val billingCountry = repository.getCountry(billingAddress.country)
         val billingState = repository.getState(billingAddress.country, billingAddress.state)
 
-        triggerEvent(
-            CustomerSelected(
-                Order.Customer(
-                    customerId = wcCustomer.remoteCustomerId.value,
-                    firstName = wcCustomer.firstName,
-                    lastName = wcCustomer.lastName,
-                    email = wcCustomer.email,
-                    billingAddress = mapper.mapFromOrderAddressToAddress(
-                        billingAddress,
-                        billingCountry,
-                        billingState
-                    ),
-                    shippingAddress = mapper.mapFromOrderAddressToAddress(
-                        shippingAddress,
-                        shippingCountry,
-                        shippingState
-                    ),
-                    username = wcCustomer.username
-                )
+        exitWithCustomer(
+            Order.Customer(
+                customerId = wcCustomer.remoteCustomerId.value,
+                firstName = wcCustomer.firstName,
+                lastName = wcCustomer.lastName,
+                email = wcCustomer.email,
+                billingAddress = mapper.mapFromOrderAddressToAddress(
+                    billingAddress,
+                    billingCountry,
+                    billingState
+                ),
+                shippingAddress = mapper.mapFromOrderAddressToAddress(
+                    shippingAddress,
+                    shippingCountry,
+                    shippingState
+                ),
+                username = wcCustomer.username
             )
+        )
+    }
+
+    protected open fun exitWithCustomer(customer: Order.Customer) {
+        triggerEvent(
+            CustomerSelected(customer)
         )
     }
 }

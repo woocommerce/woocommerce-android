@@ -10,8 +10,6 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    WOO_POS_SURVEYS,
-    WOO_POS_LOCAL_CATALOG_M1,
     BOOKINGS_MVP;
 
     fun isEnabled(context: Context? = null): Boolean {
@@ -21,10 +19,8 @@ enum class FeatureFlag {
             }
 
             WC_SHIPPING_BANNER,
-            WOO_POS_SURVEYS,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            WOO_POS_LOCAL_CATALOG_M1,
             BOOKINGS_MVP -> PackageUtils.isDebugBuild()
         }
     }
