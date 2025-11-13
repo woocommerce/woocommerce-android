@@ -3831,13 +3831,14 @@
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount total</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount total (%1$s)</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
