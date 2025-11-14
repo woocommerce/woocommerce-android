@@ -1,19 +1,16 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.Customer
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.DateRange
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.Location
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.PaymentStatus
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.ServiceEvent
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.TeamMember
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.Instant
 
 sealed interface BookingsFilterOption {
     object TeamMember : BookingsFilterOption
 
-    object AttendanceStatus : BookingsFilterOption
+    data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = AttendanceStatuses(emptySet())
+        }
+    }
 
     object PaymentStatus : BookingsFilterOption
 
@@ -39,14 +36,14 @@ sealed interface BookingsFilterOption {
 }
 
 data class BookingFilters(
-    val dateRange: DateRange? = null,
-    val customer: Customer? = null,
-    val teamMember: TeamMember? = null,
-    val attendanceStatus: AttendanceStatus? = null,
-    val paymentStatus: PaymentStatus? = null,
-    val bookingType: BookingType? = null,
-    val location: Location? = null,
-    val serviceEvent: ServiceEvent? = null,
+    val dateRange: BookingsFilterOption.DateRange? = null,
+    val customer: BookingsFilterOption.Customer? = null,
+    val teamMember: BookingsFilterOption.TeamMember? = null,
+    val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
+    val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
+    val bookingType: BookingsFilterOption.BookingType? = null,
+    val location: BookingsFilterOption.Location? = null,
+    val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
 ) {
     val enabledFiltersCount: Int
         get() {
@@ -54,7 +51,7 @@ data class BookingFilters(
             if (dateRange != null) count++
             if (customer != null) count++
             if (teamMember != null) count++
-            if (attendanceStatus != null) count++
+            if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
             if (location != null) count++

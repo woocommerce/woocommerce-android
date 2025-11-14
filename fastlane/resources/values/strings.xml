@@ -1628,6 +1628,7 @@
     <string name="card_reader_connect_missing_bluetooth_permission_button">Open settings</string>
     <string name="card_reader_connect_learn_more">&lt;a href=\'\'&gt;Learn more&lt;/a&gt; about In-Person Payments</string>
     <string name="card_reader_connect_failed_battery_low_hint">The reader battery is low. Please charge the reader and try again</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Forget the reader in Android Bluetooth Settings</string>
 
     <!--
         Card Reader Detail
@@ -2255,6 +2256,8 @@
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">POS Local Catalog</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Store your product catalog on this device for faster search, barcode scanning, and loading times.</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics, and enhance your user experience.</string>
     <string name="settings_tracking_header">Tracking</string>
@@ -3663,15 +3666,15 @@
     <string name="woopos_settings_local_catalog_category">Catalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
     <string name="woopos_settings_local_catalog_status">Catalog Status</string>
-    <string name="woopos_settings_local_catalog_size">Catalog Size</string>
-    <string name="woopos_settings_local_catalog_last_update">Last Update</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Last Full Update</string>
+    <string name="woopos_settings_local_catalog_size">Size</string>
+    <string name="woopos_settings_local_catalog_last_update">Last incremental sync</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Last full sync</string>
     <string name="woopos_settings_local_catalog_settings">Manage Data Usage</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Allow full update on cellular data</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Download catalog updates using mobile data</string>
-    <string name="woopos_settings_local_catalog_actions">Manual Catalog Update</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Use this refresh only when something seems off - POS keeps data current automatically.</string>
-    <string name="woopos_settings_local_catalog_refresh_button">Refresh Catalog</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Cellular data</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Allow sync using cellular data</string>
+    <string name="woopos_settings_local_catalog_manual_update">Catalog update</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Update the catalog manually</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Update catalog</string>
     <string name="woopos_settings_local_catalog_size_format">%1$d products and %2$d variations</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Sync error dialog background</string>
     <string name="woopos_settings_local_catalog_sync_error_dialog_title">Unable to sync catalog</string>
@@ -3690,17 +3693,19 @@
     <string name="woopos_settings_barcode_scanner_documentation_title">Documentation</string>
     <string name="woopos_settings_barcode_scanner_documentation_subtitle">Learn more about barcode scanning in POS</string>
     <string name="woopos_settings_card_reader_detail_title">Card Reader Settings</string>
+    <string name="woopos_settings_card_reader_device_name_title">Device name</string>
     <string name="woopos_settings_card_reader_battery_title">Battery</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
     <string name="woopos_settings_card_reader_unknown_reader">Unknown Reader</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Unknown</string>
-    <string name="woopos_settings_card_reader_update_button">Update</string>
+    <string name="woopos_settings_card_reader_update_button">Update firmware</string>
     <string name="woopos_settings_card_reader_update_available">• Update available</string>
     <string name="woopos_settings_card_reader_documentation_title">Documentation</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Learn more about accepting mobile payments</string>
     <string name="woopos_settings_card_reader_connected_reader">Connected reader</string>
-    <string name="woopos_settings_help_category">Help</string>
-    <string name="woopos_settings_help_category_subtitle">Get help and support</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Update firmware version</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Update the firmware version to continue accepting payments.</string>
+    <string name="woopos_settings_help_category">Get help and support</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Learn about which products are supported in POS</string>
     <string name="woopos_settings_help_documentation_subtitle">View guides and tutorials</string>
     <string name="woopos_settings_help_get_support_subtitle">Contact our support team</string>
@@ -3758,6 +3763,11 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_totals_invalid_coupon_error">Unable to apply coupons</string>
+    <string name="woopos_totals_product_not_found_error">Product not found</string>
+    <string name="woopos_totals_product_not_found_reason">A product in the cart is no longer available.</string>
+    <string name="woopos_totals_product_not_found_edit_order">Edit order</string>
+    <string name="woopos_totals_product_not_found_remove_products">Remove product</string>
+    <string name="woopos_cart_product_unknown_item">Unknown item</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
@@ -3823,13 +3833,14 @@
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount total</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount total (%1$s)</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -3936,11 +3947,13 @@
 
     <string name="woopos_settings_store_information_title">Store information</string>
     <string name="woopos_settings_receipt_information_title">Receipt information</string>
+    <string name="woopos_settings_store_general_title">General</string>
     <string name="woopos_settings_store_name_label">Store name</string>
     <string name="woopos_settings_store_address_label">Address</string>
-    <string name="woopos_settings_store_phone_label">Phone</string>
+    <string name="woopos_settings_store_physical_address_label">Physical address</string>
+    <string name="woopos_settings_store_phone_label">Phone number</string>
     <string name="woopos_settings_store_email_label">Email</string>
-    <string name="woopos_settings_refund_policy_label">Refund &amp; Returns Policy</string>
+    <string name="woopos_settings_refund_policy_label">Refund and return policy</string>
     <string name="woopos_settings_store_not_set">Not set</string>
 
     <string name="customers_details_customer_section">Customer</string>
@@ -4231,19 +4244,20 @@
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_filters_enabled_title">Filters • %d</string>
-    <string name="bookings_filters_count_title">Filters (%d)</string>
+    <string name="bookings_filters_title_with_count">Filters (%s)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
     <string name="bookings_filter_title_team_member">Assigned team member</string>
     <string name="bookings_filter_title_attendance_status">Attendance status</string>
     <string name="bookings_filter_title_payment_status">Payment status</string>
     <string name="bookings_filter_title_type">Booking type</string>
-    <string name="bookings_filter_customer_name">Customer name</string>
+    <string name="bookings_filter_customer">Customer</string>
     <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
     <string name="bookings_filter_default">Any</string>
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
+    <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
@@ -4305,6 +4319,7 @@
     <string name="booking_note_screen_update_error">Error saving booking note</string>
     <string name="booking_cancel_error">Error cancelling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
+    <string name="booking_not_selected">Booking not selected</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

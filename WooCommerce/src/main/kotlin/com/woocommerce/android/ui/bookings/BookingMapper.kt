@@ -134,6 +134,7 @@ class BookingMapper @Inject constructor(
         BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
         BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
         BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
+        BookingEntity.AttendanceStatus.Cancelled -> BookingAttendanceStatus.Cancelled
         is BookingEntity.AttendanceStatus.Unknown -> null
     }
 

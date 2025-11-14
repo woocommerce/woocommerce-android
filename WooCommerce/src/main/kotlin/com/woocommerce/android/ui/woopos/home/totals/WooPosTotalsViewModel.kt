@@ -176,7 +176,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
 
-            WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound -> handleEditOrderClicked()
+            WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound -> handleEditOrderClickedAfterProductNotFound()
 
             WooPosTotalsUIEvent.OnRemoveProductsClicked -> handleRemoveProductsClicked()
         }
@@ -253,6 +253,13 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun handleEditOrderClickedAfterProductNotFound() {
+        viewModelScope.launch {
+            totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedEditOrderTapped()
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.BackFromCheckoutToCartClicked)
+        }
+    }
+
     private fun handleRemoveCouponsClicked() {
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(ChildToParentEvent.RemoveCouponsClicked)
@@ -261,6 +268,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private fun handleRemoveProductsClicked() {
         viewModelScope.launch {
+            totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedRemoveTapped()
             childrenToParentEventSender.sendToParent(
                 ChildToParentEvent.RemoveProductsClicked(
                     getProductsIdsMissingFromOrder(requireNotNull(newOrder))
@@ -527,6 +535,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
                 reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
             )
+            totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
             return
         }
         readyToCollectPayment(order)
