@@ -13,6 +13,9 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
+      echo '--- :closed_lock_with_key: Decrypting Secrets'
+      .buildkite/git-crypt/unlock.sh
+
       echo '--- :shipit: Finalize Release'
       bundle exec fastlane finalize_release skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:

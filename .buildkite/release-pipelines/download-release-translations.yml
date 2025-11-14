@@ -13,6 +13,9 @@ steps:
       echo '--- :ruby: Setup Ruby Tools'
       install_gems
 
+      echo '--- :closed_lock_with_key: Decrypting Secrets'
+      .buildkite/git-crypt/unlock.sh
+
       echo '--- :globe_with_meridians: Download Release Translations'
       bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
     agents:

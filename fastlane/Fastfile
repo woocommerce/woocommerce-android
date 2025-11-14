@@ -476,8 +476,6 @@ platform :android do
     UI.important("Downloading latest translations for release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
-    configure_apply(force: is_ci)
-
     # Don't check translation coverage in CI
     check_translation_progress_all unless is_ci
     download_translations
@@ -510,8 +508,6 @@ platform :android do
 
     UI.important("Finalizing release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
-
-    configure_apply(force: is_ci)
 
     # Bump the release version and build code
     UI.message 'Bumping final release version and build code...'

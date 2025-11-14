@@ -11,8 +11,8 @@ fi
 echo "--- :rubygems: Setting up Gems"
 install_gems
 
-echo "--- :closed_lock_with_key: Installing Secrets"
-bundle exec fastlane run configure_apply
+echo "--- :closed_lock_with_key: Decrypting Secrets"
+.buildkite/git-crypt/unlock.sh
 
 echo "+++ 🧪 Testing"
 set +e
