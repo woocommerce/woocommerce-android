@@ -4,9 +4,12 @@ import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -18,16 +21,17 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
 
     private fun createViewModel(
         initialMembers: BookingsFilterOption.TeamMembers? = null,
+        bookingsRepository: BookingsRepository? = null
     ): BookingTeamMemberFilterViewModel {
-        val bookingsRepository = mock<BookingsRepository> {
+        val repository = bookingsRepository ?: mock<BookingsRepository> {
             on { observeResources() } doReturn flowOf(emptyList())
-            onBlocking { fetchResources() } doReturn Result.success(Unit)
+            onBlocking { fetchResources() } doReturn Result.success(emptyArray())
         }
 
         return BookingTeamMemberFilterViewModel(
             initialMembers = initialMembers,
             onFilterChanged = {},
-            bookingsRepository = bookingsRepository,
+            bookingsRepository = repository,
             savedStateHandle = SavedStateHandle()
         )
     }
@@ -87,5 +91,42 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
 
         // Then
         assertThat(vm.uiState.value.selectedMembers).isEqualTo(BookingsFilterOption.TeamMembers.DEFAULT)
+    }
+
+    @Test
+    fun `when screen opens, then loading is true and after first non-empty data loading becomes false`() =
+        testBlocking {
+            // Given a repository that first emits empty list (loading), then we push non-empty
+            val resourcesFlow = MutableStateFlow<List<BookingResourceEntity>>(emptyList())
+            val bookingsRepository = mock<BookingsRepository> {
+                on { observeResources() } doReturn resourcesFlow
+                onBlocking { fetchResources() } doAnswer {
+                    Thread.sleep(50)
+                    Result.success(emptyArray())
+                }
+            }
+
+            val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
+
+            assertTrue(vm.uiState.value.isLoading)
+
+            resourcesFlow.value = listOf(member(1))
+
+            assertThat(vm.uiState.value.isLoading).isFalse()
+        }
+
+    @Test
+    fun `when resources fetch returns error, then snackbar event is emitted`() = testBlocking {
+        // Given an error from REST
+        val resourcesFlow = MutableStateFlow<List<BookingResourceEntity>>(emptyList())
+        val bookingsRepository = mock<BookingsRepository> {
+            on { observeResources() } doReturn resourcesFlow
+            onBlocking { fetchResources() } doReturn Result.failure(Exception("boom"))
+        }
+
+        val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
+
+        val event = vm.event.value
+        assertThat(event).isInstanceOf(com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar::class.java)
     }
 }
