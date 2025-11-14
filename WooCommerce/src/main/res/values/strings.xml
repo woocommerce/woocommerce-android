@@ -4193,6 +4193,7 @@
     -->
     <string name="bookings_tab_title">Bookings</string>
     <string name="bookings_fetch_error">Error fetching bookings</string>
+    <string name="bookings_resources_fetch_error">Error fetching team members</string>
     <string name="bookings_tab_today">Today</string>
     <string name="bookings_tab_upcoming">Upcoming</string>
     <string name="bookings_tab_all">All</string>
