@@ -62,7 +62,7 @@ class BookingsRestClient @Inject constructor(
         perPage: Int,
         page: Int,
         query: String?,
-        filters: List<BookingsFilterOption>,
+        filters: BookingFilters?,
         order: BookingsOrderOption
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
@@ -77,7 +77,7 @@ class BookingsRestClient @Inject constructor(
                 "per_page" to perPage.toString(),
                 "page" to page.toString(),
                 "search" to query
-            ).filterNotNull() + filters.toQueryParams()
+            ).filterNotNull() + filters?.toQueryParams().orEmpty()
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -103,29 +103,20 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
-        this@toQueryParams.forEach { filter ->
-            when (filter) {
-                BookingsFilterOption.TeamMember -> TODO()
-                is BookingsFilterOption.BookingType -> {
-                    // TODO add query for booking type filtering
-                }
-
-                BookingsFilterOption.ServiceEvent -> TODO()
-                is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
-                    set("attendance_status", filter.values.joinToString(",") { it.key })
-                }
-
-                BookingsFilterOption.PaymentStatus -> TODO()
-                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
-                is BookingsFilterOption.DateRange -> {
-                    filter.before?.let { set("start_date_before", it.toString()) }
-                    filter.after?.let { set("start_date_after", it.toString()) }
-                }
-
-                BookingsFilterOption.Location -> TODO()
-            }
+    private fun BookingFilters.toQueryParams(): Map<String, String> = buildMap {
+        if (teamMember != null) TODO()
+        if (bookingType != null) TODO()
+        if (serviceEvent != null) TODO()
+        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
+            set("attendance_status", attendanceStatuses.values.joinToString(",") { it.key })
         }
+        if (paymentStatus != null) TODO()
+        if (customer != null) TODO()
+        if (dateRange != null) {
+            dateRange.before?.let { set("start_date_before", it.toString()) }
+            dateRange.after?.let { set("start_date_after", it.toString()) }
+        }
+        if (location != null) TODO()
     }
 }
 

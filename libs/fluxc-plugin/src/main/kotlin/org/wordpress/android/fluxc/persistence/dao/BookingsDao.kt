@@ -7,7 +7,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
@@ -76,21 +76,16 @@ interface BookingsDao {
     fun observeBookings(
         localSiteId: LocalId,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
-        val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
-        val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
-        val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
-            .firstOrNull()?.values
-            ?.map { it.key }
-            .orEmpty()
+        val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
             limit = limit,
-            startDateBefore = dateRangeFilter?.before?.epochSecond,
-            startDateAfter = dateRangeFilter?.after?.epochSecond,
-            customerId = customerFilter?.customerId,
+            startDateBefore = filters?.dateRange?.before?.epochSecond,
+            startDateAfter = filters?.dateRange?.after?.epochSecond,
+            customerId = filters?.customer?.customerId,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             order = order
