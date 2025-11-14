@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-21 15:54:04+0000
+Translation-Revision-Date: 2025-11-04 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">Erreur lors du marquage de la réservation comme payée</string>
+    <string name="booking_cancel_error">Erreur lors de l’annulation de la réservation</string>
+    <string name="booking_note_screen_update_error">Erreur lors de l’enregistrement de la note de réservation</string>
+    <string name="booking_note_screen_done">FAIT</string>
+    <string name="booking_note_screen_title">Note de réservation</string>
+    <string name="booking_note_description_private">Cette note est privée. Elle ne sera pas partagée avec le client.</string>
+    <string name="booking_note_label_add_note">Ajouter une note</string>
+    <string name="booking_note_header">NOTE DE RÉSERVATION</string>
+    <string name="booking_duration_seconds">%1$d secondes</string>
+    <string name="booking_duration_second">%1$d seconde</string>
+    <string name="booking_duration_days">%1$d jours</string>
+    <string name="booking_duration_day">%1$d jour</string>
+    <string name="booking_duration_hours">%1$d heures</string>
+    <string name="booking_duration_hour">%1$d heure</string>
+    <string name="booking_duration_minutes">%1$d minutes</string>
+    <string name="booking_duration_minute">%1$d minute</string>
+    <string name="booking_attendance_status_error">Erreur lors de la modification de l’état de présence</string>
+    <string name="booking_payment_status_pay_on_site">Payer sur place</string>
+    <string name="booking_payment_status_in_cart">Dans le panier</string>
+    <string name="bookings_filter_type_event">Événement</string>
+    <string name="bookings_filter_type_service">Service</string>
+    <string name="bookings_filters_enabled_title">Filtres • %d</string>
+    <string name="woopos_search_orders_error_description">Veuillez réessayer.</string>
+    <string name="woopos_search_orders_error_title">Impossible de charger les commandes</string>
+    <string name="woopos_search_orders_empty_description">Nous n’avons trouvé aucune commande correspondante. Essayez d’ajuster votre terme de recherche.</string>
+    <string name="woopos_search_orders_empty_title">Aucune commande trouvée</string>
+    <string name="woopos_search_orders">Rechercher des commandes</string>
+    <string name="woopos_orders_details_totals_card_content_description">Répartition des totaux de commande</string>
+    <string name="woopos_orders_details_products_list_content_description">Liste des produits de la commande</string>
+    <string name="woopos_orders_details_net_payment_label">Paiement net</string>
+    <string name="woopos_orders_details_refunded_label">Remboursée</string>
+    <string name="woopos_orders_details_total_paid_label">Paiement total</string>
+    <string name="woopos_orders_details_total_label">Total</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Expédition</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Remise (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Remise</string>
+    <string name="woopos_orders_details_breakdown_products_label">Produits</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">Totaux</string>
+    <string name="woopos_orders_details_products_title">Produits</string>
+    <string name="woopos_orders_details_placeholder_message">Choisissez une commande dans la liste pour afficher ses détails.</string>
+    <string name="woopos_orders_details_placeholder_title">Sélectionner une commande</string>
+    <string name="woopos_orders_issue_refund_content_description">Effectuer un remboursement pour cette commande</string>
+    <string name="woopos_orders_email_receipt">Reçu par e-mail</string>
+    <string name="woopos_orders_pagination_try_again_label">Réessayer</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Annuler</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Réessayer</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Veuillez vérifier votre connexion internet et réessayer.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Impossible de synchroniser le catalogue</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Arrière-plan de la boîte de dialogue d’erreur de synchronisation</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d produits et %2$d variantes</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Fermer la bannière</string>
+    <string name="woopos_refresh_catalog_banner_message">Le catalogue n’a pas été synchronisé au cours des 7 derniers jours. Connectez votre appareil au WiFi ou activez la synchronisation sur le réseau cellulaire dans les réglages du PDV.</string>
+    <string name="woopos_refresh_catalog_banner_title">Actualiser le catalogue</string>
+    <string name="woopos_home_sync_failed_retry_button">Réessayer</string>
+    <string name="woopos_home_sync_failed_message">Nous ne sommes pas en mesure de synchroniser votre catalogue de produits. Veuillez vérifier votre connexion internet et réessayer.</string>
+    <string name="woopos_home_sync_failed_title">Synchronisation impossible</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Quitter le PDV</string>
+    <string name="woopos_home_syncing_catalog_subtitle">La synchronisation continuera en arrière-plan.</string>
+    <string name="woopos_home_syncing_catalog_title">Synchronisation du catalogue</string>
+    <string name="booking_note_discard_changes_discard">Abandonner les modifications</string>
+    <string name="booking_note_discard_changes_message">Voulez-vous vraiment annuler ces modifications ?</string>
     <string name="booking_cancel_dialog_confirm">Oui, l’annuler</string>
     <string name="booking_cancel_dialog_keep">Non, la garder</string>
     <string name="booking_cancel_dialog_message">%1$s ne pourra plus assister à « %2$s » le %3$s à %4$s.</string>
@@ -28,7 +91,7 @@ Language: fr
     <string name="bookings_empty_state_description_with_filters">Aucune réservation ne correspond à vos filtres. Essayez de les ajuster pour voir plus de résultats.</string>
     <string name="bookings_search_no_results_with_filters">Nous n’avons trouvé aucune réservation avec ce nom. Essayez d’ajuster votre terme de recherche ou vos filtres pour voir plus de résultats.</string>
     <string name="bookings_search_no_results_without_filters">Nous n’avons trouvé aucune réservation avec ce nom. Essayez d’ajuster votre terme de recherche pour voir plus de résultats.</string>
-    <string name="bookings_empty_state_description_upcoming">Vous n’avez pas encore de rendez-vous ou d’événements planifiés.</string>
+    <string name="bookings_empty_state_description_upcoming">Vous n’avez pas de futurs rendez-vous ou d’événements planifiés.</string>
     <string name="bookings_empty_state_description_today">Vous n’avez aucun rendez-vous ou événement planifié pour aujourd’hui.</string>
     <string name="bookings_empty_state_description_default">Les réservations entrantes apparaîtront ici, où vous pourrez les voir et les gérer.</string>
     <string name="bookings_empty_state_title_upcoming">Aucune réservation à venir</string>

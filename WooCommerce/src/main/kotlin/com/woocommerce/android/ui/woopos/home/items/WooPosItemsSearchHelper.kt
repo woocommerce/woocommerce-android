@@ -67,6 +67,8 @@ class WooPosItemsSearchHelper @Inject constructor(
                     is ParentToChildrenEvent.CouponsRemoved -> Unit
                     is ParentToChildrenEvent.RemoveCouponsClicked -> Unit
                     is ParentToChildrenEvent.CouponsValidationFailed -> Unit
+                    is ParentToChildrenEvent.RemoveProductsClicked -> Unit
+                    is ParentToChildrenEvent.ProductsRemoved -> Unit
                     is ParentToChildrenEvent.OrderSuccessfullyPaid -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }

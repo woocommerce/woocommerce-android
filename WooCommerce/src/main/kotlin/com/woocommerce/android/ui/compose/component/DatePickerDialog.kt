@@ -26,6 +26,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,6 +50,7 @@ fun DatePickerDialog(
     onDateSelected: (Date) -> Unit,
     onDismissRequest: () -> Unit,
     neutralButton: (@Composable () -> Unit)? = null,
+    shape: Shape = DatePickerDefaults.shape,
     minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
     maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
@@ -58,6 +61,7 @@ fun DatePickerDialog(
         currentDate = currentDate?.toCalendar(),
         onDateSelected = { onDateSelected(it.time) },
         onDismissRequest = onDismissRequest,
+        shape = shape,
         neutralButton = neutralButton,
         minDate = minDate.toCalendar(),
         maxDate = maxDate.toCalendar(),
@@ -71,6 +75,7 @@ fun DatePickerDialog(
     currentDate: Calendar?,
     onDateSelected: (Calendar) -> Unit,
     onDismissRequest: () -> Unit,
+    shape: Shape = DatePickerDefaults.shape,
     neutralButton: (@Composable () -> Unit)? = null,
     minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
     maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
@@ -94,6 +99,7 @@ fun DatePickerDialog(
         Surface(
             modifier = Modifier
                 // Match the default constraints of the Material3 date picker dialog
+                .clip(shape)
                 .requiredWidth(360.dp)
                 .heightIn(max = 568.dp),
             color = colors.containerColor
