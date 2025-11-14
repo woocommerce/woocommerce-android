@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -13,7 +16,9 @@ import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
@@ -154,5 +159,51 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: updated filters become the default
         val afterClear = viewModel.uiState.getOrAwaitValue()
         assertThat(afterClear.updatedBookingFilters.bookingType).isEqualTo(null)
+    }
+
+    @Test
+    fun `when attendance status changed and leaving page, then root shows selected value`() {
+        // GIVEN: navigate to Attendance Status page and select one status
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onPage = viewModel.uiState.getOrAwaitValue()
+
+        // Select one attendance status (Booked)
+        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked)))
+
+        // WHEN: leave the page (go back to root list)
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: root list shows the selected status as subtitle values
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val value = (attendanceItem.value as UiStringRes).stringRes
+
+        assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
+    }
+
+    @Test
+    fun `when two attendance statuses selected and leaving page, then root shows selected both statuses`() {
+        // GIVEN: navigate to Attendance Status page and select two statuses
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onPage = viewModel.uiState.getOrAwaitValue()
+
+        // Select two attendance statuses (Booked and Cancelled)
+        onPage.onUpdateFilterOption(
+            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked, AttendanceStatus.Cancelled))
+        )
+
+        // WHEN: leave the page (go back to root list)
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: root list shows both selected statuses in subtitle values (order agnostic)
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val value = (attendanceItem.value as UiString.UiStringText).text
+
+        assertThat(value).isEqualTo("2")
     }
 }
