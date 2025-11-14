@@ -4,6 +4,7 @@ android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
 androidx-appcompat = '1.7.1'
 androidx-arch-core = '2.2.0'
+androidx-annotation = '1.9.1'
 androidx-browser = '1.9.0'
 androidx-camera = '1.5.1'
 androidx-cardview = '1.0.0'
@@ -114,6 +115,7 @@ android-security-lint = { group = "com.android.security.lint", name = "lint", ve
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidx-camera" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }
