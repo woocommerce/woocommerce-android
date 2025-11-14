@@ -1,1 +1,3 @@
-Did you give Woo POS a try? It’s now even better because you can view orders right inside it. What else? Interac refunds are smoother, filters and buttons got a fresh look, and tablet UI got better. Customer data quirks? Fixed. Selling in-person? Try out Woo Point Of Sale.
+- [Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
+- [Internal] Handle BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION disconnect reason from Stripe SDK [https://github.com/woocommerce/woocommerce-android/pull/14886]
+- [**] Faster POS performance - search, barcode scanning, and loading are now nearly instant. [https://github.com/woocommerce/woocommerce-android/pull/14926]
