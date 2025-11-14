@@ -45,6 +45,7 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         with(FragmentSettingsBetaBinding.bind(view)) {
             bindProductAddonsToggle()
             bindJetpackAppPasswordsToggle()
+            bindWooPosLocalCatalogToggle()
         }
     }
 
@@ -74,6 +75,18 @@ class BetaFeaturesFragment : Fragment(R.layout.fragment_settings_beta) {
         jetpackAppPasswordsToggle.isChecked = AppPrefs.jetpackAppPasswordsEnabled
         jetpackAppPasswordsToggle.setOnCheckedChangeListener { _, isChecked ->
             AppPrefs.jetpackAppPasswordsEnabled = isChecked
+        }
+    }
+
+    private fun FragmentSettingsBetaBinding.bindWooPosLocalCatalogToggle() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            wooPosLocalCatalogToggle.isVisible =
+                isRemoteFeatureFlagEnabled(RemoteFeatureFlag.REMOTE_WOO_POS_LOCAL_CATALOG_M1)
+        }
+
+        wooPosLocalCatalogToggle.isChecked = AppPrefs.wooPosLocalCatalogEnabled
+        wooPosLocalCatalogToggle.setOnCheckedChangeListener { _, isChecked ->
+            AppPrefs.wooPosLocalCatalogEnabled = isChecked
         }
     }
 
