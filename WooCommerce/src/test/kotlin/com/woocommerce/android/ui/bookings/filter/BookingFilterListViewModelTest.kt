@@ -60,6 +60,20 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given ServiceEvent page, when openPage, then current page is ServiceEvent`() {
+        // GIVEN
+        val initial = viewModel.uiState.getOrAwaitValue()
+        assertThat(initial.currentPage).isInstanceOf(BookingFilterPage.List::class.java)
+
+        // WHEN
+        initial.openPage(BookingFilterPage.ServiceEvent)
+
+        // THEN
+        val updated = viewModel.uiState.getOrAwaitValue()
+        assertThat(updated.currentPage).isInstanceOf(BookingFilterPage.ServiceEvent::class.java)
+    }
+
+    @Test
     fun `given current page is DateTimePicker, when onClose, then current page set to List`() {
         // GIVEN
         val initial = viewModel.uiState.getOrAwaitValue()
@@ -73,6 +87,35 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN
         val afterClose = viewModel.uiState.getOrAwaitValue()
         assertThat(afterClose.currentPage).isInstanceOf(BookingFilterPage.List::class.java)
+    }
+
+    @Test
+    fun `when updating ServiceEvents selection, then updatedBookingFilters and count reflect the changes`() {
+        // GIVEN
+        val initial = viewModel.uiState.getOrAwaitValue()
+        assertThat(initial.updatedBookingFiltersCount).isEqualTo(0)
+
+        val products = setOf(
+            BookingsFilterOption.ProductInfo(productId = 101L, productName = "Yoga"),
+            BookingsFilterOption.ProductInfo(productId = 202L, productName = "Haircut")
+        )
+
+        // WHEN select two products
+        initial.onUpdateFilterOption(BookingsFilterOption.ServiceEvents(values = products))
+
+        // THEN
+        val withSelection = viewModel.uiState.getOrAwaitValue()
+        assertThat(withSelection.updatedBookingFilters.serviceEvents.values).isEqualTo(products)
+        // ServiceEvents is a single enabled filter regardless of number of selected items
+        assertThat(withSelection.updatedBookingFiltersCount).isEqualTo(1)
+
+        // WHEN clear selection (Any)
+        withSelection.onUpdateFilterOption(BookingsFilterOption.ServiceEvents.DEFAULT)
+
+        // THEN
+        val cleared = viewModel.uiState.getOrAwaitValue()
+        assertThat(cleared.updatedBookingFilters.serviceEvents.values).isEmpty()
+        assertThat(cleared.updatedBookingFiltersCount).isEqualTo(0)
     }
 
     @Test
