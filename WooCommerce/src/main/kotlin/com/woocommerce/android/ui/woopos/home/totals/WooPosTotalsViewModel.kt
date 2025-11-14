@@ -84,6 +84,7 @@ class WooPosTotalsViewModel @Inject constructor(
     val state: StateFlow<WooPosTotalsViewState> = uiState
 
     private var createDraftOrderJob: Job? = null
+    private var newOrder: Order? = null
 
     private val dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -174,6 +175,10 @@ class WooPosTotalsViewModel @Inject constructor(
             WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedCouponValidation -> handleEditOrderClicked()
 
             WooPosTotalsUIEvent.OnRemoveCouponsClicked -> handleRemoveCouponsClicked()
+
+            WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound -> handleEditOrderClicked()
+
+            WooPosTotalsUIEvent.OnRemoveProductsClicked -> handleRemoveProductsClicked()
         }
     }
 
@@ -254,6 +259,16 @@ class WooPosTotalsViewModel @Inject constructor(
         }
     }
 
+    private fun handleRemoveProductsClicked() {
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(
+                ChildToParentEvent.RemoveProductsClicked(
+                    getProductsIdsMissingFromOrder(requireNotNull(newOrder))
+                )
+            )
+        }
+    }
+
     private suspend fun retryPaymentCollectionFromScratch() {
         cancelPaymentAction()
         val order = totalsRepository.getOrderById(dataState.value.orderId)
@@ -316,6 +331,16 @@ class WooPosTotalsViewModel @Inject constructor(
                         onCartDataReceived(event.cartDataList)
                     }
 
+                    is ParentToChildrenEvent.ProductsRemoved -> {
+                        if (event.cartDataList.isNotEmpty()) {
+                            onCartDataReceived(event.cartDataList)
+                        } else {
+                            childrenToParentEventSender.sendToParent(
+                                ChildToParentEvent.BackFromCheckoutToCartClicked
+                            )
+                        }
+                    }
+
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     is ParentToChildrenEvent.ItemClickedInItemsList,
                     is ParentToChildrenEvent.SearchEvent.ChangedQuery,
@@ -326,6 +351,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.RefreshProductList,
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.BarcodeEvent,
+                    is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }
@@ -491,14 +517,41 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private suspend fun handleCreatedOrder(order: Order) {
+        totalsAnalyticsTracker.trackOrderCreationSuccess()
         notifyCartAboutOrderCreation(order)
+        val notFoundProductIds = getProductsIdsMissingFromOrder(order)
+
+        if (notFoundProductIds.isNotEmpty()) {
+            newOrder = order
+            uiState.value = WooPosTotalsViewState.ProductNotFoundError(
+                message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
+                reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+            )
+            return
+        }
+        readyToCollectPayment(order)
+    }
+
+    private suspend fun readyToCollectPayment(order: Order) {
         dataState.value = dataState.value.copy(
             orderId = order.id,
             orderTotal = order.total
         )
         uiState.value = buildWooPosTotalsViewState(order)
-        totalsAnalyticsTracker.trackOrderCreationSuccess()
         collectPayment()
+    }
+
+    private fun getProductsIdsMissingFromOrder(order: Order): List<Long> {
+        val simpleProductsInCart = dataState.value.itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product.Simple>()
+
+        val orderProductIds: Set<Long> = order.items
+            .map { it.productId }
+            .toSet()
+
+        return simpleProductsInCart.filter { simple ->
+            simple.id !in orderProductIds
+        }.map { it.id }
     }
 
     private fun notifyCartAboutOrderCreation(order: Order) {

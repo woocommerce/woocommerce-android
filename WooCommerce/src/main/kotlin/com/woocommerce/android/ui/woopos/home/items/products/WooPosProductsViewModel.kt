@@ -86,6 +86,8 @@ class WooPosProductsViewModel @Inject constructor(
                     ParentToChildrenEvent.SearchEvent.Finished,
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
+                    is ParentToChildrenEvent.RemoveProductsClicked,
+                    is ParentToChildrenEvent.ProductsRemoved,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }
@@ -340,7 +342,7 @@ class WooPosProductsViewModel @Inject constructor(
                         }
                     }
                 }
-            }.onFailure { exception ->
+            }.onFailure { _ ->
                 handlePTRError()
             }
         }
