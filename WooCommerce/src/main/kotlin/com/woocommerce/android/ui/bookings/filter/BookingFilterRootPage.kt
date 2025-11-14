@@ -10,14 +10,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCListItemWithInlineSubtitle
-import com.woocommerce.android.util.UiHelpers
+import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
 fun BookingFilterRootPage(
@@ -35,19 +32,9 @@ fun BookingFilterRootPage(
 @Composable
 private fun BookingFilterListRow(item: BookingFilterListItem) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        val context = LocalContext.current
-        val subtitle = remember(item.values) {
-            val values = item.values
-            if (values.isNullOrEmpty()) {
-                context.getString(R.string.bookings_filter_default)
-            } else {
-                UiHelpers.formatUiStringList(context, values)
-            }
-        }
-
         WCListItemWithInlineSubtitle(
             text = stringResource(item.title),
-            subtitle = subtitle,
+            subtitle = item.value?.getText().orEmpty(),
             modifier = Modifier
                 .defaultMinSize(minHeight = 64.dp)
                 .clickable { item.onClick() }

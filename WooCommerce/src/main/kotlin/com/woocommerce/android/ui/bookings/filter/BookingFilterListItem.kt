@@ -8,7 +8,7 @@ import com.woocommerce.android.model.UiString
  */
 data class BookingFilterListItem(
     @StringRes val title: Int,
-    val values: List<UiString>? = null,
+    val value: UiString? = null,
     val selected: Boolean = false,
     val onClick: () -> Unit = {}
 )
