@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import com.woocommerce.android.WooException
-import com.woocommerce.android.model.ProductVariation
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.variations.selector.VariationListHandler
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
@@ -57,11 +56,23 @@ class WooPosProductsDataSource @Inject constructor(
     private val localDbDataSource: WooPosProductsInDbDataSource,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
 ) {
+    enum class SyncStrategy {
+        REMOTE,
+        LOCAL_CATALOG,
+    }
+
     private var activeSource: WooPosProductsDataSourceInterface? = null
 
+    fun getCurrentSyncStrategy(): SyncStrategy {
+        return when (activeSource) {
+            localDbDataSource -> SyncStrategy.LOCAL_CATALOG
+            remoteDataSource -> SyncStrategy.REMOTE
+            else -> error("Unknown sync strategy")
+        }
+    }
+
     fun prepopulateCache(): Flow<WooPosPrepopulatingDataStatus> = flow {
-        val requirement = syncStatusChecker.checkSyncRequirement()
-        when (requirement) {
+        when (val requirement = syncStatusChecker.checkSyncRequirement()) {
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 activeSource = remoteDataSource
                 remoteDataSource.prepopulateCache().fold(
@@ -492,7 +503,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
         )
         when {
             result.isSuccess -> {
-                val remoteVariations = variationHandler.getVariationsFlow(productId).firstOrNull()?.applyFilter()?.map {
+                val remoteVariations = variationHandler.getVariationsFlow(productId).firstOrNull()?.map {
                     it.toWooPosVariation(variationMapper)
                 } ?: emptyList()
                 updateVariationsCache(productId, remoteVariations)
@@ -525,7 +536,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
                 result.isSuccess -> {
                     val fetchedVariations = variationHandler.getVariationsFlow(
                         productId
-                    ).first().applyFilter().map { it.toWooPosVariation(variationMapper) }
+                    ).first().map { it.toWooPosVariation(variationMapper) }
                     Result.success(fetchedVariations)
                 }
 
@@ -538,10 +549,30 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
+    @Suppress("ReturnCount")
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
-        val siteModel = selectedSite.getOrNull() ?: return null
-        return productStore.getVariationByRemoteId(siteModel, productId, variationId)
-            ?.toWooPosVariation(variationMapper)
+        val cachedVariations = getCachedVariations(productId)
+        val cachedVariation = cachedVariations.find { it.remoteVariationId == variationId }
+        if (cachedVariation != null) {
+            return cachedVariation
+        }
+
+        return if (cachedVariations.isNotEmpty()) {
+            val remoteVariationsResult = productRestClient.fetchProductVariations(
+                site = selectedSite.get(),
+                productId = productId,
+            )
+
+            if (!remoteVariationsResult.isError) {
+                val variations = remoteVariationsResult.variations.map { it.toWooPosVariation(variationMapper) }
+                updateVariationsCache(productId, variations)
+                variations.find { it.remoteVariationId == variationId }
+            } else {
+                null
+            }
+        } else {
+            null
+        }
     }
 
     override suspend fun refreshProducts(): Result<WooPosSyncProductResult> = withContext(
@@ -593,9 +624,4 @@ private fun Result<Unit>.logVariationFailure() {
     val error = exceptionOrNull()
     val errorMessage = error?.message ?: "Unknown error"
     WooLog.e(WooLog.T.POS, "Loading variations failed - $errorMessage", error)
-}
-
-private fun List<ProductVariation>.applyFilter(): List<ProductVariation> {
-    return filter { !it.isDownloadable } // Keeping this filter for now, but it should be removed in the future after
-    // WC 9.7.0 is released. https://a8c.slack.com/archives/C070SJRA8DP/p1736795937571479
 }

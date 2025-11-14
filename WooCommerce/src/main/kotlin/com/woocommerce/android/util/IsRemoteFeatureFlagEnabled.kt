@@ -5,6 +5,7 @@ import com.woocommerce.android.util.RemoteFeatureFlag.APP_PASSWORDS_FOR_JETPACK_
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES
 import com.woocommerce.android.util.RemoteFeatureFlag.LOCAL_NOTIFICATION_STORE_CREATION_READY
+import com.woocommerce.android.util.RemoteFeatureFlag.REMOTE_WOO_POS_LOCAL_CATALOG_M1
 import com.woocommerce.android.util.RemoteFeatureFlag.WOO_POS
 import javax.inject.Inject
 
@@ -17,6 +18,7 @@ class IsRemoteFeatureFlagEnabled @Inject constructor(
             LOCAL_NOTIFICATION_1D_BEFORE_FREE_TRIAL_EXPIRES,
             LOCAL_NOTIFICATION_1D_AFTER_FREE_TRIAL_EXPIRES,
             WOO_POS,
+            REMOTE_WOO_POS_LOCAL_CATALOG_M1,
             APP_PASSWORDS_FOR_JETPACK_SITES ->
                 PackageUtils.isDebugBuild() ||
                     wpComRemoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(featureFlag.remoteKey)

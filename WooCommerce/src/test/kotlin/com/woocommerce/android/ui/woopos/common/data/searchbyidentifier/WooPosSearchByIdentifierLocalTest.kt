@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationMapper
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsLRUCache
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
 import com.woocommerce.android.ui.woopos.util.generateWooPosVariation
@@ -68,7 +69,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(productsCache.getAll()).thenReturn(listOf(product))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
@@ -82,7 +83,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(emptyList())
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertEquals(WooPosSearchByIdentifierResult.Failure(WooPosSearchByIdentifierResult.Error.NotFound), result)
@@ -96,7 +97,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(productsCache.getAll()).thenReturn(listOf(product))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertEquals(WooPosSearchByIdentifierResult.Success(product), result)
@@ -120,7 +121,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
@@ -151,7 +152,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(listOf(variation1, variation2))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
@@ -177,7 +178,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(variationsCache.getAll()).thenReturn(listOf(variation))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
@@ -199,7 +200,7 @@ class WooPosSearchByIdentifierLocalTest {
         whenever(productsCache.getProductById(productId)).thenReturn(null)
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = false)
+        val result = sut(identifier, syncStrategy = SyncStrategy.REMOTE)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)
@@ -224,7 +225,7 @@ class WooPosSearchByIdentifierLocalTest {
             whenever(productModelMapper.fromEntity(productEntity)).thenReturn(productModel)
 
             // WHEN
-            val result = sut(identifier, isLocalCatalogSupported = true)
+            val result = sut(identifier, syncStrategy = SyncStrategy.LOCAL_CATALOG)
 
             // THEN
             assertEquals(WooPosSearchByIdentifierResult.Success(productModel), result)
@@ -263,7 +264,7 @@ class WooPosSearchByIdentifierLocalTest {
             whenever(productModelMapper.fromEntity(parentEntity)).thenReturn(parentProduct)
 
             // WHEN
-            val result = sut(identifier, isLocalCatalogSupported = true)
+            val result = sut(identifier, syncStrategy = SyncStrategy.LOCAL_CATALOG)
 
             // THEN
             assertTrue(result is WooPosSearchByIdentifierResult.VariationSuccess)
@@ -292,7 +293,7 @@ class WooPosSearchByIdentifierLocalTest {
                 .thenReturn(Result.failure(Exception("Parent not found")))
 
             // WHEN
-            val result = sut(identifier, isLocalCatalogSupported = true)
+            val result = sut(identifier, syncStrategy = SyncStrategy.LOCAL_CATALOG)
 
             // THEN
             assertTrue(result is WooPosSearchByIdentifierResult.Failure)
@@ -310,7 +311,7 @@ class WooPosSearchByIdentifierLocalTest {
             .thenReturn(Result.failure(Exception("Not found")))
 
         // WHEN
-        val result = sut(identifier, isLocalCatalogSupported = true)
+        val result = sut(identifier, syncStrategy = SyncStrategy.LOCAL_CATALOG)
 
         // THEN
         assertTrue(result is WooPosSearchByIdentifierResult.Failure)

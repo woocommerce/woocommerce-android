@@ -39,6 +39,7 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import java.util.Locale
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
@@ -51,7 +52,7 @@ fun BookingFilterListScreen(state: BookingFilterListUiState) {
                         onNavigationButtonClick = state.onClose,
                         navigationIcon = ImageVector.vectorResource(id = state.navigationIcon),
                         onActionButtonClick = state.onClear,
-                        actionButtonText = stringResource(id = R.string.bookings_filters_clear_button)
+                        actionButtonText = stringResource(id = R.string.clear).uppercase(Locale.getDefault())
                     )
                 } else {
                     Toolbar(
@@ -129,7 +130,6 @@ private fun FiltersNavHost(
             BookingFilterRootPage(state.items)
         }
         composable(BookingFilterPage.TeamMember.route) {
-            TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
             BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
@@ -137,7 +137,6 @@ private fun FiltersNavHost(
             }
         }
         composable(BookingFilterPage.ServiceEvent.route) {
-            TODO()
         }
         composable(BookingFilterPage.AttendanceStatus.route) {
             BookingAttendanceStatusFilterRoute(
@@ -145,7 +144,6 @@ private fun FiltersNavHost(
             ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
         }
         composable(BookingFilterPage.PaymentStatus.route) {
-            TODO()
         }
         composable(BookingFilterPage.Customer.route) {
             BookingCustomerFilterPage { customer ->
@@ -165,7 +163,6 @@ private fun FiltersNavHost(
             DateTimeFilterPicker()
         }
         composable(BookingFilterPage.Location.route) {
-            TODO()
         }
     }
 }

@@ -36,6 +36,7 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val state = viewModel.state.collectAsState()
 
     BackHandler {
+        viewModel.onExitPosClicked()
         onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
     }
 
@@ -45,7 +46,10 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         }
         is WooPosSplashState.Syncing -> {
             SyncingCatalog(
-                onExitPosClicked = { onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked) }
+                onExitPosClicked = {
+                    viewModel.onExitPosClicked()
+                    onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
+                }
             )
         }
         is WooPosSplashState.SyncFailed -> {

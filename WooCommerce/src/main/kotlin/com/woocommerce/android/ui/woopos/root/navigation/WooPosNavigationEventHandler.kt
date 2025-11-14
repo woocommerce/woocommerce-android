@@ -10,12 +10,14 @@ import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfu
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
 import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
+import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
 
 fun NavHostController.handleNavigationEvent(
     event: WooPosNavigationEvent,
     activity: ComponentActivity,
 ) {
     when (event) {
+        is WooPosNavigationEvent.OpenSplashScreen -> navigateToSplashScreen()
         is WooPosNavigationEvent.ExitPosClicked,
         is WooPosNavigationEvent.BackFromSplashClicked -> activity.finish()
 

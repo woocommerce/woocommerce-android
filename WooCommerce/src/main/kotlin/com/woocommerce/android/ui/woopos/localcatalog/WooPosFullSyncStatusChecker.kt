@@ -5,7 +5,6 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -35,7 +34,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
 
-        if (localCatalogStore.getProductCount(site.localId()).getOrNull() == 0) {
+        val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
+        val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
+        val itemsCount = productCount + variationsCount
+        if (productCount == 0 || itemsCount >= WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC) {
             val size = checkCatalogSizeAction
                 .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
@@ -46,8 +48,6 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
-        val productCount = localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(site.id))
-            .getOrElse { 0 }
         val catalogIsEmpty = productCount == 0
 
         if (lastFullSyncTimestamp == null) {

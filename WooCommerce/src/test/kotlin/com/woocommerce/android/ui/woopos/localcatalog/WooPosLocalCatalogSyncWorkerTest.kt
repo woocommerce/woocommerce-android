@@ -4,7 +4,6 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +28,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var syncRepository: WooPosLocalCatalogSyncRepository = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
-    private var wooPosTabShouldBeVisible: WooPosTabShouldBeVisible = mock()
     private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
@@ -66,7 +64,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(WooPosFullSyncRequirement.BlockingRequired)
 
-        whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(true))
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(null)
         whenever(syncRepository.syncLocalCatalogFull(site))
             .thenReturn(successResponse)
@@ -83,7 +80,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             syncRepository = syncRepository,
             logger = logger,
             timeProvider = mockTimeProvider,
-            wooPosTabShouldBeVisible = wooPosTabShouldBeVisible,
             syncStatusChecker = syncStatusChecker,
         )
     }
@@ -225,38 +221,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         assertThat(result).isEqualTo(ListenableWorker.Result.failure())
         verify(syncRepository).syncLocalCatalogFull(eq(site))
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `given POS tab is not available, when sync is attempted, then returns success without syncing`() = testBlocking {
-        // GIVEN
-        whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.success(false))
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository, never()).syncLocalCatalogFull(any())
-        verify(syncRepository, never()).syncLocalCatalogIncremental(any())
-    }
-
-    @Test
-    fun `given POS tab availability check fails, when sync is attempted, then continues to attempt sync`() = testBlocking {
-        // GIVEN
-        whenever(wooPosTabShouldBeVisible.invoke()).thenReturn(Result.failure(Exception("Failed to check POS tab")))
-
-        val worker = createWorker()
-
-        // WHEN
-        val result = worker.doWork()
-
-        // THEN
-        assertThat(result).isEqualTo(ListenableWorker.Result.success())
-        verify(syncRepository).syncLocalCatalogFull(eq(site))
-        verify(syncRepository).syncLocalCatalogIncremental(eq(site))
     }
 
     @Test

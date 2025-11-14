@@ -8,6 +8,6 @@ package com.woocommerce.android.ui.woopos.localcatalog
  */
 enum class WooPosIncrementalSyncReason(val description: String) {
     AFTER_SUCCESSFUL_PAYMENT("after successful payment"),
-    ON_POS_HOME("on POS home"),
+    ON_POS_PRODUCT_LIST("on POS product list"),
     PERIODIC_HOURLY("periodic hourly"),
 }

@@ -36,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -59,6 +60,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -223,7 +225,8 @@ fun WooPosProductCard(
 ) {
     WooPosCard(
         modifier = modifier
-            .wrapContentHeight(),
+            .wrapContentHeight()
+            .testTag(WooPosTestTags.PRODUCT_ITEM),
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
