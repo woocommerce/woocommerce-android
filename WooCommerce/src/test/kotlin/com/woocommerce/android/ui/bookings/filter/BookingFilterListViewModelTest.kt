@@ -33,6 +33,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         viewModel = BookingFilterListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
         )
     }
 
@@ -177,7 +178,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: root list shows the selected status as subtitle values
         val root = viewModel.uiState.getOrAwaitValue()
 
-        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
         val value = (attendanceItem.value as UiStringRes).stringRes
 
         assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
@@ -201,7 +203,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: root list shows both selected statuses in subtitle values (order agnostic)
         val root = viewModel.uiState.getOrAwaitValue()
 
-        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
         val value = (attendanceItem.value as UiString.UiStringText).text
 
         assertThat(value).isEqualTo("2")
