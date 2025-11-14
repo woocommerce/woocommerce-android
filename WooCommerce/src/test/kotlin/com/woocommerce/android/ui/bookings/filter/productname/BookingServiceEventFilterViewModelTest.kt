@@ -10,6 +10,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -22,9 +23,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        // Return empty product list to simplify; ViewModel should still work
-        // Match any combination including default/null params to avoid unnecessary stubbing warning
-        org.mockito.kotlin.whenever(
+        whenever(
             productListRepository.getProductList(
                 productFilterOptions = any(),
                 excludedProductIds = any(),
@@ -33,15 +32,15 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
         ).thenReturn(emptyList())
         latestFilter = null
         viewModel = BookingServiceEventFilterViewModel(
-            initialServiceEvents = null,
+            selectedServiceEvents = null,
             onFilterChanged = { latestFilter = it },
-            savedStateHandle = SavedStateHandle(),
             productListRepository = productListRepository,
+            savedStateHandle = SavedStateHandle(),
         )
     }
 
     @Test
-    fun `given no initial selection when ViewModel is initialized then selectedProducts is DEFAULT`() {
+    fun `given no initial filters selected, when ViewModel is initialized, then selected items is DEFAULT`() {
         val state = viewModel.uiState.value
         assertThat(state.selectedProducts).isEqualTo(BookingsFilterOption.ServiceEvents.DEFAULT)
     }
@@ -50,11 +49,11 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     fun `given an initial selection when ViewModel is initialized then state reflects it`() {
         // GIVEN an initial selection
         val initial = BookingsFilterOption.ServiceEvents(
-            values = setOf(BookingsFilterOption.ProductInfo(1L, "Yoga"))
+            values = setOf(BookingsFilterOption.ProductInfo(1L, "Haircut"))
         )
         // WHEN creating the ViewModel with that selection
         viewModel = BookingServiceEventFilterViewModel(
-            initialServiceEvents = initial,
+            selectedServiceEvents = initial,
             onFilterChanged = { latestFilter = it },
             savedStateHandle = SavedStateHandle(),
             productListRepository = productListRepository,
@@ -83,7 +82,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
             values = setOf(BookingsFilterOption.ProductInfo(5L, "Pilates"))
         )
         viewModel = BookingServiceEventFilterViewModel(
-            initialServiceEvents = initial,
+            selectedServiceEvents = initial,
             onFilterChanged = { latestFilter = it },
             savedStateHandle = SavedStateHandle(),
             productListRepository = productListRepository,
@@ -103,15 +102,15 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     @Test
     fun `given no selection when selecting a product twice then it toggles and invokes callback`() {
         // GIVEN
-        val product = BookableProduct(id = 42L, name = "Surf")
+        val product = BookableProduct(id = 42L, name = "Yoga")
 
         // WHEN selecting a product
         viewModel.uiState.value.onProductSelected(product)
         // THEN it becomes selected and callback is invoked
         val selectedOnce = viewModel.uiState.value
         assertThat(selectedOnce.selectedProducts.values)
-            .containsExactly(BookingsFilterOption.ProductInfo(42L, "Surf"))
-        assertThat(latestFilter?.values).containsExactly(BookingsFilterOption.ProductInfo(42L, "Surf"))
+            .containsExactly(BookingsFilterOption.ProductInfo(42L, "Yoga"))
+        assertThat(latestFilter?.values).containsExactly(BookingsFilterOption.ProductInfo(42L, "Yoga"))
 
         // WHEN tapping again to unselect (toggle off)
         selectedOnce.onProductSelected(product)

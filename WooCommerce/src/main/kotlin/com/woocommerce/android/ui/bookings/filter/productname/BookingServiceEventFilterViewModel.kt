@@ -16,15 +16,15 @@ import org.wordpress.android.fluxc.store.WCProductStore
 
 @HiltViewModel(assistedFactory = BookingServiceEventFilterViewModel.Factory::class)
 class BookingServiceEventFilterViewModel @AssistedInject constructor(
-    @Assisted private val initialServiceEvents: BookingsFilterOption.ServiceEvents?,
+    @Assisted private val selectedServiceEvents: BookingsFilterOption.ServiceEvents?,
     @Assisted private val onFilterChanged: (BookingsFilterOption.ServiceEvents) -> Unit,
-    savedStateHandle: SavedStateHandle,
     private val productListRepository: ProductListRepository,
+    savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
         BookingServiceEventFilterUiState(
-            selectedProducts = initialServiceEvents ?: BookingsFilterOption.ServiceEvents.DEFAULT,
+            selectedProducts = selectedServiceEvents ?: BookingsFilterOption.ServiceEvents.DEFAULT,
             onProductSelected = ::onProductSelected,
             onSearchQueryChanged = ::onSearchQueryChanged
         )
