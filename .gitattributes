@@ -8,5 +8,6 @@ secrets.properties filter=git-crypt diff=git-crypt
 sentry.properties filter=git-crypt diff=git-crypt
 google-services.json filter=git-crypt diff=git-crypt
 firebase.secrets.json filter=git-crypt diff=git-crypt
+google-upload-credentials.json filter=git-crypt diff=git-crypt
 *.keystore filter=git-crypt diff=git-crypt
 *.jks filter=git-crypt diff=git-crypt
