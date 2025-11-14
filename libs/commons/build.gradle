@@ -18,6 +18,8 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+
+    testFixtures.enable = true
 }
 
 dependencies {
@@ -28,4 +30,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.process)
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.wordpress.utils)
+
+    testFixturesCompileOnly(libs.kotlinx.coroutines.test)
+    testFixturesCompileOnly(libs.junit)
+    testFixturesCompileOnly(libs.mockito.kotlin)
+    testFixturesCompileOnly(libs.androidx.arch.core.testing)
 }
