@@ -2,13 +2,16 @@ package com.woocommerce.android.ui.compose.component
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalTonalElevationEnabled
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerDialog
 import androidx.compose.material3.rememberTimePickerState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -29,50 +32,54 @@ fun TimePickerDialog(
         initialMinute = time?.minute ?: 0,
     )
 
-    TimePickerDialog(
-        onDismissRequest = onDismissRequest,
-        properties = dialogProperties,
-        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-        title = {
-            Text(
-                text = stringResource(R.string.bookings_filter_time_picker_title),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(bottom = 20.dp),
-            )
-        },
-        confirmButton = {
-            WCTextButton(
-                onClick = {
-                    onTimeSelected(Time(timeState.hour, timeState.minute))
-                },
-                text = stringResource(id = android.R.string.ok)
-            )
-        },
-        dismissButton = {
-            WCTextButton(
-                onClick = { onDismissRequest() },
-                text = stringResource(id = android.R.string.cancel)
-            )
-        }
-    ) {
-        // WooTheme sets very big (compared to defaults) font sizes. Those are not handled well in the TimePicker,
-        // so we have to override those locally.
-        val reducedDisplayTypography = MaterialTheme.typography.copy(
-            displayLarge = MaterialTheme.typography.displayLarge.copy(fontSize = 57.sp),
-        )
-        MaterialTheme(
-            colorScheme = MaterialTheme.colorScheme,
-            shapes = MaterialTheme.shapes,
-            typography = reducedDisplayTypography
-        ) {
-            TimePicker(
-                state = timeState,
-                colors = TimePickerDefaults.colors(
-                    clockDialColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    periodSelectorSelectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    periodSelectorSelectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+    // Remove tonal elevation to match Date picker dialog's background color
+    // Remove after updating material3 to 1.5.0 - https://issuetracker.google.com/issues/403183883
+    CompositionLocalProvider(LocalTonalElevationEnabled provides false) {
+        TimePickerDialog(
+            onDismissRequest = onDismissRequest,
+            properties = dialogProperties,
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            title = {
+                Text(
+                    text = stringResource(R.string.bookings_filter_time_picker_title),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 20.dp),
                 )
+            },
+            confirmButton = {
+                WCTextButton(
+                    onClick = {
+                        onTimeSelected(Time(timeState.hour, timeState.minute))
+                    },
+                    text = stringResource(id = android.R.string.ok)
+                )
+            },
+            dismissButton = {
+                WCTextButton(
+                    onClick = { onDismissRequest() },
+                    text = stringResource(id = android.R.string.cancel)
+                )
+            }
+        ) {
+            // WooTheme sets very big (compared to defaults) font sizes. Those are not handled well in the TimePicker,
+            // so we have to override those locally.
+            val reducedDisplayTypography = MaterialTheme.typography.copy(
+                displayLarge = MaterialTheme.typography.displayLarge.copy(fontSize = 57.sp),
             )
+            MaterialTheme(
+                colorScheme = MaterialTheme.colorScheme,
+                shapes = MaterialTheme.shapes,
+                typography = reducedDisplayTypography
+            ) {
+                TimePicker(
+                    state = timeState,
+                    colors = TimePickerDefaults.colors().copy(
+                        clockDialColor = MaterialTheme.colorScheme.surfaceColorAtElevation(2.dp),
+                        periodSelectorSelectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        periodSelectorSelectedContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    )
+                )
+            }
         }
     }
 }
