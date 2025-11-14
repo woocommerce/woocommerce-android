@@ -23,7 +23,7 @@ ext {
 
 gradle.ext {
     isCi = System.getenv('CI')?.toBoolean() ?: false
-    secretsPath = "${System.getProperty("user.home")}/.configure/woocommerce-android/secrets/secrets.properties"
+    secretsPath = "secrets.properties"
     secretProperties = loadPropertiesWithFallback(
             logger,
             file("${rootDir}/defaults.properties"),
@@ -40,7 +40,12 @@ static def loadPropertiesWithFallback(Logger logger, File fallbackFile, File pri
     def defaultProperties = readPropertiesFromFile(fallbackFile)
     def primaryProperties
     if (primaryFile.exists()) {
-        primaryProperties = readPropertiesFromFile(primaryFile)
+        try {
+            primaryProperties = readPropertiesFromFile(primaryFile)
+        } catch (Exception e) {
+            logger.warn("Failed to parse primary properties file: ${primaryFile}. Using fallback: ${fallbackFile}. Error: ${e}")
+            primaryProperties = new Properties()
+        }
     } else {
         logger.warn("Primary properties file not found: ${primaryFile}. Using fallback: ${fallbackFile}.")
         primaryProperties = new Properties()
@@ -93,8 +98,14 @@ def checkForRemoteBuildCacheOptimizedExperience() {
 }
 
 def assertSecretsApplied() {
-    if (!file(gradle.ext.secretsPath).exists()) {
-        throw new GradleException("The build requested remote build cache, but secrets file is not found. Please run `bundle exec fastlane run configure_apply` to apply secrets.")
+    def secretsFile = file(gradle.ext.secretsPath)
+    if (!secretsFile.exists()) {
+        throw new GradleException("The build requested remote build cache, but the `secrets.properties` file is not found. See README.md for instructions on how to set those up.")
+    }
+    try {
+        readPropertiesFromFile(secretsFile)
+    } catch (Exception ex) {
+        throw new GradleException("The `secrets.properties` file exists but could not be read as a valid `.properties` file. This likely means it is still encrypted (git-crypt locked). Please decrypt it before building. See README.md for instructions.", ex)
     }
 }
 
