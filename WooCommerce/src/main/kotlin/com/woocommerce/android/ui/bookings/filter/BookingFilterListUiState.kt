@@ -50,7 +50,6 @@ data class BookingFilterListUiState(
             onClick = { openPage(page) },
         )
     }
-
     val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
 
     val showClearButton: Boolean

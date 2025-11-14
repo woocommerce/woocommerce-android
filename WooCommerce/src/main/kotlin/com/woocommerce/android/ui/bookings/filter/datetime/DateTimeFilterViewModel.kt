@@ -26,6 +26,7 @@ import java.time.format.FormatStyle
 class DateTimeFilterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val clock: Clock,
+    @Assisted private val initialRange: BookingsFilterOption.DateRange? = null,
     @Assisted private val onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -41,6 +42,23 @@ class DateTimeFilterViewModel @AssistedInject constructor(
         )
     )
     val uiState: LiveData<DateTimeFilterUiState?> = _uiState.asLiveData()
+
+    init {
+        initialRange?.let { range ->
+            _uiState.update { currentState ->
+                val fromDateTime = range.after?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
+                val toDateTime = range.before?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
+                currentState.copy(
+                    fromDateTime = fromDateTime,
+                    formattedFromDate = dateFormatter.format(fromDateTime),
+                    formattedFromTime = timeFormatter.format(fromDateTime),
+                    toDateTime = toDateTime,
+                    formattedToDate = dateFormatter.format(toDateTime),
+                    formattedToTime = timeFormatter.format(toDateTime),
+                )
+            }
+        }
+    }
 
     private fun openDateDialog(dateBoundary: DateBoundary) {
         _uiState.update { currentState ->
@@ -161,7 +179,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
     @AssistedFactory
     interface Factory {
         fun create(
-            onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit
+            onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
+            initialRange: BookingsFilterOption.DateRange? = null,
         ): DateTimeFilterViewModel
     }
 }

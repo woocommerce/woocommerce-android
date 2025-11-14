@@ -7,6 +7,7 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
@@ -180,6 +181,39 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             val providedMillis = dialog2.date
             val expectedMillis = vm.uiState.getOrAwaitValue()!!.fromDateTime!!.atZone(zone).toInstant().toEpochMilli()
             assertThat(providedMillis).isEqualTo(expectedMillis)
+        }
+
+    @Test
+    fun `given initialRange with after and before, when ViewModel is created, then state reflects range`() =
+        testBlocking {
+            // Given a specific range
+            val after = LocalDateTime.of(2025, 1, 2, 3, 4).toInstant(ZoneOffset.UTC)
+            val before = LocalDateTime.of(2025, 2, 3, 4, 5).toInstant(ZoneOffset.UTC)
+            val range = BookingsFilterOption.DateRange(
+                before = before,
+                after = after
+            )
+
+            // When
+            val vm = DateTimeFilterViewModel(
+                onTypeFilterChanged = { _ -> },
+                savedStateHandle = SavedStateHandle(),
+                clock = clock,
+                initialRange = range,
+            )
+
+            // Then
+            val zone = ZoneId.systemDefault()
+            val expectedFrom = after.atZone(zone).toLocalDateTime()
+            val expectedTo = before.atZone(zone).toLocalDateTime()
+            val state = vm.uiState.getOrAwaitValue()!!
+            assertThat(state.fromDateTime).isEqualTo(expectedFrom)
+            assertThat(state.toDateTime).isEqualTo(expectedTo)
+            // formatted strings should be populated
+            assertThat(state.formattedFromDate).isNotEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
+            assertThat(state.formattedToDate).isNotEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
         }
 
     private fun createVm(): DateTimeFilterViewModel {

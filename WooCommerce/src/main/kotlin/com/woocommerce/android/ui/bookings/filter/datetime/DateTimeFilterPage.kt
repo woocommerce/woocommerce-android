@@ -39,10 +39,11 @@ import java.util.Calendar
 
 @Composable
 fun DateTimeFilterRoute(
+    initialRange: BookingsFilterOption.DateRange? = null,
     onDateTimeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) {
     val viewModel = hiltViewModel<DateTimeFilterViewModel, DateTimeFilterViewModel.Factory> { factory ->
-        factory.create(onDateTimeFilterChanged)
+        factory.create(onDateTimeFilterChanged, initialRange)
     }
 
     val state by viewModel.uiState.observeAsState()

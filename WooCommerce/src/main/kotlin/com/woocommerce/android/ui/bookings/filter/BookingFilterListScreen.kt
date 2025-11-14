@@ -132,7 +132,9 @@ private fun FiltersNavHost(
             BookingFilterRootPage(state.items)
         }
         composable(BookingFilterPage.DateTime.route) {
-            DateTimeFilterRoute { dateRange ->
+            DateTimeFilterRoute(
+                initialRange = state.updatedBookingFilters.dateRange
+            ) { dateRange ->
                 state.onUpdateFilterOption(dateRange)
             }
         }
