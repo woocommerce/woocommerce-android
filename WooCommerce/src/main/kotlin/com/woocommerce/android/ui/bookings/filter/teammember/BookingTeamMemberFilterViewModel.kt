@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.bookings.filter.teammember
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -30,12 +32,26 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
     val uiState: StateFlow<BookingTeamMemberFilterUiState> = _uiState
 
     init {
+        // First getting from database
         launch {
             bookingsRepository.observeResources().distinctUntilChanged().collect { resources ->
-                _uiState.update { current -> current.copy(teamMembers = listOf(TeamMember.any) + resources) }
+                _uiState.update { current ->
+                    current.copy(isLoading = resources.isEmpty(), teamMembers = listOf(TeamMember.any) + resources)
+                }
             }
         }
-        launch { bookingsRepository.fetchResources() }
+
+        // Then fetching from server
+        launch {
+            bookingsRepository.fetchResources()
+                .onSuccess {
+                    _uiState.update { current -> current.copy(isLoading = false) }
+                }
+                .onFailure {
+                    _uiState.update { current -> current.copy(isLoading = false) }
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_resources_fetch_error))
+                }
+        }
     }
 
     private fun onTeamMemberSelected(member: TeamMember?) {
