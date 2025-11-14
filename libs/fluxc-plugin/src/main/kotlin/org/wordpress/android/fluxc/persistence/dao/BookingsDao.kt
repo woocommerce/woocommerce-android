@@ -42,19 +42,6 @@ interface BookingsDao {
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
-    @Suppress("LongParameterList")
-    @Query(DEFAULT_SELECT_QUERY)
-    suspend fun getBookings(
-        localSiteId: LocalId,
-        limit: Int?,
-        startDateBefore: Long?,
-        startDateAfter: Long?,
-        customerId: Long?,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
-        order: BookingsOrderOption
-    ): List<BookingEntity>
-
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     fun observeBooking(localSiteId: LocalId, bookingId: Long): Flow<BookingEntity?>
 
@@ -87,31 +74,6 @@ interface BookingsDao {
             startDateAfter = filters?.dateRange?.after?.epochSecond,
             customerId = filters?.customer?.customerId,
             attendanceStatuses = attendanceStatusKeySet.toList(),
-            attendanceStatusesSize = attendanceStatusKeySet.size,
-            order = order
-        )
-    }
-
-    suspend fun getBookings(
-        localSiteId: LocalId,
-        limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
-        order: BookingsOrderOption
-    ): List<BookingEntity> {
-        val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
-        val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
-        val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
-            .firstOrNull()?.values
-            ?.map { it.key }
-            .orEmpty()
-
-        return getBookings(
-            localSiteId = localSiteId,
-            limit = limit,
-            startDateBefore = dateRangeFilter?.before?.epochSecond,
-            startDateAfter = dateRangeFilter?.after?.epochSecond,
-            customerId = customerFilter?.customerId,
-            attendanceStatuses = attendanceStatusKeySet,
             attendanceStatusesSize = attendanceStatusKeySet.size,
             order = order
         )
