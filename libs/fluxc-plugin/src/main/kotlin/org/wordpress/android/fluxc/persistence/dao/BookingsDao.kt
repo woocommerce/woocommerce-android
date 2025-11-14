@@ -108,37 +108,6 @@ interface BookingsDao {
         )
     }
 
-    suspend fun getBookings(
-        localSiteId: LocalId,
-        limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
-        order: BookingsOrderOption
-    ): List<BookingEntity> {
-        val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
-        val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
-        val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
-            .firstOrNull()?.values
-            ?.map { it.key }
-            .orEmpty()
-        val productIds = filters.filterIsInstance<BookingsFilterOption.ServiceEvents>()
-            .firstOrNull()?.values
-            ?.map { it.productId }
-            .orEmpty()
-
-        return getBookings(
-            localSiteId = localSiteId,
-            limit = limit,
-            startDateBefore = dateRangeFilter?.before?.epochSecond,
-            startDateAfter = dateRangeFilter?.after?.epochSecond,
-            customerId = customerFilter?.customerId,
-            attendanceStatuses = attendanceStatusKeySet,
-            attendanceStatusesSize = attendanceStatusKeySet.size,
-            productIds = productIds,
-            productIdsSize = productIds.size,
-            order = order
-        )
-    }
-
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     suspend fun getBooking(localSiteId: LocalId, bookingId: Long): BookingEntity?
 
