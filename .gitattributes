@@ -5,3 +5,4 @@ RELEASE-NOTES.txt merge=union
 #########################################
 
 secrets.properties filter=git-crypt diff=git-crypt
+sentry.properties filter=git-crypt diff=git-crypt
