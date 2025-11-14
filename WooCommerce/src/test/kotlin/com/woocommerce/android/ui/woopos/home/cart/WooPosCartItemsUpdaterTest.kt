@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.cart
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.automattic.android.tracks.crashlogging.CrashLogging
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
@@ -21,6 +22,8 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import java.math.BigDecimal
 import kotlin.test.Test
 
@@ -39,15 +42,22 @@ class WooPosCartItemsUpdaterTest {
         onBlocking { invoke(argThat { this == BigDecimal("5.0") }) }.thenReturn("5.0$")
     }
     private val productsCache: WooPosProductsCache = mock()
+    private val localCatalogStore: WooPosLocalCatalogStore = mock {
+        onBlocking { deleteProducts(any()) }.thenReturn(Result.success(Unit))
+    }
+    private val selectedSite: SelectedSite = mock {
+        onBlocking { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
+    }
     private val crashLogger: CrashLogging = mock()
     private val logger: WooPosLogWrapper = mock()
 
     private val updater = WooPosCartItemsUpdater(
         formatPrice = formatPrice,
         productsCache = productsCache,
+        localCatalogStore = localCatalogStore,
+        selectedSite = selectedSite,
         wooPosLogWrapper = logger,
         crashLogger = crashLogger,
-
     )
 
     @Test
@@ -301,6 +311,33 @@ class WooPosCartItemsUpdaterTest {
 
         // THEN
         verify(productsCache).deleteProduct(1L)
+    }
+
+    @Test
+    fun `given product not existing, when deleted, then also deletes from Local Catalog DB`() = runTest {
+        // GIVEN
+        val simpleProduct = WooPosCartItemViewState.Product.Simple(
+            itemNumber = 1,
+            id = 1L,
+            name = "Product Name",
+            price = "9.0$",
+            imageUrl = "url",
+            description = null
+        )
+        val itemsInCart = listOf(simpleProduct)
+
+        // WHEN
+        updater.invoke(itemsInCart, emptyList(), emptyList())
+
+        // THEN
+        verify(productsCache).deleteProduct(1L)
+        verify(localCatalogStore).deleteProducts(
+            argThat { products ->
+                products.size == 1 &&
+                    products[0].remoteId.value == 1L &&
+                    products[0].localSiteId.value == 1
+            }
+        )
     }
 
     @Test
