@@ -77,7 +77,6 @@ fun WooPosItemList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(2.dp),
         state = listState,
     ) {
         items(
@@ -583,7 +582,7 @@ fun ItemListPreview() {
                         expiredState = Coupon.ExpiredState.NotExpired
                     ),
                     Coupon(
-                        id = 4,
+                        id = 5,
                         name = "Expired Coupon",
                         summary = "10% off everything",
                         expiredState = Coupon.ExpiredState.Expired("24 Apr 2025")
