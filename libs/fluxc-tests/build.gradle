@@ -50,3 +50,12 @@ dependencies {
     testImplementation libs.androidx.arch.core.testing
     testImplementation libs.androidx.paging.runtime
 }
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed; otherwise, tests fail.
+            exclude(libs.androidx.paging.runtime.get().module.toString())
+        }
+    }
+}

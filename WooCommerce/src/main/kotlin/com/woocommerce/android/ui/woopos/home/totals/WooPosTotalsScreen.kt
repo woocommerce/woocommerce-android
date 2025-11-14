@@ -31,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState.Total
 import com.woocommerce.android.ui.woopos.home.totals.payment.failed.WooPosPaymentFailedScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.inprogress.WooPosPaymentInProgressScreen
 import com.woocommerce.android.ui.woopos.home.totals.payment.success.WooPosPaymentSuccessScreen
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosTotalsScreen(modifier: Modifier = Modifier) {
@@ -116,6 +118,16 @@ private fun WooPosTotalsScreen(
         StateChangeAnimated(visible = state is WooPosTotalsViewState.InvalidCouponError) {
             if (state is WooPosTotalsViewState.InvalidCouponError) {
                 TotalsInvalidCouponsErrorScreen(
+                    errorMessage = state.message,
+                    errorReason = state.reason,
+                    onUIEvent = onUIEvent
+                )
+            }
+        }
+
+        StateChangeAnimated(visible = state is WooPosTotalsViewState.ProductNotFoundError) {
+            if (state is WooPosTotalsViewState.ProductNotFoundError) {
+                TotalsProductNotFoundErrorScreen(
                     errorMessage = state.message,
                     errorReason = state.reason,
                     onUIEvent = onUIEvent
@@ -231,6 +243,7 @@ private fun TotalsLoaded(
                 .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding())
                 .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .testTag(WooPosTestTags.CASH_PAYMENT_BUTTON)
         )
     }
 }
@@ -468,6 +481,26 @@ private fun TotalsInvalidCouponsErrorScreen(
         secondaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_totals_coupons_validation_failed_remove_coupons),
             click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveCouponsClicked) }
+        )
+    )
+}
+
+@Composable
+private fun TotalsProductNotFoundErrorScreen(
+    errorMessage: String,
+    errorReason: String,
+    onUIEvent: (WooPosTotalsUIEvent) -> Unit
+) {
+    return WooPosErrorScreen(
+        message = errorMessage,
+        reason = errorReason,
+        primaryButton = WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_totals_product_not_found_edit_order),
+            click = { onUIEvent(WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound) }
+        ),
+        secondaryButton = WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_totals_product_not_found_remove_products),
+            click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked) }
         )
     )
 }

@@ -135,7 +135,8 @@ object AppPrefs {
         BLAZE_CAMPAIGN_SELECTED_OBJECTIVE,
         BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
         IS_SITE_WPCOM_SUSPENDED,
-        JETPACK_APP_PASSWORDS_ENABLED
+        JETPACK_APP_PASSWORDS_ENABLED,
+        WOO_POS_LOCAL_CATALOG_ENABLED
     }
 
     /**
@@ -309,6 +310,10 @@ object AppPrefs {
     var jetpackAppPasswordsEnabled: Boolean
         get() = getBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, true)
         set(value) = setBoolean(DeletablePrefKey.JETPACK_APP_PASSWORDS_ENABLED, value)
+
+    var wooPosLocalCatalogEnabled: Boolean
+        get() = getBoolean(DeletablePrefKey.WOO_POS_LOCAL_CATALOG_ENABLED, true)
+        set(value) = setBoolean(DeletablePrefKey.WOO_POS_LOCAL_CATALOG_ENABLED, value)
 
     var isWooPosSurveyNotificationCurrentUserShown: Boolean
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN, false)

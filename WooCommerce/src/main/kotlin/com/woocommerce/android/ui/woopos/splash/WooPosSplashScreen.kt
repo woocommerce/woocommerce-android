@@ -36,6 +36,7 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     val state = viewModel.state.collectAsState()
 
     BackHandler {
+        viewModel.onExitPosClicked()
         onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
     }
 
@@ -45,12 +46,18 @@ fun WooPosSplashScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         }
         is WooPosSplashState.Syncing -> {
             SyncingCatalog(
-                onExitPosClicked = { onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked) }
+                onExitPosClicked = {
+                    viewModel.onExitPosClicked()
+                    onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
+                }
             )
         }
         is WooPosSplashState.SyncFailed -> {
             SyncFailed(
-                onRetryClicked = { viewModel.onRetrySync() }
+                onRetryClicked = { viewModel.onRetrySync() },
+                onExitPosClicked = {
+                    onNavigationEvent(WooPosNavigationEvent.BackFromSplashClicked)
+                }
             )
         }
         is WooPosSplashState.Loaded -> {
@@ -125,13 +132,20 @@ private fun SyncingCatalog(
 }
 
 @Composable
-private fun SyncFailed(onRetryClicked: () -> Unit) {
+private fun SyncFailed(
+    onRetryClicked: () -> Unit,
+    onExitPosClicked: () -> Unit
+) {
     WooPosErrorScreen(
         message = stringResource(R.string.woopos_home_sync_failed_title),
         reason = stringResource(R.string.woopos_home_sync_failed_message),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(R.string.woopos_home_sync_failed_retry_button),
             click = onRetryClicked
+        ),
+        secondaryButton = WooPosErrorScreenButtonState(
+            text = stringResource(R.string.woopos_home_syncing_catalog_exit_button),
+            click = onExitPosClicked
         )
     )
 }

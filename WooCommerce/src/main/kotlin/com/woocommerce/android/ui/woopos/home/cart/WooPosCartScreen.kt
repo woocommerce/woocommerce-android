@@ -59,6 +59,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -98,6 +99,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
+import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 
 @Composable
 fun WooPosCartScreen(modifier: Modifier = Modifier) {
@@ -180,6 +182,7 @@ private fun WooPosCartScreen(
                 }
         ) {
             WooPosButton(
+                modifier = Modifier.testTag(WooPosTestTags.CHECKOUT_BUTTON),
                 text = stringResource(R.string.woopos_checkout_button),
                 onClick = { onUIEvent(WooPosCartUIEvent.CheckoutClicked) },
                 state = when (state.checkoutButtonState) {
@@ -417,6 +420,7 @@ private fun CartToolbar(
                 color = WooPosTheme.colors.onSurfaceVariantLowest,
                 maxLines = 1,
                 modifier = Modifier
+                    .testTag(WooPosTestTags.CART_ITEMS_COUNT)
                     .constrainAs(itemsCount) {
                         end.linkTo(
                             if (toolbar.isClearAllButtonVisible) {
@@ -513,11 +517,7 @@ private fun ProductItem(
         modifier = modifier
             .wrapContentHeight()
             .semantics { contentDescription = itemContentDescription },
-        backgroundColor = if (item.productDoesNotExist) {
-            WooPosTheme.colors.disabledContainer
-        } else {
-            MaterialTheme.colorScheme.surfaceContainerLowest
-        },
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
         elevation = WooPosElevation.Medium,
         shadowType = ShadowType.Soft,
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
@@ -550,11 +550,7 @@ private fun ProductItem(
                     Image(
                         imageVector = Icons.Outlined.Inventory2,
                         contentDescription = null,
-                        colorFilter = if (item.productDoesNotExist) {
-                            ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
-                        } else {
-                            ColorFilter.tint(WooPosTheme.colors.onDisabledContainer)
-                        },
+                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onDisabledContainer),
                         modifier = Modifier.size(36.dp)
                     )
                 }
@@ -565,7 +561,7 @@ private fun ProductItem(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .size(96.dp)
-                        .alpha(if (item.productDoesNotExist) 0.5f else 1f)
+                        .alpha(1f)
                 )
             }
 
@@ -583,11 +579,7 @@ private fun ProductItem(
                     style = WooPosTypography.BodySmall,
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Ellipsis,
-                    color = if (item.productDoesNotExist) {
-                        WooPosTheme.colors.onDisabledContainer
-                    } else {
-                        MaterialTheme.colorScheme.onSurface
-                    },
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .clearAndSetSemantics { }
                 )
@@ -596,11 +588,7 @@ private fun ProductItem(
                     WooPosText(
                         text = item.description ?: "",
                         style = WooPosTypography.BodySmall,
-                        color = if (item.productDoesNotExist) {
-                            WooPosTheme.colors.onDisabledContainer
-                        } else {
-                            WooPosTheme.colors.onSurfaceVariantHighest
-                        },
+                        color = WooPosTheme.colors.onSurfaceVariantHighest,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
@@ -611,14 +599,22 @@ private fun ProductItem(
                 WooPosText(
                     text = item.price,
                     style = WooPosTypography.BodySmall,
-                    color = if (item.productDoesNotExist) {
-                        WooPosTheme.colors.onDisabledContainer
-                    } else {
-                        WooPosTheme.colors.onSurfaceVariantHighest
-                    },
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                     modifier = Modifier
                         .clearAndSetSemantics { }
                 )
+
+                if (item.productDoesNotExist) {
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    WooPosText(
+                        text = stringResource(R.string.woopos_cart_product_unknown_item),
+                        style = WooPosTypography.BodySmall,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.clearAndSetSemantics { }
+                    )
+                }
             }
 
             if (canRemoveItems) {

@@ -42,9 +42,11 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.model.WCProductVariationModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -1124,6 +1126,157 @@ class WooPosProductsRemoteDataSourceTest {
         lastModified = "",
         images = images,
     )
+
+    @Test
+    fun `given variation in cache, when getVariationById called, then returns cached variation without REST call`() =
+        runTest {
+            // GIVEN
+            val productId = 1L
+            val variationId = 2L
+            val cachedVariation = variationsSampleProducts.find { it.remoteVariationId == variationId }
+            whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
+            val sut = createSUT()
+
+            // WHEN
+            val result = sut.getVariationById(productId, variationId)
+
+            // THEN
+            assertThat(result).isNotNull
+            assertThat(result).isEqualTo(cachedVariation)
+            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any())
+        }
+
+    @Test
+    fun `given variation not in cache and cache has variations, when getVariationById called, then fetches all variations and updates cache`() =
+        runTest {
+            // GIVEN
+            val productId = 1L
+            val variationId = 10L
+            val wcVariation = WCProductVariationModel(LocalId(1)).copy(
+                remoteVariationId = RemoteId(variationId),
+                remoteProductId = RemoteId(productId)
+            )
+            val expectedVariation = WooPosVariation(
+                remoteVariationId = variationId,
+                remoteProductId = productId,
+                globalUniqueId = "test-global-id",
+                price = java.math.BigDecimal("10.0"),
+                image = null,
+                attributes = emptyList(),
+                isVisible = true,
+                isDownloadable = false
+            )
+            val remotePayload = WCProductStore.RemoteProductVariationsPayload(
+                site = siteModel,
+                remoteProductId = productId,
+                variations = listOf(wcVariation)
+            )
+
+            whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
+            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+                .thenReturn(remotePayload)
+            whenever(variationMapper.fromWCProductVariationModel(wcVariation)).thenReturn(expectedVariation)
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val sut = createSUT()
+
+            // WHEN
+            val result = sut.getVariationById(productId, variationId)
+
+            // THEN
+            assertThat(result).isNotNull
+            assertThat(result?.remoteVariationId).isEqualTo(variationId)
+            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(variationsCache).put(eq(productId), any())
+        }
+
+    @Test
+    fun `given empty cache, when getVariationById called, then returns null without fetching`() =
+        runTest {
+            // GIVEN
+            val productId = 1L
+            val variationId = 2L
+
+            whenever(variationsCache.get(productId)).thenReturn(emptyList())
+            val sut = createSUT()
+
+            // WHEN
+            val result = sut.getVariationById(productId, variationId)
+
+            // THEN
+            assertThat(result).isNull()
+            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any())
+            verify(variationsCache, never()).put(any(), any())
+        }
+
+    @Test
+    fun `given REST fetch fails, when getVariationById called, then returns null without updating cache`() =
+        runTest {
+            // GIVEN
+            val productId = 1L
+            val variationId = 999L
+            val errorPayload = WCProductStore.RemoteProductVariationsPayload(
+                error = WCProductStore.ProductError(WCProductStore.ProductErrorType.GENERIC_ERROR),
+                site = siteModel,
+                remoteProductId = productId
+            )
+
+            whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
+            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+                .thenReturn(errorPayload)
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val sut = createSUT()
+
+            // WHEN
+            val result = sut.getVariationById(productId, variationId)
+
+            // THEN
+            assertThat(result).isNull()
+            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(variationsCache, never()).put(any(), any())
+        }
+
+    @Test
+    fun `given variation not in cache but others are, when getVariationById called, then refreshes entire cache and returns variation`() =
+        runTest {
+            // GIVEN
+            val productId = 1L
+            val variationId = 99L
+            val wcVariation = WCProductVariationModel(LocalId(1)).copy(
+                remoteVariationId = RemoteId(variationId),
+                remoteProductId = RemoteId(productId)
+            )
+            val expectedVariation = WooPosVariation(
+                remoteVariationId = variationId,
+                remoteProductId = productId,
+                globalUniqueId = "test-global-id",
+                price = java.math.BigDecimal("99.99"),
+                image = null,
+                attributes = emptyList(),
+                isVisible = true,
+                isDownloadable = false
+            )
+            val remotePayload = WCProductStore.RemoteProductVariationsPayload(
+                site = siteModel,
+                remoteProductId = productId,
+                variations = listOf(wcVariation)
+            )
+
+            whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
+            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+                .thenReturn(remotePayload)
+            whenever(variationMapper.fromWCProductVariationModel(wcVariation)).thenReturn(expectedVariation)
+            whenever(selectedSite.get()).thenReturn(siteModel)
+            val sut = createSUT()
+
+            // WHEN
+            val result = sut.getVariationById(productId, variationId)
+
+            // THEN
+            assertThat(result).isNotNull
+            assertThat(result?.remoteVariationId).isEqualTo(variationId)
+            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(variationsCache).put(eq(productId), any())
+        }
 
     private fun createSUT(): WooPosProductsRemoteDataSource {
         val sut = WooPosProductsRemoteDataSource(

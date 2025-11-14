@@ -524,8 +524,8 @@ fun WooPosOrdersScreenPreview() {
             state = WooPosOrdersState.Content(
                 items = WooPosOrdersState.Content.Items.Loaded(
                     items = mapOf(
-                        item1 to details1,
-                        item2 to details2
+                        item1 to OrderDetailsViewState.Computed(orderId = 1L, details = details1),
+                        item2 to OrderDetailsViewState.Computed(orderId = 2L, details = details2)
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -617,18 +617,18 @@ fun WooPosOrdersNothingFoundStatePreview() {
 private fun sampleOrderDetails(
     id: Long = 1L,
     number: String = "#014"
-) = OrderDetailsViewState(
+) = OrderDetailsViewState.Computed.Details(
     id = id,
     number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
     lineItems = listOf(
-        OrderDetailsViewState.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
-        OrderDetailsViewState.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
-        OrderDetailsViewState.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
+        OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
+        OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
+        OrderDetailsViewState.Computed.Details.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
     ),
-    breakdown = OrderDetailsViewState.TotalsBreakdown(
+    breakdown = OrderDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",
         discount = "-$5.00",
         discountCode = "8qew4mnq",

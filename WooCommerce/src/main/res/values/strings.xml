@@ -2256,6 +2256,8 @@
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">POS Local Catalog</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Store your product catalog on this device for faster search, barcode scanning, and loading times.</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics, and enhance your user experience.</string>
     <string name="settings_tracking_header">Tracking</string>
@@ -2420,7 +2422,6 @@
 
     <string name="login_continue">Continue</string>
     <string name="enter_site_address_share_intent">Enter the address of your WordPress site you\'d like to share the content to.</string>
-
 
 
     <string name="login_site_address_more_help">Need more help?</string>
@@ -2807,39 +2808,11 @@
     <string name="install_wc_shipping_flow_onboarding_screen_not_now_button">Not Now</string>
     <string name="install_wc_shipping_extension_name">WooCommerce Shipping</string>
 
-
-
     <!-- Other -->
     <string name="error_loading_image">Unable to load image</string>
     <string name="login_invalid_site_url">Please enter a complete website address, like example.com.</string>
     <string name="notification_wpcom_username_needed">Please log in with your username and password.</string>
 
-
-
-    // C
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- Z -->
     <string name="send_link_by_email">Send link by email</string>
     <string name="create_account">Create account</string>
     <string name="or_type_your_password">Or type your password</string>
@@ -3761,6 +3734,11 @@
     <string name="woopos_products_loading_error_retry_button">Retry</string>
     <string name="woopos_totals_order_creation_error">Couldn\'t create order</string>
     <string name="woopos_totals_invalid_coupon_error">Unable to apply coupons</string>
+    <string name="woopos_totals_product_not_found_error">Product not found</string>
+    <string name="woopos_totals_product_not_found_reason">A product in the cart is no longer available.</string>
+    <string name="woopos_totals_product_not_found_edit_order">Edit order</string>
+    <string name="woopos_totals_product_not_found_remove_products">Remove product</string>
+    <string name="woopos_cart_product_unknown_item">Unknown item</string>
     <string name="woopos_totals_success_payment_cash">A cash payment of %1$s was successfully made.</string>
     <string name="woopos_totals_success_payment_card">A card payment of %1$s was successfully made.</string>
 
@@ -3826,13 +3804,14 @@
     <string name="woopos_orders_details_totals_title">Totals</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_breakdown_products_label">Products</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Discount</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Discount total</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Discount total (%1$s)</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Taxes</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Shipping</string>
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
+    <string name="woopos_orders_details_refund_error">Unable to load refund</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -4250,7 +4229,11 @@
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
     <string name="bookings_filters_selected_option_content_description">Selected filter option</string>
-    <string name="bookings_filters_clear_button">CLEAR</string>
+    <string name="bookings_filter_date_label">Date</string>
+    <string name="bookings_filter_time_label">Time</string>
+    <string name="bookings_filter_date_from">FROM</string>
+    <string name="bookings_filter_date_to">TO</string>
+    <string name="bookings_filter_time_picker_title">Select time</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>

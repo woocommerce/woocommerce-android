@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -25,6 +26,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
+    private val prefsRepo: WooPosPreferencesRepository = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
 
@@ -40,6 +42,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
             networkStatus = networkStatus,
             isLocalCatalogSupported = isLocalCatalogSupported,
             wooPosLogWrapper = wooPosLogWrapper,
+            prefsRepo = prefsRepo,
             appCoroutineScope = testScope
         )
     }
@@ -53,11 +56,11 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(isLocalCatalogSupported(site.localId())).thenReturn(false)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Skipping sync on POS home: Local catalog not supported for site")
+        verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
         verifyNoInteractions(localCatalogSyncRepository)
     }
 
@@ -105,13 +108,13 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
 
         // THEN
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
         verify(wooPosLogWrapper).d(
-            "Sync on POS home completed successfully: 15 products, 8 variations synced in 2500ms"
+            "Sync on POS product list completed successfully: 15 products, 8 variations synced in 2500ms"
         )
     }
 
@@ -136,7 +139,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure`() = runTest(testScheduler) {
+    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(
+        testScheduler
+    ) {
         // GIVEN
         val site = SiteModel().apply { id = 789 }
         val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
@@ -155,6 +160,8 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
+        verify(wooPosLogWrapper).e("Disabling Local Catalog periodic sync for site due to catalog size too large")
+        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
     }
 
     @Test
@@ -175,9 +182,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
         // WHEN & THEN
-        sut.execute(WooPosIncrementalSyncReason.ON_POS_HOME)
+        sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
         advanceUntilIdle()
-        verify(wooPosLogWrapper).d("Starting incremental sync on POS home")
+        verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
 
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
         advanceUntilIdle()

@@ -46,7 +46,7 @@ fun WooPosOrdersLoadingState() {
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surface)
+                .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
                 .padding(top = WooPosSpacing.XLarge.value)
         )
@@ -55,7 +55,7 @@ fun WooPosOrdersLoadingState() {
             modifier = Modifier
                 .weight(0.7f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceContainerLow)
+                .background(MaterialTheme.colorScheme.surface)
                 .padding(top = WooPosSpacing.Large.value)
         )
     }

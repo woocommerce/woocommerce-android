@@ -12,12 +12,14 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
+import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,9 +40,9 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class WooPosProductsViewModelTest {
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Rule
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
@@ -54,6 +56,7 @@ class WooPosProductsViewModelTest {
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val resourceProvider: ResourceProvider = mock()
+    private val catalogIncrementalSync: WooPosPerformLocalCatalogIncrementalSync = mock()
 
     @Before
     fun setup() {
@@ -562,6 +565,12 @@ class WooPosProductsViewModelTest {
             priceFormat = priceFormat,
             analyticsTracker = analyticsTracker,
             resourceProvider = resourceProvider,
+            dispatchers = CoroutineDispatchers(
+                coroutinesTestRule.testDispatcher,
+                coroutinesTestRule.testDispatcher,
+                coroutinesTestRule.testDispatcher
+            ),
+            incrementalSync = catalogIncrementalSync,
         )
     }
 }
