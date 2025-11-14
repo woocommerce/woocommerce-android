@@ -123,9 +123,12 @@ class BookingsRestClient @Inject constructor(
         this@toQueryParams.forEach { filter ->
             when (filter) {
                 is BookingsFilterOption.TeamMembers -> {
-                    set(
-                        "resource",
-                        filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() })
+                    if (filter.values.isNotEmpty()) {
+                        set(
+                            "resource",
+                            filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() }
+                        )
+                    }
                 }
 
                 is BookingsFilterOption.BookingType -> {
