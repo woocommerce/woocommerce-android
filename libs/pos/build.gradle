@@ -19,3 +19,8 @@ android {
         compileSdk = gradle.ext.compileSdkVersion
     }
 }
+
+dependencies {
+    implementation(project(":libs:commons"))
+    implementation(libs.google.dagger.hilt.android.main)
+}
