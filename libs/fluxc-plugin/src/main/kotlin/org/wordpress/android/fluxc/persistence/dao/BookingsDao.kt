@@ -22,6 +22,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start > :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -37,6 +38,8 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         order: BookingsOrderOption
@@ -50,6 +53,8 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         order: BookingsOrderOption
@@ -81,6 +86,10 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
+        val resourceIdSet = filters.filterIsInstance<BookingsFilterOption.TeamMembers>()
+            .firstOrNull()?.values
+            ?.map { it.value }
+            .orEmpty()
         val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
             .firstOrNull()?.values
             ?.map { it.key }
@@ -91,6 +100,8 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            resourceIds = resourceIdSet.toList(),
+            resourceIdsSize = resourceIdSet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             order = order
@@ -105,6 +116,10 @@ interface BookingsDao {
     ): List<BookingEntity> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
+        val resourceIdSet = filters.filterIsInstance<BookingsFilterOption.TeamMembers>()
+            .firstOrNull()?.values
+            ?.map { it.value }
+            .orEmpty()
         val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
             .firstOrNull()?.values
             ?.map { it.key }
@@ -116,6 +131,8 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            resourceIds = resourceIdSet,
+            resourceIdsSize = resourceIdSet.size,
             attendanceStatuses = attendanceStatusKeySet,
             attendanceStatusesSize = attendanceStatusKeySet.size,
             order = order
