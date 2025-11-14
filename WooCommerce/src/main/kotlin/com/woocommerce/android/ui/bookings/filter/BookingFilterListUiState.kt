@@ -32,6 +32,7 @@ enum class BookingFilterPage {
 data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters = BookingFilters(),
     val updatedBookingFilters: BookingFilters = initialBookingFilters,
+    val selectedFilterValues: SelectedFilterValues = SelectedFilterValues(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
     val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
@@ -40,6 +41,7 @@ data class BookingFilterListUiState(
     val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
     val onClear: () -> Unit = {},
 ) {
+    data class SelectedFilterValues(val teamMemberValue: String? = null)
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
