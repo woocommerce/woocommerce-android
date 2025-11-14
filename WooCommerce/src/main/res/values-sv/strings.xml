@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-22 13:54:03+0000
+Translation-Revision-Date: 2025-11-06 10:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">Det gick inte att markera bokningen som betald</string>
+    <string name="booking_cancel_error">Det gick inte att avbryta bokningen</string>
+    <string name="booking_note_screen_update_error">Det gick inte att spara bokningsanteckningen</string>
+    <string name="booking_note_screen_done">KLART</string>
+    <string name="booking_note_screen_title">Bokningsanteckning</string>
+    <string name="booking_note_description_private">Detta är en privat anteckning. Den kommer inte att delas med kunden.</string>
+    <string name="booking_note_label_add_note">Lägg till anteckning</string>
+    <string name="booking_note_header">BOKNINGSANTECKNING</string>
+    <string name="booking_duration_seconds">%1$d sekunder</string>
+    <string name="booking_duration_second">%1$d sekund</string>
+    <string name="booking_duration_days">%1$d dagar</string>
+    <string name="booking_duration_day">%1$d dag</string>
+    <string name="booking_duration_hours">%1$d timmar</string>
+    <string name="booking_duration_hour">%1$d timme</string>
+    <string name="booking_duration_minutes">%1$d minuter</string>
+    <string name="booking_duration_minute">%1$d minut</string>
+    <string name="booking_attendance_status_error">Det gick inte att ändra närvarostatusen</string>
+    <string name="booking_payment_status_pay_on_site">Betala på webbplats</string>
+    <string name="booking_payment_status_in_cart">I varukorg</string>
+    <string name="bookings_filter_type_event">Händelse</string>
+    <string name="bookings_filter_type_service">Tjänst</string>
+    <string name="bookings_filters_enabled_title">Filter • %d</string>
+    <string name="woopos_search_orders_error_description">Försök igen.</string>
+    <string name="woopos_search_orders_error_title">Kan inte ladda beställningar</string>
+    <string name="woopos_search_orders_empty_description">Vi kunde inte hitta några matchande beställningar– prova att justera din sökterm.</string>
+    <string name="woopos_search_orders_empty_title">Inga beställningar hittades</string>
+    <string name="woopos_search_orders">Sök beställningar</string>
+    <string name="woopos_orders_details_totals_card_content_description">Genomgång av beställningsbelopp</string>
+    <string name="woopos_orders_details_products_list_content_description">Lista över beställningsprodukter</string>
+    <string name="woopos_orders_details_net_payment_label">Nettobetalning</string>
+    <string name="woopos_orders_details_refunded_label">Återbetald</string>
+    <string name="woopos_orders_details_total_paid_label">Betalat totalt</string>
+    <string name="woopos_orders_details_total_label">Totalt</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Frakt</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Moms</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Rabatt (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Rabatt</string>
+    <string name="woopos_orders_details_breakdown_products_label">Produkter</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">Totalt</string>
+    <string name="woopos_orders_details_products_title">Produkter</string>
+    <string name="woopos_orders_details_placeholder_message">Välj en beställning från listan för att visa detaljer.</string>
+    <string name="woopos_orders_details_placeholder_title">Välj en beställning</string>
+    <string name="woopos_orders_issue_refund_content_description">Utfärda en återbetalning för denna beställning</string>
+    <string name="woopos_orders_email_receipt">E-postkvitto</string>
+    <string name="woopos_orders_pagination_try_again_label">Försök igen</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Avbryt</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Försök igen</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Kontrollera din internetanslutning och försök igen.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Kan inte synkronisera katalog</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Synkroniseringsfel för dialogrutans bakgrund</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d produkter och %2$d varianter</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Avfärda banner</string>
+    <string name="woopos_refresh_catalog_banner_message">Katalogen har inte synkroniserats under de senaste 7 dagarna. Anslut antingen din enhet till WiFi eller aktivera synkronisering över mobilnätverk i POS-inställningarna.</string>
+    <string name="woopos_refresh_catalog_banner_title">Uppdatera katalog</string>
+    <string name="woopos_home_sync_failed_retry_button">Försök igen</string>
+    <string name="woopos_home_sync_failed_message">Vi kan inte synkronisera din produktkatalog. Kontrollera din internetanslutning och försök igen.</string>
+    <string name="woopos_home_sync_failed_title">Kan inte synkronisera</string>
+    <string name="woopos_home_syncing_catalog_exit_button">Avsluta POS</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Synkronisering kommer fortsätta i bakgrunden.</string>
+    <string name="woopos_home_syncing_catalog_title">Synkroniserar katalog</string>
+    <string name="booking_note_discard_changes_discard">Ignorera ändringarna</string>
+    <string name="booking_note_discard_changes_message">Är du säker på att du vill åsidosätta de här ändringarna?</string>
     <string name="booking_cancel_dialog_confirm">Ja, annullera den</string>
     <string name="booking_cancel_dialog_keep">Nej, behåll den</string>
     <string name="booking_cancel_dialog_message">%1$s kommer inte längre att kunna närvara på ”%2$s” den %3$s kl. %4$s.</string>

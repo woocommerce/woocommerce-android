@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-21 09:54:39+0000
+Translation-Revision-Date: 2025-11-04 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">予約を支払い済みとしてマークする際にエラーが発生しました</string>
+    <string name="booking_cancel_error">予約のキャンセル中にエラーが発生しました</string>
+    <string name="booking_note_screen_update_error">予約メモの保存中にエラーが発生しました</string>
+    <string name="booking_note_screen_done">完了</string>
+    <string name="booking_note_screen_title">予約メモ</string>
+    <string name="booking_note_description_private">これは非公開のメモです。 お客様と共有されることはありません。</string>
+    <string name="booking_note_label_add_note">メモを追加</string>
+    <string name="booking_note_header">予約メモ</string>
+    <string name="booking_duration_seconds">%1$d秒</string>
+    <string name="booking_duration_second">%1$d秒</string>
+    <string name="booking_duration_days">%1$d日間</string>
+    <string name="booking_duration_day">%1$d日間</string>
+    <string name="booking_duration_hours">%1$d時間</string>
+    <string name="booking_duration_hour">%1$d時間</string>
+    <string name="booking_duration_minutes">%1$d分</string>
+    <string name="booking_duration_minute">%1$d分</string>
+    <string name="booking_attendance_status_error">出席状況の変更中にエラーが発生しました</string>
+    <string name="booking_payment_status_pay_on_site">サイトで支払い</string>
+    <string name="booking_payment_status_in_cart">カート内</string>
+    <string name="bookings_filter_type_event">イベント</string>
+    <string name="bookings_filter_type_service">サービス</string>
+    <string name="bookings_filters_enabled_title">フィルター • %d</string>
+    <string name="woopos_search_orders_error_description">もう一度お試しください。</string>
+    <string name="woopos_search_orders_error_title">注文を読み込めません</string>
+    <string name="woopos_search_orders_empty_description">一致する注文が見つかりませんでした。検索語句を調整してみてください。</string>
+    <string name="woopos_search_orders_empty_title">注文がありません</string>
+    <string name="woopos_search_orders">注文を検索</string>
+    <string name="woopos_orders_details_totals_card_content_description">注文合計の内訳</string>
+    <string name="woopos_orders_details_products_list_content_description">注文商品リスト</string>
+    <string name="woopos_orders_details_net_payment_label">支払額 (正味)</string>
+    <string name="woopos_orders_details_refunded_label">返金済み</string>
+    <string name="woopos_orders_details_total_paid_label">支払い合計</string>
+    <string name="woopos_orders_details_total_label">合計</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">配送</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">税</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">割引 (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">割引</string>
+    <string name="woopos_orders_details_breakdown_products_label">商品</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">合計</string>
+    <string name="woopos_orders_details_products_title">商品</string>
+    <string name="woopos_orders_details_placeholder_message">リストから注文を選択して詳細を表示します。</string>
+    <string name="woopos_orders_details_placeholder_title">注文を選択</string>
+    <string name="woopos_orders_issue_refund_content_description">この注文の返金を実行</string>
+    <string name="woopos_orders_email_receipt">領収書をメールで送信</string>
+    <string name="woopos_orders_pagination_try_again_label">再試行</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">キャンセル</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">再試行</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">ネットワーク接続を確認して、もう一度お試しください。</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">カタログを同期できません</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">同期エラーダイアログ背景</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d個の商品と%2$d個のバリエーション</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">バナーを非表示</string>
+    <string name="woopos_refresh_catalog_banner_message">カタログは過去7日間同期されていません。 デバイスを WiFi に接続するか、POS 設定でセルラーネットワークによる同期を有効にします。</string>
+    <string name="woopos_refresh_catalog_banner_title">カタログを更新</string>
+    <string name="woopos_home_sync_failed_retry_button">再試行</string>
+    <string name="woopos_home_sync_failed_message">商品カタログを同期できません。 インターネット接続を確認し、もう一度お試しください。</string>
+    <string name="woopos_home_sync_failed_title">同期できません</string>
+    <string name="woopos_home_syncing_catalog_exit_button">POS を終了</string>
+    <string name="woopos_home_syncing_catalog_subtitle">同期はバックグラウンドで続行されます。</string>
+    <string name="woopos_home_syncing_catalog_title">カタログを同期中</string>
+    <string name="booking_note_discard_changes_discard">変更を破棄</string>
+    <string name="booking_note_discard_changes_message">この変更を破棄してもよいですか ?</string>
     <string name="booking_cancel_dialog_confirm">はい、キャンセルします</string>
     <string name="booking_cancel_dialog_keep">いいえ、そのままにします</string>
     <string name="booking_cancel_dialog_message">%1$sが %3$s、%4$sの「%2$s」に出席できなくなりました。</string>
@@ -28,7 +91,7 @@ Language: ja_JP
     <string name="bookings_empty_state_description_with_filters">フィルターに一致する予約がありません。 より多くの結果を表示するには、調整してみてください。</string>
     <string name="bookings_search_no_results_with_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索語句またはフィルターを調整してみてください。</string>
     <string name="bookings_search_no_results_without_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索キーワードを調整してみてください。</string>
-    <string name="bookings_empty_state_description_upcoming">予定された今後の予約やイベントはまだありません。</string>
+    <string name="bookings_empty_state_description_upcoming">今後の予定やイベントはまだスケジュールされていません。</string>
     <string name="bookings_empty_state_description_today">今日予定された予約やイベントはありません。</string>
     <string name="bookings_empty_state_description_default">追加された予約がこちらに表示され、閲覧および管理できます。</string>
     <string name="bookings_empty_state_title_upcoming">今後の予約はありません</string>
