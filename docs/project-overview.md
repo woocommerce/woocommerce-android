@@ -13,11 +13,8 @@ When creating your application, you should select "**Native client**" for the ap
 The "**Website URL**", "**Redirect URLs**", and "**Javascript Origins**" fields are required but not used for
 the mobile apps. Just use "**[https://localhost](https://localhost)**".
 
-Once you've created your application in the [applications manager][wp-com-apps], you'll
-need to update the `wc.oauth.app_id` and `wc.oauth.app_secret` fields in `secrets.properties`.
-See [setup instructions][setup] for more details about secrets file. Then you can compile and run the app on a device or an emulator and 
-try to login with a WordPress.com account. Note that authenticating to WordPress.com via Google is 
-not supported in development builds of the app, only in the official release.
+Once you've created your application in the [applications manager][wp-com-apps], you'll need to update the `wc.oauth.app_id` and `wc.oauth.app_secret` fields in `defaults.properties` (copied from `defaults-example.properties`). See [setup instructions][setup] for more details.
+Then you can compile and run the app on a device or an emulator and  try to login with a WordPress.com account. Note that authenticating to WordPress.com via Google is not supported in development builds of the app, only in the official release.
 
 Note that credentials created with our [WordPress.com applications manager][wp-com-apps]
 allow login only and not signup. New accounts must be created using the [official app][wp-app]
@@ -35,7 +32,15 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 
 #### `secrets.properties`
 
-The `secrets.properties` file is used to store sensitive information that should not be checked into version control. This file is located at `~/.configure/woocommerce-android/secrets/secrets.properties`.
+The `secrets.properties` file is used to store sensitive information that should not be checked into version control in clear text.
+This file is encrypted (using `git-crypt`), and only developers working at Automattic have the decryption key.
+
+If you are a developer working at Automattic, ensure you followed those instructions once after cloning the repo:
+  1. Make sure you have `git-crypt` installed (`brew install git-crypt`)
+  1. Search for "WooCommerce Android git-crypt encryption key" in our Secret Store, and copy the Base64 value in your clipboard
+  1. Run `git-crypt unlock <(pbpaste | base64 -d)` to decrypt the encrypted files (including `secrets.properties`)
+
+If you are an external contributor, provide those variables in your `defaults.properties` instead:
 
 | Property                   | Description |
 |:---------------------------|:------------|
