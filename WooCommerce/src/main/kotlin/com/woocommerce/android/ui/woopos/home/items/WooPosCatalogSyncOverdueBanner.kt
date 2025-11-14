@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -86,6 +87,7 @@ fun WooPosCatalogSyncOverdueBanner(
                         )
                         Spacer(Modifier.weight(1f))
                         IconButton(
+                            modifier = Modifier.minimumInteractiveComponentSize(),
                             onClick = onDismiss,
                         ) {
                             Icon(
@@ -96,11 +98,18 @@ fun WooPosCatalogSyncOverdueBanner(
                             )
                         }
                     }
-                    WooPosText(
-                        text = stringResource(R.string.woopos_refresh_catalog_banner_message),
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        WooPosText(
+                            modifier = Modifier.weight(1f),
+                            text = stringResource(R.string.woopos_refresh_catalog_banner_message),
+                            style = WooPosTypography.BodySmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Spacer(Modifier.minimumInteractiveComponentSize())
+                    }
                 }
             }
         }
