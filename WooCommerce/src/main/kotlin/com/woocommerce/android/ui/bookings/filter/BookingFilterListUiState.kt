@@ -106,13 +106,13 @@ val BookingFilterPage.titleRes: Int
 
 private fun availableBookingFilters(): List<BookingFilterPage> = listOf(
     BookingFilterPage.TeamMember,
-    BookingFilterPage.BookingType,
+//    BookingFilterPage.BookingType,
     BookingFilterPage.ServiceEvent,
     BookingFilterPage.AttendanceStatus,
-    BookingFilterPage.PaymentStatus,
+//    BookingFilterPage.PaymentStatus,
     BookingFilterPage.Customer,
     BookingFilterPage.DateTime,
-    BookingFilterPage.Location,
+//    BookingFilterPage.Location,
 )
 
 /**
