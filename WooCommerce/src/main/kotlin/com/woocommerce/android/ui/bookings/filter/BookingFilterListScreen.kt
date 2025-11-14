@@ -132,13 +132,10 @@ private fun FiltersNavHost(
             DateTimeFilterPicker()
         }
         composable(BookingFilterPage.TeamMember.route) {
-            TODO()
         }
         composable(BookingFilterPage.AttendanceStatus.route) {
-            TODO()
         }
         composable(BookingFilterPage.PaymentStatus.route) {
-            TODO()
         }
         composable(BookingFilterPage.BookingType.route) {
             BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
@@ -160,10 +157,8 @@ private fun FiltersNavHost(
             }
         }
         composable(BookingFilterPage.ServiceEvent.route) {
-            TODO()
         }
         composable(BookingFilterPage.Location.route) {
-            TODO()
         }
     }
 }

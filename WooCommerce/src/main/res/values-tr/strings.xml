@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-22 13:54:04+0000
+Translation-Revision-Date: 2025-11-03 13:54:33+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: tr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">Rezervasyon ödendi olarak işaretlenirken hata oluştu</string>
+    <string name="booking_cancel_error">Rezervasyon iptal edilirken hata oluştu</string>
+    <string name="booking_note_screen_update_error">Rezervasyon notu kaydedilirken hata oluştu</string>
+    <string name="booking_note_screen_done">TAMAMLANDI</string>
+    <string name="booking_note_screen_title">Rezervasyon notu</string>
+    <string name="booking_note_description_private">Bu özel bir nottur. Bu, müşteriyle paylaşılmayacaktır.</string>
+    <string name="booking_note_label_add_note">Not ekle</string>
+    <string name="booking_note_header">REZERVASYON NOTU</string>
+    <string name="booking_duration_seconds">%1$d saniye</string>
+    <string name="booking_duration_second">%1$d saniye</string>
+    <string name="booking_duration_days">%1$d gün</string>
+    <string name="booking_duration_day">%1$d gün</string>
+    <string name="booking_duration_hours">%1$d saat</string>
+    <string name="booking_duration_hour">%1$d saat</string>
+    <string name="booking_duration_minutes">%1$d dakika</string>
+    <string name="booking_duration_minute">%1$d dakika</string>
+    <string name="booking_attendance_status_error">Katılım durumu değiştirilirken hata oluştu</string>
+    <string name="booking_payment_status_pay_on_site">Sitede öde</string>
+    <string name="booking_payment_status_in_cart">Sepette</string>
+    <string name="bookings_filter_type_event">Etkinlik</string>
+    <string name="bookings_filter_type_service">Hizmet</string>
+    <string name="bookings_filters_enabled_title">Filtreler • %d</string>
+    <string name="woopos_search_orders_error_description">Lütfen tekrar deneyin.</string>
+    <string name="woopos_search_orders_error_title">Siparişler yüklenemiyor</string>
+    <string name="woopos_search_orders_empty_description">Eşleşen sipariş bulunamadı, arama teriminizi düzenlemeyi deneyin.</string>
+    <string name="woopos_search_orders_empty_title">Sipariş bulunamadı</string>
+    <string name="woopos_search_orders">Siparişleri ara</string>
+    <string name="woopos_orders_details_totals_card_content_description">Sipariş toplamları dökümü</string>
+    <string name="woopos_orders_details_products_list_content_description">Sipariş ürünleri listesi</string>
+    <string name="woopos_orders_details_net_payment_label">Net ödeme</string>
+    <string name="woopos_orders_details_refunded_label">Geri ödeme yapıldı</string>
+    <string name="woopos_orders_details_total_paid_label">Toplam ödenen</string>
+    <string name="woopos_orders_details_total_label">Toplam</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Gönderim</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Vergiler</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">İndirim (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">İndirim</string>
+    <string name="woopos_orders_details_breakdown_products_label">Ürünler</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">Toplamlar</string>
+    <string name="woopos_orders_details_products_title">Ürünler</string>
+    <string name="woopos_orders_details_placeholder_message">Ayrıntıları görmek için listeden bir sipariş seçin.</string>
+    <string name="woopos_orders_details_placeholder_title">Bir sipariş seçin</string>
+    <string name="woopos_orders_issue_refund_content_description">Bu sipariş için para iadesi yapın</string>
+    <string name="woopos_orders_email_receipt">Faturayı e-posta ile gönderin</string>
+    <string name="woopos_orders_pagination_try_again_label">Tekrar dene</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">İptal Et</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Tekrar dene</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Katalog senkronize edilemiyor</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Senkronizasyon hatası iletişim kutusu arka planı</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d ürün ve %2$d varyasyon</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Reklam bandını kapat</string>
+    <string name="woopos_refresh_catalog_banner_message">Katalog son 7 gündür senkronize edilmedi. Cihazınızı WiFi\'a bağlayın veya POS ayarlarında hücresel ağ üzerinden senkronizasyonu etkinleştirin.</string>
+    <string name="woopos_refresh_catalog_banner_title">Kataloğu yenile</string>
+    <string name="woopos_home_sync_failed_retry_button">Tekrar dene</string>
+    <string name="woopos_home_sync_failed_message">Ürün kataloğunuzu senkronize edemiyoruz. Lütfen internet bağlantınızı kontrol edip tekrar deneyin.</string>
+    <string name="woopos_home_sync_failed_title">Senkronize edilemiyor</string>
+    <string name="woopos_home_syncing_catalog_exit_button">POS\'tan çık</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Senkronizasyon arka planda devam edecek.</string>
+    <string name="woopos_home_syncing_catalog_title">Katalog senkronize ediliyor</string>
+    <string name="booking_note_discard_changes_discard">Değişiklikleri iptal et</string>
+    <string name="booking_note_discard_changes_message">Bu değişiklikleri atmak istediğinizden emin misiniz?</string>
     <string name="booking_cancel_dialog_confirm">Evet, iptal et</string>
     <string name="booking_cancel_dialog_keep">Hayır, sakla</string>
     <string name="booking_cancel_dialog_message">%1$s artık şuna %3$s tarihinde %4$s saatinde katılamayacak: “%2$s”.</string>

@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-21 15:54:04+0000
+Translation-Revision-Date: 2025-11-04 17:54:05+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">Foutmelding bij het markeren van de boeking als betaald</string>
+    <string name="booking_cancel_error">Foutmelding bij het annuleren van de boeking</string>
+    <string name="booking_note_screen_update_error">Foutmelding bij het opslaan van de opmerking bij de boeking</string>
+    <string name="booking_note_screen_done">GEREED</string>
+    <string name="booking_note_screen_title">Opmerking bij de boeking</string>
+    <string name="booking_note_description_private">Dit is een privé-opmerking. Deze wordt niet gedeeld met de klant.</string>
+    <string name="booking_note_label_add_note">Opmerking toevoegen</string>
+    <string name="booking_note_header">OPMERKING BIJ DE BOEKING</string>
+    <string name="booking_duration_seconds">%1$d seconden</string>
+    <string name="booking_duration_second">%1$d seconde</string>
+    <string name="booking_duration_days">%1$d dagen</string>
+    <string name="booking_duration_day">%1$d dag</string>
+    <string name="booking_duration_hours">%1$d uur</string>
+    <string name="booking_duration_hour">%1$d uur</string>
+    <string name="booking_duration_minutes">%1$d minuten</string>
+    <string name="booking_duration_minute">%1$d minuut</string>
+    <string name="booking_attendance_status_error">Foutmelding bij het wijzigen van de aanwezigheidsstatus</string>
+    <string name="booking_payment_status_pay_on_site">Betalen op site</string>
+    <string name="booking_payment_status_in_cart">In winkelwagen</string>
+    <string name="bookings_filter_type_event">Gebeurtenis</string>
+    <string name="bookings_filter_type_service">Dienst</string>
+    <string name="bookings_filters_enabled_title">Filters • %d</string>
+    <string name="woopos_search_orders_error_description">Probeer het nog eens.</string>
+    <string name="woopos_search_orders_error_title">Kan bestellingen niet laden</string>
+    <string name="woopos_search_orders_empty_description">We konden geen overeenkomende bestellingen vinden. Probeer je zoekterm aan te passen.</string>
+    <string name="woopos_search_orders_empty_title">Geen bestellingen gevonden</string>
+    <string name="woopos_search_orders">Bestellingen zoeken</string>
+    <string name="woopos_orders_details_totals_card_content_description">Overzicht totaalaantal bestellingen</string>
+    <string name="woopos_orders_details_products_list_content_description">Lijst bestelde producten</string>
+    <string name="woopos_orders_details_net_payment_label">Netto betaling</string>
+    <string name="woopos_orders_details_refunded_label">Terugbetaald</string>
+    <string name="woopos_orders_details_total_paid_label">Totaal betaald</string>
+    <string name="woopos_orders_details_total_label">Totaal</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">Verzending</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">Belastingen</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Korting (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Korting</string>
+    <string name="woopos_orders_details_breakdown_products_label">Producten</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">Totalen</string>
+    <string name="woopos_orders_details_products_title">Producten</string>
+    <string name="woopos_orders_details_placeholder_message">Kies een bestelling uit de lijst om details te bekijken.</string>
+    <string name="woopos_orders_details_placeholder_title">Selecteer een bestelling</string>
+    <string name="woopos_orders_issue_refund_content_description">Verstrek een terugbetaling voor deze bestelling</string>
+    <string name="woopos_orders_email_receipt">Betalingsbewijs e-mailen</string>
+    <string name="woopos_orders_pagination_try_again_label">Opnieuw proberen</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">Annuleren</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">Opnieuw proberen</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">Controleer je internetverbinding en probeer het opnieuw.</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">Kan catalogus niet synchroniseren</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">Synchronisatiefout dialoogvenster achtergrond</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d producten en %2$d variaties</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">Banner negeren</string>
+    <string name="woopos_refresh_catalog_banner_message">De catalogus is de afgelopen 7 dagen niet gesynchroniseerd. Verbind je apparaat met wifi of schakel synchronisatie via een mobiel netwerk in POS-instellingen in.</string>
+    <string name="woopos_refresh_catalog_banner_title">Catalogus vernieuwen</string>
+    <string name="woopos_home_sync_failed_retry_button">Opnieuw proberen</string>
+    <string name="woopos_home_sync_failed_message">We kunnen je productcatalogus niet synchroniseren. Controleer je internetverbinding en probeer het opnieuw.</string>
+    <string name="woopos_home_sync_failed_title">Kan niet synchroniseren</string>
+    <string name="woopos_home_syncing_catalog_exit_button">POS afsluiten</string>
+    <string name="woopos_home_syncing_catalog_subtitle">Synchronisatie gaat op de achtergrond door.</string>
+    <string name="woopos_home_syncing_catalog_title">Catalogus synchroniseren</string>
+    <string name="booking_note_discard_changes_discard">Wijzigingen annuleren</string>
+    <string name="booking_note_discard_changes_message">Weet je zeker dat je deze wijzigingen wilt annuleren?</string>
     <string name="booking_cancel_dialog_confirm">Ja, annuleren</string>
     <string name="booking_cancel_dialog_keep">Nee, houden</string>
     <string name="booking_cancel_dialog_message">%1$s kan niet meer deelnemen aan \'%2$s\' op %3$s om %4$s.</string>
@@ -28,7 +91,7 @@ Language: nl
     <string name="bookings_empty_state_description_with_filters">Er zijn geen boekingen die overeenkomen met je filters. Probeer ze aan te passen om meer resultaten te zien.</string>
     <string name="bookings_search_no_results_with_filters">We konden geen boekingen vinden met die naam. Probeer je zoekterm of je filters aan te passen om meer resultaten te zien.</string>
     <string name="bookings_search_no_results_without_filters">We konden geen boekingen vinden met die naam. Probeer je zoekterm aan te passen om meer resultaten te zien.</string>
-    <string name="bookings_empty_state_description_upcoming">Je hebt nog geen toekomstige afspraken of evenementen gepland.</string>
+    <string name="bookings_empty_state_description_upcoming">Je hebt nog geen toekomstige afspraken of activiteiten gepland.</string>
     <string name="bookings_empty_state_description_today">Je hebt voor vandaag geen afspraken of evenementen gepland.</string>
     <string name="bookings_empty_state_description_default">Inkomende boekingen verschijnen hier, waar je ze kan bekijken en beheren.</string>
     <string name="bookings_empty_state_title_upcoming">Geen aankomende boekingen</string>

@@ -2256,6 +2256,8 @@
     <string name="settings_enable_beta_feature_failed_snackbar_text">Sorry, we couldn\'t change this feature setting right now</string>
     <string name="settings_enable_product_addons_teaser_title">View Add-ons</string>
     <string name="settings_enable_product_addons_teaser_message">Test out viewing Order Add-ons as we get ready to launch</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">POS Local Catalog</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Store your product catalog on this device for faster search, barcode scanning, and loading times.</string>
     <string name="settings_privacy_policy">Read privacy policy</string>
     <string name="settings_privacy_statement">We value your privacy. Your personal data is used to optimize our mobile apps, improve security, conduct analytics, and enhance your user experience.</string>
     <string name="settings_tracking_header">Tracking</string>
