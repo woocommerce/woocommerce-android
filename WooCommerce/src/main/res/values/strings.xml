@@ -4239,13 +4239,12 @@
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
-    <string name="booking_appointment_details_header">APPOINTMENT DETAILS</string>
+    <string name="booking_details_section_header">BOOKING DETAILS</string>
     <string name="booking_appointment_label_date">Date</string>
     <string name="booking_appointment_label_time">Time</string>
-    <string name="booking_appointment_label_staff">Assigned staff</string>
+    <string name="booking_appointment_label_team_member">Team member</string>
     <string name="booking_appointment_label_location">Location</string>
     <string name="booking_appointment_label_duration">Duration</string>
-    <string name="booking_appointment_label_price">Price</string>
     <string name="booking_payment_status_unpaid">Unpaid</string>
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>

@@ -78,7 +78,6 @@ class BookingMapper @Inject constructor(
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
-            price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
             duration = duration,
