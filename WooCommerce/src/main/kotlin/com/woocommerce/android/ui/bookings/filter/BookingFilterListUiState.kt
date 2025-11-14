@@ -64,6 +64,7 @@ data class BookingFilterListUiState(
 
     val BookingFilterPage.filterValue: UiString
         get() = when (this) {
+            BookingFilterPage.TeamMember -> selectedFilterValues.teamMemberValue?.let { UiString.UiStringText(it) }
             BookingFilterPage.BookingType -> {
                 updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
@@ -82,7 +83,6 @@ data class BookingFilterListUiState(
                 UiString.UiStringText(name)
             }
 
-            BookingFilterPage.TeamMember,
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.PaymentStatus,
             BookingFilterPage.DateTime,
