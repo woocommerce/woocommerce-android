@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.BOOKINGS_FILTERS
 import com.woocommerce.android.tools.SelectedSite
@@ -31,7 +32,7 @@ class BookingFilterRepository @Inject constructor(
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
     private fun dateAfterKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_after")
-    private fun serviceEventsKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_service_events")
+    private fun serviceEventsKey(siteId: Int) = stringSetPreferencesKey("bfilters_${siteId}_service_events")
 
     private val siteIdFlow = selectedSite.observe().map { it?.id ?: -1 }.distinctUntilChanged()
 
@@ -109,11 +110,9 @@ class BookingFilterRepository @Inject constructor(
                 prefs.remove(serviceEventsKey)
             } else {
                 prefs[serviceEventsKey] = serviceEventsValues
-                    .joinToString(SERVICE_EVENTS_DELIMITER) {
-                        "${it.productId}${SERVICE_EVENTS_PRODUCT_DELIMITER}${it.productName}"
-                    }
+                    .map { "${it.productId}${SERVICE_EVENTS_PRODUCT_DELIMITER}${it.productName}" }
+                    .toSet()
             }
-
             // Other filters currently have no persisted payload; ignore for now
         }
     }
@@ -153,26 +152,22 @@ class BookingFilterRepository @Inject constructor(
         }
     }
 
-    private fun Preferences.getServiceEventsValue(siteId: Int): BookingsFilterOption.ServiceEvents? {
-        val stored = this[serviceEventsKey(siteId)] ?: return null
-        val set = stored.split(SERVICE_EVENTS_DELIMITER)
-            .mapNotNull { entry ->
-                val parts = entry.split(SERVICE_EVENTS_PRODUCT_DELIMITER)
-                if (parts.size == 2) {
-                    val productId = parts[0].toLongOrNull()
-                    val productName = parts[1]
-                    if (productId != null) {
-                        BookingsFilterOption.ProductInfo(productId = productId, productName = productName)
-                    } else null
-                } else null
-            }
-            .toSet()
-        return BookingsFilterOption.ServiceEvents(set)
-    }
+    private fun Preferences.getServiceEventsValue(siteId: Int): BookingsFilterOption.ServiceEvents? =
+        this[serviceEventsKey(siteId)]?.mapNotNull { entry ->
+            entry.split(SERVICE_EVENTS_PRODUCT_DELIMITER)
+                .takeIf { it.size == 2 }
+                ?.let { (prodId, name) ->
+                    runCatching {
+                        BookingsFilterOption.ProductInfo(productId = prodId.toLong(), productName = name)
+                    }.getOrNull()
+                }
+        }
+            ?.toSet()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let(BookingsFilterOption::ServiceEvents)
 
     companion object {
         private const val ATTENDANCE_STATUSES_DELIMITER = ","
-        private const val SERVICE_EVENTS_DELIMITER = ","
         private const val SERVICE_EVENTS_PRODUCT_DELIMITER = ":"
     }
 }
