@@ -36,21 +36,21 @@ import com.woocommerce.android.R
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @Composable
-fun BookingProductNameFilterRoute(
+fun BookingServiceEventFilterRoute(
     initialServiceEvents: BookingsFilterOption.ServiceEvents?,
     onServiceEventsFilterChanged: (BookingsFilterOption.ServiceEvents) -> Unit,
 ) {
     val viewModel =
-        hiltViewModel<BookingProductNameFilterViewModel, BookingProductNameFilterViewModel.Factory>
+        hiltViewModel<BookingServiceEventFilterViewModel, BookingServiceEventFilterViewModel.Factory>
         { factory ->
             factory.create(initialServiceEvents, onServiceEventsFilterChanged)
         }
     val uiState by viewModel.uiState.collectAsState()
-    BookingProductNameFilterPage(uiState)
+    BookingServiceEventFilterPage(uiState)
 }
 
 @Composable
-fun BookingProductNameFilterPage(state: BookingProductNameFilterUiState) {
+fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
     Column(modifier = Modifier.fillMaxSize()) {
         SearchBar(
             searchQuery = state.searchQuery,

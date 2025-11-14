@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.bookings.filter.productname
 
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
-data class BookingProductNameFilterUiState(
+data class BookingServiceEventFilterUiState(
     val availableProducts: List<BookableProduct> = emptyList(),
     val selectedProducts: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
     val searchQuery: String = "",

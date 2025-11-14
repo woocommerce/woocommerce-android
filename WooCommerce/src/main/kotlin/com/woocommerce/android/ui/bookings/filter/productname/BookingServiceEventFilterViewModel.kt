@@ -14,8 +14,8 @@ import kotlinx.coroutines.flow.update
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore
 
-@HiltViewModel(assistedFactory = BookingProductNameFilterViewModel.Factory::class)
-class BookingProductNameFilterViewModel @AssistedInject constructor(
+@HiltViewModel(assistedFactory = BookingServiceEventFilterViewModel.Factory::class)
+class BookingServiceEventFilterViewModel @AssistedInject constructor(
     @Assisted private val initialServiceEvents: BookingsFilterOption.ServiceEvents?,
     @Assisted private val onFilterChanged: (BookingsFilterOption.ServiceEvents) -> Unit,
     savedStateHandle: SavedStateHandle,
@@ -23,13 +23,13 @@ class BookingProductNameFilterViewModel @AssistedInject constructor(
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
-        BookingProductNameFilterUiState(
+        BookingServiceEventFilterUiState(
             selectedProducts = initialServiceEvents ?: BookingsFilterOption.ServiceEvents.DEFAULT,
             onProductSelected = ::onProductSelected,
             onSearchQueryChanged = ::onSearchQueryChanged
         )
     )
-    val uiState: StateFlow<BookingProductNameFilterUiState> = _uiState
+    val uiState: StateFlow<BookingServiceEventFilterUiState> = _uiState
 
     init {
         loadBookableProducts()
@@ -88,6 +88,6 @@ class BookingProductNameFilterViewModel @AssistedInject constructor(
         fun create(
             initial: BookingsFilterOption.ServiceEvents?,
             onFilterChanged: (BookingsFilterOption.ServiceEvents) -> Unit
-        ): BookingProductNameFilterViewModel
+        ): BookingServiceEventFilterViewModel
     }
 }
