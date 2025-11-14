@@ -7,6 +7,7 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -72,28 +74,32 @@ fun WooPosCatalogSyncOverdueBanner(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.weight(1f)
                 ) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_refresh_catalog_banner_title),
-                        style = WooPosTypography.BodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        WooPosText(
+                            text = stringResource(R.string.woopos_refresh_catalog_banner_title),
+                            style = WooPosTypography.BodyLarge,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontWeight = FontWeight.Bold,
+                        )
+                        Spacer(Modifier.weight(1f))
+                        IconButton(
+                            onClick = onDismiss,
+                        ) {
+                            Icon(
+                                modifier = Modifier.size(24.dp),
+                                imageVector = Icons.Default.Close,
+                                contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
+                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                            )
+                        }
+                    }
                     WooPosText(
                         text = stringResource(R.string.woopos_refresh_catalog_banner_message),
                         style = WooPosTypography.BodySmall,
                         color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .padding(WooPosSpacing.Small.value)
-                        .size(32.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
