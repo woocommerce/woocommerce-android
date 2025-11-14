@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.filter.attendancestatus.titleRes
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
 import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
@@ -43,7 +44,7 @@ data class BookingFilterListUiState(
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
             title = page.titleRes,
-            subtitle = page.filterValue,
+            value = page.filterValue,
             onClick = { openPage(page) },
         )
     }
@@ -59,24 +60,33 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: UiString?
+    val BookingFilterPage.filterValue: UiString
         get() = when (this) {
-            BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
-                UiString.UiStringText(name)
-            }
-
             BookingFilterPage.BookingType -> {
                 updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
 
+            BookingFilterPage.AttendanceStatus -> {
+                updatedBookingFilters.attendanceStatuses.values.takeIf { it.isNotEmpty() }?.let { list ->
+                    if (list.size > 1) {
+                        UiString.UiStringText(list.size.toString())
+                    } else {
+                        UiString.UiStringRes(list.first().titleRes)
+                    }
+                }
+            }
+
+            BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
+                UiString.UiStringText(name)
+            }
+
+            BookingFilterPage.TeamMember,
+            BookingFilterPage.ServiceEvent,
+            BookingFilterPage.PaymentStatus,
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
-            BookingFilterPage.AttendanceStatus,
-            BookingFilterPage.PaymentStatus,
-            BookingFilterPage.ServiceEvent,
-            BookingFilterPage.TeamMember,
             BookingFilterPage.List -> null
-        }
+        } ?: UiString.UiStringRes(R.string.bookings_filter_default)
 
     val title: UiString
         get() = if (currentPage != BookingFilterPage.List) {
@@ -124,7 +134,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
         is BookingsFilterOption.TeamMember -> copy(teamMember = bookingsFilterOption)
-        is BookingsFilterOption.AttendanceStatus -> copy(attendanceStatus = bookingsFilterOption)
+        is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
