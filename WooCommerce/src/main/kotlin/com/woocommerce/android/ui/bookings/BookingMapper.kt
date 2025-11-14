@@ -148,7 +148,7 @@ class BookingMapper @Inject constructor(
         val date = detailsDateFormatter.format(booking.start)
         val time = timeRangeFormatter.format(booking.start)
         return UiString.UiStringRes(
-            R.string.booking_cancel_dialog_message,
+            R.string.booking_cancel_dialog_message_v2,
             listOf(
                 customerName,
                 UiString.UiStringText(serviceName),
