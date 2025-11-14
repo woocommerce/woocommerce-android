@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
@@ -208,5 +209,27 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val value = (attendanceItem.value as UiString.UiStringText).text
 
         assertThat(value).isEqualTo("2")
+    }
+
+    @Test
+    fun `given two team member ids, when updated, then teamMemberValue shows count`() = testBlocking {
+        // Given
+        val bookingFilterRepository = mock<BookingFilterRepository> {
+            on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
+        }
+        val viewModel = BookingFilterListViewModel(
+            savedStateHandle = SavedStateHandle(),
+            bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
+        )
+
+        // When: update filters with two different member IDs
+        val state = viewModel.uiState.getOrAwaitValue()
+        val ids = setOf(LocalOrRemoteId.RemoteId(1), LocalOrRemoteId.RemoteId(2))
+        state.onUpdateFilterOption.invoke(BookingsFilterOption.TeamMembers(ids))
+
+        // Then
+        val updated = viewModel.uiState.getOrAwaitValue()
+        assertThat(updated.selectedFilterValues.teamMemberValue).isEqualTo("2")
     }
 }
