@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -88,7 +90,8 @@ private fun WooPosSettingsLocalCatalogScreen(
             allowCellularDataUpdate = state.allowCellularDataUpdate,
             onToggleCellularData = onToggleCellularData,
             isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading ||
-                state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
+                state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog,
+            hasCellularCapability = state.hasCellularCapability
         )
 
         ManualUpdateSection(
@@ -155,15 +158,19 @@ private fun CatalogStatusSection(
 private fun CellularDataSection(
     allowCellularDataUpdate: Boolean,
     onToggleCellularData: (Boolean) -> Unit,
-    isLoading: Boolean
+    isLoading: Boolean,
+    hasCellularCapability: Boolean
 ) {
+    val isEnabled = hasCellularCapability && !isLoading
+    val contentAlpha = if (hasCellularCapability) 1f else 0.38f
+
     WooPosCard(
         modifier = Modifier.fillMaxWidth()
     ) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = !isLoading) {
+                .clickable(enabled = isEnabled) {
                     onToggleCellularData(!allowCellularDataUpdate)
                 }
                 .padding(WooPosSpacing.Medium.value)
@@ -173,7 +180,7 @@ private fun CellularDataSection(
             WooPosText(
                 text = stringResource(R.string.woopos_settings_local_catalog_cellular_data),
                 style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha),
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
@@ -186,7 +193,7 @@ private fun CellularDataSection(
             WooPosText(
                 text = stringResource(R.string.woopos_settings_local_catalog_cellular_data_subtitle),
                 style = WooPosTypography.BodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = contentAlpha),
                 modifier = Modifier.constrainAs(subtitle) {
                     top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
                     start.linkTo(parent.start)
@@ -198,7 +205,7 @@ private fun CellularDataSection(
             Switch(
                 checked = allowCellularDataUpdate,
                 onCheckedChange = null,
-                enabled = !isLoading,
+                enabled = isEnabled,
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = Color(0xFFFFFFFF),
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
@@ -391,7 +398,29 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
-                allowCellularDataUpdate = true
+                allowCellularDataUpdate = true,
+                hasCellularCapability = true
+            ),
+            onToggleCellularData = {},
+            onRefreshCatalog = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsLocalCatalogScreenNoCellularPreview() {
+    WooPosTheme {
+        WooPosSettingsLocalCatalogScreen(
+            state = WooPosSettingsLocalCatalogState(
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
+                    productCount = 1250,
+                    variationCount = 3420,
+                    lastUpdate = "2 hours ago",
+                    lastFullUpdate = "Yesterday at 3:45 PM"
+                ),
+                allowCellularDataUpdate = false,
+                hasCellularCapability = false
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}
@@ -406,7 +435,8 @@ fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Loading,
-                allowCellularDataUpdate = true
+                allowCellularDataUpdate = true,
+                hasCellularCapability = true
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}
@@ -414,14 +444,21 @@ fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
     }
 }
 
+class CellularCapabilityPreviewParameterProvider : PreviewParameterProvider<Boolean> {
+    override val values = sequenceOf(true, false)
+}
+
 @WooPosPreview
 @Composable
-fun WooPosSettingsLocalCatalogRefreshingPreview() {
+fun WooPosSettingsLocalCatalogRefreshingPreview(
+    @PreviewParameter(CellularCapabilityPreviewParameterProvider::class) hasCellularCapability: Boolean
+) {
     WooPosTheme {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog,
-                allowCellularDataUpdate = true
+                allowCellularDataUpdate = true,
+                hasCellularCapability = hasCellularCapability
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}

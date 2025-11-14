@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
+import com.woocommerce.android.ui.woopos.util.WooPosCellularCapabilityDetector
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
@@ -31,16 +32,30 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val syncScheduler: WooPosLocalCatalogSyncScheduler,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val cellularCapabilityDetector: WooPosCellularCapabilityDetector,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
 
     init {
+        checkCellularCapability()
+
         loadCatalogStatus()
 
         listenToCellularDataUpdateValue()
 
         listenToParentEvents()
+    }
+
+    private fun checkCellularCapability() {
+        val hasCellular = cellularCapabilityDetector.hasCellularCapability()
+        _state.update { it.copy(hasCellularCapability = hasCellular) }
+
+        if (!hasCellular) {
+            viewModelScope.launch {
+                preferencesRepository.setAllowCellularDataUpdate(false)
+            }
+        }
     }
 
     private fun listenToParentEvents() {

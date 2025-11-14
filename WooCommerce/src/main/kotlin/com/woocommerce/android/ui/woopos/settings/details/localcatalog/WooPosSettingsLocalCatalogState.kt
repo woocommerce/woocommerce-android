@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 data class WooPosSettingsLocalCatalogState(
     val catalogStatus: CatalogStatus = CatalogStatus.Loading,
     val allowCellularDataUpdate: Boolean = false,
+    val hasCellularCapability: Boolean = false,
 ) {
     sealed class CatalogStatus {
         data class Available(

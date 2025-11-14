@@ -45,6 +45,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
     private val childToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val cellularCapabilityDetector: com.woocommerce.android.ui.woopos.util.WooPosCellularCapabilityDetector =
+        mock()
 
     private val mockSite: SiteModel = mock()
     private val allowCellularDataFlow = MutableStateFlow(false)
@@ -57,6 +59,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
         whenever(selectedSite.get()).thenReturn(mockSite)
         whenever(preferencesRepository.allowCellularDataUpdate).thenReturn(allowCellularDataFlow)
         whenever(parentToChildEventReceiver.events).thenReturn(parentEventsFlow)
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
         whenever(localCatalogSyncRepository.syncLocalCatalogFull(any()))
             .thenReturn(
                 PosLocalCatalogSyncResult.Success(
@@ -295,6 +298,72 @@ class WooPosSettingsLocalCatalogViewModelTest {
             .isInstanceOf(WooPosSettingsLocalCatalogState.CatalogStatus.Available::class.java)
     }
 
+    @Test
+    fun `given device has cellular capability, when init, then hasCellularCapability is true`() = runTest {
+        // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
+
+        // WHEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.hasCellularCapability).isTrue()
+    }
+
+    @Test
+    fun `given device has no cellular capability, when init, then hasCellularCapability is false`() = runTest {
+        // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(false)
+
+        // WHEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.hasCellularCapability).isFalse()
+    }
+
+    @Test
+    fun `given device has cellular capability, when state is checked, then hasCellularCapability matches detector`() = runTest {
+        // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
+
+        // WHEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(sut.state.value.hasCellularCapability).isTrue()
+        verify(cellularCapabilityDetector).hasCellularCapability()
+    }
+
+    @Test
+    fun `given device has no cellular capability, when init, then allowCellularDataUpdate is set to false in preferences`() = runTest {
+        // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(false)
+
+        // WHEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(preferencesRepository).setAllowCellularDataUpdate(false)
+    }
+
+    @Test
+    fun `given device has cellular capability, when init, then allowCellularDataUpdate preference is not modified`() = runTest {
+        // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
+
+        // WHEN
+        sut = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        verify(preferencesRepository, times(0)).setAllowCellularDataUpdate(false)
+    }
+
     private fun createViewModel() = WooPosSettingsLocalCatalogViewModel(
         syncTimestampManager = syncTimestampManager,
         localCatalogSyncRepository = localCatalogSyncRepository,
@@ -304,5 +373,6 @@ class WooPosSettingsLocalCatalogViewModelTest {
         syncScheduler = syncScheduler,
         childToParentEventSender = childToParentEventSender,
         parentToChildEventReceiver = parentToChildEventReceiver,
+        cellularCapabilityDetector = cellularCapabilityDetector,
     )
 }
