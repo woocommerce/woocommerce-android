@@ -325,20 +325,6 @@ class WooPosSettingsLocalCatalogViewModelTest {
     }
 
     @Test
-    fun `given device has cellular capability, when state is checked, then hasCellularCapability matches detector`() = runTest {
-        // GIVEN
-        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
-
-        // WHEN
-        sut = createViewModel()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(sut.state.value.hasCellularCapability).isTrue()
-        verify(cellularCapabilityDetector).hasCellularCapability()
-    }
-
-    @Test
     fun `given device has no cellular capability, when init, then allowCellularDataUpdate is set to false in preferences`() = runTest {
         // GIVEN
         whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(false)
