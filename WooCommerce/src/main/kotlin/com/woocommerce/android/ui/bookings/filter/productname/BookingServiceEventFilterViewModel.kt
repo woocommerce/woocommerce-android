@@ -45,13 +45,14 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 availableProducts = bookableProducts
-                .map { product ->
-                    BookableProduct(
-                        id = product.remoteId,
-                        name = product.name
-                    )
-                }
-                .sortedBy { it.name })
+                    .map { product ->
+                        BookableProduct(
+                            id = product.remoteId,
+                            name = product.name
+                        )
+                    }
+                    .sortedBy { it.name }
+            )
         }
     }
 

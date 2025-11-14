@@ -22,9 +22,11 @@ data class BookingServiceEventFilterUiState(
             BookableProduct(id = it.productId, name = it.productName)
         }
 
-        val productsToFilter = (listOf(BookableProduct.Any) +
-            selectedProductsList.filter { it !in availableProducts } +
-            availableProducts).distinctBy { it.id }
+        val productsToFilter = (
+            listOf(BookableProduct.Any) +
+                selectedProductsList.filter { it !in availableProducts } +
+                availableProducts
+            ).distinctBy { it.id }
 
         return if (searchQuery.isBlank()) {
             productsToFilter
@@ -56,4 +58,3 @@ data class BookableProduct(
         val Any = BookableProduct(id = null, name = null)
     }
 }
-
