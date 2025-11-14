@@ -86,7 +86,9 @@ fun WooPosCatalogSyncOverdueBanner(
                 }
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .padding(WooPosSpacing.Small.value)
+                        .size(32.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Close,
