@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
+import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -143,8 +144,15 @@ class BookingsRestClient @Inject constructor(
                 BookingsFilterOption.PaymentStatus -> TODO()
                 is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
                 is BookingsFilterOption.DateRange -> {
-                    filter.before?.let { set("start_date_before", it.toString()) }
-                    filter.after?.let { set("start_date_after", it.toString()) }
+                    // Plus/minus one minute to make the range inclusive
+                    filter.before?.let {
+                        val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusMinutes(1).toInstant()
+                        set("start_date_before", inclusiveBefore.toString())
+                    }
+                    filter.after?.let {
+                        val inclusiveAfter = it.atZone(ZoneOffset.UTC).minusMinutes(1).toInstant()
+                        set("start_date_after", inclusiveAfter.toString())
+                    }
                 }
 
                 BookingsFilterOption.Location -> TODO()
