@@ -62,7 +62,7 @@ GLOTPRESS_APP_STRINGS_PROJECT_URL = 'https://translate.wordpress.com/projects/wo
 GLOTPRESS_PLAYSTORE_METADATA_PROJECT_URL = "#{GLOTPRESS_APP_STRINGS_PROJECT_URL}/release-notes/".freeze
 
 APP_PACKAGE_NAME = 'com.woocommerce.android'
-GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, '.configure-files', 'firebase.secrets.json')
+GOOGLE_FIREBASE_SECRETS_PATH = File.join(PROJECT_ROOT_FOLDER, 'firebase.secrets.json')
 
 # Instantiate versioning classes
 VERSION_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::MarketingVersionCalculator.new
@@ -1485,8 +1485,11 @@ platform :android do
   end
 
   def firebase_secret(name:)
-    UI.user_error!('Unable to locale Firebase Secrets File – did you run `configure apply`?') unless File.file? GOOGLE_FIREBASE_SECRETS_PATH
-    key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
+    begin
+      key_file_secrets = JSON.parse(File.read(GOOGLE_FIREBASE_SECRETS_PATH))
+    rescue StandardError
+      UI.user_error!('Unable to read Firebase Secrets File – did you run `git-crypt unlock <(echo "…encryption-key…" | base64 -d)` on the repo?')
+    end
     UI.user_error!("Unable to find key `#{name}` in #{GOOGLE_FIREBASE_SECRETS_PATH}") if key_file_secrets[name].nil?
     key_file_secrets[name]
   end

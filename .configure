@@ -12,11 +12,6 @@
       "file": "android/WCAndroid/google-upload-credentials.json",
       "destination": "~/.configure/woocommerce-android/secrets/google-upload-credentials.json",
       "encrypt": true
-    },
-    {
-      "file": "android/WCAndroid/firebase.secrets.json",
-      "destination": ".configure-files/firebase.secrets.json",
-      "encrypt": true
     }
   ],
   "file_dependencies": []
