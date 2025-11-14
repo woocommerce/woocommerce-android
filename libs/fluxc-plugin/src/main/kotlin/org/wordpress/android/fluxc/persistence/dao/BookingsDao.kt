@@ -22,6 +22,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start > :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -39,6 +40,8 @@ interface BookingsDao {
         customerId: Long?,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        productIds: List<Long>,
+        productIdsSize: Int,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
@@ -52,6 +55,8 @@ interface BookingsDao {
         customerId: Long?,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        productIds: List<Long>,
+        productIdsSize: Int,
         order: BookingsOrderOption
     ): List<BookingEntity>
 
@@ -85,6 +90,10 @@ interface BookingsDao {
             .firstOrNull()?.values
             ?.map { it.key }
             .orEmpty()
+        val productIds = filters.filterIsInstance<BookingsFilterOption.ServiceEvents>()
+            .firstOrNull()?.values
+            ?.map { it.productId }
+            .orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
             limit = limit,
@@ -93,6 +102,8 @@ interface BookingsDao {
             customerId = customerFilter?.customerId,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            productIds = productIds,
+            productIdsSize = productIds.size,
             order = order
         )
     }
@@ -109,6 +120,10 @@ interface BookingsDao {
             .firstOrNull()?.values
             ?.map { it.key }
             .orEmpty()
+        val productIds = filters.filterIsInstance<BookingsFilterOption.ServiceEvents>()
+            .firstOrNull()?.values
+            ?.map { it.productId }
+            .orEmpty()
 
         return getBookings(
             localSiteId = localSiteId,
@@ -118,6 +133,8 @@ interface BookingsDao {
             customerId = customerFilter?.customerId,
             attendanceStatuses = attendanceStatusKeySet,
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            productIds = productIds,
+            productIdsSize = productIds.size,
             order = order
         )
     }
