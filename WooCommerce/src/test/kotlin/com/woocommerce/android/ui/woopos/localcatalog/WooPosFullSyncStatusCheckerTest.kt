@@ -70,6 +70,8 @@ class WooPosFullSyncStatusCheckerTest {
         whenever(time.now()).thenReturn(NOW)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
             .thenReturn(Result.success(15))
+        whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+            .thenReturn(Result.success(5))
         whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
             .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
     }
@@ -186,6 +188,8 @@ class WooPosFullSyncStatusCheckerTest {
             whenever(networkStatus.isConnected()).thenReturn(false)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -239,6 +243,8 @@ class WooPosFullSyncStatusCheckerTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.failure(Exception("Database error")))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
 
             val sut = createSut()
 
@@ -254,6 +260,8 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
                 .thenReturn(
@@ -276,6 +284,8 @@ class WooPosFullSyncStatusCheckerTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
                 .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
             val recentTimestamp = NOW - 1.days.inWholeMilliseconds
@@ -295,6 +305,8 @@ class WooPosFullSyncStatusCheckerTest {
         runTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
             whenever(checkCatalogSizeAction.execute(siteModel, null, 1000))
                 .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeUnknown)
@@ -316,6 +328,8 @@ class WooPosFullSyncStatusCheckerTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(100))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(50))
             val recentTimestamp = NOW - 1.days.inWholeMilliseconds
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
 
