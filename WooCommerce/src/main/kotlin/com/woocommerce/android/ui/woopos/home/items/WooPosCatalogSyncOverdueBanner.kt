@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
@@ -41,15 +42,13 @@ fun WooPosCatalogSyncOverdueBanner(
 ) {
     AnimatedVisibility(
         visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
-        enter = fadeIn(
-            animationSpec = tween(durationMillis = 180)
-        ) + scaleIn(
-            animationSpec = tween(durationMillis = 180)
-        ),
-        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value)
+        enter =
+            fadeIn(animationSpec = tween(durationMillis = 180)) + scaleIn(animationSpec = tween(durationMillis = 180))
     ) {
         WooPosCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
             backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
             elevation = WooPosElevation.Medium,
