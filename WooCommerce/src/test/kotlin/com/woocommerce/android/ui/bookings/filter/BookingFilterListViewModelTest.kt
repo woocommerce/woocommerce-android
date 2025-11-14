@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
@@ -177,9 +178,9 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val root = viewModel.uiState.getOrAwaitValue()
 
         val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
-        val values = attendanceItem.values?.map { (it as UiStringRes).stringRes }
+        val value = (attendanceItem.value as UiStringRes).stringRes
 
-        assertThat(values).containsExactly(R.string.booking_attendance_status_booked)
+        assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
     }
 
     @Test
@@ -201,11 +202,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val root = viewModel.uiState.getOrAwaitValue()
 
         val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
-        val values = attendanceItem.values?.map { (it as UiStringRes).stringRes }
+        val value = (attendanceItem.value as UiString.UiStringText).text
 
-        assertThat(values).containsExactlyInAnyOrder(
-            R.string.booking_attendance_status_booked,
-            R.string.booking_attendance_status_cancelled
-        )
+        assertThat(value).isEqualTo("2")
     }
 }

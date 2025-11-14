@@ -44,7 +44,7 @@ data class BookingFilterListUiState(
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
             title = page.titleRes,
-            values = page.filterValue,
+            value = page.filterValue,
             onClick = { openPage(page) },
         )
     }
@@ -60,18 +60,24 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: List<UiString>
+    val BookingFilterPage.filterValue: UiString
         get() = when (this) {
             BookingFilterPage.BookingType -> {
-                updatedBookingFilters.bookingType?.titleRes?.let { listOf(UiString.UiStringRes(it)) }
+                updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
 
             BookingFilterPage.AttendanceStatus -> {
-                updatedBookingFilters.attendanceStatuses.values.map { UiString.UiStringRes(it.titleRes) }
+                updatedBookingFilters.attendanceStatuses.values.takeIf { it.isNotEmpty() }?.let { list ->
+                    if (list.size > 1) {
+                        UiString.UiStringText(list.size.toString())
+                    } else {
+                        UiString.UiStringRes(list.first().titleRes)
+                    }
+                }
             }
 
             BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
-                listOf(UiString.UiStringText(name))
+                UiString.UiStringText(name)
             }
 
             BookingFilterPage.TeamMember,
@@ -80,9 +86,10 @@ data class BookingFilterListUiState(
             BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.List -> null
-        }.orEmpty().ifEmpty { listOf(UiString.UiStringRes(R.string.bookings_filter_default)) }
+        } ?: UiString.UiStringRes(R.string.bookings_filter_default)
 
-    val title: UiString
+    val title
+        : UiString
         get() = if (currentPage != BookingFilterPage.List) {
             UiString.UiStringRes(currentPage.titleRes)
         } else if (updatedBookingFiltersCount > 0) {
