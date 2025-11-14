@@ -93,11 +93,6 @@ default.profraw
 
 local-builds.gradle
 
-# All secrets should be stored under .configure-files
-# Everything without a .enc extension is ignored
-.configure-files/*
-!.configure-files/*.enc
-
 # Kotlin
 .kotlin/
 
