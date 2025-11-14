@@ -32,7 +32,7 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
     init {
         launch {
             bookingsRepository.observeResources().distinctUntilChanged().collect { resources ->
-                _uiState.update { current -> current.copy(teamMembers = resources) }
+                _uiState.update { current -> current.copy(teamMembers = listOf(TeamMember.any) + resources) }
             }
         }
         launch { bookingsRepository.fetchResources() }
