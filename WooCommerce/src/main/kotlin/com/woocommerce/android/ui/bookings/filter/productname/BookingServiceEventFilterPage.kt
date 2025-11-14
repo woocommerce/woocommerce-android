@@ -31,6 +31,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @Composable
@@ -100,5 +102,30 @@ private fun ProductRow(item: BookableProductItem) {
             }
         }
         HorizontalDivider(thickness = 0.5.dp)
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun BookingServiceEventFilterPagePreview() {
+    WooThemeWithBackground {
+        val availableProducts = listOf(
+            BookableProduct(id = 1, name = "Yoga Class"),
+            BookableProduct(id = 2, name = "Pilates Session"),
+            BookableProduct(id = 3, name = "Surf Lesson"),
+        )
+        val selected = BookingsFilterOption.ServiceEvents(
+            values = setOf(
+                BookingsFilterOption.ProductInfo(productId = 1, productName = "Yoga Class")
+            )
+        )
+        val state = BookingServiceEventFilterUiState(
+            availableProducts = availableProducts,
+            selectedProducts = selected,
+            searchQuery = "",
+            onProductSelected = {},
+            onSearchQueryChanged = {}
+        )
+        BookingServiceEventFilterPage(state)
     }
 }
