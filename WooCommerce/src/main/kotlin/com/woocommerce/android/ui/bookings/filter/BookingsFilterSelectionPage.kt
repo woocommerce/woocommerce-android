@@ -17,10 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.getText
 
 @Composable
 fun BookingsFilterSelectionPage(
@@ -30,7 +30,7 @@ fun BookingsFilterSelectionPage(
     LazyColumn(modifier = modifier) {
         items(items) { item ->
             SelectionRow(
-                text = stringResource(item.title),
+                text = item.title.getText(),
                 selected = item.selected,
                 onClick = { item.onClick() }
             )

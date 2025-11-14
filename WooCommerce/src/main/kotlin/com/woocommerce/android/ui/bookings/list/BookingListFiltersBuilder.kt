@@ -43,7 +43,7 @@ class BookingListFiltersBuilder @Inject constructor(
         val filters = mutableListOf<BookingsFilterOption>()
         customer?.let { filters.add(it) }
         dateRange?.let { filters.add(it) }
-        teamMember?.let { filters.add(it) }
+        filters.add(teamMembers)
         filters.add(attendanceStatuses)
         paymentStatus?.let { filters.add(it) }
         bookingType?.let { filters.add(it) }

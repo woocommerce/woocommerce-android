@@ -18,6 +18,7 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
+        private const val FILTER_QUERY_PARAMETER_SEPERATOR = ","
     }
 
     suspend fun fetchBooking(
@@ -85,6 +86,21 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchResources(site: SiteModel): WooPayload<Array<BookingResourceDto>> {
+        val endpoint = WOOCOMMERCE.resources.team_members.pathV2Bookings
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = Array<BookingResourceDto>::class.java,
+            params = emptyMap()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long
@@ -106,14 +122,22 @@ class BookingsRestClient @Inject constructor(
     private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
         this@toQueryParams.forEach { filter ->
             when (filter) {
-                BookingsFilterOption.TeamMember -> TODO()
+                is BookingsFilterOption.TeamMembers -> {
+                    if (filter.values.isNotEmpty()) {
+                        set(
+                            "resource",
+                            filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() }
+                        )
+                    }
+                }
+
                 is BookingsFilterOption.BookingType -> {
                     // TODO add query for booking type filtering
                 }
 
                 BookingsFilterOption.ServiceEvent -> TODO()
                 is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
-                    set("attendance_status", filter.values.joinToString(",") { it.key })
+                    set("attendance_status", filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
                 }
 
                 BookingsFilterOption.PaymentStatus -> TODO()
