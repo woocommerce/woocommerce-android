@@ -51,6 +51,10 @@ class DeveloperOptionsFragment : BaseFragment() {
                     ToastUtils.showToast(context, event.message)
                 }
 
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowToastText -> {
+                    ToastUtils.showToast(context, event.message)
+                }
+
                 is DeveloperOptionsViewModel.DeveloperOptionsEvents.ShowUpdateOptionsDialog -> {
                     showUpdateOptionsDialog(
                         values = event.options,
