@@ -77,6 +77,7 @@ fun WooPosItemList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        contentPadding = PaddingValues(2.dp),
         state = listState,
     ) {
         items(
