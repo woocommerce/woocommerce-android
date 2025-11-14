@@ -50,11 +50,11 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                 val toDateTime = range.before?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
                 currentState.copy(
                     fromDateTime = fromDateTime,
-                    formattedFromDate = dateFormatter.format(fromDateTime),
-                    formattedFromTime = timeFormatter.format(fromDateTime),
+                    formattedFromDate = fromDateTime.formatDate(),
+                    formattedFromTime = fromDateTime.formatTime(),
                     toDateTime = toDateTime,
-                    formattedToDate = dateFormatter.format(toDateTime),
-                    formattedToTime = timeFormatter.format(toDateTime),
+                    formattedToDate = toDateTime.formatDate(),
+                    formattedToTime = toDateTime.formatTime(),
                 )
             }
         }
@@ -118,7 +118,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         fromDateTime = newDateTime,
-                        formattedFromDate = dateFormatter.format(newDateTime),
+                        formattedFromDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
@@ -131,7 +131,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         toDateTime = newDateTime,
-                        formattedToDate = dateFormatter.format(newDateTime),
+                        formattedToDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
@@ -147,8 +147,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val newDateTime = (current.fromDateTime ?: LocalDateTime.now(clock)).withTime(time)
                     current.copy(
                         fromDateTime = newDateTime,
-                        formattedFromTime = timeFormatter.format(newDateTime),
-                        formattedFromDate = dateFormatter.format(newDateTime),
+                        formattedFromTime = newDateTime.formatTime(),
+                        formattedFromDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
@@ -157,8 +157,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val newDateTime = (current.toDateTime ?: LocalDateTime.now(clock)).withTime(time = time)
                     current.copy(
                         toDateTime = newDateTime,
-                        formattedToDate = dateFormatter.format(newDateTime),
-                        formattedToTime = timeFormatter.format(newDateTime),
+                        formattedToDate = newDateTime.formatDate(),
+                        formattedToTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }
@@ -175,6 +175,9 @@ class DateTimeFilterViewModel @AssistedInject constructor(
             )
         )
     }
+
+    private fun LocalDateTime?.formatDate(): String = this?.let { dateFormatter.format(it) }.orEmpty()
+    private fun LocalDateTime?.formatTime(): String = this?.let { timeFormatter.format(it) }.orEmpty()
 
     @AssistedFactory
     interface Factory {
