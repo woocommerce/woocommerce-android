@@ -107,23 +107,26 @@ class BookingsRestClient @Inject constructor(
         this@toQueryParams.forEach { filter ->
             when (filter) {
                 BookingsFilterOption.TeamMember -> TODO()
-                BookingsFilterOption.AttendanceStatus -> TODO()
-                BookingsFilterOption.PaymentStatus -> TODO()
                 is BookingsFilterOption.BookingType -> {
                     // TODO add query for booking type filtering
-                }
-
-                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
-
-                BookingsFilterOption.Location -> TODO()
-                is BookingsFilterOption.DateRange -> {
-                    filter.before?.let { set("start_date_before", it.toString()) }
-                    filter.after?.let { set("start_date_after", it.toString()) }
                 }
 
                 is BookingsFilterOption.ServiceEvents -> if (filter.values.isNotEmpty()) {
                     set("product", filter.values.joinToString(",") { it.productId.toString() })
                 }
+
+                is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
+                    set("attendance_status", filter.values.joinToString(",") { it.key })
+                }
+
+                BookingsFilterOption.PaymentStatus -> TODO()
+                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
+                is BookingsFilterOption.DateRange -> {
+                    filter.before?.let { set("start_date_before", it.toString()) }
+                    filter.after?.let { set("start_date_after", it.toString()) }
+                }
+
+                BookingsFilterOption.Location -> TODO()
             }
         }
     }
