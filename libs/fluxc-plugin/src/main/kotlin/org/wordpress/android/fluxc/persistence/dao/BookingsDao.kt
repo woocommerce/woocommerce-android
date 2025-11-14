@@ -134,6 +134,9 @@ interface BookingsDao {
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
     suspend fun getResources(localSiteId: LocalId): List<BookingResourceEntity>
 
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND  id = :resourceId")
+    suspend fun getResource(localSiteId: LocalId, resourceId: Long): BookingResourceEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(resource: BookingResourceEntity): Long
 

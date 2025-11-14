@@ -162,6 +162,11 @@ class BookingsStore @Inject internal constructor(
         }
     }
 
+    suspend fun getResource(
+        site: SiteModel,
+        resourceId: Long
+    ): BookingResourceEntity? = bookingsDao.getResource(site.localId(), resourceId)
+
     fun observeResource(
         site: SiteModel,
         resourceId: Long
