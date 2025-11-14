@@ -1,3 +1,7 @@
 RELEASE-NOTES.txt merge=union
 
-.configure-files/*.enc binary
+#########################################
+# Secrets files encrypted with git-crypt
+#########################################
+
+secrets.properties filter=git-crypt diff=git-crypt
