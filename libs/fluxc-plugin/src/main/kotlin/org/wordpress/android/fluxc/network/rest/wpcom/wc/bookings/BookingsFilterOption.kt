@@ -1,11 +1,11 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
-import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.time.Instant
 
 sealed interface BookingsFilterOption {
-    data class TeamMembers(val values: Set<BookingResourceEntity>) : BookingsFilterOption {
+    data class TeamMembers(val values: Set<LocalOrRemoteId.RemoteId>) : BookingsFilterOption {
         companion object {
             val DEFAULT = TeamMembers(emptySet())
         }
@@ -53,7 +53,7 @@ data class BookingFilters(
     val enabledFiltersCount: Int
         get() {
             var count = 0
-            if (teamMembers.values != BookingsFilterOption.TeamMembers.DEFAULT) count++
+            if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) count++
             if (bookingType?.value != null) count++
             if (serviceEvent != null) count++
             if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++

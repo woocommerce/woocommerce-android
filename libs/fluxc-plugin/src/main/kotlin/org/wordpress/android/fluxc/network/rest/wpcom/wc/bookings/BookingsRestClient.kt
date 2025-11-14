@@ -125,7 +125,7 @@ class BookingsRestClient @Inject constructor(
                 is BookingsFilterOption.TeamMembers -> {
                     set(
                         "resource",
-                        filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.id.value.toString() })
+                        filter.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() })
                 }
 
                 is BookingsFilterOption.BookingType -> {

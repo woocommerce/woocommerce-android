@@ -43,10 +43,10 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
             TeamMembers.DEFAULT
         } else {
             val memberSet = _uiState.value.selectedMembers.values.toMutableSet()
-            if (memberSet.contains(member)) {
-                memberSet.remove(member)
+            if (memberSet.contains(member?.id)) {
+                memberSet.remove(member?.id)
             } else {
-                member?.let { memberSet.add(it) }
+                member?.let { memberSet.add(it.id) }
             }
             TeamMembers(memberSet)
         }
