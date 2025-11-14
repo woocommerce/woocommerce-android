@@ -79,11 +79,16 @@ data class BookingFilterListUiState(
             BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
                 UiString.UiStringText(name)
             }
+
             BookingFilterPage.ServiceEvent -> {
-                updatedBookingFilters.serviceEvents.values.map {
-                    UiString.UiStringText(it.productName)
+                val selectedServices = updatedBookingFilters.serviceEvents.values
+                when (selectedServices.size) {
+                    0 -> UiString.UiStringRes(R.string.bookings_filter_default)
+                    1 -> UiString.UiStringText(selectedServices.first().productName)
+                    else -> UiString.UiStringText(selectedServices.size.toString())
                 }
             }
+
             BookingFilterPage.TeamMember,
             BookingFilterPage.PaymentStatus,
             BookingFilterPage.DateTime,

@@ -52,7 +52,7 @@ data class BookingFilters(
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val bookingType: BookingsFilterOption.BookingType? = null,
     val location: BookingsFilterOption.Location? = null,
-    val serviceEvent: BookingsFilterOption.ServiceEvents? = null,
+    val serviceEvents: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
 ) {
     val enabledFiltersCount: Int
         get() {
@@ -64,7 +64,7 @@ data class BookingFilters(
             if (paymentStatus != null) count++
             if (bookingType?.value != null) count++
             if (location != null) count++
-            if (serviceEvent != BookingsFilterOption.ServiceEvents.DEFAULT) count++
+            if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) count++
             return count
         }
 
