@@ -37,13 +37,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptiv
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
     state: WooPosItemsViewModel.CatalogSyncOverdueBannerState,
-    modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
     AnimatedVisibility(
         visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
         enter =
-            fadeIn(animationSpec = tween(durationMillis = 180)) + scaleIn(animationSpec = tween(durationMillis = 180))
+        fadeIn(animationSpec = tween(durationMillis = 180)) + scaleIn(animationSpec = tween(durationMillis = 180))
     ) {
         WooPosCard(
             modifier = Modifier
