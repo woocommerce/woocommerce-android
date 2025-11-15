@@ -12,7 +12,7 @@ echo "--- :rubygems: Setting up Gems"
 install_gems
 
 echo "--- :closed_lock_with_key: Decrypting Secrets"
-git-crypt-unlock
+.buildkite/commands/git-crypt-unlock.sh
 
 echo "--- 🧪 Testing"
 set +e

@@ -13,7 +13,7 @@ echo "--- :rubygems: Setting up Gems"
 install_gems
 
 echo "--- :closed_lock_with_key: Decrypting Secrets"
-git-crypt-unlock
+.buildkite/commands/git-crypt-unlock.sh
 
 echo "--- :hammer_and_wrench: Building ${APP_TO_BUILD}"
 bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"
