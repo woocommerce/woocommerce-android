@@ -41,10 +41,11 @@
 1. If you are a developer at Automattic:
    1. Make sure you have `git-crypt` installed (`brew install git-crypt`)
    1. Search for "WooCommerce Android git-crypt encryption key" in our Secret Store, and copy the Base64 value in your clipboard
-   1. Run `git-crypt unlock <(pbpaste | base64 -d)` to decrypt the encrypted files (including `secrets.properties`)
+   1. Run `git-crypt unlock <(pbpaste | base64 -d)` to decrypt the encrypted files (including `secrets.properties` and `WooCommerce/google-services.json`)
 1. If you are an external contributor:
    1. Generate developer OAuth2 tokens. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
    1. Edit `defaults.properties` and adjust the values as needed—especiallyincluding `wp.oauth.*` ones. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
+   1. `cp WooCommerce/google-services.json-example WooCommerce/google-services.json` (to replace that encrypted file with placeholder content)
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
 1. Optional: Go to Tools → Device Manager and create an emulated device.
 1. Run. (Creates a default virtual device if you skipped the previous step)

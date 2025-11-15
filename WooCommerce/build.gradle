@@ -498,12 +498,13 @@ android.buildTypes.all { buildType ->
     }
 
     // If Google services file doesn't exist, copy example file.
-    if (!file("google-services.json").exists()) {
+    def googleServicesFile = file("google-services.json")
+    if (!googleServicesFile.exists() || isFileEncrypted(googleServicesFile)) {
         tasks.copyGoogleServicesExampleFile.copy()
     }
 
     // Print warning message if example Google services file is used.
-    if ((file("google-services.json").text) == (file("google-services.json-example").text)) {
+    if ((googleServicesFile.text) == (file("google-services.json-example").text)) {
         println("WARNING: You're using the example google-services.json file. Google login will fail.")
     }
 }
@@ -514,6 +515,13 @@ static def loadPropertiesFromFile(inputFile) {
         properties.load(stream)
     }
     return properties
+}
+
+static def isFileEncrypted(File file) {
+    def gitcryptHeader = [0x00, 0x47, 0x49, 0x54, 0x43, 0x52, 0x59, 0x50, 0x54] as byte[] // GITCRYPT header
+    def header = new byte[gitcryptHeader.length]
+    file.withInputStream { stream -> stream.read(header) }
+    return Arrays.equals(header, gitcryptHeader)
 }
 
 def isLeakCanaryEnabled() {
