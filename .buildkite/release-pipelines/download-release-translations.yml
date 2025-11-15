@@ -14,7 +14,7 @@ steps:
       install_gems
 
       echo '--- :closed_lock_with_key: Decrypting Secrets'
-      .buildkite/git-crypt/unlock.sh
+      git-crypt-unlock
 
       echo '--- :globe_with_meridians: Download Release Translations'
       bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"

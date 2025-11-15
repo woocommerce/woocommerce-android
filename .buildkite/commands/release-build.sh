@@ -6,7 +6,7 @@ echo "--- :rubygems: Setting up Gems"
 install_gems
 
 echo "--- :closed_lock_with_key: Decrypting Secrets"
-.buildkite/git-crypt/unlock.sh
+git-crypt-unlock
 
 echo "--- :hammer_and_wrench: Building ${APP_TO_BUILD}"
 bundle exec fastlane build_and_upload_google_play app:"${APP_TO_BUILD}"
