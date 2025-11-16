@@ -14,9 +14,6 @@ BUILD_VARIANT=$1
 echo "--- :rubygems: Setting up Gems"
 install_gems
 
-echo "--- :closed_lock_with_key: Decrypting Secrets"
-.buildkite/commands/git-crypt-unlock.sh
-
 echo "--- 💾 Diff Merged Manifest (Module: WooCommerce, Build Variant: ${BUILD_VARIANT})"
 comment_with_manifest_diff "WooCommerce" ${BUILD_VARIANT}
 
