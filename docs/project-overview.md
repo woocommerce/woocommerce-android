@@ -38,7 +38,7 @@ This file is encrypted (using `git-crypt`), and only developers working at Autom
 If you are a developer working at Automattic, ensure you followed those instructions once after cloning the repo:
   1. Make sure you have `git-crypt` installed (`brew install git-crypt`)
   1. Search for "WooCommerce Android git-crypt encryption key" in our Secret Store, and copy the Base64 value in your clipboard
-  1. Run `git-crypt unlock <(pbpaste | base64 -d)` to decrypt the encrypted files (including `secrets.properties`)
+  1. Run `pbpaste | base64 -d | git-crypt unlock -` to decrypt the encrypted files (including `secrets.properties`)
 
 If you are an external contributor, provide those variables in your `defaults.properties` instead:
 
