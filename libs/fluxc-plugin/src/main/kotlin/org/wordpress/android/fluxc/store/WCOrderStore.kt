@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.BatchOrderApiResponse
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderUpdatePaymentDetails
@@ -107,6 +108,11 @@ class WCOrderStore @Inject internal constructor(
             this.error = error
         }
     }
+
+    data class FetchOrdersDtoResponsePayload(
+        val canLoadMore: Boolean = false
+        val orders: List<OrderDto> = emptyList()
+    ) : Payload<OrderError>()
 
     class FetchOrderListResponsePayload(
         val listDescriptor: WCOrderListDescriptor,

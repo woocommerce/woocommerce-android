@@ -31,6 +31,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.OrderNoteEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
+import org.wordpress.android.fluxc.store.WCOrderStore.FetchOrdersDtoResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.AddOrderShipmentTrackingResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.BulkUpdateOrderStatusResponsePayload
 import org.wordpress.android.fluxc.store.WCOrderStore.DeleteOrderShipmentTrackingResponsePayload
@@ -153,6 +154,64 @@ class OrderRestClient @Inject constructor(
                 error = wpAPINetworkErrorToOrderError(response.error),
                 site = site
             )
+        }
+    }
+
+    /**
+     * Fetches orders data transfer objects from the API.
+     *
+     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given site and parameters.
+     *
+     * @param site The WooCommerce [SiteModel] the orders belong to
+     * @param count The number of orders to fetch
+     * @param page The page number to fetch
+     * @param orderBy The field to order the results by
+     * @param sortOrder The order to sort the results by
+     * @param statusFilter The status to filter the results by
+     */
+    suspend fun fetchOrdersDto(
+        site: SiteModel,
+        count: Int,
+        page: Int,
+        orderBy: OrderBy,
+        sortOrder: SortOrder,
+        statusFilter: String? = null,
+        createdVia: String? = null,
+        searchQuery: String? = null
+    ): FetchOrdersDtoResponsePayload {
+
+        val params = mutableMapOf(
+            "per_page" to count.toString(),
+            "page" to page.toString(),
+            "orderby" to orderBy.value,
+            "order" to sortOrder.value,
+            "_fields" to ORDER_FIELDS
+        ).putIfNotEmpty(
+            "status" to statusFilter,
+            "created_via" to createdVia,
+            "search" to searchQuery
+        )
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = WOOCOMMERCE.orders.pathV3,
+            params = params,
+            clazz = Array<OrderDto>::class.java
+        )
+
+        return when (response) {
+            is WPAPIResponse.Success -> {
+                val dtos = response.data?.toList().orEmpty()
+                FetchOrdersDtoResponsePayload(
+                    canLoadMore = dtos.size == count,
+                    orders = dtos
+                )
+            }
+
+            is WPAPIResponse.Error -> {
+                FetchOrdersDtoResponsePayload()
+                    .withError(wpAPINetworkErrorToOrderError(response.error), site)
+            }
         }
     }
 

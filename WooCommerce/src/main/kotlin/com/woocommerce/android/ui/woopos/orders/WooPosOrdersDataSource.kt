@@ -5,6 +5,8 @@ import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosOrderModelMapper
+import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -12,6 +14,8 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
+import org.wordpress.android.fluxc.model.WCProductModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.persistence.entity.OrderEntity
@@ -39,7 +43,7 @@ sealed class RefundFetchResult {
 class WooPosOrdersDataSource @Inject constructor(
     private val restClient: OrderRestClient,
     private val selectedSite: SelectedSite,
-    private val orderMapper: OrderMapper,
+    private val orderMapper: WooPosOrderModelMapper,
     private val ordersCache: WooPosOrdersInMemoryCache,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds
 ) {
@@ -114,17 +118,17 @@ class WooPosOrdersDataSource @Inject constructor(
         ordersCache.setAll(updated)
     }
 
-    private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
+    private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<WooPosOrderModel>> {
         page.set(1)
         canLoadMore.set(false)
         return fetchAndMap(searchQuery)
     }
 
-    private suspend fun loadNextPage(searchQuery: String? = null): Result<List<Order>> {
+    private suspend fun loadNextPage(searchQuery: String? = null): Result<List<WooPosOrderModel>> {
         return fetchAndMap(searchQuery)
     }
 
-    private suspend fun fetchAndMap(searchQuery: String? = null): Result<List<Order>> {
+    private suspend fun fetchAndMap(searchQuery: String? = null): Result<List<WooPosOrderModel>> {
         val result = fetchOrdersFromRemote(page.get(), searchQuery)
         return if (result.isError) {
             Result.failure(result.error.toThrowable())
@@ -138,7 +142,7 @@ class WooPosOrdersDataSource @Inject constructor(
     private suspend fun fetchOrdersFromRemote(
         page: Int,
         searchQuery: String?
-    ) = restClient.fetchOrders(
+    ) = restClient.fetchOrdersDto(
         site = selectedSite.get(),
         count = POS_ORDERS_PAGE_SIZE,
         page = page,
@@ -150,10 +154,6 @@ class WooPosOrdersDataSource @Inject constructor(
     )
 
     fun clearCache() = ordersCache.clear()
-
-    private suspend fun List<OrderEntity>.toAppModels(): List<Order> = map {
-        orderMapper.toAppModel(it)
-    }
 
     private fun WCOrderStore.OrderError.toThrowable(): Throwable =
         Throwable("[$type] $message")
@@ -170,3 +170,6 @@ class WooPosOrdersDataSource @Inject constructor(
             }.awaitAll().toMap()
         }
 }
+
+fun List<OrderDto>?.toAppModels(): List<WooPosOrderModel> =
+    this?.map { orderMapper.map(it) } ?: emptyList()
