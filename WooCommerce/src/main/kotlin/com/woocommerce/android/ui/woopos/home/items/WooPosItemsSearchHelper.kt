@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.CoroutineScope
@@ -19,6 +20,7 @@ class WooPosItemsSearchHelper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val productsDataSource: WooPosProductsDataSource,
 ) {
     private lateinit var coroutineScope: CoroutineScope
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
@@ -162,7 +164,9 @@ class WooPosItemsSearchHelper @Inject constructor(
         val searchState = getCurrentSearchVisibleState() ?: return
         val searchStateValue = getCurrentSearchOpenState() ?: return
 
-        val shouldShowLoadingIndicatorInToolbar = isLoading && viewStateFlow.value.doesSupportLocalSearch()
+        val shouldShowLoadingIndicatorInToolbar = isLoading &&
+            viewStateFlow.value.doesSupportLocalSearch() &&
+            productsDataSource.getCurrentSyncStrategy() == WooPosProductsDataSource.SyncStrategy.REMOTE
 
         viewStateFlow.value = viewStateFlow.value.copy(
             search = searchState.copy(
