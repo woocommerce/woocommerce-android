@@ -16,7 +16,7 @@ data class BookingServiceEventFilterUiState(
     val items: List<BookingFilterListItem> = filteredProducts().map { product ->
         BookingFilterListItem(
             title = product.name?.let { UiStringText(it) }
-                        ?: UiStringRes(R.string.bookings_filter_default),
+                ?: UiStringRes(R.string.bookings_filter_default),
             selected = isSelected(product),
             onClick = { onProductSelected(product) }
         )

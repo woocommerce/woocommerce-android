@@ -46,7 +46,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given an initial selection when ViewModel is initialized then state reflects it`() {
+    fun `given an initial selection, when ViewModel is initialized, then state reflects it`() {
         // GIVEN an initial selection
         val initial = BookingsFilterOption.ServiceEvents(
             values = setOf(BookingsFilterOption.ProductInfo(1L, "Haircut"))
@@ -64,7 +64,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given initial state when search query changes then state updates`() {
+    fun `given initial state, when search query changes, then state updates`() {
         // GIVEN
         val before = viewModel.uiState.value
         assertThat(before.searchQuery).isEqualTo("")
@@ -76,7 +76,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given a current selection when selecting Any then selection is cleared and callback receives DEFAULT`() {
+    fun `given a current selection, when selecting Any, then selection is cleared and callback receives DEFAULT`() {
         // GIVEN a pre-populated selection by re-creating VM
         val initial = BookingsFilterOption.ServiceEvents(
             values = setOf(BookingsFilterOption.ProductInfo(5L, "Pilates"))
@@ -100,7 +100,7 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no selection when selecting a product twice then it toggles and invokes callback`() {
+    fun `given no selection, when selecting a product twice, then it toggles and invokes callback`() {
         // GIVEN
         val product = BookableProduct(id = 42L, name = "Yoga")
 

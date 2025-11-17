@@ -120,6 +120,7 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    @Suppress("CyclomaticComplexMethod") // The mapping is straightforward switch-over of filter types;
     private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
         this@toQueryParams.forEach { filter ->
             when (filter) {
