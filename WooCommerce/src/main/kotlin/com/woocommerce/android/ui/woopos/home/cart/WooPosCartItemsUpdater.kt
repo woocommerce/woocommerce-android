@@ -9,7 +9,6 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
-import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 
@@ -90,7 +89,7 @@ class WooPosCartItemsUpdater @Inject constructor(
                 newItem.productDoesNotExist != item.productDoesNotExist
 
             if (itemChanged) {
-                deleteProductFromCache(newItem.id)
+                deleteProductFromCache(newItem)
             }
 
             changed = itemChanged
@@ -140,20 +139,31 @@ class WooPosCartItemsUpdater @Inject constructor(
         }
     }
 
-    private suspend fun deleteProductFromCache(productId: Long) {
-        productsCache.deleteProduct(productId)
-        selectedSite.getOrNull()?.let { site ->
-            val siteId = LocalOrRemoteId.LocalId(site.id)
-            val remoteId = LocalOrRemoteId.RemoteId(productId)
-            val productEntity = WooPosProductEntity(
-                localSiteId = siteId,
-                remoteId = remoteId,
-                name = ""
-            )
-            localCatalogStore.deleteProducts(listOf(productEntity))
-                .onFailure { error ->
-                    wooPosLogWrapper.e("Failed to delete product from Local Catalog DB: ${error.message}")
+    private suspend fun deleteProductFromCache(item: WooPosCartItemViewState.Product) {
+        when (item) {
+            is WooPosCartItemViewState.Product.Simple -> {
+                productsCache.deleteProduct(item.id)
+                selectedSite.getOrNull()?.let { site ->
+                    val siteId = LocalOrRemoteId.LocalId(site.id)
+                    val remoteId = LocalOrRemoteId.RemoteId(item.id)
+                    localCatalogStore.deleteProducts(siteId, listOf(remoteId))
+                        .onFailure { error ->
+                            wooPosLogWrapper.e("Failed to delete product from Local Catalog DB: ${error.message}")
+                        }
                 }
+            }
+            is WooPosCartItemViewState.Product.Variation -> {
+                productsCache.deleteProduct(item.id)
+                selectedSite.getOrNull()?.let { site ->
+                    val siteId = LocalOrRemoteId.LocalId(site.id)
+                    val productId = LocalOrRemoteId.RemoteId(item.id)
+                    val variationId = LocalOrRemoteId.RemoteId(item.variationId)
+                    localCatalogStore.deleteVariations(siteId, listOf(productId to variationId))
+                        .onFailure { error ->
+                            wooPosLogWrapper.e("Failed to delete variation from Local Catalog DB: ${error.message}")
+                        }
+                }
+            }
         }
     }
 
