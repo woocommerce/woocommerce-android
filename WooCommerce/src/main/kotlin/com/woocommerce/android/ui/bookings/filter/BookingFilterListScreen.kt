@@ -30,8 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.attendancestatus.BookingAttendanceStatusFilterRoute
 import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
-import com.woocommerce.android.ui.bookings.filter.teammember.BookingTeamMemberFilterRoute
 import com.woocommerce.android.ui.bookings.filter.datetime.DateTimeFilterRoute
+import com.woocommerce.android.ui.bookings.filter.teammember.BookingTeamMemberFilterRoute
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
