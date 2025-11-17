@@ -20,8 +20,6 @@ sealed interface BookingsFilterOption {
         enum class Type { SERVICE, EVENT }
     }
 
-    object ServiceEvent : BookingsFilterOption
-
     data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
         companion object {
             val DEFAULT = AttendanceStatuses(emptySet())
