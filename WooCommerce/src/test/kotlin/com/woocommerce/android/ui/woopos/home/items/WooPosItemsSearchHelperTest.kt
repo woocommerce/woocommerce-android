@@ -5,6 +5,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.CoroutineScope
@@ -31,6 +32,7 @@ class WooPosItemsSearchHelperTest {
     private val mockResourceProvider: ResourceProvider = mock()
     private val mockChildToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
+    private val productsDataSource: WooPosProductsDataSource = mock()
 
     private lateinit var viewStateFlow: MutableStateFlow<WooPosItemsToolbarViewState>
     private lateinit var searchHelper: WooPosItemsSearchHelper
@@ -39,12 +41,14 @@ class WooPosItemsSearchHelperTest {
     fun setup() {
         whenever(mockResourceProvider.getString(any())).thenReturn("Search products")
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(flowOf())
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
 
         viewStateFlow = MutableStateFlow(createContentState())
         searchHelper = WooPosItemsSearchHelper(
             resourceProvider = mockResourceProvider,
             childToParentEventSender = mockChildToParentEventSender,
             parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
+            productsDataSource = productsDataSource,
         )
     }
 
