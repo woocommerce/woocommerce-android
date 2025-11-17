@@ -7,21 +7,27 @@ import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.Dat
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.TimeDialog
 import com.woocommerce.android.ui.compose.component.Time
 import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
-import javax.inject.Inject
 
-@HiltViewModel
-class DateTimeFilterViewModel @Inject constructor(
+@HiltViewModel(assistedFactory = DateTimeFilterViewModel.Factory::class)
+class DateTimeFilterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val clock: Clock,
+    @Assisted private val initialRange: BookingsFilterOption.DateRange? = null,
+    @Assisted private val onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val zone: ZoneId = ZoneId.systemDefault()
@@ -36,6 +42,23 @@ class DateTimeFilterViewModel @Inject constructor(
         )
     )
     val uiState: LiveData<DateTimeFilterUiState?> = _uiState.asLiveData()
+
+    init {
+        initialRange?.let { range ->
+            _uiState.update { currentState ->
+                val fromDateTime = range.after?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
+                val toDateTime = range.before?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
+                currentState.copy(
+                    fromDateTime = fromDateTime,
+                    formattedFromDate = fromDateTime.formatDate(),
+                    formattedFromTime = fromDateTime.formatTime(),
+                    toDateTime = toDateTime,
+                    formattedToDate = toDateTime.formatDate(),
+                    formattedToTime = toDateTime.formatTime(),
+                )
+            }
+        }
+    }
 
     private fun openDateDialog(dateBoundary: DateBoundary) {
         _uiState.update { currentState ->
@@ -95,7 +118,7 @@ class DateTimeFilterViewModel @Inject constructor(
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         fromDateTime = newDateTime,
-                        formattedFromDate = dateFormatter.format(newDateTime),
+                        formattedFromDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
@@ -108,12 +131,13 @@ class DateTimeFilterViewModel @Inject constructor(
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         toDateTime = newDateTime,
-                        formattedToDate = dateFormatter.format(newDateTime),
+                        formattedToDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
             }
         }
+        emitTypeFilterChange()
     }
 
     private fun commitSelectedTime(dateBoundary: DateBoundary, time: Time) {
@@ -123,8 +147,8 @@ class DateTimeFilterViewModel @Inject constructor(
                     val newDateTime = (current.fromDateTime ?: LocalDateTime.now(clock)).withTime(time)
                     current.copy(
                         fromDateTime = newDateTime,
-                        formattedFromTime = timeFormatter.format(newDateTime),
-                        formattedFromDate = dateFormatter.format(newDateTime),
+                        formattedFromTime = newDateTime.formatTime(),
+                        formattedFromDate = newDateTime.formatDate(),
                         pickerDialogState = null,
                     )
                 }
@@ -133,13 +157,34 @@ class DateTimeFilterViewModel @Inject constructor(
                     val newDateTime = (current.toDateTime ?: LocalDateTime.now(clock)).withTime(time = time)
                     current.copy(
                         toDateTime = newDateTime,
-                        formattedToDate = dateFormatter.format(newDateTime),
-                        formattedToTime = timeFormatter.format(newDateTime),
+                        formattedToDate = newDateTime.formatDate(),
+                        formattedToTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }
             }
         }
+        emitTypeFilterChange()
+    }
+
+    private fun emitTypeFilterChange() {
+        onTypeFilterChanged(
+            BookingsFilterOption.DateRange(
+                after = _uiState.value.fromDateTime?.toInstant(ZoneOffset.UTC),
+                before = _uiState.value.toDateTime?.toInstant(ZoneOffset.UTC),
+            )
+        )
+    }
+
+    private fun LocalDateTime?.formatDate(): String = this?.let { dateFormatter.format(it) }.orEmpty()
+    private fun LocalDateTime?.formatTime(): String = this?.let { timeFormatter.format(it) }.orEmpty()
+
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
+            initialRange: BookingsFilterOption.DateRange? = null,
+        ): DateTimeFilterViewModel
     }
 }
 

@@ -253,20 +253,42 @@ class WooPosSyncActionTest {
     // === TRASH PRODUCTS SYNC TESTS ===
 
     @Test
+    fun `when incremental sync, then passes modifiedAfterGmt to trash products fetch`() = runTest {
+        // GIVEN
+        val modifiedAfter = "2024-01-15T10:30:00Z"
+        mockFetchProductsSuccess(pages = listOf(5), serverDate = "2024-01-15T10:30:00Z")
+        mockFetchVariationsSuccess(pages = listOf(2), serverDate = "2024-01-15T10:30:00Z")
+        givenTrashProducts(count = 1)
+
+        // WHEN
+        sut.syncCatalog(site, modifiedAfter, PAGE_SIZE, 10)
+
+        // THEN
+        verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(
+            eq(site),
+            eq(modifiedAfter),
+            any(),
+            any(),
+            eq(listOf(CoreProductStatus.TRASH))
+        )
+    }
+
+    @Test
     fun `when incremental sync, then fetches and includes trash products`() = runTest {
         // GIVEN
+        val modifiedAfter = "2024-01-01T12:00:00Z"
         mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
         mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
         givenTrashProducts(count = 3)
 
         // WHEN
-        val result = sut.syncCatalog(site, "2024-01-01T12:00:00Z", PAGE_SIZE, 10)
+        val result = sut.syncCatalog(site, modifiedAfter, PAGE_SIZE, 10)
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(13) // 10 + 3 trash
         verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(
             eq(site),
-            anyOrNull(),
+            eq(modifiedAfter),
             any(),
             any(),
             eq(listOf(CoreProductStatus.TRASH))

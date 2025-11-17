@@ -88,6 +88,19 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchResources(): Result<Unit> {
+        val result = bookingsStore.fetchResources(site = selectedSite.get())
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    suspend fun getResource(
+        resourceId: Long
+    ): BookingResource? = bookingsStore.getResource(site = selectedSite.get(), resourceId = resourceId)
+
     suspend fun fetchResource(
         resourceId: Long
     ): Result<Unit> {
@@ -112,6 +125,9 @@ class BookingsRepository @Inject constructor(
             )
         }
     }
+
+    fun observeResources(): Flow<List<BookingResource>> =
+        bookingsStore.observeResources(site = selectedSite.get())
 
     suspend fun updateAttendanceStatus(
         bookingId: Long,
