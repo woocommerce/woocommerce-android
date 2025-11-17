@@ -275,11 +275,42 @@ class WooPosLocalCatalogStore @Inject constructor(
     ): Result<Unit> =
         runCatching { posProductDao.deleteAllProductsForSite(siteId) }
 
-    suspend fun deleteProducts(products: List<WooPosProductEntity>): Result<Unit> =
+    /**
+     * Deletes products and their variations from the local database.
+     *
+     * @param siteId The local site ID
+     * @param productIds The list of remote product IDs to delete
+     * @return Result indicating success or failure
+     */
+    suspend fun deleteProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        productIds: List<LocalOrRemoteId.RemoteId>
+    ): Result<Unit> =
         runCatching {
-            products.forEach { product ->
-                posProductDao.deleteProduct(product.localSiteId, product.remoteId)
-                posVariationsDao.deleteVariationsForProduct(product.localSiteId, product.remoteId)
+            database.executeInTransaction {
+                productIds.forEach { remoteId ->
+                    posProductDao.deleteProduct(siteId, remoteId)
+                    posVariationsDao.deleteVariationsForProduct(siteId, remoteId)
+                }
+            }
+        }
+
+    /**
+     * Deletes specific variations from the local database without affecting the parent product.
+     *
+     * @param siteId The local site ID
+     * @param variations List of (productId, variationId) pairs to delete
+     * @return Result indicating success or failure
+     */
+    suspend fun deleteVariations(
+        siteId: LocalOrRemoteId.LocalId,
+        variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
+    ): Result<Unit> =
+        runCatching {
+            database.executeInTransaction {
+                variations.forEach { (productId, variationId) ->
+                    posVariationsDao.deleteVariation(siteId, productId, variationId)
+                }
             }
         }
 
