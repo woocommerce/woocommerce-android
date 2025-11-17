@@ -50,7 +50,6 @@ data class BookingFilterListUiState(
             onClick = { openPage(page) },
         )
     }
-
     val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
 
     val showClearButton: Boolean
@@ -83,9 +82,15 @@ data class BookingFilterListUiState(
                 UiString.UiStringText(name)
             }
 
+            BookingFilterPage.DateTime -> {
+                updatedBookingFilters.dateRange?.let {
+                    UiString.UiStringRes(R.string.bookings_filter_date_filter_value)
+                }
+            }
+
+            BookingFilterPage.TeamMember,
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.PaymentStatus,
-            BookingFilterPage.DateTime,
             BookingFilterPage.Location,
             BookingFilterPage.List -> null
         } ?: UiString.UiStringRes(R.string.bookings_filter_default)

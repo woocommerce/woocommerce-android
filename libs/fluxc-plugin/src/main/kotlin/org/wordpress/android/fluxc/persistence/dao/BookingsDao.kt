@@ -18,8 +18,8 @@ interface BookingsDao {
         const val DEFAULT_SELECT_QUERY = """
             SELECT * FROM Bookings
             WHERE localSiteId = :localSiteId
-            AND (:startDateBefore IS NULL OR start < :startDateBefore)
-            AND (:startDateAfter IS NULL OR start > :startDateAfter)
+            AND (:startDateBefore IS NULL OR start <= :startDateBefore)
+            AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
