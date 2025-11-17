@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
@@ -32,7 +32,7 @@ class BookingListHandler @Inject constructor(
     private val canLoadMore = AtomicBoolean(false)
 
     private val searchQuery = MutableStateFlow<String?>(null)
-    private val filters = MutableStateFlow<List<BookingsFilterOption>>(emptyList())
+    private val filters = MutableStateFlow<BookingFilters?>(null)
     private val sortBy = MutableStateFlow(BookingListSortOption.NewestToOldest)
 
     private val searchResults = MutableStateFlow(emptyList<Booking>())
@@ -57,7 +57,7 @@ class BookingListHandler @Inject constructor(
 
     suspend fun loadBookings(
         searchQuery: String? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         sortBy: BookingListSortOption
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
