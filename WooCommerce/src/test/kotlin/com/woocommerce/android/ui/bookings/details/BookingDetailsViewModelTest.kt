@@ -58,7 +58,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(currencyFormatter.formatCurrency(any<String>(), any<String>(), any())).thenReturn("$0.00")
         whenever(
             resourceProvider.getString(
                 eq(R.string.booking_details_title),
