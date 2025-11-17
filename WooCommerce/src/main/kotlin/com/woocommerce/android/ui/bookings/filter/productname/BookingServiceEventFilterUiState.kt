@@ -23,24 +23,15 @@ data class BookingServiceEventFilterUiState(
     }
 
     private fun filteredProducts(): List<BookableProduct> {
-        val selectedProductsList = selectedProducts.values.map {
-            BookableProduct(id = it.productId, name = UiStringText(it.productName))
-        }
-
-        val productsToFilter = (
-            listOf(BookableProduct.Any) +
-                selectedProductsList.filter { it !in availableProducts } +
+        return listOf(BookableProduct.Any) +
+            if (searchQuery.isBlank()) {
                 availableProducts
-            ).distinctBy { it.id }
-
-        return if (searchQuery.isBlank()) {
-            productsToFilter
-        } else {
-            productsToFilter.filter { product ->
-                product.name is UiStringText &&
-                    product.name.text.contains(searchQuery, ignoreCase = true)
+            } else {
+                availableProducts.filter { product ->
+                    product.name is UiStringText &&
+                        product.name.text.contains(searchQuery, ignoreCase = true)
+                }
             }
-        }
     }
 
     private fun isSelected(product: BookableProduct): Boolean = if (product == BookableProduct.Any) {
