@@ -49,12 +49,6 @@ data class BookingServiceEventFilterUiState(
     }
 }
 
-data class BookableProductItem(
-    val product: BookableProduct,
-    val selected: Boolean = false,
-    val onClick: () -> Unit = {}
-)
-
 data class BookableProduct(
     val id: Long?,
     val name: String?
