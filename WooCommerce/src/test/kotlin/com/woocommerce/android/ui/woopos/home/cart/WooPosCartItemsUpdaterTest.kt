@@ -43,7 +43,8 @@ class WooPosCartItemsUpdaterTest {
     }
     private val productsCache: WooPosProductsCache = mock()
     private val localCatalogStore: WooPosLocalCatalogStore = mock {
-        onBlocking { deleteProducts(any()) }.thenReturn(Result.success(Unit))
+        onBlocking { deleteProducts(any(), any()) }.thenReturn(Result.success(Unit))
+        onBlocking { deleteVariations(any(), any()) }.thenReturn(Result.success(Unit))
     }
     private val selectedSite: SelectedSite = mock {
         onBlocking { getOrNull() }.thenReturn(SiteModel().apply { id = 1 })
@@ -314,7 +315,7 @@ class WooPosCartItemsUpdaterTest {
     }
 
     @Test
-    fun `given product not existing, when deleted, then also deletes from Local Catalog DB`() = runTest {
+    fun `given simple product not existing, when deleted, then also deletes from Local Catalog DB`() = runTest {
         // GIVEN
         val simpleProduct = WooPosCartItemViewState.Product.Simple(
             itemNumber = 1,
@@ -332,13 +333,42 @@ class WooPosCartItemsUpdaterTest {
         // THEN
         verify(productsCache).deleteProduct(1L)
         verify(localCatalogStore).deleteProducts(
-            argThat { products ->
-                products.size == 1 &&
-                    products[0].remoteId.value == 1L &&
-                    products[0].localSiteId.value == 1
+            argThat { siteId -> siteId.value == 1 },
+            argThat { productIds ->
+                productIds.size == 1 && productIds[0].value == 1L
             }
         )
     }
+
+    @Test
+    fun `given variation product not existing, when deleted, then deletes only variation from Local Catalog DB`() =
+        runTest {
+            // GIVEN
+            val variationProduct = WooPosCartItemViewState.Product.Variation(
+                itemNumber = 1,
+                id = 1L,
+                variationId = 2L,
+                name = "Variation Name",
+                price = "9.0$",
+                imageUrl = "url",
+                description = null
+            )
+            val itemsInCart = listOf(variationProduct)
+
+            // WHEN
+            updater.invoke(itemsInCart, emptyList(), emptyList())
+
+            // THEN
+            verify(productsCache).deleteProduct(1L)
+            verify(localCatalogStore).deleteVariations(
+                argThat { siteId -> siteId.value == 1 },
+                argThat { variations ->
+                    variations.size == 1 &&
+                        variations[0].first.value == 1L &&
+                        variations[0].second.value == 2L
+                }
+            )
+        }
 
     @Test
     fun `given product updated, when called, then cache is updated correctly`() = runTest {
