@@ -12,6 +12,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.store.WCProductStore
 
@@ -33,27 +34,29 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     val uiState: StateFlow<BookingServiceEventFilterUiState> = _uiState
 
     init {
-        loadBookableProducts()
+        launch {
+            observeProducts()
+        }
     }
 
-    private fun loadBookableProducts() {
-        val bookableProducts = productListRepository.getProductList(
-            productFilterOptions = mapOf(
+    private suspend fun observeProducts() {
+        productListRepository.observeProducts(
+            filterOptions = mapOf(
                 WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKING.value
             )
-        )
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                availableProducts = bookableProducts
-                    .sortedBy { it.name }
-                    .map { product ->
-                        BookableProduct(
-                            id = product.remoteId,
-                            name = UiStringText(product.name)
-                        )
-                    }
-            )
+        ).collect { products ->
+            _uiState.update { currentState ->
+                currentState.copy(
+                    availableProducts = products
+                        .sortedBy { it.name }
+                        .map { product ->
+                            BookableProduct(
+                                id = product.remoteId,
+                                name = UiStringText(product.name)
+                            )
+                        }
+                )
+            }
         }
     }
 
