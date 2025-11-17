@@ -30,7 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.attendancestatus.BookingAttendanceStatusFilterRoute
 import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
-import com.woocommerce.android.ui.bookings.filter.datetime.DateTimeFilterPage
+import com.woocommerce.android.ui.bookings.filter.datetime.DateTimeFilterRoute
 import com.woocommerce.android.ui.bookings.filter.teammember.BookingTeamMemberFilterRoute
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
@@ -131,6 +131,13 @@ private fun FiltersNavHost(
         composable(BookingFilterPage.List.route) {
             BookingFilterRootPage(state.items)
         }
+        composable(BookingFilterPage.DateTime.route) {
+            DateTimeFilterRoute(
+                initialRange = state.updatedBookingFilters.dateRange
+            ) { dateRange ->
+                state.onUpdateFilterOption(dateRange)
+            }
+        }
         composable(BookingFilterPage.TeamMember.route) {
             BookingTeamMemberFilterRoute(initialTeamMembers = state.updatedBookingFilters.teamMembers) { teamMember ->
                 state.onUpdateFilterOption(teamMember)
@@ -163,9 +170,6 @@ private fun FiltersNavHost(
                 }
                 state.onClose()
             }
-        }
-        composable(BookingFilterPage.DateTime.route) {
-            DateTimeFilterPage()
         }
         composable(BookingFilterPage.Location.route) {
         }
