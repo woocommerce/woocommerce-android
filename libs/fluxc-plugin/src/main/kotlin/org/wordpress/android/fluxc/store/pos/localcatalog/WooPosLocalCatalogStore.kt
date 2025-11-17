@@ -275,13 +275,6 @@ class WooPosLocalCatalogStore @Inject constructor(
     ): Result<Unit> =
         runCatching { posProductDao.deleteAllProductsForSite(siteId) }
 
-    /**
-     * Deletes products and their variations from the local database.
-     *
-     * @param siteId The local site ID
-     * @param productIds The list of remote product IDs to delete
-     * @return Result indicating success or failure
-     */
     suspend fun deleteProducts(
         siteId: LocalOrRemoteId.LocalId,
         productIds: List<LocalOrRemoteId.RemoteId>
@@ -295,13 +288,6 @@ class WooPosLocalCatalogStore @Inject constructor(
             }
         }
 
-    /**
-     * Deletes specific variations from the local database without affecting the parent product.
-     *
-     * @param siteId The local site ID
-     * @param variations List of (productId, variationId) pairs to delete
-     * @return Result indicating success or failure
-     */
     suspend fun deleteVariations(
         siteId: LocalOrRemoteId.LocalId,
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
