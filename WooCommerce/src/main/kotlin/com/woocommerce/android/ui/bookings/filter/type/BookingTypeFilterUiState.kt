@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.filter.type
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
 
@@ -11,7 +12,7 @@ data class BookingTypeFilterUiState(
 ) {
     val items: List<BookingFilterListItem> = availableBookingTypes().map { type ->
         BookingFilterListItem(
-            title = type.titleRes,
+            title = UiString.UiStringRes(type.titleRes),
             selected = type == selectedType,
             onClick = { onTypeSelected(type) }
         )

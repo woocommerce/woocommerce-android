@@ -71,6 +71,9 @@ internal class BookingDtoMapper @Inject constructor(
         description = description,
     )
 
+    fun Array<BookingResourceDto>.toEntities(localSiteId: LocalId): List<BookingResourceEntity> =
+        this.map { it.toEntity(localSiteId) }
+
     suspend fun OrderEntity.toBookingOrderInfo(
         orderItemId: Long
     ): BookingOrderInfo {

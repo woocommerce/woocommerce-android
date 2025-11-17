@@ -22,6 +22,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start > :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -37,6 +38,8 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         order: BookingsOrderOption
@@ -66,6 +69,7 @@ interface BookingsDao {
         filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
+        val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
         val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
@@ -73,6 +77,8 @@ interface BookingsDao {
             startDateBefore = filters?.dateRange?.before?.epochSecond,
             startDateAfter = filters?.dateRange?.after?.epochSecond,
             customerId = filters?.customer?.customerId,
+            resourceIds = resourceIdsKeySet.toList(),
+            resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             order = order
@@ -85,6 +91,27 @@ interface BookingsDao {
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
     fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>
 
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    fun observeResources(localSiteId: LocalId): Flow<List<BookingResourceEntity>>
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun getResources(localSiteId: LocalId): List<BookingResourceEntity>
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND  id = :resourceId")
+    suspend fun getResource(localSiteId: LocalId, resourceId: Long): BookingResourceEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(resource: BookingResourceEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplaceResources(resources: List<BookingResourceEntity>)
+
+    @Query("DELETE FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun deleteAllResourcesForSite(localSiteId: LocalId)
+
+    @Transaction
+    suspend fun replaceAllResourcesForSite(siteId: LocalId, resources: List<BookingResourceEntity>) {
+        deleteAllResourcesForSite(siteId)
+        insertOrReplaceResources(resources)
+    }
 }

@@ -32,6 +32,7 @@ enum class BookingFilterPage {
 data class BookingFilterListUiState(
     val initialBookingFilters: BookingFilters = BookingFilters(),
     val updatedBookingFilters: BookingFilters = initialBookingFilters,
+    val selectedFilterValues: SelectedFilterValues = SelectedFilterValues(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
     val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
@@ -40,10 +41,11 @@ data class BookingFilterListUiState(
     val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
     val onClear: () -> Unit = {},
 ) {
+    data class SelectedFilterValues(val teamMemberValue: String? = null)
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
-            title = page.titleRes,
+            title = UiString.UiStringRes(page.titleRes),
             value = page.filterValue,
             onClick = { openPage(page) },
         )
@@ -62,6 +64,7 @@ data class BookingFilterListUiState(
 
     val BookingFilterPage.filterValue: UiString
         get() = when (this) {
+            BookingFilterPage.TeamMember -> selectedFilterValues.teamMemberValue?.let { UiString.UiStringText(it) }
             BookingFilterPage.BookingType -> {
                 updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
@@ -80,7 +83,6 @@ data class BookingFilterListUiState(
                 UiString.UiStringText(name)
             }
 
-            BookingFilterPage.TeamMember,
             BookingFilterPage.ServiceEvent,
             BookingFilterPage.PaymentStatus,
             BookingFilterPage.DateTime,
@@ -103,7 +105,7 @@ data class BookingFilterListUiState(
 
 val BookingFilterPage.titleRes: Int
     @StringRes get() = when (this) {
-        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_team_member
+        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_member
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
@@ -133,7 +135,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
     when (bookingsFilterOption) {
         is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
-        is BookingsFilterOption.TeamMember -> copy(teamMember = bookingsFilterOption)
+        is BookingsFilterOption.TeamMembers -> copy(teamMembers = bookingsFilterOption)
         is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
