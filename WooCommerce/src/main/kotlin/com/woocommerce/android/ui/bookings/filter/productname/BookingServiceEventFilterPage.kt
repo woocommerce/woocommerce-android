@@ -15,6 +15,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -62,9 +63,9 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
 private fun BookingServiceEventFilterPagePreview() {
     WooThemeWithBackground {
         val availableProducts = listOf(
-            BookableProduct(id = 1, name = "Yoga Class"),
-            BookableProduct(id = 2, name = "Pilates Session"),
-            BookableProduct(id = 3, name = "Surf Lesson"),
+            BookableProduct(id = 1, name = UiString.UiStringText("Yoga Class")),
+            BookableProduct(id = 2, name = UiString.UiStringText("Pilates Session")),
+            BookableProduct(id = 3, name = UiString.UiStringText("Surf Lesson")),
         )
         val selected = BookingsFilterOption.ServiceEvents(
             values = setOf(

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.filter.productname
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -45,13 +46,13 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 availableProducts = bookableProducts
+                    .sortedBy { it.name }
                     .map { product ->
                         BookableProduct(
                             id = product.remoteId,
-                            name = product.name
+                            name = UiStringText(product.name)
                         )
                     }
-                    .sortedBy { it.name }
             )
         }
     }
@@ -63,8 +64,8 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
             val productSet = _uiState.value.selectedProducts.values.toMutableSet()
             val productInfo = product?.let {
                 BookingsFilterOption.ProductInfo(
-                    productId = it.id ?: 0L,
-                    productName = it.name ?: ""
+                    productId = it.id,
+                    productName = (it.name as UiStringText).text
                 )
             }
 

@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.filter.productname
 
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
@@ -15,8 +16,7 @@ data class BookingServiceEventFilterUiState(
 ) {
     val items: List<BookingFilterListItem> = filteredProducts().map { product ->
         BookingFilterListItem(
-            title = product.name?.let { UiStringText(it) }
-                ?: UiStringRes(R.string.bookings_filter_default),
+            title = product.name,
             selected = isSelected(product),
             onClick = { onProductSelected(product) }
         )
@@ -24,7 +24,7 @@ data class BookingServiceEventFilterUiState(
 
     private fun filteredProducts(): List<BookableProduct> {
         val selectedProductsList = selectedProducts.values.map {
-            BookableProduct(id = it.productId, name = it.productName)
+            BookableProduct(id = it.productId, name = UiStringText(it.productName))
         }
 
         val productsToFilter = (
@@ -37,7 +37,8 @@ data class BookingServiceEventFilterUiState(
             productsToFilter
         } else {
             productsToFilter.filter { product ->
-                product.name?.contains(searchQuery, ignoreCase = true) ?: false
+                product.name is UiStringText &&
+                    product.name.text.contains(searchQuery, ignoreCase = true)
             }
         }
     }
@@ -50,10 +51,10 @@ data class BookingServiceEventFilterUiState(
 }
 
 data class BookableProduct(
-    val id: Long?,
-    val name: String?
+    val id: Long,
+    val name: UiString
 ) {
     companion object {
-        val Any = BookableProduct(id = null, name = null)
+        val Any = BookableProduct(id = -1, name = UiStringRes(R.string.bookings_filter_default))
     }
 }
