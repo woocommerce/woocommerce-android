@@ -29,7 +29,7 @@ data class BookingServiceEventFilterUiState(
             } else {
                 availableProducts.filter { product ->
                     product.name is UiStringText &&
-                        product.name.text.contains(searchQuery, ignoreCase = true)
+                        product.name.text.contains(searchQuery.trim(), ignoreCase = true)
                 }
             }
     }
