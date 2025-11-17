@@ -15,6 +15,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
@@ -33,6 +34,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         viewModel = BookingFilterListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
         )
     }
 
@@ -220,7 +222,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: root list shows the selected status as subtitle values
         val root = viewModel.uiState.getOrAwaitValue()
 
-        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
         val value = (attendanceItem.value as UiStringRes).stringRes
 
         assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
@@ -244,9 +247,32 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // THEN: root list shows both selected statuses in subtitle values (order agnostic)
         val root = viewModel.uiState.getOrAwaitValue()
 
-        val attendanceItem = root.items.first { it.title == R.string.bookings_filter_title_attendance_status }
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
         val value = (attendanceItem.value as UiString.UiStringText).text
 
         assertThat(value).isEqualTo("2")
+    }
+
+    @Test
+    fun `given two team member ids, when updated, then teamMemberValue shows count`() = testBlocking {
+        // Given
+        val bookingFilterRepository = mock<BookingFilterRepository> {
+            on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
+        }
+        val viewModel = BookingFilterListViewModel(
+            savedStateHandle = SavedStateHandle(),
+            bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
+        )
+
+        // When: update filters with two different member IDs
+        val state = viewModel.uiState.getOrAwaitValue()
+        val ids = setOf(LocalOrRemoteId.RemoteId(1), LocalOrRemoteId.RemoteId(2))
+        state.onUpdateFilterOption.invoke(BookingsFilterOption.TeamMembers(ids))
+
+        // Then
+        val updated = viewModel.uiState.getOrAwaitValue()
+        assertThat(updated.selectedFilterValues.teamMemberValue).isEqualTo("2")
     }
 }

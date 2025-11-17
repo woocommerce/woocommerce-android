@@ -4,13 +4,16 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
@@ -21,6 +24,7 @@ import javax.inject.Inject
 class BookingFilterListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingFilterRepository: BookingFilterRepository,
+    private val bookingsRepository: BookingsRepository,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _uiState = MutableStateFlow(
@@ -36,6 +40,7 @@ class BookingFilterListViewModel @Inject constructor(
 
     init {
         getBookingFilter()
+        observeSelectedTeamMembers()
     }
 
     private fun onOpenPage(page: BookingFilterPage) {
@@ -63,6 +68,26 @@ class BookingFilterListViewModel @Inject constructor(
             _uiState.update { current ->
                 current.copy(initialBookingFilters = bookingFilters, updatedBookingFilters = bookingFilters)
             }
+        }
+    }
+
+    private fun observeSelectedTeamMembers() {
+        launch {
+            _uiState
+                .map { state -> state.updatedBookingFilters.teamMembers.values.map { it.value } }
+                .distinctUntilChanged()
+                .collect { ids ->
+                    val teamMemberValue = when {
+                        ids.isEmpty() -> null
+                        ids.size == 1 -> bookingsRepository.getResource(ids.first())?.name
+                        else -> ids.size.toString()
+                    }
+                    _uiState.update { current ->
+                        current.copy(
+                            selectedFilterValues = current.selectedFilterValues.copy(teamMemberValue = teamMemberValue)
+                        )
+                    }
+                }
         }
     }
 

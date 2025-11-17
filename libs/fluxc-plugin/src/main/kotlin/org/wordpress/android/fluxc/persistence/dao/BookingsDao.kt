@@ -18,10 +18,11 @@ interface BookingsDao {
         const val DEFAULT_SELECT_QUERY = """
             SELECT * FROM Bookings
             WHERE localSiteId = :localSiteId
-            AND (:startDateBefore IS NULL OR start < :startDateBefore)
-            AND (:startDateAfter IS NULL OR start > :startDateAfter)
+            AND (:startDateBefore IS NULL OR start <= :startDateBefore)
+            AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
@@ -38,6 +39,8 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         productIds: List<Long>,
@@ -53,6 +56,8 @@ interface BookingsDao {
         startDateBefore: Long?,
         startDateAfter: Long?,
         customerId: Long?,
+        resourceIds: List<Long>,
+        resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         productIds: List<Long>,
@@ -86,6 +91,10 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
         val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
+        val resourceIdSet = filters.filterIsInstance<BookingsFilterOption.TeamMembers>()
+            .firstOrNull()?.values
+            ?.map { it.value }
+            .orEmpty()
         val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
             .firstOrNull()?.values
             ?.map { it.key }
@@ -100,6 +109,8 @@ interface BookingsDao {
             startDateBefore = dateRangeFilter?.before?.epochSecond,
             startDateAfter = dateRangeFilter?.after?.epochSecond,
             customerId = customerFilter?.customerId,
+            resourceIds = resourceIdSet.toList(),
+            resourceIdsSize = resourceIdSet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             productIds = productIds,
@@ -114,6 +125,27 @@ interface BookingsDao {
     @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND id = :resourceId")
     fun observeResource(localSiteId: LocalId, resourceId: Long): Flow<BookingResourceEntity?>
 
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    fun observeResources(localSiteId: LocalId): Flow<List<BookingResourceEntity>>
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun getResources(localSiteId: LocalId): List<BookingResourceEntity>
+
+    @Query("SELECT * FROM BookingResources WHERE localSiteId = :localSiteId AND  id = :resourceId")
+    suspend fun getResource(localSiteId: LocalId, resourceId: Long): BookingResourceEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(resource: BookingResourceEntity): Long
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertOrReplaceResources(resources: List<BookingResourceEntity>)
+
+    @Query("DELETE FROM BookingResources WHERE localSiteId = :localSiteId")
+    suspend fun deleteAllResourcesForSite(localSiteId: LocalId)
+
+    @Transaction
+    suspend fun replaceAllResourcesForSite(siteId: LocalId, resources: List<BookingResourceEntity>) {
+        deleteAllResourcesForSite(siteId)
+        insertOrReplaceResources(resources)
+    }
 }
