@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.toWooError
 import org.wordpress.android.fluxc.utils.extensions.filterNotNull
 import org.wordpress.android.fluxc.utils.extensions.putIfNotNull
+import java.time.ZoneOffset
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -18,6 +19,7 @@ class BookingsRestClient @Inject constructor(
 ) {
     companion object {
         const val DEFAULT_PER_PAGE = 25 // Number of items to fetch in a single request
+        private const val FILTER_QUERY_PARAMETER_SEPERATOR = ","
     }
 
     suspend fun fetchBooking(
@@ -62,7 +64,7 @@ class BookingsRestClient @Inject constructor(
         perPage: Int,
         page: Int,
         query: String?,
-        filters: List<BookingsFilterOption>,
+        filters: BookingFilters?,
         order: BookingsOrderOption
     ): WooPayload<Array<BookingDto>> {
         val endpoint = WOOCOMMERCE.bookings.pathV2Bookings
@@ -77,7 +79,22 @@ class BookingsRestClient @Inject constructor(
                 "per_page" to perPage.toString(),
                 "page" to page.toString(),
                 "search" to query
-            ).filterNotNull() + filters.toQueryParams()
+            ).filterNotNull() + filters?.toQueryParams().orEmpty()
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
+    suspend fun fetchResources(site: SiteModel): WooPayload<Array<BookingResourceDto>> {
+        val endpoint = WOOCOMMERCE.resources.team_members.pathV2Bookings
+
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = endpoint,
+            clazz = Array<BookingResourceDto>::class.java,
+            params = emptyMap()
         )
         return when (response) {
             is Success -> WooPayload(response.data)
@@ -103,29 +120,34 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
-    private fun List<BookingsFilterOption>.toQueryParams(): Map<String, String> = buildMap {
-        this@toQueryParams.forEach { filter ->
-            when (filter) {
-                BookingsFilterOption.TeamMember -> TODO()
-                is BookingsFilterOption.BookingType -> {
-                    // TODO add query for booking type filtering
-                }
-
-                BookingsFilterOption.ServiceEvent -> TODO()
-                is BookingsFilterOption.AttendanceStatuses -> if (filter.values.isNotEmpty()) {
-                    set("attendance_status", filter.values.joinToString(",") { it.key })
-                }
-
-                BookingsFilterOption.PaymentStatus -> TODO()
-                is BookingsFilterOption.Customer -> set("customer", filter.customerId.toString())
-                is BookingsFilterOption.DateRange -> {
-                    filter.before?.let { set("start_date_before", it.toString()) }
-                    filter.after?.let { set("start_date_after", it.toString()) }
-                }
-
-                BookingsFilterOption.Location -> TODO()
+    private fun BookingFilters.toQueryParams(): Map<String, String> = buildMap {
+        if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) {
+            set(
+                "resource",
+                teamMembers.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.value.toString() }
+            )
+        }
+        if (bookingType != null) TODO()
+        if (serviceEvent != null) TODO()
+        if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
+            set(
+                "attendance_status",
+                attendanceStatuses.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
+        }
+        if (paymentStatus != null) TODO()
+        if (customer != null) set("customer", customer.customerId.toString())
+        if (dateRange != null) {
+            // Plus/minus one minute to make the range inclusive
+            dateRange.before?.let {
+                val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusMinutes(1).toInstant()
+                set("start_date_before", inclusiveBefore.toString())
+            }
+            dateRange.after?.let {
+                val inclusiveAfter = it.atZone(ZoneOffset.UTC).minusMinutes(1).toInstant()
+                set("start_date_after", inclusiveAfter.toString())
             }
         }
+        if (location != null) TODO()
     }
 }
 

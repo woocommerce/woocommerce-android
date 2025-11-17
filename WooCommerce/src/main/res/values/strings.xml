@@ -4217,7 +4217,7 @@
     <string name="bookings_filters_enabled_title">Filters • %d</string>
     <string name="bookings_filters_title_with_count">Filters (%s)</string>
     <string name="bookings_filters_show_bookings">Show bookings</string>
-    <string name="bookings_filter_title_team_member">Assigned team member</string>
+    <string name="bookings_filter_title_member">Team member</string>
     <string name="bookings_filter_title_attendance_status">Attendance status</string>
     <string name="bookings_filter_title_payment_status">Payment status</string>
     <string name="bookings_filter_title_type">Booking type</string>
@@ -4234,6 +4234,7 @@
     <string name="bookings_filter_date_from">FROM</string>
     <string name="bookings_filter_date_to">TO</string>
     <string name="bookings_filter_time_picker_title">Select time</string>
+    <string name="bookings_filter_date_filter_value">Custom range</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
