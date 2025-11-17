@@ -1,5 +1,9 @@
 package com.woocommerce.android.ui.bookings.filter.productname
 
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString.UiStringRes
+import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 data class BookingServiceEventFilterUiState(
@@ -9,9 +13,10 @@ data class BookingServiceEventFilterUiState(
     val onProductSelected: (BookableProduct?) -> Unit = {},
     val onSearchQueryChanged: (String) -> Unit = {},
 ) {
-    val items: List<BookableProductItem> = filteredProducts().map { product ->
-        BookableProductItem(
-            product = product,
+    val items: List<BookingFilterListItem> = filteredProducts().map { product ->
+        BookingFilterListItem(
+            title = product.name?.let { UiStringText(it) }
+                        ?: UiStringRes(R.string.bookings_filter_default),
             selected = isSelected(product),
             onClick = { onProductSelected(product) }
         )
