@@ -32,7 +32,7 @@ class BookingsStore @Inject internal constructor(
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1,
         query: String? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters?,
         order: BookingsOrderOption
     ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
@@ -54,7 +54,7 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
+                    if (page == 1 && filters == BookingFilters.EMPTY && query.isNullOrEmpty()) {
                         // Clear existing bookings and insert new ones when fetching the first page
                         bookingsDao.replaceAllForSite(site.localId(), entities)
                     } else {
@@ -80,7 +80,7 @@ class BookingsStore @Inject internal constructor(
     fun observeBookings(
         site: SiteModel,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
 
@@ -127,6 +127,22 @@ class BookingsStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchResources(site: SiteModel): WooResult<Array<BookingResourceEntity>> {
+        val response = bookingsRestClient.fetchResources(site)
+        return when {
+            response.isError -> WooResult(response.error)
+            response.result != null -> {
+                val entities = with(bookingDtoMapper) {
+                    response.result.toEntities(site.localId())
+                }
+                bookingsDao.replaceAllResourcesForSite(site.localId(), entities)
+                WooResult(entities.toTypedArray())
+            }
+
+            else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long
@@ -146,10 +162,19 @@ class BookingsStore @Inject internal constructor(
         }
     }
 
+    suspend fun getResource(
+        site: SiteModel,
+        resourceId: Long
+    ): BookingResourceEntity? = bookingsDao.getResource(site.localId(), resourceId)
+
     fun observeResource(
         site: SiteModel,
         resourceId: Long
     ): Flow<BookingResourceEntity?> = bookingsDao.observeResource(site.localId(), resourceId)
+
+    fun observeResources(
+        site: SiteModel
+    ): Flow<List<BookingResourceEntity>> = bookingsDao.observeResources(site.localId())
 
     suspend fun updateBooking(
         site: SiteModel,

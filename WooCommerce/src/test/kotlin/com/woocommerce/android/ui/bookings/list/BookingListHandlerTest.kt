@@ -36,7 +36,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     private val availablePages = 3
     private val bookingsRepository: BookingsRepository = mock {
         val results = MutableStateFlow(emptyList<Booking>())
-        on { observeBookings(any(), any(), any()) } doAnswer { invocation ->
+        on { observeBookings(any(), anyOrNull(), any()) } doAnswer { invocation ->
             val limit = invocation.getArgument<Int>(0)
             results.map { it.take(limit) }
         }
@@ -45,7 +45,7 @@ class BookingListHandlerTest : BaseUnitTest() {
                 any(),
                 any(),
                 anyOrNull(),
-                any(),
+                anyOrNull(),
                 any()
             )
         } doAnswer InlineClassesAnswer { invocation ->
@@ -68,7 +68,7 @@ class BookingListHandlerTest : BaseUnitTest() {
     @Test
     fun `given repository returns bookings, when observing bookings flow, then returns bookings`() = testBlocking {
         val sampleBookings = List(10) { getSampleBooking(it) }
-        given(bookingsRepository.observeBookings(any(), any(), any())).willReturn(flowOf(sampleBookings))
+        given(bookingsRepository.observeBookings(any(), anyOrNull(), any())).willReturn(flowOf(sampleBookings))
 
         val bookings = bookingListHandler.bookingsFlow.first()
 
@@ -97,7 +97,7 @@ class BookingListHandlerTest : BaseUnitTest() {
                     page = any(),
                     perPage = any(),
                     query = anyOrNull(),
-                    filters = any(),
+                    filters = anyOrNull(),
                     order = any()
                 )
             )
@@ -122,7 +122,7 @@ class BookingListHandlerTest : BaseUnitTest() {
                 page = any(),
                 perPage = any(),
                 query = anyOrNull(),
-                filters = any(),
+                filters = anyOrNull(),
                 order = any()
             )
         }
@@ -152,7 +152,7 @@ class BookingListHandlerTest : BaseUnitTest() {
             page = intThat { it > availablePages },
             perPage = any(),
             query = anyOrNull(),
-            filters = any(),
+            filters = anyOrNull(),
             order = any()
         )
     }
@@ -183,7 +183,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         @Suppress("UnusedFlow")
         verify(bookingsRepository).observeBookings(
             limit = eq(2 * BookingListHandler.PAGE_SIZE),
-            filters = any(),
+            filters = anyOrNull(),
             order = any()
         )
         assertThat(moreBookings).hasSize(2 * BookingListHandler.PAGE_SIZE)
@@ -209,7 +209,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         val searchQuery = "Sample"
         val firstResults = List(BookingListHandler.PAGE_SIZE) { getSampleBooking(it) }
         val refreshedResults = List(BookingListHandler.PAGE_SIZE - 2) { getSampleBooking(it) }
-        given(bookingsRepository.fetchBookings(any(), any(), eq(searchQuery), any(), any()))
+        given(bookingsRepository.fetchBookings(any(), any(), eq(searchQuery), anyOrNull(), any()))
             .willReturn(
                 Result.success(
                     BookingsRepository.FetchResult(firstResults, false)
@@ -250,13 +250,13 @@ class BookingListHandlerTest : BaseUnitTest() {
         val firstResults = List(BookingListHandler.PAGE_SIZE) { getSampleBooking(it) }
         val newResults = List(BookingListHandler.PAGE_SIZE - 3) { getSampleBooking(it) }
 
-        given(bookingsRepository.fetchBookings(any(), any(), eq(initialQuery), any(), any()))
+        given(bookingsRepository.fetchBookings(any(), any(), eq(initialQuery), anyOrNull(), any()))
             .willReturn(
                 Result.success(
                     BookingsRepository.FetchResult(firstResults, false)
                 )
             )
-        given(bookingsRepository.fetchBookings(any(), any(), eq(newQuery), any(), any()))
+        given(bookingsRepository.fetchBookings(any(), any(), eq(newQuery), anyOrNull(), any()))
             .willSuspendableAnswer {
                 delay(10) // To allow checking intermediate state
                 Result.success(

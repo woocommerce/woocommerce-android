@@ -31,14 +31,21 @@ import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Calendar
 
 @Composable
-fun DateTimeFilterPage() {
-    val viewModel: DateTimeFilterViewModel = hiltViewModel()
+fun DateTimeFilterRoute(
+    initialRange: BookingsFilterOption.DateRange? = null,
+    onDateTimeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
+) {
+    val viewModel = hiltViewModel<DateTimeFilterViewModel, DateTimeFilterViewModel.Factory> { factory ->
+        factory.create(onDateTimeFilterChanged, initialRange)
+    }
+
     val state by viewModel.uiState.observeAsState()
     state?.let { DateTimeFilterPage(it) }
 }

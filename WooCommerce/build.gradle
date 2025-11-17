@@ -26,6 +26,10 @@ fladle {
     devices = [
             ["model": "MediumPhone.arm", "version": "35"]
     ]
+
+    additionalTestApks = [
+            "- test: ${rootProject.projectDir}/libs/fluxc-plugin/build/outputs/apk/androidTest/debug/fluxc-plugin-debug-androidTest.apk".toString()
+    ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
     useOrchestrator = true

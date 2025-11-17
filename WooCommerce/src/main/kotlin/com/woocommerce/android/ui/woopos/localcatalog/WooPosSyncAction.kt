@@ -47,7 +47,7 @@ class WooPosSyncAction @Inject constructor(
                 // We run incremental sync right after completing full sync -> no need to fetch trash products
                 emptyList()
             } else {
-                fetchAllTrashProducts(site, pageSize)
+                fetchAllTrashProducts(site, modifiedAfterGmt, pageSize)
             }
         }
         val variationsDeferred = async {
@@ -158,6 +158,7 @@ class WooPosSyncAction @Inject constructor(
 
     private suspend fun fetchAllTrashProducts(
         site: SiteModel,
+        modifiedAfterGmt: String?,
         pageSize: Int
     ): List<WooPosProductEntity> {
         logger.d("Fetching all trash products for incremental sync")
@@ -169,7 +170,7 @@ class WooPosSyncAction @Inject constructor(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     site = site,
                     pageSize = pageSize,
-                    modifiedAfterGmt = null,
+                    modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     includeStatus = listOf(CoreProductStatus.TRASH)
                 )
