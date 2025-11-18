@@ -15,7 +15,6 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
     BUNDLE(R.string.product_type_bundle, CoreProductType.BUNDLE.value),
     COMPOSITE(R.string.product_type_composite, "composite"),
     VARIATION(R.string.product_type_variation, "variation"),
-    BOOKING(R.string.product_type_booking, "booking"),
     BOOKABLE_SERVICE(R.string.product_type_bookable_service, "bookable-service"),
     OTHER;
 
@@ -36,7 +35,6 @@ enum class ProductType(@StringRes val stringResource: Int = 0, val value: String
                 "bundle" -> BUNDLE
                 "composite" -> COMPOSITE
                 "variation" -> VARIATION
-                "booking" -> BOOKING
                 "bookable-service" -> BOOKABLE_SERVICE
                 else -> OTHER
             }

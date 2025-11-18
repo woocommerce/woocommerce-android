@@ -275,6 +275,31 @@ class WooPosLocalCatalogStore @Inject constructor(
     ): Result<Unit> =
         runCatching { posProductDao.deleteAllProductsForSite(siteId) }
 
+    suspend fun deleteProducts(
+        siteId: LocalOrRemoteId.LocalId,
+        productIds: List<LocalOrRemoteId.RemoteId>
+    ): Result<Unit> =
+        runCatching {
+            database.executeInTransaction {
+                productIds.forEach { remoteId ->
+                    posProductDao.deleteProduct(siteId, remoteId)
+                    posVariationsDao.deleteVariationsForProduct(siteId, remoteId)
+                }
+            }
+        }
+
+    suspend fun deleteVariations(
+        siteId: LocalOrRemoteId.LocalId,
+        variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
+    ): Result<Unit> =
+        runCatching {
+            database.executeInTransaction {
+                variations.forEach { (productId, variationId) ->
+                    posVariationsDao.deleteVariation(siteId, productId, variationId)
+                }
+            }
+        }
+
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
         runCatching { posVariationsDao.upsertVariations(variations) }
 
