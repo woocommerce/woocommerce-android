@@ -40,7 +40,7 @@ class ShippingLabelDaoTest {
     }
 
     @Test
-    fun `test upsert and get shipping labels`() = runTest {
+    fun `when shipping labels are upserted, then they can be retrieved`() = runTest {
         // given
         val shippingLabels = List(3) { id ->
             WCShippingLabelTestUtils.generateSampleShippingLabel(
@@ -59,7 +59,7 @@ class ShippingLabelDaoTest {
     }
 
     @Test
-    fun `test get shipping label by id`() = runTest {
+    fun `when shipping label exists, then it can be retrieved by id`() = runTest {
         // given
         val labelId = 123L
         val shippingLabel = WCShippingLabelTestUtils.generateSampleShippingLabel(
@@ -87,7 +87,7 @@ class ShippingLabelDaoTest {
     }
 
     @Test
-    fun `test update shipping labels`() = runTest {
+    fun `when shipping labels are updated, then changes are persisted`() = runTest {
         // given
         val shippingLabels = List(3) { id ->
             WCShippingLabelTestUtils.generateSampleShippingLabel(
@@ -116,7 +116,7 @@ class ShippingLabelDaoTest {
     }
 
     @Test
-    fun `test delete shipping labels`() = runTest {
+    fun `when shipping labels are deleted, then they are removed from database`() = runTest {
         // given
         val shippingLabels = List(3) { id ->
             WCShippingLabelTestUtils.generateSampleShippingLabel(
