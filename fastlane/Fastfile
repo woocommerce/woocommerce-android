@@ -1006,7 +1006,13 @@ platform :android do
   #####################################################################################
   desc 'Create raw POS screenshots for tablets'
   lane :take_pos_screenshots do |options|
-    locales = options[:locales] || ['en-US', 'en-GB']
+    locales = if options[:locales]
+                options[:locales].split(',')
+              else
+                SUPPORTED_LOCALES
+                  .map { |locale| locale[:google_play] }
+                  .append('en-US')
+              end
 
     UI.message("Clearing previous POS screenshots...")
     sh("rm -f ../fastlane/screenshots/raw/*-pos-*")
