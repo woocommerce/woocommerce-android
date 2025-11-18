@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.tab
 
 import app.cash.turbine.test
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
@@ -31,6 +32,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         ProductFilterOption.TYPE to ProductType.BOOKING.value
     )
     private val bookableProdsCountFlow = MutableStateFlow(0L)
+    private val bookingsCountFlow = MutableStateFlow(0L)
 
     private val productListRepository: ProductListRepository = mock {
         on {
@@ -41,6 +43,12 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         }.thenReturn(bookableProdsCountFlow)
     }
 
+    private val bookingsRepository: BookingsRepository = mock {
+        on {
+            observeBookingsCount()
+        }.thenReturn(bookingsCountFlow)
+    }
+
     private lateinit var sut: ObserveBookingsTabVisibility
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
@@ -48,13 +56,14 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
         sut = ObserveBookingsTabVisibility(
             productListRepository = productListRepository,
+            bookingsRepository = bookingsRepository,
             selectedSite = selectedSite,
             appCoroutineScope = testScope,
         )
     }
 
     @Test
-    fun `given site is CIAB, when invoke is called, then bookable products are fetched`() = testBlocking {
+    fun `given site is CIAB, when invoke is called, then bookable products and bookings are fetched`() = testBlocking {
         bookableProdsCountFlow.value = 2
         selectedSiteFlow.value = ciabSite()
         setup()
@@ -66,6 +75,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
                 excludedProductIds = any(),
                 sortType = anyOrNull()
             )
+            verify(bookingsRepository).fetchBookings(any(), any(), anyOrNull(), anyOrNull(), any())
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -97,8 +107,22 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given CIAB site with bookings, when invoke, then emits true`() = testBlocking {
+        bookingsCountFlow.value = 2
+        selectedSiteFlow.value = ciabSite()
+        setup()
+
+        sut().test {
+            val showBookingTabValue = awaitItem()
+            assertTrue(showBookingTabValue)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `given non-CIAB site, when invoke, then emits false`() = testBlocking {
         bookableProdsCountFlow.value = 10
+        bookingsCountFlow.value = 4
         selectedSiteFlow.value = nonCiabSite()
         setup()
 
@@ -112,6 +136,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     @Test
     fun `given non-Commerce Garden CIAB site, when invoke, then emits false`() = testBlocking {
         bookableProdsCountFlow.value = 10
+        bookingsCountFlow.value = 10
         selectedSiteFlow.value = nonCommerceGardenSite()
         setup()
 

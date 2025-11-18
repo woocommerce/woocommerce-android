@@ -48,6 +48,9 @@ interface BookingsDao {
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     fun observeBooking(localSiteId: LocalId, bookingId: Long): Flow<BookingEntity?>
 
+    @Query("SELECT COUNT(*) FROM Bookings WHERE localSiteId = :localSiteId")
+    fun observeBookingsCount(localSiteId: LocalId): Flow<Long>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(entity: BookingEntity): Long
 

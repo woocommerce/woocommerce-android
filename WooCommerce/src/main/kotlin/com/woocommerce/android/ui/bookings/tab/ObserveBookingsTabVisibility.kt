@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.bookings.tab
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.products.ProductStatus
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
@@ -10,21 +11,25 @@ import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
 class ObserveBookingsTabVisibility @Inject constructor(
     private val productListRepository: ProductListRepository,
+    private val bookingsRepository: BookingsRepository,
     private val selectedSite: SelectedSite,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
 ) {
@@ -43,24 +48,47 @@ class ObserveBookingsTabVisibility @Inject constructor(
             emit(false)
         } else {
             emitAll(
-                productListRepository.observeProductsCount(
-                    filterOptions = mapOf(
-                        ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                        ProductFilterOption.TYPE to ProductType.BOOKING.value
-                    ),
-                    excludeSampleProducts = true
-                )
-                    .map { count -> count > 0 }
-                    .onStart {
-                        appCoroutineScope.launch {
-                            productListRepository.fetchProductList(
-                                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)
-                            ).onFailure {
-                                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
-                            }
-                        }
-                    }.distinctUntilChanged()
+                bookableProductCountFlow()
+                    .combine(bookingsCountFlow()) { productCount, bookingCount ->
+                        productCount > 0 || bookingCount > 0
+                    }
+                    .onStart { fetchBookableInfo() }
+                    .distinctUntilChanged()
             )
         }
+    }
+
+    private fun bookableProductCountFlow(): Flow<Long> {
+        return productListRepository.observeProductsCount(
+            filterOptions = mapOf(
+                ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
+                ProductFilterOption.TYPE to ProductType.BOOKING.value
+            ),
+            excludeSampleProducts = true
+        )
+    }
+
+    private fun bookingsCountFlow(): Flow<Long> {
+        return bookingsRepository.observeBookingsCount()
+    }
+
+    private fun fetchBookableInfo() = appCoroutineScope.launch {
+        val products = async {
+            productListRepository.fetchProductList(
+                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)
+            ).onFailure {
+                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
+            }
+        }
+        val bookings = async {
+            bookingsRepository.fetchBookings(
+                page = 1,
+                perPage = 25,
+                order = BookingsOrderOption.ASC
+            ).onFailure {
+                WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookings")
+            }
+        }
+        joinAll(products, bookings)
     }
 }
