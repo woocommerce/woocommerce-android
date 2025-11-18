@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.products.filter
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.model.WooPlugin
 import com.woocommerce.android.tools.NetworkStatus
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.products.ProductFilterProductRestrictions
 import com.woocommerce.android.ui.products.ProductRestriction
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.categories.ProductCategoriesRepository
+import com.woocommerce.android.ui.products.filter.ProductFilterListViewModel.FilterListOptionItemUiModel
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,6 +40,7 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
     private lateinit var productFilterListViewModel: ProductFilterListViewModel
     private lateinit var pluginRepository: PluginRepository
     private lateinit var analyticsTrackerWrapper: AnalyticsTrackerWrapper
+    private lateinit var ciabSiteGateKeeper: CIABSiteGateKeeper
     private val siteModel: SiteModel = SiteModel().apply { id = 123 }
     private val selectedSiteMock: SelectedSite = mock {
         on { getIfExists() }.doReturn(siteModel)
@@ -53,6 +56,9 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         productRestrictions = mock()
         pluginRepository = mock()
         analyticsTrackerWrapper = mock()
+        ciabSiteGateKeeper = mock {
+            on { isFeatureSupported(any()) }.doReturn(true)
+        }
         productFilterListViewModel = ProductFilterListViewModel(
             savedState = ProductFilterListFragmentArgs(
                 selectedStockStatus = "instock",
@@ -67,7 +73,8 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             productRestrictions = productRestrictions,
             pluginRepository = pluginRepository,
             selectedSite = selectedSiteMock,
-            analyticsTrackerWrapper
+            ciabSiteGateKeeper = ciabSiteGateKeeper,
+            analyticsTracker = analyticsTrackerWrapper
         )
 
         whenever(resourceProvider.getString(any())).thenReturn("")
@@ -213,6 +220,42 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
             exploreOptions.forEach { option ->
                 Assertions.assertThat(option.url).isEqualTo(PluginUrls.COMPOSITE_URL)
             }
+        }
+
+    @Test
+    fun `given CIAB site, when product type list build, then limited options available`() =
+        testBlocking {
+            whenever(ciabSiteGateKeeper.isFeatureSupported(any())).thenReturn(false)
+            whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
+            whenever(pluginRepository.getPluginsInfo(any(), any())).thenReturn(
+                mapOf(
+                    WooCommerceStore.WooPlugin.WOO_SUBSCRIPTIONS.pluginName to installedPlugin,
+                    WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName to installedPlugin,
+                    WooCommerceStore.WooPlugin.WOO_COMPOSITE_PRODUCTS.pluginName to notInstalledPlugin
+                )
+            )
+            var productFilters: List<ProductFilterListViewModel.FilterListItemUiModel> = emptyList()
+            productFilterListViewModel.filterListItems.observeForever {
+                productFilters = it
+            }
+
+            productFilterListViewModel.loadFilters()
+
+            val productTypeFilter = productFilters
+                .find { it.filterItemKey == WCProductStore.ProductFilterOption.TYPE }!!
+
+            val productTypeFilterOptions = productTypeFilter.filterOptionListItems
+                .filterIsInstance<FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel>()
+                .map { it.filterOptionItemValue }
+
+            val expectedTypeFilters = buildList {
+                add("") // Empty represent the Any option
+                addAll(
+                    listOf(ProductType.SIMPLE, ProductType.EXTERNAL, ProductType.BOOKING).map { it.value }
+                )
+            }
+
+            Assertions.assertThat(productTypeFilterOptions).isEqualTo(expectedTypeFilters)
         }
 
     @Test

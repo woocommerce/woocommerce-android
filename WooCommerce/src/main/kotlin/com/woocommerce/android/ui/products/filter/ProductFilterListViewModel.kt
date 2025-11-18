@@ -9,6 +9,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.ciab.CIABAffectedFeature
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.model.PluginUrls
 import com.woocommerce.android.model.ProductCategory
 import com.woocommerce.android.model.WooPlugin
@@ -52,7 +54,8 @@ class ProductFilterListViewModel @Inject constructor(
     private val productRestrictions: ProductFilterProductRestrictions,
     private val pluginRepository: PluginRepository,
     private val selectedSite: SelectedSite,
-    private val analyticsTracker: AnalyticsTrackerWrapper
+    private val analyticsTracker: AnalyticsTrackerWrapper,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val KEY_PRODUCT_FILTER_OPTIONS = "key_product_filter_options"
@@ -184,51 +187,11 @@ class ProductFilterListViewModel @Inject constructor(
         )
     }
 
-    private fun getTypeFilterWithExploreOptions(): MutableList<FilterListOptionItemUiModel> {
-        return ProductType.FILTERABLE_VALUES.map {
-            when {
-                it == ProductType.BUNDLE && isPluginInstalled(it) == false -> {
-                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        ProductType.BUNDLE.value,
-                        PluginUrls.BUNDLES_URL
-                    )
-                }
-
-                it == ProductType.SUBSCRIPTION && isPluginInstalled(it) == false -> {
-                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        ProductType.SUBSCRIPTION.value,
-                        PluginUrls.SUBSCRIPTIONS_URL
-                    )
-                }
-
-                it == ProductType.VARIABLE_SUBSCRIPTION && isPluginInstalled(it) == false -> {
-                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        ProductType.VARIABLE_SUBSCRIPTION.value,
-                        PluginUrls.SUBSCRIPTIONS_URL
-                    )
-                }
-
-                it == ProductType.COMPOSITE && isPluginInstalled(it) == false -> {
-                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        ProductType.COMPOSITE.value,
-                        PluginUrls.COMPOSITE_URL
-                    )
-                }
-
-                else -> {
-                    DefaultFilterListOptionItemUiModel(
-                        resourceProvider.getString(it.stringResource),
-                        filterOptionItemValue = it.value,
-                        isSelected = productFilterOptions[TYPE] == it.value
-                    )
-                }
-            }
-        }.sortedBy { it is FilterListOptionItemUiModel.ExploreOptionItemUiModel }
-            .toMutableList()
+    private fun getTypeFilterWithExploreOptions(): List<FilterListOptionItemUiModel> {
+        return ProductType.entries
+            .filter { it.isVisible }
+            .mapNotNull { it.asFilterListOptionItemUiModel() }
+            .sortedBy { it is FilterListOptionItemUiModel.ExploreOptionItemUiModel }
     }
 
     fun loadFilterOptions(selectedFilterListItemPosition: Int) {
@@ -264,7 +227,7 @@ class ProductFilterListViewModel @Inject constructor(
                         isSelected = productFilterOptions[CATEGORY] == category.remoteCategoryId.toString(),
                         margin
                     )
-                }.toMutableList(),
+                },
             productFilterOptions[CATEGORY].isNullOrEmpty()
         )
     }
@@ -373,7 +336,7 @@ class ProductFilterListViewModel @Inject constructor(
                             filterOptionItemValue = it.value,
                             isSelected = productFilterOptions[STOCK_STATUS] == it.value
                         )
-                    }.toMutableList(),
+                    },
                     productFilterOptions[STOCK_STATUS].isNullOrEmpty()
                 )
             )
@@ -390,7 +353,7 @@ class ProductFilterListViewModel @Inject constructor(
                                 filterOptionItemValue = it.value,
                                 isSelected = productFilterOptions[STATUS] == it.value
                             )
-                        }.toMutableList(),
+                        },
                         productFilterOptions[STATUS].isNullOrEmpty()
                     )
                 )
@@ -439,18 +402,18 @@ class ProductFilterListViewModel @Inject constructor(
      * which is added to the list by this method before updating the UI
      */
     private fun addDefaultFilterOption(
-        filterOptionList: MutableList<FilterListOptionItemUiModel>,
+        filterOptionList: List<FilterListOptionItemUiModel>,
         isDefaultFilterOptionSelected: Boolean
-    ): MutableList<FilterListOptionItemUiModel> {
-        return filterOptionList.apply {
+    ): List<FilterListOptionItemUiModel> {
+        return buildList {
             add(
-                0,
-                FilterListOptionItemUiModel.DefaultFilterListOptionItemUiModel(
+                DefaultFilterListOptionItemUiModel(
                     filterOptionItemName = resourceProvider.getString(R.string.product_filter_default),
                     filterOptionItemValue = "",
                     isSelected = isDefaultFilterOptionSelected
                 )
             )
+            addAll(filterOptionList)
         }
     }
 
@@ -558,4 +521,78 @@ class ProductFilterListViewModel @Inject constructor(
             val url: String
         ) : FilterListOptionItemUiModel()
     }
+
+    private fun ProductType.asFilterListOptionItemUiModel(): FilterListOptionItemUiModel? {
+        return when (this) {
+            ProductType.SIMPLE,
+            ProductType.GROUPED,
+            ProductType.EXTERNAL,
+            ProductType.VARIABLE,
+            ProductType.BOOKING -> {
+                DefaultFilterListOptionItemUiModel(
+                    resourceProvider.getString(this.stringResource),
+                    filterOptionItemValue = this.value,
+                    isSelected = productFilterOptions[TYPE] == this.value
+                )
+            }
+
+            ProductType.SUBSCRIPTION,
+            ProductType.VARIABLE_SUBSCRIPTION,
+            ProductType.BUNDLE,
+            ProductType.COMPOSITE,
+            ProductType.VARIATION -> {
+                FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                    resourceProvider.getString(this.stringResource),
+                    filterOptionItemValue = this.value,
+                    url = this.pluginURL
+                )
+            }
+
+            ProductType.OTHER -> null
+        }
+    }
+
+    private val ProductType.pluginURL: String
+        get() = when (this) {
+            ProductType.SUBSCRIPTION,
+            ProductType.VARIABLE_SUBSCRIPTION -> PluginUrls.SUBSCRIPTIONS_URL
+
+            ProductType.COMPOSITE -> PluginUrls.COMPOSITE_URL
+            ProductType.BUNDLE -> PluginUrls.BUNDLES_URL
+            ProductType.SIMPLE,
+            ProductType.GROUPED,
+            ProductType.EXTERNAL,
+            ProductType.VARIABLE,
+            ProductType.VARIATION,
+            ProductType.BOOKING,
+            ProductType.OTHER -> ""
+        }
+
+    private val ProductType.isVisible: Boolean
+        get() = when (this) {
+            ProductType.SIMPLE,
+            ProductType.EXTERNAL -> true
+
+            ProductType.GROUPED -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
+            ProductType.VARIABLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
+            ProductType.SUBSCRIPTION -> {
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts) &&
+                    isPluginInstalled(ProductType.SUBSCRIPTION) == false
+            }
+
+            ProductType.VARIABLE_SUBSCRIPTION -> {
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts) &&
+                    isPluginInstalled(ProductType.VARIABLE_SUBSCRIPTION) == false
+            }
+
+            ProductType.BUNDLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BundleProducts) &&
+                isPluginInstalled(ProductType.BUNDLE) == false
+
+            ProductType.COMPOSITE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.CompositeProducts) &&
+                isPluginInstalled(ProductType.COMPOSITE) == false
+
+            ProductType.BOOKING -> ciabSiteGateKeeper.isCurrentSiteCIAB()
+            ProductType.VARIATION,
+            ProductType.OTHER -> false
+        }
 }
