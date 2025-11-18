@@ -4,7 +4,7 @@
 
 23.8
 -----
-
+- [Internal][Woo POS] Improve detection and handling of deleted products during checkout [https://github.com/woocommerce/woocommerce-android/pull/14981]
 
 23.7
 -----
