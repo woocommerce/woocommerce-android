@@ -77,7 +77,6 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
         val before = viewModel.uiState.value
         assertThat(before.selectedProducts).isEqualTo(initial)
 
-
         before.onProductSelected(BookableProduct.Any)
 
         val after = viewModel.uiState.value
