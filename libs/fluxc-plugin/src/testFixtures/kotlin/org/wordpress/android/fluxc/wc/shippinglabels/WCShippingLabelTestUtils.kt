@@ -27,41 +27,21 @@ object WCShippingLabelTestUtils {
         productNames: String = "[Woo T-shirt, Herman Chair]",
         productIds: String = "[60, 61, 62]"
     ): WCShippingLabelModel {
-        return WCShippingLabelModel().apply {
-            localSiteId = siteId
-            remoteOrderId = orderId
-            remoteShippingLabelId = remoteId
-            this.carrierId = carrierId
-            this.serviceName = serviceName
-            this.packageName = packageName
-            this.status = status
-            this.rate = rate
-            this.refundableAmount = refundableAmount
-            this.currency = currency
-            this.productNames = productNames
-            this.productIds = productIds
-            refund?.let { this.refund = it }
-        }
-    }
-
-    fun generateShippingLabelList(
-        siteId: Int = 6,
-        orderId: Long = 12,
-        remoteShippingLabelId: Long = 0
-    ): List<WCShippingLabelModel> {
-        with(ArrayList<WCShippingLabelModel>()) {
-            add(generateSampleShippingLabel(
-                    siteId = siteId,
-                    orderId = orderId,
-                    remoteId = remoteShippingLabelId + 1,
-                    refund = "{\"status\": \"pending\",\"request_date\": 1604847663000}"
-            ))
-            add(generateSampleShippingLabel(siteId = siteId, orderId = orderId, remoteId = remoteShippingLabelId + 2))
-            add(generateSampleShippingLabel(siteId = siteId, orderId = orderId, remoteId = remoteShippingLabelId + 3))
-            add(generateSampleShippingLabel(siteId = siteId, orderId = orderId, remoteId = remoteShippingLabelId + 4))
-            add(generateSampleShippingLabel(siteId = siteId, orderId = orderId, remoteId = remoteShippingLabelId + 5))
-            return this
-        }
+        return WCShippingLabelModel(
+            localSiteId = siteId,
+            remoteOrderId = orderId,
+            remoteShippingLabelId = remoteId,
+            carrierId = carrierId,
+            serviceName = serviceName,
+            packageName = packageName,
+            status = status,
+            rate = rate,
+            refundableAmount = refundableAmount,
+            currency = currency,
+            productNames = productNames,
+            productIds = productIds,
+            refund = refund.orEmpty()
+        )
     }
 
     fun generateSampleShippingLabelApiResponse(): ShippingLabelApiResponse? {
