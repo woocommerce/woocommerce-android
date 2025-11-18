@@ -4,6 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.bookings.filter.attendancestatus.titleRes
 import com.woocommerce.android.ui.bookings.filter.type.titleRes
 import com.woocommerce.android.ui.compose.DialogState
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
@@ -21,46 +22,38 @@ enum class BookingFilterPage {
     Location,
 }
 
+/**
+ * UI state for the Bookings Filters screen.
+ *
+ * @property initialBookingFilters The stored filters loaded from storage DataStore and shown when the screen opens.
+ * @property updatedBookingFilters The in-memory working copy reflecting user changes; not persisted until the user
+ * saves.
+ */
 data class BookingFilterListUiState(
-    val initialBookingFilters: BookingFilters? = null,
-    val newBookingFilters: Set<BookingsFilterOption> = emptySet(),
+    val initialBookingFilters: BookingFilters = BookingFilters(),
+    val updatedBookingFilters: BookingFilters = initialBookingFilters,
+    val selectedFilterValues: SelectedFilterValues = SelectedFilterValues(),
     val currentPage: BookingFilterPage = BookingFilterPage.List,
     val dialogState: DialogState? = null,
     val onClose: () -> Unit = {},
     val onShowBookings: () -> Unit = {},
     val openPage: (BookingFilterPage) -> Unit = {},
     val onUpdateFilterOption: (BookingsFilterOption) -> Unit = {},
+    val onClear: () -> Unit = {},
 ) {
+    data class SelectedFilterValues(val teamMemberValue: String? = null)
 
     val items: List<BookingFilterListItem> = availableBookingFilters().map { page ->
         BookingFilterListItem(
-            title = page.titleRes,
-            subtitle = page.filterValue,
+            title = UiString.UiStringRes(page.titleRes),
+            value = page.filterValue,
             onClick = { openPage(page) },
         )
     }
-
-    val currentBookingType: BookingsFilterOption.BookingType
-        get() = newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
-            initialBookingFilters?.bookingType
-        ) ?: BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.ANY)
-
-    val updatedBookingFilters: BookingFilters
-        get() {
-            val initial = initialBookingFilters ?: BookingFilters()
-            return BookingFilters(
-                dateRange = newBookingFilters.getOrDefault(initial.dateRange),
-                customer = newBookingFilters.getOrDefault(initial.customer),
-                teamMember = newBookingFilters.getOrDefault(initial.teamMember),
-                attendanceStatus = newBookingFilters.getOrDefault(initial.attendanceStatus),
-                paymentStatus = newBookingFilters.getOrDefault(initial.paymentStatus),
-                bookingType = newBookingFilters.getOrDefault(initial.bookingType),
-                location = newBookingFilters.getOrDefault(initial.location),
-                serviceEvent = newBookingFilters.getOrDefault(initial.serviceEvent),
-            )
-        }
-
     val updatedBookingFiltersCount = updatedBookingFilters.enabledFiltersCount
+
+    val showClearButton: Boolean
+        get() = currentPage == BookingFilterPage.List && updatedBookingFiltersCount > 0
 
     @DrawableRes
     val navigationIcon: Int = when (currentPage) {
@@ -68,28 +61,39 @@ data class BookingFilterListUiState(
         else -> R.drawable.ic_back_24dp
     }
 
-    val BookingFilterPage.filterValue: UiString?
+    val BookingFilterPage.filterValue: UiString
         get() = when (this) {
-            BookingFilterPage.Customer -> {
-                newBookingFilters.getOrDefault<BookingsFilterOption.Customer>(
-                    initialBookingFilters?.customer
-                )?.customerName?.let { name -> UiString.UiStringText(name) }
-            }
-
+            BookingFilterPage.TeamMember -> selectedFilterValues.teamMemberValue?.let { UiString.UiStringText(it) }
             BookingFilterPage.BookingType -> {
-                newBookingFilters.getOrDefault<BookingsFilterOption.BookingType>(
-                    initialBookingFilters?.bookingType
-                )?.titleRes?.let { res -> UiString.UiStringRes(res) }
+                updatedBookingFilters.bookingType?.titleRes?.let { UiString.UiStringRes(it) }
             }
 
-            BookingFilterPage.DateTime,
-            BookingFilterPage.Location,
-            BookingFilterPage.AttendanceStatus,
-            BookingFilterPage.PaymentStatus,
-            BookingFilterPage.ServiceEvent,
+            BookingFilterPage.AttendanceStatus -> {
+                updatedBookingFilters.attendanceStatuses.values.takeIf { it.isNotEmpty() }?.let { list ->
+                    if (list.size > 1) {
+                        UiString.UiStringText(list.size.toString())
+                    } else {
+                        UiString.UiStringRes(list.first().titleRes)
+                    }
+                }
+            }
+
+            BookingFilterPage.Customer -> updatedBookingFilters.customer?.customerName?.let { name ->
+                UiString.UiStringText(name)
+            }
+
+            BookingFilterPage.DateTime -> {
+                updatedBookingFilters.dateRange?.let {
+                    UiString.UiStringRes(R.string.bookings_filter_date_filter_value)
+                }
+            }
+
             BookingFilterPage.TeamMember,
+            BookingFilterPage.ServiceEvent,
+            BookingFilterPage.PaymentStatus,
+            BookingFilterPage.Location,
             BookingFilterPage.List -> null
-        }
+        } ?: UiString.UiStringRes(R.string.bookings_filter_default)
 
     val title: UiString
         get() = if (currentPage != BookingFilterPage.List) {
@@ -106,7 +110,7 @@ data class BookingFilterListUiState(
 
 val BookingFilterPage.titleRes: Int
     @StringRes get() = when (this) {
-        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_team_member
+        BookingFilterPage.TeamMember -> R.string.bookings_filter_title_member
         BookingFilterPage.AttendanceStatus -> R.string.bookings_filter_title_attendance_status
         BookingFilterPage.PaymentStatus -> R.string.bookings_filter_title_payment_status
         BookingFilterPage.BookingType -> R.string.bookings_filter_title_type
@@ -119,15 +123,27 @@ val BookingFilterPage.titleRes: Int
 
 private fun availableBookingFilters(): List<BookingFilterPage> = listOf(
     BookingFilterPage.TeamMember,
-    BookingFilterPage.BookingType,
+//    BookingFilterPage.BookingType,
     BookingFilterPage.ServiceEvent,
     BookingFilterPage.AttendanceStatus,
-    BookingFilterPage.PaymentStatus,
+//    BookingFilterPage.PaymentStatus,
     BookingFilterPage.Customer,
     BookingFilterPage.DateTime,
-    BookingFilterPage.Location,
+//    BookingFilterPage.Location,
 )
 
-inline fun <reified T> Set<BookingsFilterOption>.getOrDefault(default: T?): T? {
-    return this.filterIsInstance<T>().firstOrNull() ?: default
-}
+/**
+ * Update and return a copy of this BookingFilters by setting the field that corresponds to the type of
+ * [bookingsFilterOption].
+ */
+fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption): BookingFilters =
+    when (bookingsFilterOption) {
+        is BookingsFilterOption.DateRange -> copy(dateRange = bookingsFilterOption)
+        is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
+        is BookingsFilterOption.TeamMembers -> copy(teamMembers = bookingsFilterOption)
+        is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
+        is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
+        is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
+        is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
+        is BookingsFilterOption.ServiceEvent -> copy(serviceEvent = bookingsFilterOption)
+    }

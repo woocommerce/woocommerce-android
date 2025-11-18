@@ -98,7 +98,9 @@ class WooPosSplashViewModel @Inject constructor(
     }
 
     private suspend fun trackPosLoaded(startTime: Long) {
-        val event = Loaded.apply {
+        val syncStrategy = productsDataSource.getCurrentSyncStrategy()
+
+        val event = Loaded(syncStrategy).apply {
             val waitingTimeSeconds = TimeUnit.MILLISECONDS.toSeconds(
                 System.currentTimeMillis() - startTime
             ).toFloat()

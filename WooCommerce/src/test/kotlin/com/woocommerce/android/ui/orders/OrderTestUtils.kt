@@ -182,7 +182,7 @@ object OrderTestUtils {
         return result
     }
 
-    fun generateTestOrder(orderId: Long = 1): Order {
+    fun generateTestOrder(orderId: Long = 1, refundTotal: BigDecimal = -BigDecimal.TEN): Order {
         return Order.getEmptyOrder(Date(), Date()).copy(
             id = orderId,
             customer = Order.Customer(
@@ -198,7 +198,7 @@ object OrderTestUtils {
             status = Order.Status.Pending,
             total = BigDecimal("106.00"),
             items = generateTestOrderItems(productId = 15),
-            refundTotal = -BigDecimal.TEN,
+            refundTotal = refundTotal,
         )
     }
 

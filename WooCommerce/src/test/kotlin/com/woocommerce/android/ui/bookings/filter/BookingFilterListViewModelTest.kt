@@ -1,6 +1,9 @@
 package com.woocommerce.android.ui.bookings.filter
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
+import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -12,8 +15,11 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.BookingType
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingFilterListViewModelTest : BaseUnitTest() {
@@ -28,6 +34,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         viewModel = BookingFilterListViewModel(
             savedStateHandle = SavedStateHandle(),
             bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
         )
     }
 
@@ -91,7 +98,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         // GIVEN
         val initial = viewModel.uiState.getOrAwaitValue()
         // introduce a change different from initial filters (which are empty)
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         val changed = viewModel.uiState.getOrAwaitValue()
 
         // WHEN
@@ -108,7 +115,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
         val initial = viewModel.uiState.getOrAwaitValue()
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
 
         // WHEN: tap Keep Changes
@@ -126,7 +133,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         val events = mutableListOf<MultiLiveEvent.Event>()
         viewModel.event.observeForever { events.add(it) }
         val initial = viewModel.uiState.getOrAwaitValue()
-        initial.onUpdateFilterOption(BookingsFilterOption.BookingType(BookingsFilterOption.BookingType.Type.SERVICE))
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
         viewModel.uiState.getOrAwaitValue().onClose() // shows dialog
 
         // WHEN: tap Discard
@@ -138,5 +145,91 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         assertThat(afterDiscard.dialogState).isNull()
         assertThat(events).isNotEmpty
         assertThat(events.last()).isEqualTo(MultiLiveEvent.Event.Exit)
+    }
+
+    @Test
+    fun `when onClear is invoked, then updated filters reset to default`() {
+        // GIVEN: a changed filter state
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.onUpdateFilterOption(BookingType(BookingType.Type.SERVICE))
+        val changed = viewModel.uiState.getOrAwaitValue()
+        assertThat(changed.updatedBookingFilters.bookingType).isNotEqualTo(null)
+
+        // WHEN: clear is invoked
+        changed.onClear()
+
+        // THEN: updated filters become the default
+        val afterClear = viewModel.uiState.getOrAwaitValue()
+        assertThat(afterClear.updatedBookingFilters.bookingType).isEqualTo(null)
+    }
+
+    @Test
+    fun `when attendance status changed and leaving page, then root shows selected value`() {
+        // GIVEN: navigate to Attendance Status page and select one status
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onPage = viewModel.uiState.getOrAwaitValue()
+
+        // Select one attendance status (Booked)
+        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked)))
+
+        // WHEN: leave the page (go back to root list)
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: root list shows the selected status as subtitle values
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
+        val value = (attendanceItem.value as UiStringRes).stringRes
+
+        assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
+    }
+
+    @Test
+    fun `when two attendance statuses selected and leaving page, then root shows selected both statuses`() {
+        // GIVEN: navigate to Attendance Status page and select two statuses
+        val initial = viewModel.uiState.getOrAwaitValue()
+        initial.openPage(BookingFilterPage.AttendanceStatus)
+        val onPage = viewModel.uiState.getOrAwaitValue()
+
+        // Select two attendance statuses (Booked and Cancelled)
+        onPage.onUpdateFilterOption(
+            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked, AttendanceStatus.Cancelled))
+        )
+
+        // WHEN: leave the page (go back to root list)
+        viewModel.uiState.getOrAwaitValue().onClose()
+
+        // THEN: root list shows both selected statuses in subtitle values (order agnostic)
+        val root = viewModel.uiState.getOrAwaitValue()
+
+        val attendanceItem =
+            root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
+        val value = (attendanceItem.value as UiString.UiStringText).text
+
+        assertThat(value).isEqualTo("2")
+    }
+
+    @Test
+    fun `given two team member ids, when updated, then teamMemberValue shows count`() = testBlocking {
+        // Given
+        val bookingFilterRepository = mock<BookingFilterRepository> {
+            on { bookingFiltersFlow } doReturn flowOf(BookingFilters())
+        }
+        val viewModel = BookingFilterListViewModel(
+            savedStateHandle = SavedStateHandle(),
+            bookingFilterRepository = bookingFilterRepository,
+            bookingsRepository = mock()
+        )
+
+        // When: update filters with two different member IDs
+        val state = viewModel.uiState.getOrAwaitValue()
+        val ids = setOf(LocalOrRemoteId.RemoteId(1), LocalOrRemoteId.RemoteId(2))
+        state.onUpdateFilterOption.invoke(BookingsFilterOption.TeamMembers(ids))
+
+        // Then
+        val updated = viewModel.uiState.getOrAwaitValue()
+        assertThat(updated.selectedFilterValues.teamMemberValue).isEqualTo("2")
     }
 }

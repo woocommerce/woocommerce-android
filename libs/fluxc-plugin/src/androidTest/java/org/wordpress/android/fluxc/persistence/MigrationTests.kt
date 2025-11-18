@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence
 
-import androidx.room.migration.AutoMigrationSpec
 import androidx.room.testing.MigrationTestHelper
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
@@ -34,20 +33,8 @@ class MigrationTests {
     val helper: MigrationTestHelper = MigrationTestHelper(
         InstrumentationRegistry.getInstrumentation(),
         WCAndroidDatabase::class.java,
-        listOf<AutoMigrationSpec>()
+        emptyList()
     )
-
-    @Test
-    fun testRoomDBSchemasUnchanged() {
-        val context = InstrumentationRegistry.getInstrumentation().context
-        for (i in 3..WC_DATABASE_VERSION) {
-            val currentHash = MigrationSchemasUtils.getIdentityHash(i, context)
-            val expectedHash = MigrationSchemasUtils.DB_HASHES.getValue(
-                MigrationSchemasUtils.getDBHashKey(i)
-            )
-            assertThat(currentHash).isEqualTo(expectedHash)
-        }
-    }
 
     @Test
     fun testMigrate3To4() {

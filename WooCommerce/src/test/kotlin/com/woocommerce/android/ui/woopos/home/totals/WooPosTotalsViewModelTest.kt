@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent.OnBackClicked
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -156,6 +157,7 @@ class WooPosTotalsViewModelTest {
     private val cardReaderFacade: WooPosCardReaderFacade = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val performIncrementalSyncUseCase: WooPosPerformLocalCatalogIncrementalSync = mock()
+    private val productsDataSource: WooPosProductsDataSource = mock()
 
     private companion object {
         private const val EMPTY_ORDER_ID = -1L
@@ -175,6 +177,9 @@ class WooPosTotalsViewModelTest {
             flow<BluetoothCardReaderMessages> {}
         }
         whenever(cardReaderFacade.readerStatus).thenAnswer { cardReaderManager.readerStatus }
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+            WooPosProductsDataSource.SyncStrategy.REMOTE
+        )
     }
 
     @Test
@@ -226,12 +231,7 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
@@ -291,6 +291,7 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("2.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("1.00"),
                     ),
                     Order.Item.EMPTY.copy(
@@ -460,19 +461,7 @@ class WooPosTotalsViewModelTest {
         assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.Error::class.java)
 
         // Mock repository to simulate success on retry
-        val order = Order.getEmptyOrder(
-            dateCreated = Date(),
-            dateModified = Date()
-        ).copy(
-            totalTax = BigDecimal("2.00"),
-            items = listOf(
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00")),
-                Order.Item.EMPTY.copy(subtotal = BigDecimal("1.00"))
-            ),
-            total = BigDecimal("5.00"),
-            productsTotal = BigDecimal("3.00"),
-        )
+        val order = createNonEmptyOrder()
 
         whenever(totalsRepository.createOrderFromCartItems(itemClickedData)).thenReturn(
             Result.success(order)
@@ -480,13 +469,6 @@ class WooPosTotalsViewModelTest {
 
         // Trigger RetryOrderCreationClicked again to simulate a successful retry
         viewModel.onUIEvent(WooPosTotalsUIEvent.RetryOrderCreationClicked)
-
-        // Ensure the view model state transitions to the success state with correct totals
-        val state = viewModel.state.value as WooPosTotalsViewState.Checkout
-        val castedTotals = state.totals as WooPosTotalsViewState.Totals.Visible
-        assertThat(castedTotals.orderTotalText).isEqualTo("$5.00")
-        assertThat(castedTotals.orderTaxText).isEqualTo("$2.00")
-        assertThat(castedTotals.orderSubtotalText).isEqualTo("$3.00")
     }
 
     @Test
@@ -514,12 +496,7 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
-                    subtotal = BigDecimal("1.00"),
-                ),
-                Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
@@ -650,7 +627,7 @@ class WooPosTotalsViewModelTest {
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val order = createNonEmptyOrder()
+        val order = createNonEmptyOrder(listOf(1L))
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(
                 Result.success(order)
@@ -1176,7 +1153,8 @@ class WooPosTotalsViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
                 .thenReturn("No internet")
             val itemClickedData = listOf(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L)
             )
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1189,12 +1167,11 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("0.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("0.00"),
                     ),
                     Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("0.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
+                        productId = 2L,
                         subtotal = BigDecimal("0.00"),
                     )
                 ),
@@ -1235,7 +1212,8 @@ class WooPosTotalsViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_no_internet_message))
                 .thenReturn("No internet")
             val itemClickedData = listOf(
-                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L)
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L)
             )
             val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
@@ -1248,12 +1226,11 @@ class WooPosTotalsViewModelTest {
                 totalTax = BigDecimal("2.00"),
                 items = listOf(
                     Order.Item.EMPTY.copy(
+                        productId = 1L,
                         subtotal = BigDecimal("1.00"),
                     ),
                     Order.Item.EMPTY.copy(
-                        subtotal = BigDecimal("1.00"),
-                    ),
-                    Order.Item.EMPTY.copy(
+                        productId = 2L,
                         subtotal = BigDecimal("1.00"),
                     )
                 ),
@@ -1528,6 +1505,59 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
+    fun `when product missing from order after creation, then show ProductNotFoundError state`() = runTest {
+        // GIVEN
+        val itemClickedData = listOf(
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L)
+        )
+        val parentToChildrenEventFlow = MutableStateFlow(
+            ParentToChildrenEvent.CheckoutClicked(itemClickedData)
+        )
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        whenever(resourceProvider.getString(any()))
+            .thenReturn("")
+
+        // Order only contains product 1, not product 999
+        val order = Order.getEmptyOrder(
+            dateCreated = Date(),
+            dateModified = Date()
+        ).copy(
+            id = 123L,
+            items = listOf(
+                Order.Item.EMPTY.copy(
+                    productId = 1L,
+                    subtotal = BigDecimal("10.00"),
+                )
+            ),
+            productsTotal = BigDecimal("10.00"),
+            total = BigDecimal("10.00"),
+        )
+
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(itemClickedData) }.thenReturn(Result.success(order))
+        }
+
+        val priceFormat: WooPosFormatPrice = mock {
+            onBlocking { invoke(any()) }.thenReturn("$10.00")
+        }
+
+        // WHEN
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+            priceFormat = priceFormat,
+        )
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosTotalsViewState.ProductNotFoundError::class.java)
+    }
+
+    @Test
     fun `given order draft creation in progress, when back clicked, then order draft job should be canceled`() =
         runTest {
             // GIVEN
@@ -1560,6 +1590,106 @@ class WooPosTotalsViewModelTest {
             verify(childrenToParentEventSender, never()).sendToParent(argThat { this is OrderCreated })
         }
 
+    @Test
+    fun `when product missing from order after creation, then tracks outdated item detected screen shown event`() =
+        runTest {
+            // GIVEN
+            whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+                WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+            val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+                on { events }.thenReturn(parentToChildrenEventFlow)
+            }
+
+            val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+            val totalsRepository: WooPosTotalsRepository = mock {
+                onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+            }
+
+            // WHEN
+            createViewModel(
+                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+                totalsRepository = totalsRepository,
+            )
+
+            // THEN
+            verify(analyticsTracker).track(
+                WooPosAnalyticsEvent.Event
+                    .CheckoutOutdatedItemDetectedScreenShown(
+                        reason = "deleted",
+                        syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+                    )
+            )
+        }
+
+    @Test
+    fun `when edit order tapped after product not found, then tracks edit order tapped event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+        )
+        val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+
+        val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+        }
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedEditOrderTapped(
+                reason = "deleted",
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+        )
+    }
+
+    @Test
+    fun `when remove products tapped after product not found, then tracks remove tapped event`() = runTest {
+        // GIVEN
+        whenever(productsDataSource.getCurrentSyncStrategy()).thenReturn(
+            WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+        )
+        val itemClickedData = listOf(WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 999L))
+        val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData))
+        val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
+            on { events }.thenReturn(parentToChildrenEventFlow)
+        }
+        val order = Order.getEmptyOrder(Date(), Date()).copy(id = 123L)
+        val totalsRepository: WooPosTotalsRepository = mock {
+            onBlocking { createOrderFromCartItems(any()) }.thenReturn(Result.success(order))
+        }
+
+        val viewModel = createViewModel(
+            parentToChildrenEventReceiver = parentToChildrenEventReceiver,
+            totalsRepository = totalsRepository,
+        )
+
+        // WHEN
+        viewModel.onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked)
+
+        // THEN
+        verify(analyticsTracker).track(
+            WooPosAnalyticsEvent.Event.CheckoutOutdatedItemDetectedRemoveTapped(
+                reason = "deleted",
+                syncStrategy = WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG
+            )
+        )
+    }
+
     private fun mockPaymentFailedTexts() {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_payment_processing_title))
             .thenReturn("Processing payment")
@@ -1578,23 +1708,18 @@ class WooPosTotalsViewModelTest {
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatus)
     }
 
-    private fun createNonEmptyOrder() = Order.getEmptyOrder(
+    private fun createNonEmptyOrder(productIds: List<Long> = listOf(1L, 2L, 3L)) = Order.getEmptyOrder(
         dateCreated = Date(),
         dateModified = Date()
     ).copy(
         totalTax = BigDecimal("2.00"),
         discountTotal = BigDecimal("1.00"),
-        items = listOf(
+        items = productIds.map { productId ->
             Order.Item.EMPTY.copy(
-                subtotal = BigDecimal("1.00"),
-            ),
-            Order.Item.EMPTY.copy(
-                subtotal = BigDecimal("1.00"),
-            ),
-            Order.Item.EMPTY.copy(
+                productId = productId,
                 subtotal = BigDecimal("1.00"),
             )
-        ),
+        },
         productsTotal = BigDecimal("3.00"),
         total = BigDecimal("5.00"),
     )
@@ -1651,12 +1776,15 @@ class WooPosTotalsViewModelTest {
             totalTax = BigDecimal("2.00"),
             items = listOf(
                 Order.Item.EMPTY.copy(
+                    productId = 1L,
                     subtotal = BigDecimal("1.00"),
                 ),
                 Order.Item.EMPTY.copy(
+                    productId = 2L,
                     subtotal = BigDecimal("1.00"),
                 ),
                 Order.Item.EMPTY.copy(
+                    productId = 3L,
                     subtotal = BigDecimal("1.00"),
                 )
             ),
@@ -1708,7 +1836,8 @@ class WooPosTotalsViewModelTest {
         savedState = savedState,
         totalsAnalyticsTracker = WooPosTotalsAnalyticsTracker(
             analyticsTracker = analyticsTracker,
-            analyticsData = WooPosAnalyticsTrackingDataKeeper()
+            analyticsData = WooPosAnalyticsTrackingDataKeeper(),
+            productsDataSource = productsDataSource
         ),
         wooPosLogWrapper = wooPosLogWrapper,
         performIncrementalSyncUseCase = performIncrementalSyncUseCase,

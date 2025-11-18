@@ -44,6 +44,8 @@ class WooPosSplashViewModelTest {
         whenever(productsDataSource.prepopulateCache()).thenReturn(
             flowOf(WooPosPrepopulatingDataStatus.Completed)
         )
+        whenever(productsDataSource.getCurrentSyncStrategy())
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
     }
 
     @Test

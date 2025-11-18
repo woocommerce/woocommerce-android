@@ -7,8 +7,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsStore
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -24,7 +24,7 @@ class BookingsRepository @Inject constructor(
         page: Int,
         perPage: Int,
         query: String? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Result<FetchResult> {
         val result = bookingsStore.fetchBookings(
@@ -51,7 +51,7 @@ class BookingsRepository @Inject constructor(
 
     fun observeBookings(
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<Booking>> =
         bookingsStore.observeBookings(
@@ -60,6 +60,8 @@ class BookingsRepository @Inject constructor(
             filters = filters,
             order = order
         )
+
+    fun observeBookingsCount(): Flow<Long> = bookingsStore.observeBookingCount(site = selectedSite.get())
 
     fun observeBooking(bookingId: Long): Flow<Booking?> =
         bookingsStore.observeBooking(
@@ -88,6 +90,19 @@ class BookingsRepository @Inject constructor(
         }
     }
 
+    suspend fun fetchResources(): Result<Unit> {
+        val result = bookingsStore.fetchResources(site = selectedSite.get())
+        return if (result.isError) {
+            Result.failure(WooException(result.error))
+        } else {
+            Result.success(Unit)
+        }
+    }
+
+    suspend fun getResource(
+        resourceId: Long
+    ): BookingResource? = bookingsStore.getResource(site = selectedSite.get(), resourceId = resourceId)
+
     suspend fun fetchResource(
         resourceId: Long
     ): Result<Unit> {
@@ -112,6 +127,9 @@ class BookingsRepository @Inject constructor(
             )
         }
     }
+
+    fun observeResources(): Flow<List<BookingResource>> =
+        bookingsStore.observeResources(site = selectedSite.get())
 
     suspend fun updateAttendanceStatus(
         bookingId: Long,

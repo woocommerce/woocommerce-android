@@ -28,7 +28,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.filter.attendancestatus.BookingAttendanceStatusFilterRoute
 import com.woocommerce.android.ui.bookings.filter.customer.BookingCustomerFilterPage
+import com.woocommerce.android.ui.bookings.filter.datetime.DateTimeFilterRoute
+import com.woocommerce.android.ui.bookings.filter.teammember.BookingTeamMemberFilterRoute
 import com.woocommerce.android.ui.bookings.filter.type.BookingTypeFilterRoute
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -36,18 +39,30 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import java.util.Locale
 
 @Composable
 fun BookingFilterListScreen(state: BookingFilterListUiState) {
     Scaffold(
         topBar = {
             Column {
-                Toolbar(
-                    title = state.title.getText(),
-                    onNavigationButtonClick = state.onClose,
-                    navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
-                )
+                if (state.showClearButton) {
+                    Toolbar(
+                        title = state.title.getText(),
+                        onNavigationButtonClick = state.onClose,
+                        navigationIcon = ImageVector.vectorResource(id = state.navigationIcon),
+                        onActionButtonClick = state.onClear,
+                        actionButtonText = stringResource(id = R.string.clear).uppercase(Locale.getDefault())
+                    )
+                } else {
+                    Toolbar(
+                        title = state.title.getText(),
+                        onNavigationButtonClick = state.onClose,
+                        navigationIcon = ImageVector.vectorResource(id = state.navigationIcon)
+                    )
+                }
                 HorizontalDivider(thickness = 0.5.dp)
             }
         },
@@ -117,21 +132,30 @@ private fun FiltersNavHost(
             BookingFilterRootPage(state.items)
         }
         composable(BookingFilterPage.DateTime.route) {
-            DateTimeFilterPicker()
+            DateTimeFilterRoute(
+                initialRange = state.updatedBookingFilters.dateRange
+            ) { dateRange ->
+                state.onUpdateFilterOption(dateRange)
+            }
         }
         composable(BookingFilterPage.TeamMember.route) {
-            TODO()
-        }
-        composable(BookingFilterPage.AttendanceStatus.route) {
-            TODO()
-        }
-        composable(BookingFilterPage.PaymentStatus.route) {
-            TODO()
+            BookingTeamMemberFilterRoute(initialTeamMembers = state.updatedBookingFilters.teamMembers) { teamMember ->
+                state.onUpdateFilterOption(teamMember)
+            }
         }
         composable(BookingFilterPage.BookingType.route) {
-            BookingTypeFilterRoute(initialType = state.currentBookingType) { type ->
+            BookingTypeFilterRoute(initialType = state.updatedBookingFilters.bookingType) { type ->
                 state.onUpdateFilterOption(type)
             }
+        }
+        composable(BookingFilterPage.ServiceEvent.route) {
+        }
+        composable(BookingFilterPage.AttendanceStatus.route) {
+            BookingAttendanceStatusFilterRoute(
+                initialAttendanceStatuses = state.updatedBookingFilters.attendanceStatuses
+            ) { attendanceStatuses -> state.onUpdateFilterOption(attendanceStatuses) }
+        }
+        composable(BookingFilterPage.PaymentStatus.route) {
         }
         composable(BookingFilterPage.Customer.route) {
             BookingCustomerFilterPage { customer ->
@@ -147,11 +171,7 @@ private fun FiltersNavHost(
                 state.onClose()
             }
         }
-        composable(BookingFilterPage.ServiceEvent.route) {
-            TODO()
-        }
         composable(BookingFilterPage.Location.route) {
-            TODO()
         }
     }
 }
@@ -179,7 +199,7 @@ private fun BookingFilterListScreenPreview() {
     WooThemeWithBackground {
         BookingFilterListScreen(
             state = BookingFilterListUiState(
-                initialBookingFilters = null,
+                initialBookingFilters = BookingFilters(),
             )
         )
     }

@@ -1,11 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-10-21 09:54:38+0000
+Translation-Revision-Date: 2025-11-04 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_mark_as_paid_error">將預訂標示為「已付款」時發生錯誤</string>
+    <string name="booking_cancel_error">取消預訂時發生錯誤</string>
+    <string name="booking_note_screen_update_error">儲存預訂備註時發生錯誤</string>
+    <string name="booking_note_screen_done">完成</string>
+    <string name="booking_note_screen_title">預訂備註</string>
+    <string name="booking_note_description_private">這是私密備註， 不會與顧客分享。</string>
+    <string name="booking_note_label_add_note">新增備註</string>
+    <string name="booking_note_header">預訂備註</string>
+    <string name="booking_duration_seconds">%1$d 秒</string>
+    <string name="booking_duration_second">%1$d 秒</string>
+    <string name="booking_duration_days">%1$d 天</string>
+    <string name="booking_duration_day">%1$d 天</string>
+    <string name="booking_duration_hours">%1$d 小時</string>
+    <string name="booking_duration_hour">%1$d 小時</string>
+    <string name="booking_duration_minutes">%1$d 分鐘</string>
+    <string name="booking_duration_minute">%1$d 分鐘</string>
+    <string name="booking_attendance_status_error">變更出席狀態時發生錯誤</string>
+    <string name="booking_payment_status_pay_on_site">在網站上付款</string>
+    <string name="booking_payment_status_in_cart">在購物車中</string>
+    <string name="bookings_filter_type_event">活動</string>
+    <string name="bookings_filter_type_service">服務</string>
+    <string name="bookings_filters_enabled_title">篩選條件 • %d</string>
+    <string name="woopos_search_orders_error_description">請再試一次。</string>
+    <string name="woopos_search_orders_error_title">無法載入訂單</string>
+    <string name="woopos_search_orders_empty_description">找不到任何相符的訂單，請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_orders_empty_title">找不到訂單</string>
+    <string name="woopos_search_orders">搜尋訂單</string>
+    <string name="woopos_orders_details_totals_card_content_description">訂單總計明細</string>
+    <string name="woopos_orders_details_products_list_content_description">訂單商品列表</string>
+    <string name="woopos_orders_details_net_payment_label">付款淨額</string>
+    <string name="woopos_orders_details_refunded_label">已退款</string>
+    <string name="woopos_orders_details_total_paid_label">總付款金額</string>
+    <string name="woopos_orders_details_total_label">總計</string>
+    <string name="woopos_orders_details_breakdown_shipping_label">運費</string>
+    <string name="woopos_orders_details_breakdown_taxes_label">稅金</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">折扣 (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">折扣</string>
+    <string name="woopos_orders_details_breakdown_products_label">商品</string>
+    <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
+    <string name="woopos_orders_details_totals_title">總計</string>
+    <string name="woopos_orders_details_products_title">商品</string>
+    <string name="woopos_orders_details_placeholder_message">從清單中選擇要檢視詳細資料的訂單。</string>
+    <string name="woopos_orders_details_placeholder_title">選取訂單…</string>
+    <string name="woopos_orders_issue_refund_content_description">發放此訂單的退款？</string>
+    <string name="woopos_orders_email_receipt">電子郵件收據</string>
+    <string name="woopos_orders_pagination_try_again_label">重試</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_cancel_button">取消</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_retry_button">重試</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_message">請檢查你的網際網路連線並再試一次。</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_title">無法同步目錄</string>
+    <string name="woopos_settings_local_catalog_sync_error_dialog_background_content_description">同步錯誤通話方塊背景</string>
+    <string name="woopos_settings_local_catalog_size_format">%1$d 項商品和 %2$d 項款式</string>
+    <string name="woopos_refresh_catalog_banner_dismiss">關閉橫幅</string>
+    <string name="woopos_refresh_catalog_banner_message">目錄過去 7 天尚未同步。 請將裝置連線至 WiFi，或在 POS 設定中啟用透過行動資料網路同步。</string>
+    <string name="woopos_refresh_catalog_banner_title">重新整理目錄</string>
+    <string name="woopos_home_sync_failed_retry_button">重試</string>
+    <string name="woopos_home_sync_failed_message">我們無法同步商品目錄。 請檢查你的網際網路連線，然後再試一次。</string>
+    <string name="woopos_home_sync_failed_title">無法同步</string>
+    <string name="woopos_home_syncing_catalog_exit_button">結束 POS</string>
+    <string name="woopos_home_syncing_catalog_subtitle">將在背景繼續同步</string>
+    <string name="woopos_home_syncing_catalog_title">正在同步目錄</string>
+    <string name="booking_note_discard_changes_discard">捨棄變更</string>
+    <string name="booking_note_discard_changes_message">你確定要捨棄這些變更？</string>
     <string name="booking_cancel_dialog_confirm">是，取消</string>
     <string name="booking_cancel_dialog_keep">不，保留</string>
     <string name="booking_cancel_dialog_message">%1$s 將無法於 %3$s %4$s 出席「%2$s」。</string>
@@ -28,7 +91,7 @@ Language: zh_TW
     <string name="bookings_empty_state_description_with_filters">沒有符合篩選條件的預訂。 請調整後查看更多結果。</string>
     <string name="bookings_search_no_results_with_filters">找不到符合該名稱的預訂。請嘗試調整搜尋字詞或篩選條件，以便查看更多結果。</string>
     <string name="bookings_search_no_results_without_filters">找不到符合該名稱的預訂。請嘗試調整搜尋字詞，以便查看更多結果。</string>
-    <string name="bookings_empty_state_description_upcoming">你之後尚未排程任何預約或事件。</string>
+    <string name="bookings_empty_state_description_upcoming">您尚未安排任何未來的預約或活動。</string>
     <string name="bookings_empty_state_description_today">你今天沒有排程任何預約或事件。</string>
     <string name="bookings_empty_state_description_default">即將到來的預訂會顯示在這裡，供你檢視及管理。</string>
     <string name="bookings_empty_state_title_upcoming">沒有即將到來的預訂</string>

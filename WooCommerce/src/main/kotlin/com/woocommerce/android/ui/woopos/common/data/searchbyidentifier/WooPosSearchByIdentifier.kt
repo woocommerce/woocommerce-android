@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariation
 import com.woocommerce.android.ui.woopos.common.data.WooPosVariationsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.DownloadableOptions
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
@@ -18,15 +17,15 @@ class WooPosSearchByIdentifier @Inject constructor(
     private val remoteSearcher: WooPosSearchByIdentifierRemote,
     private val filterConfig: WooPosProductsTypesFilterConfig,
     private val variationFilterConfig: WooPosVariationsTypesFilterConfig,
-    private val localCatalogSupported: WooPosIsLocalCatalogSupported,
-    private val selectedSite: SelectedSite,
+    private val productDataSource: WooPosProductsDataSource,
     private val wooPosLogWrapper: WooPosLogWrapper,
 ) {
     suspend operator fun invoke(identifier: String): WooPosSearchByIdentifierResult {
-        val isLocalCatalogSupported = localCatalogSupported.invoke(selectedSite.get().localId())
-        val localResult = localSearcher(identifier, isLocalCatalogSupported)
+        val syncStrategy = productDataSource.getCurrentSyncStrategy()
+
+        val localResult = localSearcher(identifier, syncStrategy)
         // When product not found in local catalog, immediately return "not found" to avoid unnecessary remote call
-        if (localResult.isSuccess || isLocalCatalogSupported) {
+        if (localResult.isSuccess || syncStrategy == WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG) {
             return filterUnsupportedProductResult(localResult)
         }
 

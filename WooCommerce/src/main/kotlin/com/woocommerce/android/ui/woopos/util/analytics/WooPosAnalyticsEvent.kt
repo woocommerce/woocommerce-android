@@ -3,13 +3,17 @@ package com.woocommerce.android.ui.woopos.util.analytics
 import com.woocommerce.android.analytics.IAnalyticsEvent
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
+import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListProductType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import kotlin.reflect.KClass
 
 sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
@@ -41,21 +45,27 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object BackToCartTapped : Event() {
             override val name: String = "back_to_cart_tapped"
         }
+
         data object BackToCheckoutFromCash : Event() {
             override val name: String = "back_to_checkout_from_cash"
         }
+
         data object CashCollectPaymentSuccess : Event() {
             override val name: String = "cash_collect_payment_success"
         }
+
         data object CheckoutCashPaymentTapped : Event() {
             override val name: String = "checkout_cash_payment_tapped"
         }
+
         data object CashPaymentTapped : Event() {
             override val name: String = "cash_payment_tapped"
         }
+
         data object CashPaymentFailed : Event() {
             override val name: String = "cash_payment_failed"
         }
+
         data class CheckoutTapped(val productsInCart: Int, val couponsInCart: Int) : Event() {
             override val name: String = "checkout_tapped"
 
@@ -68,15 +78,19 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
         data object ClearCartTapped : Event() {
             override val name: String = "clear_cart_tapped"
         }
+
         data object CreateNewOrderTapped : Event() {
             override val name: String = "create_new_order_tapped"
         }
+
         data object EmailReceiptTapped : Event() {
             override val name: String = "receipt_email_tapped"
         }
+
         data object EmailReceiptSendTapped : Event() {
             override val name: String = "receipt_email_send_tapped"
         }
@@ -92,6 +106,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
         data class EmailReceiptSendSuccess(val eligibleForPOSReceipts: Boolean) : Event() {
             override val name: String = "receipt_email_success"
 
@@ -120,12 +135,15 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object ExitTapped : Event() {
             override val name: String = "exit_menu_item_tapped"
         }
+
         data object ExitConfirmed : Event() {
             override val name: String = "exit_confirmed"
         }
+
         data object InteractionWithCustomerStarted : Event() {
             override val name: String = "interaction_with_customer_started"
         }
+
         data object GoToOrdersTapped : Event() {
             override val name: String = "orders_menu_item_tapped"
         }
@@ -314,6 +332,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                     is WooPosCartItemViewState.Coupon,
                     is WooPosCartItemViewState.Error,
                     is WooPosCartItemViewState.Loading -> null
+
                     is WooPosCartItemViewState.Product.Simple -> ItemsListProductType.SIMPLE
                     is WooPosCartItemViewState.Product.Variation -> ItemsListProductType.VARIATION
                 },
@@ -380,8 +399,80 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
-        data object Loaded : Event() {
+        data class Loaded(val syncStrategy: SyncStrategy) : Event() {
             override val name: String = "loaded"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
+                    )
+                )
+            }
+        }
+
+        data class LocalCatalogSyncStarted(
+            val syncType: SyncType,
+            val connectionType: ConnectionType
+        ) : Event() {
+            override val name: String = "local_catalog_sync_started"
+
+            init {
+                addProperties(
+                    mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
+                        "connection_type" to when (connectionType) {
+                            ConnectionType.WIFI -> "wifi"
+                            ConnectionType.CELLULAR -> "cellular"
+                            ConnectionType.UNKNOWN -> "unknown"
+                        }
+                    )
+                )
+            }
+        }
+
+        data class LocalCatalogSyncCompleted(
+            val syncType: SyncType,
+            val productsSynced: Int,
+            val variationsSynced: Int,
+            val totalProducts: Int,
+            val totalVariations: Int,
+            val syncDurationMs: Long
+        ) : Event() {
+            override val name: String = "local_catalog_sync_completed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
+                        "products_synced" to productsSynced.toString(),
+                        "variations_synced" to variationsSynced.toString(),
+                        "total_products" to totalProducts.toString(),
+                        "total_variations" to totalVariations.toString(),
+                        "sync_duration_ms" to syncDurationMs.toString()
+                    )
+                )
+            }
+        }
+
+        data class LocalCatalogSyncFailed(
+            val syncType: SyncType,
+            val errorContext: String,
+            val errorType: SyncErrorType,
+            val errorDescription: String
+        ) : Event() {
+            override val name: String = "local_catalog_sync_failed"
+
+            init {
+                addProperties(
+                    mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
+                        "error_context" to errorContext,
+                        SyncErrorType.ERROR_TYPE to errorType.toString(),
+                        "error_description" to errorDescription
+                    )
+                )
+            }
         }
 
         data object OrderCreationSuccess : Event() {
@@ -695,6 +786,54 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         data object SplashScreenRetryTapped : Event() {
             override val name: String = "splash_screen_retry_tapped"
         }
+
+        data class CheckoutOutdatedItemDetectedScreenShown(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_screen_shown"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
+                    )
+                )
+            }
+        }
+
+        data class CheckoutOutdatedItemDetectedEditOrderTapped(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_edit_order_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
+                    )
+                )
+            }
+        }
+
+        data class CheckoutOutdatedItemDetectedRemoveTapped(
+            val reason: String,
+            val syncStrategy: SyncStrategy
+        ) : Event() {
+            override val name: String = "checkout_outdated_item_detected_remove_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "reason" to reason,
+                        "sync_strategy" to syncStrategy.toAnalyticsValue()
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
@@ -952,5 +1091,12 @@ internal fun WooPosLaunchability.NonLaunchabilityReason.toAnalyticsReason(): Str
         WooPosLaunchability.NonLaunchabilityReason.SiteSettingsUnavailable,
         WooPosLaunchability.NonLaunchabilityReason.UnknownNoPositiveCache,
         WooPosLaunchability.NonLaunchabilityReason.NoSiteSelected -> "other"
+    }
+}
+
+internal fun SyncStrategy.toAnalyticsValue(): String {
+    return when (this) {
+        SyncStrategy.REMOTE -> "remote"
+        SyncStrategy.LOCAL_CATALOG -> "local_catalog"
     }
 }

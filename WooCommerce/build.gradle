@@ -26,6 +26,10 @@ fladle {
     devices = [
             ["model": "MediumPhone.arm", "version": "35"]
     ]
+
+    additionalTestApks = [
+            "- test: ${rootProject.projectDir}/libs/fluxc-plugin/build/outputs/apk/androidTest/debug/fluxc-plugin-debug-androidTest.apk".toString()
+    ]
     localResultsDir = "$rootDir/build/instrumented-tests"
 
     useOrchestrator = true
@@ -512,6 +516,21 @@ static def loadPropertiesFromFile(inputFile) {
 
 def isLeakCanaryEnabled() {
     return developerProperties.get("enable_leak_canary") ?: true
+}
+
+dependencyAnalysis {
+    issues {
+        onUnusedDependencies {
+            // This dependency is actually needed otherwise UI tests will crash with a runtime exception.
+            exclude(libs.apache.http.client.android.get().module.toString())
+            // This dependency is actually needed otherwise it will cause the app to fail to build.
+            exclude(libs.androidx.hilt.navigation.compose.get().module.toString())
+            // This dependency is actually needed otherwise it will cause the app to fail to build.
+            exclude(libs.androidx.work.runtime.ktx.get().module.toString())
+            // This dependency is actually needed otherwise it will cause the app to fail to build.
+            exclude(libs.google.protobuf.kotlinlite.get().module.toString())
+        }
+    }
 }
 
 apply from: '../config/gradle/build_optimization.gradle'

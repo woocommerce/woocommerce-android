@@ -75,4 +75,9 @@ sealed class WooPosTotalsViewState : Parcelable {
         val message: String,
         val reason: String,
     ) : WooPosTotalsViewState()
+
+    data class ProductNotFoundError(
+        val message: String,
+        val reason: String,
+    ) : WooPosTotalsViewState()
 }

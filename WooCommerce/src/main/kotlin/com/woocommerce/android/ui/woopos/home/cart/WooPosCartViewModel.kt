@@ -176,7 +176,7 @@ class WooPosCartViewModel @Inject constructor(
     }
 
     private fun getCartItemsDataList(): List<WooPosItemsViewModel.ItemClickedData> {
-        val itemClickedDataList = (_state.value.body as WooPosCartState.Body.WithItems).itemsInCart.mapNotNull {
+        val itemClickedDataList = (_state.value.body as? WooPosCartState.Body.WithItems)?.itemsInCart?.mapNotNull {
             when (it) {
                 is Product.Simple -> WooPosItemsViewModel.ItemClickedData.Product.Simple(it.id)
                 is Product.Variation -> WooPosItemsViewModel.ItemClickedData.Product.Variation(
@@ -188,7 +188,7 @@ class WooPosCartViewModel @Inject constructor(
                 is WooPosCartItemViewState.Loading -> null
                 is WooPosCartItemViewState.Error -> null
             }
-        }
+        } ?: emptyList()
         return itemClickedDataList
     }
 
@@ -227,9 +227,15 @@ class WooPosCartViewModel @Inject constructor(
                         removeCouponsFromCart()
                     }
 
+                    is ParentToChildrenEvent.RemoveProductsClicked -> {
+                        removeNotFoundProductsFromCart(event)
+                    }
+
                     is ParentToChildrenEvent.BarcodeEvent -> {
                         onBarcodeEvent(event.result)
                     }
+
+                    is ParentToChildrenEvent.ProductsRemoved -> Unit
                 }
             }
         }
@@ -286,6 +292,19 @@ class WooPosCartViewModel @Inject constructor(
                 removeItemsFromCart(couponsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
             }
         sendEventToParent(CouponsRemoved(getCartItemsDataList()))
+    }
+
+    private fun removeNotFoundProductsFromCart(event: ParentToChildrenEvent.RemoveProductsClicked) {
+        val cartBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+
+        val productsToRemove = cartBody.itemsInCart
+            .filterIsInstance<Product.Simple>()
+            .filter { it.id in event.productIdsToRemove }
+            .toSet()
+
+        removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
+
+        sendEventToParent(ChildToParentEvent.ProductsRemoved(getCartItemsDataList()))
     }
 
     private fun handleBackFromCheckoutToCartClicked() {
