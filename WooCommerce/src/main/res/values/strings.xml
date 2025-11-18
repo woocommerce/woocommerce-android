@@ -2547,6 +2547,7 @@
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
     <string name="product_type_booking">Bookable product</string>
+    <string name="product_type_bookable_service">Service</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
