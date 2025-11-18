@@ -42,7 +42,7 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     private suspend fun observeProducts() {
         productListRepository.observeProducts(
             filterOptions = mapOf(
-                WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKING.value
+                WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
             )
         ).collect { products ->
             _uiState.update { currentState ->
