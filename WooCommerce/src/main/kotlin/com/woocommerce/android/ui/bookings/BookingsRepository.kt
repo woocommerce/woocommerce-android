@@ -88,13 +88,13 @@ class BookingsRepository @Inject constructor(
         }
     }
 
-    suspend fun fetchResources(): Result<Array<BookingResourceEntity>> {
+    suspend fun fetchResources(): Result<Unit> {
         val result = bookingsStore.fetchResources(site = selectedSite.get())
         val model = result.model
         return if (result.isError || model == null) {
             Result.failure(WooException(result.error))
         } else {
-            Result.success(model)
+            Result.success(Unit)
         }
     }
 
