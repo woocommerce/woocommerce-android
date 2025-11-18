@@ -95,7 +95,6 @@ fun WooPosCatalogSyncOverdueBanner(
                         imageVector = Icons.Default.Close,
                         contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
