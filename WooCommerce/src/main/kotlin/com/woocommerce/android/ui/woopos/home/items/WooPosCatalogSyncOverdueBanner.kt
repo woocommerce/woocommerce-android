@@ -7,7 +7,6 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -17,7 +16,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -75,41 +73,30 @@ fun WooPosCatalogSyncOverdueBanner(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        WooPosText(
-                            text = stringResource(R.string.woopos_refresh_catalog_banner_title),
-                            style = WooPosTypography.BodyLarge,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        Spacer(Modifier.weight(1f))
-                        IconButton(
-                            modifier = Modifier.minimumInteractiveComponentSize(),
-                            onClick = onDismiss,
-                        ) {
-                            Icon(
-                                modifier = Modifier.size(24.dp),
-                                imageVector = Icons.Default.Close,
-                                contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
-                                tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                            )
-                        }
-                    }
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        WooPosText(
-                            modifier = Modifier.weight(1f),
-                            text = stringResource(R.string.woopos_refresh_catalog_banner_message),
-                            style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                        Spacer(Modifier.minimumInteractiveComponentSize())
-                    }
+                    WooPosText(
+                        text = stringResource(R.string.woopos_refresh_catalog_banner_title),
+                        style = WooPosTypography.BodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    WooPosText(
+                        text = stringResource(R.string.woopos_refresh_catalog_banner_message),
+                        style = WooPosTypography.BodySmall,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Top)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         }
