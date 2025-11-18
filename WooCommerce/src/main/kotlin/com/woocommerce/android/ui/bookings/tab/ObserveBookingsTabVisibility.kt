@@ -1,10 +1,10 @@
 package com.woocommerce.android.ui.bookings.tab
 
-import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
@@ -46,7 +46,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
                 productListRepository.observeProductsCount(
                     filterOptions = mapOf(
                         ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                        ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE
+                        ProductFilterOption.TYPE to ProductType.BOOKING.value
                     ),
                     excludeSampleProducts = true
                 )
@@ -54,7 +54,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
                     .onStart {
                         appCoroutineScope.launch {
                             productListRepository.fetchProductList(
-                                productFilterOptions = mapOf(ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE)
+                                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)
                             ).onFailure {
                                 WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
                             }
@@ -62,10 +62,5 @@ class ObserveBookingsTabVisibility @Inject constructor(
                     }.distinctUntilChanged()
             )
         }
-    }
-
-    companion object {
-        @VisibleForTesting
-        const val BOOKING_PRODUCT_TYPE = "booking"
     }
 }

@@ -2,8 +2,8 @@ package com.woocommerce.android.ui.bookings.tab
 
 import app.cash.turbine.test
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.bookings.tab.ObserveBookingsTabVisibility.Companion.BOOKING_PRODUCT_TYPE
 import com.woocommerce.android.ui.products.ProductStatus
+import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.list.ProductListRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,7 +28,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     private val selectedSiteFlow = MutableStateFlow<SiteModel?>(null)
     private val bookableProdsFilterOptions = mapOf(
         ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-        ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE
+        ProductFilterOption.TYPE to ProductType.BOOKING.value
     )
     private val bookableProdsCountFlow = MutableStateFlow(0L)
 
@@ -62,7 +62,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         sut().test {
             verify(productListRepository).fetchProductList(
                 loadMore = any(),
-                productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to BOOKING_PRODUCT_TYPE)),
+                productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)),
                 excludedProductIds = any(),
                 sortType = anyOrNull()
             )
