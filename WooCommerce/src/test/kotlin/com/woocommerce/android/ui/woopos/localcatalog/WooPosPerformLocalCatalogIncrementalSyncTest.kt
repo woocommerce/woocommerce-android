@@ -48,7 +48,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given local catalog not supported, when execute called, then skips sync`() = runTest(testScheduler) {
+    fun `given local catalog not supported, when execute called, then skips sync`() = runTest(
+        testScheduler
+    ) {
         // GIVEN
         val site = SiteModel().apply { id = 123 }
         whenever(networkStatus.isConnected()).thenReturn(true)
@@ -65,7 +67,9 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given no network connection, when execute called, then skips sync`() = runTest(testScheduler) {
+    fun `given no network connection, when execute called, then skips sync`() = runTest(
+        testScheduler
+    ) {
         // GIVEN
         whenever(networkStatus.isConnected()).thenReturn(false)
 

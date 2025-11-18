@@ -1,10 +1,16 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -20,17 +26,21 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val time: DateTimeProvider,
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongMethod")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {
         val site = selectedSite.getOrNull()
         if (site == null) {
             wooPosLogWrapper.e("Full sync check failed: No site selected")
+            trackSyncSkipped(SyncSkipReason.NO_SITE_SELECTED)
             return WooPosFullSyncRequirement.Error("No site selected")
         }
 
         if (!isLocalCatalogSupported(site.localId())) {
             wooPosLogWrapper.d("Full sync check skipped: Local catalog not supported for site")
+            trackSyncSkipped(SyncSkipReason.LOCAL_CATALOG_NOT_SUPPORTED)
             return WooPosFullSyncRequirement.LocalCatalogDisabled("Local catalog not supported for site")
         }
 
@@ -43,6 +53,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
             if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
                 prefsRepo.disablePeriodicSyncForSite(site.localId())
+                trackSyncSkipped(SyncSkipReason.CATALOG_TOO_LARGE)
                 return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
             }
         }
@@ -53,6 +64,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
         if (lastFullSyncTimestamp == null) {
             if (!networkStatus.isConnected()) {
                 wooPosLogWrapper.e("Cannot perform initial sync: No network connection")
+                trackSyncSkipped(SyncSkipReason.NO_NETWORK)
                 return WooPosFullSyncRequirement.Error("No network connection")
             }
             wooPosLogWrapper.d("Full sync required: Never synced before")
@@ -83,6 +95,16 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 }
                 WooPosFullSyncRequirement.NonBlockingRequired(lastFullSyncTimestamp, isFullSyncOverdue)
             }
+        }
+    }
+
+    private fun trackSyncSkipped(skipReason: SyncSkipReason) {
+        appCoroutineScope.launch {
+            analyticsTracker.track(
+                LocalCatalogSyncSkipped(
+                    skipReason = skipReason
+                )
+            )
         }
     }
 

@@ -4,9 +4,13 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -38,6 +42,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val time: DateTimeProvider = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val siteModel = SiteModel().apply {
         id = 123
@@ -57,7 +62,9 @@ class WooPosFullSyncStatusCheckerTest {
         checkCatalogSizeAction = checkCatalogSizeAction,
         isLocalCatalogSupported = isLocalCatalogSupported,
         wooPosLogWrapper = wooPosLogWrapper,
-        time = time
+        time = time,
+        analyticsTracker = analyticsTracker,
+        appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
     )
 
     @Before
@@ -77,7 +84,7 @@ class WooPosFullSyncStatusCheckerTest {
     }
 
     @Test
-    fun `given local catalog not supported, when checkSyncRequirement called, then should return LocalCatalogDisabled`() =
+    fun `given local catalog not supported, when checkSyncRequirement called, then should return LocalCatalogDisabled and track event`() =
         runTest {
             // GIVEN
             whenever(isLocalCatalogSupported(siteModel.localId())).thenReturn(false)
@@ -86,13 +93,19 @@ class WooPosFullSyncStatusCheckerTest {
 
             // WHEN
             val result = sut.checkSyncRequirement()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
+            verify(analyticsTracker).track(
+                LocalCatalogSyncSkipped(
+                    skipReason = SyncSkipReason.LOCAL_CATALOG_NOT_SUPPORTED
+                )
+            )
         }
 
     @Test
-    fun `given no site selected, when checkSyncRequirement called, then should return Error`() = runTest {
+    fun `given no site selected, when checkSyncRequirement called, then should return Error and track event`() = runTest {
         // GIVEN
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
@@ -100,10 +113,16 @@ class WooPosFullSyncStatusCheckerTest {
 
         // WHEN
         val result = sut.checkSyncRequirement()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isInstanceOf(WooPosFullSyncRequirement.Error::class.java)
         assertThat((result as WooPosFullSyncRequirement.Error).message).isEqualTo("No site selected")
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                skipReason = SyncSkipReason.NO_SITE_SELECTED
+            )
+        )
     }
 
     @Test
@@ -122,7 +141,7 @@ class WooPosFullSyncStatusCheckerTest {
         }
 
     @Test
-    fun `given never synced before and no network, when checkSyncRequirement called, then should return Error`() =
+    fun `given never synced before and no network, when checkSyncRequirement called, then should return Error and track event`() =
         runTest {
             // GIVEN
             whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(null)
@@ -132,10 +151,16 @@ class WooPosFullSyncStatusCheckerTest {
 
             // WHEN
             val result = sut.checkSyncRequirement()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.Error::class.java)
             assertThat((result as WooPosFullSyncRequirement.Error).message).isEqualTo("No network connection")
+            verify(analyticsTracker).track(
+                LocalCatalogSyncSkipped(
+                    skipReason = SyncSkipReason.NO_NETWORK
+                )
+            )
         }
 
     @Test
@@ -256,7 +281,7 @@ class WooPosFullSyncStatusCheckerTest {
         }
 
     @Test
-    fun `given empty catalog and catalog too large, when checkSyncRequirement called, then should disable sync and return LocalCatalogDisabled`() =
+    fun `given empty catalog and catalog too large, when checkSyncRequirement called, then should disable sync, return LocalCatalogDisabled, and track event`() =
         runTest {
             // GIVEN
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -272,10 +297,16 @@ class WooPosFullSyncStatusCheckerTest {
 
             // WHEN
             val result = sut.checkSyncRequirement()
+            coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
             // THEN
             verify(prefsRepo).disablePeriodicSyncForSite(siteModel.localId())
             assertThat(result).isInstanceOf(WooPosFullSyncRequirement.LocalCatalogDisabled::class.java)
+            verify(analyticsTracker).track(
+                LocalCatalogSyncSkipped(
+                    skipReason = SyncSkipReason.CATALOG_TOO_LARGE
+                )
+            )
         }
 
     @Test

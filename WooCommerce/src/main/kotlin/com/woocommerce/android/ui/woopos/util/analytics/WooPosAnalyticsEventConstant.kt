@@ -109,4 +109,19 @@ object WooPosAnalyticsEventConstant {
             const val ERROR_TYPE = "error_type"
         }
     }
+
+    enum class SyncSkipReason(val value: String) {
+        NO_NETWORK("no_network"),
+        NO_SITE_SELECTED("no_site_selected"),
+        LOCAL_CATALOG_NOT_SUPPORTED("local_catalog_not_supported"),
+        CATALOG_TOO_LARGE("catalog_too_large");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SKIP_REASON = "reason"
+        }
+    }
 }
