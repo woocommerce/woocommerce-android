@@ -1,10 +1,11 @@
 package org.wordpress.android.fluxc.wc.shippinglabels
 
-import androidx.room.Room
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.yarolegovich.wellsql.WellSql
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -37,7 +38,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.SLCreationEligibilityApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.test
@@ -51,13 +52,17 @@ import kotlin.test.assertTrue
 @Config(manifest = Config.NONE)
 @RunWith(RobolectricTestRunner::class)
 class WCShippingLabelStoreTest {
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
+
     private val restClient = mock<ShippingLabelRestClient>()
     private val orderId = 25L
     private val refundShippingLabelId = 12L
     private val site = SiteModel().apply { id = 321 }
     private val errorSite = SiteModel().apply { id = 123 }
     private val mapper = WCShippingLabelMapper()
-    private lateinit var roomDb: WCAndroidDatabase
     private lateinit var store: WCShippingLabelStore
 
     private val sampleShippingLabelApiResponse = WCShippingLabelTestUtils.generateSampleShippingLabelApiResponse()
@@ -191,24 +196,15 @@ class WCShippingLabelStoreTest {
         WellSql.init(config)
         config.reset()
 
-        roomDb = Room.inMemoryDatabaseBuilder(appContext, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-
         store = WCShippingLabelStore(
             restClient,
             initCoroutineEngine(),
             mapper,
-            roomDb.shippingLabelDao,
+            databaseRule.db.shippingLabelDao
         )
 
         // Insert the site into the db so it's available later when testing shipping labels
         TestSiteSqlUtils.siteSqlUtils.insertOrUpdateSite(site)
-    }
-
-    @After
-    fun tearDown() {
-        roomDb.close()
     }
 
     @Test

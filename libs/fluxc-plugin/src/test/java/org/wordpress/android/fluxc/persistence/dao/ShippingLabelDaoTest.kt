@@ -1,42 +1,36 @@
 package org.wordpress.android.fluxc.persistence.dao
 
 import android.app.Application
-import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
+import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.wc.shippinglabels.WCShippingLabelTestUtils
 
 @ExperimentalCoroutinesApi
 @RunWith(RobolectricTestRunner::class)
 class ShippingLabelDaoTest {
+
     private lateinit var shippingLabelDao: ShippingLabelDao
-    private lateinit var db: WCAndroidDatabase
+
+    @Rule
+    @JvmField
+    val databaseRule = DatabaseTestRule(ApplicationProvider.getApplicationContext<Application>())
 
     private val defaultSiteId = LocalId(6)
     private val defaultOrderId = RemoteId(12L)
 
     @Before
-    fun createDb() {
-        val context = ApplicationProvider.getApplicationContext<Application>()
-        db = Room.inMemoryDatabaseBuilder(context, WCAndroidDatabase::class.java)
-            .allowMainThreadQueries()
-            .build()
-        shippingLabelDao = db.shippingLabelDao
-    }
-
-    @After
-    fun closeDb() {
-        db.close()
+    fun setUp() {
+        shippingLabelDao = databaseRule.db.shippingLabelDao
     }
 
     @Test
