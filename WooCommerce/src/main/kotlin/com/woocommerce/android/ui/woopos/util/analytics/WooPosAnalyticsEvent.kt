@@ -477,6 +477,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data class LocalCatalogSyncSkipped(
+            val syncType: SyncType,
             val skipReason: SyncSkipReason
         ) : Event() {
             override val name: String = "local_catalog_sync_skipped"
@@ -484,6 +485,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             init {
                 addProperties(
                     mapOf(
+                        SyncType.SYNC_TYPE to syncType.toString(),
                         SyncSkipReason.SKIP_REASON to skipReason.toString()
                     )
                 )

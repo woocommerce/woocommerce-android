@@ -114,7 +114,9 @@ object WooPosAnalyticsEventConstant {
         NO_NETWORK("no_network"),
         NO_SITE_SELECTED("no_site_selected"),
         LOCAL_CATALOG_NOT_SUPPORTED("local_catalog_not_supported"),
-        CATALOG_TOO_LARGE("catalog_too_large");
+        CATALOG_TOO_LARGE("catalog_too_large"),
+        POS_NOT_OPENED_30_DAYS("pos_not_opened_30_days"),
+        POS_NOT_ELIGIBLE("pos_not_eligible");
 
         override fun toString(): String {
             return value
