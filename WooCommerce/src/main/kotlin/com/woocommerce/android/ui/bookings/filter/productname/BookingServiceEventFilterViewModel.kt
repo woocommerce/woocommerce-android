@@ -34,12 +34,10 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     val uiState: StateFlow<BookingServiceEventFilterUiState> = _uiState
 
     init {
-        launch {
-            observeProducts()
-        }
+        observeProducts()
     }
 
-    private suspend fun observeProducts() {
+    private fun observeProducts() = launch {
         productListRepository.observeProducts(
             filterOptions = mapOf(
                 WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
