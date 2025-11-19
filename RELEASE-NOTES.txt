@@ -6,6 +6,7 @@
 -----
 - [Internal][Woo POS] Improve detection and handling of deleted products during checkout [https://github.com/woocommerce/woocommerce-android/pull/14981]
 - [*][Woo POS] Fixed payment screen layout to properly position payment instructions text [https://github.com/woocommerce/woocommerce-android/pull/14991]
+- [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 
 23.7
 -----

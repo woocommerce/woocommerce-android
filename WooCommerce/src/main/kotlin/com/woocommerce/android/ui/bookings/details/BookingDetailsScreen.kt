@@ -282,7 +282,6 @@ private fun BookingDetailsPreview() {
                         staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
-                        price = "$55.00",
                         cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,
                     ),
