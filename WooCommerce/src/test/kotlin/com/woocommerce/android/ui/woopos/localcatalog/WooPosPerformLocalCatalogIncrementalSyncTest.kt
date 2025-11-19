@@ -4,7 +4,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -12,7 +11,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.mock
@@ -62,13 +60,12 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
-        verifyNoInteractions(localCatalogSyncRepository)
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL,
-                skipReason = SyncSkipReason.LOCAL_CATALOG_NOT_SUPPORTED
+                syncType = SyncType.INCREMENTAL
             )
         )
+        verifyNoInteractions(localCatalogSyncRepository)
     }
 
     @Test
@@ -85,13 +82,12 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync after successful payment: No network connection")
-        verifyNoInteractions(localCatalogSyncRepository)
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL,
-                skipReason = SyncSkipReason.NO_NETWORK
+                syncType = SyncType.INCREMENTAL
             )
         )
+        verifyNoInteractions(localCatalogSyncRepository)
     }
 
     @Test
@@ -107,13 +103,12 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync periodic hourly: No site selected")
-        verifyNoInteractions(localCatalogSyncRepository)
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL,
-                skipReason = SyncSkipReason.NO_SITE_SELECTED
+                syncType = SyncType.INCREMENTAL
             )
         )
+        verifyNoInteractions(localCatalogSyncRepository)
     }
 
     @Test
@@ -165,7 +160,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure, disables periodic sync, and tracks event`() = runTest(
+    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(
         testScheduler
     ) {
         // GIVEN
@@ -189,12 +184,6 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
         verify(wooPosLogWrapper).e("Disabling Local Catalog periodic sync for site due to catalog size too large")
         verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
-        verify(analyticsTracker).track(
-            LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL,
-                skipReason = SyncSkipReason.CATALOG_TOO_LARGE
-            )
-        )
     }
 
     @Test
