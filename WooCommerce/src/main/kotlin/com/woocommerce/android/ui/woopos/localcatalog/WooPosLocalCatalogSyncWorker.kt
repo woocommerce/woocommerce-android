@@ -48,7 +48,7 @@ constructor(
 
         val site = selectedSite.getOrNull() ?: run {
             logger.e("Unexpected: Site is null after validation")
-            trackSyncSkipped()
+            trackSyncSkipped(SyncSkipReason.SITE_NOT_SELECTED)
             return Result.failure()
         }
 
@@ -96,17 +96,17 @@ constructor(
                     "Local catalog sync NotRequired: Catalog was last synced at " +
                         "${syncRequirement.lastSyncTimestamp}"
                 )
-                trackSyncSkipped()
+                trackSyncSkipped(SyncSkipReason.SYNC_NOT_REQUIRED)
                 Result.success()
             }
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 logger.d("Local catalog sync LocalCatalogDisabled: ${syncRequirement.message}")
-                trackSyncSkipped()
+                trackSyncSkipped(SyncSkipReason.LOCAL_CATALOG_DISABLED)
                 Result.success()
             }
             is WooPosFullSyncRequirement.Error -> {
                 logger.e("Sync requirement check failed: ${syncRequirement.message}. Retrying...")
-                trackSyncSkipped()
+                trackSyncSkipped(SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED)
                 Result.retry()
             }
             is WooPosFullSyncRequirement.BlockingRequired,
