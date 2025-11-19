@@ -105,7 +105,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when no site selected, then returns retry`() = testBlocking {
+    fun `when no site selected, then returns retry and tracks event`() = testBlocking {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement())
             .thenReturn(WooPosFullSyncRequirement.Error("No site selected"))
@@ -113,10 +113,17 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED
+            )
+        )
     }
 
     @Test
@@ -134,7 +141,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         verify(syncRepository, never()).syncLocalCatalogFull(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.SITE_NOT_SELECTED
             )
         )
     }
@@ -275,7 +283,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.SYNC_NOT_REQUIRED
             )
         )
     }
@@ -298,13 +307,14 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.LOCAL_CATALOG_DISABLED
             )
         )
     }
 
     @Test
-    fun `given sync requirement check error, when validateSyncStatus is called, then returns retry and tracks event`() = testBlocking {
+    fun `given no network connection, when validateSyncStatus is called, then returns retry and tracks event`() = testBlocking {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement())
             .thenReturn(WooPosFullSyncRequirement.Error("No network connection"))
@@ -321,7 +331,8 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.FULL
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED
             )
         )
     }
