@@ -2547,6 +2547,7 @@
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
     <string name="product_type_booking">Bookable product</string>
+    <string name="product_type_bookable_service">Service</string>
 
     <!-- Product type bottom sheets -->
     <string name="product_type_list_header">Select a product type</string>
@@ -4226,6 +4227,7 @@
     <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
     <string name="bookings_filter_title_service_event">Service / Event</string>
+    <string name="bookings_filter_search_service_event">Search service / event</string>
     <string name="bookings_filter_default">Any</string>
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>

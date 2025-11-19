@@ -62,7 +62,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
         return productListRepository.observeProductsCount(
             filterOptions = mapOf(
                 ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-                ProductFilterOption.TYPE to ProductType.BOOKING.value
+                ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
             ),
             excludeSampleProducts = true
         )
@@ -75,7 +75,7 @@ class ObserveBookingsTabVisibility @Inject constructor(
     private fun fetchBookableInfo() = appCoroutineScope.launch {
         val products = async {
             productListRepository.fetchProductList(
-                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)
+                productFilterOptions = mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)
             ).onFailure {
                 WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookable products")
             }
