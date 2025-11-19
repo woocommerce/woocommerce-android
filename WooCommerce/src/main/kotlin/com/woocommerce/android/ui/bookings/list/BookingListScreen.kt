@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ fun BookingListScreen(state: BookingListViewState) {
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(R.string.bookings_tab_title),
+                title = state.toolbarTitle.getText(),
                 navigationIcon = null,
                 actions = {
                     SearchSection(
