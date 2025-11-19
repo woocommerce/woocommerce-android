@@ -1,0 +1,26 @@
+plugins {
+    alias(libs.plugins.android.library)
+    alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.dependency.analysis)
+}
+
+android {
+    compileOptions {
+        sourceCompatibility = libs.versions.java.get()
+        targetCompatibility = libs.versions.java.get()
+    }
+
+    namespace = "com.woocommerce.android.pos"
+
+    defaultConfig {
+        minSdkVersion gradle.ext.minSdkVersion
+        targetSdkVersion gradle.ext.targetSdkVersion
+        compileSdk = gradle.ext.compileSdkVersion
+    }
+}
+
+dependencies {
+    implementation(project(":libs:commons"))
+    implementation(libs.google.dagger.hilt.android.main)
+}

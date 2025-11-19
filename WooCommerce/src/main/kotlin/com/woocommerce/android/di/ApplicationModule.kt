@@ -81,9 +81,4 @@ abstract class ApplicationModule {
 @Qualifier
 @MustBeDocumented
 @Retention(RUNTIME)
-annotation class AppCoroutineScope
-
-@Qualifier
-@MustBeDocumented
-@Retention(RUNTIME)
 annotation class LimitedConcurrencyDispatcher
