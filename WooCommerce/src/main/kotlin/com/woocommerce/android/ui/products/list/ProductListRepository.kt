@@ -19,7 +19,6 @@ import com.woocommerce.android.util.ContinuationWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -240,7 +239,7 @@ class ProductListRepository @Inject constructor(
         limit = limit
     ).map {
         it.map { product -> product.toAppModel() }
-    }.flowOn(dispatchers.io)
+    }
 
     fun observeProductsCount(
         filterOptions: Map<WCProductStore.ProductFilterOption, String>,
