@@ -1023,7 +1023,7 @@ platform :android do
   #####################################################################################
   desc 'Build the application and instrumented tests, then run the tests in Firebase Test Lab'
   lane :build_and_instrumented_test do
-    gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest])
+    gradle(tasks: %w[assembleVanillaDebug assembleVanillaDebugAndroidTest :libs:fluxc-plugin:assembleDebugAndroidTest])
 
     annotation_ctx = 'firebase-test-woocommerce-vanilla-debug'
     begin

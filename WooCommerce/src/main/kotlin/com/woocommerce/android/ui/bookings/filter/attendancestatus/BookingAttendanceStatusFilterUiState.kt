@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.filter.attendancestatus
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
@@ -12,7 +13,7 @@ data class BookingAttendanceStatusFilterUiState(
 ) {
     val items: List<BookingFilterListItem> = availableAttendanceStatuses().map { status ->
         BookingFilterListItem(
-            title = status.titleRes,
+            title = UiString.UiStringRes(status.titleRes),
             selected = isSelected(status),
             onClick = { onStatusSelected(status) }
         )
