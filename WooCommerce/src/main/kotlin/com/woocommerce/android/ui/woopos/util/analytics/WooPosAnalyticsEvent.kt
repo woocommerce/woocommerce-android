@@ -478,17 +478,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
 
         data class LocalCatalogSyncSkipped(
             val syncType: SyncType,
-            val skipReason: SyncSkipReason
+            val skipReason: SyncSkipReason? = null
         ) : Event() {
             override val name: String = "local_catalog_sync_skipped"
 
             init {
-                addProperties(
-                    mapOf(
-                        SyncType.SYNC_TYPE to syncType.toString(),
-                        SyncSkipReason.SKIP_REASON to skipReason.toString()
-                    )
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString()
                 )
+                skipReason?.let {
+                    properties[SyncSkipReason.SKIP_REASON] = it.toString()
+                }
+                addProperties(properties)
             }
         }
 
