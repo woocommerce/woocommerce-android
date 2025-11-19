@@ -57,8 +57,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -75,10 +73,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import coil.compose.AsyncImagePainter
-import coil.compose.rememberAsyncImagePainter
-import coil.imageLoader
-import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -87,6 +81,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
@@ -527,43 +522,15 @@ private fun ProductItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
+            WooPosItemImage(
+                imageUrl = item.imageUrl,
                 modifier = Modifier
-                    .background(MaterialTheme.colorScheme.surfaceDim)
                     .width(96.dp)
                     .fillMaxHeight()
                     .heightIn(min = 96.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                val asyncImagePainter = rememberAsyncImagePainter(
-                    model = ImageRequest.Builder(LocalContext.current)
-                        .data(item.imageUrl)
-                        .crossfade(true)
-                        .build(),
-                    imageLoader = LocalContext.current.imageLoader,
-                    contentScale = ContentScale.Crop
-                )
-
-                val isNotLoaded = asyncImagePainter.state !is AsyncImagePainter.State.Success
-
-                if (isNotLoaded) {
-                    Image(
-                        imageVector = Icons.Outlined.Inventory2,
-                        contentDescription = null,
-                        colorFilter = ColorFilter.tint(WooPosTheme.colors.onDisabledContainer),
-                        modifier = Modifier.size(36.dp)
-                    )
-                }
-
-                Image(
-                    painter = asyncImagePainter,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .size(96.dp)
-                        .alpha(1f)
-                )
-            }
+                icon = Icons.Outlined.Inventory2,
+                iconSize = 36.dp
+            )
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
 

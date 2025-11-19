@@ -34,8 +34,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -43,12 +41,11 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -293,29 +290,15 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
 
 @Composable
 private fun ProductImage(item: Product) {
-    Box(
+    WooPosItemImage(
+        imageUrl = item.imageUrl,
         modifier = Modifier
             .width(112.dp)
             .fillMaxHeight()
-            .heightIn(min = 112.dp)
-            .background(MaterialTheme.colorScheme.surfaceDim),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            imageVector = Icons.Outlined.Inventory2,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-            modifier = Modifier.size(44.dp)
-        )
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(item.imageUrl)
-                .crossfade(true)
-                .build(),
-            contentDescription = null,
-            contentScale = ContentScale.Crop
-        )
-    }
+            .heightIn(min = 112.dp),
+        icon = Icons.Outlined.Inventory2,
+        iconSize = 44.dp
+    )
 }
 
 @Composable
@@ -348,7 +331,7 @@ fun WooPosCouponCard(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CouponImage(item.expiredState)
+            CouponImage()
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
@@ -408,26 +391,16 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
 }
 
 @Composable
-private fun CouponImage(expiredState: Coupon.ExpiredState) {
-    Box(
+private fun CouponImage() {
+    WooPosItemImage(
+        imageUrl = null,
         modifier = Modifier
             .width(112.dp)
             .fillMaxHeight()
-            .heightIn(min = 112.dp)
-            .background(MaterialTheme.colorScheme.surfaceDim),
-        contentAlignment = Alignment.Center
-    ) {
-        Image(
-            imageVector = Icons.Outlined.LocalOffer,
-            contentDescription = null,
-            colorFilter = if (expiredState is Coupon.ExpiredState.Expired) {
-                ColorFilter.tint(WooPosTheme.colors.disabledContainer)
-            } else {
-                ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest)
-            },
-            modifier = Modifier.size(36.dp, 36.dp)
-        )
-    }
+            .heightIn(min = 112.dp),
+        icon = Icons.Outlined.LocalOffer,
+        iconSize = 36.dp
+    )
 }
 
 @Composable
