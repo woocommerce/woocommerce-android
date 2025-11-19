@@ -11,7 +11,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestScope
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -88,7 +87,6 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             timeProvider = mockTimeProvider,
             syncStatusChecker = syncStatusChecker,
             analyticsTracker = analyticsTracker,
-            appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
         )
     }
 
