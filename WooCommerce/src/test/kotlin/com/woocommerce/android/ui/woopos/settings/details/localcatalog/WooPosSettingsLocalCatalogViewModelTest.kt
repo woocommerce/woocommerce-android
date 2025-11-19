@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
+import com.woocommerce.android.ui.woopos.util.WooPosCellularCapabilityDetector
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
@@ -45,8 +46,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     private val syncScheduler: WooPosLocalCatalogSyncScheduler = mock()
     private val childToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver = mock()
-    private val cellularCapabilityDetector: com.woocommerce.android.ui.woopos.util.WooPosCellularCapabilityDetector =
-        mock()
+    private val cellularCapabilityDetector: WooPosCellularCapabilityDetector = mock()
 
     private val mockSite: SiteModel = mock()
     private val allowCellularDataFlow = MutableStateFlow(false)
@@ -82,26 +82,34 @@ class WooPosSettingsLocalCatalogViewModelTest {
     fun `given cellular data is disabled, when init, then state reflects disabled preference`() = runTest {
         // GIVEN
         allowCellularDataFlow.value = false
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
 
         // WHEN
         sut = createViewModel()
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.allowCellularDataUpdate).isFalse()
+        val capability = sut.state.value.cellularCapability
+        assertThat(capability).isInstanceOf(WooPosSettingsLocalCatalogState.CellularCapability.Available::class.java)
+        assertThat((capability as WooPosSettingsLocalCatalogState.CellularCapability.Available).allowCellularDataUpdate)
+            .isFalse()
     }
 
     @Test
     fun `given cellular data is enabled, when init, then state reflects enabled preference`() = runTest {
         // GIVEN
         allowCellularDataFlow.value = true
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
 
         // WHEN
         sut = createViewModel()
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.allowCellularDataUpdate).isTrue()
+        val capability = sut.state.value.cellularCapability
+        assertThat(capability).isInstanceOf(WooPosSettingsLocalCatalogState.CellularCapability.Available::class.java)
+        assertThat((capability as WooPosSettingsLocalCatalogState.CellularCapability.Available).allowCellularDataUpdate)
+            .isTrue()
     }
 
     @Test
@@ -121,16 +129,24 @@ class WooPosSettingsLocalCatalogViewModelTest {
     @Test
     fun `when cellular data preference changes, then state is updated`() = runTest {
         // GIVEN
+        whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
         sut = createViewModel()
         advanceUntilIdle()
-        assertThat(sut.state.value.allowCellularDataUpdate).isFalse()
+
+        var capability = sut.state.value.cellularCapability
+        assertThat(capability).isInstanceOf(WooPosSettingsLocalCatalogState.CellularCapability.Available::class.java)
+        assertThat((capability as WooPosSettingsLocalCatalogState.CellularCapability.Available).allowCellularDataUpdate)
+            .isFalse()
 
         // WHEN
         allowCellularDataFlow.value = true
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.allowCellularDataUpdate).isTrue()
+        capability = sut.state.value.cellularCapability
+        assertThat(capability).isInstanceOf(WooPosSettingsLocalCatalogState.CellularCapability.Available::class.java)
+        assertThat((capability as WooPosSettingsLocalCatalogState.CellularCapability.Available).allowCellularDataUpdate)
+            .isTrue()
     }
 
     @Test
@@ -299,7 +315,7 @@ class WooPosSettingsLocalCatalogViewModelTest {
     }
 
     @Test
-    fun `given device has cellular capability, when init, then hasCellularCapability is true`() = runTest {
+    fun `given device has cellular capability, when init, then cellularCapability is Available`() = runTest {
         // GIVEN
         whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(true)
 
@@ -308,11 +324,12 @@ class WooPosSettingsLocalCatalogViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.hasCellularCapability).isTrue()
+        assertThat(sut.state.value.cellularCapability)
+            .isInstanceOf(WooPosSettingsLocalCatalogState.CellularCapability.Available::class.java)
     }
 
     @Test
-    fun `given device has no cellular capability, when init, then hasCellularCapability is false`() = runTest {
+    fun `given device has no cellular capability, when init, then cellularCapability is None`() = runTest {
         // GIVEN
         whenever(cellularCapabilityDetector.hasCellularCapability()).thenReturn(false)
 
@@ -321,7 +338,8 @@ class WooPosSettingsLocalCatalogViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(sut.state.value.hasCellularCapability).isFalse()
+        assertThat(sut.state.value.cellularCapability)
+            .isEqualTo(WooPosSettingsLocalCatalogState.CellularCapability.None)
     }
 
     @Test
