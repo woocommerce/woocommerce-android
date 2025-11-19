@@ -111,12 +111,12 @@ object WooPosAnalyticsEventConstant {
     }
 
     enum class SyncSkipReason(val value: String) {
-        NO_NETWORK("no_network"),
-        NO_SITE_SELECTED("no_site_selected"),
-        LOCAL_CATALOG_NOT_SUPPORTED("local_catalog_not_supported"),
-        CATALOG_TOO_LARGE("catalog_too_large"),
         POS_NOT_OPENED_30_DAYS("pos_not_opened_30_days"),
-        POS_NOT_ELIGIBLE("pos_not_eligible");
+        POS_NOT_ELIGIBLE("pos_not_eligible"),
+        FEATURE_FLAG_DISABLED("feature_flag_disabled"),
+        UNSUPPORTED_WOOCOMMERCE_VERSION("unsupported_woocommerce_version"),
+        CATALOG_TOO_LARGE("catalog_too_large"),
+        CATALOG_SIZE_CHECK_FAILED("catalog_size_check_failed");
 
         override fun toString(): String {
             return value
