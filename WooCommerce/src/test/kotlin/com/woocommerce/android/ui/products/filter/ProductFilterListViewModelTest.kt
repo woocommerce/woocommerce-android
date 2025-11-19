@@ -28,6 +28,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -281,6 +282,8 @@ class ProductFilterListViewModelTest : BaseUnitTest() {
         }
 
         assertFalse(hasAnExploreOption)
+        val expectedNumberOfAllAvailableFilters = 9
+        assertEquals(productTypeFilter.filterOptionListItems.size, expectedNumberOfAllAvailableFilters)
     }
 
     @Test

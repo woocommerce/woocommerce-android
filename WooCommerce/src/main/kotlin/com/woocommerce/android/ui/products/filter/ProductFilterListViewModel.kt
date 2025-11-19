@@ -541,11 +541,19 @@ class ProductFilterListViewModel @Inject constructor(
             ProductType.BUNDLE,
             ProductType.COMPOSITE,
             ProductType.VARIATION -> {
-                FilterListOptionItemUiModel.ExploreOptionItemUiModel(
-                    resourceProvider.getString(this.stringResource),
-                    filterOptionItemValue = this.value,
-                    url = this.pluginURL
-                )
+                if (isPluginInstalled(this) == false) {
+                    FilterListOptionItemUiModel.ExploreOptionItemUiModel(
+                        resourceProvider.getString(this.stringResource),
+                        filterOptionItemValue = this.value,
+                        url = this.pluginURL
+                    )
+                } else {
+                    DefaultFilterListOptionItemUiModel(
+                        resourceProvider.getString(this.stringResource),
+                        filterOptionItemValue = this.value,
+                        isSelected = productFilterOptions[TYPE] == this.value
+                    )
+                }
             }
 
             ProductType.OTHER -> null
@@ -575,22 +583,12 @@ class ProductFilterListViewModel @Inject constructor(
 
             ProductType.GROUPED -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.GroupedProducts)
             ProductType.VARIABLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.VariableProducts)
-            ProductType.SUBSCRIPTION -> {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts) &&
-                    isPluginInstalled(ProductType.SUBSCRIPTION) == false
-            }
+            ProductType.SUBSCRIPTION -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts)
+            ProductType.VARIABLE_SUBSCRIPTION ->
+                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts)
 
-            ProductType.VARIABLE_SUBSCRIPTION -> {
-                ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.SubscriptionProducts) &&
-                    isPluginInstalled(ProductType.VARIABLE_SUBSCRIPTION) == false
-            }
-
-            ProductType.BUNDLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BundleProducts) &&
-                isPluginInstalled(ProductType.BUNDLE) == false
-
-            ProductType.COMPOSITE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.CompositeProducts) &&
-                isPluginInstalled(ProductType.COMPOSITE) == false
-
+            ProductType.BUNDLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BundleProducts)
+            ProductType.COMPOSITE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.CompositeProducts)
             ProductType.BOOKING -> ciabSiteGateKeeper.isCurrentSiteCIAB()
             ProductType.VARIATION,
             ProductType.OTHER -> false
