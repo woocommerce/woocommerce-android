@@ -223,6 +223,7 @@ private fun OrdersListPane(
         ) {
             WooPosSearchInput(
                 state = state.searchInputState,
+                searchIconBackgroundColor = MaterialTheme.colorScheme.surface,
                 onEvent = onSearchEvent,
                 modifier = Modifier
                     .statusBarsPadding()

@@ -158,6 +158,7 @@ fun WooPosCircularIconButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
     contentDescription: String? = null,
+    backgroundColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     onClick: () -> Unit
 ) {
     Box(
@@ -165,7 +166,7 @@ fun WooPosCircularIconButton(
         modifier = modifier
             .size(56.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.surfaceContainerLow)
+            .background(backgroundColor)
     ) {
         IconButton(
             onClick = onClick,
