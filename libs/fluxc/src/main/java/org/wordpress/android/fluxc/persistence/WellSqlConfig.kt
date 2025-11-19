@@ -2260,6 +2260,10 @@ open class WellSqlConfig : DefaultWellConfig {
                 232 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
                     db.execSQL("DROP TABLE IF EXISTS WCShippingLabelModel")
                 }
+
+                233 -> migrateAddOn(ADDON_WOOCOMMERCE, version) {
+                    db.execSQL("DROP TABLE IF EXISTS WCOrderShipmentTrackingModel")
+                }
             }
         }
         db.setTransactionSuccessful()
