@@ -48,10 +48,8 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     }
 
     private fun checkCellularCapability() {
-        val hasCellular = cellularCapabilityDetector.hasCellularCapability()
-        _state.update { it.copy(hasCellularCapability = hasCellular) }
-
-        if (!hasCellular) {
+        if (!cellularCapabilityDetector.hasCellularCapability()) {
+            _state.update { it.copy(cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.None) }
             viewModelScope.launch {
                 preferencesRepository.setAllowCellularDataUpdate(false)
             }
@@ -105,8 +103,18 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private fun listenToCellularDataUpdateValue() {
         viewModelScope.launch {
             preferencesRepository.allowCellularDataUpdate.collect { allowCellularDataUpdate ->
-                _state.update {
-                    it.copy(allowCellularDataUpdate = allowCellularDataUpdate)
+                _state.update { currentState ->
+                    if (cellularCapabilityDetector.hasCellularCapability()) {
+                        currentState.copy(
+                            cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.Available(
+                                allowCellularDataUpdate = allowCellularDataUpdate
+                            )
+                        )
+                    } else {
+                        currentState.copy(
+                            cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.None
+                        )
+                    }
                 }
             }
         }
