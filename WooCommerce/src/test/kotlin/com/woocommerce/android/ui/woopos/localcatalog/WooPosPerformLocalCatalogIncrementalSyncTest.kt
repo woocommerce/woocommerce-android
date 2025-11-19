@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -10,7 +14,6 @@ import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -27,31 +30,27 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val prefsRepo: WooPosPreferencesRepository = mock()
+    private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
 
-    private val testScope = TestScope(testDispatcher)
-
-    private lateinit var sut: WooPosPerformLocalCatalogIncrementalSync
-
-    @Before
-    fun setUp() {
-        sut = WooPosPerformLocalCatalogIncrementalSync(
-            localCatalogSyncRepository = localCatalogSyncRepository,
-            selectedSite = selectedSite,
-            networkStatus = networkStatus,
-            isLocalCatalogSupported = isLocalCatalogSupported,
-            wooPosLogWrapper = wooPosLogWrapper,
-            prefsRepo = prefsRepo,
-            appCoroutineScope = testScope
-        )
-    }
+    private fun createSut() = WooPosPerformLocalCatalogIncrementalSync(
+        localCatalogSyncRepository = localCatalogSyncRepository,
+        selectedSite = selectedSite,
+        networkStatus = networkStatus,
+        isLocalCatalogSupported = isLocalCatalogSupported,
+        wooPosLogWrapper = wooPosLogWrapper,
+        prefsRepo = prefsRepo,
+        analyticsTracker = analyticsTracker,
+        appCoroutineScope = TestScope(testDispatcher)
+    )
 
     @Test
-    fun `given local catalog not supported, when execute called, then skips sync`() = runTest(
+    fun `given local catalog not supported, when execute called, then skips sync and tracks event`() = runTest(
         testScheduler
     ) {
         // GIVEN
+        val sut = createSut()
         val site = SiteModel().apply { id = 123 }
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
@@ -59,46 +58,68 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
         verifyNoInteractions(localCatalogSyncRepository)
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.LOCAL_CATALOG_NOT_SUPPORTED
+            )
+        )
     }
 
     @Test
-    fun `given no network connection, when execute called, then skips sync`() = runTest(
+    fun `given no network connection, when execute called, then skips sync and tracks event`() = runTest(
         testScheduler
     ) {
         // GIVEN
+        val sut = createSut()
         whenever(networkStatus.isConnected()).thenReturn(false)
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync after successful payment: No network connection")
         verifyNoInteractions(localCatalogSyncRepository)
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.NO_NETWORK
+            )
+        )
     }
 
     @Test
-    fun `given no site selected, when execute called, then skips sync`() = runTest(testScheduler) {
+    fun `given no site selected, when execute called, then skips sync and tracks event`() = runTest(testScheduler) {
         // GIVEN
+        val sut = createSut()
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(null)
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Skipping sync periodic hourly: No site selected")
         verifyNoInteractions(localCatalogSyncRepository)
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.NO_SITE_SELECTED
+            )
+        )
     }
 
     @Test
     fun `given sync succeeds, when execute called, then performs sync successfully`() = runTest(testScheduler) {
         // GIVEN
+        val sut = createSut()
         val site = SiteModel().apply { id = 123 }
         val syncResult = PosLocalCatalogSyncResult.Success(
             productsSynced = 15,
@@ -113,7 +134,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
@@ -125,6 +146,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     @Test
     fun `given sync fails with unexpected error, when execute called, then logs failure`() = runTest(testScheduler) {
         // GIVEN
+        val sut = createSut()
         val site = SiteModel().apply { id = 456 }
         val syncResult = PosLocalCatalogSyncResult.Failure.UnexpectedError("Network timeout")
 
@@ -135,7 +157,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync after successful payment")
@@ -143,10 +165,11 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(
+    fun `given sync fails with catalog too large, when execute called, then logs failure, disables periodic sync, and tracks event`() = runTest(
         testScheduler
     ) {
         // GIVEN
+        val sut = createSut()
         val site = SiteModel().apply { id = 789 }
         val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
             error = "Catalog exceeds limit",
@@ -159,13 +182,19 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // WHEN
         sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
 
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
         verify(wooPosLogWrapper).e("Disabling Local Catalog periodic sync for site due to catalog size too large")
         verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.CATALOG_TOO_LARGE
+            )
+        )
     }
 
     @Test
@@ -173,6 +202,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         testScheduler
     ) {
         // GIVEN
+        val sut = createSut()
         val site = SiteModel().apply { id = 123 }
         val syncResult = PosLocalCatalogSyncResult.Success(
             productsSynced = 5,
@@ -187,15 +217,15 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // WHEN & THEN
         sut.execute(WooPosIncrementalSyncReason.ON_POS_PRODUCT_LIST)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
         verify(wooPosLogWrapper).d("Starting incremental sync on POS product list")
 
         sut.execute(WooPosIncrementalSyncReason.AFTER_SUCCESSFUL_PAYMENT)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
         verify(wooPosLogWrapper).d("Starting incremental sync after successful payment")
 
         sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        advanceUntilIdle()
+        testScheduler.advanceUntilIdle()
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
     }
 }

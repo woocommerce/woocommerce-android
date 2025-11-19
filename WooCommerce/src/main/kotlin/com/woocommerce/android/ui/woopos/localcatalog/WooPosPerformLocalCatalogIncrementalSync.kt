@@ -6,6 +6,10 @@ import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -19,12 +23,14 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val prefsRepo: WooPosPreferencesRepository,
+    private val analyticsTracker: WooPosAnalyticsTracker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
     fun execute(reason: WooPosIncrementalSyncReason) {
         val reasonDescription = reason.description
         if (!networkStatus.isConnected()) {
             wooPosLogWrapper.d("Skipping sync $reasonDescription: No network connection")
+            trackSyncSkipped(SyncSkipReason.NO_NETWORK)
             return
         }
 
@@ -32,11 +38,13 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
             val site = selectedSite.getOrNull()
             if (site == null) {
                 wooPosLogWrapper.d("Skipping sync $reasonDescription: No site selected")
+                trackSyncSkipped(SyncSkipReason.NO_SITE_SELECTED)
                 return@launch
             }
 
             if (!isLocalCatalogSupported(site.localId())) {
                 wooPosLogWrapper.d("Skipping sync $reasonDescription: Local catalog not supported for site")
+                trackSyncSkipped(SyncSkipReason.LOCAL_CATALOG_NOT_SUPPORTED)
                 return@launch
             }
 
@@ -62,8 +70,20 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
                 if (syncResult is Failure.CatalogTooLarge) {
                     wooPosLogWrapper.e("Disabling Local Catalog periodic sync for site due to catalog size too large")
                     prefsRepo.disablePeriodicSyncForSite(site.localId())
+                    trackSyncSkipped(SyncSkipReason.CATALOG_TOO_LARGE)
                 }
             }
+        }
+    }
+
+    private fun trackSyncSkipped(skipReason: SyncSkipReason) {
+        appCoroutineScope.launch {
+            analyticsTracker.track(
+                LocalCatalogSyncSkipped(
+                    syncType = SyncType.INCREMENTAL,
+                    skipReason = skipReason
+                )
+            )
         }
     }
 }
