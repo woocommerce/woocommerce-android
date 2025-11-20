@@ -67,6 +67,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
@@ -95,6 +98,7 @@ fun WooPosOrdersScreen(
 
     WooPosOrdersScreen(
         state = state,
+        scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = viewModel::onRefresh,
         onOrderSelected = viewModel::onOrderSelected,
@@ -112,6 +116,7 @@ fun WooPosOrdersScreen(
 @Composable
 private fun WooPosOrdersScreen(
     state: WooPosOrdersState,
+    scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
@@ -126,9 +131,10 @@ private fun WooPosOrdersScreen(
     BackHandler { onBackClicked() }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        when (val currentState = state) {
+        when (state) {
             is WooPosOrdersState.Content -> OrdersContent(
-                state = currentState,
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
@@ -162,6 +168,7 @@ private fun WooPosOrdersScreen(
 @Composable
 private fun OrdersContent(
     state: WooPosOrdersState.Content,
+    scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
@@ -173,6 +180,7 @@ private fun OrdersContent(
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
             state = state,
+            scrollToTopEvent = scrollToTopEvent,
             onRefresh = onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             onOrderSelected = onOrderSelected,
@@ -205,6 +213,7 @@ private fun OrdersContent(
 @Composable
 private fun OrdersListPane(
     state: WooPosOrdersState.Content,
+    scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
     onOrderSelected: (Long) -> Unit,
@@ -248,6 +257,7 @@ private fun OrdersListPane(
             OrdersList(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
+                scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
@@ -271,6 +281,7 @@ private fun OrdersListPane(
 private fun OrdersList(
     modifier: Modifier = Modifier,
     state: WooPosOrdersState.Content,
+    scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
@@ -282,6 +293,7 @@ private fun OrdersList(
                 modifier = modifier,
                 items = items.items,
                 paginationState = state.paginationState,
+                scrollToTopEvent = scrollToTopEvent,
                 onOrderSelected = onOrderSelected,
                 onEndOfOrdersListReached = onEndOfOrdersListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain
@@ -332,6 +344,7 @@ private fun LoadedOrdersList(
     modifier: Modifier = Modifier,
     items: Map<OrderItemViewState, OrderDetailsViewState>,
     paginationState: WooPosPaginationState,
+    scrollToTopEvent: SharedFlow<Unit>,
     onOrderSelected: (Long) -> Unit,
     onEndOfOrdersListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit
@@ -353,6 +366,13 @@ private fun LoadedOrdersList(
             .distinctUntilChanged()
             .filter { it }
             .collect { onEndOfOrdersListReached() }
+    }
+
+    LaunchedEffect(Unit) {
+        scrollToTopEvent.collect {
+            delay(100)
+            listState.animateScrollToItem(0)
+        }
     }
 
     WooPosLazyColumn(
@@ -533,6 +553,7 @@ fun WooPosOrdersScreenPreview() {
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None
             ),
+            scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
             onOrderSelected = {},
@@ -566,6 +587,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None
             ),
+            scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
             onOrderSelected = {},
@@ -599,6 +621,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None
             ),
+            scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
             onOrderSelected = {},

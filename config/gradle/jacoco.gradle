@@ -18,6 +18,7 @@ rootProject.afterEvaluate {
                 ':libs:login:testDebugUnitTest',
                 ':libs:apifaker:testDebugUnitTest',
                 ':libs:commons:testDebugUnitTest',
+                ':libs:pos:testDebugUnitTest',
         )
 
         group = "Reporting"

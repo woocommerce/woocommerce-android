@@ -128,7 +128,9 @@ class BookingsRestClient @Inject constructor(
             )
         }
         if (bookingType != null) TODO()
-        if (serviceEvent != null) TODO()
+        if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) {
+            set("product", serviceEvents.values.joinToString(",") { it.productId.toString() })
+        }
         if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) {
             set(
                 "attendance_status",

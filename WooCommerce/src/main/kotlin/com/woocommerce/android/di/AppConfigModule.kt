@@ -7,6 +7,7 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.logs.WooFileLogger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -53,8 +54,8 @@ class AppConfigModule {
 
     @Provides
     @Singleton
-    fun provideWooLog(context: Context): WooLog {
-        WooLog.init(context)
+    fun provideWooLog(fileLogger: WooFileLogger): WooLog {
+        WooLog.init(fileLogger)
         return WooLog
     }
 }
