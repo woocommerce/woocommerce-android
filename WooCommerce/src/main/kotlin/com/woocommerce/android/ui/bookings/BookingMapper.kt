@@ -92,7 +92,7 @@ class BookingMapper @Inject constructor(
             email = billingEmail,
             phone = billingPhone,
             billingAddress = address()?.getFullAddress(),
-            customerNote = customerNote
+            customerNote = customerNote?.ifEmpty { null }
         )
     }
 
