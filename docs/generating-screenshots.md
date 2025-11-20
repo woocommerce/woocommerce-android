@@ -16,19 +16,21 @@ brew install ruby
 gem install bundler
 ```
 
-### Install Fastlane
+### Install Fastlane and Dependencies
 
 ```sh
-# Install project dependencies including Fastlane
-bundle install
+# Install project dependencies including Fastlane and screenshot generation gems
+bundle install --with screenshots
 ```
 
 ### Install ImageMagick
 
 ```sh
-# Install ImageMagick for mask generation
+# Install ImageMagick for promo screenshot generation
 brew install imagemagick
 ```
+
+ImageMagick is required to apply masks, composite device frames, and add text during promo screenshot generation.
 
 ## Phone Screenshots
 
@@ -36,7 +38,11 @@ brew install imagemagick
 
 1. Connect a Pixel 9 device or start a Pixel 9 emulator
    - Emulators can be started from Android Studio UI (Device Manager) or command line
-2. Ensure only the phone is connected:
+2. Add Android SDK platform-tools to your PATH (if not already added):
+   ```sh
+   export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
+   ```
+3. Ensure only the phone is connected:
    ```sh
    adb devices
    ```
@@ -91,7 +97,12 @@ fastlane/screenshots/promo_screenshots/{locale}/
    emulator -avd Pixel_Tablet_API_35
    ```
 
-2. Ensure only the tablet is connected:
+2. Add Android SDK platform-tools to your PATH (if not already added):
+   ```sh
+   export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
+   ```
+
+3. Ensure only the tablet is connected:
    ```sh
    adb devices
    ```
