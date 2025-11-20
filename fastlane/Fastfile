@@ -1027,15 +1027,33 @@ platform :android do
       skip_open_summary: true
     }
 
-    UI.message('Setting light theme...')
+    UI.message('Taking POS screenshots for Dark theme on Pixel Tablet...')
+    begin
+      adb(command: 'shell cmd uimode night yes')
+    rescue StandardError => e
+      UI.error(e)
+    end
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ['theme dark']
+        }
+      )
+    )
+
+    UI.message('Taking POS screenshots for Light theme on Pixel Tablet...')
     begin
       adb(command: 'shell cmd uimode night no')
     rescue StandardError => e
       UI.error(e)
     end
-
-    UI.message('Taking POS screenshots for light theme on Pixel Tablet...')
-    screengrab(screenshot_options)
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ['theme light']
+        }
+      )
+    )
   end
 
   # This lane downloads the translated promo strings from the translation system.

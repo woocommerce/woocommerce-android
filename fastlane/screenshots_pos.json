@@ -25,7 +25,7 @@
       ],
       "screenshot_offset": [
         540,
-        466
+        400
       ],
       "screenshot_mask": "playstoreres/assets/pixel-tablet-mask.png",
       "device_frame": "playstoreres/assets/pixel-tablet.png",
@@ -43,21 +43,21 @@
     {
       "device": "Pixel Tablet",
       "filename": "Pixel Tablet-01.png",
-      "background": "playstoreres/assets/background-light.png",
+      "background": "playstoreres/assets/background-tablet-light.png",
       "screenshot": "images/phoneScreenshots/1-pos-home-light.png",
       "text": "metadata/android/{locale}/promo_screenshot_pos_1.txt"
     },
     {
       "device": "Pixel Tablet",
       "filename": "Pixel Tablet-02.png",
-      "background": "playstoreres/assets/background-dark.png",
+      "background": "playstoreres/assets/background-tablet-dark.png",
       "screenshot": "images/phoneScreenshots/2-pos-totals-dark.png",
       "text": "metadata/android/{locale}/promo_screenshot_pos_2.txt"
     },
     {
       "device": "Pixel Tablet",
       "filename": "Pixel Tablet-03.png",
-      "background": "playstoreres/assets/background-light.png",
+      "background": "playstoreres/assets/background-tablet-light.png",
       "screenshot": "images/phoneScreenshots/3-pos-payment-success-light.png",
       "text": "metadata/android/{locale}/promo_screenshot_pos_3.txt"
     }
