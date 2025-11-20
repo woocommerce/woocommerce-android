@@ -228,8 +228,10 @@ data class OrderEntity(
 
 internal class OrderPaymentStatusConverters {
     @TypeConverter
-    fun paymentStatusToString(status: OrderEntity.PaymentStatus): String = status.key
+    fun paymentStatusToString(status: OrderEntity.PaymentStatus?): String? = status?.key
 
     @TypeConverter
-    fun stringToPaymentStatus(key: String): OrderEntity.PaymentStatus = OrderEntity.PaymentStatus.fromKey(key)
+    fun stringToPaymentStatus(key: String?): OrderEntity.PaymentStatus? {
+        return key?.let { OrderEntity.PaymentStatus.fromKey(it) }
+    }
 }
