@@ -4,6 +4,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -62,7 +63,8 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         verify(wooPosLogWrapper).d("Skipping sync on POS product list: Local catalog not supported for site")
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.LOCAL_CATALOG_DISABLED
             )
         )
         verifyNoInteractions(localCatalogSyncRepository)
@@ -84,7 +86,8 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         verify(wooPosLogWrapper).d("Skipping sync after successful payment: No network connection")
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED
             )
         )
         verifyNoInteractions(localCatalogSyncRepository)
@@ -105,7 +108,8 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         verify(wooPosLogWrapper).d("Skipping sync periodic hourly: No site selected")
         verify(analyticsTracker).track(
             LocalCatalogSyncSkipped(
-                syncType = SyncType.INCREMENTAL
+                syncType = SyncType.INCREMENTAL,
+                skipReason = SyncSkipReason.SITE_NOT_SELECTED
             )
         )
         verifyNoInteractions(localCatalogSyncRepository)
