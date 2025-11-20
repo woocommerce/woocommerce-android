@@ -58,9 +58,11 @@ fun BookingSummary(
                     attendanceUpdateStatus = model.attendanceUpdateStatus,
                 )
             }
-            BookingStatusTag(
-                state = model.status
-            )
+            model.paymentStatus?.let {
+                BookingStatusTag(
+                    state = it
+                )
+            }
         }
     }
 }
@@ -87,7 +89,7 @@ data class BookingSummaryModel(
     val name: String,
     val customerName: String?,
     val attendanceStatus: BookingAttendanceStatus?,
-    val status: BookingStatus,
+    val paymentStatus: PaymentStatus?,
     val attendanceUpdateStatus: AttendanceUpdateStatus,
 )
 
@@ -101,7 +103,7 @@ private fun BookingSummaryPreview() {
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                status = BookingStatus.Paid,
+                paymentStatus = PaymentStatus.Paid,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -119,7 +121,7 @@ private fun BookingSummaryDarkPreview() {
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.Booked,
-                status = BookingStatus.PendingConfirmation,
+                paymentStatus = PaymentStatus.Unpaid,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
             modifier = Modifier.fillMaxWidth()
@@ -137,7 +139,7 @@ private fun BookingSummaryAttendanceUpdatingPreview() {
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
                 attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                status = BookingStatus.Paid,
+                paymentStatus = PaymentStatus.Paid,
                 attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             ),
             modifier = Modifier.fillMaxWidth()

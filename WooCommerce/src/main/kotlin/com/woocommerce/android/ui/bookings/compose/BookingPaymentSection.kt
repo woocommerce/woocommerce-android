@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
-    status: BookingStatus,
+    paymentStatus: PaymentStatus?,
     onMarkAsPaid: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,7 +60,7 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            AnimatedVisibility(status == BookingStatus.Unpaid) {
+            AnimatedVisibility(paymentStatus == PaymentStatus.Unpaid) {
                 WCColoredButton(
                     onClick = onMarkAsPaid,
                     text = stringResource(id = R.string.booking_payment_mark_as_paid),
@@ -136,7 +136,7 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Unpaid,
+            paymentStatus = PaymentStatus.Unpaid,
             onMarkAsPaid = {},
             onViewOrder = {},
             modifier = Modifier.fillMaxWidth()
@@ -155,7 +155,7 @@ private fun BookingPaymentSectionWithPaidBookingPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Paid,
+            paymentStatus = PaymentStatus.Paid,
             onMarkAsPaid = {},
             onViewOrder = {},
             modifier = Modifier.fillMaxWidth()

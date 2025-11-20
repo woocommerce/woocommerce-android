@@ -50,10 +50,10 @@ import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.compose.PaymentStatus
 import com.woocommerce.android.ui.compose.Render
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -178,7 +178,7 @@ private fun BookingDetailsContent(
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
-            status = booking.bookingSummary.status,
+            paymentStatus = booking.bookingSummary.paymentStatus,
             onMarkAsPaid = onMarkAsPaid,
             onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
@@ -273,7 +273,7 @@ private fun BookingDetailsPreview() {
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
                         attendanceStatus = BookingAttendanceStatus.CheckedIn,
-                        status = BookingStatus.Paid,
+                        paymentStatus = PaymentStatus.Paid,
                         attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),
                     bookingsAppointmentDetails = BookingAppointmentDetailsModel(

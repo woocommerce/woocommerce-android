@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
 fun BookingStatusTag(
-    state: BookingStatus,
+    state: PaymentStatus,
     modifier: Modifier = Modifier,
 ) {
     WCTag(
@@ -25,37 +25,31 @@ fun BookingStatusTag(
     )
 }
 
-sealed interface BookingStatus {
-    data object PayOnSite : BookingStatus
-    data object Unpaid : BookingStatus
-    data object PendingConfirmation : BookingStatus
-    data object Confirmed : BookingStatus
-    data object Paid : BookingStatus
-    data object Cancelled : BookingStatus
-    data object Complete : BookingStatus
-    data object InCart : BookingStatus
-    data class Unknown(val key: String) : BookingStatus
+sealed interface PaymentStatus {
+    data object Unpaid : PaymentStatus
+    data object Paid : PaymentStatus
+    data object PartiallyRefunded : PaymentStatus
+    data object Refunded : PaymentStatus
+    data object Failed : PaymentStatus
+    data class Unknown(val key: String) : PaymentStatus
 }
 
 @Composable
-private fun BookingStatus.text(): String {
+private fun PaymentStatus.text(): String {
     return when (this) {
-        BookingStatus.Unpaid -> stringResource(R.string.booking_payment_status_unpaid)
-        BookingStatus.PendingConfirmation -> stringResource(R.string.booking_payment_status_pending_confirmation)
-        BookingStatus.Confirmed -> stringResource(R.string.booking_payment_status_confirmed)
-        BookingStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
-        BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
-        BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
-        BookingStatus.PayOnSite -> stringResource(R.string.booking_payment_status_pay_on_site)
-        BookingStatus.InCart -> stringResource(R.string.booking_payment_status_in_cart)
-        is BookingStatus.Unknown -> key
+        PaymentStatus.Unpaid -> stringResource(R.string.booking_payment_status_unpaid)
+        PaymentStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
+        PaymentStatus.Failed -> stringResource(R.string.booking_payment_status_failed)
+        PaymentStatus.PartiallyRefunded -> stringResource(R.string.booking_payment_status_partially_refunded)
+        PaymentStatus.Refunded -> stringResource(R.string.booking_payment_status_refunded)
+        is PaymentStatus.Unknown -> key
     }
 }
 
 @Composable
-fun BookingStatus.backgroundColor(): Color {
+fun PaymentStatus.backgroundColor(): Color {
     return when (this) {
-        BookingStatus.PayOnSite -> R.color.tag_bg_booking_yellow
+        PaymentStatus.Unpaid -> R.color.tag_bg_booking_yellow
         else -> R.color.tagView_bg
     }.let { colorResource(it) }
 }
@@ -65,7 +59,7 @@ fun BookingStatus.backgroundColor(): Color {
 private fun PaymentStatusTagPreview() {
     WooThemeWithBackground {
         BookingStatusTag(
-            state = BookingStatus.Paid
+            state = PaymentStatus.Paid
         )
     }
 }
@@ -75,7 +69,7 @@ private fun PaymentStatusTagPreview() {
 private fun PaymentStatusTagPayOnSitePreview() {
     WooThemeWithBackground {
         BookingStatusTag(
-            state = BookingStatus.PayOnSite
+            state = PaymentStatus.Unpaid
         )
     }
 }

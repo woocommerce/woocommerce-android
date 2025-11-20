@@ -58,10 +58,10 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummary
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryLoading
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.compose.PaymentStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -498,7 +498,7 @@ private fun BookingListPreview() {
                                 name = "Women’s Haircut",
                                 customerName = "Margarita Nikolaevna",
                                 attendanceStatus = BookingAttendanceStatus.Booked,
-                                status = BookingStatus.Paid,
+                                paymentStatus = PaymentStatus.Paid,
                                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                             )
                         )

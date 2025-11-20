@@ -5,7 +5,7 @@ import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
+import com.woocommerce.android.ui.bookings.compose.PaymentStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderIn
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
@@ -81,11 +82,11 @@ class BookingMapperTest : BaseUnitTest() {
         val start = Instant.parse("2025-07-05T11:00:00Z")
         val end = start.plusSeconds(60 * 60)
         val booking = sampleBooking(
-            status = BookingEntity.Status.Confirmed,
             start = start,
             end = end,
             cost = "55.00",
-            currency = "USD"
+            currency = "USD",
+            paymentStatus = OrderEntity.PaymentStatus.Paid
         )
 
         val expectedDate = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
@@ -101,7 +102,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
         assertThat(model.attendanceStatus).isEqualTo(BookingAttendanceStatus.Booked)
-        assertThat(model.status).isEqualTo(BookingStatus.Confirmed)
+        assertThat(model.paymentStatus).isEqualTo(PaymentStatus.Paid)
     }
 
     @Test
@@ -110,7 +111,6 @@ class BookingMapperTest : BaseUnitTest() {
         val start = Instant.parse("2025-07-05T11:00:00Z")
         val end = start.plusSeconds(90 * 60) // 90 minutes
         val booking = sampleBooking(
-            status = BookingEntity.Status.Paid,
             start = start,
             end = end,
             cost = "55.00",
@@ -137,16 +137,16 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given booking with unknown status, when mapped, then preserves Unknown key`() {
+    fun `given booking with unknown payment_status, when mapped, then preserves Unknown key`() {
         // GIVEN
-        val booking = sampleBooking(status = BookingEntity.Status.Unknown("weird-status"))
+        val booking = sampleBooking(paymentStatus = OrderEntity.PaymentStatus.Unknown("weird-status"))
 
         // WHEN
         val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
-        assertThat(model.status).isInstanceOf(BookingStatus.Unknown::class.java)
-        val unknown = model.status as BookingStatus.Unknown
+        assertThat(model.paymentStatus).isInstanceOf(PaymentStatus.Unknown::class.java)
+        val unknown = model.paymentStatus as PaymentStatus.Unknown
         assertThat(unknown.key).isEqualTo("weird-status")
     }
 
@@ -251,29 +251,6 @@ class BookingMapperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given on-hold order with COD payment method, when mapped to summary model, then status is PayOnSite`() {
-        // GIVEN
-        val booking = sampleBooking().let { original ->
-            val paymentInfo = BookingPaymentInfo(
-                paymentMethodId = "cod",
-                paymentMethodTitle = "Cash on Delivery",
-                subtotal = BigDecimal("55.00"),
-                subtotalTax = BigDecimal("0.00"),
-                total = BigDecimal("55.00"),
-                totalTax = BigDecimal("0.00")
-            )
-            val orderWithPayment = original.order.copy(paymentInfo = paymentInfo, status = "on-hold")
-            original.copy(order = orderWithPayment)
-        }
-
-        // WHEN
-        val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
-
-        // THEN
-        assertThat(model.status).isEqualTo(BookingStatus.PayOnSite)
-    }
-
-    @Test
     fun `given cancellable statuses, when mapped to appointment details, then cancel button visible`() {
         val statuses = listOf(
             BookingEntity.Status.Confirmed,
@@ -314,7 +291,8 @@ class BookingMapperTest : BaseUnitTest() {
         customerInfo: BookingCustomerInfo? = BookingCustomerInfo(
             billingFirstName = "Margarita",
             billingLastName = "Nikolaevna"
-        )
+        ),
+        paymentStatus: OrderEntity.PaymentStatus = OrderEntity.PaymentStatus.Paid
     ): BookingEntity {
         return BookingEntity(
             id = LocalOrRemoteId.RemoteId(1L),
@@ -341,6 +319,7 @@ class BookingMapperTest : BaseUnitTest() {
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),
                 customerInfo = customerInfo,
+                paymentStatus = paymentStatus,
             )
         )
     }

@@ -10,8 +10,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
-import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
+import com.woocommerce.android.ui.bookings.compose.PaymentStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
@@ -24,6 +24,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
@@ -52,7 +53,7 @@ class BookingMapper @Inject constructor(
             date = summaryDateFormatter.format(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
-            status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
+            paymentStatus = order.paymentStatus?.toUiModel(),
             attendanceStatus = attendanceStatus.toUiModel(),
             attendanceUpdateStatus = attendanceUpdateStatus,
         )
@@ -109,23 +110,14 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    private fun BookingEntity.Status.toUiModel(
-        orderStatus: String?,
-        paymentMethod: String?,
-    ): BookingStatus {
-        return if (orderStatus == "on-hold" && paymentMethod == "cod") {
-            BookingStatus.PayOnSite
-        } else {
-            when (this) {
-                BookingEntity.Status.Paid -> BookingStatus.Paid
-                BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
-                BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-                BookingEntity.Status.Complete -> BookingStatus.Complete
-                BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
-                BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
-                BookingEntity.Status.InCart -> BookingStatus.InCart
-                is BookingEntity.Status.Unknown -> BookingStatus.Unknown(this.key)
-            }
+    private fun OrderEntity.PaymentStatus.toUiModel(): PaymentStatus {
+        return when (this) {
+            OrderEntity.PaymentStatus.Failed -> PaymentStatus.Failed
+            OrderEntity.PaymentStatus.Paid -> PaymentStatus.Paid
+            OrderEntity.PaymentStatus.PartiallyRefunded -> PaymentStatus.PartiallyRefunded
+            OrderEntity.PaymentStatus.Refunded -> PaymentStatus.Refunded
+            OrderEntity.PaymentStatus.Unpaid -> PaymentStatus.Unpaid
+            is OrderEntity.PaymentStatus.Unknown -> PaymentStatus.Unknown(key)
         }
     }
 
