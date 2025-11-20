@@ -66,7 +66,7 @@ class OrderRestClient @Inject constructor(
     private val coroutineEngine: CoroutineEngine
 ) {
     /**
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given
+     * Makes a GET call to `/wp-json/wc/v4/orders` retrieving a list of orders for the given
      * WooCommerce [SiteModel].
      *
      * The number of orders fetched is defined in [WCOrderStore.NUM_ORDERS_PER_FETCH], and retrieving older
@@ -78,7 +78,7 @@ class OrderRestClient @Inject constructor(
      */
     fun fetchOrders(site: SiteModel, offset: Int, filterByStatus: String? = null) {
         coroutineEngine.launch(T.API, this, "fetchOrders") {
-            val url = WOOCOMMERCE.orders.pathV3
+            val url = WOOCOMMERCE.orders.pathV4
             val params = mutableMapOf(
                 "per_page" to WCOrderStore.NUM_ORDERS_PER_FETCH.toString(),
                 "offset" to offset.toString(),
@@ -121,7 +121,7 @@ class OrderRestClient @Inject constructor(
         offset: Int,
         filterByStatus: String? = null
     ): FetchOrdersResponsePayload {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val params = mutableMapOf(
             "per_page" to WCOrderStore.NUM_ORDERS_PER_FETCH.toString(),
             "offset" to offset.toString(),
@@ -159,7 +159,7 @@ class OrderRestClient @Inject constructor(
     /**
      * Fetches orders from the API.
      *
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given site and parameters.
+     * Makes a GET call to `/wp-json/wc/v4/orders` retrieving a list of orders for the given site and parameters.
      *
      * @param site The WooCommerce [SiteModel] the orders belong to
      * @param count The number of orders to fetch
@@ -179,7 +179,7 @@ class OrderRestClient @Inject constructor(
         createdVia: String? = null,
         searchQuery: String? = null,
     ): FetchOrdersResponsePayload {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val params = mutableMapOf(
             "per_page" to count.toString(),
             "page" to page.toString(),
@@ -226,7 +226,7 @@ class OrderRestClient @Inject constructor(
      * used to determine what orders should be fetched (either existing orders that have since changed or new
      * orders not yet downloaded).
      *
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given
+     * Makes a GET call to `/wp-json/wc/v4/orders` retrieving a list of orders for the given
      * WooCommerce [SiteModel].
      *
      * Dispatches a [WCOrderAction.FETCHED_ORDER_LIST] action with the resulting list of order summaries.
@@ -242,7 +242,7 @@ class OrderRestClient @Inject constructor(
     ) {
         coroutineEngine.launch(T.API, this, "fetchOrderListSummaries") {
             val startTime = System.currentTimeMillis()
-            val url = WOOCOMMERCE.orders.pathV3
+            val url = WOOCOMMERCE.orders.pathV4
             val networkPageSize = listDescriptor.config.networkPageSize
             val params = mutableMapOf(
                 "per_page" to networkPageSize.toString(),
@@ -301,7 +301,7 @@ class OrderRestClient @Inject constructor(
     suspend fun fetchOrdersListFirstPage(
         listDescriptor: WCOrderListDescriptor
     ): WooPayload<List<Pair<OrderEntity, List<WCMetaData>>>> {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val networkPageSize = listDescriptor.config.networkPageSize
         val params = mutableMapOf(
             "per_page" to networkPageSize.toString(),
@@ -332,7 +332,7 @@ class OrderRestClient @Inject constructor(
 
     /**
      * Requests orders from the API that match the provided list of [orderIds] by making a GET call to
-     * `/wp-json/wc/v3/orders`
+     * `/wp-json/wc/v4/orders`
      *
      * Dispatches a [WCOrderAction.FETCHED_ORDERS_BY_IDS] action with the resulting list of orders.
      *
@@ -340,7 +340,7 @@ class OrderRestClient @Inject constructor(
      * @param orderIds A list of remote order identifiers to fetch from the API
      */
     suspend fun fetchOrdersByIds(site: SiteModel, orderIds: List<Long>): FetchOrdersByIdsResponsePayload {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val params = mapOf(
             "per_page" to orderIds.size.toString(),
             "include" to orderIds.map { it }.joinToString(),
@@ -424,7 +424,7 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET call to `/wp-json/wc/v3/orders` retrieving a list of orders for the given
+     * Makes a GET call to `/wp-json/wc/v4/orders` retrieving a list of orders for the given
      * WooCommerce [SiteModel] matching [searchQuery]
      *
      * The number of orders fetched is defined in [WCOrderStore.NUM_ORDERS_PER_FETCH]
@@ -435,7 +435,7 @@ class OrderRestClient @Inject constructor(
      */
     fun searchOrders(site: SiteModel, searchQuery: String, offset: Int) {
         coroutineEngine.launch(T.API, this, "searchOrders") {
-            val url = WOOCOMMERCE.orders.pathV3
+            val url = WOOCOMMERCE.orders.pathV4
             val params = mutableMapOf(
                 "per_page" to WCOrderStore.NUM_ORDERS_PER_FETCH.toString(),
                 "offset" to offset.toString(),
@@ -478,12 +478,12 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-     * Makes a GET request to `/wp-json/wc/v3/orders/{remoteOrderId}` to fetch a single order by the remoteOrderId.
+     * Makes a GET request to `/wp-json/wc/v4/orders/{remoteOrderId}` to fetch a single order by the remoteOrderId.
      *
      * @param [orderId] Unique server id of the order to fetch
      */
     suspend fun fetchSingleOrder(site: SiteModel, orderId: Long): RemoteOrderPayload.Fetching {
-        val url = WOOCOMMERCE.orders.id(orderId).pathV3
+        val url = WOOCOMMERCE.orders.id(orderId).pathV4
         val params = mapOf("_fields" to ORDER_FIELDS)
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -544,7 +544,7 @@ class OrderRestClient @Inject constructor(
         doFetchOrderCount(site, filterByStatus)
 
     /**
-     * Makes a GET request to `/wp-json/wc/v3/orders` for a single order of a specific type (or any type) in order to
+     * Makes a GET request to `/wp-json/wc/v4/orders` for a single order of a specific type (or any type) in order to
      * determine if there are any orders in the store.
      *
      *
@@ -560,7 +560,7 @@ class OrderRestClient @Inject constructor(
             filterByStatus
         }
 
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val params = mapOf(
             "per_page" to "1",
             "offset" to "0",
@@ -599,14 +599,14 @@ class OrderRestClient @Inject constructor(
     }
 
     /**
-     * Makes a PUT call to `/wp-json/wc/v3/orders/<id>` updating the order.
+     * Makes a PUT call to `/wp-json/wc/v4/orders/<id>` updating the order.
      */
     private suspend fun updateOrder(
         orderToUpdate: OrderEntity,
         site: SiteModel,
         updatePayload: Map<String, Any>
     ): RemoteOrderPayload.Updating {
-        val url = WOOCOMMERCE.orders.id(orderToUpdate.orderId).pathV3
+        val url = WOOCOMMERCE.orders.id(orderToUpdate.orderId).pathV4
 
         val response = wooNetwork.executePutGsonRequest(
             site = site,
@@ -966,7 +966,7 @@ class OrderRestClient @Inject constructor(
         request: UpdateOrderRequest,
         attributionSourceType: String?
     ): WooPayload<OrderEntity> {
-        val url = WOOCOMMERCE.orders.pathV3
+        val url = WOOCOMMERCE.orders.pathV4
         val metaData = mapOf(
             "meta_data" to listOfNotNull(
                 attributionSourceType?.let {
@@ -997,7 +997,7 @@ class OrderRestClient @Inject constructor(
         orderId: Long,
         request: UpdateOrderRequest
     ): WooPayload<OrderEntity> {
-        val url = WOOCOMMERCE.orders.id(orderId).pathV3
+        val url = WOOCOMMERCE.orders.id(orderId).pathV4
         val body = request.toNetworkRequest()
 
         val response = wooNetwork.executePutGsonRequest(
@@ -1017,7 +1017,7 @@ class OrderRestClient @Inject constructor(
         orderId: Long,
         trash: Boolean
     ): WooPayload<Unit> {
-        val url = WOOCOMMERCE.orders.id(orderId).pathV3
+        val url = WOOCOMMERCE.orders.id(orderId).pathV4
 
         val response = wooNetwork.executeDeleteGsonRequest(
             site = site,
@@ -1300,7 +1300,8 @@ class OrderRestClient @Inject constructor(
             "needs_payment",
             "needs_processing",
             "shipping_tax",
-            "created_via"
+            "created_via",
+            "payment_status",
         ).joinToString(separator = ",")
 
         private val TRACKING_FIELDS = arrayOf(
