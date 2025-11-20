@@ -14,7 +14,7 @@ import java.time.Instant
     tableName = "Bookings",
     primaryKeys = ["id", "localSiteId"]
 )
-@TypeConverters(BookingEntityConverters::class)
+@TypeConverters(BookingEntityConverters::class, OrderPaymentStatusConverters::class)
 data class BookingEntity(
     val id: RemoteId,
     val localSiteId: LocalId,
@@ -131,10 +131,10 @@ internal class BookingEntityConverters {
     fun epochSecondsToInstant(epochSeconds: Long) = Instant.ofEpochSecond(epochSeconds)
 
     @TypeConverter
-    fun paymentStatusToString(status: BookingEntity.Status): String = status.key
+    fun bookingStatusToString(status: BookingEntity.Status): String = status.key
 
     @TypeConverter
-    fun stringToPaymentStatus(key: String): BookingEntity.Status = BookingEntity.Status.fromKey(key)
+    fun stringToBookingStatus(key: String): BookingEntity.Status = BookingEntity.Status.fromKey(key)
 
     @TypeConverter
     fun attendanceStatusToString(status: BookingEntity.AttendanceStatus): String = status.key

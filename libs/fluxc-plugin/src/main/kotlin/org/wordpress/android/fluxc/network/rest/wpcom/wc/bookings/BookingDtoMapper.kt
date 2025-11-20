@@ -80,6 +80,7 @@ internal class BookingDtoMapper @Inject constructor(
         val lineItem = getLineItemList().firstOrNull { it.id == orderItemId }
         return BookingOrderInfo(
             status = status,
+            paymentStatus = paymentStatus,
             productInfo = BookingProductInfo(
                 name = lineItem?.name.orEmpty()
             ),

@@ -1,10 +1,12 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 import androidx.room.Embedded
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import java.math.BigDecimal
 
 data class BookingOrderInfo(
     val status: String? = null,
+    val paymentStatus: OrderEntity.PaymentStatus? = null,
     @Embedded(prefix = "product_") val productInfo: BookingProductInfo? = null,
     @Embedded(prefix = "customer_") val customerInfo: BookingCustomerInfo? = null,
     @Embedded(prefix = "payment_") val paymentInfo: BookingPaymentInfo? = null,
