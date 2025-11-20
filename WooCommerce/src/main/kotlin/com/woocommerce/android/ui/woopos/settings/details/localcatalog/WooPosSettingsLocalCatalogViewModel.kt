@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncScheduler
+import com.woocommerce.android.ui.woopos.util.WooPosCellularCapabilityDetector
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
@@ -31,16 +32,28 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private val syncScheduler: WooPosLocalCatalogSyncScheduler,
     private val childToParentEventSender: WooPosChildrenToParentEventSender,
     private val parentToChildEventReceiver: WooPosParentToChildrenEventReceiver,
+    private val cellularCapabilityDetector: WooPosCellularCapabilityDetector,
 ) : ViewModel() {
     private val _state = MutableStateFlow(WooPosSettingsLocalCatalogState())
     val state: StateFlow<WooPosSettingsLocalCatalogState> = _state.asStateFlow()
 
     init {
+        checkCellularCapability()
+
         loadCatalogStatus()
 
         listenToCellularDataUpdateValue()
 
         listenToParentEvents()
+    }
+
+    private fun checkCellularCapability() {
+        if (!cellularCapabilityDetector.hasCellularCapability()) {
+            _state.update { it.copy(cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.None) }
+            viewModelScope.launch {
+                preferencesRepository.setAllowCellularDataUpdate(false)
+            }
+        }
     }
 
     private fun listenToParentEvents() {
@@ -90,8 +103,18 @@ class WooPosSettingsLocalCatalogViewModel @Inject constructor(
     private fun listenToCellularDataUpdateValue() {
         viewModelScope.launch {
             preferencesRepository.allowCellularDataUpdate.collect { allowCellularDataUpdate ->
-                _state.update {
-                    it.copy(allowCellularDataUpdate = allowCellularDataUpdate)
+                _state.update { currentState ->
+                    if (cellularCapabilityDetector.hasCellularCapability()) {
+                        currentState.copy(
+                            cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.Available(
+                                allowCellularDataUpdate = allowCellularDataUpdate
+                            )
+                        )
+                    } else {
+                        currentState.copy(
+                            cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.None
+                        )
+                    }
                 }
             }
         }

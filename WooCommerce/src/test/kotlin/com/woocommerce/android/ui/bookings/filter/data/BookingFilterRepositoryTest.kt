@@ -18,6 +18,7 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.nio.file.Files
 import java.nio.file.Path
 import java.time.Instant
@@ -128,5 +129,76 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         setSite(100)
         val secondA = repository.bookingFiltersFlow.first()
         assertThat(secondA.customer).isEqualTo(siteACustomer)
+    }
+
+    @Test
+    fun `when attendance statuses saved, then flow emits them`() = testBlocking {
+        setSite(5)
+        val repository = BookingFilterRepository(dataStore, selectedSite)
+        val statuses = setOf(
+            BookingEntity.AttendanceStatus.CheckedIn,
+            BookingEntity.AttendanceStatus.NoShow
+        )
+
+        repository.save(
+            BookingFilters(
+                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(values = statuses)
+            )
+        )
+        val emitted = repository.bookingFiltersFlow.first()
+
+        assertThat(emitted.attendanceStatuses.values).isEqualTo(statuses)
+    }
+
+    @Test
+    fun `when service or events selected, then flow emits them`() = testBlocking {
+        setSite(6)
+        val repository = BookingFilterRepository(dataStore, selectedSite)
+        val products = setOf(
+            BookingsFilterOption.ProductInfo(productId = 11L, productName = "Yoga class"),
+            BookingsFilterOption.ProductInfo(productId = 22L, productName = "Haircut")
+        )
+
+        repository.save(
+            BookingFilters(
+                serviceEvents = BookingsFilterOption.ServiceEvents(values = products)
+            )
+        )
+        val emitted = repository.bookingFiltersFlow.first()
+
+        assertThat(emitted.serviceEvents.values).isEqualTo(products)
+    }
+
+    @Test
+    fun `when saving empty attendance and service events, then values are cleared`() = testBlocking {
+        setSite(7)
+        val repository = BookingFilterRepository(dataStore, selectedSite)
+        val initialStatuses = setOf(BookingEntity.AttendanceStatus.Booked)
+        val initialProducts = setOf(
+            BookingsFilterOption.ProductInfo(productId = 33L, productName = "Pilates")
+        )
+        repository.save(
+            BookingFilters(
+                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(initialStatuses),
+                serviceEvents = BookingsFilterOption.ServiceEvents(initialProducts)
+            )
+        )
+        // Sanity check precondition
+        val pre = repository.bookingFiltersFlow.first()
+        assertThat(pre.attendanceStatuses.values).isEqualTo(initialStatuses)
+        assertThat(pre.serviceEvents.values).isEqualTo(initialProducts)
+
+        // WHEN clear by saving empty sets
+        repository.save(
+            BookingFilters(
+                attendanceStatuses = BookingsFilterOption.AttendanceStatuses(emptySet()),
+                serviceEvents = BookingsFilterOption.ServiceEvents(emptySet())
+            )
+        )
+        val emitted = repository.bookingFiltersFlow.first()
+
+        // THEN
+        assertThat(emitted.attendanceStatuses.values).isEmpty()
+        assertThat(emitted.serviceEvents.values).isEmpty()
     }
 }
