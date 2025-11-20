@@ -33,7 +33,7 @@ import com.woocommerce.android.util.ActivityUtils
 
 @Composable
 fun BookingCustomerDetails(
-    model: BookingCustomerDetailsModel,
+    model: BookingCustomerDetailsUiModel,
     modifier: Modifier = Modifier,
 ) {
     var phoneMenuExpanded by remember { mutableStateOf(false) }
@@ -97,6 +97,21 @@ fun BookingCustomerDetails(
                 }
                 HorizontalDivider(thickness = 0.5.dp)
             }
+            model.customerNote?.let { customerNote ->
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                ) {
+                    BookingLabel(label = R.string.booking_customer_note_label)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = customerNote,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+                HorizontalDivider(thickness = 0.5.dp)
+            }
         }
     }
 }
@@ -144,18 +159,20 @@ private fun CustomerDetailsRow(
     }
 }
 
-data class BookingCustomerDetailsModel(
+data class BookingCustomerDetailsUiModel(
     val name: String?,
     val email: String?,
     val phone: String?,
     val billingAddress: String?,
+    val customerNote: String?
 ) {
     companion object {
-        val EMPTY = BookingCustomerDetailsModel(
+        val EMPTY = BookingCustomerDetailsUiModel(
             name = null,
             email = null,
             phone = null,
-            billingAddress = null
+            billingAddress = null,
+            customerNote = null
         )
     }
 }
@@ -165,7 +182,7 @@ data class BookingCustomerDetailsModel(
 private fun BookingCustomerDetailsPreview() {
     WooThemeWithBackground {
         BookingCustomerDetails(
-            model = BookingCustomerDetailsModel(
+            model = BookingCustomerDetailsUiModel(
                 name = "Margarita Nikolaevna",
                 email = "margarita@example.com",
                 phone = "+1 555-123-4567",
@@ -173,7 +190,8 @@ private fun BookingCustomerDetailsPreview() {
                     238 Willow Creek Drive
                     Montgomery
                     AL 36109
-                """.trimIndent()
+                """.trimIndent(),
+                customerNote = "Customer note"
             ),
             modifier = Modifier.fillMaxWidth()
         )
