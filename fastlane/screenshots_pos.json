@@ -1,0 +1,65 @@
+{
+  "version": 0.1,
+  "shadow_offset": 0,
+  "background_color": "#FFFFFF",
+  "stylesheet": "playstoreres/assets/style.css",
+  "devices": [
+    {
+      "name": "Pixel Tablet",
+      "canvas_size": [
+        3000,
+        2000
+      ],
+      "text_size": [
+        3000,
+        200
+      ],
+      "text_offset": [
+        0,
+        100
+      ],
+      "font_size": "100px",
+      "screenshot_size": [
+        1920,
+        1200
+      ],
+      "screenshot_offset": [
+        540,
+        466
+      ],
+      "screenshot_mask": "playstoreres/assets/pixel-tablet-mask.png",
+      "device_frame": "playstoreres/assets/pixel-tablet.png",
+      "device_frame_size": [
+        2028,
+        1332
+      ],
+      "device_frame_offset": [
+        486,
+        334
+      ]
+    }
+  ],
+  "entries": [
+    {
+      "device": "Pixel Tablet",
+      "filename": "Pixel Tablet-01.png",
+      "background": "playstoreres/assets/background-light.png",
+      "screenshot": "images/phoneScreenshots/1-pos-home-light.png",
+      "text": "metadata/android/{locale}/promo_screenshot_pos_1.txt"
+    },
+    {
+      "device": "Pixel Tablet",
+      "filename": "Pixel Tablet-02.png",
+      "background": "playstoreres/assets/background-dark.png",
+      "screenshot": "images/phoneScreenshots/2-pos-totals-dark.png",
+      "text": "metadata/android/{locale}/promo_screenshot_pos_2.txt"
+    },
+    {
+      "device": "Pixel Tablet",
+      "filename": "Pixel Tablet-03.png",
+      "background": "playstoreres/assets/background-light.png",
+      "screenshot": "images/phoneScreenshots/3-pos-payment-success-light.png",
+      "text": "metadata/android/{locale}/promo_screenshot_pos_3.txt"
+    }
+  ]
+}
