@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.persistence.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
+import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
@@ -27,6 +28,7 @@ import java.math.BigDecimal
     )],
     primaryKeys = ["localSiteId", "orderId"]
 )
+@TypeConverters(OrderPaymentStatusConverters::class)
 data class OrderEntity(
     @ColumnInfo(name = "localSiteId")
     val localSiteId: LocalId,
@@ -96,6 +98,7 @@ data class OrderEntity(
     val shippingTax: String = "",
     @ColumnInfo(name = "createdVia", defaultValue = "")
     val createdVia: String = "",
+    val paymentStatus: PaymentStatus? = null
 ) {
     companion object {
         private val gson by lazy { Gson() }
@@ -182,4 +185,51 @@ data class OrderEntity(
             emptyList()
         }
     }
+
+    sealed interface PaymentStatus {
+        val key: String
+
+        data object Unpaid : PaymentStatus {
+            override val key = "unpaid"
+        }
+
+        data object Paid : PaymentStatus {
+            override val key = "paid"
+        }
+
+        data object PartiallyRefunded : PaymentStatus {
+            override val key = "partially_refunded"
+        }
+
+        data object Refunded : PaymentStatus {
+            override val key = "refunded"
+        }
+
+        data object Failed : PaymentStatus {
+            override val key = "failed"
+        }
+
+        data class Unknown(override val key: String) : PaymentStatus
+
+        companion object Companion {
+            fun fromKey(key: String): PaymentStatus {
+                return when (key) {
+                    Unpaid.key -> Unpaid
+                    Paid.key -> Paid
+                    PartiallyRefunded.key -> PartiallyRefunded
+                    Refunded.key -> Refunded
+                    Failed.key -> Failed
+                    else -> Unknown(key)
+                }
+            }
+        }
+    }
+}
+
+internal class OrderPaymentStatusConverters {
+    @TypeConverter
+    fun paymentStatusToString(status: OrderEntity.PaymentStatus): String = status.key
+
+    @TypeConverter
+    fun stringToPaymentStatus(key: String): OrderEntity.PaymentStatus = OrderEntity.PaymentStatus.fromKey(key)
 }

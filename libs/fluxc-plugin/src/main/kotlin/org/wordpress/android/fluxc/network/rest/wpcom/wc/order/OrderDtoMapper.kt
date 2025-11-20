@@ -86,7 +86,8 @@ class OrderDtoMapper @Inject internal constructor(
                     needsPayment = this.needs_payment,
                     needsProcessing = this.needs_processing,
                     shippingTax = this.shipping_tax ?: "",
-                    createdVia = this.created_via ?: ""
+                    createdVia = this.created_via ?: "",
+                    paymentStatus = payment_status?.let { OrderEntity.PaymentStatus.fromKey(it) }
             )
         }
 
