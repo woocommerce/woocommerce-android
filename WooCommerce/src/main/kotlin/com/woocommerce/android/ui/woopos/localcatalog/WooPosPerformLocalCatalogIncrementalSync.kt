@@ -75,7 +75,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
         }
     }
 
-    private suspend fun trackSyncSkipped(skipReason: SyncSkipReason?) {
+    private suspend fun trackSyncSkipped(skipReason: SyncSkipReason) {
         analyticsTracker.track(
             LocalCatalogSyncSkipped(
                 syncType = SyncType.INCREMENTAL,
