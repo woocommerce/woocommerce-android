@@ -131,7 +131,7 @@ constructor(
         }
     }
 
-    private suspend fun trackSyncSkipped(skipReason: SyncSkipReason? = null) {
+    private suspend fun trackSyncSkipped(skipReason: SyncSkipReason) {
         analyticsTracker.track(
             LocalCatalogSyncSkipped(
                 syncType = SyncType.FULL,
