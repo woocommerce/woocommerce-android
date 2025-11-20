@@ -23,26 +23,50 @@ gem install bundler
 bundle install --with screenshots
 ```
 
-### Install ImageMagick
+### Install ImageMagick and drawText
 
 ```sh
-# Install ImageMagick for promo screenshot generation
-brew install imagemagick
+# Install ImageMagick and drawText for promo screenshot generation
+brew install imagemagick automattic/build-tools/drawText
 ```
 
 ImageMagick is required to apply masks, composite device frames, and add text during promo screenshot generation.
 
-## Phone Screenshots
+### Install Proxima Nova Font
+
+The Proxima Nova font is required for screenshot text. Check Font Book app first - it's included in macOS Sonoma and later. Only install manually if not already available.
+
+### Configure Device for Screenshots
+
+To remove unwanted icons from the status bar and keep the time set to "12:30," enable demo mode and turn on the "Show demo mode" switch.
+
+When generating screenshots, unwanted notifications from other apps may appear. To prevent this:
+
+1. Go to Settings → Notifications → App notifications
+2. Select All apps from the dropdown menu
+3. Tap the Show system option from the menu at the top
+4. Disable notifications for:
+   - Android System Intelligence
+   - Digital Wellbeing
+   - Google Play Store
+   - Google Play Protect Service
+5. Tap on Android System and disable all switches within its details
+
+## Generating Screenshots
 
 ### Setup
 
-1. Connect a Pixel 9 device or start a Pixel 9 emulator
+1. Connect the appropriate device or start an emulator:
+   - **Phone**: Pixel 9 XL device or emulator
+   - **Tablet (POS)**: Pixel Tablet device or emulator (API 35)
    - Emulators can be started from Android Studio UI (Device Manager) or command line
+
 2. Add Android SDK platform-tools to your PATH (if not already added):
    ```sh
    export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
    ```
-3. Ensure only the phone is connected:
+
+3. Ensure only one device is connected:
    ```sh
    adb devices
    ```
@@ -52,8 +76,20 @@ ImageMagick is required to apply masks, composite device frames, and add text du
 
 Run the fastlane command to capture raw screenshots:
 
+**Phone:**
 ```sh
 bundle exec fastlane take_screenshots
+```
+
+**Tablet (POS):**
+```sh
+bundle exec fastlane take_pos_screenshots
+```
+
+Optional: Specify locales (otherwise generates for all):
+```sh
+bundle exec fastlane take_screenshots locales:en-US,fr-FR
+bundle exec fastlane take_pos_screenshots locales:en-US,fr-FR
 ```
 
 This will:
@@ -62,89 +98,42 @@ This will:
 - Run UI tests that capture screenshots for both light and dark themes
 - Save raw screenshots to `fastlane/screenshots/raw/{locale}/images/phoneScreenshots/`
 
+**Note:** This command can take hours to run for all locales. Verify it works for one locale first, then let it run in the background.
+
+If you modify the screenshot test or change screenshot order, update the filenames in `fastlane/screenshots.json`.
+
 ### Generate Promo Screenshots
 
-After raw screenshots are captured, generate the final promotional screenshots with device frames and text:
+After raw screenshots are captured, download the translated strings:
 
+```sh
+bundle exec fastlane download_promo_strings
+```
+
+Then generate the final promotional screenshots with device frames and text:
+
+**Phone:**
 ```sh
 bundle exec fastlane create_promo_screenshots
 ```
 
-This will:
-- Apply device frames to the raw screenshots
-- Add promotional text from `fastlane/metadata/android/{locale}/promo_screenshot_*.txt`
-- Save final screenshots to `fastlane/screenshots/promo_screenshots/{locale}/`
-
-### Output Location
-
-Final phone promo screenshots will be in:
-```
-fastlane/screenshots/promo_screenshots/{locale}/
-├── Phone-01.png
-├── Phone-02.png
-├── Phone-03.png
-└── ...
-```
-
-## Tablet Screenshots (POS)
-
-### Setup
-
-1. Connect a Pixel Tablet device or start a Pixel Tablet emulator (API 35)
-   - Emulators can be started from Android Studio UI (Device Manager) or command line:
-   ```sh
-   # Example: Launch Pixel Tablet emulator from command line
-   emulator -avd Pixel_Tablet_API_35
-   ```
-
-2. Add Android SDK platform-tools to your PATH (if not already added):
-   ```sh
-   export PATH="$HOME/Library/Android/sdk/platform-tools:$PATH"
-   ```
-
-3. Ensure only the tablet is connected:
-   ```sh
-   adb devices
-   ```
-   You should see only one device listed. If multiple devices are connected, disconnect the others to avoid conflicts
-
-### Generate Raw Screenshots
-
-Run the fastlane command to capture raw POS screenshots:
-
-```sh
-bundle exec fastlane take_pos_screenshots
-```
-
-This will:
-- Build debug APKs
-- Install the app on the connected tablet
-- Run POS UI tests that capture screenshots for both light and dark themes
-- Save raw screenshots to `fastlane/screenshots/raw/{locale}/images/phoneScreenshots/`
-  - Files will be named like `1-pos-home-light.png`, `2-pos-totals-dark.png`, etc.
-
-### Generate Promo Screenshots
-
-After raw screenshots are captured, generate the final promotional screenshots:
-
+**Tablet (POS):**
 ```sh
 bundle exec fastlane create_pos_promo_screenshots
 ```
 
 This will:
-- Apply Pixel Tablet device frames to the raw screenshots
-- Add promotional text from `fastlane/metadata/android/{locale}/promo_screenshot_pos_*.txt`
-- Apply rounded corner masks (configured in `fastlane/screenshots_pos.json`)
+- Apply device frames to the raw screenshots
+- Add promotional text from `fastlane/metadata/android/{locale}/promo_screenshot_*.txt` or `promo_screenshot_pos_*.txt`
 - Save final screenshots to `fastlane/screenshots/promo_screenshots/{locale}/`
 
 ### Output Location
 
-Final tablet promo screenshots will be in:
+Final promo screenshots will be in:
 ```
 fastlane/screenshots/promo_screenshots/{locale}/
-├── Pixel Tablet-01.png
-├── Pixel Tablet-02.png
-├── Pixel Tablet-03.png
+├── Phone-01.png or Pixel Tablet-01.png
+├── Phone-02.png or Pixel Tablet-02.png
 └── ...
 ```
 
