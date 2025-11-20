@@ -33,7 +33,7 @@ fun BookingAppointmentDetails(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        BookingSectionHeader(R.string.booking_appointment_details_header)
+        BookingSectionHeader(R.string.booking_details_section_header)
         Column(modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainer)) {
             HorizontalDivider(thickness = 0.5.dp)
             AppointmentDetailsRow(
@@ -46,7 +46,7 @@ fun BookingAppointmentDetails(
             )
             model.staff?.let {
                 AppointmentDetailsRow(
-                    label = R.string.booking_appointment_label_staff
+                    label = R.string.booking_appointment_label_team_member
                 ) {
                     when (it) {
                         is BookingStaffMemberStatus.Loaded, is BookingStaffMemberStatus.Unavailable -> {
@@ -76,11 +76,7 @@ fun BookingAppointmentDetails(
             )
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_duration,
-                value = model.duration
-            )
-            AppointmentDetailsRow(
-                label = R.string.booking_appointment_label_price,
-                value = model.price,
+                value = model.duration,
                 withDivider = model.cancelButtonVisible,
             )
             AnimatedVisibility(model.cancelButtonVisible) {
@@ -152,7 +148,6 @@ data class BookingAppointmentDetailsModel(
     val staff: BookingStaffMemberStatus?,
     val location: String,
     val duration: String,
-    val price: String,
     val cancelButtonVisible: Boolean,
     val cancelStatus: CancelStatus,
 ) {
@@ -177,7 +172,6 @@ private fun BookingAppointmentDetailsPreview() {
                 staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
-                price = "$55.00",
                 cancelButtonVisible = true,
                 cancelStatus = CancelStatus.Idle,
             ),
@@ -198,7 +192,6 @@ private fun BookingAppointmentDetailsCancelHiddenPreview() {
                 staff = BookingStaffMemberStatus.Loading,
                 location = "238 Willow Creek Drive, Montgomery AL 36109",
                 duration = "60 min",
-                price = "$55.00",
                 cancelButtonVisible = false,
                 cancelStatus = CancelStatus.Idle,
             ),

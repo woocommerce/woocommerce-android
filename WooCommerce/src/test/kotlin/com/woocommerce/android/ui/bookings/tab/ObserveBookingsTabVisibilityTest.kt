@@ -29,7 +29,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
     private val selectedSiteFlow = MutableStateFlow<SiteModel?>(null)
     private val bookableProdsFilterOptions = mapOf(
         ProductFilterOption.STATUS to ProductStatus.PUBLISH.value,
-        ProductFilterOption.TYPE to ProductType.BOOKING.value
+        ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
     )
     private val bookableProdsCountFlow = MutableStateFlow(0L)
     private val bookingsCountFlow = MutableStateFlow(0L)
@@ -71,7 +71,7 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         sut().test {
             verify(productListRepository).fetchProductList(
                 loadMore = any(),
-                productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKING.value)),
+                productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)),
                 excludedProductIds = any(),
                 sortType = anyOrNull()
             )

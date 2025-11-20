@@ -11,6 +11,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
+import kotlin.collections.orEmpty
 
 @Dao
 interface BookingsDao {
@@ -23,6 +24,7 @@ interface BookingsDao {
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
+            AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -42,6 +44,8 @@ interface BookingsDao {
         resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        productIds: List<Long>,
+        productIdsSize: Int,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
@@ -74,6 +78,7 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
         val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
+        val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
             limit = limit,
@@ -84,6 +89,8 @@ interface BookingsDao {
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            productIds = productIds,
+            productIdsSize = productIds.size,
             order = order
         )
     }

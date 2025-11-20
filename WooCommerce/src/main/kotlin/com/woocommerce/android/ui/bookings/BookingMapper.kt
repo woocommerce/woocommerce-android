@@ -78,7 +78,6 @@ class BookingMapper @Inject constructor(
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
-            price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
             duration = duration,
@@ -149,7 +148,7 @@ class BookingMapper @Inject constructor(
         val date = detailsDateFormatter.format(booking.start)
         val time = timeRangeFormatter.format(booking.start)
         return UiString.UiStringRes(
-            R.string.booking_cancel_dialog_message,
+            R.string.booking_cancel_dialog_message_v2,
             listOf(
                 customerName,
                 UiString.UiStringText(serviceName),

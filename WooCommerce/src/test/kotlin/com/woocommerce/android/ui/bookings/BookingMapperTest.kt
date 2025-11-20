@@ -20,7 +20,6 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
@@ -119,8 +118,6 @@ class BookingMapperTest : BaseUnitTest() {
         )
         val staffMemberStatus = BookingStaffMemberStatus.Loaded("Marianne Renoir")
 
-        whenever(currencyFormatter.formatCurrency(eq("55.00"), eq("USD"), eq(true))).thenReturn("$55.00")
-
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
             .format(start)
@@ -136,7 +133,6 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(model.staff).isEqualTo(staffMemberStatus)
         assertThat(model.location).isEqualTo("238 Willow Creek Drive, Montgomery AL 36109")
         assertThat(model.duration).isEqualTo("1 hour 30 minutes")
-        assertThat(model.price).isEqualTo("$55.00")
         assertThat(model.cancelStatus).isEqualTo(CancelStatus.Idle)
     }
 
@@ -217,7 +213,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(message)
             .isEqualTo(
                 UiString.UiStringRes(
-                    R.string.booking_cancel_dialog_message,
+                    R.string.booking_cancel_dialog_message_v2,
                     listOf(
                         UiString.UiStringText(customerName),
                         UiString.UiStringText("${booking.order.productInfo?.name}"),
@@ -243,7 +239,7 @@ class BookingMapperTest : BaseUnitTest() {
         assertThat(message)
             .isEqualTo(
                 UiString.UiStringRes(
-                    R.string.booking_cancel_dialog_message,
+                    R.string.booking_cancel_dialog_message_v2,
                     listOf(
                         UiString.UiStringRes(R.string.customer_detail_guest_customer),
                         UiString.UiStringText("${booking.order.productInfo?.name}"),
@@ -279,11 +275,6 @@ class BookingMapperTest : BaseUnitTest() {
 
     @Test
     fun `given cancellable statuses, when mapped to appointment details, then cancel button visible`() {
-        whenever(currencyFormatter.formatCurrency(any<String>(), any(), eq(true))).thenAnswer {
-            val amount = it.getArgument<String>(0)
-            val currency = it.getArgument<String>(1)
-            "$currency$amount"
-        }
         val statuses = listOf(
             BookingEntity.Status.Confirmed,
             BookingEntity.Status.Paid,
@@ -301,11 +292,6 @@ class BookingMapperTest : BaseUnitTest() {
 
     @Test
     fun `given non-cancellable statuses, when mapped to appointment details, then cancel button hidden`() {
-        whenever(currencyFormatter.formatCurrency(any<String>(), any(), eq(true))).thenAnswer {
-            val amount = it.getArgument<String>(0)
-            val currency = it.getArgument<String>(1)
-            "$currency$amount"
-        }
         val statuses = listOf(
             BookingEntity.Status.Cancelled,
             BookingEntity.Status.InCart,
