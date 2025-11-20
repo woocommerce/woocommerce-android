@@ -7,7 +7,7 @@ import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
@@ -84,14 +84,15 @@ class BookingMapper @Inject constructor(
         )
     }
 
-    suspend fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
-        if (this == null) return BookingCustomerDetailsModel.EMPTY
+    suspend fun BookingCustomerInfo?.toCustomerDetailsModel(customerNote: String?): BookingCustomerDetailsUiModel {
+        if (this == null) return BookingCustomerDetailsUiModel.EMPTY
 
-        return BookingCustomerDetailsModel(
+        return BookingCustomerDetailsUiModel(
             name = fullName(),
             email = billingEmail,
             phone = billingPhone,
-            billingAddress = address()?.getFullAddress()
+            billingAddress = address()?.getFullAddress(),
+            customerNote = customerNote
         )
     }
 
