@@ -1,1 +1,2 @@
-Manage your in-person sales with WooCommerce POS
+Manage your in-person sales with
+WooCommerce POS

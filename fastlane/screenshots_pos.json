@@ -20,22 +20,22 @@
       ],
       "font_size": "100px",
       "screenshot_size": [
-        1920,
-        1200
+        1965,
+        1228
       ],
       "screenshot_offset": [
-        540,
-        400
+        517,
+        386
       ],
       "screenshot_mask": "playstoreres/assets/pixel-tablet-mask.png",
       "device_frame": "playstoreres/assets/pixel-tablet.png",
       "device_frame_size": [
-        2028,
-        1332
+        2119,
+        1392
       ],
       "device_frame_offset": [
-        486,
-        334
+        441,
+        304
       ]
     }
   ],
