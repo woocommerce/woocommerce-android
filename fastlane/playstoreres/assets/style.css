@@ -1,5 +1,12 @@
+@font-face {
+	font-family: 'Proxima Nova';
+	src: url('Proxima Nova Bold.otf') format('opentype');
+	font-weight: bold;
+	font-style: normal;
+}
+
 *{
-	font-family: Proxima Nova;
+	font-family: 'Proxima Nova', -apple-system, sans-serif;
 	font-style: normal;
 	font-weight: bold;
 	line-height: 120px;
