@@ -196,11 +196,6 @@ public class ThemeStore extends Store {
     }
 
     @NonNull
-    public List<ThemeModel> getWpComThemes() {
-        return ThemeSqlUtils.getWpComThemes();
-    }
-
-    @NonNull
     public List<ThemeModel> getWpComThemes(@NonNull List<String> themeIds) {
         return ThemeSqlUtils.getWpComThemes(themeIds);
     }

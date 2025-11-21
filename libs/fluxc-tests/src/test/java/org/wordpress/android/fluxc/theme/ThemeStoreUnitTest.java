@@ -105,29 +105,30 @@ public class ThemeStoreUnitTest {
 
         // first add 20 themes and make sure the count is correct
         ThemeSqlUtils.insertOrReplaceWpComThemes(firstTestThemes);
-        assertEquals(20, mThemeStore.getWpComThemes().size());
+        assertEquals(20, mThemeStore.getWpComThemes(ids(firstTestThemes)).size());
 
         // next add a larger list of themes (with 20 being duplicates) and make sure the count is correct
         ThemeSqlUtils.insertOrReplaceWpComThemes(secondTestThemes);
-        assertEquals(30, mThemeStore.getWpComThemes().size());
+        assertEquals(30, mThemeStore.getWpComThemes(ids(secondTestThemes)).size());
 
         // lastly add a smaller list of themes (all duplicates) and make sure count is correct
         ThemeSqlUtils.insertOrReplaceWpComThemes(thirdTestThemes);
-        assertEquals(10, mThemeStore.getWpComThemes().size());
+        assertEquals(10, mThemeStore.getWpComThemes(ids(thirdTestThemes)).size());
     }
 
     @Test
     public void testRemoveThemesWithNoSite() {
         final List<ThemeModel> testThemes = generateThemesTestList(20);
+        final List<String> themeIds = ids(testThemes);
 
         // insert and verify count
-        assertEquals(0, mThemeStore.getWpComThemes().size());
+        assertEquals(0, mThemeStore.getWpComThemes(themeIds).size());
         ThemeSqlUtils.insertOrReplaceWpComThemes(testThemes);
-        assertEquals(testThemes.size(), mThemeStore.getWpComThemes().size());
+        assertEquals(testThemes.size(), mThemeStore.getWpComThemes(themeIds).size());
 
         // remove and verify count
         ThemeSqlUtils.removeWpComThemes();
-        assertEquals(0, mThemeStore.getWpComThemes().size());
+        assertEquals(0, mThemeStore.getWpComThemes(themeIds).size());
     }
 
     private ThemeModel generateTestTheme(int siteId, String themeId, String themeName) {
@@ -144,5 +145,13 @@ public class ThemeStoreUnitTest {
             testThemes.add(generateTestTheme(0, "themeid" + i, "themename" + i));
         }
         return testThemes;
+    }
+
+    private List<String> ids(List<ThemeModel> themes) {
+        List<String> themeIds = new ArrayList<>();
+        for (ThemeModel theme : themes) {
+            themeIds.add(theme.getThemeId());
+        }
+        return themeIds;
     }
 }
