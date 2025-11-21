@@ -32,6 +32,7 @@ fun BlazeCampaignDetailWebViewScreen(
             userAgent = userAgent,
             authenticator = authenticator,
             onUrlLoaded = onUrlLoaded,
+            disablePopups = true,
             modifier = Modifier.padding(paddingValues)
         )
     }
