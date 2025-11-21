@@ -29,6 +29,8 @@ import com.woocommerce.android.ui.bookings.compose.BookingLabel
 import com.woocommerce.android.ui.bookings.compose.BookingSectionHeader
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
+import com.woocommerce.android.ui.compose.component.datePickerDialogDefaultMaxDate
+import com.woocommerce.android.ui.compose.component.datePickerDialogDefaultMinDate
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -82,8 +84,10 @@ fun DateTimeFilterPage(
         when (dialogState) {
             is PickerDialogState.DateDialog -> {
                 DatePickerDialog(
-                    currentDate = dialogState.date?.let { Calendar.getInstance().apply { timeInMillis = it } },
-                    onDateSelected = { calendar ->
+                    currentDate = dialogState.date?.toCalendar(),
+                    minDate = dialogState.minDate?.toCalendar() ?: datePickerDialogDefaultMinDate,
+                    maxDate = dialogState.maxDate?.toCalendar() ?: datePickerDialogDefaultMaxDate,
+                    onDateSelected = { calendar: Calendar ->
                         dialogState.onDateSelected(calendar.timeInMillis)
                     },
                     onDismissRequest = dialogState.onDismiss,
@@ -154,6 +158,10 @@ private fun DateTimeRow(@StringRes labelRes: Int, value: String, onClick: () -> 
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
+}
+
+private fun Long.toCalendar(): Calendar {
+    return Calendar.getInstance().apply { timeInMillis = this@toCalendar }
 }
 
 @LightDarkThemePreviews

@@ -63,28 +63,35 @@ class DateTimeFilterViewModel @AssistedInject constructor(
 
     private fun openDateDialog(dateBoundary: DateBoundary) {
         _uiState.update { currentState ->
-            val dialogState = when (dateBoundary) {
-                DateBoundary.FROM -> DateDialog(
-                    // Convert to UTC for the Date picker
-                    date = currentState.fromDateTime
-                        ?.toLocalDate()
-                        ?.atStartOfDay(ZoneOffset.UTC)
-                        ?.toInstant()
-                        ?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val fromDate = currentState.fromDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
+            val toDate = currentState.toDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
 
-                DateBoundary.TO -> DateDialog(
-                    // Convert to UTC for the Date picker
-                    date = currentState.toDateTime
-                        ?.toLocalDate()
-                        ?.atStartOfDay(ZoneOffset.UTC)
-                        ?.toInstant()
-                        ?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val dialogState = when (dateBoundary) {
+                DateBoundary.FROM -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = fromDate?.toEpochMilli(),
+                        maxDate = toDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
+
+                DateBoundary.TO -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = toDate?.toEpochMilli(),
+                        minDate = fromDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
             }
             currentState.copy(
                 pickerDialogState = dialogState

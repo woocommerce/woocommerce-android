@@ -44,6 +44,9 @@ import java.util.GregorianCalendar
 private const val DEFAULT_MIN_YEAR = 1900
 private const val DEFAULT_MAX_YEAR = 2100
 
+val datePickerDialogDefaultMinDate = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1)
+val datePickerDialogDefaultMaxDate = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1)
+
 @Composable
 fun DatePickerDialog(
     currentDate: Date?,
@@ -51,8 +54,8 @@ fun DatePickerDialog(
     onDismissRequest: () -> Unit,
     neutralButton: (@Composable () -> Unit)? = null,
     shape: Shape = DatePickerDefaults.shape,
-    minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
-    maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
+    minDate: Date = datePickerDialogDefaultMinDate.time,
+    maxDate: Date = datePickerDialogDefaultMaxDate.time,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
@@ -77,8 +80,8 @@ fun DatePickerDialog(
     onDismissRequest: () -> Unit,
     shape: Shape = DatePickerDefaults.shape,
     neutralButton: (@Composable () -> Unit)? = null,
-    minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
-    maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
+    minDate: Calendar = datePickerDialogDefaultMinDate,
+    maxDate: Calendar = datePickerDialogDefaultMaxDate,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
