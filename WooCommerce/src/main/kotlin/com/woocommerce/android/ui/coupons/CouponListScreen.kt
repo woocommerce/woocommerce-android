@@ -39,12 +39,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.CouponListViewModel.CouponListState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Appending
 import com.woocommerce.android.ui.coupons.CouponListViewModel.LoadingState.Refreshing
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
 fun CouponListScreen(viewModel: CouponListViewModel) {
@@ -298,7 +298,7 @@ private fun CouponListPreview() {
 @Preview
 @Composable
 private fun CouponListEmptyPreview() {
-    WooPosTheme {
+    WooThemeWithBackground {
         EmptyCouponList()
     }
 }
@@ -306,7 +306,7 @@ private fun CouponListEmptyPreview() {
 @Preview
 @Composable
 private fun CouponListSkeletonPreview() {
-    WooPosTheme {
+    WooThemeWithBackground {
         CouponListSkeleton()
     }
 }
