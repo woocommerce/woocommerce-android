@@ -51,7 +51,7 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given DateDialog opened for FROM, when a date is selected, then fromDateTime and formattedFromDate are updated`() =
+    fun `given DateDialog opened for FROM, when initial date is selected, then fromDateTime and formattedFromDate are updated`() =
         testBlocking {
             val vm = createVm()
 
@@ -68,17 +68,16 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.fromDateTime!!.year).isEqualTo(2024)
             assertThat(state.fromDateTime.monthValue).isEqualTo(5)
             assertThat(state.fromDateTime.dayOfMonth).isEqualTo(10)
-            // time should be preserved from picked (midnight)
+            // initial time should be set at start of day
             assertThat(state.fromDateTime.hour).isEqualTo(0)
             assertThat(state.fromDateTime.minute).isEqualTo(0)
             assertThat(state.formattedFromDate).isNotEmpty()
-            // time is not formatted on date selection
-            assertThat(state.formattedFromTime).isEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
         }
 
     @Test
-    fun `given DateDialog opened for TO, when a date is selected, then toDateTime and formattedToDate are updated`() =
+    fun `given DateDialog opened for TO, when initial date is selected, then toDateTime and formattedToDate are updated`() =
         testBlocking {
             val vm = createVm()
 
@@ -95,10 +94,11 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.toDateTime!!.year).isEqualTo(2024)
             assertThat(state.toDateTime.monthValue).isEqualTo(6)
             assertThat(state.toDateTime.dayOfMonth).isEqualTo(2)
-            assertThat(state.toDateTime.hour).isEqualTo(0)
-            assertThat(state.toDateTime.minute).isEqualTo(0)
+            // initial time should be set at end of day
+            assertThat(state.toDateTime.hour).isEqualTo(23)
+            assertThat(state.toDateTime.minute).isEqualTo(59)
             assertThat(state.formattedToDate).isNotEmpty()
-            assertThat(state.formattedToTime).isEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
         }
 
