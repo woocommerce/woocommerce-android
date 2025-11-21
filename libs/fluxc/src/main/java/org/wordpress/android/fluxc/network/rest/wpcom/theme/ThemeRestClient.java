@@ -17,8 +17,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeListResponse;
-import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeMobileFriendlyTaxonomy;
-import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeTaxonomies;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedCurrentThemePayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedWpComThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload;
@@ -37,9 +35,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public class ThemeRestClient extends BaseWPComRestClient {
-    private static final String WPCOM_MOBILE_FRIENDLY_TAXONOMY_SLUG = "mobile-friendly";
-    private static final String THEME_TYPE_EXTERNAL = "managed-external";
-
     @Inject public ThemeRestClient(
             Context appContext,
             Dispatcher dispatcher,
@@ -145,79 +140,19 @@ public class ThemeRestClient extends BaseWPComRestClient {
 
     @NonNull
     private static ThemeModel createThemeFromWPComResponse(@NonNull WPComThemeResponse response) {
-        boolean free = response.theme_tier == null || response.theme_tier.slug == null
-                       || response.theme_tier.slug.equalsIgnoreCase("free");
-        String priceText = null;
-        if (!free) {
-            priceText = response.price;
-        }
-        boolean isExternalTheme = false;
-        if (response.theme_type != null) {
-            isExternalTheme = response.theme_type.equals(THEME_TYPE_EXTERNAL);
-        }
         return new ThemeModel(
                 response.id,
                 response.name,
-                response.description,
-                response.slug,
-                response.version,
-                response.author,
-                response.author_uri,
-                response.theme_uri,
-                response.theme_type,
-                response.screenshot,
-                response.demo_uri,
-                response.download_uri,
-                response.stylesheet,
-                priceText,
-                isExternalTheme,
-                free,
-                getMobileFriendlyCategorySlug(response.taxonomies)
+                response.demo_uri
         );
-    }
-
-    @Nullable
-    private static String getMobileFriendlyCategorySlug(@Nullable WPComThemeTaxonomies taxonomies) {
-        // detect the mobile-friendly category slug if there
-        if (taxonomies != null && taxonomies.theme_mobile_friendly != null) {
-            String category = null;
-            for (WPComThemeMobileFriendlyTaxonomy taxonomy : taxonomies.theme_mobile_friendly) {
-                // The server response has two taxonomies defined here. One is named "mobile-friendly" and the other is
-                //  a more specific category the theme belongs to. We're only interested in the specific one here so,
-                //  ignore the "mobile-friendly" one.
-                if (taxonomy.slug.equals(WPCOM_MOBILE_FRIENDLY_TAXONOMY_SLUG)) {
-                    continue;
-                }
-
-                category = taxonomy.slug;
-
-                // we got the category slug so, no need to continue looping
-                break;
-            }
-            return category;
-        }
-        return null;
     }
 
     @NonNull
     private static ThemeModel createThemeFromJetpackResponse(@NonNull JetpackThemeResponse response) {
-        // the screenshot field in Jetpack responses does not contain a protocol so we'll prepend 'https'
-        String screenshotUrl = response.screenshot;
-        if (screenshotUrl.startsWith("//")) {
-            screenshotUrl = "https:" + screenshotUrl;
-        }
         return new ThemeModel(
                 response.id,
                 response.name,
-                response.description,
-                response.version,
-                response.author,
-                response.author_uri,
-                response.theme_uri,
-                screenshotUrl,
-                response.active,
-                response.autoupdate,
-                response.autoupdate_translation
+                response.active
         );
     }
 
