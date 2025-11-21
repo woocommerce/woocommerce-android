@@ -4,10 +4,8 @@ import org.wordpress.android.fluxc.annotations.Action;
 import org.wordpress.android.fluxc.annotations.ActionEnum;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.SiteModel;
-import org.wordpress.android.fluxc.store.ThemeStore.FetchStarterDesignsPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchWPComThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedCurrentThemePayload;
-import org.wordpress.android.fluxc.store.ThemeStore.FetchedStarterDesignsPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedWpComThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload;
 
@@ -16,8 +14,6 @@ public enum ThemeAction implements IAction {
     // Remote actions
     @Action(payloadType = FetchWPComThemesPayload.class)
     FETCH_WP_COM_THEMES,
-    @Action(payloadType = FetchStarterDesignsPayload.class)
-    FETCH_STARTER_DESIGNS,
     @Action(payloadType = SiteModel.class)
     FETCH_CURRENT_THEME,
     @Action(payloadType = SiteThemePayload.class)
@@ -28,8 +24,6 @@ public enum ThemeAction implements IAction {
     // Remote responses
     @Action(payloadType = FetchedWpComThemesPayload.class)
     FETCHED_WP_COM_THEMES,
-    @Action(payloadType = FetchedStarterDesignsPayload.class)
-    FETCHED_STARTER_DESIGNS,
     @Action(payloadType = FetchedCurrentThemePayload.class)
     FETCHED_CURRENT_THEME,
     @Action(payloadType = SiteThemePayload.class)

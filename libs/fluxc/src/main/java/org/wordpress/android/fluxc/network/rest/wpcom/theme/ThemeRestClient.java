@@ -1,14 +1,15 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.theme;
 
 import android.content.Context;
-import android.text.TextUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.android.volley.RequestQueue;
 
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.ThemeActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
-import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.ThemeModel;
 import org.wordpress.android.fluxc.network.UserAgent;
@@ -20,7 +21,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.W
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeMobileFriendlyTaxonomy;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeTaxonomies;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedCurrentThemePayload;
-import org.wordpress.android.fluxc.store.ThemeStore.FetchedStarterDesignsPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedWpComThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload;
 import org.wordpress.android.fluxc.store.ThemeStore.ThemesError;
@@ -30,15 +30,11 @@ import org.wordpress.android.util.StringUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.inject.Singleton;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 @Singleton
 public class ThemeRestClient extends BaseWPComRestClient {
@@ -124,43 +120,6 @@ public class ThemeRestClient extends BaseWPComRestClient {
                     ThemesError themeError = new ThemesError(error.apiError, error.message);
                     FetchedWpComThemesPayload payload = new FetchedWpComThemesPayload(themeError);
                     mDispatcher.dispatch(ThemeActionBuilder.newFetchedWpComThemesAction(payload));
-                }));
-    }
-
-    /**
-     * Endpoint:  v2/common-starter-site-designs
-     */
-    public void fetchStarterDesigns(
-            @Nullable Float previewWidth,
-            @Nullable Float previewHeight,
-            @Nullable Float scale,
-            @Nullable String[] groups) {
-        Map<String, String> params = new HashMap<>();
-        params.put("type", "mobile");
-        if (previewWidth != null) {
-            params.put("preview_width", String.format(Locale.US, "%.1f", previewWidth));
-        }
-        if (previewHeight != null) {
-            params.put("preview_height", String.format(Locale.US, "%.1f", previewHeight));
-        }
-        if (scale != null) {
-            params.put("scale", String.format(Locale.US, "%.1f", scale));
-        }
-        if (groups != null && groups.length > 0) {
-            params.put("group", TextUtils.join(",", groups));
-        }
-        String url = WPCOMV2.common_starter_site_designs.getUrl();
-        add(WPComGsonRequest.buildGetRequest(url, params, StarterDesignsResponse.class,
-                (response, headers) -> {
-                    AppLog.d(AppLog.T.API, "Received response to WP.com starter designs fetch request.");
-                    FetchedStarterDesignsPayload payload =
-                            new FetchedStarterDesignsPayload(response.getDesigns(), response.getCategories());
-                    mDispatcher.dispatch(ThemeActionBuilder.newFetchedStarterDesignsAction(payload));
-                }, error -> {
-                    AppLog.e(AppLog.T.API, "Received error response to WP.com starter designs fetch request.");
-                    ThemesError themeError = new ThemesError(error.apiError, error.message);
-                    FetchedStarterDesignsPayload payload = new FetchedStarterDesignsPayload(themeError);
-                    mDispatcher.dispatch(ThemeActionBuilder.newFetchedStarterDesignsAction(payload));
                 }));
     }
 

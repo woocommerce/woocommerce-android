@@ -15,8 +15,6 @@ import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.model.ThemeModel;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
-import org.wordpress.android.fluxc.network.rest.wpcom.theme.StarterDesign;
-import org.wordpress.android.fluxc.network.rest.wpcom.theme.StarterDesignCategory;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.ThemeRestClient;
 import org.wordpress.android.fluxc.persistence.ThemeSqlUtils;
 import org.wordpress.android.util.AppLog;
@@ -88,42 +86,6 @@ public class ThemeStore extends Store {
         public SiteThemePayload(@NonNull SiteModel site, @NonNull ThemeModel theme) {
             this.site = site;
             this.theme = theme;
-        }
-    }
-
-    public static class FetchStarterDesignsPayload extends Payload<BaseNetworkError> {
-        @Nullable public Float previewWidth;
-        @Nullable public Float previewHeight;
-        @Nullable public Float scale;
-        @Nullable public String[] groups;
-
-        public FetchStarterDesignsPayload(
-                @Nullable Float previewWidth,
-                @Nullable Float previewHeight,
-                @Nullable Float scale,
-                @Nullable String... groups) {
-            this.previewWidth = previewWidth;
-            this.previewHeight = previewHeight;
-            this.scale = scale;
-            this.groups = groups;
-        }
-    }
-
-    public static class FetchedStarterDesignsPayload extends Payload<ThemesError> {
-        @NonNull public List<StarterDesign> designs;
-        @NonNull public List<StarterDesignCategory> categories;
-
-        public FetchedStarterDesignsPayload(@NonNull ThemesError error) {
-            this.error = error;
-            this.designs = new ArrayList<>();
-            this.categories = new ArrayList<>();
-        }
-
-        public FetchedStarterDesignsPayload(
-                @NonNull List<StarterDesign> designs,
-                @NonNull List<StarterDesignCategory> categories) {
-            this.designs = designs;
-            this.categories = categories;
         }
     }
 
@@ -209,20 +171,6 @@ public class ThemeStore extends Store {
         }
     }
 
-    public static class OnStarterDesignsFetched extends OnChanged<ThemesError> {
-        @NonNull public List<StarterDesign> designs;
-        @NonNull public List<StarterDesignCategory> categories;
-
-        public OnStarterDesignsFetched(
-                @NonNull List<StarterDesign> designs,
-                @NonNull List<StarterDesignCategory> categories,
-                @Nullable ThemesError error) {
-            this.designs = designs;
-            this.categories = categories;
-            this.error = error;
-        }
-    }
-
     private final ThemeRestClient mThemeRestClient;
 
     @Inject public ThemeStore(Dispatcher dispatcher, ThemeRestClient themeRestClient) {
@@ -262,12 +210,6 @@ public class ThemeStore extends Store {
                 break;
             case INSTALLED_THEME:
                 handleThemeInstalled((SiteThemePayload) action.getPayload());
-                break;
-            case FETCH_STARTER_DESIGNS:
-                fetchStarterDesigns((FetchStarterDesignsPayload) action.getPayload());
-                break;
-            case FETCHED_STARTER_DESIGNS:
-                handleStarterDesignsFetched((FetchedStarterDesignsPayload) action.getPayload());
                 break;
         }
     }
@@ -326,14 +268,6 @@ public class ThemeStore extends Store {
 
     private void fetchWpComThemes(@NonNull FetchWPComThemesPayload payload) {
         mThemeRestClient.fetchWpComThemes(payload.filter, payload.resultsLimit);
-    }
-
-    private void fetchStarterDesigns(@NonNull FetchStarterDesignsPayload payload) {
-        mThemeRestClient.fetchStarterDesigns(
-                payload.previewWidth,
-                payload.previewHeight,
-                payload.scale,
-                payload.groups);
     }
 
     private void handleWpComThemesFetched(@NonNull FetchedWpComThemesPayload payload) {
@@ -414,11 +348,6 @@ public class ThemeStore extends Store {
                 setActiveThemeForSite(payload.site, activatedTheme);
             }
         }
-        emitChange(event);
-    }
-
-    private void handleStarterDesignsFetched(@NonNull FetchedStarterDesignsPayload payload) {
-        OnStarterDesignsFetched event = new OnStarterDesignsFetched(payload.designs, payload.categories, payload.error);
         emitChange(event);
     }
 }
