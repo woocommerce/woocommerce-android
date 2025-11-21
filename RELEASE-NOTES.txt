@@ -12,6 +12,7 @@
 - [Internal] Handle BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION disconnect reason from Stripe SDK [https://github.com/woocommerce/woocommerce-android/pull/14886]
 - [**] Faster POS performance - search, barcode scanning, and loading are now nearly instant. [https://github.com/woocommerce/woocommerce-android/pull/14926]
 - [*] Fixed a crash on app startup for users with the old shortcuts pinned. [https://github.com/woocommerce/woocommerce-android/pull/15007]
+- [*] Fixed a bug that cause blank blaze campaign detail page. [https://github.com/woocommerce/woocommerce-android/pull/15010]
 
 23.6
 -----
