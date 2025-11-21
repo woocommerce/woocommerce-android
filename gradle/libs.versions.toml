@@ -4,6 +4,7 @@ android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
 androidx-appcompat = '1.7.1'
 androidx-arch-core = '2.2.0'
+androidx-annotation = '1.9.1'
 androidx-browser = '1.9.0'
 androidx-camera = '1.5.1'
 androidx-cardview = '1.0.0'
@@ -73,7 +74,7 @@ google-play-services-auth = '21.4.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '19.0.0'
 google-protobuf-plugin = '0.9.5'
-google-protobuf-library = '4.32.1'
+google-protobuf-library = '4.33.0'
 google-services = '4.4.0'
 google-zxing = '3.5.4'
 gravatar = '0.2.0'
@@ -95,7 +96,7 @@ sentry = '5.8.0'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.2.1"
-stripe-terminal = '4.7.4'
+stripe-terminal = '4.7.5'
 swiperefreshlayout = "1.1.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
@@ -114,6 +115,7 @@ android-security-lint = { group = "com.android.security.lint", name = "lint", ve
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidx-camera" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }

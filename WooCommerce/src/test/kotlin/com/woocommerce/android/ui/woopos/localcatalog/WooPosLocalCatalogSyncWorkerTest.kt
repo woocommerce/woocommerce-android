@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.work.ListenableWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,6 +33,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
     private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
+    private var analyticsTracker: WooPosAnalyticsTracker = mock()
     private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
@@ -81,6 +86,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
             logger = logger,
             timeProvider = mockTimeProvider,
             syncStatusChecker = syncStatusChecker,
+            analyticsTracker = analyticsTracker,
         )
     }
 
@@ -99,7 +105,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when no site selected, then returns retry`() = testBlocking {
+    fun `when no site selected, then returns retry and tracks event`() = testBlocking {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement())
             .thenReturn(WooPosFullSyncRequirement.Error("No site selected"))
@@ -107,14 +113,42 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED
+            )
+        )
     }
 
     @Test
-    fun `when POS not used in 31 days, then returns success without sync`() = testBlocking {
+    fun `when site is null after validation, then returns failure and tracks event`() = testBlocking {
+        // GIVEN
+        whenever(selectedSite.getOrNull()).thenReturn(null)
+        val worker = createWorker()
+
+        // WHEN
+        val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
+
+        // THEN
+        assertThat(result).isEqualTo(ListenableWorker.Result.failure())
+        verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.SITE_NOT_SELECTED
+            )
+        )
+    }
+
+    @Test
+    fun `when POS not used in 31 days, then returns success without sync and tracks event`() = testBlocking {
         // GIVEN
         val thirtyOneDaysAgo = CURRENT_TIME_MILLIS - (31 * 24 * 60 * 60 * 1000L)
         whenever(preferencesRepository.getLastUsedTimestamp()).thenReturn(thirtyOneDaysAgo)
@@ -122,10 +156,17 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.POS_NOT_OPENED_30_DAYS
+            )
+        )
     }
 
     @Test
@@ -224,7 +265,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given sync not required, when validateSyncStatus is called, then returns success without syncing`() = testBlocking {
+    fun `given sync not required, when validateSyncStatus is called, then returns success without syncing and tracks event`() = testBlocking {
         // GIVEN
         val lastSyncTimestamp = CURRENT_TIME_MILLIS - (3 * 24 * 60 * 60 * 1000L) // 3 days ago
         whenever(syncStatusChecker.checkSyncRequirement())
@@ -234,15 +275,22 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.SYNC_NOT_REQUIRED
+            )
+        )
     }
 
     @Test
-    fun `given local catalog disabled, when validateSyncStatus is called, then returns success without syncing`() = testBlocking {
+    fun `given local catalog disabled, when validateSyncStatus is called, then returns success without syncing and tracks event`() = testBlocking {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement())
             .thenReturn(WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large"))
@@ -251,15 +299,22 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.success())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.LOCAL_CATALOG_DISABLED
+            )
+        )
     }
 
     @Test
-    fun `given sync requirement check error, when validateSyncStatus is called, then returns retry`() = testBlocking {
+    fun `given no network connection, when validateSyncStatus is called, then returns retry and tracks event`() = testBlocking {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement())
             .thenReturn(WooPosFullSyncRequirement.Error("No network connection"))
@@ -268,11 +323,18 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
 
         // WHEN
         val result = worker.doWork()
+        coroutinesTestRule.testDispatcher.scheduler.advanceUntilIdle()
 
         // THEN
         assertThat(result).isEqualTo(ListenableWorker.Result.retry())
         verify(syncRepository, never()).syncLocalCatalogFull(any())
         verify(syncRepository, never()).syncLocalCatalogIncremental(any())
+        verify(analyticsTracker).track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED
+            )
+        )
     }
 
     @Test

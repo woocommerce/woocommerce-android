@@ -528,7 +528,7 @@ class ProductFilterListViewModel @Inject constructor(
             ProductType.GROUPED,
             ProductType.EXTERNAL,
             ProductType.VARIABLE,
-            ProductType.BOOKING -> {
+            ProductType.BOOKABLE_SERVICE -> {
                 DefaultFilterListOptionItemUiModel(
                     resourceProvider.getString(this.stringResource),
                     filterOptionItemValue = this.value,
@@ -572,7 +572,7 @@ class ProductFilterListViewModel @Inject constructor(
             ProductType.EXTERNAL,
             ProductType.VARIABLE,
             ProductType.VARIATION,
-            ProductType.BOOKING,
+            ProductType.BOOKABLE_SERVICE,
             ProductType.OTHER -> ""
         }
 
@@ -589,7 +589,7 @@ class ProductFilterListViewModel @Inject constructor(
 
             ProductType.BUNDLE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.BundleProducts)
             ProductType.COMPOSITE -> ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.CompositeProducts)
-            ProductType.BOOKING -> ciabSiteGateKeeper.isCurrentSiteCIAB()
+            ProductType.BOOKABLE_SERVICE -> ciabSiteGateKeeper.isCurrentSiteCIAB()
             ProductType.VARIATION,
             ProductType.OTHER -> false
         }
