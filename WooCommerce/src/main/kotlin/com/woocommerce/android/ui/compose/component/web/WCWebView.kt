@@ -45,6 +45,7 @@ fun WCWebView(
     onPageFinished: (String) -> Unit = {},
     onUrlFailed: (String, Int?) -> Unit = { _, _ -> },
     captureBackPresses: Boolean = true,
+    disablePopups: Boolean = false,
     authenticator: WebViewAuthenticator? = null,
     webViewNavigator: WebViewNavigator = rememberWebViewNavigator(),
     webViewClient: WCWebViewClient = remember { WCWebViewClient() },
@@ -105,7 +106,7 @@ fun WCWebView(
             webView.settings.loadWithOverviewMode = settings.loadWithOverviewMode
             webView.settings.javaScriptEnabled = settings.isJavaScriptEnabled
             webView.settings.domStorageEnabled = settings.isDomStorageEnabled
-            webView.settings.setSupportMultipleWindows(true)
+            if (!disablePopups) webView.settings.setSupportMultipleWindows(true)
         }
     }
 
@@ -143,8 +144,10 @@ fun WCWebView(
                     this.settings.userAgentString = userAgent.webViewUserAgent
                 }.also { webView = it }
 
-                FrameLayout(context).apply {
-                    addView(webView)
+                if (disablePopups) {
+                    webView
+                } else {
+                    FrameLayout(context).apply { addView(webView) }
                 }
             },
             modifier = Modifier
