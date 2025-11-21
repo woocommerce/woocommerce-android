@@ -1004,10 +1004,10 @@ platform :android do
                   .append('en-US')
               end
 
-    UI.message("Clearing previous POS screenshots...")
-    sh("rm -f ../fastlane/screenshots/raw/*-pos-*")
+    UI.message('Clearing previous POS screenshots...')
+    sh('rm -f ../fastlane/screenshots/raw/*-pos-*')
 
-    UI.message("Building APKs...")
+    UI.message('Building APKs...')
     gradle(task: 'assembleVanillaDebug assembleVanillaDebugAndroidTest')
 
     UI.message("Attempting POS screenshots for locales: #{locales}")

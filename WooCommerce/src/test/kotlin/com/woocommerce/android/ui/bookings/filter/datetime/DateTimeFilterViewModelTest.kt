@@ -11,16 +11,17 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DateTimeFilterViewModelTest : BaseUnitTest() {
 
+    private val zone = ZoneOffset.UTC
+
     private val clock = Clock.fixed(
         LocalDateTime.of(2025, 11, 13, 10, 0)
-            .toInstant(ZoneOffset.UTC),
-        ZoneOffset.UTC
+            .toInstant(zone),
+        zone
     )
 
     @Test
@@ -53,7 +54,6 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     fun `given DateDialog opened for FROM, when a date is selected, then fromDateTime and formattedFromDate are updated`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
             var state = vm.uiState.getOrAwaitValue()!!
@@ -81,7 +81,6 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     fun `given DateDialog opened for TO, when a date is selected, then toDateTime and formattedToDate are updated`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
             var state = vm.uiState.getOrAwaitValue()!!
@@ -166,7 +165,6 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     fun `given existing FROM date, when onDateClick(FROM) called again, then DateDialog is prefilled with matching millis`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             // Set FROM date first
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
@@ -203,7 +201,6 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             )
 
             // Then
-            val zone = ZoneId.systemDefault()
             val expectedFrom = after.atZone(zone).toLocalDateTime()
             val expectedTo = before.atZone(zone).toLocalDateTime()
             val state = vm.uiState.getOrAwaitValue()!!
