@@ -33,7 +33,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.Leaderboar
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsProductApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.reports.ReportsRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TopPerformerProductsDao
 import org.wordpress.android.fluxc.persistence.entity.TopPerformerProductEntity
 import org.wordpress.android.fluxc.store.WCLeaderboardsStore
@@ -84,10 +83,7 @@ class WCLeaderboardsStoreTest {
         val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
-            listOf(
-                SiteModel::class.java,
-            ),
-            WellSqlConfig.ADDON_WOOCOMMERCE
+            SiteModel::class.java
         )
         WellSql.init(config)
         config.reset()
