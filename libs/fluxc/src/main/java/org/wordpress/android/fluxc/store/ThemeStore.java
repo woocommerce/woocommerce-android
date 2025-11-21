@@ -68,21 +68,6 @@ public class ThemeStore extends Store {
         }
     }
 
-    public static class FetchedSiteThemesPayload extends Payload<ThemesError> {
-        @NonNull public SiteModel site;
-        @Nullable public List<ThemeModel> themes;
-
-        public FetchedSiteThemesPayload(@NonNull SiteModel site, @NonNull ThemesError error) {
-            this.site = site;
-            this.error = error;
-        }
-
-        public FetchedSiteThemesPayload(@NonNull SiteModel site, @NonNull List<ThemeModel> themes) {
-            this.site = site;
-            this.themes = themes;
-        }
-    }
-
     public static class FetchedWpComThemesPayload extends Payload<ThemesError> {
         @NonNull public List<ThemeModel> themes;
 
@@ -177,18 +162,6 @@ public class ThemeStore extends Store {
         }
     }
 
-    // OnChanged events
-    @SuppressWarnings("WeakerAccess")
-    public static class OnSiteThemesChanged extends OnChanged<ThemesError> {
-        @NonNull public SiteModel site;
-        @NonNull public ThemeAction origin;
-
-        public OnSiteThemesChanged(@NonNull SiteModel site, @NonNull ThemeAction origin) {
-            this.site = site;
-            this.origin = origin;
-        }
-    }
-
     public static class OnWpComThemesChanged extends OnChanged<ThemesError> {
     }
 
@@ -271,12 +244,6 @@ public class ThemeStore extends Store {
                 break;
             case FETCHED_WP_COM_THEMES:
                 handleWpComThemesFetched((FetchedWpComThemesPayload) action.getPayload());
-                break;
-            case FETCH_INSTALLED_THEMES:
-                fetchInstalledThemes((SiteModel) action.getPayload());
-                break;
-            case FETCHED_INSTALLED_THEMES:
-                handleInstalledThemesFetched((FetchedSiteThemesPayload) action.getPayload());
                 break;
             case FETCH_CURRENT_THEME:
                 fetchCurrentTheme((SiteModel) action.getPayload());
@@ -375,30 +342,6 @@ public class ThemeStore extends Store {
             event.error = payload.error;
         } else {
             ThemeSqlUtils.insertOrReplaceWpComThemes(payload.themes);
-        }
-        emitChange(event);
-    }
-
-    private void fetchInstalledThemes(@NonNull SiteModel site) {
-        if (site.isJetpackConnected() && site.isUsingWpComRestApi()) {
-            mThemeRestClient.fetchJetpackInstalledThemes(site);
-        } else {
-            ThemesError error = new ThemesError(ThemeErrorType.NOT_AVAILABLE);
-            FetchedSiteThemesPayload payload = new FetchedSiteThemesPayload(site, error);
-            handleInstalledThemesFetched(payload);
-        }
-    }
-
-    private void handleInstalledThemesFetched(@NonNull FetchedSiteThemesPayload payload) {
-        OnSiteThemesChanged event = new OnSiteThemesChanged(payload.site, ThemeAction.FETCH_INSTALLED_THEMES);
-        if (payload.isError()) {
-            event.error = payload.error;
-        } else {
-            if (payload.themes != null) {
-                ThemeSqlUtils.insertOrReplaceInstalledThemes(payload.site, payload.themes);
-            } else {
-                AppLog.w(AppLog.T.THEMES, "Fetched site themes payload themes is null.");
-            }
         }
         emitChange(event);
     }

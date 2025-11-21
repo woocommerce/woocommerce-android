@@ -117,28 +117,6 @@ public class ThemeStoreUnitTest {
     }
 
     @Test
-    public void testInsertOrReplaceInstalledThemes() throws SiteSqlUtils.DuplicateSiteException {
-        final SiteModel site = SiteUtils.generateJetpackSiteOverRestOnly();
-        TestSiteSqlUtils.INSTANCE.getSiteSqlUtils().insertOrUpdateSite(site);
-
-        final List<ThemeModel> firstTestThemes = generateThemesTestList(5);
-        final List<ThemeModel> secondTestThemes = generateThemesTestList(10);
-        final List<ThemeModel> thirdTestThemes = generateThemesTestList(1);
-
-        // first add 5 installed themes
-        ThemeSqlUtils.insertOrReplaceInstalledThemes(site, firstTestThemes);
-        assertEquals(firstTestThemes.size(), mThemeStore.getThemesForSite(site).size());
-
-        // then replace them all with a new list of 10
-        ThemeSqlUtils.insertOrReplaceInstalledThemes(site, secondTestThemes);
-        assertEquals(secondTestThemes.size(), mThemeStore.getThemesForSite(site).size());
-
-        // then replace them all with a single theme
-        ThemeSqlUtils.insertOrReplaceInstalledThemes(site, thirdTestThemes);
-        assertEquals(thirdTestThemes.size(), mThemeStore.getThemesForSite(site).size());
-    }
-
-    @Test
     public void testRemoveThemesWithNoSite() {
         final List<ThemeModel> testThemes = generateThemesTestList(20);
 
@@ -150,22 +128,6 @@ public class ThemeStoreUnitTest {
         // remove and verify count
         ThemeSqlUtils.removeWpComThemes();
         assertEquals(0, mThemeStore.getWpComThemes().size());
-    }
-
-    @Test
-    public void testRemoveInstalledSiteThemes() throws SiteSqlUtils.DuplicateSiteException {
-        final SiteModel site = SiteUtils.generateJetpackSiteOverRestOnly();
-        TestSiteSqlUtils.INSTANCE.getSiteSqlUtils().insertOrUpdateSite(site);
-
-        final List<ThemeModel> testThemes = generateThemesTestList(5);
-
-        // add site themes and verify count
-        ThemeSqlUtils.insertOrReplaceInstalledThemes(site, testThemes);
-        assertEquals(testThemes.size(), mThemeStore.getThemesForSite(site).size());
-
-        // remove and verify count
-        ThemeSqlUtils.removeSiteThemes(site);
-        assertEquals(0, mThemeStore.getThemesForSite(site).size());
     }
 
     private ThemeModel generateTestTheme(int siteId, String themeId, String themeName) {

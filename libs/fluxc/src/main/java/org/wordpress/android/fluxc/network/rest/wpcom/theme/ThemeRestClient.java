@@ -20,7 +20,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.W
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeMobileFriendlyTaxonomy;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeTaxonomies;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedCurrentThemePayload;
-import org.wordpress.android.fluxc.store.ThemeStore.FetchedSiteThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedStarterDesignsPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.FetchedWpComThemesPayload;
 import org.wordpress.android.fluxc.store.ThemeStore.SiteThemePayload;
@@ -162,27 +161,6 @@ public class ThemeRestClient extends BaseWPComRestClient {
                     ThemesError themeError = new ThemesError(error.apiError, error.message);
                     FetchedStarterDesignsPayload payload = new FetchedStarterDesignsPayload(themeError);
                     mDispatcher.dispatch(ThemeActionBuilder.newFetchedStarterDesignsAction(payload));
-                }));
-    }
-
-    /**
-     * [Undocumented!] Endpoint: v1/sites/$siteId/themes
-     *
-     * @see <a href="https://developer.wordpress.com/docs/api/1.1/get/sites/%24site/themes/">Similar endpoint</a>
-     */
-    public void fetchJetpackInstalledThemes(@NonNull final SiteModel site) {
-        String url = WPCOMREST.sites.site(site.getSiteId()).themes.getUrlV1();
-        add(WPComGsonRequest.buildGetRequest(url, null, JetpackThemeListResponse.class,
-                (response, headers) -> {
-                    AppLog.d(AppLog.T.API, "Received response to Jetpack installed themes fetch request.");
-                    List<ThemeModel> themes = createThemeListFromJetpackResponse(response);
-                    FetchedSiteThemesPayload payload = new FetchedSiteThemesPayload(site, themes);
-                    mDispatcher.dispatch(ThemeActionBuilder.newFetchedInstalledThemesAction(payload));
-                }, error -> {
-                    AppLog.e(AppLog.T.API, "Received error response to Jetpack installed themes fetch request.");
-                    ThemesError themeError = new ThemesError(error.apiError, error.message);
-                    FetchedSiteThemesPayload payload = new FetchedSiteThemesPayload(site, themeError);
-                    mDispatcher.dispatch(ThemeActionBuilder.newFetchedInstalledThemesAction(payload));
                 }));
     }
 
