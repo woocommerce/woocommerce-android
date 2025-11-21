@@ -314,8 +314,8 @@ private fun OrderLineItemImage(
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-        icon = Icons.Outlined.Inventory2,
-        iconSize = 24.dp
+        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIconSize = 24.dp
     )
 }
 

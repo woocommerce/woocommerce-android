@@ -296,8 +296,8 @@ private fun ProductImage(item: Product) {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        icon = Icons.Outlined.Inventory2,
-        iconSize = 44.dp
+        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIconSize = 44.dp
     )
 }
 
@@ -398,8 +398,8 @@ private fun CouponImage() {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        icon = Icons.Outlined.LocalOffer,
-        iconSize = 36.dp
+        placeholderIcon = Icons.Outlined.LocalOffer,
+        placeholderIconSize = 36.dp
     )
 }
 

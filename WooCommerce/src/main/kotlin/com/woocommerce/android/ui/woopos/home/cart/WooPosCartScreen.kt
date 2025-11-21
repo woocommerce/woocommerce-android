@@ -528,8 +528,8 @@ private fun ProductItem(
                     .width(96.dp)
                     .fillMaxHeight()
                     .heightIn(min = 96.dp),
-                icon = Icons.Outlined.Inventory2,
-                iconSize = 36.dp
+                placeholderIcon = Icons.Outlined.Inventory2,
+                placeholderIconSize = 36.dp
             )
 
             Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))

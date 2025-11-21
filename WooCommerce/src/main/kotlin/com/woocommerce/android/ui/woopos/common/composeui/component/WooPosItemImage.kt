@@ -21,18 +21,18 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 fun WooPosItemImage(
     modifier: Modifier = Modifier,
     imageUrl: String?,
-    icon: ImageVector,
-    iconSize: Dp
+    placeholderIcon: ImageVector,
+    placeholderIconSize: Dp
 ) {
     Box(
         modifier = modifier.background(MaterialTheme.colorScheme.surfaceDim),
         contentAlignment = Alignment.Center
     ) {
         Image(
-            imageVector = icon,
+            imageVector = placeholderIcon,
             contentDescription = null,
             colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantLowest),
-            modifier = Modifier.size(iconSize)
+            modifier = Modifier.size(placeholderIconSize)
         )
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
