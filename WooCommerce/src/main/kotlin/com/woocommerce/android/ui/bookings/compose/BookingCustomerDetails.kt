@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -98,9 +99,13 @@ fun BookingCustomerDetails(
                 HorizontalDivider(thickness = 0.5.dp)
             }
             model.customerNote?.let { customerNote ->
+                val defaultMaxLines = 4
+                var isExpanded by remember { mutableStateOf(false) }
                 Column(
                     modifier = Modifier
+                        .clickable { isExpanded = !isExpanded }
                         .padding(vertical = 12.dp, horizontal = 16.dp)
+                        .animateContentSize()
                 ) {
                     BookingLabel(label = R.string.booking_customer_note_label)
                     Spacer(Modifier.height(4.dp))
@@ -108,6 +113,8 @@ fun BookingCustomerDetails(
                         text = customerNote,
                         style = MaterialTheme.typography.labelLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = if (isExpanded) Int.MAX_VALUE else defaultMaxLines,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
                 HorizontalDivider(thickness = 0.5.dp)
