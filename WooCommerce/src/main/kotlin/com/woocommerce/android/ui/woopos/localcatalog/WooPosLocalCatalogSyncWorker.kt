@@ -6,6 +6,10 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -24,6 +28,7 @@ constructor(
     private val logger: WooPosLogWrapper,
     private val timeProvider: DateTimeProvider,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val analyticsTracker: WooPosAnalyticsTracker,
 ) : CoroutineWorker(appContext, workerParams) {
 
     companion object {
@@ -35,14 +40,15 @@ constructor(
     override suspend fun doWork(): Result {
         if (isPosInactive()) {
             logger.d("POS has been inactive recently, skipping local catalog sync")
+            trackSyncSkipped(SyncSkipReason.POS_NOT_OPENED_30_DAYS)
             return Result.success()
         }
 
         validateSyncStatus()?.let { return it }
 
-        // Site and catalog support already validated by validateSyncStatus()
         val site = selectedSite.getOrNull() ?: run {
             logger.e("Unexpected: Site is null after validation")
+            trackSyncSkipped(SyncSkipReason.SITE_NOT_SELECTED)
             return Result.failure()
         }
 
@@ -93,14 +99,17 @@ constructor(
                     "Local catalog sync NotRequired: Catalog was last synced at " +
                         "${syncRequirement.lastSyncTimestamp}"
                 )
+                trackSyncSkipped(SyncSkipReason.SYNC_NOT_REQUIRED)
                 Result.success()
             }
             is WooPosFullSyncRequirement.LocalCatalogDisabled -> {
                 logger.d("Local catalog sync LocalCatalogDisabled: ${syncRequirement.message}")
+                trackSyncSkipped(SyncSkipReason.LOCAL_CATALOG_DISABLED)
                 Result.success()
             }
             is WooPosFullSyncRequirement.Error -> {
                 logger.e("Sync requirement check failed: ${syncRequirement.message}. Retrying...")
+                trackSyncSkipped(SyncSkipReason.CHECKING_SYNC_REQUIREMENT_FAILED)
                 Result.retry()
             }
             is WooPosFullSyncRequirement.BlockingRequired,
@@ -123,5 +132,14 @@ constructor(
         } else {
             false
         }
+    }
+
+    private suspend fun trackSyncSkipped(skipReason: SyncSkipReason) {
+        analyticsTracker.track(
+            LocalCatalogSyncSkipped(
+                syncType = SyncType.FULL,
+                skipReason = skipReason
+            )
+        )
     }
 }

@@ -136,7 +136,7 @@ class WooPosProductsDataSourceTest {
     fun `given sync error, when prepopulate cache, then no active source is set`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-            WooPosFullSyncRequirement.Error("Sync error")
+            WooPosFullSyncRequirement.Error("No network connection")
         )
         val sut = createSut()
 

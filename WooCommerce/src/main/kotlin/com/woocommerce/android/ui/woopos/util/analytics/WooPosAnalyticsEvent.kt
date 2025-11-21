@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListSourceType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncErrorType
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import kotlin.reflect.KClass
 
@@ -472,6 +473,21 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                         "error_description" to errorDescription
                     )
                 )
+            }
+        }
+
+        data class LocalCatalogSyncSkipped(
+            val syncType: SyncType,
+            val skipReason: SyncSkipReason
+        ) : Event() {
+            override val name: String = "local_catalog_sync_skipped"
+
+            init {
+                val properties = mutableMapOf(
+                    SyncType.SYNC_TYPE to syncType.toString(),
+                    SyncSkipReason.SKIP_REASON to skipReason.toString()
+                )
+                addProperties(properties)
             }
         }
 
