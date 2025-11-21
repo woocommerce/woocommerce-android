@@ -99,6 +99,9 @@ object WooPosAnalyticsEventConstant {
 
     enum class SyncErrorType(val value: String) {
         CATALOG_TOO_LARGE("catalog_too_large"),
+        NETWORK_ERROR("network_error"),
+        DATABASE_ERROR("database_error"),
+        INVALID_RESPONSE("invalid_response"),
         UNEXPECTED_ERROR("unexpected_error");
 
         override fun toString(): String {

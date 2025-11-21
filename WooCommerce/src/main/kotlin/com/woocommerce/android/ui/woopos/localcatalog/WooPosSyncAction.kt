@@ -7,6 +7,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosPaginatedFetchResult
 import javax.inject.Inject
@@ -96,6 +97,23 @@ class WooPosSyncAction @Inject constructor(
             is CatalogTooLargeException -> WooPosSyncResult.Failed.CatalogTooLarge(
                 error.totalPages,
                 error.maxPages
+            )
+
+            is WooPosLocalCatalogError.NetworkError -> WooPosSyncResult.Failed.NetworkError(
+                errorMessage = error.errorMessage
+            )
+
+            is WooPosLocalCatalogError.DatabaseError -> WooPosSyncResult.Failed.DatabaseError(
+                errorMessage = error.errorMessage,
+                throwable = error.throwable
+            )
+
+            is WooPosLocalCatalogError.InvalidResponse -> WooPosSyncResult.Failed.InvalidResponse(
+                errorMessage = error.errorMessage
+            )
+
+            is WooPosLocalCatalogError.EmptyResponse -> WooPosSyncResult.Failed.InvalidResponse(
+                errorMessage = error.message
             )
 
             else -> WooPosSyncResult.Failed.UnexpectedError(
@@ -188,6 +206,14 @@ class WooPosSyncAction @Inject constructor(
                 WooPosSyncResult.Failed.CatalogTooLarge(error.totalPages, error.maxPages)
             }
 
+            is WooPosLocalCatalogError.DatabaseError -> {
+                logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
+                WooPosSyncResult.Failed.DatabaseError(
+                    errorMessage = error.errorMessage,
+                    throwable = error.throwable
+                )
+            }
+
             else -> {
                 logger.e("Local Catalog Transaction failed and was rolled back: ${error.message}")
                 WooPosSyncResult.Failed.UnexpectedError(
@@ -225,6 +251,19 @@ sealed interface WooPosSyncResult {
             val totalPages: Int,
             val maxPages: Int
         ) : Failed("Local Catalog too large: $totalPages pages exceed maximum of $maxPages pages")
+
+        data class NetworkError(
+            val errorMessage: String
+        ) : Failed(errorMessage)
+
+        data class DatabaseError(
+            val errorMessage: String,
+            val throwable: Throwable? = null
+        ) : Failed(errorMessage)
+
+        data class InvalidResponse(
+            val errorMessage: String
+        ) : Failed(errorMessage)
 
         data class UnexpectedError(
             val errorMessage: String
