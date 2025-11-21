@@ -16,7 +16,6 @@ import org.wordpress.android.fluxc.network.UserAgent;
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest;
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken;
-import org.wordpress.android.fluxc.network.rest.wpcom.theme.JetpackThemeResponse.JetpackThemeListResponse;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeListResponse;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeMobileFriendlyTaxonomy;
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.WPComThemeResponse.WPComThemeTaxonomies;
@@ -227,18 +226,6 @@ public class ThemeRestClient extends BaseWPComRestClient {
         final List<ThemeModel> themeList = new ArrayList<>();
         for (WPComThemeResponse item : response.themes) {
             themeList.add(createThemeFromWPComResponse(item));
-        }
-        return themeList;
-    }
-
-    /**
-     * Creates a list of ThemeModels from the Jetpack /v1/sites/$siteId/themes REST response.
-     */
-    @NonNull
-    private static List<ThemeModel> createThemeListFromJetpackResponse(@NonNull JetpackThemeListResponse response) {
-        final List<ThemeModel> themeList = new ArrayList<>();
-        for (JetpackThemeResponse item : response.themes) {
-            themeList.add(createThemeFromJetpackResponse(item));
         }
         return themeList;
     }
