@@ -93,23 +93,6 @@ public class ThemeSqlUtils {
                 .endWhere().getAsModel();
     }
 
-    @NonNull
-    public static List<ThemeModel> getWpComMobileFriendlyThemes(@NonNull String categorySlug) {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.MOBILE_FRIENDLY_CATEGORY_SLUG, categorySlug)
-                .equals(ThemeModelTable.IS_WP_COM_THEME, true)
-                .endWhere().getAsModel();
-    }
-
-    @NonNull
-    public static List<ThemeModel> getThemesForSite(@NonNull SiteModel site) {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.LOCAL_SITE_ID, site.getId())
-                .endWhere().getAsModel();
-    }
-
     @Nullable
     public static ThemeModel getWpComThemeByThemeId(@NonNull String themeId) {
         if (TextUtils.isEmpty(themeId)) {
