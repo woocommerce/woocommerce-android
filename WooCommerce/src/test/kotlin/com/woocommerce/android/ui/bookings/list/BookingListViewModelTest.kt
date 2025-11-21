@@ -430,7 +430,8 @@ class BookingListViewModelTest : BaseUnitTest() {
             personCounts = listOf(1L),
             localTimezone = "",
             attendanceStatus = BookingEntity.AttendanceStatus.Booked,
-            order = BookingOrderInfo()
+            order = BookingOrderInfo(),
+            customerNote = ""
         )
     }
 }

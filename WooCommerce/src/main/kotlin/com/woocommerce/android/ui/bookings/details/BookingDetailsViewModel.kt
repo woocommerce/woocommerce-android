@@ -282,7 +282,7 @@ class BookingDetailsViewModel @Inject constructor(
                 ),
                 cancelStatus = cancelStatus
             ),
-            bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
+            bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(booking.customerNote),
             bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
             note = booking.note,
             isAttendanceStatusEditable = booking.isAttendanceStatusEditable,

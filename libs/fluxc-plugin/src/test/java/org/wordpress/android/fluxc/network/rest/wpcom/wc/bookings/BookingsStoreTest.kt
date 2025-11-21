@@ -214,7 +214,8 @@ class BookingsStoreTest {
         localTimezone = "UTC",
         attendanceStatus = AttendanceStatus.Booked,
         note = "",
-        order = order
+        order = order,
+        customerNote = "Customer Note"
     )
 
     companion object {
