@@ -19,8 +19,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 
 @Composable
 fun WooPosItemImage(
-    imageUrl: String?,
     modifier: Modifier = Modifier,
+    imageUrl: String?,
     icon: ImageVector,
     iconSize: Dp
 ) {
