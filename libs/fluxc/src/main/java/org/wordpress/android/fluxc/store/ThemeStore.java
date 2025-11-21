@@ -137,17 +137,6 @@ public class ThemeStore extends Store {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static class OnThemeRemoved extends OnChanged<ThemesError> {
-        @NonNull public SiteModel site;
-        @NonNull public ThemeModel theme;
-
-        public OnThemeRemoved(@NonNull SiteModel site, @NonNull ThemeModel theme) {
-            this.site = site;
-            this.theme = theme;
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
     public static class OnThemeInstalled extends OnChanged<ThemesError> {
         @NonNull public SiteModel site;
         @NonNull public ThemeModel theme;
@@ -214,16 +203,6 @@ public class ThemeStore extends Store {
     @NonNull
     public List<ThemeModel> getWpComThemes(@NonNull List<String> themeIds) {
         return ThemeSqlUtils.getWpComThemes(themeIds);
-    }
-
-    @NonNull
-    public List<ThemeModel> getWpComMobileFriendlyThemes(@NonNull String categorySlug) {
-        return ThemeSqlUtils.getWpComMobileFriendlyThemes(categorySlug);
-    }
-
-    @NonNull
-    public List<ThemeModel> getThemesForSite(@NonNull SiteModel site) {
-        return ThemeSqlUtils.getThemesForSite(site);
     }
 
     @Nullable
