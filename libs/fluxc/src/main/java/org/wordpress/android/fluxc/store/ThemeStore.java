@@ -217,12 +217,6 @@ public class ThemeStore extends Store {
         return ThemeSqlUtils.getWpComThemeByThemeId(themeId);
     }
 
-    @Nullable
-    public ThemeModel getActiveThemeForSite(@NonNull SiteModel site) {
-        List<ThemeModel> activeTheme = ThemeSqlUtils.getActiveThemeForSite(site);
-        return activeTheme.isEmpty() ? null : activeTheme.get(0);
-    }
-
     public void setActiveThemeForSite(@NonNull SiteModel site, @NonNull ThemeModel theme) {
         ThemeSqlUtils.insertOrReplaceActiveThemeForSite(site, theme);
     }

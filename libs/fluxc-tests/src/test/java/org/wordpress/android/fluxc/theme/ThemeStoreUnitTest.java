@@ -44,7 +44,7 @@ public class ThemeStoreUnitTest {
     public void testActiveTheme() throws SiteSqlUtils.DuplicateSiteException {
         final SiteModel site = SiteUtils.generateWPComSite();
         TestSiteSqlUtils.INSTANCE.getSiteSqlUtils().insertOrUpdateSite(site);
-        assertNull(mThemeStore.getActiveThemeForSite(site));
+        assertEquals(0, ThemeSqlUtils.getActiveThemeForSite(site).size());
 
         final ThemeModel firstTheme = generateTestTheme(site.getId(), "first-active", "First Active");
         final ThemeModel secondTheme = generateTestTheme(site.getId(), "second-active", "Second Active");
