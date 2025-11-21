@@ -341,7 +341,8 @@ class BookingMapperTest : BaseUnitTest() {
                 status = "completed",
                 productInfo = BookingProductInfo(name = "Women’s Haircut"),
                 customerInfo = customerInfo,
-            )
+            ),
+            customerNote = "Customer Note"
         )
     }
 }
