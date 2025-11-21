@@ -226,17 +226,6 @@ public class ThemeStore extends Store {
     }
 
     @SuppressWarnings("WeakerAccess")
-    public static class OnThemeDeleted extends OnChanged<ThemesError> {
-        @NonNull public SiteModel site;
-        @NonNull public ThemeModel theme;
-
-        public OnThemeDeleted(@NonNull SiteModel site, @NonNull ThemeModel theme) {
-            this.site = site;
-            this.theme = theme;
-        }
-    }
-
-    @SuppressWarnings("WeakerAccess")
     public static class OnThemeInstalled extends OnChanged<ThemesError> {
         @NonNull public SiteModel site;
         @NonNull public ThemeModel theme;
@@ -306,12 +295,6 @@ public class ThemeStore extends Store {
                 break;
             case INSTALLED_THEME:
                 handleThemeInstalled((SiteThemePayload) action.getPayload());
-                break;
-            case DELETE_THEME:
-                deleteTheme((SiteThemePayload) action.getPayload());
-                break;
-            case DELETED_THEME:
-                handleThemeDeleted((SiteThemePayload) action.getPayload());
                 break;
             case FETCH_STARTER_DESIGNS:
                 fetchStarterDesigns((FetchStarterDesignsPayload) action.getPayload());
@@ -487,25 +470,6 @@ public class ThemeStore extends Store {
             if (activatedTheme != null) {
                 setActiveThemeForSite(payload.site, activatedTheme);
             }
-        }
-        emitChange(event);
-    }
-
-    private void deleteTheme(@NonNull SiteThemePayload payload) {
-        if (payload.site.isJetpackConnected() && payload.site.isUsingWpComRestApi()) {
-            mThemeRestClient.deleteTheme(payload.site, payload.theme);
-        } else {
-            payload.error = new ThemesError(ThemeErrorType.NOT_AVAILABLE);
-            handleThemeDeleted(payload);
-        }
-    }
-
-    private void handleThemeDeleted(@NonNull SiteThemePayload payload) {
-        OnThemeDeleted event = new OnThemeDeleted(payload.site, payload.theme);
-        if (payload.isError()) {
-            event.error = payload.error;
-        } else {
-            ThemeSqlUtils.removeSiteTheme(payload.site, payload.theme);
         }
         emitChange(event);
     }

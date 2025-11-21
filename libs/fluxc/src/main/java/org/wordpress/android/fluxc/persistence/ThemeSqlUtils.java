@@ -167,15 +167,6 @@ public class ThemeSqlUtils {
                 .endWhere().execute();
     }
 
-    public static void removeSiteTheme(@NonNull SiteModel site, @NonNull ThemeModel theme) {
-        WellSql.delete(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.LOCAL_SITE_ID, site.getId())
-                .equals(ThemeModelTable.THEME_ID, theme.getThemeId())
-                .equals(ThemeModelTable.IS_WP_COM_THEME, false)
-                .endWhere().execute();
-    }
-
     public static void removeSiteThemes(@NonNull SiteModel site) {
         WellSql.delete(ThemeModel.class)
                 .where()

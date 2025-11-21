@@ -56,26 +56,6 @@ public class ThemeRestClient extends BaseWPComRestClient {
     }
 
     /**
-     * [Undocumented!] Endpoint: v1.1/sites/$siteId/themes/$themeId/delete
-     */
-    public void deleteTheme(@NonNull final SiteModel site, @NonNull final ThemeModel theme) {
-        String url = WPCOMREST.sites.site(site.getSiteId()).themes.theme(theme.getThemeId()).delete.getUrlV1_1();
-        add(WPComGsonRequest.buildPostRequest(url, null, JetpackThemeResponse.class,
-                (response, headers) -> {
-                    AppLog.d(AppLog.T.API, "Received response to Jetpack theme deletion request.");
-                    ThemeModel responseTheme = createThemeFromJetpackResponse(response);
-                    responseTheme.setId(theme.getId());
-                    SiteThemePayload payload = new SiteThemePayload(site, responseTheme);
-                    mDispatcher.dispatch(ThemeActionBuilder.newDeletedThemeAction(payload));
-                }, error -> {
-                    AppLog.d(AppLog.T.API, "Received error response to Jetpack theme deletion request.");
-                    SiteThemePayload payload = new SiteThemePayload(site, theme);
-                    payload.error = new ThemesError(error.apiError, error.message);
-                    mDispatcher.dispatch(ThemeActionBuilder.newDeletedThemeAction(payload));
-                }));
-    }
-
-    /**
      * [Undocumented!] Endpoint: v1.1/sites/$siteId/themes/$themeId/install
      */
     public void installTheme(@NonNull final SiteModel site, @NonNull final ThemeModel theme) {
