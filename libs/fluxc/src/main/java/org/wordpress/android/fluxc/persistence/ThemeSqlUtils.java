@@ -77,14 +77,6 @@ public class ThemeSqlUtils {
     }
 
     @NonNull
-    public static List<ThemeModel> getWpComThemes() {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.IS_WP_COM_THEME, true)
-                .endWhere().getAsModel();
-    }
-
-    @NonNull
     public static List<ThemeModel> getWpComThemes(@NonNull List<String> themeIds) {
         return WellSql.select(ThemeModel.class)
                 .where()
