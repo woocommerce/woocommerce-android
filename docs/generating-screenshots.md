@@ -23,18 +23,25 @@ gem install bundler
 bundle install --with screenshots
 ```
 
-### Install ImageMagick and drawText
+### Install ImageMagick
 
 ```sh
-# Install ImageMagick and drawText for promo screenshot generation
-brew install imagemagick automattic/build-tools/drawText
+# Install ImageMagick for promo screenshot generation
+brew install imagemagick
 ```
 
-ImageMagick is required to apply masks, composite device frames, and add text during promo screenshot generation.
+ImageMagick is required to apply masks, composite device frames, and render text during promo screenshot generation.
 
 ### Install Proxima Nova Font
 
-The Proxima Nova font is required for screenshot text. Check Font Book app first - it's included in macOS Sonoma and later. Only install manually if not already available.
+The Proxima Nova Bold font is required for screenshot text. The font file must be named `ProximaNova-Bold.otf` and installed in `~/Library/Fonts/`.
+
+To verify installation:
+```sh
+ls ~/Library/Fonts/ProximaNova-Bold.otf
+```
+
+If the font is missing, the promo screenshot generation will fail with an error indicating the font was not found.
 
 ### Configure Device for Screenshots
 
@@ -162,3 +169,19 @@ This file defines:
 - Screenshot size, offset, and frame dimensions
 
 Promotional text: `fastlane/metadata/android/{locale}/promo_screenshot_pos_*.txt`
+
+### Text Styling Configuration
+
+Text styling for promotional screenshots is controlled via `fastlane/playstoreres/assets/style.css`:
+
+```css
+*{
+    font-family: 'ProximaNova-Bold';  /* Font file name (without extension) */
+    font-style: normal;               /* normal or italic */
+    font-weight: normal;              /* normal or bold */
+    line-height: 120px;               /* Line spacing for multi-line text */
+    text-align: center;
+}
+```
+
+The font file must be installed in `~/Library/Fonts/` with a matching filename (e.g., `ProximaNova-Bold.otf` or `ProximaNova-Bold.ttf`).
