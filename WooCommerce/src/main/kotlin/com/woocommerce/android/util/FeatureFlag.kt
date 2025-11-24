@@ -10,7 +10,8 @@ enum class FeatureFlag {
     WC_SHIPPING_BANNER,
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
-    BOOKINGS_MVP;
+    BOOKINGS_MVP,
+    POS_REFUNDS;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -21,7 +22,8 @@ enum class FeatureFlag {
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            BOOKINGS_MVP -> PackageUtils.isDebugBuild()
+            BOOKINGS_MVP,
+            POS_REFUNDS -> PackageUtils.isDebugBuild()
         }
     }
 }
