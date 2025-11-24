@@ -25,7 +25,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
     ): BookingTeamMemberFilterViewModel {
         val repository = bookingsRepository ?: mock<BookingsRepository> {
             on { observeResources() } doReturn flowOf(emptyList())
-            onBlocking { fetchResources() } doReturn Result.success(emptyArray())
+            onBlocking { fetchResources() } doReturn Result.success(Unit)
         }
 
         return BookingTeamMemberFilterViewModel(
@@ -102,7 +102,7 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
                 on { observeResources() } doReturn resourcesFlow
                 onBlocking { fetchResources() } doAnswer {
                     Thread.sleep(50)
-                    Result.success(emptyArray())
+                    Result.success(Unit)
                 }
             }
 
