@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.bookings.filter.teammember
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -10,7 +12,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -29,7 +30,7 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
             onTeamMemberSelected = ::onTeamMemberSelected,
         )
     )
-    val uiState: StateFlow<BookingTeamMemberFilterUiState> = _uiState
+    val uiState: LiveData<BookingTeamMemberFilterUiState> = _uiState.asLiveData()
 
     init {
         // First getting from database

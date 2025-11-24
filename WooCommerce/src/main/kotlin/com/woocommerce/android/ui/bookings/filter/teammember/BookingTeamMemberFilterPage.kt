@@ -11,7 +11,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -33,9 +32,9 @@ fun BookingTeamMemberFilterRoute(
         hiltViewModel<BookingTeamMemberFilterViewModel, BookingTeamMemberFilterViewModel.Factory> { factory ->
             factory.create(initialTeamMembers, onTeamMembersFilterChanged)
         }
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.observeAsState()
     val event by viewModel.event.observeAsState()
-    BookingTeamMemberFilterPage(uiState, event)
+    uiState?.let { BookingTeamMemberFilterPage(it, event) }
 }
 
 @Composable
