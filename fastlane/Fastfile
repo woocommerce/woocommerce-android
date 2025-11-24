@@ -1104,6 +1104,68 @@ platform :android do
     end
   end
 
+  # Patches PromoScreenshots helper to use ImageMagick directly instead of drawText.
+  # This fixes font rendering issues where drawText ignores CSS font-family.
+  # Reads font-family, font-style, font-weight, line-height from style.css.
+  def patch_promo_screenshots_text_rendering
+    stylesheet_path = File.join(Dir.pwd, 'playstoreres/assets/style.css')
+    css_content = File.exist?(stylesheet_path) ? File.read(stylesheet_path) : ''
+
+    font_family = css_content.match(/font-family:\s*['"]?([^;'"]+)['"]?;/)&.captures&.first&.strip || 'Proxima Nova Bold'
+    fill_color = css_content.match(/color:\s*([^;]+);/)&.captures&.first&.strip || 'white'
+    font_style = css_content.match(/font-style:\s*([^;]+);/)&.captures&.first&.strip || 'normal'
+    font_weight = css_content.match(/font-weight:\s*([^;]+);/)&.captures&.first&.strip || 'normal'
+    line_height = css_content.match(/line-height:\s*(\d+)px;/)&.captures&.first&.to_i || 0
+
+    font_path = File.expand_path("~/Library/Fonts/#{font_family}.otf")
+    font_path = File.expand_path("~/Library/Fonts/#{font_family}.ttf") unless File.exist?(font_path)
+    UI.user_error!("Font '#{font_family}' not found at #{font_path}. Please install the font.") unless File.exist?(font_path)
+
+    UI.message("Using font: #{font_family} (#{font_path})")
+    UI.message("Using fill color: #{fill_color}")
+    UI.message("Using font-style: #{font_style}, font-weight: #{font_weight}, line-height: #{line_height}px")
+
+    Fastlane::Helper::PromoScreenshots.class_eval do
+      define_method(:draw_text_to_canvas) do |canvas, text, width, height, x_position, y_position, font_size, _stylesheet_path, position = 'center'|
+        temp_text_file = Tempfile.new(['text', '.png'])
+        begin
+          text_content = File.exist?(text) ? File.read(text).strip : text
+          font_size_num = font_size.to_s.gsub('px', '').to_i
+
+          magick_args = [
+            'magick', '-size', "#{width}x#{height}", 'xc:transparent',
+            '-font', font_path,
+            '-pointsize', font_size_num.to_s,
+            '-fill', fill_color,
+            '-gravity', 'center'
+          ]
+
+          magick_args += ['-style', 'Italic'] if font_style == 'italic'
+          magick_args += ['-weight', 'Bold'] if %w[bold 700].include?(font_weight)
+          magick_args += ['-interline-spacing', (line_height - font_size_num).to_s] if line_height > 0
+
+          magick_args += ['-annotate', '0', text_content, temp_text_file.path]
+
+          system(*magick_args)
+
+          text_image = open_image(temp_text_file.path)
+          text_frame = create_image(width, height)
+          text_frame = case position
+                       when 'left' then composite_image_left(text_frame, text_image, 0, 0)
+                       when 'center' then composite_image_center(text_frame, text_image, 0, 0)
+                       when 'top' then composite_image_top(text_frame, text_image, 0, 0)
+                       else composite_image_center(text_frame, text_image, 0, 0)
+                       end
+        ensure
+          temp_text_file.close
+          temp_text_file.unlink
+        end
+
+        composite_image(canvas, text_frame, x_position, y_position)
+      end
+    end
+  end
+
   #####################################################################################
   # create_promo_screenshots
   # -----------------------------------------------------------------------------------
@@ -1123,6 +1185,8 @@ platform :android do
     rescue LoadError
       UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
     end
+
+    patch_promo_screenshots_text_rendering
 
     # Clean temporary folder from previous runs
     FileUtils.rm_rf(PROMO_SCREENSHOTS_DIR)
@@ -1174,6 +1238,8 @@ platform :android do
     rescue LoadError
       UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
     end
+
+    patch_promo_screenshots_text_rendering
 
     FileUtils.rm_rf(PROMO_SCREENSHOTS_DIR)
 
