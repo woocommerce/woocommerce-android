@@ -29,8 +29,6 @@ import com.woocommerce.android.ui.bookings.compose.BookingLabel
 import com.woocommerce.android.ui.bookings.compose.BookingSectionHeader
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
-import com.woocommerce.android.ui.compose.component.datePickerDialogDefaultMaxDate
-import com.woocommerce.android.ui.compose.component.datePickerDialogDefaultMinDate
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -85,8 +83,8 @@ fun DateTimeFilterPage(
             is PickerDialogState.DateDialog -> {
                 DatePickerDialog(
                     currentDate = dialogState.date?.toCalendar(),
-                    minDate = dialogState.minDate?.toCalendar() ?: datePickerDialogDefaultMinDate,
-                    maxDate = dialogState.maxDate?.toCalendar() ?: datePickerDialogDefaultMaxDate,
+                    minDate = dialogState.minDate?.toCalendar(),
+                    maxDate = dialogState.maxDate?.toCalendar(),
                     onDateSelected = { calendar: Calendar ->
                         dialogState.onDateSelected(calendar.timeInMillis)
                     },
