@@ -45,7 +45,6 @@
 1. If you are an external contributor:
    1. Generate developer OAuth2 tokens. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
    1. Edit `defaults.properties` and adjust the values as needed — especially including `wp.oauth.*` ones. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
-   1. `cp WooCommerce/google-services.json-example WooCommerce/google-services.json` (to replace that encrypted file with placeholder content)
 1. In Android Studio, open the project from the local repository. This will auto-generate `local.properties` with the SDK location.
 1. Optional: Go to Tools → Device Manager and create an emulated device.
 1. Run. (Creates a default virtual device if you skipped the previous step)
