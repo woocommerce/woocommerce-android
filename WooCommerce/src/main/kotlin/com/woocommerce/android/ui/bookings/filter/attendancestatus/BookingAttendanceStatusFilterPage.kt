@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.bookings.filter.attendancestatus
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
@@ -17,8 +17,8 @@ fun BookingAttendanceStatusFilterRoute(
         { factory ->
             factory.create(initialAttendanceStatuses, onAttendanceStatusesFilterChanged)
         }
-    val uiState by viewModel.uiState.collectAsState()
-    BookingAttendanceStatusFilterPage(uiState)
+    val uiState by viewModel.uiState.observeAsState()
+    uiState?.let { BookingAttendanceStatusFilterPage(it) }
 }
 
 @Composable
