@@ -40,7 +40,7 @@
 
 1. If you are a developer at Automattic:
    1. Make sure you have `git-crypt` installed (`brew install git-crypt`)
-   1. Search for "WooCommerce Android git-crypt encryption key" in our Secret Store, and copy the Base64 value in your clipboard
+   1. Open [the "WooCommerce Android git-crypt encryption key" entry in our Secret Store](https://mc.a8c.com/secret-store/?secret_id=13697), and copy the Base64 value in your clipboard
    1. Run `pbpaste | base64 -d | git-crypt unlock -` to decrypt the encrypted files (including `secrets.properties` and `WooCommerce/google-services.json`)
 1. If you are an external contributor:
    1. Generate developer OAuth2 tokens. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
