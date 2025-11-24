@@ -55,6 +55,11 @@ local.properties
 # Backup Files
 *.bak
 
+# Legacy secret files managed by `configure`, before we migrated to use `git-crypt`.
+# Kept in this `.gitignore` to ensure that, if someone still had them in their local working copy and didn't do a
+# `git clean` to remove them after the migration away from `configure`, they don't risk being accidentally committed.
+.configure-files/
+
 # Android Studio Navigation editor temp files
 .navigation/
 
