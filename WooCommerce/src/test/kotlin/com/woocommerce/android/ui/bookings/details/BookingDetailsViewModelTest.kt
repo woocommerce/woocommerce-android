@@ -58,7 +58,6 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        whenever(currencyFormatter.formatCurrency(any<String>(), any<String>(), any())).thenReturn("$0.00")
         whenever(
             resourceProvider.getString(
                 eq(R.string.booking_details_title),
@@ -409,7 +408,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             personCounts = listOf(1L),
             localTimezone = "",
             attendanceStatus = BookingEntity.AttendanceStatus.Booked,
-            order = BookingOrderInfo()
+            order = BookingOrderInfo(),
+            customerNote = "Customer note"
         )
     }
 }

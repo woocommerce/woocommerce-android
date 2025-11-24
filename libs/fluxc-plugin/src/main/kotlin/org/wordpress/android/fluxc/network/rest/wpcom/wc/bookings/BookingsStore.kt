@@ -32,7 +32,7 @@ class BookingsStore @Inject internal constructor(
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1,
         query: String? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters?,
         order: BookingsOrderOption
     ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
@@ -54,7 +54,7 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    if (page == 1 && filters.isEmpty() && query.isNullOrEmpty()) {
+                    if (page == 1 && filters == BookingFilters.EMPTY && query.isNullOrEmpty()) {
                         // Clear existing bookings and insert new ones when fetching the first page
                         bookingsDao.replaceAllForSite(site.localId(), entities)
                     } else {
@@ -80,9 +80,13 @@ class BookingsStore @Inject internal constructor(
     fun observeBookings(
         site: SiteModel,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> = bookingsDao.observeBookings(site.localId(), limit, filters, order)
+
+    fun observeBookingCount(
+        site: SiteModel
+    ): Flow<Long> = bookingsDao.observeBookingsCount(site.localId())
 
     fun observeBooking(
         site: SiteModel,

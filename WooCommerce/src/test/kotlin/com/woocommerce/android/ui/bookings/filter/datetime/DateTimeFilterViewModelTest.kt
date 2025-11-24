@@ -7,19 +7,21 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DateTimeFilterViewModelTest : BaseUnitTest() {
 
+    private val zone = ZoneOffset.UTC
+
     private val clock = Clock.fixed(
         LocalDateTime.of(2025, 11, 13, 10, 0)
-            .toInstant(ZoneOffset.UTC),
-        ZoneOffset.UTC
+            .toInstant(zone),
+        zone
     )
 
     @Test
@@ -49,10 +51,9 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given DateDialog opened for FROM, when a date is selected, then fromDateTime and formattedFromDate are updated`() =
+    fun `given DateDialog opened for FROM, when initial date is selected, then fromDateTime and formattedFromDate are updated`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
             var state = vm.uiState.getOrAwaitValue()!!
@@ -67,20 +68,18 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.fromDateTime!!.year).isEqualTo(2024)
             assertThat(state.fromDateTime.monthValue).isEqualTo(5)
             assertThat(state.fromDateTime.dayOfMonth).isEqualTo(10)
-            // time should be preserved from picked (midnight)
+            // initial time should be set at start of day
             assertThat(state.fromDateTime.hour).isEqualTo(0)
             assertThat(state.fromDateTime.minute).isEqualTo(0)
             assertThat(state.formattedFromDate).isNotEmpty()
-            // time is not formatted on date selection
-            assertThat(state.formattedFromTime).isEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
         }
 
     @Test
-    fun `given DateDialog opened for TO, when a date is selected, then toDateTime and formattedToDate are updated`() =
+    fun `given DateDialog opened for TO, when initial date is selected, then toDateTime and formattedToDate are updated`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
             var state = vm.uiState.getOrAwaitValue()!!
@@ -95,10 +94,11 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.toDateTime!!.year).isEqualTo(2024)
             assertThat(state.toDateTime.monthValue).isEqualTo(6)
             assertThat(state.toDateTime.dayOfMonth).isEqualTo(2)
-            assertThat(state.toDateTime.hour).isEqualTo(0)
-            assertThat(state.toDateTime.minute).isEqualTo(0)
+            // initial time should be set at end of day
+            assertThat(state.toDateTime.hour).isEqualTo(23)
+            assertThat(state.toDateTime.minute).isEqualTo(59)
             assertThat(state.formattedToDate).isNotEmpty()
-            assertThat(state.formattedToTime).isEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
         }
 
@@ -165,7 +165,6 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     fun `given existing FROM date, when onDateClick(FROM) called again, then DateDialog is prefilled with matching millis`() =
         testBlocking {
             val vm = createVm()
-            val zone = ZoneId.systemDefault()
 
             // Set FROM date first
             vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
@@ -182,8 +181,111 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(providedMillis).isEqualTo(expectedMillis)
         }
 
+    @Test
+    fun `given initialRange with after and before, when ViewModel is created, then state reflects range`() =
+        testBlocking {
+            // Given a specific range
+            val after = LocalDateTime.of(2025, 1, 2, 3, 4).toInstant(ZoneOffset.UTC)
+            val before = LocalDateTime.of(2025, 2, 3, 4, 5).toInstant(ZoneOffset.UTC)
+            val range = BookingsFilterOption.DateRange(
+                before = before,
+                after = after
+            )
+
+            // When
+            val vm = DateTimeFilterViewModel(
+                onTypeFilterChanged = { _ -> },
+                savedStateHandle = SavedStateHandle(),
+                clock = clock,
+                initialRange = range,
+            )
+
+            // Then
+            val expectedFrom = after.atZone(zone).toLocalDateTime()
+            val expectedTo = before.atZone(zone).toLocalDateTime()
+            val state = vm.uiState.getOrAwaitValue()!!
+            assertThat(state.fromDateTime).isEqualTo(expectedFrom)
+            assertThat(state.toDateTime).isEqualTo(expectedTo)
+            // formatted strings should be populated
+            assertThat(state.formattedFromDate).isNotEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
+            assertThat(state.formattedToDate).isNotEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
+        }
+
+    @Test
+    fun `given existing TO date, when onDateClick(FROM), then DateDialog maxDate equals TO startOfDayUTC millis`() =
+        testBlocking {
+            val vm = createVm()
+
+            // First select TO date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
+            val toDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val toLocalDateTime = LocalDateTime.of(2025, 6, 15, 0, 0)
+            val toMillisInput = toLocalDateTime.atZone(zone).toInstant().toEpochMilli()
+            toDialog.onDateSelected(toMillisInput)
+
+            // Now open FROM dialog; it should constrain by maxDate = TO (startOfDay UTC)
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
+            val fromDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+
+            val expectedMaxMillis = toLocalDateTime
+                .toLocalDate()
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant()
+                .toEpochMilli()
+
+            assertThat(fromDialog.maxDate).isEqualTo(expectedMaxMillis)
+        }
+
+    @Test
+    fun `given existing FROM date, when onDateClick(TO), then DateDialog minDate equals FROM startOfDayUTC millis`() =
+        testBlocking {
+            val vm = createVm()
+
+            // First select FROM date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
+            val fromDialogInitial = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val fromLocalDateTime = LocalDateTime.of(2025, 6, 1, 0, 0)
+            val fromMillisInput = fromLocalDateTime.atZone(zone).toInstant().toEpochMilli()
+            fromDialogInitial.onDateSelected(fromMillisInput)
+
+            // Now open TO dialog; it should constrain by minDate = FROM (startOfDay UTC)
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
+            val toDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+
+            val expectedMinMillis = fromLocalDateTime
+                .toLocalDate()
+                .atStartOfDay(ZoneOffset.UTC)
+                .toInstant()
+                .toEpochMilli()
+
+            assertThat(toDialog.minDate).isEqualTo(expectedMinMillis)
+        }
+
+    @Test
+    fun `given no TO date, when onDateClick(FROM), then DateDialog maxDate is null`() = testBlocking {
+        val vm = createVm()
+
+        vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
+        val dialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+
+        assertThat(dialog.maxDate).isNull()
+    }
+
+    @Test
+    fun `given no FROM date, when onDateClick(TO), then DateDialog minDate is null`() = testBlocking {
+        val vm = createVm()
+
+        vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
+        val dialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+
+        assertThat(dialog.minDate).isNull()
+    }
+
     private fun createVm(): DateTimeFilterViewModel {
         return DateTimeFilterViewModel(
+            onTypeFilterChanged = { _ -> },
             savedStateHandle = SavedStateHandle(),
             clock = clock,
         )

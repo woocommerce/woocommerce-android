@@ -1,9 +1,10 @@
 [versions]
-agp = '8.13.0'
+agp = '8.13.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
 androidx-appcompat = '1.7.1'
 androidx-arch-core = '2.2.0'
+androidx-annotation = '1.9.1'
 androidx-browser = '1.9.0'
 androidx-camera = '1.5.1'
 androidx-cardview = '1.0.0'
@@ -11,7 +12,7 @@ androidx-compose-bom = '2025.11.00'
 androidx-constraintlayout-compose = '1.0.1'
 androidx-constraintlayout-main = '2.2.1'
 androidx-core-main = '1.17.0'
-androidx-core-splashscreen = '1.0.1'
+androidx-core-splashscreen = '1.2.0'
 androidx-credentials = '1.5.0'
 androidx-datastore = '1.1.7'
 androidx-exifinterface = "1.4.1"
@@ -37,7 +38,7 @@ androidx-wear-compose = '1.4.0'
 androidx-wear-protolayout = '1.2.1'
 androidx-wear-tooling = '1.0.0'
 androidx-wear-watchface = '1.2.1'
-androidx-work = '2.10.5'
+androidx-work = '2.11.0'
 apache-commons-text = '1.14.0'
 apache-http-client-android = '4.3.5.1'
 automattic-about = '1.7.0'
@@ -49,7 +50,7 @@ bumptech-glide = '5.0.5'
 cashapp-turbine = '1.2.1'
 coil = '2.7.0'
 commons-fileupload = '1.6.0'
-dependency-analysis = '3.0.2'
+dependency-analysis = '3.2.0'
 detekt = '1.23.8'
 eventbus = "3.3.1"
 facebook-shimmer = '0.5.0'
@@ -73,7 +74,7 @@ google-play-services-auth = '21.4.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '19.0.0'
 google-protobuf-plugin = '0.9.5'
-google-protobuf-library = '4.32.1'
+google-protobuf-library = '4.33.0'
 google-services = '4.4.0'
 google-zxing = '3.5.4'
 gravatar = '0.2.0'
@@ -83,7 +84,7 @@ jetty = '9.4.57.v20241219'
 json-path = '2.9.0'
 json-smart = '2.6.0'
 junit = '4.13.2'
-lottie = '6.6.7'
+lottie = '6.6.10'
 kotlin = '2.2.21'
 kotlinx-coroutines = '1.10.2'
 ksp = '2.2.21-2.0.4'
@@ -95,7 +96,7 @@ sentry = '5.8.0'
 squareup-javapoet = "1.13.0"
 squareup-leakcanary = '2.14'
 squareup-okhttp3 = "5.2.1"
-stripe-terminal = '4.7.4'
+stripe-terminal = '4.7.5'
 swiperefreshlayout = "1.1.0"
 tinder-statemachine = '0.2.0'
 volley = "1.2.1"
@@ -114,6 +115,7 @@ android-security-lint = { group = "com.android.security.lint", name = "lint", ve
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 androidx-arch-core-testing = { group = "androidx.arch.core", name = "core-testing", version.ref = "androidx-arch-core" }
+androidx-annotation = { group = "androidx.annotation", name = "annotation", version.ref = "androidx-annotation" }
 androidx-browser = { group = "androidx.browser", name = "browser", version.ref = "androidx-browser" }
 androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "androidx-camera" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "androidx-camera" }

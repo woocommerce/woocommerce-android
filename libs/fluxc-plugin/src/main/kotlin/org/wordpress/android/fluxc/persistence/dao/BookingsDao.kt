@@ -7,10 +7,11 @@ import androidx.room.Query
 import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
+import kotlin.collections.orEmpty
 
 @Dao
 interface BookingsDao {
@@ -18,11 +19,12 @@ interface BookingsDao {
         const val DEFAULT_SELECT_QUERY = """
             SELECT * FROM Bookings
             WHERE localSiteId = :localSiteId
-            AND (:startDateBefore IS NULL OR start < :startDateBefore)
-            AND (:startDateAfter IS NULL OR start > :startDateAfter)
+            AND (:startDateBefore IS NULL OR start <= :startDateBefore)
+            AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
+            AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -42,26 +44,16 @@ interface BookingsDao {
         resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        productIds: List<Long>,
+        productIdsSize: Int,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
-    @Suppress("LongParameterList")
-    @Query(DEFAULT_SELECT_QUERY)
-    suspend fun getBookings(
-        localSiteId: LocalId,
-        limit: Int?,
-        startDateBefore: Long?,
-        startDateAfter: Long?,
-        customerId: Long?,
-        resourceIds: List<Long>,
-        resourceIdsSize: Int,
-        attendanceStatuses: List<String>,
-        attendanceStatusesSize: Int,
-        order: BookingsOrderOption
-    ): List<BookingEntity>
-
     @Query("SELECT * FROM Bookings WHERE localSiteId = :localSiteId AND id = :bookingId LIMIT 1")
     fun observeBooking(localSiteId: LocalId, bookingId: Long): Flow<BookingEntity?>
+
+    @Query("SELECT COUNT(*) FROM Bookings WHERE localSiteId = :localSiteId")
+    fun observeBookingsCount(localSiteId: LocalId): Flow<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrReplace(entity: BookingEntity): Long
@@ -81,60 +73,24 @@ interface BookingsDao {
     fun observeBookings(
         localSiteId: LocalId,
         limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
+        filters: BookingFilters? = null,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>> {
-        val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
-        val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
-        val resourceIdSet = filters.filterIsInstance<BookingsFilterOption.TeamMembers>()
-            .firstOrNull()?.values
-            ?.map { it.value }
-            .orEmpty()
-        val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
-            .firstOrNull()?.values
-            ?.map { it.key }
-            .orEmpty()
+        val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
+        val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
+        val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
             limit = limit,
-            startDateBefore = dateRangeFilter?.before?.epochSecond,
-            startDateAfter = dateRangeFilter?.after?.epochSecond,
-            customerId = customerFilter?.customerId,
-            resourceIds = resourceIdSet.toList(),
-            resourceIdsSize = resourceIdSet.size,
+            startDateBefore = filters?.dateRange?.before?.epochSecond,
+            startDateAfter = filters?.dateRange?.after?.epochSecond,
+            customerId = filters?.customer?.customerId,
+            resourceIds = resourceIdsKeySet.toList(),
+            resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
-            order = order
-        )
-    }
-
-    suspend fun getBookings(
-        localSiteId: LocalId,
-        limit: Int? = null,
-        filters: List<BookingsFilterOption> = emptyList(),
-        order: BookingsOrderOption
-    ): List<BookingEntity> {
-        val dateRangeFilter = filters.filterIsInstance<BookingsFilterOption.DateRange>().firstOrNull()
-        val customerFilter = filters.filterIsInstance<BookingsFilterOption.Customer>().firstOrNull()
-        val resourceIdSet = filters.filterIsInstance<BookingsFilterOption.TeamMembers>()
-            .firstOrNull()?.values
-            ?.map { it.value }
-            .orEmpty()
-        val attendanceStatusKeySet = filters.filterIsInstance<BookingsFilterOption.AttendanceStatuses>()
-            .firstOrNull()?.values
-            ?.map { it.key }
-            .orEmpty()
-
-        return getBookings(
-            localSiteId = localSiteId,
-            limit = limit,
-            startDateBefore = dateRangeFilter?.before?.epochSecond,
-            startDateAfter = dateRangeFilter?.after?.epochSecond,
-            customerId = customerFilter?.customerId,
-            resourceIds = resourceIdSet,
-            resourceIdsSize = resourceIdSet.size,
-            attendanceStatuses = attendanceStatusKeySet,
-            attendanceStatusesSize = attendanceStatusKeySet.size,
+            productIds = productIds,
+            productIdsSize = productIds.size,
             order = order
         )
     }

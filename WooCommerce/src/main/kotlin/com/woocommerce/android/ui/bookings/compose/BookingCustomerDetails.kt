@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.bookings.compose
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,7 +34,7 @@ import com.woocommerce.android.util.ActivityUtils
 
 @Composable
 fun BookingCustomerDetails(
-    model: BookingCustomerDetailsModel,
+    model: BookingCustomerDetailsUiModel,
     modifier: Modifier = Modifier,
 ) {
     var phoneMenuExpanded by remember { mutableStateOf(false) }
@@ -97,6 +98,27 @@ fun BookingCustomerDetails(
                 }
                 HorizontalDivider(thickness = 0.5.dp)
             }
+            model.customerNote?.let { customerNote ->
+                val defaultMaxLines = 4
+                var isExpanded by remember { mutableStateOf(false) }
+                Column(
+                    modifier = Modifier
+                        .clickable { isExpanded = !isExpanded }
+                        .padding(vertical = 12.dp, horizontal = 16.dp)
+                        .animateContentSize()
+                ) {
+                    BookingLabel(label = R.string.booking_customer_note_label)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        text = customerNote,
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = if (isExpanded) Int.MAX_VALUE else defaultMaxLines,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
+                HorizontalDivider(thickness = 0.5.dp)
+            }
         }
     }
 }
@@ -144,18 +166,20 @@ private fun CustomerDetailsRow(
     }
 }
 
-data class BookingCustomerDetailsModel(
+data class BookingCustomerDetailsUiModel(
     val name: String?,
     val email: String?,
     val phone: String?,
     val billingAddress: String?,
+    val customerNote: String?
 ) {
     companion object {
-        val EMPTY = BookingCustomerDetailsModel(
+        val EMPTY = BookingCustomerDetailsUiModel(
             name = null,
             email = null,
             phone = null,
-            billingAddress = null
+            billingAddress = null,
+            customerNote = null
         )
     }
 }
@@ -165,7 +189,7 @@ data class BookingCustomerDetailsModel(
 private fun BookingCustomerDetailsPreview() {
     WooThemeWithBackground {
         BookingCustomerDetails(
-            model = BookingCustomerDetailsModel(
+            model = BookingCustomerDetailsUiModel(
                 name = "Margarita Nikolaevna",
                 email = "margarita@example.com",
                 phone = "+1 555-123-4567",
@@ -173,7 +197,8 @@ private fun BookingCustomerDetailsPreview() {
                     238 Willow Creek Drive
                     Montgomery
                     AL 36109
-                """.trimIndent()
+                """.trimIndent(),
+                customerNote = "Customer note"
             ),
             modifier = Modifier.fillMaxWidth()
         )

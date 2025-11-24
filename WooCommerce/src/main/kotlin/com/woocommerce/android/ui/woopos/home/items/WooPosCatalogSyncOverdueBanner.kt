@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -32,24 +33,22 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
     state: WooPosItemsViewModel.CatalogSyncOverdueBannerState,
-    modifier: Modifier = Modifier,
     onDismiss: () -> Unit
 ) {
     AnimatedVisibility(
         visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
-        enter = fadeIn(
-            animationSpec = tween(durationMillis = 180)
-        ) + scaleIn(
-            animationSpec = tween(durationMillis = 180)
-        ),
-        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value)
+        enter =
+        fadeIn(animationSpec = tween(durationMillis = 180)) + scaleIn(animationSpec = tween(durationMillis = 180))
     ) {
         WooPosCard(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
             backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
             elevation = WooPosElevation.Medium,
@@ -78,6 +77,7 @@ fun WooPosCatalogSyncOverdueBanner(
                         text = stringResource(R.string.woopos_refresh_catalog_banner_title),
                         style = WooPosTypography.BodyLarge,
                         color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
                     )
                     WooPosText(
                         text = stringResource(R.string.woopos_refresh_catalog_banner_message),
@@ -87,13 +87,14 @@ fun WooPosCatalogSyncOverdueBanner(
                 }
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(32.dp)
+                    modifier = Modifier
+                        .size(32.dp)
+                        .align(Alignment.Top)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Close,
+                        imageVector = Icons.Default.Close,
                         contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
-                        tint = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier.size(24.dp)
+                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
                 }
             }

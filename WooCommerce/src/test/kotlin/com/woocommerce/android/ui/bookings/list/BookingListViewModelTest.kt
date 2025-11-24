@@ -236,10 +236,8 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(bookingListHandler).loadBookings(
             searchQuery = eq(null),
             filters = eq(
-                listOfNotNull(
-                    with(filtersBuilder) {
-                        BookingListTab.Upcoming.asDateRangeFilter()
-                    }
+                BookingFilters().copy(
+                    dateRange = with(filtersBuilder) { BookingListTab.Upcoming.asDateRangeFilter() }
                 )
             ),
             sortBy = any()
@@ -332,7 +330,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         // THEN
         verify(bookingListHandler).loadBookings(
             searchQuery = anyOrNull(),
-            filters = argThat { any { it == customerFilter } },
+            filters = argThat { customer == customerFilter },
             sortBy = any()
         )
     }
@@ -432,7 +430,8 @@ class BookingListViewModelTest : BaseUnitTest() {
             personCounts = listOf(1L),
             localTimezone = "",
             attendanceStatus = BookingEntity.AttendanceStatus.Booked,
-            order = BookingOrderInfo()
+            order = BookingOrderInfo(),
+            customerNote = ""
         )
     }
 }

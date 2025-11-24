@@ -2,7 +2,7 @@ package com.woocommerce.android.ui.bookings.details
 
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 import com.woocommerce.android.ui.compose.DialogState
@@ -29,7 +29,7 @@ data class BookingUiState(
     val orderId: Long,
     val bookingSummary: BookingSummaryModel,
     val bookingsAppointmentDetails: BookingAppointmentDetailsModel,
-    val bookingCustomerDetails: BookingCustomerDetailsModel,
+    val bookingCustomerDetails: BookingCustomerDetailsUiModel,
     val bookingPaymentDetails: BookingPaymentDetailsModel?,
     val note: String,
     val isAttendanceStatusEditable: Boolean,

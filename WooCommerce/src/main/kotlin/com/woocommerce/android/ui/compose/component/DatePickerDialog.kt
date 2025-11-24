@@ -51,8 +51,8 @@ fun DatePickerDialog(
     onDismissRequest: () -> Unit,
     neutralButton: (@Composable () -> Unit)? = null,
     shape: Shape = DatePickerDefaults.shape,
-    minDate: Date = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time,
-    maxDate: Date = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time,
+    minDate: Date? = null,
+    maxDate: Date? = null,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
@@ -63,8 +63,8 @@ fun DatePickerDialog(
         onDismissRequest = onDismissRequest,
         shape = shape,
         neutralButton = neutralButton,
-        minDate = minDate.toCalendar(),
-        maxDate = maxDate.toCalendar(),
+        minDate = (minDate ?: GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1).time).toCalendar(),
+        maxDate = (maxDate ?: GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1).time).toCalendar(),
         dateFormat = dateFormat,
         dialogProperties = dialogProperties
     )
@@ -77,8 +77,8 @@ fun DatePickerDialog(
     onDismissRequest: () -> Unit,
     shape: Shape = DatePickerDefaults.shape,
     neutralButton: (@Composable () -> Unit)? = null,
-    minDate: Calendar = GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1),
-    maxDate: Calendar = GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1),
+    minDate: Calendar? = null,
+    maxDate: Calendar? = null,
     dateFormat: DateFormat = SimpleDateFormat.getDateInstance(SimpleDateFormat.MEDIUM),
     dialogProperties: DialogProperties = DialogProperties(usePlatformDefaultWidth = false)
 ) {
@@ -86,7 +86,11 @@ fun DatePickerDialog(
         onDismissRequest = onDismissRequest,
         properties = dialogProperties
     ) {
-        val selectableDates = remember(minDate, maxDate) { createSelectableDates(minDate, maxDate) }
+        val minDefault = minDate ?: GregorianCalendar(DEFAULT_MIN_YEAR, 0, 1)
+        val maxDefault = maxDate ?: GregorianCalendar(DEFAULT_MAX_YEAR, 0, 1)
+        val selectableDates = remember(minDefault.timeInMillis, maxDefault.timeInMillis) {
+            createSelectableDates(minDefault, maxDefault)
+        }
         val dateFormatter = remember(dateFormat) { dateFormat.toDatePickerFormatter() }
 
         val state = rememberDatePickerState(

@@ -58,11 +58,10 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
-                is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> {
-                    preferencesRepository.disablePeriodicSyncForSite(site.localId())
-                    trackSyncFailed(SyncType.FULL, result)
-                }
-                is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
+                is PosLocalCatalogSyncResult.Failure -> {
+                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge) {
+                        preferencesRepository.disablePeriodicSyncForSite(site.localId())
+                    }
                     trackSyncFailed(SyncType.FULL, result)
                 }
             }
@@ -124,6 +123,9 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     ) {
         val errorType = when (result) {
             is PosLocalCatalogSyncResult.Failure.CatalogTooLarge -> SyncErrorType.CATALOG_TOO_LARGE
+            is PosLocalCatalogSyncResult.Failure.NetworkError -> SyncErrorType.NETWORK_ERROR
+            is PosLocalCatalogSyncResult.Failure.DatabaseError -> SyncErrorType.DATABASE_ERROR
+            is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
         }
 
@@ -203,8 +205,20 @@ private fun WooPosSyncResult.Failed.toPosLocalCatalogSyncFailure(): PosLocalCata
             )
         }
 
+        is WooPosSyncResult.Failed.NetworkError -> {
+            PosLocalCatalogSyncResult.Failure.NetworkError(error)
+        }
+
+        is WooPosSyncResult.Failed.DatabaseError -> {
+            PosLocalCatalogSyncResult.Failure.DatabaseError(error)
+        }
+
+        is WooPosSyncResult.Failed.InvalidResponse -> {
+            PosLocalCatalogSyncResult.Failure.InvalidResponse(error)
+        }
+
         is WooPosSyncResult.Failed.UnexpectedError -> {
-            PosLocalCatalogSyncResult.Failure.UnexpectedError(errorMessage)
+            PosLocalCatalogSyncResult.Failure.UnexpectedError(error)
         }
     }
 }
