@@ -8,11 +8,11 @@ fi
 
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
-echo "--- :rubygems: Setting up Gems"
-install_gems
-
 echo "--- :closed_lock_with_key: Decrypting Secrets"
 .buildkite/commands/git-crypt-unlock.sh
+
+echo "--- :rubygems: Setting up Gems"
+install_gems
 
 echo "+++ 🧪 Testing"
 set +e
