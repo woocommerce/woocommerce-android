@@ -32,7 +32,7 @@ class BookingsStore @Inject internal constructor(
         perPage: Int = BookingsRestClient.DEFAULT_PER_PAGE,
         page: Int = 1,
         query: String? = null,
-        filters: BookingFilters?,
+        filters: BookingFilters,
         order: BookingsOrderOption
     ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {

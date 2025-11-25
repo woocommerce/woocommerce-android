@@ -24,7 +24,7 @@ class BookingsRepository @Inject constructor(
         page: Int,
         perPage: Int,
         query: String? = null,
-        filters: BookingFilters? = null,
+        filters: BookingFilters = BookingFilters.EMPTY,
         order: BookingsOrderOption
     ): Result<FetchResult> {
         val result = bookingsStore.fetchBookings(
