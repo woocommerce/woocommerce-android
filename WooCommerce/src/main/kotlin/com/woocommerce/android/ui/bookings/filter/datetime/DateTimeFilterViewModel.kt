@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -62,28 +63,35 @@ class DateTimeFilterViewModel @AssistedInject constructor(
 
     private fun openDateDialog(dateBoundary: DateBoundary) {
         _uiState.update { currentState ->
-            val dialogState = when (dateBoundary) {
-                DateBoundary.FROM -> DateDialog(
-                    // Convert to UTC for the Date picker
-                    date = currentState.fromDateTime
-                        ?.toLocalDate()
-                        ?.atStartOfDay(ZoneOffset.UTC)
-                        ?.toInstant()
-                        ?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val fromDate = currentState.fromDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
+            val toDate = currentState.toDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
 
-                DateBoundary.TO -> DateDialog(
-                    // Convert to UTC for the Date picker
-                    date = currentState.toDateTime
-                        ?.toLocalDate()
-                        ?.atStartOfDay(ZoneOffset.UTC)
-                        ?.toInstant()
-                        ?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val dialogState = when (dateBoundary) {
+                DateBoundary.FROM -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = fromDate?.toEpochMilli(),
+                        maxDate = toDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
+
+                DateBoundary.TO -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = toDate?.toEpochMilli(),
+                        minDate = fromDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
             }
             currentState.copy(
                 pickerDialogState = dialogState
@@ -130,6 +138,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     current.copy(
                         fromDateTime = newDateTime,
                         formattedFromDate = newDateTime.formatDate(),
+                        formattedFromTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }
@@ -137,13 +146,14 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                 DateBoundary.TO -> {
                     // Convert from UTC to local zone
                     val picked = Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC).toLocalDate()
-                    val newDateTime = (current.toDateTime ?: picked.atStartOfDay())
+                    val newDateTime = (current.toDateTime ?: picked.atTime(LocalTime.MAX))
                         .withYear(picked.year)
                         .withMonth(picked.monthValue)
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         toDateTime = newDateTime,
                         formattedToDate = newDateTime.formatDate(),
+                        formattedToTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }

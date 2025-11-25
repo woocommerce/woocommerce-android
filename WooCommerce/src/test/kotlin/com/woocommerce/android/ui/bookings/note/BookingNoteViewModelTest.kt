@@ -53,7 +53,8 @@ class BookingNoteViewModelTest : BaseUnitTest() {
         localTimezone = "",
         attendanceStatus = BookingEntity.AttendanceStatus.Booked,
         note = "Initial note",
-        order = BookingOrderInfo()
+        order = BookingOrderInfo(),
+        customerNote = "Customer Note"
     )
 
     private val savedStateHandle: SavedStateHandle = BookingNoteFragmentArgs(bookingId).toSavedStateHandle()
