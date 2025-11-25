@@ -1122,7 +1122,6 @@ platform :android do
     end
   end
 
-  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength
   # Patches PromoScreenshots helper to use ImageMagick's label: for text rendering.
   # Uses label: with font from CSS, falling back to system fonts for international characters.
   # Reads font-family, font-style, font-weight, line-height from style.css.
@@ -1136,7 +1135,6 @@ platform :android do
 
     register_draw_text_method(font_path, css_config)
   end
-  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength
 
   def parse_promo_screenshot_css
     stylesheet_path = File.join(Dir.pwd, 'playstoreres/assets/style.css')
@@ -1167,17 +1165,12 @@ platform :android do
   end
 
   # ProximaNova-Bold doesn't support non-Latin scripts, so we fall back to system fonts.
-  FONT_FALLBACKS = {
-    /[\p{Hiragana}\p{Katakana}]/ => 'Hiragino-Sans-W6',
-    /[\p{Hangul}]/ => 'Apple-SD-Gothic-Neo-Bold',
-    /[\p{Han}]/ => 'Heiti-SC-Medium',
-    /[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/ => 'Arial'
-  }.freeze
-
   def select_font_for_text(text_content, default_font)
-    FONT_FALLBACKS.each do |pattern, font|
-      return font if text_content.match?(pattern)
-    end
+    return 'Hiragino-Sans-W6' if text_content.match?(/[\p{Hiragana}\p{Katakana}]/)
+    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/[\p{Hangul}]/)
+    return 'Heiti-SC-Medium' if text_content.match?(/[\p{Han}]/)
+    return 'Arial' if text_content.match?(/[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/)
+
     default_font
   end
 
@@ -1215,7 +1208,11 @@ platform :android do
           system(*magick_args, temp_file.path)
           text_image = open_image(temp_file.path)
           text_frame = create_image(width, height)
-          composite_method = position == 'left' ? :composite_image_left : position == 'top' ? :composite_image_top : :composite_image_center
+          composite_method = case position
+                             when 'left' then :composite_image_left
+                             when 'top' then :composite_image_top
+                             else :composite_image_center
+                             end
           send(composite_method, text_frame, text_image, 0, 0)
         ensure
           temp_file.close
