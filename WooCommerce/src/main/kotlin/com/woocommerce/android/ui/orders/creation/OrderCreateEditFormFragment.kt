@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -58,7 +59,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.selector.CouponSelectorFragment.Companion.KEY_COUPON_SELECTOR_RESULT
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.AppBarStatus
-import com.woocommerce.android.ui.main.MainActivity.Companion.BackPressListener
 import com.woocommerce.android.ui.orders.CustomAmountTypeBottomSheetDialog
 import com.woocommerce.android.ui.orders.CustomAmountUIModel
 import com.woocommerce.android.ui.orders.OrderNavigationTarget.ViewOrderStatusSelector
@@ -114,8 +114,7 @@ private const val ANIMATION_DURATION = 200L
 @Suppress("LargeClass")
 @AndroidEntryPoint
 class OrderCreateEditFormFragment :
-    BaseFragment(R.layout.fragment_order_create_edit_form),
-    BackPressListener {
+    BaseFragment(R.layout.fragment_order_create_edit_form) {
     private companion object {
         private const val TABLET_PANES_WIDTH_RATIO = 0.5F
     }
@@ -138,6 +137,12 @@ class OrderCreateEditFormFragment :
 
     private val args: OrderCreateEditFormFragmentArgs by navArgs()
 
+    private val backPressedCallback = object : OnBackPressedCallback(true) {
+        override fun handleOnBackPressed() {
+            viewModel.onBackButtonClicked()
+        }
+    }
+
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
@@ -157,6 +162,12 @@ class OrderCreateEditFormFragment :
             orderCurrency = args.orderCurrency
         )
         navController?.setGraph(R.navigation.nav_graph_product_selector, args.toBundle())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Register in onResume to ensure our callback has higher priority than nested NavHostFragment's (LIFO order)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -1267,11 +1278,6 @@ class OrderCreateEditFormFragment :
     private fun hideProgressDialog() {
         progressDialog?.dismiss()
         progressDialog = null
-    }
-
-    override fun onRequestAllowBackPress(): Boolean {
-        viewModel.onBackButtonClicked()
-        return false
     }
 
     private fun FragmentOrderCreateEditFormBinding.showEditableControls(
