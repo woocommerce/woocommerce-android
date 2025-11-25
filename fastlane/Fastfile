@@ -1150,8 +1150,19 @@ platform :android do
           text_content = File.exist?(text) ? File.read(text).strip : text
           font_size_num = font_size.to_s.gsub('px', '').to_i
 
-          has_non_latin = text_content.match?(/[^\u0000-\u007F]/)
-          effective_font = has_non_latin ? 'Arial' : font_path
+          # ProximaNova-Bold doesn't support non-Latin scripts, so we fall back to system fonts
+          # that support each script. This ensures proper text rendering for all locales.
+          effective_font = if text_content.match?(/[\p{Hiragana}\p{Katakana}]/)
+                             'Hiragino-Sans-W6'
+                           elsif text_content.match?(/[\p{Hangul}]/)
+                             'Apple-SD-Gothic-Neo-Bold'
+                           elsif text_content.match?(/[\p{Han}]/)
+                             'Heiti-SC-Medium'
+                           elsif text_content.match?(/[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/)
+                             'Arial'
+                           else
+                             font_path
+                           end
 
           magick_args = [
             'magick',
