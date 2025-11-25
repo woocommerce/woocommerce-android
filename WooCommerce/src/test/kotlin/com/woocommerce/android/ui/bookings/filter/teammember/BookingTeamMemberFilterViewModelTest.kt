@@ -7,7 +7,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
@@ -33,7 +32,9 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
             onFilterChanged = {},
             bookingsRepository = repository,
             savedStateHandle = SavedStateHandle()
-        )
+        ).apply {
+            uiState.observeForever { }
+        }
     }
 
     private fun member(id: Long, name: String = "Member $id"): TeamMember =
@@ -59,10 +60,10 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val vm = createViewModel(initial)
 
         // When
-        vm.uiState.value.onTeamMemberSelected(TeamMember.any)
+        vm.uiState.value?.onTeamMemberSelected(TeamMember.any)
 
         // Then
-        assertThat(vm.uiState.value.selectedMembers).isEqualTo(BookingsFilterOption.TeamMembers.DEFAULT)
+        assertThat(vm.uiState.value?.selectedMembers).isEqualTo(BookingsFilterOption.TeamMembers.DEFAULT)
     }
 
     @Test
@@ -72,10 +73,10 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT)
 
         // When
-        vm.uiState.value.onTeamMemberSelected(m1)
+        vm.uiState.value?.onTeamMemberSelected(m1)
 
         // Then
-        val ids = vm.uiState.value.selectedMembers.values
+        val ids = vm.uiState.value?.selectedMembers?.values
         assertThat(ids).containsExactly(m1.id)
     }
 
@@ -87,10 +88,10 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
         val vm = createViewModel(initial)
 
         // When
-        vm.uiState.value.onTeamMemberSelected(m1)
+        vm.uiState.value?.onTeamMemberSelected(m1)
 
         // Then
-        assertThat(vm.uiState.value.selectedMembers).isEqualTo(BookingsFilterOption.TeamMembers.DEFAULT)
+        assertThat(vm.uiState.value?.selectedMembers).isEqualTo(BookingsFilterOption.TeamMembers.DEFAULT)
     }
 
     @Test
@@ -108,11 +109,11 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
 
             val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
 
-            assertTrue(vm.uiState.value.isLoading)
+            assertThat(vm.uiState.value?.isLoading).isTrue()
 
             resourcesFlow.value = listOf(member(1))
 
-            assertThat(vm.uiState.value.isLoading).isFalse()
+            assertThat(vm.uiState.value?.isLoading).isFalse()
         }
 
     @Test
