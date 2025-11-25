@@ -26,6 +26,7 @@ import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
+import java.time.Clock
 import java.time.Instant
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -38,6 +39,7 @@ class BookingsStoreTest {
     private val bookingsDao: BookingsDao = mock()
     private val bookingDtoMapper: BookingDtoMapper = BookingDtoMapper(mock())
     private val headersParser: HeadersParser = mock()
+    private val clock: Clock = Clock.systemUTC()
 
     @Before
     fun setUp() {
@@ -47,63 +49,66 @@ class BookingsStoreTest {
             bookingsDao = bookingsDao,
             bookingDtoMapper = bookingDtoMapper,
             headersParser = headersParser,
-            coroutineEngine = CoroutineEngine(EmptyCoroutineContext, mock())
+            coroutineEngine = CoroutineEngine(EmptyCoroutineContext, mock()),
+            clock = clock,
         )
     }
 
     @Test
-    fun `given refreshOrder is false, when updateBooking succeeds, then inserts mapped entity and returns it`(): Unit = runBlocking {
-        // given
-        val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
-        val dto = sampleBookingDto()
-        val storedBooking = sampleBookingEntity(order = BookingOrderInfo(productInfo = null))
-        whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
-        whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(note = "n")))
-            .thenReturn(WooPayload(dto))
-        whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+    fun `given refreshOrder is false, when updateBooking succeeds, then inserts mapped entity and returns it`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto()
+            val storedBooking = sampleBookingEntity(order = BookingOrderInfo(productInfo = null))
+            whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
+            whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(note = "n")))
+                .thenReturn(WooPayload(dto))
+            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
 
-        // when
-        val result = sut.updateBooking(
-            site = site,
-            bookingId = dto.id,
-            bookingUpdatePayload = BookingUpdatePayload(note = "n"),
-            refreshOrder = false
-        )
+            // when
+            val result = sut.updateBooking(
+                site = site,
+                bookingId = dto.id,
+                bookingUpdatePayload = BookingUpdatePayload(note = "n"),
+                refreshOrder = false
+            )
 
-        // then
-        assertThat(result.isError).isFalse()
-        assertThat(result.model).isNotNull
-        // The store preserves the stored order on the mapped entity
-        verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
-    }
+            // then
+            assertThat(result.isError).isFalse()
+            assertThat(result.model).isNotNull
+            // The store preserves the stored order on the mapped entity
+            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+        }
 
     @Test
-    fun `given refreshOrder is true, when updateBooking succeeds, then refreshes order and inserts mapped entity`(): Unit = runBlocking {
-        // given
-        val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
-        val dto = sampleBookingDto()
+    fun `given refreshOrder is true, when updateBooking succeeds, then refreshes order and inserts mapped entity`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto()
 
-        val fetchedOrder = OrderEntity(orderId = dto.orderId, localSiteId = TEST_LOCAL_SITE_ID)
-        whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
-        whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
-            .thenReturn(WooPayload(dto))
-        whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+            val fetchedOrder = OrderEntity(orderId = dto.orderId, localSiteId = TEST_LOCAL_SITE_ID)
+            whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
+            whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
+                .thenReturn(WooPayload(dto))
+            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
 
-        // when
-        val result = sut.updateBooking(
-            site = site,
-            bookingId = dto.id,
-            bookingUpdatePayload = BookingUpdatePayload(status = Status.Confirmed),
-            refreshOrder = true
-        )
+            // when
+            val result = sut.updateBooking(
+                site = site,
+                bookingId = dto.id,
+                bookingUpdatePayload = BookingUpdatePayload(status = Status.Confirmed),
+                refreshOrder = true
+            )
 
-        // then
-        assertThat(result.isError).isFalse()
-        val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
-        assertThat(result.model).isEqualTo(expected)
-        verify(bookingsDao).insertOrReplace(expected)
-        verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
-    }
+            // then
+            assertThat(result.isError).isFalse()
+            val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
+            assertThat(result.model).isEqualTo(expected)
+            verify(bookingsDao).insertOrReplace(expected)
+            verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
+        }
 
     @Test
     fun `given rest client fails, when updateBooking, then returns error and does not insert`(): Unit = runBlocking {
@@ -167,6 +172,130 @@ class BookingsStoreTest {
             verify(bookingsDao).getBooking(TEST_LOCAL_SITE_ID, dto.id)
             // The store preserves the stored order on the mapped entity
             verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+        }
+
+    @Test
+    fun `given page 1 and today date filter and no query, when fetchBookings, then delete matching and insert is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L) // avoid order fetch
+            val filters = BookingFilters(
+                dateRange = BookingsDateRangePresets.today(clock)
+            )
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 1,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            )
+                .thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 1,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            // We delete only matching filtered rows then insert the fetched page
+            verify(bookingsDao).deleteForSiteWithDateRangeFilter(
+                any(),
+                any<BookingsFilterOption.DateRange>(),
+                any<List<Long>>()
+            )
+            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao, never()).replaceAllForSite(any(), any())
+        }
+
+    @Test
+    fun `given page greater than 1 with multiple filters, when fetchBookings, then insertOrReplace is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L)
+            val filters = BookingFilters(
+                dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
+                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name")
+            )
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 2,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            )
+                .thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 2,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao, never()).replaceAllForSite(any(), any())
+            verify(bookingsDao, never())
+                .deleteForSiteWithDateRangeFilter(any(), any<BookingsFilterOption.DateRange>(), any<List<Long>>())
+        }
+
+    @Test
+    fun `given page 1 with no filters and no query, when fetchBookings, then replaceAllForSite is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L)
+            val filters: BookingFilters = BookingFilters.EMPTY
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 1,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            ).thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 1,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            verify(bookingsDao).replaceAllForSite(any(), any())
+            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+                any(),
+                any<BookingsFilterOption.DateRange>(),
+                any<List<Long>>()
+            )
         }
 
     private fun sampleBookingDto(): BookingDto = BookingDto(

@@ -15,6 +15,7 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
+import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -26,6 +27,7 @@ class BookingsStore @Inject internal constructor(
     private val bookingDtoMapper: BookingDtoMapper,
     private val headersParser: HeadersParser,
     private val coroutineEngine: CoroutineEngine,
+    private val clock: Clock,
 ) {
     suspend fun fetchBookings(
         site: SiteModel,
@@ -54,9 +56,28 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    if (page == 1 && filters == BookingFilters.EMPTY && query.isNullOrEmpty()) {
-                        // Clear existing bookings and insert new ones when fetching the first page
-                        bookingsDao.replaceAllForSite(site.localId(), entities)
+                    // Clear existing bookings when fetching the first page.
+                    // If filters are applied, only clear entries that match the applied filters,
+                    // otherwise (no filters) clear all entries for the site.
+                    if (page == 1 && query.isNullOrEmpty()) {
+                        when {
+                            filters == BookingFilters.EMPTY -> {
+                                bookingsDao.replaceAllForSite(site.localId(), entities)
+                            }
+                            filters.dateRange != null && isTodayOrUpcoming(filters.dateRange) -> {
+                                // Delete only the rows that match the applied date range filter for Today/Upcoming
+                                bookingsDao.deleteForSiteWithDateRangeFilter(
+                                    site.localId(),
+                                    filters.dateRange,
+                                    entities.map { it.id.value }
+                                )
+                                bookingsDao.insertOrReplace(entities)
+                            }
+                            else -> {
+                                // For any other filters, avoid deletions to prevent removing unrelated cached items
+                                bookingsDao.insertOrReplace(entities)
+                            }
+                        }
                     } else {
                         bookingsDao.insertOrReplace(entities)
                     }
@@ -75,6 +96,12 @@ class BookingsStore @Inject internal constructor(
                 else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
             }
         }
+    }
+
+    private fun isTodayOrUpcoming(dateRange: BookingsFilterOption.DateRange): Boolean {
+        val today = BookingsDateRangePresets.today(clock)
+        val upcoming = BookingsDateRangePresets.upcoming(clock)
+        return dateRange == today || dateRange == upcoming
     }
 
     fun observeBookings(
