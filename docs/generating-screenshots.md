@@ -41,7 +41,7 @@ To verify installation:
 ls ~/Library/Fonts/ProximaNova-Bold.otf
 ```
 
-If the font is missing, the promo screenshot generation will fail with an error indicating the font was not found.
+For international locales with non-Latin text (Arabic, Hebrew, Japanese, Korean, Chinese), Arial is automatically used instead to ensure proper character rendering.
 
 ### Configure Device for Screenshots
 
