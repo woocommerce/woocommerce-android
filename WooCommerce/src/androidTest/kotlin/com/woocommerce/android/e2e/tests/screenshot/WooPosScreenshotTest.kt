@@ -56,7 +56,7 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         InstrumentationRegistry
             .getInstrumentation()
             .uiAutomation
-            .executeShellCommand("settings put system user_rotation 2")
+            .executeShellCommand("settings put system user_rotation 0")
             .close()
         InstrumentationRegistry
             .getInstrumentation()
