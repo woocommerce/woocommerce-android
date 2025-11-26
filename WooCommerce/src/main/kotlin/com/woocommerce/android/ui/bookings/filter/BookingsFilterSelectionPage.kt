@@ -68,6 +68,6 @@ private fun SelectionRow(
                 )
             }
         }
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
     }
 }
