@@ -68,31 +68,31 @@ fun BookingTeamMemberFilterPageLoading(modifier: Modifier) {
                 .size(62.dp, 64.dp)
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
         SkeletonView(
             modifier = Modifier
                 .size(175.dp, 64.dp)
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
         SkeletonView(
             modifier = Modifier
                 .size(130.dp, 64.dp)
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
         SkeletonView(
             modifier = Modifier
                 .size(167.dp, 64.dp)
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
         SkeletonView(
             modifier = Modifier
                 .size(166.dp, 64.dp)
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
-        HorizontalDivider(thickness = 0.5.dp)
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
     }
 }
 
