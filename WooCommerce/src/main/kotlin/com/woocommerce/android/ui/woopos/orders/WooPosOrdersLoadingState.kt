@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,7 +42,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 
 @Composable
 fun WooPosOrdersLoadingState() {
-    Row(modifier = Modifier.fillMaxSize()) {
+    Row(modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
         WooPosOrdersListLoadingPane(
             modifier = Modifier
                 .weight(0.3f)
@@ -56,7 +60,6 @@ fun WooPosOrdersLoadingState() {
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
-                .padding(top = WooPosSpacing.Large.value)
         )
     }
 }
@@ -127,7 +130,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value)
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Row(
             modifier = Modifier
@@ -135,6 +138,8 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
                 WooPosShimmerText(
                     text = "Order #123",
                     style = WooPosTypography.Heading.style,
@@ -161,6 +166,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                     .width(140.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .padding(vertical = WooPosSpacing.Small.value)
             )
         }
 
