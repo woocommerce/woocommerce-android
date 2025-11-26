@@ -152,7 +152,7 @@ private fun WooPosOrdersScreen(
                 onRetryClicked = onOrdersLoadingErrorRetryButtonClicked
             )
 
-            is WooPosOrdersState.Loading -> WooPosOrdersLoadingState()
+            is WooPosOrdersState.Loading -> WooPosOrdersLoadingScreen()
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {

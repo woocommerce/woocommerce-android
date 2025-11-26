@@ -41,7 +41,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosOrdersLoadingState() {
+fun WooPosOrdersLoadingScreen() {
     Row(modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
@@ -307,6 +307,6 @@ private fun TotalLoadingItem() {
 @Composable
 fun WooPosOrdersLoadingStatePreview() {
     WooPosTheme {
-        WooPosOrdersLoadingState()
+        WooPosOrdersLoadingScreen()
     }
 }
