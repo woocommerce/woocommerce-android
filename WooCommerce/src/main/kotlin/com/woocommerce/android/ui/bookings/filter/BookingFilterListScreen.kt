@@ -111,6 +111,9 @@ private fun FiltersNavHost(
     val navController = rememberNavController()
 
     LaunchedEffect(state.currentPage) {
+        val currentRoute = navController.currentDestination?.route
+        if (currentRoute == state.currentPage.route) return@LaunchedEffect
+
         if (state.currentPage != BookingFilterPage.List) {
             navController.navigate(state.currentPage.route) {
                 popUpTo(BookingFilterPage.List.route)
