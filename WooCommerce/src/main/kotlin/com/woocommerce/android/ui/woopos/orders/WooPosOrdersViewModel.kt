@@ -176,6 +176,20 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun onIssueRefundButtonClicked(orderId: Long) {
+        val currentState = _state.value as? WooPosOrdersState.Content ?: return
+        _state.value = currentState.copy(
+            dialogState = WooPosOrdersState.Content.DialogState.IssueRefund(orderId)
+        )
+    }
+
+    fun onIssueRefundDialogDismissed() {
+        val currentState = _state.value as? WooPosOrdersState.Content ?: return
+        _state.value = currentState.copy(
+            dialogState = WooPosOrdersState.Content.DialogState.Hidden
+        )
+    }
+
     fun onOrdersEmptyActionClicked() {
         viewModelScope.launch {
             _openUrlEvent.emit(AppUrls.URL_LEARN_MORE_ORDERS)

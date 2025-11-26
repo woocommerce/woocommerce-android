@@ -84,13 +84,19 @@ sealed class WooPosOrdersState {
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details,
-        val paginationState: WooPosPaginationState
+        val paginationState: WooPosPaginationState,
+        val dialogState: DialogState = DialogState.Hidden
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()
             object Searching : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
+        }
+
+        sealed class DialogState {
+            data object Hidden : DialogState()
+            data class IssueRefund(val orderId: Long) : DialogState()
         }
     }
 

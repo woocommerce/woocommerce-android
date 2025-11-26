@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,9 +17,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,7 +53,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState.Computed.Details,
-    onEmailReceiptButtonClicked: (Long) -> Unit
+    onEmailReceiptButtonClicked: (Long) -> Unit,
+    onIssueRefundButtonClicked: (Long) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -53,7 +64,6 @@ fun WooPosOrderDetails(
             .padding(
                 start = WooPosSpacing.Medium.value,
                 end = WooPosSpacing.Medium.value,
-                top = WooPosSpacing.XLarge.value,
                 bottom = WooPosSpacing.XLarge.value
             )
     ) {
@@ -70,8 +80,15 @@ fun WooPosOrderDetails(
             Spacer(Modifier.weight(1f))
 
             WooPosButtonSmall(
-                text = stringResource(R.string.woopos_orders_email_receipt),
-                onClick = { onEmailReceiptButtonClicked(details.id) },
+                text = stringResource(R.string.orderdetail_issue_refund_button),
+                onClick = { onIssueRefundButtonClicked(details.id) },
+            )
+
+            Spacer(Modifier.width(WooPosSpacing.Small.value))
+
+            OrderDetailsOverflowMenu(
+                orderId = details.id,
+                onEmailReceiptClicked = onEmailReceiptButtonClicked
             )
         }
 
@@ -333,6 +350,42 @@ private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 
+@Composable
+private fun OrderDetailsOverflowMenu(
+    orderId: Long,
+    onEmailReceiptClicked: (Long) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(onClick = { showMenu = true }) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.more_menu),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                text = {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_email_receipt),
+                        style = WooPosTypography.BodyMedium
+                    )
+                },
+                onClick = {
+                    showMenu = false
+                    onEmailReceiptClicked(orderId)
+                }
+            )
+        }
+    }
+}
+
 @WooPosPreview
 @Composable
 fun WooPosOrderDetailsPreview() {
@@ -371,7 +424,8 @@ fun WooPosOrderDetailsPreview() {
     WooPosTheme {
         WooPosOrderDetails(
             details = orderDetails,
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onIssueRefundButtonClicked = {}
         )
     }
 }

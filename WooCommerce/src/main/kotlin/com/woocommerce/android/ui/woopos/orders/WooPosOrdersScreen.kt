@@ -108,7 +108,9 @@ fun WooPosOrdersScreen(
         onSearchErrorRetry = viewModel::onSearchErrorRetry,
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
-        onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked
+        onEmailReceiptButtonClicked = viewModel::onEmailReceiptButtonClicked,
+        onIssueRefundButtonClicked = viewModel::onIssueRefundButtonClicked,
+        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed
     )
 }
 
@@ -127,6 +129,8 @@ private fun WooPosOrdersScreen(
     onOrdersEmptyActionClicked: () -> Unit,
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit,
+    onIssueRefundButtonClicked: (Long) -> Unit,
+    onIssueRefundDialogDismissed: () -> Unit,
 ) {
     BackHandler { onBackClicked() }
 
@@ -141,7 +145,9 @@ private fun WooPosOrdersScreen(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
-                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
+                onIssueRefundButtonClicked = onIssueRefundButtonClicked,
+                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed
             )
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
@@ -175,7 +181,9 @@ private fun OrdersContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onEmailReceiptButtonClicked: (Long) -> Unit
+    onEmailReceiptButtonClicked: (Long) -> Unit,
+    onIssueRefundButtonClicked: (Long) -> Unit,
+    onIssueRefundDialogDismissed: () -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
@@ -203,9 +211,21 @@ private fun OrdersContent(
                 modifier = Modifier
                     .fillMaxHeight(),
                 details = state.selectedDetails,
-                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
+                onIssueRefundButtonClicked = onIssueRefundButtonClicked
             )
         }
+    }
+
+    when (val dialogState = state.dialogState) {
+        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+            WooPosIssueRefundDialog(
+                isVisible = true,
+                orderId = dialogState.orderId,
+                onDismissRequest = onIssueRefundDialogDismissed
+            )
+        }
+        WooPosOrdersState.Content.DialogState.Hidden -> Unit
     }
 }
 
@@ -564,7 +584,9 @@ fun WooPosOrdersScreenPreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onIssueRefundButtonClicked = {},
+            onIssueRefundDialogDismissed = {}
         )
     }
 }
@@ -598,7 +620,9 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onIssueRefundButtonClicked = {},
+            onIssueRefundDialogDismissed = {}
         )
     }
 }
@@ -632,7 +656,9 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onEmailReceiptButtonClicked = {},
+            onIssueRefundButtonClicked = {},
+            onIssueRefundDialogDismissed = {}
         )
     }
 }
