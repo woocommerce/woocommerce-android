@@ -37,9 +37,6 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
         launch {
             bookingsRepository.observeResources().distinctUntilChanged().collect { resources ->
                 var newUiStateValue = _uiState.value.copy(teamMembers = listOf(TeamMember.any) + resources)
-                if (resources.isNotEmpty()) {
-                    newUiStateValue = newUiStateValue.copy(isLoading = false)
-                }
                 _uiState.update { newUiStateValue }
             }
         }

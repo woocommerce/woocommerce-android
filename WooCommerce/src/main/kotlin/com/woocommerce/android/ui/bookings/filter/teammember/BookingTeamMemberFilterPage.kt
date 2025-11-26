@@ -52,7 +52,7 @@ fun BookingTeamMemberFilterPage(state: BookingTeamMemberFilterUiState, event: Li
         containerColor = MaterialTheme.colorScheme.surface,
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
-        if (state.isLoading) {
+        if (state.skeletonVisible) {
             BookingTeamMemberFilterPageLoading(modifier = Modifier.padding(paddingValues))
         } else {
             BookingsFilterSelectionPage(items = state.items, modifier = Modifier.padding(paddingValues))

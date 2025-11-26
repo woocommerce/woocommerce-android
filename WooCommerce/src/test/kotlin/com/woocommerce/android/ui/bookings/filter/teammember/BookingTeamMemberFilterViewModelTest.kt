@@ -109,11 +109,11 @@ class BookingTeamMemberFilterViewModelTest : BaseUnitTest() {
 
             val vm = createViewModel(BookingsFilterOption.TeamMembers.DEFAULT, bookingsRepository)
 
-            assertThat(vm.uiState.value?.isLoading).isTrue()
+            assertThat(vm.uiState.value?.skeletonVisible).isTrue()
 
             resourcesFlow.value = listOf(member(1))
 
-            assertThat(vm.uiState.value?.isLoading).isFalse()
+            assertThat(vm.uiState.value?.skeletonVisible).isFalse()
         }
 
     @Test
