@@ -192,8 +192,94 @@ class BookingsStoreTest {
                     filters = filters,
                     order = BookingsOrderOption.DESC
                 )
+            ).thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 1,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
             )
-                .thenReturn(WooPayload(arrayOf(dto)))
+
+            // then
+            assertThat(result.isError).isFalse()
+            // We delete only matching filtered rows then insert the fetched page
+            verify(bookingsDao).deleteForSiteWithDateRangeFilter(
+                any(),
+                any<BookingsFilterOption.DateRange>(),
+                any<List<Long>>()
+            )
+            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao, never()).replaceAllForSite(any(), any())
+        }
+
+    @Test
+    fun `given page 1, today date filter, customer filter and no query, when fetchBookings, then only insertOrReplace is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L) // avoid order fetch
+            val filters = BookingFilters(
+                dateRange = BookingsDateRangePresets.today(clock),
+                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+            )
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 1,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            ).thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 1,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            // We delete only matching filtered rows then insert the fetched page
+            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+                any(),
+                any<BookingsFilterOption.DateRange>(),
+                any<List<Long>>()
+            )
+            verify(bookingsDao, never()).replaceAllForSite(any(), any())
+        }
+
+    @Test
+    fun `given page 1 and upcoming date filter and no query, when fetchBookings, then delete matching and insert is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L) // avoid order fetch
+            val filters = BookingFilters(
+                dateRange = BookingsDateRangePresets.upcoming(clock)
+            )
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 1,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            ).thenReturn(WooPayload(arrayOf(dto)))
             whenever(headersParser.getTotalPages(any())).thenReturn(null)
 
             // when
@@ -291,6 +377,49 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             verify(bookingsDao).replaceAllForSite(any(), any())
+            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+                any(),
+                any<BookingsFilterOption.DateRange>(),
+                any<List<Long>>()
+            )
+        }
+
+    @Test
+    fun `given page 1 with custom date range filter and no query, when fetchBookings, then only insertOrReplace is called`(): Unit =
+        runBlocking {
+            // given
+            val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
+            val dto = sampleBookingDto().copy(orderId = 0L)
+            val filters = BookingFilters(
+                dateRange = BookingsFilterOption.DateRange(before = Instant.now(), after = Instant.now()),
+                customer = BookingsFilterOption.Customer(customerId = 1L, customerName = "name"),
+            )
+            whenever(
+                bookingsRestClient.fetchBookings(
+                    site,
+                    perPage = 25,
+                    page = 1,
+                    query = null,
+                    filters = filters,
+                    order = BookingsOrderOption.DESC
+                )
+            ).thenReturn(WooPayload(arrayOf(dto)))
+            whenever(headersParser.getTotalPages(any())).thenReturn(null)
+
+            // when
+            val result = sut.fetchBookings(
+                site = site,
+                perPage = 25,
+                page = 1,
+                query = null,
+                filters = filters,
+                order = BookingsOrderOption.DESC
+            )
+
+            // then
+            assertThat(result.isError).isFalse()
+            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao, never()).replaceAllForSite(any(), any())
             verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
                 any(),
                 any<BookingsFilterOption.DateRange>(),

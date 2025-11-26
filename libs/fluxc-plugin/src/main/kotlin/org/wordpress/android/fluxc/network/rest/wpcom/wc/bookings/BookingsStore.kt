@@ -64,7 +64,8 @@ class BookingsStore @Inject internal constructor(
                             filters == BookingFilters.EMPTY -> {
                                 bookingsDao.replaceAllForSite(site.localId(), entities)
                             }
-                            filters.dateRange != null && isTodayOrUpcoming(filters.dateRange) -> {
+
+                            filters.dateRange != null && filters.isTodayOrUpcoming -> {
                                 // Delete only the rows that match the applied date range filter for Today/Upcoming
                                 bookingsDao.deleteForSiteWithDateRangeFilter(
                                     site.localId(),
@@ -73,6 +74,7 @@ class BookingsStore @Inject internal constructor(
                                 )
                                 bookingsDao.insertOrReplace(entities)
                             }
+
                             else -> {
                                 // For any other filters, avoid deletions to prevent removing unrelated cached items
                                 bookingsDao.insertOrReplace(entities)
@@ -98,11 +100,12 @@ class BookingsStore @Inject internal constructor(
         }
     }
 
-    private fun isTodayOrUpcoming(dateRange: BookingsFilterOption.DateRange): Boolean {
-        val today = BookingsDateRangePresets.today(clock)
-        val upcoming = BookingsDateRangePresets.upcoming(clock)
-        return dateRange == today || dateRange == upcoming
-    }
+    private val BookingFilters.isTodayOrUpcoming: Boolean
+        get() {
+            val today = BookingsDateRangePresets.today(clock)
+            val upcoming = BookingsDateRangePresets.upcoming(clock)
+            return (dateRange == today || dateRange == upcoming) && enabledFiltersCount == 1
+        }
 
     fun observeBookings(
         site: SiteModel,
