@@ -1178,8 +1178,8 @@ platform :android do
   # ProximaNova-Bold doesn't support non-Latin scripts, so we fall back to system fonts.
   def select_font_for_text(text_content, default_font)
     return 'Hiragino-Sans-W6' if text_content.match?(/[\p{Hiragana}\p{Katakana}]/)
-    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/[\p{Hangul}]/)
-    return 'Heiti-SC-Medium' if text_content.match?(/[\p{Han}]/)
+    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/\p{Hangul}/)
+    return 'Heiti-SC-Medium' if text_content.match?(/\p{Han}/)
     return 'Arial' if text_content.match?(/[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/)
 
     default_font
