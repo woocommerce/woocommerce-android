@@ -10,17 +10,23 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
 import com.woocommerce.android.ui.compose.animations.SkeletonView
-import com.woocommerce.android.viewmodel.MultiLiveEvent
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 
 @Composable
@@ -33,20 +39,14 @@ fun BookingTeamMemberFilterRoute(
             factory.create(initialTeamMembers, onTeamMembersFilterChanged)
         }
     val uiState by viewModel.uiState.observeAsState()
-    val event by viewModel.event.observeAsState()
-    uiState?.let { BookingTeamMemberFilterPage(it, event) }
+    uiState?.let { BookingTeamMemberFilterPage(it, viewModel.event) }
 }
 
 @Composable
-fun BookingTeamMemberFilterPage(state: BookingTeamMemberFilterUiState, event: MultiLiveEvent.Event?) {
+fun BookingTeamMemberFilterPage(state: BookingTeamMemberFilterUiState, event: LiveData<Event>) {
     val snackbarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
 
-    LaunchedEffect(event) {
-        if (event is MultiLiveEvent.Event.ShowSnackbar) {
-            snackbarHostState.showSnackbar(context.getString(event.message))
-        }
-    }
+    HandleEvents(event, snackbarHostState)
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
@@ -93,5 +93,26 @@ fun BookingTeamMemberFilterPageLoading(modifier: Modifier) {
                 .padding(horizontal = 16.dp, vertical = 24.dp)
         )
         HorizontalDivider(thickness = 0.5.dp)
+    }
+}
+
+@Composable
+private fun HandleEvents(event: LiveData<Event>, snackbarHostState: SnackbarHostState) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    DisposableEffect(event, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is ShowSnackbar -> coroutineScope.launch {
+                    snackbarHostState.showSnackbar(context.getString(event.message))
+                }
+            }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose { event.removeObserver(observer) }
     }
 }
