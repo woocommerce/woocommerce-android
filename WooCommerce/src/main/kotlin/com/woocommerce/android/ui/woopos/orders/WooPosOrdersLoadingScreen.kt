@@ -42,7 +42,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 
 @Composable
 fun WooPosOrdersLoadingScreen() {
-    Row(modifier = Modifier
+    Row(
+        modifier = Modifier
             .fillMaxSize()
             .statusBarsPadding()
     ) {
