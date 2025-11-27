@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,14 +41,15 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosOrdersLoadingScreen() {
-    Row(modifier = Modifier.fillMaxSize()) {
+fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxSize()
+    ) {
         WooPosOrdersListLoadingPane(
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
         )
 
         OrderDetailsLoadingPane(
@@ -109,13 +111,17 @@ fun WooPosOrdersOrderLoadingRow() {
 
 @Composable
 fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
-    LazyColumn(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-        contentPadding = PaddingValues(WooPosSpacing.Medium.value)
-    ) {
-        items(7) {
-            WooPosOrdersOrderLoadingRow()
+    Column(modifier = modifier.statusBarsPadding()) {
+        Spacer(modifier = Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT))
+
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+            contentPadding = PaddingValues(WooPosSpacing.Medium.value)
+        ) {
+            items(7) {
+                WooPosOrdersOrderLoadingRow()
+            }
         }
     }
 }
@@ -125,6 +131,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Row(
