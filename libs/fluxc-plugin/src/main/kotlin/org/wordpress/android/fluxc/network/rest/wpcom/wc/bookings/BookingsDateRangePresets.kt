@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
 import java.time.Clock
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -24,24 +25,23 @@ object BookingsDateRangePresets {
             .atTime(LocalTime.MIDNIGHT)
             .atOffset(ZoneOffset.UTC)
             .toInstant()
-        val end = LocalDate.now(clock)
-            .atTime(LocalTime.MAX)
-            .atOffset(ZoneOffset.UTC)
-            .toInstant()
+        val end = getEndOfToday(clock)
         return BookingsFilterOption.DateRange(before = end, after = start)
     }
 
     /**
      * Returns a DateRange that includes bookings strictly after the end of the
      * current day in UTC (i.e., upcoming bookings from tomorrow onwards).
-     *
-     * before = null and after = end-of-today.
      */
     fun upcoming(clock: Clock): BookingsFilterOption.DateRange {
-        val endOfToday = LocalDate.now(clock)
+        val endOfToday = getEndOfToday(clock)
+        return BookingsFilterOption.DateRange(before = null, after = endOfToday)
+    }
+
+    private fun getEndOfToday(clock: Clock): Instant {
+        return LocalDate.now(clock)
             .atTime(LocalTime.MAX)
             .atOffset(ZoneOffset.UTC)
             .toInstant()
-        return BookingsFilterOption.DateRange(before = null, after = endOfToday)
     }
 }
