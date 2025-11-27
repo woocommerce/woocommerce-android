@@ -1,24 +1,42 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -26,8 +44,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosIssueRefundDialog(
     isVisible: Boolean,
-    orderId: Long,
-    onDismissRequest: () -> Unit
+    lineItems: List<OrderDetailsViewState.Computed.Details.LineItemRow>,
+    itemsSelectedLabel: String,
+    onDismissRequest: () -> Unit,
+    onContinue: () -> Unit
 ) {
     WooPosDialogWrapper(
         isVisible = isVisible,
@@ -36,53 +56,229 @@ fun WooPosIssueRefundDialog(
         ),
         onDismissRequest = onDismissRequest
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.Large.value),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            IconButton(
-                onClick = onDismissRequest,
-                modifier = Modifier.align(Alignment.End)
+        Column(modifier = Modifier.fillMaxSize()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.XLarge.value),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = stringResource(R.string.close),
-                    tint = MaterialTheme.colorScheme.onSurface
+                WooPosText(
+                    text = stringResource(R.string.woopos_orders_select_items_to_refund),
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                IconButton(
+                    modifier = Modifier.size(48.dp),
+                    onClick = onDismissRequest,
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.close),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
+                    .padding(bottom = WooPosSpacing.Medium.value),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
+                ) {
+                    Checkbox(
+                        checked = true,
+                        onCheckedChange = null,
+                        modifier = Modifier.size(32.dp),
+                        colors = CheckboxDefaults.colors(
+                            checkedColor = MaterialTheme.colorScheme.primary,
+                            checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                    WooPosText(
+                        text = itemsSelectedLabel,
+                        style = WooPosTypography.Caption,
+                        fontWeight = FontWeight.Bold,
+                        color = WooPosTheme.colors.onSurfaceVariantHighest
+                    )
+                }
+                WooPosText(
+                    modifier = Modifier.width(104.dp),
+                    text = stringResource(R.string.woopos_orders_amount),
+                    style = WooPosTypography.Caption,
+                    fontWeight = FontWeight.Bold,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+                WooPosText(
+                    modifier = Modifier.width(104.dp),
+                    text = stringResource(R.string.woopos_orders_tax),
+                    style = WooPosTypography.Caption,
+                    fontWeight = FontWeight.Bold,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    textAlign = TextAlign.End,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
 
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-            WooPosText(
-                text = stringResource(R.string.orderdetail_issue_refund_button),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+                color = WooPosTheme.colors.outlineVariant,
+                thickness = 0.25.dp
             )
 
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
+            LazyColumn(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(horizontal = WooPosSpacing.XLarge.value)
+                    .padding(vertical = WooPosSpacing.Medium.value),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+            ) {
+                items(lineItems) { item ->
+                    LineItemRow(item = item)
+                    if (lineItems.last() != item) {
+                        HorizontalDivider(
+                            color = WooPosTheme.colors.outlineVariant,
+                            thickness = 0.25.dp
+                        )
+                    }
+                }
+            }
 
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+                color = WooPosTheme.colors.outlineVariant,
+                thickness = 0.25.dp
+            )
+
+            WooPosButton(
+                text = stringResource(R.string.continue_button),
+                onClick = onContinue,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.XLarge.value)
+            )
+        }
+    }
+}
+
+@Composable
+private fun LineItemRow(
+    item: OrderDetailsViewState.Computed.Details.LineItemRow
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = WooPosSpacing.XSmall.value),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Checkbox(
+            checked = true,
+            onCheckedChange = null,
+            modifier = Modifier.size(32.dp),
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.primary,
+                checkmarkColor = MaterialTheme.colorScheme.onPrimary
+            )
+        )
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
+
+        WooPosItemImage(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
+            imageUrl = item.imageUrl,
+            placeholderIcon = Icons.Outlined.Inventory2,
+            placeholderIconSize = 24.dp
+        )
+        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
             WooPosText(
-                text = "Refund flow coming soon for order #$orderId",
+                text = item.name,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            WooPosText(
+                text = item.qtyAndUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
-
-            Spacer(Modifier.height(WooPosSpacing.Large.value))
         }
+
+        WooPosText(
+            text = item.lineTotal,
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(104.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+        WooPosText(
+            text = "-",
+            style = WooPosTypography.BodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            textAlign = TextAlign.End,
+            modifier = Modifier.width(104.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 
 @WooPosPreview
 @Composable
 fun WooPosIssueRefundDialogPreview() {
+    val sampleLineItems = listOf(
+        OrderDetailsViewState.Computed.Details.LineItemRow(
+            id = 1,
+            name = "Cup",
+            qtyAndUnitPrice = "1 X $18.00",
+            lineTotal = "$999999.00",
+            imageUrl = null
+        ),
+        OrderDetailsViewState.Computed.Details.LineItemRow(
+            id = 2,
+            name = "Coffee Storage Container",
+            qtyAndUnitPrice = "1 X $30.00",
+            lineTotal = "$30.00",
+            imageUrl = null
+        ),
+        OrderDetailsViewState.Computed.Details.LineItemRow(
+            id = 3,
+            name = "Enamel Mug",
+            qtyAndUnitPrice = "1 X $8.50",
+            lineTotal = "$8.50",
+            imageUrl = null
+        )
+    )
+
     WooPosTheme {
         WooPosIssueRefundDialog(
             isVisible = true,
-            orderId = 123L,
-            onDismissRequest = {}
+            lineItems = sampleLineItems,
+            itemsSelectedLabel = "ITEMS (${sampleLineItems.size} SELECTED)",
+            onDismissRequest = {},
+            onContinue = {}
         )
     }
 }

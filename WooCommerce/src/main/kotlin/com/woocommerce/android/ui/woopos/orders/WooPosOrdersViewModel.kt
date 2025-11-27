@@ -194,8 +194,16 @@ class WooPosOrdersViewModel @Inject constructor(
 
     fun onIssueRefundButtonClicked(orderId: Long) {
         val currentState = _state.value as? WooPosOrdersState.Content ?: return
+        val itemsCount = currentState.selectedDetails.lineItems.size
+        val itemsSelectedLabel = resourceProvider.getString(
+            R.string.woopos_orders_items_selected,
+            itemsCount
+        )
         _state.value = currentState.copy(
-            dialogState = WooPosOrdersState.Content.DialogState.IssueRefund(orderId)
+            dialogState = WooPosOrdersState.Content.DialogState.IssueRefund(
+                orderId = orderId,
+                itemsSelectedLabel = itemsSelectedLabel
+            )
         )
     }
 

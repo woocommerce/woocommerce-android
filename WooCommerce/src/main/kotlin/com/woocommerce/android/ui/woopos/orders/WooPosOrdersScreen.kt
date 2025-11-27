@@ -146,8 +146,7 @@ private fun WooPosOrdersScreen(
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
                 onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
-                onIssueRefundButtonClicked = onIssueRefundButtonClicked,
-                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed
+                onIssueRefundButtonClicked = onIssueRefundButtonClicked
             )
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
@@ -168,6 +167,21 @@ private fun WooPosOrdersScreen(
                 modifier = Modifier.fillMaxWidth()
             )
         }
+
+        if (state is WooPosOrdersState.Content) {
+            when (val dialogState = state.dialogState) {
+                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+                    WooPosIssueRefundDialog(
+                        isVisible = true,
+                        lineItems = state.selectedDetails.lineItems,
+                        itemsSelectedLabel = dialogState.itemsSelectedLabel,
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onContinue = onIssueRefundDialogDismissed
+                    )
+                }
+                WooPosOrdersState.Content.DialogState.Hidden -> Unit
+            }
+        }
     }
 }
 
@@ -182,8 +196,7 @@ private fun OrdersContent(
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
     onEmailReceiptButtonClicked: (Long) -> Unit,
-    onIssueRefundButtonClicked: (Long) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit
+    onIssueRefundButtonClicked: (Long) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
@@ -216,17 +229,6 @@ private fun OrdersContent(
                 onIssueRefundButtonClicked = onIssueRefundButtonClicked
             )
         }
-    }
-
-    when (val dialogState = state.dialogState) {
-        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
-            WooPosIssueRefundDialog(
-                isVisible = true,
-                orderId = dialogState.orderId,
-                onDismissRequest = onIssueRefundDialogDismissed
-            )
-        }
-        WooPosOrdersState.Content.DialogState.Hidden -> Unit
     }
 }
 
