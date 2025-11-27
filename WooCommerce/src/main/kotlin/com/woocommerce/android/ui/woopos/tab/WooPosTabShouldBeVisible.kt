@@ -52,9 +52,12 @@ class WooPosTabShouldBeVisible @Inject constructor(
             }
         }
 
-        val siteSettings = wooCommerceStore
-            .fetchSiteGeneralSettings(site)
-            .model
+        val siteSettings = if (forceRefresh) {
+            wooCommerceStore.fetchSiteGeneralSettings(site).model
+        } else {
+            wooCommerceStore.getSiteSettings(site)
+                ?: wooCommerceStore.fetchSiteGeneralSettings(site).model
+        }
             ?: return@withContext Result.failure(WooPosCouldNotDetermineValueException())
 
         val isSupported = isCountrySupported(countryCode = siteSettings.countryCode)
