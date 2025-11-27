@@ -23,9 +23,14 @@ class WooShippingRatesDomainMapper @Inject constructor(
         rates: List<WooShippingRateOptionsModel>,
         currencyCode: String?
     ): Map<CarrierUI, List<ShippingRateUI>> {
-        return rates.groupBy { it.defaultRate.carrier }.map { entry ->
-            getCarrier(entry.key) to entry.value.map { getShippingRate(it, resourceProvider, currencyCode) }
-        }.toMap()
+        return rates.groupBy { it.defaultRate.carrier }
+            .map { (carrier, models) ->
+                getCarrier(carrier) to models
+                    .map { getShippingRate(it, resourceProvider, currencyCode) }
+                    .filter { it.options.containsKey(Option.DEFAULT) }
+            }
+            .filter { it.second.isNotEmpty() }
+            .toMap()
     }
 
     operator fun invoke(
