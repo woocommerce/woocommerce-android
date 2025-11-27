@@ -3,9 +3,11 @@ package com.woocommerce.android.ui.bookings.filter.datetime
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.DateDialog
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.TimeDialog
 import com.woocommerce.android.ui.compose.component.Time
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -170,6 +172,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val to = current.toDateTime
                     if (to != null && newDateTime.isAfter(to)) {
                         // If the new FROM is after TO, swap them
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
                         current.copyWithDates(
                             fromDate = to,
                             toDate = newDateTime,
@@ -187,6 +190,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val from = current.fromDateTime
                     if (from != null && newDateTime.isBefore(from)) {
                         // If the new TO is before FROM, swap them
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
                         current.copyWithDates(
                             fromDate = newDateTime,
                             toDate = from,

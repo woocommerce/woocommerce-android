@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.bookings.filter.datetime
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Time
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -304,6 +306,9 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.formattedToDate).isNotEmpty()
             assertThat(state.formattedToTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
+
+            val event = vm.event.getOrAwaitValue()
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
         }
 
     @Test
@@ -337,6 +342,8 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.formattedToDate).isNotEmpty()
             assertThat(state.formattedToTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
+            val event = vm.event.getOrAwaitValue()
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
         }
 
     @Test
