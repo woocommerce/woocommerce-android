@@ -12,6 +12,9 @@ sealed class PosLocalCatalogSyncResult {
 
     sealed class Failure(val error: String) : PosLocalCatalogSyncResult() {
         class CatalogTooLarge(error: String) : Failure(error)
+        class NetworkError(error: String) : Failure(error)
+        class DatabaseError(error: String) : Failure(error)
+        class InvalidResponse(error: String) : Failure(error)
         class UnexpectedError(error: String) : Failure(error)
     }
 }

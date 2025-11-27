@@ -1,14 +1,17 @@
 package com.woocommerce.android.ui.bookings.filter.teammember
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.asLiveData
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -27,15 +30,29 @@ class BookingTeamMemberFilterViewModel @AssistedInject constructor(
             onTeamMemberSelected = ::onTeamMemberSelected,
         )
     )
-    val uiState: StateFlow<BookingTeamMemberFilterUiState> = _uiState
+    val uiState: LiveData<BookingTeamMemberFilterUiState> = _uiState.asLiveData()
 
     init {
+        // First getting from database
         launch {
             bookingsRepository.observeResources().distinctUntilChanged().collect { resources ->
-                _uiState.update { current -> current.copy(teamMembers = listOf(TeamMember.any) + resources) }
+                var newUiStateValue = _uiState.value.copy(teamMembers = listOf(TeamMember.any) + resources)
+                _uiState.update { newUiStateValue }
             }
         }
-        launch { bookingsRepository.fetchResources() }
+
+        // Then fetching from server
+        launch {
+            _uiState.update { current -> current.copy(isLoading = true) }
+            bookingsRepository.fetchResources()
+                .onSuccess {
+                    _uiState.update { current -> current.copy(isLoading = false) }
+                }
+                .onFailure {
+                    _uiState.update { current -> current.copy(isLoading = false) }
+                    triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.bookings_resources_fetch_error))
+                }
+        }
     }
 
     private fun onTeamMemberSelected(member: TeamMember?) {

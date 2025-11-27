@@ -432,7 +432,7 @@ class ProductDetailViewModel @Inject constructor(
 
         launch {
             val product = storedProductAggregate.filterNotNull().first().product
-            if (selectedSite.get().isCIABSite() && product.productType == ProductType.BOOKING) {
+            if (selectedSite.get().isCIABSite() && product.productType == ProductType.BOOKABLE_SERVICE) {
                 triggerEvent(OpenProductInWebView(product.remoteId))
             }
         }

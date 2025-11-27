@@ -82,8 +82,10 @@ fun DateTimeFilterPage(
         when (dialogState) {
             is PickerDialogState.DateDialog -> {
                 DatePickerDialog(
-                    currentDate = dialogState.date?.let { Calendar.getInstance().apply { timeInMillis = it } },
-                    onDateSelected = { calendar ->
+                    currentDate = dialogState.date?.toCalendar(),
+                    minDate = dialogState.minDate?.toCalendar(),
+                    maxDate = dialogState.maxDate?.toCalendar(),
+                    onDateSelected = { calendar: Calendar ->
                         dialogState.onDateSelected(calendar.timeInMillis)
                     },
                     onDismissRequest = dialogState.onDismiss,
@@ -154,6 +156,10 @@ private fun DateTimeRow(@StringRes labelRes: Int, value: String, onClick: () -> 
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
+}
+
+private fun Long.toCalendar(): Calendar {
+    return Calendar.getInstance().apply { timeInMillis = this@toCalendar }
 }
 
 @LightDarkThemePreviews

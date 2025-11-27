@@ -1,0 +1,1 @@
+Monitora ordini e totali in tempo reale

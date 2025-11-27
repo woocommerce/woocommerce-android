@@ -18,4 +18,28 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+
+    testFixtures.enable = true
+}
+
+dependencies {
+    implementation(libs.androidx.annotation)
+    implementation(libs.glassfish.javax.annotation)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.automattic.tracks.crashlogging)
+    implementation(libs.androidx.lifecycle.process)
+    implementation(libs.google.dagger.hilt.android.main)
+    implementation(libs.wordpress.utils)
+
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.assertj.core)
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.androidx.arch.core.testing)
+    testImplementation(libs.androidx.lifecycle.runtime.testing)
+
+    testFixturesCompileOnly(libs.kotlinx.coroutines.test)
+    testFixturesCompileOnly(libs.junit)
+    testFixturesCompileOnly(libs.mockito.kotlin)
+    testFixturesCompileOnly(libs.androidx.arch.core.testing)
 }

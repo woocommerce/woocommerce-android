@@ -54,6 +54,9 @@ class WooPosOrdersViewModel @Inject constructor(
     private val _openUrlEvent = MutableSharedFlow<String>()
     val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()
 
+    private val _scrollToTopEvent = MutableSharedFlow<Unit>()
+    val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
@@ -443,8 +446,14 @@ class WooPosOrdersViewModel @Inject constructor(
         ordersWithRefunds: Map<Order, RefundFetchResult>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
+        val currentState = _state.value
+        val currentFirstOrderId = (currentState as? WooPosOrdersState.Content)
+            ?.let { it.items as? WooPosOrdersState.Content.Items.Loaded }
+            ?.items?.keys?.firstOrNull()?.id
+
         val orders = ordersWithRefunds.keys.toList()
-        val newSelectedId = requireNotNull(orders.firstOrNull()?.id) { "Content requires at least one order" }
+        val newFirstOrderId = orders.firstOrNull()?.id
+        val newSelectedId = requireNotNull(newFirstOrderId) { "Content requires at least one order" }
         val items = buildItemsMap(ordersWithRefunds, newSelectedId)
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
         val selectedDetails = when (val details = selectedEntry.value) {
@@ -461,6 +470,10 @@ class WooPosOrdersViewModel @Inject constructor(
             paginationState = paginationState,
             searchInputState = _state.value.searchInputState
         )
+
+        if (currentFirstOrderId != null && currentFirstOrderId != newFirstOrderId) {
+            _scrollToTopEvent.emit(Unit)
+        }
     }
 
     private suspend fun appendOrders(

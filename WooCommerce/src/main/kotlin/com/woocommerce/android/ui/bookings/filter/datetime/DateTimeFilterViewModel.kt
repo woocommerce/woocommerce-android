@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -30,7 +31,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
     @Assisted private val onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) : ScopedViewModel(savedStateHandle) {
 
-    private val zone: ZoneId = ZoneId.systemDefault()
+    private val zone: ZoneId = ZoneOffset.UTC
 
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
     private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
@@ -46,8 +47,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
     init {
         initialRange?.let { range ->
             _uiState.update { currentState ->
-                val fromDateTime = range.after?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
-                val toDateTime = range.before?.atZone(ZoneOffset.UTC)?.toLocalDateTime()
+                val fromDateTime = range.after?.atZone(zone)?.toLocalDateTime()
+                val toDateTime = range.before?.atZone(zone)?.toLocalDateTime()
                 currentState.copy(
                     fromDateTime = fromDateTime,
                     formattedFromDate = fromDateTime.formatDate(),
@@ -62,18 +63,35 @@ class DateTimeFilterViewModel @AssistedInject constructor(
 
     private fun openDateDialog(dateBoundary: DateBoundary) {
         _uiState.update { currentState ->
-            val dialogState = when (dateBoundary) {
-                DateBoundary.FROM -> DateDialog(
-                    date = currentState.fromDateTime?.atZone(zone)?.toInstant()?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val fromDate = currentState.fromDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
+            val toDate = currentState.toDateTime
+                ?.toLocalDate()
+                ?.atStartOfDay(ZoneOffset.UTC)
+                ?.toInstant()
 
-                DateBoundary.TO -> DateDialog(
-                    date = currentState.toDateTime?.atZone(zone)?.toInstant()?.toEpochMilli(),
-                    onDismiss = ::dismissPickerDialog,
-                    onDateSelected = { commitSelectedDate(dateBoundary, it) },
-                )
+            val dialogState = when (dateBoundary) {
+                DateBoundary.FROM -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = fromDate?.toEpochMilli(),
+                        maxDate = toDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
+
+                DateBoundary.TO -> {
+                    DateDialog(
+                        // Convert to UTC for the Date picker
+                        date = toDate?.toEpochMilli(),
+                        minDate = fromDate?.toEpochMilli(),
+                        onDismiss = ::dismissPickerDialog,
+                        onDateSelected = { commitSelectedDate(dateBoundary, it) },
+                    )
+                }
             }
             currentState.copy(
                 pickerDialogState = dialogState
@@ -111,27 +129,31 @@ class DateTimeFilterViewModel @AssistedInject constructor(
         _uiState.update { current ->
             when (dateBoundary) {
                 DateBoundary.FROM -> {
-                    val picked = Instant.ofEpochMilli(date).atZone(zone).toLocalDateTime()
-                    val newDateTime = (current.fromDateTime ?: picked)
+                    // Convert from UTC to local zone
+                    val picked = Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC).toLocalDate()
+                    val newDateTime = (current.fromDateTime ?: picked.atStartOfDay())
                         .withYear(picked.year)
                         .withMonth(picked.monthValue)
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         fromDateTime = newDateTime,
                         formattedFromDate = newDateTime.formatDate(),
+                        formattedFromTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }
 
                 DateBoundary.TO -> {
-                    val picked = Instant.ofEpochMilli(date).atZone(zone).toLocalDateTime()
-                    val newDateTime = (current.toDateTime ?: picked)
+                    // Convert from UTC to local zone
+                    val picked = Instant.ofEpochMilli(date).atZone(ZoneOffset.UTC).toLocalDate()
+                    val newDateTime = (current.toDateTime ?: picked.atTime(LocalTime.MAX))
                         .withYear(picked.year)
                         .withMonth(picked.monthValue)
                         .withDayOfMonth(picked.dayOfMonth)
                     current.copy(
                         toDateTime = newDateTime,
                         formattedToDate = newDateTime.formatDate(),
+                        formattedToTime = newDateTime.formatTime(),
                         pickerDialogState = null,
                     )
                 }
@@ -170,8 +192,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
     private fun emitTypeFilterChange() {
         onTypeFilterChanged(
             BookingsFilterOption.DateRange(
-                after = _uiState.value.fromDateTime?.toInstant(ZoneOffset.UTC),
-                before = _uiState.value.toDateTime?.toInstant(ZoneOffset.UTC),
+                after = _uiState.value.fromDateTime?.atZone(zone)?.toInstant(),
+                before = _uiState.value.toDateTime?.atZone(zone)?.toInstant(),
             )
         )
     }
