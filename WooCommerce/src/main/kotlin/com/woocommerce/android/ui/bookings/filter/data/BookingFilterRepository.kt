@@ -103,7 +103,7 @@ class BookingFilterRepository @Inject constructor(
             val dateRange = bookingFilters.dateRange
             val beforeKey = dateBeforeKey(siteId)
             val afterKey = dateAfterKey(siteId)
-            if (dateRange != null) {
+            if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
                 val before = dateRange.before?.toEpochMilli()
                 val after = dateRange.after?.toEpochMilli()
                 if (before == null) prefs.remove(beforeKey) else prefs[beforeKey] = before
@@ -159,13 +159,13 @@ class BookingFilterRepository @Inject constructor(
         }
     }
 
-    private fun Preferences.getDateRangeValue(siteId: Int): BookingsFilterOption.DateRange? {
+    private fun Preferences.getDateRangeValue(siteId: Int): BookingsFilterOption.DateRange {
         val before = this[dateBeforeKey(siteId)]?.let { Instant.ofEpochMilli(it) }
         val after = this[dateAfterKey(siteId)]?.let { Instant.ofEpochMilli(it) }
         return if (before != null || after != null) {
             BookingsFilterOption.DateRange(before = before, after = after)
         } else {
-            null
+            BookingsFilterOption.DateRange.DEFAULT
         }
     }
 
