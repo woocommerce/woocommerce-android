@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.bookings.list
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
 import java.time.ZoneId
@@ -21,8 +22,8 @@ class BookingListFilterBuilderTest {
         }
 
         assertThat(filter).isNotNull()
-        assertThat(filter?.after).isEqualTo(Instant.parse("2025-01-01T00:00:00Z"))
-        assertThat(filter?.before).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
+        assertThat(filter.after).isEqualTo(Instant.parse("2025-01-01T00:00:00Z"))
+        assertThat(filter.before).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
     }
 
     @Test
@@ -32,8 +33,8 @@ class BookingListFilterBuilderTest {
         }
 
         assertThat(filter).isNotNull()
-        assertThat(filter?.after).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
-        assertThat(filter?.before).isNull()
+        assertThat(filter.after).isEqualTo(Instant.parse("2025-01-01T23:59:59.999999999+00:00"))
+        assertThat(filter.before).isNull()
     }
 
     @Test
@@ -42,6 +43,6 @@ class BookingListFilterBuilderTest {
             BookingListTab.All.asDateRangeFilter()
         }
 
-        assertThat(filter).isNull()
+        assertThat(filter).isEqualTo(BookingsFilterOption.DateRange.DEFAULT)
     }
 }
