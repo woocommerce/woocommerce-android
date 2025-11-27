@@ -167,22 +167,36 @@ class DateTimeFilterViewModel @AssistedInject constructor(
             when (dateBoundary) {
                 DateBoundary.FROM -> {
                     val newDateTime = (current.fromDateTime ?: LocalDateTime.now(clock)).withTime(time)
-                    current.copy(
-                        fromDateTime = newDateTime,
-                        formattedFromTime = newDateTime.formatTime(),
-                        formattedFromDate = newDateTime.formatDate(),
-                        pickerDialogState = null,
-                    )
+                    val to = current.toDateTime
+                    if (to != null && newDateTime.isAfter(to)) {
+                        // If the new FROM is after TO, swap them
+                        current.copyWithDates(
+                            fromDate = to,
+                            toDate = newDateTime,
+                        )
+                    } else {
+                        current.copyWithDates(
+                            fromDate = newDateTime,
+                            toDate = to,
+                        )
+                    }
                 }
 
                 DateBoundary.TO -> {
                     val newDateTime = (current.toDateTime ?: LocalDateTime.now(clock)).withTime(time = time)
-                    current.copy(
-                        toDateTime = newDateTime,
-                        formattedToDate = newDateTime.formatDate(),
-                        formattedToTime = newDateTime.formatTime(),
-                        pickerDialogState = null,
-                    )
+                    val from = current.fromDateTime
+                    if (from != null && newDateTime.isBefore(from)) {
+                        // If the new TO is before FROM, swap them
+                        current.copyWithDates(
+                            fromDate = newDateTime,
+                            toDate = from,
+                        )
+                    } else {
+                        current.copyWithDates(
+                            fromDate = from,
+                            toDate = newDateTime,
+                        )
+                    }
                 }
             }
         }
@@ -195,6 +209,21 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                 after = _uiState.value.fromDateTime?.atZone(zone)?.toInstant(),
                 before = _uiState.value.toDateTime?.atZone(zone)?.toInstant(),
             )
+        )
+    }
+
+    private fun DateTimeFilterUiState.copyWithDates(
+        fromDate: LocalDateTime?,
+        toDate: LocalDateTime?
+    ): DateTimeFilterUiState {
+        return copy(
+            fromDateTime = fromDate,
+            formattedFromDate = fromDate.formatDate(),
+            formattedFromTime = fromDate.formatTime(),
+            toDateTime = toDate,
+            formattedToDate = toDate.formatDate(),
+            formattedToTime = toDate.formatTime(),
+            pickerDialogState = null,
         )
     }
 
