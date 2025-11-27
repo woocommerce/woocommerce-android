@@ -18,7 +18,7 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
         return !isFeatureSupported(feature)
     }
 
-    private fun isCurrentSiteCIAB(): Boolean =
+    fun isCurrentSiteCIAB(): Boolean =
         selectedSite.getOrNull()?.isCIABSite() ?: false
 
     companion object Companion {

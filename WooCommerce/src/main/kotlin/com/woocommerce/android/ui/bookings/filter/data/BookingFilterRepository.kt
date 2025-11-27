@@ -34,6 +34,7 @@ class BookingFilterRepository @Inject constructor(
     private fun customerNameKey(siteId: Int) = stringPreferencesKey("bfilters_${siteId}_customer_name")
     private fun dateBeforeKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_before")
     private fun dateAfterKey(siteId: Int) = longPreferencesKey("bfilters_${siteId}_date_after")
+    private fun serviceEventsKey(siteId: Int) = stringSetPreferencesKey("bfilters_${siteId}_service_events")
 
     private val siteIdFlow = selectedSite.observe().map { it?.id ?: -1 }.distinctUntilChanged()
 
@@ -45,7 +46,9 @@ class BookingFilterRepository @Inject constructor(
                 attendanceStatuses = prefs.getAttendanceStatuses(siteId)
                     ?: BookingsFilterOption.AttendanceStatuses.DEFAULT,
                 customer = prefs.getCustomerValue(siteId),
-                dateRange = prefs.getDateRangeValue(siteId)
+                dateRange = prefs.getDateRangeValue(siteId),
+                serviceEvents = prefs.getServiceEventsValue(siteId)
+                    ?: BookingsFilterOption.ServiceEvents.DEFAULT
             )
         }
     }
@@ -111,6 +114,16 @@ class BookingFilterRepository @Inject constructor(
                 prefs.remove(afterKey)
             }
 
+            // Service events
+            val serviceEventsKey = serviceEventsKey(siteId)
+            val serviceEventsValues = bookingFilters.serviceEvents.values
+            if (serviceEventsValues.isEmpty()) {
+                prefs.remove(serviceEventsKey)
+            } else {
+                prefs[serviceEventsKey] = serviceEventsValues
+                    .map { "${it.productId}${SERVICE_EVENTS_PRODUCT_DELIMITER}${it.productName}" }
+                    .toSet()
+            }
             // Other filters currently have no persisted payload; ignore for now
         }
     }
@@ -154,5 +167,23 @@ class BookingFilterRepository @Inject constructor(
         } else {
             null
         }
+    }
+
+    private fun Preferences.getServiceEventsValue(siteId: Int): BookingsFilterOption.ServiceEvents? =
+        this[serviceEventsKey(siteId)]?.mapNotNull { entry ->
+            entry.split(SERVICE_EVENTS_PRODUCT_DELIMITER)
+                .takeIf { it.size == 2 }
+                ?.let { (prodId, name) ->
+                    runCatching {
+                        BookingsFilterOption.ProductInfo(productId = prodId.toLong(), productName = name)
+                    }.getOrNull()
+                }
+        }
+            ?.toSet()
+            ?.takeIf { it.isNotEmpty() }
+            ?.let(BookingsFilterOption::ServiceEvents)
+
+    companion object {
+        private const val SERVICE_EVENTS_PRODUCT_DELIMITER = ":"
     }
 }

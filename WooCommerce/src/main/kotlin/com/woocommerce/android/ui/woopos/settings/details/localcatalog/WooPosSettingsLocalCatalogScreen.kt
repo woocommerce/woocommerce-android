@@ -84,12 +84,14 @@ private fun WooPosSettingsLocalCatalogScreen(
             catalogStatus = state.catalogStatus
         )
 
-        CellularDataSection(
-            allowCellularDataUpdate = state.allowCellularDataUpdate,
-            onToggleCellularData = onToggleCellularData,
-            isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading ||
-                state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
-        )
+        if (state.cellularCapability is WooPosSettingsLocalCatalogState.CellularCapability.Available) {
+            CellularDataSection(
+                allowCellularDataUpdate = state.cellularCapability.allowCellularDataUpdate,
+                onToggleCellularData = onToggleCellularData,
+                isLoading = state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.Loading ||
+                    state.catalogStatus is WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog
+            )
+        }
 
         ManualUpdateSection(
             catalogStatus = state.catalogStatus,
@@ -204,8 +206,8 @@ private fun CellularDataSection(
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 modifier = Modifier.constrainAs(switch) {
-                    bottom.linkTo(subtitle.bottom)
-                    top.linkTo(subtitle.top)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
             )
@@ -262,8 +264,8 @@ private fun ManualUpdateSection(
                     WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> WooPosButtonState.LOADING
                 },
                 modifier = Modifier.constrainAs(button) {
-                    bottom.linkTo(subtitle.bottom)
-                    top.linkTo(subtitle.top)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
             )
@@ -391,7 +393,29 @@ fun WooPosSettingsLocalCatalogScreenPreview() {
                     lastUpdate = "2 hours ago",
                     lastFullUpdate = "Yesterday at 3:45 PM"
                 ),
-                allowCellularDataUpdate = true
+                cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.Available(
+                    allowCellularDataUpdate = true
+                )
+            ),
+            onToggleCellularData = {},
+            onRefreshCatalog = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosSettingsLocalCatalogScreenNoCellularPreview() {
+    WooPosTheme {
+        WooPosSettingsLocalCatalogScreen(
+            state = WooPosSettingsLocalCatalogState(
+                catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Available(
+                    productCount = 1250,
+                    variationCount = 3420,
+                    lastUpdate = "2 hours ago",
+                    lastFullUpdate = "Yesterday at 3:45 PM"
+                ),
+                cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.None
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}
@@ -406,7 +430,9 @@ fun WooPosSettingsLocalCatalogScreenLoadingPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.Loading,
-                allowCellularDataUpdate = true
+                cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.Available(
+                    allowCellularDataUpdate = true
+                )
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}
@@ -421,7 +447,9 @@ fun WooPosSettingsLocalCatalogRefreshingPreview() {
         WooPosSettingsLocalCatalogScreen(
             state = WooPosSettingsLocalCatalogState(
                 catalogStatus = WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog,
-                allowCellularDataUpdate = true
+                cellularCapability = WooPosSettingsLocalCatalogState.CellularCapability.Available(
+                    allowCellularDataUpdate = true
+                )
             ),
             onToggleCellularData = {},
             onRefreshCatalog = {}

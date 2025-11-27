@@ -70,6 +70,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.component.WCSearchField
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ fun BookingListScreen(state: BookingListViewState) {
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(R.string.bookings_tab_title),
+                title = state.toolbarTitle.getText(),
                 navigationIcon = null,
                 actions = {
                     SearchSection(
@@ -398,7 +399,11 @@ private fun EmptyListView(
             text = when (selectedTab) {
                 BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
-                BookingListTab.All -> stringResource(R.string.bookings_empty_state_title_default)
+                BookingListTab.All -> if (areFiltersActive) {
+                    stringResource(R.string.bookings_empty_state_title_default)
+                } else {
+                    stringResource(R.string.bookings_empty_state_title_all)
+                }
             },
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
@@ -408,13 +413,13 @@ private fun EmptyListView(
 
         Text(
             text = when (selectedTab) {
-                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today)
-                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming)
+                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
+                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
                 else -> {
                     if (areFiltersActive) {
                         stringResource(R.string.bookings_empty_state_description_with_filters)
                     } else {
-                        stringResource(R.string.bookings_empty_state_description_default)
+                        stringResource(R.string.bookings_empty_state_description_all)
                     }
                 }
             },

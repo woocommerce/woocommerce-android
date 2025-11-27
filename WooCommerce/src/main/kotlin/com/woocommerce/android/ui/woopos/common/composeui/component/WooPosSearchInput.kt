@@ -37,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextRange
@@ -62,6 +63,7 @@ import kotlinx.parcelize.Parcelize
 fun WooPosSearchInput(
     modifier: Modifier = Modifier,
     state: WooPosSearchInputState = WooPosSearchInputState.Closed,
+    searchIconBackgroundColor: Color = MaterialTheme.colorScheme.surfaceContainerLow,
     onEvent: (WooPosSearchUIEvent) -> Unit = {},
 ) {
     BackHandler(
@@ -86,6 +88,7 @@ fun WooPosSearchInput(
                     contentDescription = stringResource(
                         id = R.string.woopos_search_products,
                     ),
+                    backgroundColor = searchIconBackgroundColor,
                     onClick = { onEvent(SearchIconClicked) }
                 )
             }

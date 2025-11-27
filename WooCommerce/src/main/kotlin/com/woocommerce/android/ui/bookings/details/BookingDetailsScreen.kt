@@ -45,7 +45,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
-import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentSection
@@ -282,11 +282,10 @@ private fun BookingDetailsPreview() {
                         staff = BookingStaffMemberStatus.Loaded("Marianne Renoir"),
                         location = "238 Willow Creek Drive, Montgomery AL 36109",
                         duration = "60 min",
-                        price = "$55.00",
                         cancelButtonVisible = true,
                         cancelStatus = CancelStatus.Idle,
                     ),
-                    bookingCustomerDetails = BookingCustomerDetailsModel(
+                    bookingCustomerDetails = BookingCustomerDetailsUiModel(
                         name = "Margarita Nikolaevna",
                         email = "margarita@example.com",
                         phone = "+1 555-123-4567",
@@ -294,7 +293,8 @@ private fun BookingDetailsPreview() {
                             238 Willow Creek Drive
                             Montgomery AL 36109
                             United States
-                        """.trimIndent()
+                        """.trimIndent(),
+                        customerNote = "Customer note"
                     ),
                     bookingPaymentDetails = BookingPaymentDetailsModel(
                         service = "$55.00",

@@ -6,6 +6,9 @@ enum class CIABAffectedFeature {
     WooShippingSplitShipments,
     GroupedProducts,
     VariableProducts,
+    SubscriptionProducts,
+    BundleProducts,
+    CompositeProducts,
     GiftCardEditing,
     ProductsStockDashboardCard,
     POS

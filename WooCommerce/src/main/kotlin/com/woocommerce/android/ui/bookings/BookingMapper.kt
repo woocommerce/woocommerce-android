@@ -7,7 +7,7 @@ import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsModel
+import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStatus
@@ -78,21 +78,21 @@ class BookingMapper @Inject constructor(
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
-            price = currencyFormatter.formatCurrency(cost, currency),
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
             duration = duration,
         )
     }
 
-    suspend fun BookingCustomerInfo?.toCustomerDetailsModel(): BookingCustomerDetailsModel {
-        if (this == null) return BookingCustomerDetailsModel.EMPTY
+    suspend fun BookingCustomerInfo?.toCustomerDetailsModel(customerNote: String?): BookingCustomerDetailsUiModel {
+        if (this == null) return BookingCustomerDetailsUiModel.EMPTY
 
-        return BookingCustomerDetailsModel(
+        return BookingCustomerDetailsUiModel(
             name = fullName(),
             email = billingEmail,
             phone = billingPhone,
-            billingAddress = address()?.getFullAddress()
+            billingAddress = address()?.getFullAddress(),
+            customerNote = customerNote?.ifEmpty { null }
         )
     }
 
@@ -149,7 +149,7 @@ class BookingMapper @Inject constructor(
         val date = detailsDateFormatter.format(booking.start)
         val time = timeRangeFormatter.format(booking.start)
         return UiString.UiStringRes(
-            R.string.booking_cancel_dialog_message,
+            R.string.booking_cancel_dialog_message_v2,
             listOf(
                 customerName,
                 UiString.UiStringText(serviceName),

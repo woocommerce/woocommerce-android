@@ -99,6 +99,9 @@ object WooPosAnalyticsEventConstant {
 
     enum class SyncErrorType(val value: String) {
         CATALOG_TOO_LARGE("catalog_too_large"),
+        NETWORK_ERROR("network_error"),
+        DATABASE_ERROR("database_error"),
+        INVALID_RESPONSE("invalid_response"),
         UNEXPECTED_ERROR("unexpected_error");
 
         override fun toString(): String {
@@ -107,6 +110,22 @@ object WooPosAnalyticsEventConstant {
 
         companion object {
             const val ERROR_TYPE = "error_type"
+        }
+    }
+
+    enum class SyncSkipReason(val value: String) {
+        POS_NOT_OPENED_30_DAYS("pos_not_opened_30_days"),
+        SYNC_NOT_REQUIRED("sync_not_required"),
+        LOCAL_CATALOG_DISABLED("local_catalog_disabled"),
+        CHECKING_SYNC_REQUIREMENT_FAILED("checking_sync_requirement_failed"),
+        SITE_NOT_SELECTED("site_not_selected");
+
+        override fun toString(): String {
+            return value
+        }
+
+        companion object {
+            const val SKIP_REASON = "reason"
         }
     }
 }
