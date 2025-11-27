@@ -130,7 +130,11 @@ private fun WooPosOrdersScreen(
 ) {
     BackHandler { onBackClicked() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+    ) {
         when (state) {
             is WooPosOrdersState.Content -> OrdersContent(
                 state = state,
@@ -234,9 +238,7 @@ private fun OrdersListPane(
                 state = state.searchInputState,
                 searchIconBackgroundColor = MaterialTheme.colorScheme.surface,
                 onEvent = onSearchEvent,
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
 
