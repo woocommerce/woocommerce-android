@@ -75,12 +75,13 @@ fun DateTimeFilterPage(
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) }
-    ) {
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(innerPadding),
             verticalArrangement = Arrangement.Top
         ) {
             DateTimeSection(
