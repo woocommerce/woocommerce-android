@@ -212,7 +212,8 @@ private fun OrdersContent(
                     .fillMaxHeight(),
                 details = state.selectedDetails,
                 onEmailReceiptButtonClicked = onEmailReceiptButtonClicked,
-                onIssueRefundButtonClicked = onIssueRefundButtonClicked
+                onIssueRefundButtonClicked = onIssueRefundButtonClicked,
+                isRefundsEnabled = state.isRefundsEnabled
             )
         }
     }

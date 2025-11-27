@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -46,8 +47,13 @@ class WooPosOrdersViewModel @Inject constructor(
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker
 ) : ViewModel() {
 
+    private val isRefundsEnabled = FeatureFlag.POS_REFUNDS.isEnabled()
+
     private val _state = MutableStateFlow<WooPosOrdersState>(
-        WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
+        WooPosOrdersState.Loading(
+            searchInputState = WooPosSearchInputState.Closed,
+            isRefundsEnabled = isRefundsEnabled
+        )
     )
     val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
 
@@ -197,7 +203,10 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
-        _state.value = WooPosOrdersState.Loading(searchInputState = WooPosSearchInputState.Closed)
+        _state.value = WooPosOrdersState.Loading(
+            searchInputState = WooPosSearchInputState.Closed,
+            isRefundsEnabled = isRefundsEnabled
+        )
         loadOrders()
     }
 
@@ -352,7 +361,8 @@ class WooPosOrdersViewModel @Inject constructor(
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
                     searchInputState = _state.value.searchInputState,
                     selectedDetails = currentSelectedDetails,
-                    paginationState = WooPosPaginationState.None
+                    paginationState = WooPosPaginationState.None,
+                    isRefundsEnabled = isRefundsEnabled
                 )
             }
 
@@ -370,7 +380,8 @@ class WooPosOrdersViewModel @Inject constructor(
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
                         selectedDetails = currentSelectedDetails,
-                        paginationState = WooPosPaginationState.None
+                        paginationState = WooPosPaginationState.None,
+                        isRefundsEnabled = isRefundsEnabled
                     )
                 }
 
@@ -384,7 +395,8 @@ class WooPosOrdersViewModel @Inject constructor(
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
                             selectedDetails = currentSelectedDetails,
-                            paginationState = WooPosPaginationState.None
+                            paginationState = WooPosPaginationState.None,
+                            isRefundsEnabled = isRefundsEnabled
                         )
                     } else {
                         replaceOrders(result.ordersWithRefunds)
@@ -406,14 +418,16 @@ class WooPosOrdersViewModel @Inject constructor(
 
                         _state.value = WooPosOrdersState.Error(
                             message = result.message,
-                            searchInputState = WooPosSearchInputState.Closed
+                            searchInputState = WooPosSearchInputState.Closed,
+                            isRefundsEnabled = isRefundsEnabled
                         )
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
                         if (result.ordersWithRefunds.isEmpty()) {
                             _state.value = WooPosOrdersState.Loading(
-                                searchInputState = WooPosSearchInputState.Closed
+                                searchInputState = WooPosSearchInputState.Closed,
+                                isRefundsEnabled = isRefundsEnabled
                             )
                         } else {
                             replaceOrders(result.ordersWithRefunds)
@@ -426,7 +440,8 @@ class WooPosOrdersViewModel @Inject constructor(
 
                         if (result.ordersWithRefunds.isEmpty()) {
                             _state.value = WooPosOrdersState.Empty(
-                                searchInputState = WooPosSearchInputState.Closed
+                                searchInputState = WooPosSearchInputState.Closed,
+                                isRefundsEnabled = isRefundsEnabled
                             )
                         } else {
                             replaceOrders(result.ordersWithRefunds)
@@ -482,7 +497,8 @@ class WooPosOrdersViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            isRefundsEnabled = isRefundsEnabled
         )
 
         if (currentFirstOrderId != null && currentFirstOrderId != newFirstOrderId) {
@@ -507,7 +523,8 @@ class WooPosOrdersViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = current.selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            isRefundsEnabled = isRefundsEnabled
         )
     }
 

@@ -54,7 +54,8 @@ fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState.Computed.Details,
     onEmailReceiptButtonClicked: (Long) -> Unit,
-    onIssueRefundButtonClicked: (Long) -> Unit
+    onIssueRefundButtonClicked: (Long) -> Unit,
+    isRefundsEnabled: Boolean = false
 ) {
     Column(
         modifier = modifier
@@ -79,17 +80,24 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            WooPosButtonSmall(
-                text = stringResource(R.string.orderdetail_issue_refund_button),
-                onClick = { onIssueRefundButtonClicked(details.id) },
-            )
+            if (isRefundsEnabled) {
+                WooPosButtonSmall(
+                    text = stringResource(R.string.orderdetail_issue_refund_button),
+                    onClick = { onIssueRefundButtonClicked(details.id) },
+                )
 
-            Spacer(Modifier.width(WooPosSpacing.Small.value))
+                Spacer(Modifier.width(WooPosSpacing.Small.value))
 
-            OrderDetailsOverflowMenu(
-                orderId = details.id,
-                onEmailReceiptClicked = onEmailReceiptButtonClicked
-            )
+                OrderDetailsOverflowMenu(
+                    orderId = details.id,
+                    onEmailReceiptClicked = onEmailReceiptButtonClicked
+                )
+            } else {
+                WooPosButtonSmall(
+                    text = stringResource(R.string.woopos_orders_email_receipt),
+                    onClick = { onEmailReceiptButtonClicked(details.id) },
+                )
+            }
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))

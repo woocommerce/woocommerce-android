@@ -77,6 +77,7 @@ data class OrderItemViewState(
 sealed class WooPosOrdersState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
     abstract val searchInputState: WooPosSearchInputState
+    abstract val isRefundsEnabled: Boolean
 
     @Immutable
     data class Content(
@@ -85,7 +86,8 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details,
         val paginationState: WooPosPaginationState,
-        val dialogState: DialogState = DialogState.Hidden
+        val dialogState: DialogState = DialogState.Hidden,
+        override val isRefundsEnabled: Boolean = false
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()
@@ -103,13 +105,17 @@ sealed class WooPosOrdersState {
     @Immutable
     data class Error(
         val message: String,
-        override val searchInputState: WooPosSearchInputState
+        override val searchInputState: WooPosSearchInputState,
+        override val isRefundsEnabled: Boolean = false
     ) : WooPosOrdersState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
     @Immutable
-    data class Loading(override val searchInputState: WooPosSearchInputState) : WooPosOrdersState() {
+    data class Loading(
+        override val searchInputState: WooPosSearchInputState,
+        override val isRefundsEnabled: Boolean = false
+    ) : WooPosOrdersState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
@@ -117,6 +123,7 @@ sealed class WooPosOrdersState {
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
         override val searchInputState: WooPosSearchInputState,
+        override val isRefundsEnabled: Boolean = false
     ) : WooPosOrdersState()
 }
 
