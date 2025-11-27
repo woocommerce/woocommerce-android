@@ -172,7 +172,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val to = current.toDateTime
                     if (to != null && newDateTime.isAfter(to)) {
                         // If the new FROM is after TO, swap them
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
                         current.copyWithDates(
                             fromDate = to,
                             toDate = newDateTime,
@@ -190,7 +190,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
                     val from = current.fromDateTime
                     if (from != null && newDateTime.isBefore(from)) {
                         // If the new TO is before FROM, swap them
-                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
+                        triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
                         current.copyWithDates(
                             fromDate = newDateTime,
                             toDate = from,

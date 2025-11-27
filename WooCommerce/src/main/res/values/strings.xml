@@ -4238,7 +4238,7 @@
     <string name="bookings_filter_date_to">TO</string>
     <string name="bookings_filter_time_picker_title">Select time</string>
     <string name="bookings_filter_date_filter_value">Custom range</string>
-    <string name="booing_filter_date_time_swap_info">Your time selection was reordered to create a valid range</string>
+    <string name="booking_filter_date_time_swap_info">Your time selection was reordered to create a valid range</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>

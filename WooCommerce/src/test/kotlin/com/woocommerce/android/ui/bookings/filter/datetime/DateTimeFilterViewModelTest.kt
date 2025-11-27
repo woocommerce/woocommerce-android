@@ -308,7 +308,7 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.pickerDialogState).isNull()
 
             val event = vm.event.getOrAwaitValue()
-            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
         }
 
     @Test
@@ -343,7 +343,7 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             assertThat(state.formattedToTime).isNotEmpty()
             assertThat(state.pickerDialogState).isNull()
             val event = vm.event.getOrAwaitValue()
-            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booing_filter_date_time_swap_info))
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
         }
 
     @Test
