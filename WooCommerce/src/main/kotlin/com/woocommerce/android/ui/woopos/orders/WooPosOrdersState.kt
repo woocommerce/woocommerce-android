@@ -52,6 +52,7 @@ sealed class OrderDetailsViewState {
                 val name: String,
                 val qtyAndUnitPrice: String,
                 val lineTotal: String,
+                val lineTax: String,
                 val imageUrl: String?,
             )
 

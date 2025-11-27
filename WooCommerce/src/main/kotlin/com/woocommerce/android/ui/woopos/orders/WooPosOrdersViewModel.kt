@@ -643,6 +643,7 @@ class WooPosOrdersViewModel @Inject constructor(
                     name = item.name,
                     qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
                     lineTotal = formatPrice(item.total),
+                    lineTax = formatPrice(item.totalTax),
                     imageUrl = product?.firstImageUrl
                 )
             }
