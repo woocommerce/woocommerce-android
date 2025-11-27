@@ -8,6 +8,7 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
@@ -67,6 +68,55 @@ interface BookingsDao {
     @Transaction
     suspend fun replaceAllForSite(siteId: LocalId, entities: List<BookingEntity>) {
         deleteAllForSite(siteId)
+        insertOrReplace(entities)
+    }
+
+    @Suppress("LongParameterList")
+    @Query(
+        """
+            DELETE FROM Bookings
+            WHERE localSiteId = :localSiteId
+            AND (:startDateBefore IS NULL OR start <= :startDateBefore)
+            AND (:startDateAfter IS NULL OR start >= :startDateAfter)
+            AND ((:idsSize = 0) OR id NOT IN (:ids))
+        """
+    )
+    suspend fun deleteForSiteWithDateRangeFilter(
+        localSiteId: LocalId,
+        startDateBefore: Long?,
+        startDateAfter: Long?,
+        ids: List<Long>,
+        idsSize: Int,
+    )
+
+    private suspend fun deleteForSiteWithDateRangeFilter(
+        localSiteId: LocalId,
+        dateRange: BookingsFilterOption.DateRange,
+        ids: List<Long>
+    ) {
+        deleteForSiteWithDateRangeFilter(
+            localSiteId = localSiteId,
+            startDateBefore = dateRange.before?.epochSecond,
+            startDateAfter = dateRange.after?.epochSecond,
+            ids = ids,
+            idsSize = ids.size,
+        )
+    }
+
+    /**
+     * Delete Booking entities that are not present in the new list and then insert the new entities
+     */
+    @Transaction
+    suspend fun cleanAndUpsertBookings(
+        localSiteId: LocalId,
+        dateRange: BookingsFilterOption.DateRange,
+        entities: List<BookingEntity>,
+    ) {
+        deleteForSiteWithDateRangeFilter(
+            localSiteId = localSiteId,
+            dateRange = dateRange,
+            ids = entities.map { it.id.value },
+        )
         insertOrReplace(entities)
     }
 

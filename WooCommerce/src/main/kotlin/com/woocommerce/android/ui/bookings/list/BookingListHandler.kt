@@ -32,7 +32,7 @@ class BookingListHandler @Inject constructor(
     private val canLoadMore = AtomicBoolean(false)
 
     private val searchQuery = MutableStateFlow<String?>(null)
-    private val filters = MutableStateFlow<BookingFilters?>(null)
+    private val filters = MutableStateFlow(BookingFilters.EMPTY)
     private val sortBy = MutableStateFlow(BookingListSortOption.NewestToOldest)
 
     private val searchResults = MutableStateFlow(emptyList<Booking>())
@@ -57,7 +57,7 @@ class BookingListHandler @Inject constructor(
 
     suspend fun loadBookings(
         searchQuery: String? = null,
-        filters: BookingFilters? = null,
+        filters: BookingFilters = BookingFilters.EMPTY,
         sortBy: BookingListSortOption
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
