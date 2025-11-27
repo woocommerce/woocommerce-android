@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -67,6 +68,7 @@ fun DateTimeFilterPage(
             timeReadable = state.formattedFromTime,
             onDateClick = { state.onDateClick(DateBoundary.FROM) },
             onTimeClick = { state.onTimeClick(DateBoundary.FROM) },
+            onClearClick = { state.onClearClick(DateBoundary.FROM) },
         )
         DateTimeSection(
             header = R.string.bookings_filter_date_to,
@@ -74,6 +76,7 @@ fun DateTimeFilterPage(
             timeReadable = state.formattedToTime,
             onDateClick = { state.onDateClick(DateBoundary.TO) },
             onTimeClick = { state.onTimeClick(DateBoundary.TO) },
+            onClearClick = { state.onClearClick(DateBoundary.TO) },
         )
     }
 
@@ -112,8 +115,21 @@ private fun DateTimeSection(
     timeReadable: String,
     onDateClick: () -> Unit,
     onTimeClick: () -> Unit,
+    onClearClick: () -> Unit,
 ) {
-    BookingSectionHeader(header = header)
+    BookingSectionHeader(
+        header = header,
+        action = {
+            if (dateReadable.isNotEmpty()) {
+                Text(
+                    text = stringResource(R.string.clear).uppercase(),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.clickable(onClick = onClearClick),
+                )
+            }
+        }
+    )
     HorizontalDivider(thickness = 0.5.dp)
     Column(
         modifier = Modifier.background(MaterialTheme.colorScheme.surfaceContainer)
@@ -167,19 +183,14 @@ private fun Long.toCalendar(): Calendar {
 private fun DateTimeFilterPagePreview() {
     WooTheme {
         val now = LocalDateTime.of(2025, 11, 13, 10, 0)
-        val later = now.withHour(now.hour + 1)
         DateTimeFilterPage(
             state = DateTimeFilterUiState(
                 fromDateTime = now,
-                toDateTime = later,
+                toDateTime = null,
                 formattedFromDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
                     .format(now),
                 formattedFromTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
                     .format(now),
-                formattedToDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-                    .format(later),
-                formattedToTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
-                    .format(later),
             )
         )
     }
