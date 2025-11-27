@@ -23,6 +23,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
@@ -37,6 +38,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun DateTimeFilterRoute(
@@ -122,10 +124,14 @@ private fun DateTimeSection(
         action = {
             if (dateReadable.isNotEmpty()) {
                 Text(
-                    text = stringResource(R.string.clear).uppercase(),
+                    text = stringResource(R.string.clear).uppercase(Locale.getDefault()),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable(onClick = onClearClick),
+                    modifier = Modifier.clickable(
+                        onClick = onClearClick,
+                        role = Role.Button,
+                        onClickLabel = stringResource(R.string.clear)
+                    ),
                 )
             }
         }

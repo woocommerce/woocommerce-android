@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.compose
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,11 +17,12 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun BookingSectionHeader(
     @StringRes header: Int,
+    modifier: Modifier = Modifier,
     action: @Composable () -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp),
