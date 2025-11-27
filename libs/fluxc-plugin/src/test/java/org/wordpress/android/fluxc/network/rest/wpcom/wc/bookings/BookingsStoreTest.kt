@@ -208,12 +208,11 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             // We delete only matching filtered rows then insert the fetched page
-            verify(bookingsDao).deleteForSiteWithDateRangeFilter(
+            verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
-                any<List<Long>>()
+                any<List<BookingEntity>>()
             )
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
         }
 
@@ -253,10 +252,10 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             // We delete only matching filtered rows then insert the fetched page
             verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
-            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+            verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
-                any<List<Long>>()
+                any<List<BookingEntity>>()
             )
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
         }
@@ -295,12 +294,11 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             // We delete only matching filtered rows then insert the fetched page
-            verify(bookingsDao).deleteForSiteWithDateRangeFilter(
+            verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
-                any<List<Long>>()
+                any<List<BookingEntity>>()
             )
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
         }
 
@@ -342,7 +340,7 @@ class BookingsStoreTest {
             verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
             verify(bookingsDao, never())
-                .deleteForSiteWithDateRangeFilter(any(), any<BookingsFilterOption.DateRange>(), any<List<Long>>())
+                .cleanAndUpsertBookings(any(), any<BookingsFilterOption.DateRange>(), any<List<BookingEntity>>())
         }
 
     @Test
@@ -377,10 +375,10 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             verify(bookingsDao).replaceAllForSite(any(), any())
-            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+            verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
-                any<List<Long>>()
+                any<List<BookingEntity>>()
             )
         }
 
@@ -420,10 +418,10 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
-            verify(bookingsDao, never()).deleteForSiteWithDateRangeFilter(
+            verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
-                any<List<Long>>()
+                any<List<BookingEntity>>()
             )
         }
 

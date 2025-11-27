@@ -89,7 +89,7 @@ interface BookingsDao {
         idsSize: Int,
     )
 
-    suspend fun deleteForSiteWithDateRangeFilter(
+    private suspend fun deleteForSiteWithDateRangeFilter(
         localSiteId: LocalId,
         dateRange: BookingsFilterOption.DateRange,
         ids: List<Long>
@@ -101,6 +101,23 @@ interface BookingsDao {
             ids = ids,
             idsSize = ids.size,
         )
+    }
+
+    /**
+     * Delete Booking entities that are not present in the new list and then insert the new entities
+     */
+    @Transaction
+    suspend fun cleanAndUpsertBookings(
+        localSiteId: LocalId,
+        dateRange: BookingsFilterOption.DateRange,
+        entities: List<BookingEntity>,
+    ) {
+        deleteForSiteWithDateRangeFilter(
+            localSiteId = localSiteId,
+            dateRange = dateRange,
+            ids = entities.map { it.id.value },
+        )
+        insertOrReplace(entities)
     }
 
     fun observeBookings(

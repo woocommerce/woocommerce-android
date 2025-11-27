@@ -66,13 +66,11 @@ class BookingsStore @Inject internal constructor(
                             }
 
                             filters.dateRange != null && filters.isTodayOrUpcoming -> {
-                                // Delete only the rows that match the applied date range filter for Today/Upcoming
-                                bookingsDao.deleteForSiteWithDateRangeFilter(
+                                bookingsDao.cleanAndUpsertBookings(
                                     site.localId(),
                                     filters.dateRange,
-                                    entities.map { it.id.value }
+                                    entities
                                 )
-                                bookingsDao.insertOrReplace(entities)
                             }
 
                             else -> {
