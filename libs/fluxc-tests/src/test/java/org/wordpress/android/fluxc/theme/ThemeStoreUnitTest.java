@@ -1,5 +1,10 @@
 package org.wordpress.android.fluxc.theme;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+
 import android.content.Context;
 
 import com.yarolegovich.wellsql.WellSql;
@@ -24,10 +29,6 @@ import org.wordpress.android.fluxc.store.ThemeStore;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 @RunWith(RobolectricTestRunner.class)
 public class ThemeStoreUnitTest {
     private final ThemeStore mThemeStore = new ThemeStore(new Dispatcher(), Mockito.mock(ThemeRestClient.class));
@@ -44,7 +45,7 @@ public class ThemeStoreUnitTest {
     public void testActiveTheme() throws SiteSqlUtils.DuplicateSiteException {
         final SiteModel site = SiteUtils.generateWPComSite();
         TestSiteSqlUtils.INSTANCE.getSiteSqlUtils().insertOrUpdateSite(site);
-        assertEquals(0, ThemeSqlUtils.getActiveThemeForSite(site).size());
+        assertThat(ThemeSqlUtils.getActiveThemeForSite(site)).isEmpty();
 
         final ThemeModel firstTheme = generateTestTheme(site.getId(), "first-active", "First Active");
         final ThemeModel secondTheme = generateTestTheme(site.getId(), "second-active", "Second Active");
