@@ -409,6 +409,7 @@ private fun OrderDetailsOverflowMenu(
         }
 
         DropdownMenu(
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {
