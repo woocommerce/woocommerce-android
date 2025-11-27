@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -53,9 +54,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: OrderDetailsViewState.Computed.Details,
+    actions: List<OrderAction>,
     onEmailReceiptButtonClicked: (Long) -> Unit,
-    onIssueRefundButtonClicked: (Long) -> Unit,
-    isRefundsEnabled: Boolean = false
+    onIssueRefundButtonClicked: (Long) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -80,23 +81,33 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            if (isRefundsEnabled) {
-                WooPosButtonSmall(
-                    text = stringResource(R.string.orderdetail_issue_refund_button),
-                    onClick = { onIssueRefundButtonClicked(details.id) },
-                )
+            when {
+                actions.size > 1 -> {
+                    val primaryAction = actions.first()
+                    val overflowActions = actions.drop(1)
 
-                Spacer(Modifier.width(WooPosSpacing.Small.value))
+                    OrderActionButton(
+                        action = primaryAction,
+                        onIssueRefundClicked = onIssueRefundButtonClicked,
+                        onEmailReceiptClicked = onEmailReceiptButtonClicked
+                    )
 
-                OrderDetailsOverflowMenu(
-                    orderId = details.id,
-                    onEmailReceiptClicked = onEmailReceiptButtonClicked
-                )
-            } else {
-                WooPosButtonSmall(
-                    text = stringResource(R.string.woopos_orders_email_receipt),
-                    onClick = { onEmailReceiptButtonClicked(details.id) },
-                )
+                    Spacer(Modifier.width(WooPosSpacing.Small.value))
+
+                    OrderDetailsOverflowMenu(
+                        actions = overflowActions,
+                        onIssueRefundClicked = onIssueRefundButtonClicked,
+                        onEmailReceiptClicked = onEmailReceiptButtonClicked
+                    )
+                }
+
+                actions.size == 1 -> {
+                    OrderActionButton(
+                        action = actions.first(),
+                        onIssueRefundClicked = onIssueRefundButtonClicked,
+                        onEmailReceiptClicked = onEmailReceiptButtonClicked
+                    )
+                }
             }
         }
 
@@ -359,8 +370,31 @@ private fun DividerWithSpacing() {
 }
 
 @Composable
+private fun OrderActionButton(
+    action: OrderAction,
+    onIssueRefundClicked: (Long) -> Unit,
+    onEmailReceiptClicked: (Long) -> Unit
+) {
+    when (action) {
+        is OrderAction.IssueRefund -> {
+            WooPosButtonSmall(
+                text = stringResource(R.string.orderdetail_issue_refund_button),
+                onClick = { onIssueRefundClicked(action.orderId) }
+            )
+        }
+        is OrderAction.EmailReceipt -> {
+            WooPosButtonSmall(
+                text = stringResource(R.string.woopos_orders_email_receipt),
+                onClick = { onEmailReceiptClicked(action.orderId) }
+            )
+        }
+    }
+}
+
+@Composable
 private fun OrderDetailsOverflowMenu(
-    orderId: Long,
+    actions: List<OrderAction>,
+    onIssueRefundClicked: (Long) -> Unit,
     onEmailReceiptClicked: (Long) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
@@ -378,18 +412,27 @@ private fun OrderDetailsOverflowMenu(
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {
-            DropdownMenuItem(
-                text = {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_orders_email_receipt),
-                        style = WooPosTypography.BodyMedium
-                    )
-                },
-                onClick = {
-                    showMenu = false
-                    onEmailReceiptClicked(orderId)
-                }
-            )
+            actions.forEach { action ->
+                DropdownMenuItem(
+                    text = {
+                        val text = when (action) {
+                            is OrderAction.IssueRefund -> stringResource(R.string.orderdetail_issue_refund_button)
+                            is OrderAction.EmailReceipt -> stringResource(R.string.woopos_orders_email_receipt)
+                        }
+                        WooPosText(
+                            text = text,
+                            style = WooPosTypography.BodyMedium
+                        )
+                    },
+                    onClick = {
+                        showMenu = false
+                        when (action) {
+                            is OrderAction.IssueRefund -> onIssueRefundClicked(action.orderId)
+                            is OrderAction.EmailReceipt -> onEmailReceiptClicked(action.orderId)
+                        }
+                    }
+                )
+            }
         }
     }
 }
@@ -432,6 +475,10 @@ fun WooPosOrderDetailsPreview() {
     WooPosTheme {
         WooPosOrderDetails(
             details = orderDetails,
+            actions = listOf(
+                OrderAction.IssueRefund(1L),
+                OrderAction.EmailReceipt(1L)
+            ),
             onEmailReceiptButtonClicked = {},
             onIssueRefundButtonClicked = {}
         )
