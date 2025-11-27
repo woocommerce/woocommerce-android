@@ -9,6 +9,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.model.ShippingLabel
 import com.woocommerce.android.model.toAppModel
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
@@ -359,14 +360,15 @@ object OrderTestUtils {
         val result = ArrayList<OrderShipmentTracking>()
         for (i in totalCount downTo 1) {
             result.add(
-                WCOrderShipmentTrackingModel(totalCount).apply {
-                    this.trackingProvider = "TNT Express $i"
-                    this.trackingNumber = "$i"
-                    this.dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
-                    this.trackingLink = "www.somelink$i.com"
-                    this.orderId = orderId
-                    this.localSiteId = localSiteId
-                }.toAppModel()
+                WCOrderShipmentTrackingModel(
+                    localSiteId = LocalId(localSiteId),
+                    orderId = RemoteId(orderId),
+                    remoteTrackingId = "$i",
+                    trackingNumber = "$i",
+                    trackingProvider = "TNT Express $i",
+                    trackingLink = "www.somelink$i.com",
+                    dateShipped = SimpleDateFormat("yyyy-MM-dd").format(Date())
+                ).toAppModel()
             )
         }
         return result

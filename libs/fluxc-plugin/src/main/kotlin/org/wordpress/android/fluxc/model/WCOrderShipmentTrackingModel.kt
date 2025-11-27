@@ -1,24 +1,19 @@
 package org.wordpress.android.fluxc.model
 
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import androidx.room.Entity
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-data class WCOrderShipmentTrackingModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column(name = "LOCAL_ORDER_ID") var orderId = 0L // The local db unique identifier for the parent order object
-    @Column var remoteTrackingId = ""
-    @Column var trackingNumber = ""
-    @Column var trackingProvider = ""
-    @Column var trackingLink = ""
-    @Column var dateShipped = ""
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
-
-    override fun getId() = this.id
-}
+@Entity(
+    tableName = "OrderShipmentTrackingEntity",
+    primaryKeys = ["localSiteId", "orderId", "remoteTrackingId"]
+)
+data class WCOrderShipmentTrackingModel(
+    val localSiteId: LocalId,
+    val orderId: RemoteId,
+    val remoteTrackingId: String,
+    val trackingNumber: String,
+    val trackingProvider: String,
+    val trackingLink: String,
+    val dateShipped: String
+)

@@ -77,28 +77,28 @@ object OrderTestUtils {
         val responseType = object : TypeToken<List<OrderShipmentTrackingApiResponse>>() {}.type
         val converted = Gson().fromJson(json, responseType) as? List<OrderShipmentTrackingApiResponse> ?: emptyList()
         return converted.map {
-            WCOrderShipmentTrackingModel().apply {
-                localSiteId = siteId
-                this.orderId = orderId
-                remoteTrackingId = it.tracking_id ?: ""
-                trackingNumber = it.tracking_number ?: ""
-                trackingProvider = it.tracking_provider ?: ""
-                trackingLink = it.tracking_link ?: ""
+            WCOrderShipmentTrackingModel(
+                localSiteId = LocalId(siteId),
+                orderId = RemoteId(orderId),
+                remoteTrackingId = it.tracking_id ?: "",
+                trackingNumber = it.tracking_number ?: "",
+                trackingProvider = it.tracking_provider ?: "",
+                trackingLink = it.tracking_link ?: "",
                 dateShipped = it.date_shipped ?: ""
-            }
+            )
         }
     }
 
     fun generateOrderShipmentTracking(siteId: Int, orderId: Long): WCOrderShipmentTrackingModel {
-        return WCOrderShipmentTrackingModel().apply {
-            localSiteId = siteId
-            this.orderId = orderId
-            remoteTrackingId = "3290834092801"
-            trackingNumber = "ZZ9939921"
-            trackingProvider = "USPS"
-            trackingLink = ""
+        return WCOrderShipmentTrackingModel(
+            localSiteId = LocalId(siteId),
+            orderId = RemoteId(orderId),
+            remoteTrackingId = "3290834092801",
+            trackingNumber = "ZZ9939921",
+            trackingProvider = "USPS",
+            trackingLink = "",
             dateShipped = "2019-01-01"
-        }
+        )
     }
 
     fun getOrderShipmentProvidersFromJson(json: String, siteId: Int): List<WCOrderShipmentProviderModel> {

@@ -9,6 +9,7 @@ import androidx.room.TypeConverters
 import androidx.room.withTransaction
 import org.wordpress.android.fluxc.model.WCNewVisitorStatsModel
 import org.wordpress.android.fluxc.model.WCOrderShipmentProviderModel
+import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.WCOrderSummaryModel
 import org.wordpress.android.fluxc.model.WCProductCategoryModel
@@ -47,6 +48,7 @@ import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.NewVisitorStatsDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
+import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
 import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
@@ -129,7 +131,7 @@ import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_7_8
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_8_9
 import org.wordpress.android.fluxc.persistence.migrations.MIGRATION_9_10
 
-const val WC_DATABASE_VERSION = 74
+const val WC_DATABASE_VERSION = 75
 
 @Database(
     version = WC_DATABASE_VERSION,
@@ -167,6 +169,7 @@ const val WC_DATABASE_VERSION = 74
         WCCustomerModel::class,
         WCLocationModel::class,
         WCOrderShipmentProviderModel::class,
+        WCOrderShipmentTrackingModel::class,
         WCUserModel::class,
         WCTaxClassModel::class,
         WCSettingsModel::class,
@@ -237,6 +240,7 @@ const val WC_DATABASE_VERSION = 74
         AutoMigration(from = 70, to = 71),
         AutoMigration(from = 72, to = 73),
         AutoMigration(from = 73, to = 74),
+        AutoMigration(from = 74, to = 75),
     ]
 )
 @TypeConverters(
@@ -267,6 +271,7 @@ abstract class WCAndroidDatabase : RoomDatabase(), TransactionExecutor {
     abstract val bookingsDao: BookingsDao
     internal abstract val locationsDao: LocationsDao
     internal abstract val orderShipmentProvidersDao: OrderShipmentProvidersDao
+    internal abstract val orderShipmentTrackingDao: OrderShipmentTrackingDao
     internal abstract val customerDao: CustomerDao
     internal abstract val productsDao: ProductsDao
     internal abstract val posProductsDao: WooPosProductsDao
