@@ -274,6 +274,68 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given existing dates, when onClearClick(FROM), then FROM values are cleared and TO remains`() =
+        testBlocking {
+            val vm = createVm()
+
+            // Set FROM date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
+            val fromDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val fromDateTime = LocalDateTime.of(2025, 3, 4, 0, 0)
+            fromDialog.onDateSelected(fromDateTime.atZone(zone).toInstant().toEpochMilli())
+
+            // Set TO date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
+            val toDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val toDateTime = LocalDateTime.of(2025, 4, 5, 0, 0)
+            toDialog.onDateSelected(toDateTime.atZone(zone).toInstant().toEpochMilli())
+
+            // Clear FROM
+            vm.uiState.getOrAwaitValue()!!.onClearClick(DateBoundary.FROM)
+
+            val state = vm.uiState.getOrAwaitValue()!!
+            // FROM cleared
+            assertThat(state.fromDateTime).isNull()
+            assertThat(state.formattedFromDate).isEmpty()
+            assertThat(state.formattedFromTime).isEmpty()
+            // TO intact
+            assertThat(state.toDateTime).isNotNull()
+            assertThat(state.formattedToDate).isNotEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
+        }
+
+    @Test
+    fun `given existing dates, when onClearClick(TO), then TO values are cleared and FROM remains`() =
+        testBlocking {
+            val vm = createVm()
+
+            // Set FROM date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.FROM)
+            val fromDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val fromDateTime = LocalDateTime.of(2025, 3, 4, 0, 0)
+            fromDialog.onDateSelected(fromDateTime.atZone(zone).toInstant().toEpochMilli())
+
+            // Set TO date
+            vm.uiState.getOrAwaitValue()!!.onDateClick(DateBoundary.TO)
+            val toDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.DateDialog
+            val toDateTime = LocalDateTime.of(2025, 4, 5, 0, 0)
+            toDialog.onDateSelected(toDateTime.atZone(zone).toInstant().toEpochMilli())
+
+            // Clear TO
+            vm.uiState.getOrAwaitValue()!!.onClearClick(DateBoundary.TO)
+
+            val state = vm.uiState.getOrAwaitValue()!!
+            // TO cleared
+            assertThat(state.toDateTime).isNull()
+            assertThat(state.formattedToDate).isEmpty()
+            assertThat(state.formattedToTime).isEmpty()
+            // FROM intact
+            assertThat(state.fromDateTime).isNotNull()
+            assertThat(state.formattedFromDate).isNotEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
+        }
+
+    @Test
     fun `given no FROM date, when onDateClick(TO), then DateDialog minDate is null`() = testBlocking {
         val vm = createVm()
 
