@@ -7,6 +7,7 @@ import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertEquals
+import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -276,6 +277,39 @@ class WooShippingRatesDomainMapperTest : BaseUnitTest() {
         val rate = mappedRates.values.first().first()
 
         assertEquals(3, rate.shippingRateIncludedOptions.size)
+    }
+
+    @Test
+    fun `when a shipping rate does not contain a DEFAULT option, then it is NOT included in the mapped rates`() {
+        val rates = listOf(
+            WooShippingRateOptionsModel(
+                mapOf(
+                    WooShippingRateModel.Option.SIGNATURE to WooShippingRateModel(
+                        carrier = WooShippingCarrier.DHL,
+                        deliveryDays = (1..10).random(),
+                        hasFreePickup = true,
+                        insurance = BigDecimal.TEN,
+                        isTrackingEnabled = true,
+                        carrierId = WooShippingCarrier.DHL.ordinal.toString(),
+                        option = WooShippingRateModel.Option.SIGNATURE,
+                        packageId = "1",
+                        price = BigDecimal.TEN,
+                        rateId = "1",
+                        shipmentId = "1",
+                        serviceId = "1",
+                        serviceName = "Signature Required",
+                        isSelected = true,
+                        listRate = BigDecimal.TEN,
+                        retailRate = BigDecimal.TEN,
+                        deliveryDate = null,
+                        isDeliveryDateGuaranteed = false
+                    )
+                )
+            )
+        )
+        val mappedRates = sut(rates, "USD")
+
+        assertTrue(mappedRates.isEmpty())
     }
 
     @Suppress("LongMethod")
