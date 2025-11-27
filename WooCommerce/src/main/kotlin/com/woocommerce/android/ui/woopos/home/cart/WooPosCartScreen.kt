@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.material.icons.outlined.Delete
@@ -77,6 +76,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -361,25 +361,18 @@ private fun CartToolbar(
             enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
             exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
-            IconButton(
-                onClick = { onBackClicked() },
+            WooPosBackButton(
                 modifier = Modifier
                     .constrainAs(backButton) {
                         start.linkTo(parent.start)
                         centerVerticallyTo(parent)
                     }
-                    .size(48.dp)
-                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .offset(y = 4.dp)
-                )
-            }
+                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding()),
+                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                iconModifier = Modifier
+                    .size(iconSize)
+                    .offset(y = 4.dp)
+            ) { onBackClicked() }
         }
 
         WooPosText(
