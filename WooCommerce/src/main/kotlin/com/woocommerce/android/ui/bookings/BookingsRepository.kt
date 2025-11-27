@@ -24,7 +24,7 @@ class BookingsRepository @Inject constructor(
         page: Int,
         perPage: Int,
         query: String? = null,
-        filters: BookingFilters? = null,
+        filters: BookingFilters = BookingFilters.EMPTY,
         order: BookingsOrderOption
     ): Result<FetchResult> {
         val result = bookingsStore.fetchBookings(
@@ -92,7 +92,8 @@ class BookingsRepository @Inject constructor(
 
     suspend fun fetchResources(): Result<Unit> {
         val result = bookingsStore.fetchResources(site = selectedSite.get())
-        return if (result.isError) {
+        val model = result.model
+        return if (result.isError || model == null) {
             Result.failure(WooException(result.error))
         } else {
             Result.success(Unit)

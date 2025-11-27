@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.bookings.list
 
+import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
 
 data class BookingListViewState(
@@ -8,7 +10,15 @@ data class BookingListViewState(
     val controlsState: BookingListControlsState,
     val sortBottomSheetState: BookingListSortBottomSheetState?,
     val searchState: BookingListSearchState,
-)
+) {
+
+    val toolbarTitle: UiString
+        get() = if (searchState.isSearchActive) {
+            UiString.UiStringText("")
+        } else {
+            UiString.UiStringRes(R.string.bookings_tab_title)
+        }
+}
 
 data class BookingListContentState(
     val bookings: List<BookingListItem>,

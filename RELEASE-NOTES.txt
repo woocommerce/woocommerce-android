@@ -4,17 +4,21 @@
 
 23.8
 -----
+- [*] Fixed system back button not working on Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/15016]
 - [*] Optimized POS Local Catalog Settings screen [https://github.com/woocommerce/woocommerce-android/pull/14971]
 - [Internal][Woo POS] Improve detection and handling of deleted products during checkout [https://github.com/woocommerce/woocommerce-android/pull/14981]
 - [*][Woo POS] Fixed payment screen layout to properly position payment instructions text [https://github.com/woocommerce/woocommerce-android/pull/14991]
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
+- [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
 
 23.7
 -----
 - [Internal][Woo POS] Survey for potential and current users of the POS delivered via local push notification. [https://github.com/woocommerce/woocommerce-android/pull/14751]
 - [Internal] Handle BLUETOOTH_PEER_REMOVED_PAIRING_INFORMATION disconnect reason from Stripe SDK [https://github.com/woocommerce/woocommerce-android/pull/14886]
 - [**] Faster POS performance - search, barcode scanning, and loading are now nearly instant. [https://github.com/woocommerce/woocommerce-android/pull/14926]
+- [*] Fixed a crash on app startup for users with the old shortcuts pinned. [https://github.com/woocommerce/woocommerce-android/pull/15007]
+- [*] Fixed a bug that cause blank blaze campaign detail page. [https://github.com/woocommerce/woocommerce-android/pull/15010]
 
 23.6
 -----

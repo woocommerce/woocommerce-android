@@ -26,6 +26,8 @@ data class BookingTeamMemberFilterUiState(
     } else {
         selectedMembers.values.contains(teamMember?.id)
     }
+
+    val skeletonVisible: Boolean = isLoading && teamMembers.filterNotNull().isEmpty()
 }
 
 val BookingResourceEntity.Companion.any: BookingResourceEntity?

@@ -2546,7 +2546,6 @@
     <string name="product_type_bundle">Bundle</string>
     <string name="product_type_composite">Composite product</string>
     <string name="product_type_variation">Variation product</string>
-    <string name="product_type_booking">Bookable product</string>
     <string name="product_type_bookable_service">Service</string>
 
     <!-- Product type bottom sheets -->
@@ -3635,7 +3634,7 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
-    <string name="woopos_settings_local_catalog_category">Catalog</string>
+    <string name="woopos_settings_local_catalog_category">Product catalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
     <string name="woopos_settings_local_catalog_status">Catalog Status</string>
     <string name="woopos_settings_local_catalog_size">Size</string>
@@ -4194,6 +4193,7 @@
     -->
     <string name="bookings_tab_title">Bookings</string>
     <string name="bookings_fetch_error">Error fetching bookings</string>
+    <string name="bookings_resources_fetch_error">Error fetching team members</string>
     <string name="bookings_tab_today">Today</string>
     <string name="bookings_tab_upcoming">Upcoming</string>
     <string name="bookings_tab_all">All</string>

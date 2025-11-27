@@ -352,7 +352,20 @@ platform :android do
 
     # Parse the provided version into an AppVersion object
     parsed_version = VERSION_FORMATTER.parse(version_name)
+    # Validate that this is a hotfix version (must have a patch component > 0)
+    UI.user_error!("Invalid hotfix version '#{version_name}'. Must include a patch number.") unless parsed_version.patch.to_i.positive?
     previous_version = VERSION_FORMATTER.release_version(VERSION_CALCULATOR.previous_patch_version(version: parsed_version))
+    previous_release_branch = "release/#{previous_version}"
+
+    # Determine the base for the hotfix branch: either a tag or a release branch
+    base_ref_for_hotfix = if git_tag_exists(tag: previous_version, remote: true)
+                            previous_version
+                          elsif Fastlane::Helper::GitHelper.branch_exists_on_remote?(branch_name: previous_release_branch)
+                            UI.message("ℹ️  Tag '#{previous_version}' not found on the remote. Using release branch '#{previous_release_branch}' as the base for hotfix instead.")
+                            previous_release_branch
+                          else
+                            UI.user_error!("Neither tag '#{previous_version}' nor branch '#{previous_release_branch}' exists on the remote! A hotfix branch cannot be created.")
+                          end
 
     # Check versions
     message = <<-MESSAGE
@@ -363,7 +376,7 @@ platform :android do
       Current build code: #{build_code_current}
       New build code: #{version_code}
 
-      Branching from tag: #{previous_version}
+      Branching from #{base_ref_for_hotfix}
 
     MESSAGE
 
@@ -371,13 +384,18 @@ platform :android do
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     # Check tags
-    UI.user_error!("The version `#{version_name}` tag already exists!") if git_tag_exists(tag: version_name)
-    UI.user_error!("Version #{previous_version} is not tagged! A hotfix branch cannot be created.") unless git_tag_exists(tag: previous_version)
+    UI.user_error!("Version '#{version_name}' already exists on the remote! Abort!") if git_tag_exists(tag: version_name, remote: true)
+
+    # Fetch the base ref to ensure it's available locally
+    sh('git', 'fetch', 'origin', base_ref_for_hotfix)
+
+    hotfix_branch = "release/#{version_name}"
+    ensure_branch_does_not_exist!(hotfix_branch)
 
     # Create the hotfix branch
-    UI.message('Creating hotfix branch...')
-    Fastlane::Helper::GitHelper.create_branch("release/#{version_name}", from: previous_version)
-    UI.success("Done! New hotfix branch is: #{git_branch}")
+    UI.message("Creating hotfix branch from '#{base_ref_for_hotfix}'...")
+    Fastlane::Helper::GitHelper.create_branch(hotfix_branch, from: base_ref_for_hotfix)
+    UI.success("Done! New hotfix branch is: '#{git_branch}'")
 
     # Bump the hotfix version and build code and write it to the `version.properties` file
     UI.message('Bumping hotfix version and build code...')
@@ -386,7 +404,7 @@ platform :android do
       version_code: version_code
     )
     commit_version_bump
-    UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
+    UI.success("Done! New Release Version: '#{release_version_current}'. New Build Code: '#{build_code_current}'")
 
     UI.important('Pushing new hotfix branch to remote...')
 
@@ -1027,15 +1045,33 @@ platform :android do
       skip_open_summary: true
     }
 
-    UI.message('Setting light theme...')
+    UI.message('Taking POS screenshots for Dark theme on Pixel Tablet...')
+    begin
+      adb(command: 'shell cmd uimode night yes')
+    rescue StandardError => e
+      UI.error(e)
+    end
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ['theme dark']
+        }
+      )
+    )
+
+    UI.message('Taking POS screenshots for Light theme on Pixel Tablet...')
     begin
       adb(command: 'shell cmd uimode night no')
     rescue StandardError => e
       UI.error(e)
     end
-
-    UI.message('Taking POS screenshots for light theme on Pixel Tablet...')
-    screengrab(screenshot_options)
+    screengrab(
+      screenshot_options.merge(
+        {
+          launch_arguments: ['theme light']
+        }
+      )
+    )
   end
 
   # This lane downloads the translated promo strings from the translation system.
@@ -1086,6 +1122,107 @@ platform :android do
     end
   end
 
+  # Patches PromoScreenshots helper to use ImageMagick's label: for text rendering.
+  # Uses label: with font from CSS, falling back to system fonts for international characters.
+  # Reads font-family, font-style, font-weight, line-height from style.css.
+  def patch_promo_screenshots_text_rendering
+    css_config = parse_promo_screenshot_css
+    font_path = resolve_font_path(css_config[:font_family])
+
+    UI.message("Using font: #{css_config[:font_family]} (#{font_path})")
+    UI.message("Using fill color: #{css_config[:fill_color]}")
+    UI.message("Using font-style: #{css_config[:font_style]}, font-weight: #{css_config[:font_weight]}, line-height: #{css_config[:line_height]}px")
+
+    register_draw_text_method(font_path, css_config)
+  end
+
+  def parse_promo_screenshot_css
+    stylesheet_path = File.join(Dir.pwd, 'playstoreres/assets/style.css')
+    css_content = File.exist?(stylesheet_path) ? File.read(stylesheet_path) : ''
+
+    {
+      font_family: extract_css_value(css_content, /font-family:\s*['"]?([^;'"]+)['"]?;/, 'Proxima Nova Bold'),
+      fill_color: extract_css_value(css_content, /color:\s*([^;]+);/, 'white'),
+      font_style: extract_css_value(css_content, /font-style:\s*([^;]+);/, 'normal'),
+      font_weight: extract_css_value(css_content, /font-weight:\s*([^;]+);/, 'normal'),
+      line_height: extract_css_value(css_content, /line-height:\s*(\d+)px;/, '0').to_i
+    }
+  end
+
+  def extract_css_value(css_content, pattern, default)
+    match = css_content.match(pattern)
+    match ? match.captures.first.strip : default
+  end
+
+  def resolve_font_path(font_family)
+    otf_path = File.expand_path("~/Library/Fonts/#{font_family}.otf")
+    return otf_path if File.exist?(otf_path)
+
+    ttf_path = File.expand_path("~/Library/Fonts/#{font_family}.ttf")
+    return ttf_path if File.exist?(ttf_path)
+
+    'Arial'
+  end
+
+  # ProximaNova-Bold doesn't support non-Latin scripts, so we fall back to system fonts.
+  def select_font_for_text(text_content, default_font)
+    return 'Hiragino-Sans-W6' if text_content.match?(/[\p{Hiragana}\p{Katakana}]/)
+    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/[\p{Hangul}]/)
+    return 'Heiti-SC-Medium' if text_content.match?(/[\p{Han}]/)
+    return 'Arial' if text_content.match?(/[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/)
+
+    default_font
+  end
+
+  # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/ParameterLists
+  def register_draw_text_method(font_path, css_config)
+    fill_color = css_config[:fill_color]
+    font_style = css_config[:font_style]
+    font_weight = css_config[:font_weight]
+    line_height = css_config[:line_height]
+    outer_self = self
+
+    Fastlane::Helper::PromoScreenshots.class_eval do
+      define_method(:draw_text_to_canvas) do |canvas, text, width, height, x_position, y_position, font_size, _stylesheet_path, position = 'center'|
+        text_content = File.exist?(text) ? File.read(text).strip : text
+        font_size_num = font_size.to_s.gsub('px', '').to_i
+        effective_font = outer_self.select_font_for_text(text_content, font_path)
+
+        magick_args = build_magick_args(width, height, effective_font, font_size_num, fill_color, font_style, font_weight, line_height, text_content)
+        text_frame = render_text_image(magick_args, width, height, position)
+        composite_image(canvas, text_frame, x_position, y_position)
+      end
+
+      define_method(:build_magick_args) do |width, height, font, font_size, color, style, weight, line_ht, text|
+        args = ['magick', '-size', "#{width}x#{height}", '-background', 'transparent',
+                '-font', font, '-pointsize', font_size.to_s, '-fill', color, '-gravity', 'center']
+        args += ['-style', 'Italic'] if style == 'italic'
+        args += ['-weight', 'Bold'] if %w[bold 700].include?(weight)
+        args += ['-interline-spacing', (line_ht - font_size).to_s] if line_ht.positive?
+        args + ["label:#{text}"]
+      end
+
+      define_method(:render_text_image) do |magick_args, width, height, position|
+        temp_file = Tempfile.new(['text', '.png'])
+        begin
+          system(*magick_args, temp_file.path)
+          text_image = open_image(temp_file.path)
+          text_frame = create_image(width, height)
+          composite_method = case position
+                             when 'left' then :composite_image_left
+                             when 'top' then :composite_image_top
+                             else :composite_image_center
+                             end
+          send(composite_method, text_frame, text_image, 0, 0)
+        ensure
+          temp_file.close
+          temp_file.unlink
+        end
+      end
+    end
+  end
+  # rubocop:enable Metrics/AbcSize, Metrics/MethodLength, Metrics/ParameterLists
+
   #####################################################################################
   # create_promo_screenshots
   # -----------------------------------------------------------------------------------
@@ -1105,6 +1242,8 @@ platform :android do
     rescue LoadError
       UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
     end
+
+    patch_promo_screenshots_text_rendering
 
     # Clean temporary folder from previous runs
     FileUtils.rm_rf(PROMO_SCREENSHOTS_DIR)
@@ -1146,6 +1285,53 @@ platform :android do
     )
 
     # Clean up the temp directories
+    FileUtils.rm_rf(RAW_SCREENSHOTS_PROCESSING_DIR)
+  end
+
+  desc 'Creates POS promo screenshots for tablets'
+  lane :create_pos_promo_screenshots do |options|
+    begin
+      fastlane_require 'rmagick'
+    rescue LoadError
+      UI.user_error!("The rmagick gem doesn't seem to be installed. Be sure to use `bundle install --with screenshots`.")
+    end
+
+    patch_promo_screenshots_text_rendering
+
+    FileUtils.rm_rf(PROMO_SCREENSHOTS_DIR)
+
+    FileUtils.rm_rf(RAW_SCREENSHOTS_PROCESSING_DIR)
+    FileUtils.copy_entry(RAW_SCREENSHOTS_DIR, RAW_SCREENSHOTS_PROCESSING_DIR)
+
+    locales = SUPPORTED_LOCALES
+              .reject { |hsh| hsh[:promo_config] == false }
+              .map { |hsh| hsh[:google_play] }
+              .append('en-US')
+
+    unless options[:locale].nil?
+      locales.keep_if do |locale|
+        locale.casecmp(options[:locale]).zero?
+      end
+    end
+
+    UI.message("Creating POS promo screenshots for Locales: #{locales}")
+
+    Pathname(RAW_SCREENSHOTS_PROCESSING_DIR)
+      .children
+      .select(&:directory?)
+      .reject { |dir| locales.include? File.basename(dir) }
+      .each do |dir|
+      FileUtils.rm_rf(dir)
+    end
+
+    promo_screenshots(
+      config_file: 'screenshots_pos.json',
+      orig_folder: RAW_SCREENSHOTS_PROCESSING_DIR,
+      metadata_folder: METADATA_DIR_PATH[MOBILE_APP],
+      output_folder: PROMO_SCREENSHOTS_DIR,
+      force: options[:force]
+    )
+
     FileUtils.rm_rf(RAW_SCREENSHOTS_PROCESSING_DIR)
   end
 
