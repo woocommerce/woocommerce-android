@@ -172,9 +172,7 @@ private fun WooPosOrdersScreen(
             when (val dialogState = state.dialogState) {
                 is WooPosOrdersState.Content.DialogState.IssueRefund -> {
                     WooPosIssueRefundDialog(
-                        isVisible = true,
-                        lineItems = state.selectedDetails.lineItems,
-                        itemsSelectedLabel = dialogState.itemsSelectedLabel,
+                        orderId = dialogState.orderId,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onContinue = onIssueRefundDialogDismissed
                     )
