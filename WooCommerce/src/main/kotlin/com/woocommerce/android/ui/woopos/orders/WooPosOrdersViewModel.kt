@@ -631,10 +631,17 @@ class WooPosOrdersViewModel @Inject constructor(
     ): List<OrderDetailsViewState.Computed.Details.LineItemRow> = coroutineScope {
         order.items.map { item ->
             async {
+                val unitPrice =
+                    if (item.quantity == 0f) {
+                        item.total
+                    } else {
+                        item.total / item.quantity.toBigDecimal()
+                    }
                 val product = getProductById(item.productId)
                 OrderDetailsViewState.Computed.Details.LineItemRow(
                     id = item.itemId,
                     name = item.name,
+                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
                     lineTotal = formatPrice(item.total),
                     imageUrl = product?.firstImageUrl
                 )

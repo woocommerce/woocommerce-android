@@ -677,9 +677,9 @@ private fun sampleOrderDetails(
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
     lineItems = listOf(
-        OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "$15.00", null),
-        OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "$8.00", null),
-        OrderDetailsViewState.Computed.Details.LineItemRow(103, "Paper Filter", "$8.00", null)
+        OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "1 x $8.50", "$15.00", null),
+        OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$8.00", null),
+        OrderDetailsViewState.Computed.Details.LineItemRow(103, "Paper Filter", "1 x $4.50", "$8.00", null)
     ),
     breakdown = OrderDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",

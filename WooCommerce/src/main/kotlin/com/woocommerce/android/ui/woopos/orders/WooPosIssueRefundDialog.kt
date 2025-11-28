@@ -219,15 +219,23 @@ private fun LineItemRow(
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
-        WooPosText(
-            text = item.name,
-            style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f)
-        )
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            WooPosText(
+                text = item.name,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            WooPosText(
+                text = item.qtyAndUnitPrice,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest
+            )
+        }
 
         WooPosText(
             text = item.lineTotal,
@@ -258,18 +266,21 @@ fun WooPosIssueRefundDialogPreview() {
         OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 1,
             name = "Cup",
+            qtyAndUnitPrice = "1 X $18.00",
             lineTotal = "$999999.00",
             imageUrl = null
         ),
         OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 2,
             name = "Coffee Storage Container",
+            qtyAndUnitPrice = "1 X $30.00",
             lineTotal = "$30.00",
             imageUrl = null
         ),
         OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 3,
             name = "Enamel Mug",
+            qtyAndUnitPrice = "1 X $8.50",
             lineTotal = "$8.50",
             imageUrl = null
         )

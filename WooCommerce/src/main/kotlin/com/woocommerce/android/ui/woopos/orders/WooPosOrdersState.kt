@@ -50,6 +50,7 @@ sealed class OrderDetailsViewState {
             data class LineItemRow(
                 val id: Long,
                 val name: String,
+                val qtyAndUnitPrice: String,
                 val lineTotal: String,
                 val imageUrl: String?,
             )
