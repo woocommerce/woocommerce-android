@@ -1,1 +1,7 @@
-Selling in-person just got faster! We've supercharged Woo POS with lightning-fast product search, instant barcode scanning, and near-instant loading. Your in-store experience is now smoother than ever.
+- [*] Fixed system back button not working on Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/15016]
+- [*] Optimized POS Local Catalog Settings screen [https://github.com/woocommerce/woocommerce-android/pull/14971]
+- [Internal][Woo POS] Improve detection and handling of deleted products during checkout [https://github.com/woocommerce/woocommerce-android/pull/14981]
+- [*][Woo POS] Fixed payment screen layout to properly position payment instructions text [https://github.com/woocommerce/woocommerce-android/pull/14991]
+- [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
+- [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
+- [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
