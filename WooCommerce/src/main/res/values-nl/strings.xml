@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-04 17:54:05+0000
+Translation-Revision-Date: 2025-11-18 11:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: nl
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">Boeking niet geselecteerd</string>
+    <string name="bookings_filters_selected_option_content_description">Geselecteerde filteroptie</string>
+    <string name="bookings_filter_customer">Klant</string>
+    <string name="bookings_filters_title_with_count">Filters (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">Fysiek adres</string>
+    <string name="woopos_settings_store_general_title">Algemeen</string>
+    <string name="woopos_orders_details_refund_error">Kan terugbetaling niet laden</string>
+    <string name="woopos_cart_product_unknown_item">Onbekend artikel</string>
+    <string name="woopos_totals_product_not_found_remove_products">Product verwijderen</string>
+    <string name="woopos_totals_product_not_found_edit_order">Bestelling bewerken</string>
+    <string name="woopos_totals_product_not_found_reason">Een product in de winkelwagen is niet meer beschikbaar.</string>
+    <string name="woopos_totals_product_not_found_error">Product niet gevonden</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Werk de firmwareversie bij om betalingen te kunnen blijven aannemen.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Firmwareversie bijwerken</string>
+    <string name="woopos_settings_card_reader_device_name_title">Apparaatnaam </string>
+    <string name="woopos_settings_local_catalog_refresh_description">De catalogus handmatig bijwerken</string>
+    <string name="woopos_settings_local_catalog_manual_update">Catalogus bijwerken</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Synchronisatie met mobiele data toestaan</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Mobiele data</string>
+    <string name="woopos_settings_local_catalog_last_update">Laatste incrementele synchronisatie</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Sla je productcatalogus op dit apparaat op voor sneller zoeken, scannen van streepjescodes en snellere laadtijden.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">Lokale POS-catalogus</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Vergeet de reader in Android Bluetooth-instellingen</string>
     <string name="booking_mark_as_paid_error">Foutmelding bij het markeren van de boeking als betaald</string>
     <string name="booking_cancel_error">Foutmelding bij het annuleren van de boeking</string>
     <string name="booking_note_screen_update_error">Foutmelding bij het opslaan van de opmerking bij de boeking</string>
@@ -41,8 +64,8 @@ Language: nl
     <string name="woopos_orders_details_total_label">Totaal</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Verzending</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Belastingen</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Korting (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Korting</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Totaal aan korting (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Totaal aan korting</string>
     <string name="woopos_orders_details_breakdown_products_label">Producten</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">Totalen</string>
@@ -78,13 +101,11 @@ Language: nl
     <string name="bookings_filter_title_service_event">Service/evenement</string>
     <string name="bookings_filter_title_date">Datum en tijd</string>
     <string name="bookings_filter_location">Locatie</string>
-    <string name="bookings_filter_customer_name">Naam klant</string>
     <string name="bookings_filter_title_type">Type boeking</string>
     <string name="bookings_filter_title_payment_status">Betaalstatus</string>
     <string name="bookings_filter_title_attendance_status">Aanwezigheidsstatus</string>
     <string name="bookings_filter_title_team_member">Toegewezen teamlid</string>
     <string name="bookings_filters_show_bookings">Boekingen weergeven</string>
-    <string name="bookings_filters_count_title">Filters (%d)</string>
     <string name="bookings_filters_default_title">Filters</string>
     <string name="bookings_empty_state_clear_filters_button">Filters wissen</string>
     <string name="bookings_empty_state_change_filters_button">Filters wijzigen</string>
@@ -123,15 +144,10 @@ Language: nl
     <string name="woopos_date_today_at">Vandaag om %s</string>
     <string name="woopos_date_just_now">Zojuist</string>
     <string name="woopos_date_never">Nooit</string>
-    <string name="woopos_settings_local_catalog_refresh_button">Catalogus vernieuwen</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Gebruik vernieuwen alleen als iets niet lijkt te kloppen – POS houdt gegevens automatisch actueel.</string>
-    <string name="woopos_settings_local_catalog_actions">Handmatige catalogus-update</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Catalogus-updates downloaden met mobiele data</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Volledige update met mobiele data toestaan</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Catalogus bijwerken</string>
     <string name="woopos_settings_local_catalog_settings">Dataverbruik beheren</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Laatste volledige update</string>
-    <string name="woopos_settings_local_catalog_last_update">Laatste update</string>
-    <string name="woopos_settings_local_catalog_size">Catalogusgrootte</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Laatste volledige synchronisatie</string>
+    <string name="woopos_settings_local_catalog_size">Afmetingen</string>
     <string name="woopos_settings_local_catalog_status">Catalogusstatus</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Catalogus-instellingen beheren</string>
     <string name="woopos_settings_local_catalog_category">Catalogus</string>
@@ -192,7 +208,6 @@ Language: nl
     <string name="woopos_cart_empty_scan_barcode">streepjescode scannen</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Tik op een product of </string>
     <string name="woopos_orders_title">Bestellingen</string>
-    <string name="woopos_settings_help_category">Help</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">WP Admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">Webkassa</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Je kan er geen producten in plaatsen of uit verwijderen.</string>
@@ -208,7 +223,7 @@ Language: nl
     <string name="woopos_settings_store_not_set">Niet ingesteld</string>
     <string name="woopos_settings_refund_policy_label">Terugbetaal- en retourneringsbeleid</string>
     <string name="woopos_settings_store_email_label">E-mail</string>
-    <string name="woopos_settings_store_phone_label">Telefoon</string>
+    <string name="woopos_settings_store_phone_label">Telefoonnummer</string>
     <string name="woopos_settings_store_address_label">Adres</string>
     <string name="woopos_settings_store_name_label">Winkelnaam</string>
     <string name="woopos_settings_receipt_information_title">Gegevens betalingsbewijs</string>
@@ -216,12 +231,12 @@ Language: nl
     <string name="woopos_settings_help_get_support_subtitle">Neem contact op met ons ondersteuningsteam</string>
     <string name="woopos_settings_help_documentation_subtitle">Bekijk handleidingen en tutorials</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Bekijk welke producten worden ondersteund in POS</string>
-    <string name="woopos_settings_help_category_subtitle">Krijg hulp en ondersteuning</string>
+    <string name="woopos_settings_help_category">Krijg hulp en ondersteuning</string>
     <string name="woopos_settings_card_reader_connected_reader">Verbonden lezer</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Meer informatie over het aannemen van mobiele betalingen</string>
     <string name="woopos_settings_card_reader_documentation_title">Documentatie</string>
     <string name="woopos_settings_card_reader_update_available">• Update beschikbaar</string>
-    <string name="woopos_settings_card_reader_update_button">Updaten</string>
+    <string name="woopos_settings_card_reader_update_button">Firmware bijwerken</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Onbekend</string>
     <string name="woopos_settings_card_reader_unknown_reader">Onbekende lezer</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>
