@@ -20,6 +20,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosPaginatedFetchResult
 import kotlin.Result as KotlinResult
@@ -645,6 +646,93 @@ class WooPosSyncActionTest {
         assertThat(success.variationsSynced).isEqualTo(0)
     }
 
+    // === ERROR TYPE TESTS ===
+
+    @Test
+    fun `given network error on product fetch, when sync catalog, then returns NetworkError result`() = runTest {
+        // GIVEN
+        givenProductFetchFailsWithNetworkError(page = 1, "Network timeout")
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.NetworkError::class.java)
+        val networkError = result as WooPosSyncResult.Failed.NetworkError
+        assertThat(networkError.errorMessage).isEqualTo("Network timeout")
+    }
+
+    @Test
+    fun `given database error on product fetch, when sync catalog, then returns DatabaseError result`() = runTest {
+        // GIVEN
+        givenProductFetchFailsWithDatabaseError(page = 1, "Database constraint violation")
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.DatabaseError::class.java)
+        val databaseError = result as WooPosSyncResult.Failed.DatabaseError
+        assertThat(databaseError.errorMessage).isEqualTo("Database constraint violation")
+    }
+
+    @Test
+    fun `given invalid response on product fetch, when sync catalog, then returns InvalidResponse result`() = runTest {
+        // GIVEN
+        givenProductFetchFailsWithInvalidResponse(page = 1, "Missing required header: X-WP-Total")
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.InvalidResponse::class.java)
+        val invalidResponse = result as WooPosSyncResult.Failed.InvalidResponse
+        assertThat(invalidResponse.errorMessage).isEqualTo("Missing required header: X-WP-Total")
+    }
+
+    @Test
+    fun `given empty response on product fetch, when sync catalog, then returns InvalidResponse result`() = runTest {
+        // GIVEN
+        givenProductFetchFailsWithEmptyResponse(page = 1)
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.InvalidResponse::class.java)
+    }
+
+    @Test
+    fun `given network error on variation fetch, when sync catalog, then returns NetworkError result`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        givenVariationFetchFailsWithNetworkError(page = 1, "No network connection")
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.NetworkError::class.java)
+        val networkError = result as WooPosSyncResult.Failed.NetworkError
+        assertThat(networkError.errorMessage).isEqualTo("No network connection")
+    }
+
+    @Test
+    fun `given database error on transaction, when sync catalog, then returns DatabaseError result`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+        givenTransactionFailsWithDatabaseError("Transaction rollback due to constraint violation")
+
+        // WHEN
+        val result = sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        assertThat(result).isInstanceOf(WooPosSyncResult.Failed.DatabaseError::class.java)
+        val databaseError = result as WooPosSyncResult.Failed.DatabaseError
+        assertThat(databaseError.errorMessage).isEqualTo("Transaction rollback due to constraint violation")
+    }
+
     // === HELPER METHODS ===
 
     private fun mockFetchProductsSuccess(pages: List<Int>, serverDate: String) = runBlocking {
@@ -881,5 +969,65 @@ class WooPosSyncActionTest {
                 stockQuantity = 1.0
             )
         }
+    }
+
+    private fun givenProductFetchFailsWithNetworkError(page: Int, errorMessage: String) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+        ).thenReturn(
+            KotlinResult.failure(
+                WooPosLocalCatalogError.NetworkError(errorMessage = errorMessage)
+            )
+        )
+    }
+
+    private fun givenProductFetchFailsWithDatabaseError(page: Int, errorMessage: String) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+        ).thenReturn(
+            KotlinResult.failure(
+                WooPosLocalCatalogError.DatabaseError(errorMessage = errorMessage)
+            )
+        )
+    }
+
+    private fun givenProductFetchFailsWithInvalidResponse(page: Int, errorMessage: String) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+        ).thenReturn(
+            KotlinResult.failure(
+                WooPosLocalCatalogError.InvalidResponse(errorMessage = errorMessage)
+            )
+        )
+    }
+
+    private fun givenProductFetchFailsWithEmptyResponse(page: Int) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+        ).thenReturn(
+            KotlinResult.failure(WooPosLocalCatalogError.EmptyResponse)
+        )
+    }
+
+    private fun givenVariationFetchFailsWithNetworkError(
+        page: Int,
+        errorMessage: String
+    ) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(page), any())
+        ).thenReturn(
+            KotlinResult.failure(
+                WooPosLocalCatalogError.NetworkError(errorMessage = errorMessage)
+            )
+        )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun givenTransactionFailsWithDatabaseError(errorMessage: String) = runBlocking {
+        whenever(
+            posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
+        ).thenReturn(
+            KotlinResult.failure(WooPosLocalCatalogError.DatabaseError(errorMessage = errorMessage))
+        )
     }
 }

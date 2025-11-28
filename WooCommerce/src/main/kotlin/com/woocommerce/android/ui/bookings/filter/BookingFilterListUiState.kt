@@ -83,13 +83,23 @@ data class BookingFilterListUiState(
             }
 
             BookingFilterPage.DateTime -> {
-                updatedBookingFilters.dateRange?.let {
+                if (updatedBookingFilters.dateRange == BookingsFilterOption.DateRange.DEFAULT) {
+                    UiString.UiStringRes(R.string.bookings_filter_default)
+                } else {
                     UiString.UiStringRes(R.string.bookings_filter_date_filter_value)
                 }
             }
 
+            BookingFilterPage.ServiceEvent -> {
+                val selectedServices = updatedBookingFilters.serviceEvents.values
+                when (selectedServices.size) {
+                    0 -> UiString.UiStringRes(R.string.bookings_filter_default)
+                    1 -> UiString.UiStringText(selectedServices.first().productName)
+                    else -> UiString.UiStringText(selectedServices.size.toString())
+                }
+            }
+
             BookingFilterPage.TeamMember,
-            BookingFilterPage.ServiceEvent,
             BookingFilterPage.PaymentStatus,
             BookingFilterPage.Location,
             BookingFilterPage.List -> null
@@ -145,5 +155,5 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
-        is BookingsFilterOption.ServiceEvent -> copy(serviceEvent = bookingsFilterOption)
+        is BookingsFilterOption.ServiceEvents -> copy(serviceEvents = bookingsFilterOption)
     }

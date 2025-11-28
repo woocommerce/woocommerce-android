@@ -8,7 +8,6 @@ import org.wordpress.android.fluxc.model.WCOrderShipmentTrackingModel
 
 @Parcelize
 data class OrderShipmentTracking(
-    val id: Int = 0,
     val localSiteId: Int = 0,
     val orderId: Long = 0,
     val remoteTrackingId: String = "",
@@ -31,7 +30,6 @@ data class OrderShipmentTracking(
 
 fun WCOrderShipmentTrackingModel.toAppModel(): OrderShipmentTracking {
     return OrderShipmentTracking(
-        id = 0, // No longer using synthetic id
         localSiteId = localSiteId.value,
         orderId = orderId.value,
         remoteTrackingId = remoteTrackingId,

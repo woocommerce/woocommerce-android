@@ -29,7 +29,7 @@ open class ComposeScreen {
         screenshotCount += 1
         val modeSuffix = if (isDarkTheme()) "dark" else "light"
         val screenshotName = "$screenshotCount-$name-$modeSuffix"
-        Thread.sleep(1000)
+        Thread.sleep(1500)
         Screengrab.screenshot(screenshotName)
         return this as T
     }

@@ -55,7 +55,8 @@ internal class BookingDtoMapper @Inject constructor(
             productInfo = productsDao.getProduct(localSiteId.value, productId)?.let {
                 BookingProductInfo(name = it.name)
             }
-        )
+        ),
+        customerNote = orderEntity?.customerNote
     )
 
     fun BookingResourceDto.toEntity(localSiteId: LocalId) = BookingResourceEntity(

@@ -1441,23 +1441,24 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given add new product flow, when product not yet created on server, then trashOption is hidden`() = testBlocking {
-        // GIVEN: existing product (ShowProduct mode)
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
-        setup()
-        given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
+    fun `given add new product flow, when product not yet created on server, then trashOption is hidden`() =
+        testBlocking {
+            // GIVEN: existing product (ShowProduct mode)
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+                .toSavedStateHandle()
+            setup()
+            given(productRepository.getProductAggregate(any())).willReturn(productAggregate)
 
-        val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
-            viewModel.start()
-            viewModel.productDetailViewStateData.observeForever { _, _ -> }
-            // Ensure trash action is not possible
-            viewModel.setTrashActionPossible(false)
-        }.last()
+            val menuButtonsState = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.start()
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+                // Ensure trash action is not possible
+                viewModel.setTrashActionPossible(false)
+            }.last()
 
-        // THEN
-        Assertions.assertThat(menuButtonsState.trashOption).isFalse()
-    }
+            // THEN
+            Assertions.assertThat(menuButtonsState.trashOption).isFalse()
+        }
 
     @Test
     fun `given existing product, when trash action possible, then trashOption shown`() = testBlocking {
@@ -1479,33 +1480,34 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given add new product flow, when product gets stored later and trash possible, then trashOption shown`() = testBlocking {
-        // GIVEN: start in AddNewProduct mode (product under creation)
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
-        // Ensure default product type preferences are provided for the add flow
-        whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
-        whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
-        setup()
+    fun `given add new product flow, when product gets stored later and trash possible, then trashOption shown`() =
+        testBlocking {
+            // GIVEN: start in AddNewProduct mode (product under creation)
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.AddNewProduct).toSavedStateHandle()
+            // Ensure default product type preferences are provided for the add flow
+            whenever(prefsWrapper.getSelectedProductType()).thenReturn(ProductType.SIMPLE.value)
+            whenever(prefsWrapper.isSelectedProductVirtual()).thenReturn(false)
+            setup()
 
-        // Simulate successful creation on server returning a new remote id
-        val newRemoteId = 1234L
-        val storedAggregate = ProductAggregate(ProductTestUtils.generateProduct(newRemoteId))
-        given(productRepository.addProduct(any<ProductAggregate>())).willReturn(Pair(true, newRemoteId))
-        whenever(productRepository.getProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
-        whenever(productRepository.fetchAndGetProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
+            // Simulate successful creation on server returning a new remote id
+            val newRemoteId = 1234L
+            val storedAggregate = ProductAggregate(ProductTestUtils.generateProduct(newRemoteId))
+            given(productRepository.addProduct(any<ProductAggregate>())).willReturn(Pair(true, newRemoteId))
+            whenever(productRepository.getProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
+            whenever(productRepository.fetchAndGetProductAggregate(eq(newRemoteId))).thenReturn(storedAggregate)
 
-        val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
-            viewModel.setTrashActionPossible(true)
-            viewModel.start()
-            // Observe the view state to trigger menu buttons state emissions
-            viewModel.productDetailViewStateData.observeForever { _, _ -> }
-            // When: user saves as draft so the product is posted to the server
-            viewModel.onSaveAsDraftButtonClicked()
+            val menuButtonsStates = viewModel.menuButtonsState.runAndCaptureValues {
+                viewModel.setTrashActionPossible(true)
+                viewModel.start()
+                // Observe the view state to trigger menu buttons state emissions
+                viewModel.productDetailViewStateData.observeForever { _, _ -> }
+                // When: user saves as draft so the product is posted to the server
+                viewModel.onSaveAsDraftButtonClicked()
+            }
+
+            // THEN: once the product is stored, trash option should be visible
+            Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
         }
-
-        // THEN: once the product is stored, trash option should be visible
-        Assertions.assertThat(menuButtonsStates.last().trashOption).isTrue()
-    }
 
     @Test
     fun `given CIAB site and bookable product, when product detail is opened, then show WebView`() = testBlocking {
@@ -1519,7 +1521,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
         savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
             .toSavedStateHandle()
         val testProductAggregate = productAggregate.copy(
-            product = productAggregate.product.copy(type = ProductType.BOOKING.value)
+            product = productAggregate.product.copy(type = ProductType.BOOKABLE_SERVICE.value)
         )
         doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
         doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
@@ -1537,29 +1539,30 @@ class ProductDetailViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given CIAB site and non-bookable product, when product detail is opened, then don't show WebView`() = testBlocking {
-        // GIVEN
-        whenever(selectedSite.get()).thenReturn(
-            SiteModel().apply {
-                setIsGardenSite(true)
-                gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
-            }
-        )
-        savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
-            .toSavedStateHandle()
-        val testProductAggregate = productAggregate.copy(
-            product = productAggregate.product.copy(type = ProductType.SIMPLE.value)
-        )
-        doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
-        doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
+    fun `given CIAB site and non-bookable product, when product detail is opened, then don't show WebView`() =
+        testBlocking {
+            // GIVEN
+            whenever(selectedSite.get()).thenReturn(
+                SiteModel().apply {
+                    setIsGardenSite(true)
+                    gardenName = CIABSiteGateKeeper.CIAB_GARDEN_NAME
+                }
+            )
+            savedState = ProductDetailFragmentArgs(ProductDetailFragment.Mode.ShowProduct(PRODUCT_REMOTE_ID))
+                .toSavedStateHandle()
+            val testProductAggregate = productAggregate.copy(
+                product = productAggregate.product.copy(type = ProductType.SIMPLE.value)
+            )
+            doReturn(testProductAggregate).whenever(productRepository).fetchAndGetProductAggregate(any())
+            doReturn(testProductAggregate).whenever(productRepository).getProductAggregate(any())
 
-        setup()
-        viewModel.start()
+            setup()
+            viewModel.start()
 
-        // WHEN
-        val events = viewModel.event.captureValues()
+            // WHEN
+            val events = viewModel.event.captureValues()
 
-        // THEN
-        Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
-    }
+            // THEN
+            Assertions.assertThat(events).noneMatch { it is ProductDetailViewModel.OpenProductInWebView }
+        }
 }

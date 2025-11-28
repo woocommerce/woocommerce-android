@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.core.text.HtmlCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -284,7 +285,9 @@ private fun ReaderReadyForPayment(readerStatus: WooPosTotalsViewState.ReaderStat
     WooPosText(
         text = readerStatus.subtitle,
         style = WooPosTypography.Heading,
-        fontWeight = FontWeight.Bold
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding())
     )
 }
 
@@ -520,7 +523,7 @@ fun WooPosTotalsScreenPreview(modifier: Modifier = Modifier) {
                 ),
                 readerStatus = WooPosTotalsViewState.ReaderStatus.ReadyForPayment(
                     title = "Ready for payment",
-                    subtitle = "Tap, swipe or insert card"
+                    subtitle = "Tap, swipe or insert card, Tap, swipe or insert card, Tap, swipe or insert card"
                 ),
             ),
             onUIEvent = {},

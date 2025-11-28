@@ -8,9 +8,11 @@ import androidx.room.Transaction
 import kotlinx.coroutines.flow.Flow
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
+import kotlin.collections.orEmpty
 
 @Dao
 interface BookingsDao {
@@ -23,6 +25,7 @@ interface BookingsDao {
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
+            AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
                 CASE WHEN :order = 'DESC' THEN start END DESC
@@ -42,6 +45,8 @@ interface BookingsDao {
         resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        productIds: List<Long>,
+        productIdsSize: Int,
         order: BookingsOrderOption
     ): Flow<List<BookingEntity>>
 
@@ -66,6 +71,55 @@ interface BookingsDao {
         insertOrReplace(entities)
     }
 
+    @Suppress("LongParameterList")
+    @Query(
+        """
+            DELETE FROM Bookings
+            WHERE localSiteId = :localSiteId
+            AND (:startDateBefore IS NULL OR start <= :startDateBefore)
+            AND (:startDateAfter IS NULL OR start >= :startDateAfter)
+            AND ((:idsSize = 0) OR id NOT IN (:ids))
+        """
+    )
+    suspend fun deleteForSiteWithDateRangeFilter(
+        localSiteId: LocalId,
+        startDateBefore: Long?,
+        startDateAfter: Long?,
+        ids: List<Long>,
+        idsSize: Int,
+    )
+
+    private suspend fun deleteForSiteWithDateRangeFilter(
+        localSiteId: LocalId,
+        dateRange: BookingsFilterOption.DateRange,
+        ids: List<Long>
+    ) {
+        deleteForSiteWithDateRangeFilter(
+            localSiteId = localSiteId,
+            startDateBefore = dateRange.before?.epochSecond,
+            startDateAfter = dateRange.after?.epochSecond,
+            ids = ids,
+            idsSize = ids.size,
+        )
+    }
+
+    /**
+     * Delete Booking entities that are not present in the new list and then insert the new entities
+     */
+    @Transaction
+    suspend fun cleanAndUpsertBookings(
+        localSiteId: LocalId,
+        dateRange: BookingsFilterOption.DateRange,
+        entities: List<BookingEntity>,
+    ) {
+        deleteForSiteWithDateRangeFilter(
+            localSiteId = localSiteId,
+            dateRange = dateRange,
+            ids = entities.map { it.id.value },
+        )
+        insertOrReplace(entities)
+    }
+
     fun observeBookings(
         localSiteId: LocalId,
         limit: Int? = null,
@@ -74,6 +128,7 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
         val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
+        val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
             limit = limit,
@@ -84,6 +139,8 @@ interface BookingsDao {
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            productIds = productIds,
+            productIdsSize = productIds.size,
             order = order
         )
     }

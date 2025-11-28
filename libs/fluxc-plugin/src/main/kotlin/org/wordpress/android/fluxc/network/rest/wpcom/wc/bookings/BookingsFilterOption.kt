@@ -20,8 +20,6 @@ sealed interface BookingsFilterOption {
         enum class Type { SERVICE, EVENT }
     }
 
-    object ServiceEvent : BookingsFilterOption
-
     data class AttendanceStatuses(val values: Set<BookingEntity.AttendanceStatus>) : BookingsFilterOption {
         companion object {
             val DEFAULT = AttendanceStatuses(emptySet())
@@ -34,20 +32,35 @@ sealed interface BookingsFilterOption {
 
     data class DateRange(
         val before: Instant?,
-        val after: Instant?
-    ) : BookingsFilterOption
+        val after: Instant?,
+    ) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = DateRange(null, null)
+        }
+    }
 
     object Location : BookingsFilterOption
+
+    data class ServiceEvents(val values: Set<ProductInfo>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = ServiceEvents(emptySet())
+        }
+    }
+
+    data class ProductInfo(
+        val productId: Long,
+        val productName: String
+    )
 }
 
 data class BookingFilters(
     val teamMembers: BookingsFilterOption.TeamMembers = BookingsFilterOption.TeamMembers.DEFAULT,
     val bookingType: BookingsFilterOption.BookingType? = null,
-    val serviceEvent: BookingsFilterOption.ServiceEvent? = null,
+    val serviceEvents: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
     val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val customer: BookingsFilterOption.Customer? = null,
-    val dateRange: BookingsFilterOption.DateRange? = null,
+    val dateRange: BookingsFilterOption.DateRange = BookingsFilterOption.DateRange.DEFAULT,
     val location: BookingsFilterOption.Location? = null,
 ) {
     val enabledFiltersCount: Int
@@ -55,11 +68,11 @@ data class BookingFilters(
             var count = 0
             if (teamMembers != BookingsFilterOption.TeamMembers.DEFAULT) count++
             if (bookingType?.value != null) count++
-            if (serviceEvent != null) count++
+            if (serviceEvents != BookingsFilterOption.ServiceEvents.DEFAULT) count++
             if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
             if (customer != null) count++
-            if (dateRange != null) count++
+            if (dateRange != BookingsFilterOption.DateRange.DEFAULT) count++
             if (location != null) count++
             return count
         }

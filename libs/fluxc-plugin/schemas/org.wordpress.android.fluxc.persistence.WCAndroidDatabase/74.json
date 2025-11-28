@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 74,
-    "identityHash": "614cce83d946b09faee60138a62f196a",
+    "identityHash": "c3f9cf2da69e786c0b9acf04927e65ec",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3312,62 +3312,6 @@
         }
       },
       {
-        "tableName": "OrderShipmentTrackingEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `remoteTrackingId` TEXT NOT NULL, `trackingNumber` TEXT NOT NULL, `trackingProvider` TEXT NOT NULL, `trackingLink` TEXT NOT NULL, `dateShipped` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `orderId`, `remoteTrackingId`))",
-        "fields": [
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "orderId",
-            "columnName": "orderId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "remoteTrackingId",
-            "columnName": "remoteTrackingId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trackingNumber",
-            "columnName": "trackingNumber",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trackingProvider",
-            "columnName": "trackingProvider",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trackingLink",
-            "columnName": "trackingLink",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateShipped",
-            "columnName": "dateShipped",
-            "affinity": "TEXT",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "localSiteId",
-            "orderId",
-            "remoteTrackingId"
-          ]
-        }
-      },
-      {
         "tableName": "UserEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteUserId` INTEGER NOT NULL, `firstName` TEXT NOT NULL, `lastName` TEXT NOT NULL, `username` TEXT NOT NULL, `email` TEXT NOT NULL, `roles` TEXT NOT NULL, PRIMARY KEY(`localSiteId`, `remoteUserId`))",
         "fields": [
@@ -4008,7 +3952,7 @@
       },
       {
         "tableName": "Bookings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `attendanceStatus` TEXT NOT NULL DEFAULT '', `note` TEXT NOT NULL DEFAULT '', `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, `order_payment_paymentMethodId` TEXT, `order_payment_paymentMethodTitle` TEXT, `order_payment_subtotal` TEXT, `order_payment_subtotalTax` TEXT, `order_payment_total` TEXT, `order_payment_totalTax` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `customerNote` TEXT, `attendanceStatus` TEXT NOT NULL DEFAULT '', `note` TEXT NOT NULL DEFAULT '', `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, `order_payment_paymentMethodId` TEXT, `order_payment_paymentMethodTitle` TEXT, `order_payment_subtotal` TEXT, `order_payment_subtotalTax` TEXT, `order_payment_total` TEXT, `order_payment_totalTax` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -4122,6 +4066,11 @@
             "columnName": "localTimezone",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "customerNote",
+            "columnName": "customerNote",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "attendanceStatus",
@@ -4486,7 +4435,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '614cce83d946b09faee60138a62f196a')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c3f9cf2da69e786c0b9acf04927e65ec')"
     ]
   }
 }

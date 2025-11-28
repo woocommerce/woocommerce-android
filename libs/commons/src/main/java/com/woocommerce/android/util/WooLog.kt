@@ -1,13 +1,8 @@
 package com.woocommerce.android.util
 
-import android.content.Context
 import android.util.Log
 import com.woocommerce.android.util.logs.LogEntry
 import com.woocommerce.android.util.logs.WooFileLogger
-import dagger.hilt.EntryPoint
-import dagger.hilt.EntryPoints
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 import java.io.PrintWriter
 import java.io.StringWriter
 import org.wordpress.android.util.AppLog as WordPressAppLog
@@ -64,13 +59,13 @@ object WooLog {
 
     private lateinit var fileLogger: WooFileLogger
 
-    fun init(context: Context) {
+    fun init(fileLogger: WooFileLogger) {
         // add listener for WP app log so we can capture login & FluxC logs
         WordPressAppLog.addListener { tag, logLevel, message ->
             addWPLogEntry(tag, logLevel, message)
         }
 
-        fileLogger = EntryPoints.get(context, FileLoggerEntryPoint::class.java).fileLogger()
+        this.fileLogger = fileLogger
         tempListBeforeInit.forEach { entry ->
             fileLogger.addEntry(entry)
         }
@@ -211,10 +206,4 @@ object WooLog {
         throwable.printStackTrace(PrintWriter(errors))
         return errors.toString()
     }
-}
-
-@InstallIn(SingletonComponent::class)
-@EntryPoint
-private interface FileLoggerEntryPoint {
-    fun fileLogger(): WooFileLogger
 }

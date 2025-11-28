@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 73,
-    "identityHash": "f45f7b7c89ffd7e95edcbddae7c606a6",
+    "identityHash": "9bd71246e08926871dc3b927a5635f58",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -3952,7 +3952,7 @@
       },
       {
         "tableName": "Bookings",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `attendanceStatus` TEXT NOT NULL DEFAULT '', `note` TEXT NOT NULL DEFAULT '', `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, `order_payment_paymentMethodId` TEXT, `order_payment_paymentMethodTitle` TEXT, `order_payment_subtotal` TEXT, `order_payment_subtotalTax` TEXT, `order_payment_total` TEXT, `order_payment_totalTax` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `localSiteId` INTEGER NOT NULL, `start` INTEGER NOT NULL, `end` INTEGER NOT NULL, `allDay` INTEGER NOT NULL, `status` TEXT NOT NULL, `cost` TEXT NOT NULL, `currency` TEXT NOT NULL, `customerId` INTEGER NOT NULL, `productId` INTEGER NOT NULL, `resourceId` INTEGER NOT NULL, `dateCreated` INTEGER NOT NULL, `dateModified` INTEGER NOT NULL, `googleCalendarEventId` TEXT NOT NULL, `orderId` INTEGER NOT NULL, `orderItemId` INTEGER NOT NULL, `parentId` INTEGER NOT NULL, `personCounts` TEXT, `localTimezone` TEXT NOT NULL, `customerNote` TEXT, `attendanceStatus` TEXT NOT NULL DEFAULT '', `note` TEXT NOT NULL DEFAULT '', `order_status` TEXT, `order_product_name` TEXT, `order_customer_billingFirstName` TEXT, `order_customer_billingLastName` TEXT, `order_customer_billingCompany` TEXT, `order_customer_billingAddress1` TEXT, `order_customer_billingAddress2` TEXT, `order_customer_billingCity` TEXT, `order_customer_billingState` TEXT, `order_customer_billingPostcode` TEXT, `order_customer_billingCountry` TEXT, `order_customer_billingEmail` TEXT, `order_customer_billingPhone` TEXT, `order_payment_paymentMethodId` TEXT, `order_payment_paymentMethodTitle` TEXT, `order_payment_subtotal` TEXT, `order_payment_subtotalTax` TEXT, `order_payment_total` TEXT, `order_payment_totalTax` TEXT, PRIMARY KEY(`id`, `localSiteId`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -4066,6 +4066,11 @@
             "columnName": "localTimezone",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "customerNote",
+            "columnName": "customerNote",
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "attendanceStatus",
@@ -4307,130 +4312,11 @@
             "rangeId"
           ]
         }
-      },
-      {
-        "tableName": "ShippingLabelEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteOrderId` INTEGER NOT NULL, `remoteShippingLabelId` INTEGER NOT NULL, `trackingNumber` TEXT NOT NULL, `carrierId` TEXT NOT NULL, `dateCreated` INTEGER, `expiryDate` INTEGER, `serviceName` TEXT NOT NULL, `status` TEXT NOT NULL, `packageName` TEXT NOT NULL, `rate` REAL NOT NULL, `refundableAmount` REAL NOT NULL, `currency` TEXT NOT NULL, `productNames` TEXT NOT NULL, `productIds` TEXT NOT NULL, `formData` TEXT NOT NULL, `refund` TEXT NOT NULL, `commercialInvoiceUrl` TEXT, PRIMARY KEY(`localSiteId`, `remoteOrderId`, `remoteShippingLabelId`))",
-        "fields": [
-          {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "remoteOrderId",
-            "columnName": "remoteOrderId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "remoteShippingLabelId",
-            "columnName": "remoteShippingLabelId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "trackingNumber",
-            "columnName": "trackingNumber",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "carrierId",
-            "columnName": "carrierId",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "dateCreated",
-            "columnName": "dateCreated",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "expiryDate",
-            "columnName": "expiryDate",
-            "affinity": "INTEGER"
-          },
-          {
-            "fieldPath": "serviceName",
-            "columnName": "serviceName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "status",
-            "columnName": "status",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "packageName",
-            "columnName": "packageName",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "rate",
-            "columnName": "rate",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "refundableAmount",
-            "columnName": "refundableAmount",
-            "affinity": "REAL",
-            "notNull": true
-          },
-          {
-            "fieldPath": "currency",
-            "columnName": "currency",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "productNames",
-            "columnName": "productNames",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "productIds",
-            "columnName": "productIds",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "formData",
-            "columnName": "formData",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "refund",
-            "columnName": "refund",
-            "affinity": "TEXT",
-            "notNull": true
-          },
-          {
-            "fieldPath": "commercialInvoiceUrl",
-            "columnName": "commercialInvoiceUrl",
-            "affinity": "TEXT"
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": false,
-          "columnNames": [
-            "localSiteId",
-            "remoteOrderId",
-            "remoteShippingLabelId"
-          ]
-        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f45f7b7c89ffd7e95edcbddae7c606a6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9bd71246e08926871dc3b927a5635f58')"
     ]
   }
 }

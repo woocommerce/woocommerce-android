@@ -13,11 +13,14 @@ data class DateTimeFilterUiState(
     val pickerDialogState: PickerDialogState? = null,
     val onTimeClick: (DateBoundary) -> Unit = {},
     val onDateClick: (DateBoundary) -> Unit = {},
+    val onClearClick: (DateBoundary) -> Unit = {},
 )
 
 sealed interface PickerDialogState {
     data class DateDialog(
         val date: Long?,
+        val minDate: Long? = null,
+        val maxDate: Long? = null,
         val onDateSelected: (Long) -> Unit,
         val onDismiss: () -> Unit,
     ) : PickerDialogState

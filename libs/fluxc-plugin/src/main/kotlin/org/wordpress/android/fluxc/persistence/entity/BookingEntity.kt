@@ -35,6 +35,7 @@ data class BookingEntity(
     val parentId: Long,
     val personCounts: List<Long>?,
     val localTimezone: String,
+    val customerNote: String?,
     @ColumnInfo(defaultValue = "") val attendanceStatus: AttendanceStatus,
     @ColumnInfo(defaultValue = "") val note: String = "",
     @Embedded("order_") val order: BookingOrderInfo

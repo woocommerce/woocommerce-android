@@ -87,7 +87,7 @@ class BookingDetailsViewModel @Inject constructor(
         if (showCancelBooking && booking != null) {
             val message = bookingMapper.buildCancelDialogMessage(booking)
             DialogState(
-                title = UiString.UiStringRes(R.string.booking_cancel_dialog_title),
+                title = UiString.UiStringRes(R.string.booking_cancel_dialog_title_v2),
                 message = message,
                 positiveButton = DialogState.DialogButton(
                     text = UiString.UiStringRes(R.string.booking_cancel_dialog_confirm),
@@ -282,7 +282,7 @@ class BookingDetailsViewModel @Inject constructor(
                 ),
                 cancelStatus = cancelStatus
             ),
-            bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(),
+            bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(booking.customerNote),
             bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),
             note = booking.note,
             isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
