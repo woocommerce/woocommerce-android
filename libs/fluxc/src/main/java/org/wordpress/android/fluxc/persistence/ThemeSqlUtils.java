@@ -50,18 +50,6 @@ public class ThemeSqlUtils {
         WellSql.insert(themes).asSingleTransaction(true).execute();
     }
 
-    public static void insertOrReplaceInstalledThemes(@NonNull SiteModel site, @NonNull List<ThemeModel> themes) {
-        // remove existing installed themes
-        removeSiteThemes(site);
-
-        // ensure site ID is set before inserting
-        for (ThemeModel theme : themes) {
-            theme.setLocalSiteId(site.getId());
-        }
-
-        WellSql.insert(themes).asSingleTransaction(true).execute();
-    }
-
     public static void insertOrReplaceActiveThemeForSite(@NonNull SiteModel site, @NonNull ThemeModel theme) {
         // find any existing active theme for the site and unset active flag
         List<ThemeModel> existing = getActiveThemeForSite(site);
@@ -89,36 +77,11 @@ public class ThemeSqlUtils {
     }
 
     @NonNull
-    public static List<ThemeModel> getWpComThemes() {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.IS_WP_COM_THEME, true)
-                .endWhere().getAsModel();
-    }
-
-    @NonNull
     public static List<ThemeModel> getWpComThemes(@NonNull List<String> themeIds) {
         return WellSql.select(ThemeModel.class)
                 .where()
                 .equals(ThemeModelTable.IS_WP_COM_THEME, true)
                 .isIn(ThemeModelTable.THEME_ID, themeIds)
-                .endWhere().getAsModel();
-    }
-
-    @NonNull
-    public static List<ThemeModel> getWpComMobileFriendlyThemes(@NonNull String categorySlug) {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.MOBILE_FRIENDLY_CATEGORY_SLUG, categorySlug)
-                .equals(ThemeModelTable.IS_WP_COM_THEME, true)
-                .endWhere().getAsModel();
-    }
-
-    @NonNull
-    public static List<ThemeModel> getThemesForSite(@NonNull SiteModel site) {
-        return WellSql.select(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.LOCAL_SITE_ID, site.getId())
                 .endWhere().getAsModel();
     }
 
@@ -164,23 +127,6 @@ public class ThemeSqlUtils {
         WellSql.delete(ThemeModel.class)
                 .where()
                 .equals(ThemeModelTable.IS_WP_COM_THEME, true)
-                .endWhere().execute();
-    }
-
-    public static void removeSiteTheme(@NonNull SiteModel site, @NonNull ThemeModel theme) {
-        WellSql.delete(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.LOCAL_SITE_ID, site.getId())
-                .equals(ThemeModelTable.THEME_ID, theme.getThemeId())
-                .equals(ThemeModelTable.IS_WP_COM_THEME, false)
-                .endWhere().execute();
-    }
-
-    public static void removeSiteThemes(@NonNull SiteModel site) {
-        WellSql.delete(ThemeModel.class)
-                .where()
-                .equals(ThemeModelTable.LOCAL_SITE_ID, site.getId())
-                .equals(ThemeModelTable.IS_WP_COM_THEME, false)
                 .endWhere().execute();
     }
 }

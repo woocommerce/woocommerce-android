@@ -781,10 +781,7 @@ class OrderRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 val trackings = response.data?.map {
-                    orderShipmentTrackingResponseToModel(it).apply {
-                        localSiteId = site.id
-                        this.orderId = orderId
-                    }
+                    orderShipmentTrackingResponseToModel(it, site.localId(), orderId)
                 }.orEmpty()
 
                 FetchOrderShipmentTrackingsResponsePayload(site, orderId, trackings)
@@ -834,10 +831,7 @@ class OrderRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val trackingModel = orderShipmentTrackingResponseToModel(it).apply {
-                        this.orderId = orderId
-                        localSiteId = site.id
-                    }
+                    val trackingModel = orderShipmentTrackingResponseToModel(it, site.localId(), orderId)
                     AddOrderShipmentTrackingResponsePayload(site, orderId, trackingModel)
                 } ?: AddOrderShipmentTrackingResponsePayload(
                     OrderError(type = GENERIC_ERROR, message = "Success response with empty data"),
@@ -879,11 +873,7 @@ class OrderRestClient @Inject constructor(
         return when (response) {
             is WPAPIResponse.Success -> {
                 response.data?.let {
-                    val model = orderShipmentTrackingResponseToModel(it).apply {
-                        localSiteId = site.id
-                        this.orderId = orderId
-                        id = tracking.id
-                    }
+                    val model = orderShipmentTrackingResponseToModel(it, site.localId(), orderId)
                     DeleteOrderShipmentTrackingResponsePayload(
                         site,
                         orderId,
@@ -1230,15 +1220,19 @@ class OrderRestClient @Inject constructor(
     }
 
     private fun orderShipmentTrackingResponseToModel(
-        response: OrderShipmentTrackingApiResponse
+        response: OrderShipmentTrackingApiResponse,
+        siteId: LocalId,
+        orderId: Long
     ): WCOrderShipmentTrackingModel {
-        return WCOrderShipmentTrackingModel().apply {
-            remoteTrackingId = response.tracking_id ?: ""
-            trackingNumber = response.tracking_number ?: ""
-            trackingProvider = response.tracking_provider ?: ""
-            trackingLink = response.tracking_link ?: ""
+        return WCOrderShipmentTrackingModel(
+            localSiteId = siteId,
+            orderId = RemoteId(orderId),
+            remoteTrackingId = response.tracking_id ?: "",
+            trackingNumber = response.tracking_number ?: "",
+            trackingProvider = response.tracking_provider ?: "",
+            trackingLink = response.tracking_link ?: "",
             dateShipped = response.date_shipped ?: ""
-        }
+        )
     }
 
     private fun convertDateToUTCString(date: String?): String =

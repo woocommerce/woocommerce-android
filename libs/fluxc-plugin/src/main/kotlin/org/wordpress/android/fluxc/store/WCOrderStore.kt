@@ -33,10 +33,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderBy
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.OrderUpdatePaymentDetails
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient.SortOrder
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.MetaDataDao
 import org.wordpress.android.fluxc.persistence.dao.OrderNotesDao
 import org.wordpress.android.fluxc.persistence.dao.OrderShipmentProvidersDao
+import org.wordpress.android.fluxc.persistence.dao.OrderShipmentTrackingDao
 import org.wordpress.android.fluxc.persistence.dao.OrderStatusDao
 import org.wordpress.android.fluxc.persistence.dao.OrderSummaryDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDaoDecorator
@@ -70,6 +70,7 @@ class WCOrderStore @Inject internal constructor(
     private val orderNotesDao: OrderNotesDao,
     private val metaDataDao: MetaDataDao,
     private val orderShipmentProvidersDao: OrderShipmentProvidersDao,
+    private val orderShipmentTrackingDao: OrderShipmentTrackingDao,
     private val orderStatusDao: OrderStatusDao,
     private val orderSummaryDao: OrderSummaryDao,
     private val insertOrder: InsertOrder
@@ -526,11 +527,11 @@ class WCOrderStore @Inject internal constructor(
     /**
      * Returns shipment trackings as list of [WCOrderShipmentTrackingModel] for a single [OrderEntity]
      */
-    fun getShipmentTrackingsForOrder(site: SiteModel, orderId: Long): List<WCOrderShipmentTrackingModel> =
-        OrderSqlUtils.getShipmentTrackingsForOrder(site, orderId)
+    suspend fun getShipmentTrackingsForOrder(site: SiteModel, orderId: Long): List<WCOrderShipmentTrackingModel> =
+        orderShipmentTrackingDao.getShipmentTrackings(site.localId(), RemoteId(orderId))
 
-    fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
-        OrderSqlUtils.getShipmentTrackingByTrackingNumber(site, orderId, trackingNumber)
+    suspend fun getShipmentTrackingByTrackingNumber(site: SiteModel, orderId: Long, trackingNumber: String) =
+        orderShipmentTrackingDao.getShipmentTrackingByNumber(site.localId(), RemoteId(orderId), trackingNumber)
 
     @Suppress("ComplexMethod", "UseCheckOrError")
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -850,9 +851,9 @@ class WCOrderStore @Inject internal constructor(
                 OnOrderChanged(orderError = result.error)
             } else {
                 // Calculate which existing records should be deleted because they no longer exist in the payload
-                val existingTrackings = OrderSqlUtils.getShipmentTrackingsForOrder(
-                    result.site,
-                    result.orderId
+                val existingTrackings = orderShipmentTrackingDao.getShipmentTrackings(
+                    result.site.localId(),
+                    RemoteId(result.orderId)
                 )
                 val deleteTrackings = mutableListOf<WCOrderShipmentTrackingModel>()
                 existingTrackings.iterator().forEach { existing ->
@@ -865,10 +866,10 @@ class WCOrderStore @Inject internal constructor(
                     }
                     if (!exists) deleteTrackings.add(existing)
                 }
-                var rowsAffected = deleteTrackings.sumBy { OrderSqlUtils.deleteOrderShipmentTrackingById(it) }
+                deleteTrackings.forEach { orderShipmentTrackingDao.deleteShipmentTracking(it) }
 
                 // Save new shipment trackings to the database
-                rowsAffected += result.trackings.sumBy { OrderSqlUtils.insertOrIgnoreOrderShipmentTracking(it) }
+                result.trackings.forEach { orderShipmentTrackingDao.upsertShipmentTracking(it) }
                 OnOrderChanged()
             }
         }
@@ -885,7 +886,7 @@ class WCOrderStore @Inject internal constructor(
             return@withDefaultContext if (result.isError) {
                 OnOrderChanged(orderError = result.error)
             } else {
-                result.tracking?.let { OrderSqlUtils.insertOrIgnoreOrderShipmentTracking(it) }
+                result.tracking?.let { orderShipmentTrackingDao.upsertShipmentTracking(it) }
                 OnOrderChanged()
             }
         }
@@ -901,7 +902,7 @@ class WCOrderStore @Inject internal constructor(
                 OnOrderChanged(orderError = result.error)
             } else {
                 // Remove the record from the database and send response
-                result.tracking?.let { OrderSqlUtils.deleteOrderShipmentTrackingById(it) }
+                result.tracking?.let { orderShipmentTrackingDao.deleteShipmentTracking(it) }
                 OnOrderChanged()
             }
         }
@@ -945,7 +946,7 @@ class WCOrderStore @Inject internal constructor(
                 if (!payload.loadedMore) {
                     ordersDaoDecorator.deleteOrdersForSite(payload.site.localId())
                     orderNotesDao.deleteOrderNotesForSite(payload.site.localId())
-                    OrderSqlUtils.deleteOrderShipmentTrackingsForSite(payload.site)
+                    orderShipmentTrackingDao.deleteShipmentTrackingsForSite(payload.site.localId())
                 }
 
                 insertOrder(payload.site.localId(), *payload.ordersWithMeta.toTypedArray())

@@ -3634,7 +3634,7 @@
     <string name="woopos_settings_hardware_barcode_scanners_subtitle">Configure barcode scanner settings</string>
     <string name="woopos_settings_hardware_card_readers">Card Readers</string>
     <string name="woopos_settings_hardware_card_readers_subtitle">Manage card reader connections</string>
-    <string name="woopos_settings_local_catalog_category">Catalog</string>
+    <string name="woopos_settings_local_catalog_category">Product catalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Manage catalog settings</string>
     <string name="woopos_settings_local_catalog_status">Catalog Status</string>
     <string name="woopos_settings_local_catalog_size">Size</string>
@@ -4238,6 +4238,7 @@
     <string name="bookings_filter_date_to">TO</string>
     <string name="bookings_filter_time_picker_title">Select time</string>
     <string name="bookings_filter_date_filter_value">Custom range</string>
+    <string name="booking_filter_date_time_swap_info">Your time selection was reordered to create a valid range</string>
 
     <!-- Booking details view-->
     <string name="booking_details_title">Booking #%s</string>
