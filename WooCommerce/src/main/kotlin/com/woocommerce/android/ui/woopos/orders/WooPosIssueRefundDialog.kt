@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -26,6 +26,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -41,6 +43,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
+private val COLUMN_WIDTH = 104.dp
+
 @Composable
 fun WooPosIssueRefundDialog(
     isVisible: Boolean,
@@ -49,6 +53,8 @@ fun WooPosIssueRefundDialog(
     onDismissRequest: () -> Unit,
     onContinue: () -> Unit
 ) {
+    val selectAllContentDescription = stringResource(R.string.order_refunds_items_select_all)
+
     WooPosDialogWrapper(
         isVisible = isVisible,
         dialogBackgroundContentDescription = stringResource(
@@ -98,7 +104,11 @@ fun WooPosIssueRefundDialog(
                     Checkbox(
                         checked = true,
                         onCheckedChange = null,
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier
+                            .size(32.dp)
+                            .semantics {
+                                contentDescription = selectAllContentDescription
+                            },
                         colors = CheckboxDefaults.colors(
                             checkedColor = MaterialTheme.colorScheme.primary,
                             checkmarkColor = MaterialTheme.colorScheme.onPrimary
@@ -112,7 +122,7 @@ fun WooPosIssueRefundDialog(
                     )
                 }
                 WooPosText(
-                    modifier = Modifier.width(104.dp),
+                    modifier = Modifier.width(COLUMN_WIDTH),
                     text = stringResource(R.string.woopos_orders_amount),
                     style = WooPosTypography.Caption,
                     fontWeight = FontWeight.Bold,
@@ -122,7 +132,7 @@ fun WooPosIssueRefundDialog(
                 )
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 WooPosText(
-                    modifier = Modifier.width(104.dp),
+                    modifier = Modifier.width(COLUMN_WIDTH),
                     text = stringResource(R.string.woopos_orders_tax),
                     style = WooPosTypography.Caption,
                     fontWeight = FontWeight.Bold,
@@ -146,9 +156,9 @@ fun WooPosIssueRefundDialog(
                     .padding(vertical = WooPosSpacing.Medium.value),
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
             ) {
-                items(lineItems) { item ->
+                itemsIndexed(lineItems) { index, item ->
                     LineItemRow(item = item)
-                    if (lineItems.last() != item) {
+                    if (index < lineItems.lastIndex) {
                         HorizontalDivider(
                             color = WooPosTheme.colors.outlineVariant,
                             thickness = 0.25.dp
@@ -187,7 +197,11 @@ private fun LineItemRow(
         Checkbox(
             checked = true,
             onCheckedChange = null,
-            modifier = Modifier.size(32.dp),
+            modifier = Modifier
+                .size(32.dp)
+                .semantics {
+                    contentDescription = item.name
+                },
             colors = CheckboxDefaults.colors(
                 checkedColor = MaterialTheme.colorScheme.primary,
                 checkmarkColor = MaterialTheme.colorScheme.onPrimary
@@ -220,7 +234,7 @@ private fun LineItemRow(
             style = WooPosTypography.BodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
-            modifier = Modifier.width(104.dp),
+            modifier = Modifier.width(COLUMN_WIDTH),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
@@ -230,7 +244,7 @@ private fun LineItemRow(
             style = WooPosTypography.BodyMedium,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.End,
-            modifier = Modifier.width(104.dp),
+            modifier = Modifier.width(COLUMN_WIDTH),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
