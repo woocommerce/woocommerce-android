@@ -63,9 +63,11 @@ object WCCurrencyUtils {
     fun getLocalizedCurrencySymbolForCode(currencyCode: String, locale: Locale): String {
         return try {
             Currency.getInstance(currencyCode).getSymbol(locale)
-        } catch (e: IllegalArgumentException) {
-            AppLog.e(T.UTILS,
-                    "Error finding valid currency symbol for currency code [$currencyCode] in locale [$locale]", e)
+        } catch (_: IllegalArgumentException) {
+            AppLog.e(
+                T.UTILS,
+                "Error finding valid currency symbol for currency code [$currencyCode] in locale [$locale]"
+            )
             currencyCode
         }
     }
