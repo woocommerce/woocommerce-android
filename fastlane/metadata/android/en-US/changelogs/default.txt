@@ -1,7 +1,1 @@
-- [*] Fixed system back button not working on Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/15016]
-- [*] Optimized POS Local Catalog Settings screen [https://github.com/woocommerce/woocommerce-android/pull/14971]
-- [Internal][Woo POS] Improve detection and handling of deleted products during checkout [https://github.com/woocommerce/woocommerce-android/pull/14981]
-- [*][Woo POS] Fixed payment screen layout to properly position payment instructions text [https://github.com/woocommerce/woocommerce-android/pull/14991]
-- [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
-- [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
-- [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
+This update smooths your workflow with fixes to back navigation, shipping rate crashes, and payment screen layout. POS also gets improvements, including faster Local Catalog settings, better handling of deleted products, and automatic scrolling to your newest orders.
