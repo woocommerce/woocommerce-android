@@ -173,14 +173,13 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.Computed.Detail
 }
 
 @Composable
-@Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineItemRow) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = WooPosSpacing.Small.value)
     ) {
-        val (image, nameText, qtyText, totalText) = createRefs()
+        val (image, nameText, totalText) = createRefs()
 
         OrderLineItemImage(
             imageUrl = row.imageUrl,
@@ -197,18 +196,6 @@ private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineIte
             modifier = Modifier.constrainAs(nameText) {
                 top.linkTo(image.top)
                 start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
-                end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
-                width = Dimension.fillToConstraints
-            }
-        )
-
-        WooPosText(
-            text = row.qtyAndUnitPrice,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(nameText.bottom, margin = WooPosSpacing.XSmall.value)
-                start.linkTo(nameText.start)
                 end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
                 width = Dimension.fillToConstraints
             }
@@ -448,13 +435,12 @@ fun WooPosOrderDetailsPreview() {
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
         lineItems = listOf(
-            OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
-            OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
+            OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "$8.00", null),
+            OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "$10.00", null),
             OrderDetailsViewState.Computed.Details.LineItemRow(
                 103,
                 "A vey tasty coffee that incidentally has a very long name " +
                     "and should go over a few lines without overlapping anything",
-                "1 x $5.00",
                 "$5.00",
                 null
             )
