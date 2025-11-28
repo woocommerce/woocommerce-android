@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-03 21:54:32+0000
+Translation-Revision-Date: 2025-11-18 15:54:04+0000
 Plural-Forms: nplurals=2; plural=(n > 1);
 Generator: GlotPress/2.4.0-alpha
 Language: pt_BR
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">Reserva não selecionada</string>
+    <string name="bookings_filters_selected_option_content_description">Opção de filtragem selecionada</string>
+    <string name="bookings_filter_customer">Cliente</string>
+    <string name="bookings_filters_title_with_count">Filtros (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">Endereço físico</string>
+    <string name="woopos_settings_store_general_title">Geral</string>
+    <string name="woopos_orders_details_refund_error">Não foi possível carregar o reembolso</string>
+    <string name="woopos_cart_product_unknown_item">Item desconhecido</string>
+    <string name="woopos_totals_product_not_found_remove_products">Remover produto</string>
+    <string name="woopos_totals_product_not_found_edit_order">Editar pedido</string>
+    <string name="woopos_totals_product_not_found_reason">Um produto no carrinho não está mais disponível.</string>
+    <string name="woopos_totals_product_not_found_error">Produto não encontrado</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Atualize a versão do firmware para continuar aceitando pagamentos.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Atualizar versão do firmware</string>
+    <string name="woopos_settings_card_reader_device_name_title">Nome do dispositivo:</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Atualize o catálogo manualmente</string>
+    <string name="woopos_settings_local_catalog_manual_update">Atualização do catálogo</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Permita sincronização usando dados da rede celular</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Dados da rede celular</string>
+    <string name="woopos_settings_local_catalog_last_update">Última sincronização incremental</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Armazene o catálogo de produtos neste dispositivo para agilizar pesquisas, leituras de código de barras e tempos de carregamento.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">Catálogo local do PDV</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Esqueça o leitor nas configurações Bluetooth do Android</string>
     <string name="booking_mark_as_paid_error">Erro ao marcar a reserva como paga</string>
     <string name="booking_cancel_error">Erro ao cancelar a reserva</string>
     <string name="booking_note_screen_update_error">Erro ao salvar a observação da reserva</string>
@@ -41,8 +64,8 @@ Language: pt_BR
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Envio</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Impostos</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Desconto (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Desconto</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Desconto total (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Desconto total</string>
     <string name="woopos_orders_details_breakdown_products_label">Produtos</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">Totais</string>
@@ -78,13 +101,11 @@ Language: pt_BR
     <string name="bookings_filter_title_service_event">Serviço/Evento</string>
     <string name="bookings_filter_title_date">Data e hora</string>
     <string name="bookings_filter_location">Localização</string>
-    <string name="bookings_filter_customer_name">Nome do cliente</string>
     <string name="bookings_filter_title_type">Tipo de reserva</string>
     <string name="bookings_filter_title_payment_status">Status do pagamento</string>
     <string name="bookings_filter_title_attendance_status">Status de presença</string>
     <string name="bookings_filter_title_team_member">Membro da equipe atribuído</string>
     <string name="bookings_filters_show_bookings">Mostrar reservas</string>
-    <string name="bookings_filters_count_title">Filtros (%d)</string>
     <string name="bookings_filters_default_title">Filtros</string>
     <string name="bookings_empty_state_clear_filters_button">Limpar filtros</string>
     <string name="bookings_empty_state_change_filters_button">Alterar filtros</string>
@@ -124,14 +145,9 @@ Language: pt_BR
     <string name="woopos_date_just_now">Agora mesmo</string>
     <string name="woopos_date_never">Nunca</string>
     <string name="woopos_settings_local_catalog_refresh_button">Atualizar catálogo</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Use esta atualização somente quando algo parecer errado. O ponto de vendas mantém os dados atualizados automaticamente.</string>
-    <string name="woopos_settings_local_catalog_actions">Atualização manual do catálogo</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Baixar atualizações do catálogo usando dados móveis</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Permitir atualização completa usando dados móveis</string>
     <string name="woopos_settings_local_catalog_settings">Gerenciar uso de dados</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Última atualização completa</string>
-    <string name="woopos_settings_local_catalog_last_update">Última atualização</string>
-    <string name="woopos_settings_local_catalog_size">Tamanho do catálogo</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Última sincronização completa</string>
+    <string name="woopos_settings_local_catalog_size">Tamanho</string>
     <string name="woopos_settings_local_catalog_status">Status do catálogo</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Gerenciar configurações de catálogo</string>
     <string name="woopos_settings_local_catalog_category">Catálogo</string>
@@ -192,7 +208,6 @@ Language: pt_BR
     <string name="woopos_cart_empty_scan_barcode">escaneie um código de barras</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Toque em um produto ou </string>
     <string name="woopos_orders_title">Pedidos</string>
-    <string name="woopos_settings_help_category">Ajuda</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">Painel WP Admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">Pagamento online</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Não é possível mover produtos para dentro ou fora dele.</string>
@@ -206,9 +221,9 @@ Language: pt_BR
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Não foi possível encontrar um serviço de envio para a combinação da categoria de materiais perigosos com o pacote selecionado e o peso total do envio. Ajuste sua entrada e tente novamente.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Não foi possível encontrar um serviço de envio para a combinação do pacote selecionado com o peso total do envio. Ajuste sua entrada e tente novamente.</string>
     <string name="woopos_settings_store_not_set">Não configurada</string>
-    <string name="woopos_settings_refund_policy_label">Política de reembolso e devoluções</string>
+    <string name="woopos_settings_refund_policy_label">Política de reembolso e devolução</string>
     <string name="woopos_settings_store_email_label">E-mail</string>
-    <string name="woopos_settings_store_phone_label">Telefone</string>
+    <string name="woopos_settings_store_phone_label">Número de telefone</string>
     <string name="woopos_settings_store_address_label">Endereço</string>
     <string name="woopos_settings_store_name_label">Nome da loja</string>
     <string name="woopos_settings_receipt_information_title">Informações do recibo</string>
@@ -216,12 +231,12 @@ Language: pt_BR
     <string name="woopos_settings_help_get_support_subtitle">Fale com nossa equipe de suporte</string>
     <string name="woopos_settings_help_documentation_subtitle">Veja guias e tutoriais</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Saiba quais produtos são aceitos no ponto de venda</string>
-    <string name="woopos_settings_help_category_subtitle">Obtenha ajuda e suporte</string>
+    <string name="woopos_settings_help_category">Obtenha ajuda e suporte</string>
     <string name="woopos_settings_card_reader_connected_reader">Leitor conectado</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Saiba mais sobre como aceitar pagamentos com dispositivo móvel</string>
     <string name="woopos_settings_card_reader_documentation_title">Documentação</string>
     <string name="woopos_settings_card_reader_update_available">• Atualização disponível</string>
-    <string name="woopos_settings_card_reader_update_button">Atualizar</string>
+    <string name="woopos_settings_card_reader_update_button">Atualizar firmware</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Desconhecido</string>
     <string name="woopos_settings_card_reader_unknown_reader">Leitor desconhecido</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-03 19:54:06+0000
+Translation-Revision-Date: 2025-11-17 16:54:04+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">لم يُحدد الحجز</string>
+    <string name="bookings_filters_selected_option_content_description">خيار عامل التصفية المُحدَّد</string>
+    <string name="bookings_filter_customer">العميل</string>
+    <string name="bookings_filters_title_with_count">عوامل التصفية (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">العنوان الفعلي</string>
+    <string name="woopos_settings_store_general_title">عام</string>
+    <string name="woopos_orders_details_refund_error">يتعذر تحميل استرداد المبلغ</string>
+    <string name="woopos_cart_product_unknown_item">عنصر غير معروف</string>
+    <string name="woopos_totals_product_not_found_remove_products">إزالة منتج</string>
+    <string name="woopos_totals_product_not_found_edit_order">تحرير الطلب</string>
+    <string name="woopos_totals_product_not_found_reason">لم يعد المنتج الموجود في عربة التسوق متاحًا.</string>
+    <string name="woopos_totals_product_not_found_error">لم نعثر على المنتج</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">حدّث إصدار البرنامج الثابت لمواصلة قبول المدفوعات.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">تحديث إصدار البرنامج الثابت</string>
+    <string name="woopos_settings_card_reader_device_name_title">اسم الجهاز: </string>
+    <string name="woopos_settings_local_catalog_refresh_description">تحديث قائمة المنتجات يدويًا</string>
+    <string name="woopos_settings_local_catalog_manual_update">تحديث قائمة المنتجات</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">السماح بالمزامنة باستخدام البيانات الخلوية</string>
+    <string name="woopos_settings_local_catalog_cellular_data">بيانات خلوية</string>
+    <string name="woopos_settings_local_catalog_last_update">آخر مزامنة تزايدية</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">خزن قائمة منتجاتك على هذا الجهاز للبحث، ومسح الرمز الشريطي ضوئيًا، وأوقات تحميل أكثر سرعة.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">قائمة المنتجات المحلية لنقطة البيع</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">تجاهل القارئ في إعدادات البلوتوث الخاصة بنظام تشغيل أندرويد</string>
     <string name="booking_mark_as_paid_error">حدث خطأ أثناء وضع علامة على الحجز أنه مدفوع</string>
     <string name="booking_cancel_error">حدث خطأ أثناء إلغاء الحجز</string>
     <string name="booking_note_screen_update_error">حدث خطأ أثناء حفظ ملحوظة الحجز</string>
@@ -41,8 +64,8 @@ Language: ar
     <string name="woopos_orders_details_total_label">الإجمالي</string>
     <string name="woopos_orders_details_breakdown_shipping_label">الشحن</string>
     <string name="woopos_orders_details_breakdown_taxes_label">الضرائب</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">الخصم (⁦%1$s⁩)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">الخصم</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">إجمالي الخصم⁦%1$s⁩</string>
+    <string name="woopos_orders_details_breakdown_discount_label">إجمالي الخصم</string>
     <string name="woopos_orders_details_breakdown_products_label">المنتجات</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d × %2$s</string>
     <string name="woopos_orders_details_totals_title">الإجمالي</string>
@@ -78,13 +101,11 @@ Language: ar
     <string name="bookings_filter_title_service_event">الخدمة / الحدث</string>
     <string name="bookings_filter_title_date">التاريخ والوقت</string>
     <string name="bookings_filter_location">الموقع</string>
-    <string name="bookings_filter_customer_name">اسم العميل</string>
     <string name="bookings_filter_title_type">نوع الحجز</string>
     <string name="bookings_filter_title_payment_status">حالة المدفوعات</string>
     <string name="bookings_filter_title_attendance_status">حالة الحضور</string>
     <string name="bookings_filter_title_team_member">عضو الفريق المعيّن</string>
     <string name="bookings_filters_show_bookings">عرض الحجوزات</string>
-    <string name="bookings_filters_count_title">عوامل التصفية (%d)</string>
     <string name="bookings_filters_default_title">عوامل التصفية</string>
     <string name="bookings_empty_state_clear_filters_button">مسح عوامل التصفية</string>
     <string name="bookings_empty_state_change_filters_button">تغيير عوامل التصفية</string>
@@ -123,15 +144,10 @@ Language: ar
     <string name="woopos_date_today_at">اليوم في %s</string>
     <string name="woopos_date_just_now">الآن</string>
     <string name="woopos_date_never">أبدًا</string>
-    <string name="woopos_settings_local_catalog_refresh_button">تحديث الكتالوج</string>
-    <string name="woopos_settings_local_catalog_refresh_description">استخدم هذا التحديث فقط عندما يبدو أن هناك خطأ ما - يحافظ نظام نقاط البيع على تحديث البيانات تلقائيًا.</string>
-    <string name="woopos_settings_local_catalog_actions">تحديث الكتالوج يدويًا</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">تنزيل تحديثات الكتالوج باستخدام بيانات الهاتف المحمول</string>
-    <string name="woopos_settings_local_catalog_cellular_data">السماح بالتحديث الكامل على بيانات شبكة الجوال</string>
+    <string name="woopos_settings_local_catalog_refresh_button">تحديث قائمة المنتجات</string>
     <string name="woopos_settings_local_catalog_settings">إدارة استخدام البيانات</string>
-    <string name="woopos_settings_local_catalog_last_full_update">آخر تحديث كامل</string>
-    <string name="woopos_settings_local_catalog_last_update">آخر تحديث</string>
-    <string name="woopos_settings_local_catalog_size">حجم الكتالوج</string>
+    <string name="woopos_settings_local_catalog_last_full_update">آخر مزامنة كاملة</string>
+    <string name="woopos_settings_local_catalog_size">الحجم</string>
     <string name="woopos_settings_local_catalog_status">حالة الكتالوج</string>
     <string name="woopos_settings_local_catalog_category_subtitle">إدارة إعدادات الكتالوج</string>
     <string name="woopos_settings_local_catalog_category">الكتالوج</string>
@@ -192,7 +208,6 @@ Language: ar
     <string name="woopos_cart_empty_scan_barcode">مسح رمز شريطي ضوئيًا</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">النقر على منتج أو </string>
     <string name="woopos_orders_title">الطلبات</string>
-    <string name="woopos_settings_help_category">المساعدة</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">مشرف ووردبريس</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">السداد عبر الويب</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">لا يمكنك نقل المنتجات إليه أو الخروج منه.</string>
@@ -206,9 +221,9 @@ Language: ar
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">تعذر علينا العثور على خدمة الشحن لمجموعة من تصنيفات المواد الخطرة المحددة، والطرود المحددة، وإجمالي وزن الشحنة. يرجى ضبط إدخالك والمحاولة مجددًا.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty">تعذر علينا العثور على خدمة الشحن لمجموعة من الطرود المحددة وإجمالي وزن الشحنة. يرجى ضبط إدخالك والمحاولة مجددًا.</string>
     <string name="woopos_settings_store_not_set">لم يتم التعيين</string>
-    <string name="woopos_settings_refund_policy_label">سياسة الاسترداد والإرجاع</string>
+    <string name="woopos_settings_refund_policy_label">سياسة استرداد المبالغ المدفوعة وعمليات الإرجاع</string>
     <string name="woopos_settings_store_email_label">البريد الإلكتروني</string>
-    <string name="woopos_settings_store_phone_label">الهاتف</string>
+    <string name="woopos_settings_store_phone_label">رقم الهاتف</string>
     <string name="woopos_settings_store_address_label">العنوان</string>
     <string name="woopos_settings_store_name_label">اسم المتجر</string>
     <string name="woopos_settings_receipt_information_title">معلومات الإيصال</string>
@@ -216,12 +231,12 @@ Language: ar
     <string name="woopos_settings_help_get_support_subtitle">اتصل بفريق الدعم لدينا</string>
     <string name="woopos_settings_help_documentation_subtitle">عرض الأدلة والبرامج التعليمية</string>
     <string name="woopos_settings_help_product_limitations_subtitle">تعرف على المنتجات المدعومة في نقطة البيع</string>
-    <string name="woopos_settings_help_category_subtitle">احصل على المساعدة والدعم</string>
+    <string name="woopos_settings_help_category">الحصول على المساعدة والدعم</string>
     <string name="woopos_settings_card_reader_connected_reader">تم توصيل القارئ</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">تعرف على المزيد حول قبول المدفوعات باستخدام الهاتف المحمول</string>
     <string name="woopos_settings_card_reader_documentation_title">توثيق</string>
     <string name="woopos_settings_card_reader_update_available">• يوجد تحديث متوفر</string>
-    <string name="woopos_settings_card_reader_update_button">تحديث</string>
+    <string name="woopos_settings_card_reader_update_button">تحديث البرنامج الثابت</string>
     <string name="woopos_settings_card_reader_unknown_firmware">غير معروف</string>
     <string name="woopos_settings_card_reader_unknown_reader">قارئ غير معروف</string>
     <string name="woopos_settings_card_reader_firmware_title">البرنامج الثابت</string>
