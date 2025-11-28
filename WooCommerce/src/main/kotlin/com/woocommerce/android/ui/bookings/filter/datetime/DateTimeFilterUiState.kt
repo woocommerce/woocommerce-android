@@ -13,6 +13,7 @@ data class DateTimeFilterUiState(
     val pickerDialogState: PickerDialogState? = null,
     val onTimeClick: (DateBoundary) -> Unit = {},
     val onDateClick: (DateBoundary) -> Unit = {},
+    val onClearClick: (DateBoundary) -> Unit = {},
 )
 
 sealed interface PickerDialogState {

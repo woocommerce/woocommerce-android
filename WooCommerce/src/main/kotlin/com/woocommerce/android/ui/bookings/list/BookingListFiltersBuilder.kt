@@ -11,9 +11,9 @@ class BookingListFiltersBuilder @Inject constructor(
     /**
      * Returns a [BookingsFilterOption.DateRange] based on the selected [BookingListTab].
      */
-    fun BookingListTab.asDateRangeFilter(): BookingsFilterOption.DateRange? = when (this) {
+    fun BookingListTab.asDateRangeFilter(): BookingsFilterOption.DateRange = when (this) {
         BookingListTab.Today -> BookingsDateRangePresets.today(clock)
         BookingListTab.Upcoming -> BookingsDateRangePresets.upcoming(clock)
-        BookingListTab.All -> null
+        BookingListTab.All -> BookingsFilterOption.DateRange.DEFAULT
     }
 }

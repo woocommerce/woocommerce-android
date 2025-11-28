@@ -42,6 +42,7 @@ class DateTimeFilterViewModel @AssistedInject constructor(
         DateTimeFilterUiState(
             onDateClick = { openDateDialog(it) },
             onTimeClick = { openTimeDialog(it) },
+            onClearClick = { clearSelectedDate(it) },
         )
     )
     val uiState: LiveData<DateTimeFilterUiState?> = _uiState.asLiveData()
@@ -121,6 +122,29 @@ class DateTimeFilterViewModel @AssistedInject constructor(
             )
             currentState.copy(pickerDialogState = dialogState)
         }
+    }
+
+    private fun clearSelectedDate(dateBoundary: DateBoundary) {
+        _uiState.update { currentState ->
+            when (dateBoundary) {
+                DateBoundary.FROM -> {
+                    currentState.copy(
+                        fromDateTime = null,
+                        formattedFromDate = "",
+                        formattedFromTime = "",
+                    )
+                }
+
+                DateBoundary.TO -> {
+                    currentState.copy(
+                        toDateTime = null,
+                        formattedToDate = "",
+                        formattedToTime = "",
+                    )
+                }
+            }
+        }
+        emitTypeFilterChange()
     }
 
     private fun dismissPickerDialog() {
