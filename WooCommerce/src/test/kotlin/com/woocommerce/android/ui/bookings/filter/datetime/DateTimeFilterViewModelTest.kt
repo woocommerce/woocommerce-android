@@ -1,9 +1,11 @@
 package com.woocommerce.android.ui.bookings.filter.datetime
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Time
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -272,6 +274,77 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
 
         assertThat(dialog.maxDate).isNull()
     }
+
+    @Test
+    fun `given FROM and TO exist, when selecting a FROM time after TO, then values are swapped`() =
+        testBlocking {
+            // Given
+            val fromInitial = LocalDateTime.of(2025, 1, 1, 9, 0)
+            val toInitial = LocalDateTime.of(2025, 1, 1, 10, 0)
+            val vm = DateTimeFilterViewModel(
+                onTypeFilterChanged = { _ -> },
+                savedStateHandle = SavedStateHandle(),
+                clock = clock,
+                initialRange = BookingsFilterOption.DateRange(
+                    after = fromInitial.toInstant(ZoneOffset.UTC),
+                    before = toInitial.toInstant(ZoneOffset.UTC)
+                )
+            )
+
+            // When: user opens FROM time dialog and selects a time after current TO (11:00)
+            vm.uiState.getOrAwaitValue()!!.onTimeClick(DateBoundary.FROM)
+            val timeDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.TimeDialog
+            timeDialog.onTimeSelected(Time(11, 0))
+
+            // Then: the values are swapped so that FROM = previous TO (10:00) and TO = new 11:00
+            val state = vm.uiState.getOrAwaitValue()!!
+            assertThat(state.fromDateTime).isEqualTo(toInitial)
+            assertThat(state.toDateTime).isEqualTo(fromInitial.withHour(11).withMinute(0).withSecond(0).withNano(0))
+            // formatted strings should be present and dialog dismissed
+            assertThat(state.formattedFromDate).isNotEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
+            assertThat(state.formattedToDate).isNotEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
+            assertThat(state.pickerDialogState).isNull()
+
+            val event = vm.event.getOrAwaitValue()
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
+        }
+
+    @Test
+    fun `given FROM and TO exist, when selecting a TO time before FROM, then values are swapped`() =
+        testBlocking {
+            // Given
+            val fromInitial = LocalDateTime.of(2025, 1, 1, 9, 0)
+            val toInitial = LocalDateTime.of(2025, 1, 1, 10, 0)
+            val vm = DateTimeFilterViewModel(
+                onTypeFilterChanged = { _ -> },
+                savedStateHandle = SavedStateHandle(),
+                clock = clock,
+                initialRange = BookingsFilterOption.DateRange(
+                    after = fromInitial.toInstant(ZoneOffset.UTC),
+                    before = toInitial.toInstant(ZoneOffset.UTC)
+                )
+            )
+
+            // When: user opens TO time dialog and selects a time before current FROM (08:00)
+            vm.uiState.getOrAwaitValue()!!.onTimeClick(DateBoundary.TO)
+            val timeDialog = vm.uiState.getOrAwaitValue()!!.pickerDialogState as PickerDialogState.TimeDialog
+            timeDialog.onTimeSelected(Time(8, 0))
+
+            // Then: the values are swapped so that FROM = new 08:00 and TO = previous FROM (09:00)
+            val state = vm.uiState.getOrAwaitValue()!!
+            assertThat(state.fromDateTime).isEqualTo(fromInitial.withHour(8).withMinute(0).withSecond(0).withNano(0))
+            assertThat(state.toDateTime).isEqualTo(fromInitial)
+            // formatted strings should be present and dialog dismissed
+            assertThat(state.formattedFromDate).isNotEmpty()
+            assertThat(state.formattedFromTime).isNotEmpty()
+            assertThat(state.formattedToDate).isNotEmpty()
+            assertThat(state.formattedToTime).isNotEmpty()
+            assertThat(state.pickerDialogState).isNull()
+            val event = vm.event.getOrAwaitValue()
+            assertThat(event).isEqualTo(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_filter_date_time_swap_info))
+        }
 
     @Test
     fun `given no FROM date, when onDateClick(TO), then DateDialog minDate is null`() = testBlocking {

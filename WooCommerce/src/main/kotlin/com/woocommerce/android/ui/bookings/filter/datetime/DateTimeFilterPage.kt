@@ -16,14 +16,25 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.compose.BookingLabel
 import com.woocommerce.android.ui.bookings.compose.BookingSectionHeader
@@ -31,6 +42,9 @@ import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.compose.component.TimePickerDialog
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooTheme
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
+import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -47,34 +61,44 @@ fun DateTimeFilterRoute(
     }
 
     val state by viewModel.uiState.observeAsState()
-    state?.let { DateTimeFilterPage(it) }
+    state?.let { DateTimeFilterPage(it, viewModel.event) }
 }
 
 @Composable
 fun DateTimeFilterPage(
-    state: DateTimeFilterUiState
+    state: DateTimeFilterUiState,
+    event: LiveData<Event>,
 ) {
-    Column(
-        modifier = Modifier
-            .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState())
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.Top
-    ) {
-        DateTimeSection(
-            header = R.string.bookings_filter_date_from,
-            dateReadable = state.formattedFromDate,
-            timeReadable = state.formattedFromTime,
-            onDateClick = { state.onDateClick(DateBoundary.FROM) },
-            onTimeClick = { state.onTimeClick(DateBoundary.FROM) },
-        )
-        DateTimeSection(
-            header = R.string.bookings_filter_date_to,
-            dateReadable = state.formattedToDate,
-            timeReadable = state.formattedToTime,
-            onDateClick = { state.onDateClick(DateBoundary.TO) },
-            onTimeClick = { state.onTimeClick(DateBoundary.TO) },
-        )
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    HandleEvents(event, snackbarHostState)
+
+    Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .background(MaterialTheme.colorScheme.background)
+                .verticalScroll(rememberScrollState())
+                .fillMaxSize()
+                .padding(innerPadding),
+            verticalArrangement = Arrangement.Top
+        ) {
+            DateTimeSection(
+                header = R.string.bookings_filter_date_from,
+                dateReadable = state.formattedFromDate,
+                timeReadable = state.formattedFromTime,
+                onDateClick = { state.onDateClick(DateBoundary.FROM) },
+                onTimeClick = { state.onTimeClick(DateBoundary.FROM) },
+            )
+            DateTimeSection(
+                header = R.string.bookings_filter_date_to,
+                dateReadable = state.formattedToDate,
+                timeReadable = state.formattedToTime,
+                onDateClick = { state.onDateClick(DateBoundary.TO) },
+                onTimeClick = { state.onTimeClick(DateBoundary.TO) },
+            )
+        }
     }
 
     // Render dialogs at the top level so state is controlled by the ViewModel
@@ -102,6 +126,27 @@ fun DateTimeFilterPage(
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun HandleEvents(event: LiveData<Event>, snackbarHostState: SnackbarHostState) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+
+    DisposableEffect(event, lifecycleOwner) {
+        val observer = Observer { event: Event ->
+            when (event) {
+                is ShowSnackbar -> coroutineScope.launch {
+                    snackbarHostState.showSnackbar(context.getString(event.message))
+                }
+            }
+        }
+
+        event.observe(lifecycleOwner, observer)
+
+        onDispose { event.removeObserver(observer) }
     }
 }
 
@@ -180,7 +225,8 @@ private fun DateTimeFilterPagePreview() {
                     .format(later),
                 formattedToTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
                     .format(later),
-            )
+            ),
+            event = MutableLiveData()
         )
     }
 }
