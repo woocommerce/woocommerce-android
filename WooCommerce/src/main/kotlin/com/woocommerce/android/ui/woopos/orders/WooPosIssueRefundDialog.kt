@@ -328,14 +328,23 @@ private fun RefundableItemRow(item: WooPosRefundableItem) {
         )
         Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
 
-        WooPosText(
-            text = item.name,
-            style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        Column(
+            modifier = Modifier.weight(1f),
+        ) {
+            WooPosText(
+                text = item.name,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            WooPosText(
+                text = "1",
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest
+            )
+        }
 
         WooPosText(
             text = item.formattedUnitPrice,
