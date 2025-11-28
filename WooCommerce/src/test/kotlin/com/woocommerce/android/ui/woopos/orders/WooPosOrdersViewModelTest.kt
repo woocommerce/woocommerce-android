@@ -95,6 +95,8 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
+        whenever(resourceProvider.getString(eq(R.string.woopos_orders_items_selected), any()))
+            .thenAnswer { "ITEMS (${it.arguments[1]} SELECTED)" }
     }
 
     @Test
@@ -916,6 +918,31 @@ class WooPosOrdersViewModelTest {
         assertThat(state.dialogState).isInstanceOf(WooPosOrdersState.Content.DialogState.IssueRefund::class.java)
         val dialogState = state.dialogState as WooPosOrdersState.Content.DialogState.IssueRefund
         assertThat(dialogState.orderId).isEqualTo(123L)
+        verify(resourceProvider).getString(eq(R.string.woopos_orders_items_selected), any())
+    }
+
+    @Test
+    fun `given order with multiple line items, when onIssueRefundButtonClicked called, then itemsSelectedLabel is correctly formatted`() = runTest {
+        // GIVEN
+        val testOrder = order(123).copy(
+            items = OrderTestUtils.generateTestOrderItems(count = 3)
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+        whenever(resourceProvider.getString(eq(R.string.woopos_orders_items_selected), eq(3)))
+            .thenReturn("ITEMS (3 SELECTED)")
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onIssueRefundButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val dialogState = state.dialogState as WooPosOrdersState.Content.DialogState.IssueRefund
+        assertThat(dialogState.itemsSelectedLabel).isEqualTo("ITEMS (3 SELECTED)")
     }
 
     @Test
