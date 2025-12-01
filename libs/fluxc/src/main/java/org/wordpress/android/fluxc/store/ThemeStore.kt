@@ -1,16 +1,18 @@
 package org.wordpress.android.fluxc.store
 
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.ThemeAction
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.ThemeRestClient
-import org.wordpress.android.fluxc.persistence.ThemeSqlUtils
+import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.store.Store.OnChangedError
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
@@ -20,7 +22,8 @@ import javax.inject.Singleton
 @Singleton
 class ThemeStore @Inject constructor(
     dispatcher: Dispatcher,
-    private val themeRestClient: ThemeRestClient
+    private val themeRestClient: ThemeRestClient,
+    private val database: WPAndroidDatabase
 ) : Store(dispatcher) {
 
     // Payloads
@@ -148,26 +151,40 @@ class ThemeStore @Inject constructor(
         AppLog.d(T.API, "ThemeStore onRegister")
     }
 
-    fun getWpComThemes(themeIds: List<String>): List<ThemeModel> {
-        return ThemeSqlUtils.getWpComThemes(themeIds)
+    fun getWpComThemes(themeIds: List<String>): List<ThemeModel> = runBlocking {
+        database.themeDao().getWpComThemes(themeIds)
     }
 
     fun getInstalledThemeByThemeId(siteModel: SiteModel, themeId: String): ThemeModel? {
         if (themeId.isEmpty()) {
             return null
         }
-        return ThemeSqlUtils.getSiteThemeByThemeId(siteModel, themeId)
+        return runBlocking {
+            database.themeDao().getSiteThemeByThemeId(siteModel.localId(), themeId)
+        }
     }
 
     fun getWpComThemeByThemeId(themeId: String): ThemeModel? {
         if (themeId.isEmpty()) {
             return null
         }
-        return ThemeSqlUtils.getWpComThemeByThemeId(themeId)
+        return runBlocking {
+            database.themeDao().getWpComThemeByThemeId(themeId)
+        }
     }
 
-    fun setActiveThemeForSite(site: SiteModel, theme: ThemeModel) {
-        ThemeSqlUtils.insertOrReplaceActiveThemeForSite(site, theme)
+    fun setActiveThemeForSite(site: SiteModel, theme: ThemeModel) = runBlocking {
+        // Deactivate all currently active themes for the site
+        val activeThemes = database.themeDao().getActiveThemesForSite(site.localId())
+        database.themeDao().upsertThemes(activeThemes.map { it.copy(active = false) })
+
+        // Insert or update the new active theme
+        val activeTheme = theme.copy(
+            siteId = site.localId(),
+            isWpComTheme = false,
+            active = true
+        )
+        database.themeDao().upsert(activeTheme)
     }
 
     private fun fetchWpComThemes(payload: FetchWPComThemesPayload) {
@@ -179,7 +196,10 @@ class ThemeStore @Inject constructor(
         if (payload.isError) {
             event.error = payload.error
         } else {
-            ThemeSqlUtils.insertOrReplaceWpComThemes(payload.themes)
+            runBlocking {
+                val wpComThemes = payload.themes.map { it.copy(isWpComTheme = true) }
+                database.themeDao().replaceAllWpComThemes(wpComThemes)
+            }
         }
         emitChange(event)
     }
@@ -200,7 +220,7 @@ class ThemeStore @Inject constructor(
             event.error = payload.error
         } else {
             if (payload.theme != null) {
-                ThemeSqlUtils.insertOrReplaceActiveThemeForSite(payload.site, payload.theme)
+                setActiveThemeForSite(payload.site, payload.theme)
             } else {
                 AppLog.w(T.THEMES, "Fetched current theme payload theme is null.")
             }
@@ -222,7 +242,13 @@ class ThemeStore @Inject constructor(
         if (payload.isError) {
             event.error = payload.error
         } else {
-            ThemeSqlUtils.insertOrUpdateSiteTheme(payload.site, payload.theme)
+            runBlocking {
+                val siteTheme = payload.theme.copy(
+                    siteId = payload.site.localId(),
+                    isWpComTheme = false
+                )
+                database.themeDao().upsert(siteTheme)
+            }
         }
         emitChange(event)
     }
