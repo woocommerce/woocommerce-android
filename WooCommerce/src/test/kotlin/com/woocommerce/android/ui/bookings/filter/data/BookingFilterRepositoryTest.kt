@@ -74,7 +74,7 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         // THEN
         assertThat(value).isEqualTo(BookingFilters())
         assertThat(value.customer).isNull()
-        assertThat(value.dateRange).isNull()
+        assertThat(value.dateRange).isEqualTo(BookingsFilterOption.DateRange.DEFAULT)
     }
 
     @Test
@@ -96,8 +96,8 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
 
         // THEN
         assertThat(emitted.customer).isEqualTo(customer)
-        assertThat(emitted.dateRange?.before).isEqualTo(before)
-        assertThat(emitted.dateRange?.after).isEqualTo(after)
+        assertThat(emitted.dateRange.before).isEqualTo(before)
+        assertThat(emitted.dateRange.after).isEqualTo(after)
     }
 
     @Test

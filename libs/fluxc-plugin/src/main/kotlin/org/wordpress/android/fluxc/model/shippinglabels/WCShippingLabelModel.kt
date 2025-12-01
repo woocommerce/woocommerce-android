@@ -1,43 +1,40 @@
 package org.wordpress.android.fluxc.model.shippinglabels
 
+import androidx.room.Entity
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
-import com.yarolegovich.wellsql.core.Identifiable
-import com.yarolegovich.wellsql.core.annotation.Column
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey
-import com.yarolegovich.wellsql.core.annotation.Table
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import java.math.BigDecimal
 
-@Table(addOn = WellSqlConfig.ADDON_WOOCOMMERCE)
-class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identifiable {
-    @Column var localSiteId = 0
-    @Column var remoteOrderId = 0L // The remote identifier for the parent order object
-    @Column var remoteShippingLabelId = 0L // The unique identifier for this note on the server
-    @Column var trackingNumber = ""
-    @Column var carrierId = ""
-    @Column var dateCreated: Long? = null
-    @Column var expiryDate: Long? = null
-    @Column var serviceName = ""
-    @Column var status = ""
-    @Column var packageName = ""
-    @Column var rate = 0F
-    @Column var refundableAmount = 0F
-    @Column var currency = ""
-    @Column var productNames = "" // list of product names the shipping label was purchased for
-    @Column var productIds = "" // list of product ids the shipping label was purchased for
-    @Column var formData = "" // map containing package and product details related to that shipping label
-    @Column var refund = "" // map containing refund information for a shipping label
-    @Column var commercialInvoiceUrl: String? = null // URL pointing to the international commercial URL
-
-    override fun getId() = id
-
-    override fun setId(id: Int) {
-        this.id = id
-    }
+@Entity(
+    tableName = "ShippingLabelEntity",
+    primaryKeys = ["localSiteId", "remoteOrderId", "remoteShippingLabelId"],
+)
+data class WCShippingLabelModel(
+    val localSiteId: LocalId,
+    val remoteOrderId: RemoteId, // The remote identifier for the parent order object
+    val remoteShippingLabelId: RemoteId, // The unique identifier for this note on the server
+    val trackingNumber: String,
+    val carrierId: String,
+    val dateCreated: Long?,
+    val expiryDate: Long?,
+    val serviceName: String,
+    val status: String,
+    val packageName: String,
+    val rate: Float,
+    val refundableAmount: Float,
+    val currency: String,
+    val productNames: String, // list of product names the shipping label was purchased for
+    val productIds: String, // list of product ids the shipping label was purchased for
+    val formData: String, // map containing package and product details related to that shipping label
+    val refund: String, // map containing refund information for a shipping label
+    val commercialInvoiceUrl: String? // URL pointing to the international commercial URL
+) {
 
     companion object {
+        @Deprecated("Database entity should not keep a reference to Gson")
         private val gson by lazy { Gson() }
     }
 
@@ -50,11 +47,6 @@ class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identi
      * Returns the shipping details wrapped in a [ShippingLabelAddress].
      */
     fun getOriginAddress() = getFormData()?.origin
-
-    /**
-     * Returns the product details for the order wrapped in a list of [ProductItem]
-     */
-    fun getProductItems() = getFormData()?.selectedPackage?.defaultBox?.productItems ?: emptyList()
 
     /**
      * Returns default data related to the order such as the origin address,
@@ -168,14 +160,7 @@ class WCShippingLabelModel(@PrimaryKey @Column private var id: Int = 0) : Identi
         @SerializedName("request_date") val requestDate: Long? = null
     }
     enum class HazmatCategory {
-        PRIMARY_CONTAINED,
-        PRIMARY_PACKED,
         PRIMARY,
-        SECONDARY_CONTAINED,
-        SECONDARY_PACKED,
-        SECONDARY,
-        ORMD,
-        LITHIUM,
         LIMITED_QUANTITY,
         AIR_ELIGIBLE_ETHANOL,
         CLASS_1,

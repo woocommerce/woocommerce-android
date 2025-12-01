@@ -1,6 +1,9 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 23.8
+This update smooths your workflow with fixes to back navigation, shipping rate crashes, and payment screen layout. POS also gets improvements, including faster Local Catalog settings, better handling of deleted products, and automatic scrolling to your newest orders.
+
 ## 23.7
 Selling in-person just got faster! We've supercharged Woo POS with lightning-fast product search, instant barcode scanning, and near-instant loading. Your in-store experience is now smoother than ever.
 

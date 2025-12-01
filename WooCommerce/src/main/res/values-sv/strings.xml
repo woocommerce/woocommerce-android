@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-06 10:54:03+0000
+Translation-Revision-Date: 2025-11-18 18:54:07+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">Bokning har inte valts</string>
+    <string name="bookings_filters_selected_option_content_description">Valt filteralternativ</string>
+    <string name="bookings_filter_customer">Kund</string>
+    <string name="bookings_filters_title_with_count">Filter (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">Fysisk adress</string>
+    <string name="woopos_settings_store_general_title">Allmänt</string>
+    <string name="woopos_orders_details_refund_error">Kan inte ladda återbetalning</string>
+    <string name="woopos_cart_product_unknown_item">Okänt objekt</string>
+    <string name="woopos_totals_product_not_found_remove_products">Ta bort produkt</string>
+    <string name="woopos_totals_product_not_found_edit_order">Redigera beställning</string>
+    <string name="woopos_totals_product_not_found_reason">En produkt i varukorgen är inte längre tillgänglig.</string>
+    <string name="woopos_totals_product_not_found_error">Produkt hittades inte</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Uppdatera versionen av den fasta programvaran för att fortsätta ta emot betalningar.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Uppdatera version av fast programvara</string>
+    <string name="woopos_settings_card_reader_device_name_title">Enhetsnamn</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Uppdatera katalogen manuellt</string>
+    <string name="woopos_settings_local_catalog_manual_update">Kataloguppdatering</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Tillåt synkronisering med mobildata</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Mobildata</string>
+    <string name="woopos_settings_local_catalog_last_update">Senaste inkrementella synkronisering</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Lagra din produktkatalog på den här enheten för snabbare sökning, streckkodsskanning och laddningstider.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">Lokal katalog för POS</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Glöm läsaren i Bluetooth-inställningarna för Android</string>
     <string name="booking_mark_as_paid_error">Det gick inte att markera bokningen som betald</string>
     <string name="booking_cancel_error">Det gick inte att avbryta bokningen</string>
     <string name="booking_note_screen_update_error">Det gick inte att spara bokningsanteckningen</string>
@@ -41,8 +64,8 @@ Language: sv_SE
     <string name="woopos_orders_details_total_label">Totalt</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Frakt</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Moms</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Rabatt (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Rabatt</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Rabatt totalt (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Rabatt totalt</string>
     <string name="woopos_orders_details_breakdown_products_label">Produkter</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">Totalt</string>
@@ -78,13 +101,11 @@ Language: sv_SE
     <string name="bookings_filter_title_service_event">Tjänst/evenemang</string>
     <string name="bookings_filter_title_date">Datum och tid</string>
     <string name="bookings_filter_location">Plats</string>
-    <string name="bookings_filter_customer_name">Kundnamn</string>
     <string name="bookings_filter_title_type">Bokningstyp</string>
     <string name="bookings_filter_title_payment_status">Betalningsstatus</string>
     <string name="bookings_filter_title_attendance_status">Närvarostatus</string>
     <string name="bookings_filter_title_team_member">Tilldelad teammedlem</string>
     <string name="bookings_filters_show_bookings">Visa bokningar</string>
-    <string name="bookings_filters_count_title">Filter (%d)</string>
     <string name="bookings_filters_default_title">Filter</string>
     <string name="bookings_empty_state_clear_filters_button">Rensa filter</string>
     <string name="bookings_empty_state_change_filters_button">Ändra filter</string>
@@ -124,14 +145,9 @@ Language: sv_SE
     <string name="woopos_date_just_now">Just nu</string>
     <string name="woopos_date_never">Aldrig</string>
     <string name="woopos_settings_local_catalog_refresh_button">Uppdatera katalog</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Använd endast den här uppdateringen när något verkar vara fel – POS håller data aktuella automatiskt.</string>
-    <string name="woopos_settings_local_catalog_actions">Manuell kataloguppdatering</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Ladda ner kataloguppdateringar med mobildata</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Tillåt fullständig uppdatering med mobildata</string>
     <string name="woopos_settings_local_catalog_settings">Hantera dataanvändning</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Senaste fullständiga uppdatering</string>
-    <string name="woopos_settings_local_catalog_last_update">Senaste uppdatering</string>
-    <string name="woopos_settings_local_catalog_size">Katalogstorlek</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Senaste fullständiga synkronisering</string>
+    <string name="woopos_settings_local_catalog_size">Storlek</string>
     <string name="woopos_settings_local_catalog_status">Katalogstatus</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Hantera kataloginställningar</string>
     <string name="woopos_settings_local_catalog_category">Katalog</string>
@@ -192,7 +208,6 @@ Language: sv_SE
     <string name="woopos_cart_empty_scan_barcode">skanna en streckkod</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Tryck på en produkt eller </string>
     <string name="woopos_orders_title">Beställningar</string>
-    <string name="woopos_settings_help_category">Hjälp</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">Webbkassa</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Du kan inte flytta produkter till eller från den.</string>
@@ -208,7 +223,7 @@ Language: sv_SE
     <string name="woopos_settings_store_not_set">Inte inställd</string>
     <string name="woopos_settings_refund_policy_label">Återbetalnings- och returpolicy</string>
     <string name="woopos_settings_store_email_label">E-post</string>
-    <string name="woopos_settings_store_phone_label">Telefon</string>
+    <string name="woopos_settings_store_phone_label">Telefonnummer</string>
     <string name="woopos_settings_store_address_label">Adress</string>
     <string name="woopos_settings_store_name_label">Butiksnamn</string>
     <string name="woopos_settings_receipt_information_title">Kvittoinformation</string>
@@ -216,12 +231,12 @@ Language: sv_SE
     <string name="woopos_settings_help_get_support_subtitle">Kontakta vårt supportteam</string>
     <string name="woopos_settings_help_documentation_subtitle">Visa guider och handledning</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Läs om vilka produkter som stöds i POS</string>
-    <string name="woopos_settings_help_category_subtitle">Skaffa hjälp och support</string>
+    <string name="woopos_settings_help_category">Skaffa hjälp och support</string>
     <string name="woopos_settings_card_reader_connected_reader">Ansluten läsare</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Lär dig mer om att ta emot mobila betalningar</string>
     <string name="woopos_settings_card_reader_documentation_title">Dokumentation</string>
     <string name="woopos_settings_card_reader_update_available">• Uppdatering tillgänglig</string>
-    <string name="woopos_settings_card_reader_update_button">Uppdatera</string>
+    <string name="woopos_settings_card_reader_update_button">Uppdatera firmware</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Okänd</string>
     <string name="woopos_settings_card_reader_unknown_reader">Okänd läsare</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>

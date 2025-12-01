@@ -259,14 +259,17 @@ class OrderDetailRepository @Inject constructor(
     fun getOrderShipmentTrackingByTrackingNumber(
         orderId: Long,
         trackingNumber: String
-    ): OrderShipmentTracking? = orderStore.getShipmentTrackingByTrackingNumber(
-        selectedSite.get(),
-        orderId,
-        trackingNumber
-    )?.toAppModel()
+    ): OrderShipmentTracking? = runBlocking {
+        orderStore.getShipmentTrackingByTrackingNumber(
+            selectedSite.get(),
+            orderId,
+            trackingNumber
+        )?.toAppModel()
+    }
 
-    fun getOrderShipmentTrackings(orderId: Long) =
+    fun getOrderShipmentTrackings(orderId: Long) = runBlocking {
         orderStore.getShipmentTrackingsForOrder(selectedSite.get(), orderId).map { it.toAppModel() }
+    }
 
     fun getOrderShippingLabels(remoteOrderId: Long) = shippingLabelStore
         .getShippingLabelsForOrder(selectedSite.get(), remoteOrderId)

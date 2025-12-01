@@ -94,6 +94,7 @@ internal class WCOrderStoreTest {
             orderNotesDao = orderNotesDao,
             metaDataDao = metaDataDao,
             orderShipmentProvidersDao = databaseRule.db.orderShipmentProvidersDao,
+            orderShipmentTrackingDao = databaseRule.db.orderShipmentTrackingDao,
             orderStatusDao = databaseRule.db.orderStatusDao,
             orderSummaryDao = databaseRule.db.orderSummaryDao,
             insertOrder = insertOrder
