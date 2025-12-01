@@ -121,12 +121,7 @@ internal class TerminalWrapper {
 
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
-            .tapZone(
-                TapToPayUxConfiguration.TapZone.Manual.Builder()
-                    .indicator(TapToPayUxConfiguration.TapZoneIndicator.DEFAULT)
-                    .position(TapToPayUxConfiguration.TapZonePosition.Default)
-                    .build()
-            )
+            .tapZone(TapToPayUxConfiguration.TapZone.Default)
             .colors(
                 TapToPayUxConfiguration.ColorScheme.Builder()
                     .primary(Color.Resource(config.primaryColor))
