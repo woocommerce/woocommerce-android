@@ -117,6 +117,24 @@ internal class BluetoothReaderListenerImpl(
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected(errorCode = errorCode))
     }
 
+    override fun onReaderReconnectFailed(reader: com.stripe.stripeterminal.external.models.Reader) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectFailed")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
+    }
+
+    override fun onReaderReconnectStarted(
+        reader: com.stripe.stripeterminal.external.models.Reader,
+        cancelReconnect: Cancelable,
+        reason: DisconnectReason
+    ) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectStarted: reason=$reason")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.Reconnecting)
+    }
+
+    override fun onReaderReconnectSucceeded(reader: com.stripe.stripeterminal.external.models.Reader) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectSucceeded")
+    }
+
     fun resetConnectionState() {
         _updateStatusEvents.value = SoftwareUpdateStatus.Unknown
         _updateAvailabilityEvents.value = SoftwareUpdateAvailability.NotAvailable

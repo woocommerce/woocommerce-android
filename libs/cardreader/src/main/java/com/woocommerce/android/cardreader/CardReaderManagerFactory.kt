@@ -42,7 +42,7 @@ object CardReaderManagerFactory {
             UpdateErrorMapper(batteryLevelProvider),
             terminalListener
         )
-        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper)
+        val tapToPayReaderListener = TapToPayReaderListenerImpl(logWrapper, terminalListener)
         val cardReaderConfigFactory = CardReaderConfigFactory()
         val paymentUtils = PaymentUtils(logWrapper)
 
