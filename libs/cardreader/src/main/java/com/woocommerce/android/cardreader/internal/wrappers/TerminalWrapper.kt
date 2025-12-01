@@ -40,7 +40,7 @@ internal class TerminalWrapper {
         logLevel: LogLevel,
         tokenProvider: ConnectionTokenProvider,
         listener: TerminalListener
-    ) = Terminal.initTerminal(application, logLevel, tokenProvider, listener)
+    ) = Terminal.init(application, logLevel, tokenProvider, listener, null)
 
     @RequiresPermission(
         anyOf = [
