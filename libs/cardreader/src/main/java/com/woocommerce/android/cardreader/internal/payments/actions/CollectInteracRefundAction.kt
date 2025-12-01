@@ -1,7 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments.actions
 
 import com.stripe.stripeterminal.external.callable.Callback
-import com.stripe.stripeterminal.external.models.RefundConfiguration
+import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -17,7 +17,7 @@ internal class CollectInteracRefundAction(private val terminal: TerminalWrapper)
 
     fun collectRefund(
         refundParameters: RefundParameters,
-        refundConfiguration: RefundConfiguration
+        refundConfiguration: CollectRefundConfiguration
     ): Flow<CollectInteracRefundStatus> {
         return callbackFlow {
             val cancelable = terminal.refundPayment(

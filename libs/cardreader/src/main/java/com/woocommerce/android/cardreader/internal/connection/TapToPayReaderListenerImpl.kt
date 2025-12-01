@@ -5,10 +5,11 @@ import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.models.DisconnectReason
 import com.stripe.stripeterminal.external.models.Reader
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.internal.LOG_TAG
 
-class TapToPayReaderListenerImpl(
+internal class TapToPayReaderListenerImpl(
     private val logWrapper: LogWrapper,
     private val terminalListenerImpl: TerminalListenerImpl
 ) : TapToPayReaderListener {
@@ -33,5 +34,6 @@ class TapToPayReaderListenerImpl(
 
     override fun onReaderReconnectSucceeded(reader: Reader) {
         logWrapper.d(LOG_TAG, "onReaderReconnectSucceeded")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
     }
 }
