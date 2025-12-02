@@ -16,16 +16,13 @@ import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForUSA
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -76,8 +73,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     private val terminalWrapper: TerminalWrapper = mock()
     private val cardReaderStore: CardReaderStore = mock()
     private val createPaymentAction: CreatePaymentAction = mock()
-    private val collectPaymentAction: CollectPaymentAction = mock()
-    private val processPaymentAction: ProcessPaymentAction = mock()
+    private val processPaymentIntentAction: ProcessPaymentIntentAction = mock()
     private val cancelPaymentAction: CancelPaymentAction = mock()
     private val paymentErrorMapper: PaymentErrorMapper = mock()
     private val paymentUtils: PaymentUtils = mock()
@@ -85,7 +81,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
     private val expectedSequence = listOf(
         InitializingPayment::class,
-        CollectingPayment::class,
         ProcessingPayment::class,
         ProcessingPaymentCompleted::class,
         CapturingPayment::class,
@@ -98,8 +93,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             terminalWrapper,
             cardReaderStore,
             createPaymentAction,
-            collectPaymentAction,
-            processPaymentAction,
+            processPaymentIntentAction,
             cancelPaymentAction,
             paymentUtils,
             paymentErrorMapper,
@@ -113,11 +107,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
                 }
             )
 
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(REQUIRES_CONFIRMATION))) })
-
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentIntentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
 
         whenever(cardReaderStore.capturePaymentIntent(any(), anyString()))
             .thenReturn(CapturePaymentResponse.Successful.Success)
@@ -133,7 +124,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(true)
     }
 
-    // BEGIN - Arguments validation and conversion
     @Test
     fun `when currency not supported, then error emitted`() = testBlocking {
         whenever(paymentUtils.isSupportedCurrency(any(), any())).thenReturn(false)
@@ -160,8 +150,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
         assertThat(result).isInstanceOf(PaymentFailed::class.java)
     }
 
-    // END - Arguments validation and conversion
-    // BEGIN - Creating Payment intent
     @Test
     fun `when creating payment intent starts, then InitializingPayment is emitted`() = testBlocking {
         val result = manager.acceptPayment(createPaymentInfo())
@@ -204,60 +192,10 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
                     .toList()
             }
 
-            assertThat(result).isNotNull // verify the flow did not timeout
-            verify(collectPaymentAction, never()).collectPayment(anyOrNull())
+            assertThat(result).isNotNull
+            verify(processPaymentIntentAction, never()).processPaymentIntent(anyOrNull())
         }
 
-    // END - Creating Payment intent
-    // BEGIN - Collecting Payment
-    @Test
-    fun `when collecting payment starts, then CollectingPayment is emitted`() = testBlocking {
-        val result = manager.acceptPayment(createPaymentInfo())
-            .takeUntil(CollectingPayment::class).toList()
-
-        assertThat(result.last()).isInstanceOf(CollectingPayment::class.java)
-    }
-
-    @Test
-    fun `when collecting payment fails, then error is emitted`() = testBlocking {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
-
-        val result = manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
-    }
-
-    @Test
-    fun `when collecting payment intent fails, then mapTerminalError invoked`() = testBlocking {
-        whenever(collectPaymentAction.collectPayment(anyOrNull()))
-            .thenReturn(flow { emit(CollectPaymentStatus.Failure(mock())) })
-
-        manager
-            .acceptPayment(createPaymentInfo()).toList()
-
-        verify(paymentErrorMapper).mapTerminalError(anyOrNull(), anyOrNull())
-    }
-
-    @Test
-    fun `given status not REQUIRES_CONFIRMATION, when collecting payment finishes, then flow terminates`() =
-        testBlocking {
-            whenever(collectPaymentAction.collectPayment(anyOrNull()))
-                .thenReturn(flow { emit(CollectPaymentStatus.Success(createPaymentIntent(CANCELED))) })
-
-            val result = withTimeoutOrNull(TIMEOUT) {
-                manager
-                    .acceptPayment(createPaymentInfo())
-                    .toList()
-            }
-
-            assertThat(result).isNotNull // verify the flow did not timeout
-            verify(processPaymentAction, never()).processPayment(anyOrNull())
-        }
-
-    // END - Collecting Payment
-    // BEGIN - Processing Payment
     @Test
     fun `when processing payment starts, then ProcessingPayment is emitted`() = testBlocking {
         val result = manager.acceptPayment(createPaymentInfo())
@@ -268,8 +206,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when processing payment fails, then error emitted`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentIntentStatus.Failure(mock())) })
 
         val result = manager
             .acceptPayment(createPaymentInfo()).toList()
@@ -279,8 +217,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when processing payment fails, then mapTerminalError invoked`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
-            .thenReturn(flow { emit(ProcessPaymentStatus.Failure(mock())) })
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+            .thenReturn(flow { emit(ProcessPaymentIntentStatus.Failure(mock())) })
 
         manager
             .acceptPayment(createPaymentInfo()).toList()
@@ -291,8 +229,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given status not REQUIRES_CAPTURE, when processing payment finishes, then flow terminates`() =
         testBlocking {
-            whenever(processPaymentAction.processPayment(anyOrNull()))
-                .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(CANCELED))) })
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentIntentStatus.Success(createPaymentIntent(CANCELED))) })
 
             val result = withTimeoutOrNull(TIMEOUT) {
                 manager
@@ -300,18 +238,18 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
                     .toList()
             }
 
-            assertThat(result).isNotNull // verify the flow did not timeout
+            assertThat(result).isNotNull
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
         }
 
     @Test
     fun `given interac payment, when processing payment finishes successfully, then capture payment is emitted`() =
         testBlocking {
-            whenever(processPaymentAction.processPayment(anyOrNull()))
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(
                     flow {
                         emit(
-                            ProcessPaymentStatus.Success(
+                            ProcessPaymentIntentStatus.Success(
                                 createPaymentIntent(SUCCEEDED, interacPresentDetails = mock())
                             )
                         )
@@ -327,11 +265,11 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given interac payment, when processing payment finishes with canceled status, then flow terminates`() =
         testBlocking {
-            whenever(processPaymentAction.processPayment(anyOrNull()))
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
                 .thenReturn(
                     flow {
                         emit(
-                            ProcessPaymentStatus.Success(
+                            ProcessPaymentIntentStatus.Success(
                                 createPaymentIntent(CANCELED, interacPresentDetails = mock())
                             )
                         )
@@ -344,7 +282,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
                     .toList()
             }
 
-            assertThat(result).isNotNull // verify the flow did not timeout
+            assertThat(result).isNotNull
             verify(cardReaderStore, never()).capturePaymentIntent(any(), anyString())
         }
 
@@ -361,8 +299,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             }
             val charges = listOf(charge)
             whenever(intent.getCharges()).thenReturn(charges)
-            whenever(processPaymentAction.processPayment(anyOrNull()))
-                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentIntentStatus.Success(intent)) })
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
@@ -382,8 +320,8 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
             }
             val charges = listOf(charge)
             whenever(intent.getCharges()).thenReturn(charges)
-            whenever(processPaymentAction.processPayment(anyOrNull()))
-                .thenReturn(flow { emit(ProcessPaymentStatus.Success(intent)) })
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentIntentStatus.Success(intent)) })
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
@@ -393,23 +331,21 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `given processing payment suc with unknown, when processing, then ProcessingPaymentCompleted emitted`() =
         testBlocking {
-            whenever(processPaymentAction.processPayment(anyOrNull()))
-                .thenReturn(flow { emit(ProcessPaymentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
+            whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
+                .thenReturn(flow { emit(ProcessPaymentIntentStatus.Success(createPaymentIntent(REQUIRES_CAPTURE))) })
 
             val result = manager.acceptPayment(createPaymentInfo()).toList()
 
             assertThat(result).contains(ProcessingPaymentCompleted(PaymentMethodType.UNKNOWN))
         }
 
-    // END - Processing Payment
-    // BEGIN - Capturing Payment
     @Test
     fun `when receiptUrl is empty, then PaymentFailed emitted`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
             .thenReturn(
                 flow {
                     emit(
-                        ProcessPaymentStatus.Success(
+                        ProcessPaymentIntentStatus.Success(
                             createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
                         )
                     )
@@ -424,11 +360,11 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
     @Test
     fun `when receiptUrl is empty, then PaymentData for retry are empty`() = testBlocking {
-        whenever(processPaymentAction.processPayment(anyOrNull()))
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
             .thenReturn(
                 flow {
                     emit(
-                        ProcessPaymentStatus.Success(
+                        ProcessPaymentIntentStatus.Success(
                             createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = null)
                         )
                     )
@@ -460,11 +396,11 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
     @Test
     fun `when capturing payment succeeds, then PaymentCompleted event contains receipt url`() = testBlocking {
         val expectedReceiptUrl = "abcd"
-        whenever(processPaymentAction.processPayment(anyOrNull()))
+        whenever(processPaymentIntentAction.processPaymentIntent(anyOrNull()))
             .thenReturn(
                 flow {
                     emit(
-                        ProcessPaymentStatus.Success(
+                        ProcessPaymentIntentStatus.Success(
                             createPaymentIntent(REQUIRES_CAPTURE, receiptUrl = expectedReceiptUrl)
                         )
                     )
@@ -509,11 +445,9 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
         verify(paymentErrorMapper).mapCapturePaymentError(anyOrNull(), anyOrNull())
     }
-    // END - Capturing Payment
 
-    // BEGIN - Retry
     @Test
-    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when retrying payment, then flow resumes on collectPayment`() =
+    fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when retrying payment, then flow resumes on processPayment`() =
         testBlocking {
             val paymentIntent = mock<PaymentIntent>().also {
                 whenever(it.status).thenReturn(REQUIRES_PAYMENT_METHOD)
@@ -522,7 +456,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             val result = manager.retryPayment(DUMMY_ORDER_ID, paymentData).first()
 
-            assertThat(result).isInstanceOf(CollectingPayment::class.java)
+            assertThat(result).isInstanceOf(ProcessingPayment::class.java)
         }
 
     @Test
@@ -574,9 +508,7 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             assertThat(result.last()).isInstanceOf(PaymentFailed::class.java)
         }
-    // END - Retry
 
-    // BEGIN - Cancel
     @Test
     fun `given PaymentStatus REQUIRES_PAYMENT_METHOD, when canceling payment, then payment intent canceled`() =
         testBlocking {
@@ -609,7 +541,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
             verify(cancelPaymentAction, never()).cancelPayment(paymentIntent)
         }
-    // END - Cancel
 
     private fun createPaymentIntent(
         status: PaymentIntentStatus,
@@ -628,7 +559,6 @@ class PaymentManagerTest : CardReaderBaseUnitTest() {
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedSequence.indexOf(untilStatus) + 1)
-            // the below lines are here just as a safeguard to verify that the expectedSequence is defined correctly
             .withIndex()
             .onEach {
                 if (expectedSequence[it.index] != it.value!!::class) {
