@@ -1034,4 +1034,33 @@ class WooPosOrdersViewModelTest {
         val selectedItem = loadedItems.items.keys.first { it.isSelected }
         assertThat(selectedItem.id).isEqualTo(5L)
     }
+
+    @Test
+    fun `given search fails, when search performed, then no order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
+            .thenReturn("Unable to load orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Please try again.")
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isNull()
+    }
 }
