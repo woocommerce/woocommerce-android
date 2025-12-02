@@ -123,7 +123,7 @@ fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
+fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()

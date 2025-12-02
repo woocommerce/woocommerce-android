@@ -83,7 +83,7 @@ sealed class WooPosOrdersState {
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
-        val selectedDetails: OrderDetailsViewState.Computed.Details,
+        val selectedDetails: OrderDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState
     ) : WooPosOrdersState() {
         sealed class Items {
