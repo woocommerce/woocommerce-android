@@ -4,12 +4,14 @@ import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.MobileReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
 import com.stripe.stripeterminal.external.models.DisconnectReason
+import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.ReaderDisplayMessage
 import com.stripe.stripeterminal.external.models.ReaderEvent
 import com.stripe.stripeterminal.external.models.ReaderInputOptions
 import com.stripe.stripeterminal.external.models.ReaderSoftwareUpdate
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
+import com.woocommerce.android.cardreader.connection.CardReaderImpl
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages.CardReaderNoMessage
@@ -115,6 +117,25 @@ internal class BluetoothReaderListenerImpl(
             else -> null
         }
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected(errorCode = errorCode))
+    }
+
+    override fun onReaderReconnectFailed(reader: Reader) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectFailed")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
+    }
+
+    override fun onReaderReconnectStarted(
+        reader: Reader,
+        cancelReconnect: Cancelable,
+        reason: DisconnectReason
+    ) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectStarted: reason=$reason")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.Reconnecting)
+    }
+
+    override fun onReaderReconnectSucceeded(reader: Reader) {
+        logWrapper.d(LOG_TAG, "onReaderReconnectSucceeded")
+        terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
     }
 
     fun resetConnectionState() {
