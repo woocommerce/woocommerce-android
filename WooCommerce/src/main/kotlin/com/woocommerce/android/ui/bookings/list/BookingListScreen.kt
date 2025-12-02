@@ -52,7 +52,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -463,6 +462,14 @@ private fun EmptySearchResultsView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
+            text = stringResource(R.string.bookings_empty_state_title_default),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
             text = stringResource(
                 id = if (areFiltersActive) {
                     R.string.bookings_search_no_results_with_filters
@@ -470,9 +477,9 @@ private fun EmptySearchResultsView(
                     R.string.bookings_search_no_results_without_filters
                 }
             ),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
