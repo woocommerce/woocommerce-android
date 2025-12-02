@@ -11,7 +11,9 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.models.CollectPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
+import com.stripe.stripeterminal.external.models.ConfirmPaymentIntentConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
@@ -76,13 +78,15 @@ internal class TerminalWrapper {
     fun createPaymentIntent(params: PaymentIntentParameters, callback: PaymentIntentCallback) =
         Terminal.getInstance().createPaymentIntent(params, callback)
 
-    fun collectPaymentMethod(
+    fun processPaymentIntent(
         paymentIntent: PaymentIntent,
         callback: PaymentIntentCallback
-    ): Cancelable = Terminal.getInstance().collectPaymentMethod(paymentIntent, callback)
-
-    fun processPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback): Cancelable =
-        Terminal.getInstance().confirmPaymentIntent(paymentIntent, callback)
+    ): Cancelable = Terminal.getInstance().processPaymentIntent(
+        paymentIntent,
+        CollectPaymentIntentConfiguration.Builder().build(),
+        ConfirmPaymentIntentConfiguration.Builder().build(),
+        callback
+    )
 
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
