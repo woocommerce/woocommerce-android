@@ -199,12 +199,27 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            WooPosOrderDetails(
-                modifier = Modifier
-                    .fillMaxHeight(),
-                details = state.selectedDetails,
-                onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
-            )
+            when (state.items) {
+                is WooPosOrdersState.Content.Items.Error,
+                is WooPosOrdersState.Content.Items.NothingFound -> {
+                    WooPosEmptyScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        icon = WooPosIcons.OrdersEmpty,
+                        title = stringResource(R.string.woopos_orders_no_order_selected),
+                        message = "",
+                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                    )
+                }
+                is WooPosOrdersState.Content.Items.Loaded,
+                is WooPosOrdersState.Content.Items.Searching -> {
+                    WooPosOrderDetails(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        details = state.selectedDetails,
+                        onEmailReceiptButtonClicked = onEmailReceiptButtonClicked
+                    )
+                }
+            }
         }
     }
 }
@@ -621,6 +636,30 @@ fun WooPosOrdersNothingFoundStatePreview() {
                 ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None
+            ),
+            scrollToTopEvent = MutableSharedFlow(),
+            onBackClicked = {},
+            onRefresh = {},
+            onOrderSelected = {},
+            onEndOfOrdersListReached = {},
+            onPaginationErrorTryAgain = {},
+            onSearchEvent = {},
+            onSearchErrorRetry = {},
+            onOrdersEmptyActionClicked = {},
+            onOrdersLoadingErrorRetryButtonClicked = {},
+            onEmailReceiptButtonClicked = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersEmptyStatePreview() {
+    WooPosTheme {
+        WooPosOrdersScreen(
+            state = WooPosOrdersState.Empty(
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                searchInputState = WooPosSearchInputState.Closed,
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
