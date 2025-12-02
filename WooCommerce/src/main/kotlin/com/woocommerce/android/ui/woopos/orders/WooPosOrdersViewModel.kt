@@ -453,7 +453,15 @@ class WooPosOrdersViewModel @Inject constructor(
 
         val orders = ordersWithRefunds.keys.toList()
         val newFirstOrderId = orders.firstOrNull()?.id
-        val newSelectedId = requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+
+        val currentSelectedId = (currentState as? WooPosOrdersState.Content)?.selectedDetails?.id
+        val isSelectedOrderStillInList = currentSelectedId != null && orders.any { it.id == currentSelectedId }
+        val newSelectedId =
+            if (isSelectedOrderStillInList) {
+                currentSelectedId
+            } else {
+                requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+            }
         val items = buildItemsMap(ordersWithRefunds, newSelectedId)
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
         val selectedDetails = when (val details = selectedEntry.value) {
