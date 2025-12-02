@@ -4210,8 +4210,8 @@
     <string name="bookings_empty_state_description_all">Bookings will appear here once customers start scheduling your services or registering for events.</string>
     <string name="bookings_empty_state_description_today_v2">Any bookings scheduled for today will appear here.</string>
     <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
-    <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
-    <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
+    <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
+    <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
     <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
