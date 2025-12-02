@@ -95,6 +95,10 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title))
+            .thenReturn("No orders found")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
+            .thenReturn("Try a different search term")
     }
 
     @Test
@@ -896,5 +900,138 @@ class WooPosOrdersViewModelTest {
         val breakdown = content.selectedDetails!!.breakdown
         assertThat(breakdown.discount).isEqualTo("-$3.50")
         assertThat(breakdown.shipping).isEqualTo("$4.00")
+    }
+
+    @Test
+    fun `given search returns no results, when search performed, then selectedDetails is null`() = runTest {
+        // GIVEN
+        val query = "no results query"
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(emptyMap())
+        )
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails).isNull()
+        assertThat(content.items).isInstanceOf(WooPosOrdersState.Content.Items.NothingFound::class.java)
+    }
+
+    @Test
+    fun `given order selected and search returns results with selected order, when search performed, then selected order preserved`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val order1 = order(1)
+        val order2 = order(2)
+        val searchResults = listOf(order1, order2, order(3))
+
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(2L)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(2L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(2L)
+    }
+
+    @Test
+    fun `given order selected and search returns results without selected order, when search performed, then first order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val order1 = order(1)
+        val order2 = order(2)
+        val searchResults = listOf(order(3), order(4))
+
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(2L)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(3L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(3L)
+    }
+
+    @Test
+    fun `given no order selected and search returns results, when search performed, then first order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val searchResults = listOf(order(5), order(6))
+
+        whenever(dataSource.searchOrders("empty")).thenReturn(
+            SearchOrdersResult.Success(emptyMap())
+        )
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("empty", 5))
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(5L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(5L)
     }
 }
