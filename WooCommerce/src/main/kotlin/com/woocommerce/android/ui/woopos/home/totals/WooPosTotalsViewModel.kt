@@ -124,7 +124,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     }
 
                     Reconnecting -> {
-                        // Keep current state while SDK attempts to reconnect
+                        // We start payment right away so this state not worth handling
                     }
 
                     is Connected -> {
