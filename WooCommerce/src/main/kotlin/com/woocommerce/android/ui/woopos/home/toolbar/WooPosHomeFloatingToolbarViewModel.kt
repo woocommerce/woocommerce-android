@@ -131,9 +131,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
             }
 
             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting -> {
-                viewModelScope.launch {
-                    cardReaderFacade.disconnectFromReader()
-                }
+                cardReaderFacade.cancelReconnection()
             }
         }
     }

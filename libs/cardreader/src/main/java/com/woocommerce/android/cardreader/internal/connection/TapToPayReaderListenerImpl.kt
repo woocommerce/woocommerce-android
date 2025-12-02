@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.TapToPayReaderListener
 import com.stripe.stripeterminal.external.models.DisconnectReason
@@ -13,6 +14,8 @@ internal class TapToPayReaderListenerImpl(
     private val logWrapper: LogWrapper,
     private val terminalListenerImpl: TerminalListenerImpl
 ) : TapToPayReaderListener {
+    var cancelReconnectAction: Cancelable? = null
+
     override fun onDisconnect(reason: DisconnectReason) {
         logWrapper.d(LOG_TAG, "onDisconnect: reason=$reason")
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
@@ -20,6 +23,7 @@ internal class TapToPayReaderListenerImpl(
 
     override fun onReaderReconnectFailed(reader: Reader) {
         logWrapper.d(LOG_TAG, "onReaderReconnectFailed")
+        cancelReconnectAction = null
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
     }
 
@@ -29,11 +33,18 @@ internal class TapToPayReaderListenerImpl(
         reason: DisconnectReason
     ) {
         logWrapper.d(LOG_TAG, "onReaderReconnectStarted: reason=$reason")
+        cancelReconnectAction = cancelReconnect
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.Reconnecting)
     }
 
     override fun onReaderReconnectSucceeded(reader: Reader) {
         logWrapper.d(LOG_TAG, "onReaderReconnectSucceeded")
+        cancelReconnectAction = null
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
+    }
+
+    fun cancelReconnection(callback: Callback) {
+        cancelReconnectAction?.cancel(callback)
+        cancelReconnectAction = null
     }
 }

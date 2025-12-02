@@ -1,5 +1,6 @@
 package com.woocommerce.android.cardreader.internal.connection
 
+import com.stripe.stripeterminal.external.callable.Callback
 import com.stripe.stripeterminal.external.callable.Cancelable
 import com.stripe.stripeterminal.external.callable.MobileReaderListener
 import com.stripe.stripeterminal.external.models.BatteryStatus
@@ -47,6 +48,7 @@ internal class BluetoothReaderListenerImpl(
     val batteryStatusEvents = _batteryStatusEvents.asStateFlow()
 
     var cancelUpdateAction: Cancelable? = null
+    var cancelReconnectAction: Cancelable? = null
 
     override fun onFinishInstallingUpdate(update: ReaderSoftwareUpdate?, e: TerminalException?) {
         logWrapper.d(LOG_TAG, "onFinishInstallingUpdate: $update $e")
@@ -121,6 +123,7 @@ internal class BluetoothReaderListenerImpl(
 
     override fun onReaderReconnectFailed(reader: Reader) {
         logWrapper.d(LOG_TAG, "onReaderReconnectFailed")
+        cancelReconnectAction = null
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.NotConnected())
     }
 
@@ -130,11 +133,13 @@ internal class BluetoothReaderListenerImpl(
         reason: DisconnectReason
     ) {
         logWrapper.d(LOG_TAG, "onReaderReconnectStarted: reason=$reason")
+        cancelReconnectAction = cancelReconnect
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.Reconnecting)
     }
 
     override fun onReaderReconnectSucceeded(reader: Reader) {
         logWrapper.d(LOG_TAG, "onReaderReconnectSucceeded")
+        cancelReconnectAction = null
         terminalListenerImpl.updateReaderStatus(CardReaderStatus.Connected(CardReaderImpl(reader)))
     }
 
@@ -145,5 +150,10 @@ internal class BluetoothReaderListenerImpl(
 
     fun resetDisplayMessage() {
         _displayMessagesEvents.value = CardReaderNoMessage
+    }
+
+    fun cancelReconnection(callback: Callback) {
+        cancelReconnectAction?.cancel(callback)
+        cancelReconnectAction = null
     }
 }

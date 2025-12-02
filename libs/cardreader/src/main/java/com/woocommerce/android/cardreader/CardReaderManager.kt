@@ -47,6 +47,7 @@ interface CardReaderManager {
 
     fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
+    fun cancelReconnection()
 
     suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus>
     suspend fun refundInteracPayment(
