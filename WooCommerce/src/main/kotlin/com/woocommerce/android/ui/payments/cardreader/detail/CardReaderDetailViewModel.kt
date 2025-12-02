@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
@@ -85,6 +86,9 @@ class CardReaderDetailViewModel @Inject constructor(
                             )
                         )
                         handleNotConnectedState()
+                    }
+                    Reconnecting -> {
+                        // Keep current state while SDK attempts to reconnect
                     }
                 }
             }

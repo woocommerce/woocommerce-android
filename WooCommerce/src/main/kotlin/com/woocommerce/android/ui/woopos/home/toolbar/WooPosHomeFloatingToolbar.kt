@@ -309,15 +309,11 @@ private fun CardReaderStatusButton(
         when (status) {
             WooPosCardReaderStatus.Connected -> WooPosTheme.colors.success
             WooPosCardReaderStatus.NotConnected -> WooPosTheme.colors.alert
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
-    val title = stringResource(
-        id = when (state) {
-            WooPosCardReaderStatus.Connected -> WooPosCardReaderStatus.Connected.title
-            WooPosCardReaderStatus.NotConnected -> WooPosCardReaderStatus.NotConnected.title
-        }
-    )
+    val title = stringResource(id = state.title)
 
     val borderColor by transition.animateColor(
         transitionSpec = { tween(durationMillis = animationDuration) },
@@ -326,6 +322,7 @@ private fun CardReaderStatusButton(
         when (status) {
             WooPosCardReaderStatus.Connected -> Color.Transparent
             WooPosCardReaderStatus.NotConnected -> MaterialTheme.colorScheme.primary
+            WooPosCardReaderStatus.Reconnecting -> WooPosTheme.colors.alert
         }
     }
 
@@ -407,6 +404,9 @@ private fun getToolbarAccessibilityLabels(
         )
         WooPosCardReaderStatus.NotConnected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_not_connected_status_content_description
+        )
+        WooPosCardReaderStatus.Reconnecting -> stringResource(
+            id = R.string.woopos_reader_reconnecting
         )
     }
     val floatingToolbarMenuOverlayContentDescription = when (menuCardDisabled) {

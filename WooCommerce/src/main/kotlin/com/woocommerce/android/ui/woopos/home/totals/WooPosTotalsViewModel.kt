@@ -9,6 +9,7 @@ import com.woocommerce.android.WooException
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
@@ -120,6 +121,10 @@ class WooPosTotalsViewModel @Inject constructor(
                         if (state !is WooPosTotalsViewState.Checkout) return@collect
                         uiState.value = state.copy(readerStatus = buildTotalsReaderNotConnectedError())
                         cancelPaymentAction()
+                    }
+
+                    Reconnecting -> {
+                        // Keep current state while SDK attempts to reconnect
                     }
 
                     is Connected -> {
