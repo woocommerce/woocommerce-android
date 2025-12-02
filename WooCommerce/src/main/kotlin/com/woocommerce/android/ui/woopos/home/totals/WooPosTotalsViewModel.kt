@@ -380,13 +380,12 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch {
             cardReaderPaymentController?.paymentState?.collect { paymentState ->
                 when (paymentState) {
-                    is CardReaderPaymentState.CollectingPayment -> handleCollectingPaymentState(paymentState)
+                    is CardReaderPaymentState.ProcessingPayment -> handleProcessingPaymentState(paymentState)
 
                     is CardReaderPaymentState.LoadingData -> handleReaderLoadingPaymentState()
 
-                    is CardReaderPaymentState.PaymentCapturing,
-                    is CardReaderPaymentState.ProcessingPayment -> {
-                        handleProcessingOrCapturingPaymentState()
+                    is CardReaderPaymentState.PaymentCapturing -> {
+                        handleCapturingPaymentState()
                     }
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
@@ -412,12 +411,10 @@ class WooPosTotalsViewModel @Inject constructor(
         viewModelScope.launch { totalsAnalyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
-    private suspend fun handleProcessingOrCapturingPaymentState() {
+    private suspend fun handleCapturingPaymentState() {
         val state = uiState.value
         if (state is WooPosTotalsViewState.Checkout) {
             uiState.value = state.copy(totals = Totals.Hidden)
-            // allow the UI to show "shrinking" exit animation of totals grid before showing
-            // the "payment in progress" state.
             @Suppress("MagicNumber")
             delay(384)
         }
@@ -428,7 +425,7 @@ class WooPosTotalsViewModel @Inject constructor(
         )
     }
 
-    private suspend fun handleCollectingPaymentState(paymentState: CardReaderPaymentState.CollectingPayment) {
+    private suspend fun handleProcessingPaymentState(paymentState: CardReaderPaymentState.ProcessingPayment) {
         val totalsState = uiState.value
         if (totalsState is WooPosTotalsViewState.Checkout) {
             uiState.value = totalsState.copy(

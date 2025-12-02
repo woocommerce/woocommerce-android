@@ -28,7 +28,6 @@ import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.NoNetwork
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.ReaderNotConnected
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Server
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CollectingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
@@ -262,7 +261,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -282,7 +281,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -301,7 +300,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -320,7 +319,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -340,7 +339,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -361,7 +360,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -382,7 +381,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -403,7 +402,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -424,7 +423,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
             }
 
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -532,7 +531,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting payment, then ui updated to collecting payment state`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -544,7 +543,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `given built in reader,when collecting payment, then ui updated to collecting payment state`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
             initViewModel(BUILT_IN)
 
@@ -1511,7 +1510,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting payment, then progress and cancel button is visible`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()
@@ -1527,7 +1526,7 @@ class CardReaderPaymentViewModelTest : BaseUnitTest() {
     fun `when collecting payment, then correct labels and illustration is shown`() =
         testBlocking {
             whenever(cardReaderManager.collectPayment(any())).thenAnswer {
-                flow { emit(CollectingPayment) }
+                flow { emit(ProcessingPayment) }
             }
 
             viewModel.start()

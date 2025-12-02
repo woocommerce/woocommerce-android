@@ -22,13 +22,9 @@ class WooPosTotalsAnalyticsTracker @Inject constructor(
     suspend fun trackPaymentStates(paymentState: StateFlow<CardReaderPaymentOrRefundState>?) {
         paymentState?.distinctUntilChanged { old, new -> old::class == new::class }?.collect {
             when (it) {
-                is CardReaderPaymentState.CollectingPayment -> {
+                is CardReaderPaymentState.ProcessingPayment -> {
                     analyticsData.readerReadyForPaymentTimestamp = System.currentTimeMillis()
                     trackReaderReadyForPayment()
-                }
-
-                is CardReaderPaymentState.ProcessingPayment -> {
-                    analyticsData.cardTappedTimestamp = System.currentTimeMillis()
                 }
 
                 is CardReaderPaymentOrRefundState.CardReaderInteracRefundState.CollectingInteracRefund,
