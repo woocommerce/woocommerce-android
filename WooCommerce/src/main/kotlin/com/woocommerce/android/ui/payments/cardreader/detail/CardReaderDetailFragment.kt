@@ -27,6 +27,7 @@ import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailVie
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ConnectedState
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.Loading
 import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.NotConnectedState
+import com.woocommerce.android.ui.payments.cardreader.detail.CardReaderDetailViewModel.ViewState.ReconnectingState
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderType.EXTERNAL
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateDialogFragment
 import com.woocommerce.android.ui.payments.cardreader.update.CardReaderUpdateViewModel.UpdateResult
@@ -180,6 +181,28 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
                 Loading -> {
                 }
+
+                is ReconnectingState -> {
+                    with(binding.readerDisconnectedState) {
+                        UiHelpers.setTextOrHide(cardReaderDetailConnectHeaderLabel, state.headerLabel)
+                        UiHelpers.setImageOrHideInLandscapeOnCompactScreenHeightSizeClass(
+                            cardReaderDetailIllustration,
+                            state.illustration
+                        )
+                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                        cardReaderDetailFirstHintNumberLabel.visibility = View.GONE
+                        cardReaderDetailSecondHintLabel.visibility = View.GONE
+                        cardReaderDetailSecondHintNumberLabel.visibility = View.GONE
+                        cardReaderDetailThirdHintLabel.visibility = View.GONE
+                        cardReaderDetailThirdHintNumberLabel.visibility = View.GONE
+                        cardReaderDetailConnectBtn.visibility = View.GONE
+                        with(cardReaderDetailLearnMoreTv.root) {
+                            movementMethod = LinkMovementMethod.getInstance()
+                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
+                            setOnClickListener { state.onLearnMoreClicked.invoke() }
+                        }
+                    }
+                }
             }
         }
     }
@@ -192,7 +215,10 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
 
     private fun makeStateVisible(binding: FragmentCardReaderDetailBinding, state: ViewState) {
         UiHelpers.updateVisibility(binding.readerConnectedState.root, state is ConnectedState)
-        UiHelpers.updateVisibility(binding.readerDisconnectedState.root, state is NotConnectedState)
+        UiHelpers.updateVisibility(
+            binding.readerDisconnectedState.root,
+            state is NotConnectedState || state is ReconnectingState
+        )
         UiHelpers.updateVisibility(binding.readerConnectedLoading, state is Loading)
     }
 

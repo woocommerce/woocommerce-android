@@ -88,7 +88,7 @@ class CardReaderDetailViewModel @Inject constructor(
                         handleNotConnectedState()
                     }
                     Reconnecting -> {
-                        // Keep current state while SDK attempts to reconnect
+                        handleReconnectingState()
                     }
                 }
             }
@@ -136,6 +136,10 @@ class CardReaderDetailViewModel @Inject constructor(
         cancelConnectedScopeJobs()
         viewState.value =
             NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked, onLearnMoreClicked = ::onLearnMoreClicked)
+    }
+
+    private fun handleReconnectingState() {
+        viewState.value = ViewState.ReconnectingState(onLearnMoreClicked = ::onLearnMoreClicked)
     }
 
     private fun cancelConnectedScopeJobs() {
@@ -311,6 +315,17 @@ class CardReaderDetailViewModel @Inject constructor(
         }
 
         object Loading : ViewState()
+
+        data class ReconnectingState(
+            val onLearnMoreClicked: (() -> Unit),
+        ) : ViewState() {
+            val headerLabel = UiStringRes(R.string.card_reader_detail_reconnecting_header)
+
+            @DrawableRes
+            val illustration = R.drawable.img_card_reader_not_connected
+            val firstHintLabel = UiStringRes(R.string.card_reader_detail_reconnecting_hint)
+            val learnMoreLabel = UiStringRes(R.string.card_reader_detail_learn_more, containsHtml = true)
+        }
     }
 }
 
