@@ -189,18 +189,15 @@ class CardReaderDetailFragment : BaseFragment(R.layout.fragment_card_reader_deta
                             cardReaderDetailIllustration,
                             state.illustration
                         )
-                        UiHelpers.setTextOrHide(cardReaderDetailFirstHintLabel, state.firstHintLabel)
+                        cardReaderDetailFirstHintLabel.visibility = View.GONE
                         cardReaderDetailFirstHintNumberLabel.visibility = View.GONE
                         cardReaderDetailSecondHintLabel.visibility = View.GONE
                         cardReaderDetailSecondHintNumberLabel.visibility = View.GONE
                         cardReaderDetailThirdHintLabel.visibility = View.GONE
                         cardReaderDetailThirdHintNumberLabel.visibility = View.GONE
-                        cardReaderDetailConnectBtn.visibility = View.GONE
-                        with(cardReaderDetailLearnMoreTv.root) {
-                            movementMethod = LinkMovementMethod.getInstance()
-                            UiHelpers.setTextOrHide(this, state.learnMoreLabel)
-                            setOnClickListener { state.onLearnMoreClicked.invoke() }
-                        }
+                        UiHelpers.setTextOrHide(cardReaderDetailConnectBtn, state.cancelBtnLabel)
+                        cardReaderDetailConnectBtn.setOnClickListener { state.onCancelClicked.invoke() }
+                        cardReaderDetailLearnMoreTv.root.visibility = View.GONE
                     }
                 }
             }
