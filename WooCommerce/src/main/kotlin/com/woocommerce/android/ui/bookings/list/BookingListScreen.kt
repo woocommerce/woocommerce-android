@@ -65,7 +65,6 @@ import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.component.WCSearchField
@@ -358,13 +357,13 @@ private fun EmptyView(
         if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
                 areFiltersActive = state.controlsState.areFiltersActive,
+                onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
         } else {
             EmptyListView(
                 selectedTab = state.tabState.selectedTab,
                 areFiltersActive = state.controlsState.areFiltersActive,
-                onChangeFiltersClick = state.controlsState.onFilterClick,
                 onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
@@ -376,7 +375,6 @@ private fun EmptyView(
 private fun EmptyListView(
     selectedTab: BookingListTab,
     areFiltersActive: Boolean,
-    onChangeFiltersClick: () -> Unit,
     onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -386,9 +384,11 @@ private fun EmptyListView(
         modifier = modifier
     ) {
         Image(
-            painter = painterResource(R.drawable.img_calendar_grey),
+            painter = painterResource(
+                if (areFiltersActive) R.drawable.img_empty_search else R.drawable.img_calendar_grey
+            ),
             contentDescription = null,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier.size(80.dp)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -415,7 +415,7 @@ private fun EmptyListView(
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
                 else -> {
                     if (areFiltersActive) {
-                        stringResource(R.string.bookings_empty_state_description_with_filters)
+                        stringResource(R.string.bookings_filtered_empty_state_description)
                     } else {
                         stringResource(R.string.bookings_empty_state_description_all)
                     }
@@ -429,12 +429,6 @@ private fun EmptyListView(
         if (areFiltersActive) {
             Spacer(Modifier.height(24.dp))
             WCColoredButton(
-                text = stringResource(R.string.bookings_empty_state_change_filters_button),
-                onClick = onChangeFiltersClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            WCOutlinedButton(
                 text = stringResource(R.string.bookings_empty_state_clear_filters_button),
                 onClick = onClearFiltersClick,
                 modifier = Modifier.fillMaxWidth()
@@ -446,6 +440,7 @@ private fun EmptyListView(
 @Composable
 private fun EmptySearchResultsView(
     areFiltersActive: Boolean,
+    onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -480,6 +475,15 @@ private fun EmptySearchResultsView(
             textAlign = TextAlign.Center,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        if (areFiltersActive) {
+            Spacer(Modifier.height(24.dp))
+            WCColoredButton(
+                text = stringResource(R.string.bookings_empty_state_clear_filters_button),
+                onClick = onClearFiltersClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

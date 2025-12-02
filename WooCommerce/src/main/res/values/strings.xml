@@ -4212,7 +4212,7 @@
     <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
     <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
     <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
-    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_filtered_empty_state_description">Try adjusting or clearing your filters to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
