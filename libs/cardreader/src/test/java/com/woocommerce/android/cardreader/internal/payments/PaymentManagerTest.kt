@@ -69,6 +69,7 @@ private const val DUMMY_CUSTOMER_NAME = "Tester"
 private const val DUMMY_SITE_URL = "www.test.test/test"
 private const val DUMMY_STORE_NAME = "Test store"
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 class PaymentManagerTest : CardReaderBaseUnitTest() {
     private lateinit var manager: PaymentManager

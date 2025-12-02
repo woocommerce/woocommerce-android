@@ -11,12 +11,12 @@ import com.stripe.stripeterminal.external.callable.PaymentIntentCallback
 import com.stripe.stripeterminal.external.callable.ReaderCallback
 import com.stripe.stripeterminal.external.callable.RefundCallback
 import com.stripe.stripeterminal.external.callable.TerminalListener
+import com.stripe.stripeterminal.external.models.CollectRefundConfiguration
 import com.stripe.stripeterminal.external.models.ConnectionConfiguration
 import com.stripe.stripeterminal.external.models.DiscoveryConfiguration
 import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.PaymentIntentParameters
 import com.stripe.stripeterminal.external.models.Reader
-import com.stripe.stripeterminal.external.models.RefundConfiguration
 import com.stripe.stripeterminal.external.models.RefundParameters
 import com.stripe.stripeterminal.external.models.SimulateReaderUpdate
 import com.stripe.stripeterminal.external.models.SimulatedCard
@@ -40,7 +40,7 @@ internal class TerminalWrapper {
         logLevel: LogLevel,
         tokenProvider: ConnectionTokenProvider,
         listener: TerminalListener
-    ) = Terminal.initTerminal(application, logLevel, tokenProvider, listener)
+    ) = Terminal.init(application, logLevel, tokenProvider, listener, null)
 
     @RequiresPermission(
         anyOf = [
@@ -69,7 +69,9 @@ internal class TerminalWrapper {
     fun disconnectReader(callback: Callback) =
         Terminal.getInstance().disconnectReader(callback)
 
-    fun clearCachedCredentials() = Terminal.getInstance().clearCachedCredentials()
+    fun clearCachedCredentials() {
+        Terminal.getInstance().clearCachedCredentials()
+    }
 
     fun createPaymentIntent(params: PaymentIntentParameters, callback: PaymentIntentCallback) =
         Terminal.getInstance().createPaymentIntent(params, callback)
@@ -85,12 +87,14 @@ internal class TerminalWrapper {
     fun cancelPayment(paymentIntent: PaymentIntent, callback: PaymentIntentCallback) =
         Terminal.getInstance().cancelPaymentIntent(paymentIntent, callback)
 
+    @Suppress("DEPRECATION")
     fun refundPayment(
         refundParameters: RefundParameters,
-        refundConfiguration: RefundConfiguration,
+        refundConfiguration: CollectRefundConfiguration,
         callback: Callback
     ) = Terminal.getInstance().collectRefundPaymentMethod(refundParameters, refundConfiguration, callback)
 
+    @Suppress("DEPRECATION")
     fun processRefund(callback: RefundCallback) =
         Terminal.getInstance().confirmRefund(callback)
 
@@ -121,12 +125,7 @@ internal class TerminalWrapper {
 
     fun setupTapToPayUx(config: CardReaderManager.TapToPayUxConfig) {
         val uxConfig = TapToPayUxConfiguration.Builder()
-            .tapZone(
-                TapToPayUxConfiguration.TapZone.Manual.Builder()
-                    .indicator(TapToPayUxConfiguration.TapZoneIndicator.DEFAULT)
-                    .position(TapToPayUxConfiguration.TapZonePosition.Default)
-                    .build()
-            )
+            .tapZone(TapToPayUxConfiguration.TapZone.Default)
             .colors(
                 TapToPayUxConfiguration.ColorScheme.Builder()
                     .primary(Color.Resource(config.primaryColor))

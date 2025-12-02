@@ -21,6 +21,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class CollectInteracRefundActionTest : CardReaderBaseUnitTest() {

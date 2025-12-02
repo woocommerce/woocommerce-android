@@ -16,6 +16,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 internal class ProcessPaymentActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: ProcessPaymentAction
