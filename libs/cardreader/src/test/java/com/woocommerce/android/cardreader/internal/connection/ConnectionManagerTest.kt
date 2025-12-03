@@ -5,6 +5,7 @@ import com.stripe.stripeterminal.external.models.DeviceType
 import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents.ReadersFound
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -45,6 +46,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
         on { readerStatus }.thenReturn(MutableStateFlow(CardReaderStatus.NotConnected()))
     }
     private val application: Application = mock()
+    private val logWrapper: LogWrapper = mock()
 
     private val supportedReaders =
         CardReaderTypesToDiscover.SpecificReaders.ExternalReaders(
@@ -65,6 +67,7 @@ class ConnectionManagerTest : CardReaderBaseUnitTest() {
             discoverReadersAction,
             terminalListenerImpl,
             application,
+            logWrapper,
         )
     }
 

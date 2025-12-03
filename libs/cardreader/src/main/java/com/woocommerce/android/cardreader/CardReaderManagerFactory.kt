@@ -77,6 +77,7 @@ object CardReaderManagerFactory {
                 DiscoverReadersAction(terminal, logWrapper),
                 terminalListener,
                 application,
+                logWrapper,
             ),
             SoftwareUpdateManager(
                 terminal,

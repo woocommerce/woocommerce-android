@@ -12,6 +12,7 @@ import com.stripe.stripeterminal.external.models.Reader
 import com.stripe.stripeterminal.external.models.TerminalErrorCode
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.CardReaderManager
+import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
 import com.woocommerce.android.cardreader.connection.CardReaderImpl
@@ -33,7 +34,9 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.launch
 
 private const val ARTIFICIAL_STATUS_UPDATE_DELAY_IN_MILLIS = 500L
+private const val LOG_TAG = "ConnectionManager"
 
+@Suppress("LongParameterList")
 internal class ConnectionManager(
     private val terminal: TerminalWrapper,
     private val bluetoothReaderListener: BluetoothReaderListenerImpl,
@@ -41,6 +44,7 @@ internal class ConnectionManager(
     private val discoverReadersAction: DiscoverReadersAction,
     private val terminalListenerImpl: TerminalListenerImpl,
     private val application: Application,
+    private val logWrapper: LogWrapper,
 ) {
     val softwareUpdateStatus = bluetoothReaderListener.updateStatusEvents
     val softwareUpdateAvailability = bluetoothReaderListener.updateAvailabilityEvents
@@ -146,7 +150,8 @@ internal class ConnectionManager(
             terminal.disconnectReader()
             updateReaderStatus(CardReaderStatus.NotConnected())
             true
-        } catch (@Suppress("SwallowedException") e: TerminalException) {
+        } catch (e: TerminalException) {
+            logWrapper.e(LOG_TAG, "Failed to disconnect reader: ${e.errorMessage}")
             updateReaderStatus(CardReaderStatus.NotConnected())
             false
         }
