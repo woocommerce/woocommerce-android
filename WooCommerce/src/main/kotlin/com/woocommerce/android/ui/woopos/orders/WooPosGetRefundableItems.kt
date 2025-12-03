@@ -69,8 +69,7 @@ class WooPosGetRefundableItems @Inject constructor(
         return productItems.mapNotNull { orderItem ->
             val refundedQuantity = allRefundedItems
                 .filter { refundedItem ->
-                    refundedItem.productId == orderItem.productId &&
-                        refundedItem.variationId == orderItem.variationId
+                    refundedItem.orderItemId == orderItem.itemId
                 }
                 .sumOf { it.quantity }
 
