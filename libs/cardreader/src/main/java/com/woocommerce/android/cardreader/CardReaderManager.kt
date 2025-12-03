@@ -45,7 +45,7 @@ interface CardReaderManager {
 
     fun setupTapToPayUx(config: TapToPayUxConfig)
 
-    fun startConnectionToReader(cardReader: CardReader, locationId: String)
+    suspend fun startConnectionToReader(cardReader: CardReader, locationId: String)
     suspend fun disconnectReader(): Boolean
     fun cancelReconnection()
 
