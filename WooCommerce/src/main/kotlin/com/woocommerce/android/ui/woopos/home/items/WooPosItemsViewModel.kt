@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
@@ -89,7 +90,7 @@ class WooPosItemsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentTime = dateTimeProvider.now()
             val timeDifferenceMs = currentTime - lastSyncTimestamp
-            val hoursSinceLastSync = (timeDifferenceMs / (1000 * 60 * 60)).toInt()
+            val hoursSinceLastSync = timeDifferenceMs.milliseconds.inWholeHours.toInt()
 
             analyticsTracker.track(
                 WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
