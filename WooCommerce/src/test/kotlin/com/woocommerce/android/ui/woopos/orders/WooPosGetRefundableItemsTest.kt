@@ -304,6 +304,7 @@ class WooPosGetRefundableItemsTest {
         assertThat(result).hasSize(3) // 5 - 2 = 3 remaining
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `given order with multiple items and partial refunds, when invoke called, then returns correct remaining quantities`() {
         // GIVEN
@@ -384,6 +385,7 @@ class WooPosGetRefundableItemsTest {
         assertThat(result.filter { it.productId == 20L }).hasSize(2)
     }
 
+    @Suppress("LongMethod")
     @Test
     fun `given order with multiple refunds for same item, when invoke called, then sums all refunds correctly`() {
         // GIVEN
