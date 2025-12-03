@@ -518,10 +518,10 @@ static def loadPropertiesFromFile(inputFile) {
 }
 
 static def isFileEncrypted(File file) {
-    def gitcryptHeader = [0x00, 0x47, 0x49, 0x54, 0x43, 0x52, 0x59, 0x50, 0x54] as byte[] // GITCRYPT header
-    def header = new byte[gitcryptHeader.length]
+    def gitconcealHeader = [0x00, 0x61, 0x38, 0x63, 0x63, 0x72, 0x79, 0x70, 0x74] as byte[] // git-conceal header
+    def header = new byte[gitconcealHeader.length]
     file.withInputStream { stream -> stream.read(header) }
-    return Arrays.equals(header, gitcryptHeader)
+    return Arrays.equals(header, gitconcealHeader)
 }
 
 def isLeakCanaryEnabled() {
