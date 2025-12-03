@@ -16,21 +16,21 @@ msgid "This update makes the Wear app run more smoothly with faster startup time
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_238"
+msgid ""
+"23.8:\n"
+"This update smooths your workflow with fixes to back navigation, shipping rate crashes, and payment screen layout. POS also gets improvements, including faster Local Catalog settings, better handling of deleted products, and automatic scrolling to your newest orders.\n"
+msgstr ""
+
 msgctxt "release_note_237"
 msgid ""
 "23.7:\n"
 "Selling in-person just got faster! We've supercharged Woo POS with lightning-fast product search, instant barcode scanning, and near-instant loading. Your in-store experience is now smoother than ever.\n"
 msgstr ""
 
-msgctxt "release_note_236"
-msgid ""
-"23.6:\n"
-"Did you give Woo POS a try? It’s now even better because you can view orders right inside it. What else? Interac refunds are smoother, filters and buttons got a fresh look, and tablet UI got better. Customer data quirks? Fixed. Selling in-person? Try out Woo Point Of Sale.\n"
-msgstr ""
-
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!
 msgctxt "play_store_promo"
-msgid "Manage orders, get sales notifications, and view key metrics — wherever you are."
+msgid "Manage orders, get notifications, view metrics, and accept in-person payments."
 msgstr ""
 
 #. translators: Multi-paragraph text used to display in the Play Store.
@@ -47,7 +47,10 @@ msgid ""
 "Once you have some products created, it’s simple. Choose items from your catalog, add shipping, and then fill in customer details to quickly create an order that syncs with your inventory.\n"
 "\n"
 "Take payments in person\n"
-"Collect physical payments using WooCommerce In-Person Payments and a card reader. Start a new order - or find an existing one that’s pending payment - and collect payment using the card reader or a digital wallet, such as Google Pay.\n"
+"Collect physical payments using WooCommerce In-Person Payments and a card reader (available in the US, UK, and Canada), Tap to Pay, or a digital wallet, such as Apple Pay. Start a new order — or find an existing one that's pending payment – then seamlessly accept payment.\n"
+"\n"
+"Go from clicks to bricks\n"
+"Turn any tablet into a powerful point of sale with WooCommerce POS. Search products, scan barcodes, apply coupons, and send email receipts, with all of your online and physical sales synced in real time. Available in the US and UK.\n"
 "\n"
 "Get notified of every sale\n"
 "Now that you’re actively selling, never miss an order or a review. Keep yourself in the loop by enabling real-time alerts – and listen for that addictive “cha-ching” sound that comes with each new sale!\n"
@@ -67,7 +70,7 @@ msgstr ""
 
 #. translators: Title to be displayed in the Play Store. Limit to 50 characters including spaces and commas!
 msgctxt "play_store_app_title"
-msgid "WooCommerce"
+msgid "WooCommerce: Store Management & POS"
 msgstr ""
 
 #. translators: This is a promo message that will be attached on top of a screenshot in the App Store.

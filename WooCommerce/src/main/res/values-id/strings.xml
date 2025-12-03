@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-04 11:54:04+0000
+Translation-Revision-Date: 2025-11-18 09:54:05+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: id
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">Pemesanan tidak dipilih</string>
+    <string name="bookings_filters_selected_option_content_description">Opsi filter yang dipilih</string>
+    <string name="bookings_filter_customer">Pelanggan</string>
+    <string name="bookings_filters_title_with_count">Filter (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">Alamat fisik</string>
+    <string name="woopos_settings_store_general_title">Umum</string>
+    <string name="woopos_orders_details_refund_error">Tidak dapat memuat pengembalian dana</string>
+    <string name="woopos_cart_product_unknown_item">Item tidak diketahui</string>
+    <string name="woopos_totals_product_not_found_remove_products">Hapus produk</string>
+    <string name="woopos_totals_product_not_found_edit_order">Edit pesanan</string>
+    <string name="woopos_totals_product_not_found_reason">Produk di keranjang sudah tidak tersedia.</string>
+    <string name="woopos_totals_product_not_found_error">Produk tidak ditemukan</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Perbarui versi firmware untuk terus menerima pembayaran.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Perbarui versi firmware</string>
+    <string name="woopos_settings_card_reader_device_name_title">Nama perangkat</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Perbarui katalog secara manual</string>
+    <string name="woopos_settings_local_catalog_manual_update">Pembaruan katalog</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Izinkan sinkronisasi menggunakan data seluler</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Data seluler</string>
+    <string name="woopos_settings_local_catalog_last_update">Sinkronisasi tambahan terakhir</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Simpan katalog produk Anda di perangkat ini untuk pencarian, pemindaian barcode, dan waktu pemuatan yang lebih cepat.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">Katalog Lokal POS</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Hapus koneksi pembaca di Pengaturan Bluetooth Android</string>
     <string name="booking_mark_as_paid_error">Terjadi error saat menandai pemesanan sebagai sudah dibayar</string>
     <string name="booking_cancel_error">Terjadi error saat membatalkan pemesanan</string>
     <string name="booking_note_screen_update_error">Error saat menyimpan catatan pemesanan</string>
@@ -41,8 +64,8 @@ Language: id
     <string name="woopos_orders_details_total_label">Total</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Pengiriman</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Pajak</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Diskon (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Diskon</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Total diskon (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Total diskon</string>
     <string name="woopos_orders_details_breakdown_products_label">Produk</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">Total</string>
@@ -78,13 +101,11 @@ Language: id
     <string name="bookings_filter_title_service_event">Layanan / Acara</string>
     <string name="bookings_filter_title_date">Tanggal dan waktu</string>
     <string name="bookings_filter_location">Lokasi</string>
-    <string name="bookings_filter_customer_name">Nama pelanggan</string>
     <string name="bookings_filter_title_type">Jenis pemesanan</string>
     <string name="bookings_filter_title_payment_status">Status pembayaran</string>
     <string name="bookings_filter_title_attendance_status">Status kehadiran</string>
     <string name="bookings_filter_title_team_member">Anggota tim yang ditetapkan</string>
     <string name="bookings_filters_show_bookings">Tampilkan pemesanan</string>
-    <string name="bookings_filters_count_title">Penyaring (%d)</string>
     <string name="bookings_filters_default_title">Penyaring</string>
     <string name="bookings_empty_state_clear_filters_button">Hapus penyaring</string>
     <string name="bookings_empty_state_change_filters_button">Ubah penyaring</string>
@@ -123,15 +144,10 @@ Language: id
     <string name="woopos_date_today_at">Hari ini pukul %s</string>
     <string name="woopos_date_just_now">Baru saja</string>
     <string name="woopos_date_never">Tidak pernah</string>
-    <string name="woopos_settings_local_catalog_refresh_button">Segarkan Katalog</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Gunakan opsi segarkan ini hanya jika ada data yang terlihat tidak sesuai. POS menyimpan data terkini secara otomatis.</string>
-    <string name="woopos_settings_local_catalog_actions">Pembaruan Katalog Manual</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Unduh pembaruan katalog menggunakan data seluler</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Izinkan pembaruan lengkap atas data seluler</string>
+    <string name="woopos_settings_local_catalog_refresh_button">Perbarui katalog</string>
     <string name="woopos_settings_local_catalog_settings">Kelola Penggunaan Data</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Pembaruan Lengkap Terakhir</string>
-    <string name="woopos_settings_local_catalog_last_update">Pembaruan Terakhir </string>
-    <string name="woopos_settings_local_catalog_size">Ukuran Katalog</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Sinkronisasi penuh terakhir</string>
+    <string name="woopos_settings_local_catalog_size">Ukuran</string>
     <string name="woopos_settings_local_catalog_status">Status Katalog</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Kelola pengaturan katalog</string>
     <string name="woopos_settings_local_catalog_category">Katalog</string>
@@ -192,7 +208,6 @@ Language: id
     <string name="woopos_cart_empty_scan_barcode">pindai barcode</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Ketuk pada produk atau </string>
     <string name="woopos_orders_title">Pesanan</string>
-    <string name="woopos_settings_help_category">Bantuan</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">Checkout web</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Anda tidak dapat memindahkan produk ke dalam atau ke luar.</string>
@@ -206,9 +221,9 @@ Language: id
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Kami tidak dapat menemukan layanan pengiriman untuk kombinasi paket kategori iHAZMAT yang dipilih, paket yang dipilih, dan total berat pengiriman. Sesuaikan informasi yang Anda masukkan dan coba lagi.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Kami tidak dapat menemukan layanan pengiriman untuk kombinasi paket yang dipilih dan total berat pengiriman. Sesuaikan informasi yang Anda masukkan dan coba lagi.</string>
     <string name="woopos_settings_store_not_set">Tidak ditentukan</string>
-    <string name="woopos_settings_refund_policy_label">Kebijakan Pengembalian Dana &amp; Barang</string>
+    <string name="woopos_settings_refund_policy_label">Kebijakan pengembalian dana dan barang</string>
     <string name="woopos_settings_store_email_label">Email</string>
-    <string name="woopos_settings_store_phone_label">Telepon</string>
+    <string name="woopos_settings_store_phone_label">Nomor telepon</string>
     <string name="woopos_settings_store_address_label">Alamat</string>
     <string name="woopos_settings_store_name_label">Nama toko</string>
     <string name="woopos_settings_receipt_information_title">Informasi tanda terima</string>
@@ -216,12 +231,12 @@ Language: id
     <string name="woopos_settings_help_get_support_subtitle">Hubungi tim dukungan kami</string>
     <string name="woopos_settings_help_documentation_subtitle">Lihat panduan dan tutorial</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Pelajari tentang produk yang didukung di POS</string>
-    <string name="woopos_settings_help_category_subtitle">Dapatkan bantuan dan dukungan</string>
+    <string name="woopos_settings_help_category">Dapatkan bantuan dan dukungan</string>
     <string name="woopos_settings_card_reader_connected_reader">Pembaca terhubung</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Pelajari selengkapnya tentang menerima pembayaran dengan perangkat seluler</string>
     <string name="woopos_settings_card_reader_documentation_title">Dokumentasi</string>
     <string name="woopos_settings_card_reader_update_available">• Pembaruan tersedia</string>
-    <string name="woopos_settings_card_reader_update_button">Perbarui</string>
+    <string name="woopos_settings_card_reader_update_button">Perbarui firmware</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Tidak diketahui</string>
     <string name="woopos_settings_card_reader_unknown_reader">Pembaca Tidak Dikenal</string>
     <string name="woopos_settings_card_reader_firmware_title">Firmware</string>

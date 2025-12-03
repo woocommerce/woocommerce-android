@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-04 17:54:05+0000
+Translation-Revision-Date: 2025-11-18 18:54:15+0000
 Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);
 Generator: GlotPress/2.4.0-alpha
 Language: ru
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">Бронирование не выбрано</string>
+    <string name="bookings_filters_selected_option_content_description">Опция «Выбранный фильтр»</string>
+    <string name="bookings_filter_customer">Клиент</string>
+    <string name="bookings_filters_title_with_count">Фильтры (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">Физический адрес</string>
+    <string name="woopos_settings_store_general_title">Общие</string>
+    <string name="woopos_orders_details_refund_error">Не удалось загрузить возврат средств</string>
+    <string name="woopos_cart_product_unknown_item">Неизвестный товар</string>
+    <string name="woopos_totals_product_not_found_remove_products">Удалить товар</string>
+    <string name="woopos_totals_product_not_found_edit_order">Изменить заказ</string>
+    <string name="woopos_totals_product_not_found_reason">Товара в корзине больше нет в наличии.</string>
+    <string name="woopos_totals_product_not_found_error">Товар не найден</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">Обновите версию прошивки, чтобы продолжать принимать платежи.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">Обновить версию прошивки</string>
+    <string name="woopos_settings_card_reader_device_name_title">Имя устройства</string>
+    <string name="woopos_settings_local_catalog_refresh_description">Обновить каталог вручную</string>
+    <string name="woopos_settings_local_catalog_manual_update">Обновление каталога</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Разрешить синхронизацию по сотовым данным</string>
+    <string name="woopos_settings_local_catalog_cellular_data">Сотовые данные</string>
+    <string name="woopos_settings_local_catalog_last_update">Последняя инкрементная синхронизация</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">Храните каталог товаров на этом устройстве, чтобы ускорить поиск, сканировать штрихкоды и повысить скорость загрузки.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">Локальный каталог POS</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Отключить терминал в настройках Android Bluetooth</string>
     <string name="booking_mark_as_paid_error">Ошибка при присвоении бронированию статуса «Оплачено»</string>
     <string name="booking_cancel_error">Ошибка при отмене бронирования</string>
     <string name="booking_note_screen_update_error">Ошибка при сохранении примечания к бронированию</string>
@@ -41,8 +64,8 @@ Language: ru
     <string name="woopos_orders_details_total_label">Итого</string>
     <string name="woopos_orders_details_breakdown_shipping_label">Доставка</string>
     <string name="woopos_orders_details_breakdown_taxes_label">Налоги</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">Скидка (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">Скидка</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">Итоговая скидка (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">Итоговая скидка</string>
     <string name="woopos_orders_details_breakdown_products_label">Товары</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">Итого</string>
@@ -78,13 +101,11 @@ Language: ru
     <string name="bookings_filter_title_service_event">Служба / событие</string>
     <string name="bookings_filter_title_date">Дата и время</string>
     <string name="bookings_filter_location">Местоположение</string>
-    <string name="bookings_filter_customer_name">Имя клиента</string>
     <string name="bookings_filter_title_type">Тип бронирования</string>
     <string name="bookings_filter_title_payment_status">Статус платежа</string>
     <string name="bookings_filter_title_attendance_status">Статус участия</string>
     <string name="bookings_filter_title_team_member">Назначенный сотрудник</string>
     <string name="bookings_filters_show_bookings">Показать бронирования</string>
-    <string name="bookings_filters_count_title">Фильтры (%d)</string>
     <string name="bookings_filters_default_title">Фильтры</string>
     <string name="bookings_empty_state_clear_filters_button">Очистить фильтры</string>
     <string name="bookings_empty_state_change_filters_button">Изменить фильтры</string>
@@ -124,14 +145,9 @@ Language: ru
     <string name="woopos_date_just_now">Прямо сейчас</string>
     <string name="woopos_date_never">Никогда</string>
     <string name="woopos_settings_local_catalog_refresh_button">Обновить каталог</string>
-    <string name="woopos_settings_local_catalog_refresh_description">Следует прибегать к обновлению только при возникновении неполадок с подключением. POS автоматически сохраняет текущие данные.</string>
-    <string name="woopos_settings_local_catalog_actions">Обновление каталога вручную</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">Загрузить обновления каталога по сотовым данным</string>
-    <string name="woopos_settings_local_catalog_cellular_data">Разрешить полное обновление по сотовым данным</string>
     <string name="woopos_settings_local_catalog_settings">Управление использованием данных</string>
-    <string name="woopos_settings_local_catalog_last_full_update">Последнее полное обновление</string>
-    <string name="woopos_settings_local_catalog_last_update">Последнее обновление</string>
-    <string name="woopos_settings_local_catalog_size">Размер каталога</string>
+    <string name="woopos_settings_local_catalog_last_full_update">Последняя полная синхронизация</string>
+    <string name="woopos_settings_local_catalog_size">Размер</string>
     <string name="woopos_settings_local_catalog_status">Статус каталога</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Управление настройками каталога</string>
     <string name="woopos_settings_local_catalog_category">Каталог</string>
@@ -192,7 +208,6 @@ Language: ru
     <string name="woopos_cart_empty_scan_barcode">сканируйте штрихкод,</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">Нажмите на товар или </string>
     <string name="woopos_orders_title">Заказы</string>
-    <string name="woopos_settings_help_category">Справка</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">Консоль WP-Admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">Онлайн-оформление заказа</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">Вы не можете перемещать сюда товары или удалять их отсюда.</string>
@@ -206,9 +221,9 @@ Language: ru
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty_with_hazmat">Не удалось найти службу доставки по комбинации заданной категории опасных веществ, указанных данных упаковки и общего веса посылки. Уточните данные и повторите попытку.</string>
     <string name="woo_shipping_labels_package_creation_shipping_rates_empty">Не удалось найти службу доставки по комбинации указанных данных упаковки и общего веса посылки. Уточните данные и повторите попытку.</string>
     <string name="woopos_settings_store_not_set">Не указано</string>
-    <string name="woopos_settings_refund_policy_label">Правила возмещения средств и возврата товаров</string>
+    <string name="woopos_settings_refund_policy_label">Правила возврата товаров и денежных средств</string>
     <string name="woopos_settings_store_email_label">Адрес эл. почты</string>
-    <string name="woopos_settings_store_phone_label">Телефон</string>
+    <string name="woopos_settings_store_phone_label">Номер телефона</string>
     <string name="woopos_settings_store_address_label">Адрес</string>
     <string name="woopos_settings_store_name_label">Название магазина</string>
     <string name="woopos_settings_receipt_information_title">Данные чека</string>
@@ -216,12 +231,12 @@ Language: ru
     <string name="woopos_settings_help_get_support_subtitle">Обратитесь в службу поддержки</string>
     <string name="woopos_settings_help_documentation_subtitle">Руководства и обучающие материалы</string>
     <string name="woopos_settings_help_product_limitations_subtitle">Товары, поддерживаемые в POS</string>
-    <string name="woopos_settings_help_category_subtitle">Помощь и техническая поддержка</string>
+    <string name="woopos_settings_help_category">Помощь и техническая поддержка</string>
     <string name="woopos_settings_card_reader_connected_reader">Подключённое устройство чтения</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">Подробнее о приёме мобильных платежей</string>
     <string name="woopos_settings_card_reader_documentation_title">Документация</string>
     <string name="woopos_settings_card_reader_update_available">• Доступно обновление</string>
-    <string name="woopos_settings_card_reader_update_button">Обновить</string>
+    <string name="woopos_settings_card_reader_update_button">Обновить прошивку</string>
     <string name="woopos_settings_card_reader_unknown_firmware">Неизвестно</string>
     <string name="woopos_settings_card_reader_unknown_reader">Неизвестное устройство чтения</string>
     <string name="woopos_settings_card_reader_firmware_title">Прошивка</string>
