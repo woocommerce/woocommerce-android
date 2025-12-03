@@ -87,7 +87,9 @@ class CardReaderPaymentStateToViewStateMapper @Inject constructor(
             is ProcessingPayment.ExternalReaderProcessingPayment -> {
                 ViewState.ExternalReaderProcessingPaymentState(
                     amountWithCurrencyLabel = paymentState.amountWithCurrencyLabel,
-                    onSecondaryActionClicked = paymentState.onCancel
+                    onSecondaryActionClicked = paymentState.onCancel,
+                    hintLabel = paymentState.cardReaderHint
+                        ?: R.string.card_reader_payment_collect_payment_hint,
                 )
             }
             ReFetchingOrder -> ViewState.ReFetchingOrderState
