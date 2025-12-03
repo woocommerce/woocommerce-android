@@ -81,11 +81,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>
     ): WooPosRefundState.Content {
-        val itemsLabel = resourceProvider.getString(
-            R.string.woopos_orders_items_count,
-            refundableItems.size
-        )
-
         val subtotal = refundableItems.sumOf { it.lineTotal }
         val taxes = refundableItems.sumOf { it.lineTax }
         val total = subtotal + taxes
@@ -95,7 +90,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             orderNumber = "#${order.number}",
             currency = order.currency,
             refundableItems = refundableItems,
-            itemsLabel = itemsLabel,
+            itemsCount = refundableItems.size,
             subtotal = subtotal,
             taxes = taxes,
             total = total

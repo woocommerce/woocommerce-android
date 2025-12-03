@@ -162,7 +162,7 @@ private fun RefundDialogContent(
     Column(modifier = Modifier.fillMaxSize()) {
         RefundDialogHeader(onDismissRequest = onDismissRequest)
 
-        ItemsHeaderRow(itemsLabel = state.itemsLabel)
+        ItemsHeaderRow(itemsCount = state.itemsCount)
 
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
@@ -235,7 +235,7 @@ private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun ItemsHeaderRow(itemsLabel: String) {
+private fun ItemsHeaderRow(itemsCount: Int) {
     val selectAllContentDescription = stringResource(R.string.order_refunds_items_select_all)
     Row(
         modifier = Modifier
@@ -259,12 +259,24 @@ private fun ItemsHeaderRow(itemsLabel: String) {
             )
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
-        WooPosText(
-            text = itemsLabel,
-            style = WooPosTypography.Caption,
-            fontWeight = FontWeight.Bold,
-            color = WooPosTheme.colors.onSurfaceVariantHighest
-        )
+        Row {
+            WooPosText(
+                text = stringResource(R.string.woopos_orders_select_all_items),
+                style = WooPosTypography.Caption,
+                fontWeight = FontWeight.Bold,
+                color = WooPosTheme.colors.onSurfaceVariantHighest
+            )
+            WooPosText(
+                text = " ",
+                style = WooPosTypography.Caption
+            )
+            WooPosText(
+                text = stringResource(R.string.woopos_orders_items_selected_count, itemsCount),
+                style = WooPosTypography.Caption,
+                fontWeight = FontWeight.Normal,
+                color = WooPosTheme.colors.onSurfaceVariantLowest
+            )
+        }
     }
 }
 
@@ -366,7 +378,7 @@ fun WooPosIssueRefundDialogPreview() {
         orderNumber = "#123",
         currency = "USD",
         refundableItems = sampleItems,
-        itemsLabel = "SELECT ALL ITEMS (3 SELECTED)",
+        itemsCount = 3,
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
         total = BigDecimal("62.65")
