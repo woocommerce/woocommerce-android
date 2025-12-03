@@ -105,7 +105,7 @@ def assertSecretsApplied() {
     try {
         readPropertiesFromFile(secretsFile)
     } catch (Exception ex) {
-        throw new GradleException("The `secrets.properties` file exists but could not be read as a valid `.properties` file. This likely means it is still encrypted (git-crypt locked). Please decrypt it before building. See README.md for instructions.", ex)
+        throw new GradleException("The `secrets.properties` file exists but could not be read as a valid `.properties` file. This likely means it is still encrypted (git-conceal locked). Please decrypt it before building. See README.md for instructions.", ex)
     }
 }
 

@@ -33,12 +33,9 @@ Read more about [OAuth2][oauth] and the [WordPress.com REST endpoint][wp-api].
 #### `secrets.properties`
 
 The `secrets.properties` file is used to store sensitive information that should not be checked into version control in clear text.
-This file is encrypted (using `git-crypt`), and only developers working at Automattic have the decryption key.
+This file is encrypted (using [`git-conceal`](https://github.com/Automattic/git-conceal)), and only developers working at Automattic have the decryption key.
 
-If you are a developer working at Automattic, ensure you followed those instructions once after cloning the repo:
-  1. Make sure you have `git-crypt` installed (`brew install git-crypt`)
-  1. Search for "WooCommerce Android git-crypt encryption key" in our Secret Store, and copy the Base64 value in your clipboard
-  1. Run `pbpaste | base64 -d | git-crypt unlock -` to decrypt the encrypted files (including `secrets.properties`)
+If you are a developer working at Automattic, follow the steps [in the README.md](../README.md#-setup-instructions) to decrypt the encrypted files (including `secrets.properties`).
 
 If you are an external contributor, provide those variables in your `defaults.properties` instead:
 
