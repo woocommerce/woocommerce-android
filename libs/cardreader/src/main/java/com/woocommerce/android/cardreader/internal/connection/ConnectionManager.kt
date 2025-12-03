@@ -146,7 +146,7 @@ internal class ConnectionManager(
             terminal.disconnectReader()
             updateReaderStatus(CardReaderStatus.NotConnected())
             true
-        } catch (e: TerminalException) {
+        } catch (@Suppress("SwallowedException") e: TerminalException) {
             updateReaderStatus(CardReaderStatus.NotConnected())
             false
         }

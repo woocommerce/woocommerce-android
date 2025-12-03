@@ -24,8 +24,8 @@ import com.stripe.stripeterminal.external.models.TapToPayUxConfiguration.Color
 import com.stripe.stripeterminal.ktx.cancelPaymentIntent
 import com.stripe.stripeterminal.ktx.connectReader
 import com.stripe.stripeterminal.ktx.createPaymentIntent
-import com.stripe.stripeterminal.ktx.discoverReaders
 import com.stripe.stripeterminal.ktx.disconnectReader
+import com.stripe.stripeterminal.ktx.discoverReaders
 import com.stripe.stripeterminal.ktx.processPaymentIntent
 import com.stripe.stripeterminal.ktx.processRefund
 import com.stripe.stripeterminal.log.LogLevel
