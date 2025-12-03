@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -19,6 +20,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -38,6 +40,8 @@ class WooPosItemsViewModel @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val syncTimestampManager: WooPosSyncTimestampManager,
+    private val dateTimeProvider: DateTimeProvider,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -72,6 +76,7 @@ class WooPosItemsViewModel @Inject constructor(
             _catalogSyncOverdueBannerState.value = when (requirement) {
                 is WooPosFullSyncRequirement.NonBlockingRequired -> {
                     if (requirement.isOverdue) {
+                        trackStaleWarningShown(requirement.lastSyncTimestamp)
                         CatalogSyncOverdueBannerState.Visible
                     } else {
                         CatalogSyncOverdueBannerState.Hidden
@@ -79,6 +84,18 @@ class WooPosItemsViewModel @Inject constructor(
                 }
                 else -> CatalogSyncOverdueBannerState.Hidden
             }
+        }
+    }
+
+    private fun trackStaleWarningShown(lastSyncTimestamp: Long) {
+        viewModelScope.launch {
+            val currentTime = dateTimeProvider.now()
+            val timeDifferenceMs = currentTime - lastSyncTimestamp
+            val hoursSinceLastSync = (timeDifferenceMs / (1000 * 60 * 60)).toInt()
+
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
+            )
         }
     }
 

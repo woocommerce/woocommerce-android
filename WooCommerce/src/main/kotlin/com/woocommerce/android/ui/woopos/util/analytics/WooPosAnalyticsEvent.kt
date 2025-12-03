@@ -795,6 +795,18 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "local_catalog_downloading_screen_exit_pos_tapped"
         }
 
+        data class LocalCatalogStaleWarningShown(val hoursSinceLastSync: Int) : Event() {
+            override val name: String = "local_catalog_stale_warning_shown"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "hours_since_last_sync" to hoursSinceLastSync.toString()
+                    )
+                )
+            }
+        }
+
         data object SplashScreenErrorShown : Event() {
             override val name: String = "splash_screen_error_shown"
         }
