@@ -3,7 +3,7 @@
 APP_TO_BUILD="${1?You need to specify the app to build, WooCommerce or WooCommerce-Wear}"
 
 echo "--- :closed_lock_with_key: Decrypting Secrets"
-.buildkite/commands/git-crypt-unlock.sh
+git-conceal-unlock
 
 echo "--- :rubygems: Setting up Gems"
 install_gems

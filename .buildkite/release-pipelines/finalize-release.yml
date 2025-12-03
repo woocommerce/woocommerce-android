@@ -11,7 +11,7 @@ steps:
       .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
 
       echo '--- :closed_lock_with_key: Decrypting Secrets'
-      .buildkite/commands/git-crypt-unlock.sh
+      git-conceal-unlock
 
       echo '--- :ruby: Setup Ruby Tools'
       install_gems

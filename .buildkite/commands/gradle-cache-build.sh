@@ -11,7 +11,7 @@ fi
 "$(dirname "${BASH_SOURCE[0]}")/restore-cache.sh"
 
 echo "--- :closed_lock_with_key: Decrypting Secrets"
-.buildkite/commands/git-crypt-unlock.sh
+git-conceal-unlock
 
 echo "--- :rubygems: Setting up Gems"
 install_gems
