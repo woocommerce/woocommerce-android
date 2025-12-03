@@ -89,6 +89,15 @@ class WooPosOrdersDataSource @Inject constructor(
             }
         }
 
+    suspend fun getOrderById(orderId: Long): Result<Order> {
+        val cached = ordersCache.getAll().firstOrNull { it.id == orderId }
+        if (cached != null) {
+            return Result.success(cached)
+        }
+
+        return refreshOrderById(orderId)
+    }
+
     suspend fun refreshOrderById(orderId: Long): Result<Order> {
         val site = selectedSite.get()
         val payload = restClient.fetchSingleOrder(site, orderId)
