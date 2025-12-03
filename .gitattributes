@@ -1,13 +1,13 @@
 RELEASE-NOTES.txt merge=union
 
 #########################################
-# Secrets files encrypted with git-crypt
+# Secrets files encrypted with git-conceal
 #########################################
 
-secrets.properties filter=git-crypt diff=git-crypt
-sentry.properties filter=git-crypt diff=git-crypt
-google-services.json filter=git-crypt diff=git-crypt
-firebase.secrets.json filter=git-crypt diff=git-crypt
-google-upload-credentials.json filter=git-crypt diff=git-crypt
-*.keystore filter=git-crypt diff=git-crypt
-*.jks filter=git-crypt diff=git-crypt
+secrets.properties filter=git-conceal diff=git-conceal
+sentry.properties filter=git-conceal diff=git-conceal
+google-services.json filter=git-conceal diff=git-conceal
+firebase.secrets.json filter=git-conceal diff=git-conceal
+google-upload-credentials.json filter=git-conceal diff=git-conceal
+*.keystore filter=git-conceal diff=git-conceal
+*.jks filter=git-conceal diff=git-conceal
