@@ -94,13 +94,18 @@ fun WooPosIssueRefundDialog(
 
 @Composable
 private fun LoadingContent() {
+    val loadingDescription = stringResource(R.string.woopos_orders_loading_refund_items)
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(WooPosSpacing.XLarge.value),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator()
+        CircularProgressIndicator(
+            modifier = Modifier.semantics {
+                contentDescription = loadingDescription
+            }
+        )
     }
 }
 
