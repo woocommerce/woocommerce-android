@@ -172,6 +172,19 @@ private fun WooPosOrdersScreen(
                     .statusBarsPadding()
             )
         }
+
+        if (state is WooPosOrdersState.Content) {
+            when (val dialogState = state.dialogState) {
+                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+                    WooPosIssueRefundDialog(
+                        orderId = dialogState.orderId,
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onContinue = onIssueRefundDialogDismissed
+                    )
+                }
+                WooPosOrdersState.Content.DialogState.Hidden -> Unit
+            }
+        }
     }
 }
 
@@ -217,17 +230,6 @@ private fun OrdersContent(
                 onUIEvent = onUIEvent
             )
         }
-    }
-
-    when (val dialogState = state.dialogState) {
-        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
-            WooPosIssueRefundDialog(
-                isVisible = true,
-                orderId = dialogState.orderId,
-                onDismissRequest = onIssueRefundDialogDismissed
-            )
-        }
-        WooPosOrdersState.Content.DialogState.Hidden -> Unit
     }
 }
 
