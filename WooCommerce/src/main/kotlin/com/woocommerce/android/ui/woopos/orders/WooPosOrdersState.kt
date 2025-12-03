@@ -8,85 +8,87 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
-sealed interface OrderAction {
-    @Immutable
-    data class IssueRefund(val orderId: Long) : OrderAction
-
-    @Immutable
-    data class EmailReceipt(val orderId: Long) : OrderAction
-}
-
-@Immutable
-sealed class OrderDetailsViewState {
-    abstract val orderId: Long
-
-    @Immutable
-    data class Lazy(
-        override val orderId: Long,
-        val order: Order,
-        val refundResult: RefundFetchResult
-    ) : OrderDetailsViewState()
-
-    @Immutable
-    data class Computed(
-        override val orderId: Long,
-        val details: Details
-    ) : OrderDetailsViewState() {
-        @Immutable
-        data class Details(
-            val id: Long,
-            val number: String,
-            val dateTime: String,
-            val customerEmail: String?,
-            val status: PosOrderStatus,
-
-            val lineItems: List<LineItemRow>,
-            val breakdown: TotalsBreakdown,
-            val total: String,
-            val totalPaid: String,
-            val paymentMethodTitle: String?,
-        ) {
-            @Immutable
-            data class LineItemRow(
-                val id: Long,
-                val name: String,
-                val qtyAndUnitPrice: String,
-                val lineTotal: String,
-                val imageUrl: String?,
-            )
-
-            @Immutable
-            data class TotalsBreakdown(
-                val products: String,
-                val discount: String?,
-                val discountCode: String?,
-                val taxes: String,
-                val shipping: String?,
-                val refunds: List<String>,
-                val netPayment: String?
-            )
-        }
-    }
-}
-
-@Immutable
-data class OrderItemViewState(
-    val id: Long,
-    val title: String,
-    val date: String,
-    val total: String,
-    val customerEmail: String?,
-    val isSelected: Boolean,
-    val status: PosOrderStatus,
-    val statusSlug: String,
-    val createdAtMillis: Long
-)
-
-@Immutable
 sealed class WooPosOrdersState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
     abstract val searchInputState: WooPosSearchInputState
-    abstract val actions: List<OrderAction>
+
+    @Immutable
+    sealed interface OrderAction {
+        val orderId: Long
+
+        @Immutable
+        data class IssueRefund(override val orderId: Long) : OrderAction
+
+        @Immutable
+        data class EmailReceipt(override val orderId: Long) : OrderAction
+    }
+
+    @Immutable
+    sealed class OrderDetailsViewState {
+        abstract val orderId: Long
+
+        @Immutable
+        data class Lazy(
+            override val orderId: Long,
+            val order: Order,
+            val refundResult: RefundFetchResult
+        ) : OrderDetailsViewState()
+
+        @Immutable
+        data class Computed(
+            override val orderId: Long,
+            val details: Details
+        ) : OrderDetailsViewState() {
+            @Immutable
+            data class Details(
+                val id: Long,
+                val number: String,
+                val dateTime: String,
+                val customerEmail: String?,
+                val status: PosOrderStatus,
+
+                val lineItems: List<LineItemRow>,
+                val breakdown: TotalsBreakdown,
+                val total: String,
+                val totalPaid: String,
+                val paymentMethodTitle: String?,
+                val actions: List<OrderAction>
+            ) {
+                @Immutable
+                data class LineItemRow(
+                    val id: Long,
+                    val name: String,
+                    val qtyAndUnitPrice: String,
+                    val lineTotal: String,
+                    val imageUrl: String?,
+                )
+
+                @Immutable
+                data class TotalsBreakdown(
+                    val products: String,
+                    val discount: String?,
+                    val discountCode: String?,
+                    val taxes: String,
+                    val shipping: String?,
+                    val refunds: List<String>,
+                    val netPayment: String?
+                )
+            }
+        }
+    }
+
+    @Immutable
+    data class OrderItemViewState(
+        val id: Long,
+        val title: String,
+        val date: String,
+        val total: String,
+        val customerEmail: String?,
+        val isSelected: Boolean,
+        val status: PosOrderStatus,
+        val statusSlug: String,
+        val createdAtMillis: Long
+    )
 
     @Immutable
     data class Content(
@@ -95,8 +97,7 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details,
         val paginationState: WooPosPaginationState,
-        val dialogState: DialogState = DialogState.Hidden,
-        override val actions: List<OrderAction> = emptyList()
+        val dialogState: DialogState = DialogState.Hidden
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()
@@ -114,16 +115,14 @@ sealed class WooPosOrdersState {
     @Immutable
     data class Error(
         val message: String,
-        override val searchInputState: WooPosSearchInputState,
-        override val actions: List<OrderAction> = emptyList()
+        override val searchInputState: WooPosSearchInputState
     ) : WooPosOrdersState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
     @Immutable
     data class Loading(
-        override val searchInputState: WooPosSearchInputState,
-        override val actions: List<OrderAction> = emptyList()
+        override val searchInputState: WooPosSearchInputState
     ) : WooPosOrdersState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
@@ -131,8 +130,7 @@ sealed class WooPosOrdersState {
     @Immutable
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val searchInputState: WooPosSearchInputState,
-        override val actions: List<OrderAction> = emptyList()
+        override val searchInputState: WooPosSearchInputState
     ) : WooPosOrdersState()
 }
 
