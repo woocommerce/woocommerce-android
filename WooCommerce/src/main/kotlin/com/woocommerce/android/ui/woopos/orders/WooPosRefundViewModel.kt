@@ -40,40 +40,34 @@ class WooPosRefundViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
-            try {
-                val orderResult = ordersDataSource.getOrderById(orderId)
-                if (orderResult.isFailure) {
-                    _state.value = WooPosRefundState.Error(
-                        message = resourceProvider.getString(R.string.error_generic)
-                    )
-                    return@launch
-                }
-
-                val order = orderResult.getOrThrow()
-
-                val refundsResult = retrieveOrderRefunds(order)
-                val refunds = if (refundsResult.isSuccess) {
-                    refundsResult.getOrThrow()
-                } else {
-                    emptyList()
-                }
-
-                val refundableItems = getRefundableItems(order, refunds)
-
-                if (refundableItems.isEmpty()) {
-                    _state.value = WooPosRefundState.NoRefundableItems
-                    return@launch
-                }
-
-                _state.value = buildContentState(
-                    order = order,
-                    refundableItems = refundableItems
-                )
-            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
+            val orderResult = ordersDataSource.getOrderById(orderId)
+            if (orderResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
-                    message = e.message ?: resourceProvider.getString(R.string.error_generic)
+                    message = resourceProvider.getString(R.string.error_generic)
                 )
+                return@launch
             }
+
+            val order = orderResult.getOrThrow()
+
+            val refundsResult = retrieveOrderRefunds(order)
+            val refunds = if (refundsResult.isSuccess) {
+                refundsResult.getOrThrow()
+            } else {
+                emptyList()
+            }
+
+            val refundableItems = getRefundableItems(order, refunds)
+
+            if (refundableItems.isEmpty()) {
+                _state.value = WooPosRefundState.NoRefundableItems
+                return@launch
+            }
+
+            _state.value = buildContentState(
+                order = order,
+                refundableItems = refundableItems
+            )
         }
     }
 
