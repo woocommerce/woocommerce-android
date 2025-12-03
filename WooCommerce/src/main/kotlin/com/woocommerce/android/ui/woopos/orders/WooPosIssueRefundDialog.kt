@@ -145,7 +145,7 @@ private fun NoItemsContent(onDismissRequest: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
-            text = "No items available for refund",
+            text = stringResource(R.string.woopos_orders_no_items_available_for_refund),
             style = WooPosTypography.BodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
