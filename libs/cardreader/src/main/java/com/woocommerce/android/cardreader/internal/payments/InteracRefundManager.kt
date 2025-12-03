@@ -19,17 +19,16 @@ internal class InteracRefundManager(
         refundConfig: RefundConfig,
     ): Flow<CardInteracRefundStatus> = flow {
         emit(CardInteracRefundStatus.CollectingInteracRefund)
-        processRefundAction.processRefund(
+        val status = processRefundAction.processRefund(
             refundParameters.toStripeRefundParameters(paymentsUtils),
             refundConfig.toStripeRefundConfiguration()
-        ).collect { status ->
-            when (status) {
-                is ProcessRefundAction.ProcessRefundStatus.Success -> {
-                    emit(CardInteracRefundStatus.InteracRefundSuccess)
-                }
-                is ProcessRefundAction.ProcessRefundStatus.Failure -> {
-                    emit(refundErrorMapper.mapTerminalError(refundParameters, status.exception))
-                }
+        )
+        when (status) {
+            is ProcessRefundAction.ProcessRefundStatus.Success -> {
+                emit(CardInteracRefundStatus.InteracRefundSuccess)
+            }
+            is ProcessRefundAction.ProcessRefundStatus.Failure -> {
+                emit(refundErrorMapper.mapTerminalError(refundParameters, status.exception))
             }
         }
     }
