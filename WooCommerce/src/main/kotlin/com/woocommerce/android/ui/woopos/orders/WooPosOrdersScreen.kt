@@ -146,8 +146,7 @@ private fun WooPosOrdersScreen(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
-                onUIEvent = onUIEvent,
-                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed
+                onUIEvent = onUIEvent
             )
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
@@ -198,8 +197,7 @@ private fun OrdersContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
