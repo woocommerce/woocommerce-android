@@ -509,7 +509,7 @@ class WooPosGetRefundableItemsTest {
     }
 
     @Test
-    fun `given order with variation and refund on different variation, when invoke called, then does not reduce quantity`() {
+    fun `given order with variation and refund on different order item, when invoke called, then does not reduce quantity`() {
         // GIVEN
         val orderItem = Order.Item(
             itemId = 1L,
@@ -528,24 +528,25 @@ class WooPosGetRefundableItemsTest {
         )
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
 
+        // Refund targeting a different order item (orderItemId = 999) that doesn't exist in this order
         val refund = Refund(
             id = 1L,
             amount = BigDecimal("20.00"),
             dateCreated = Date(),
-            reason = "Refund different variation",
+            reason = "Refund different order item",
             automaticGatewayRefund = true,
             items = listOf(
                 Refund.Item(
                     id = 1L,
                     productId = 50L,
-                    variationId = 102L, // Different variation
+                    variationId = 102L,
                     quantity = 1,
                     name = "T-Shirt - Large",
                     subtotal = BigDecimal("20.00"),
                     total = BigDecimal("20.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
-                    orderItemId = 1L
+                    orderItemId = 999L // Different order item ID
                 )
             ),
             shippingLines = emptyList(),
@@ -556,7 +557,7 @@ class WooPosGetRefundableItemsTest {
         val result = sut.invoke(order, listOf(refund))
 
         // THEN
-        assertThat(result).hasSize(3) // Quantity unchanged
+        assertThat(result).hasSize(3) // Quantity unchanged because refund targets different order item
         result.forEach { item ->
             assertThat(item.variationId).isEqualTo(101L)
         }
@@ -616,6 +617,80 @@ class WooPosGetRefundableItemsTest {
         }
     }
 
+    @Suppress("LongMethod")
+    @Test
+    fun `given order with same product and variation as separate items, when one item refunded, then only that specific item quantity is reduced`() {
+        // GIVEN
+        // Two separate line items with the same product and variation (e.g., added to cart at different times)
+        val item1 = Order.Item(
+            itemId = 1L,
+            productId = 50L,
+            name = "T-Shirt - Small",
+            price = BigDecimal("20.00"),
+            sku = "",
+            quantity = 3f,
+            subtotal = BigDecimal("60.00"),
+            subtotalTax = BigDecimal.ZERO,
+            totalTax = BigDecimal.ZERO,
+            total = BigDecimal("60.00"),
+            variationId = 101L,
+            attributesList = emptyList(),
+            taxes = emptyList()
+        )
+        val item2 = Order.Item(
+            itemId = 2L,
+            productId = 50L, // Same product
+            name = "T-Shirt - Small",
+            price = BigDecimal("20.00"),
+            sku = "",
+            quantity = 2f,
+            subtotal = BigDecimal("40.00"),
+            subtotalTax = BigDecimal.ZERO,
+            totalTax = BigDecimal.ZERO,
+            total = BigDecimal("40.00"),
+            variationId = 101L, // Same variation
+            attributesList = emptyList(),
+            taxes = emptyList()
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(item1, item2))
+
+        // Refund targeting only item1 (orderItemId = 1)
+        val refund = Refund(
+            id = 1L,
+            amount = BigDecimal("40.00"),
+            dateCreated = Date(),
+            reason = "Partial refund of first item",
+            automaticGatewayRefund = true,
+            items = listOf(
+                Refund.Item(
+                    id = 1L,
+                    productId = 50L,
+                    variationId = 101L,
+                    quantity = 2,
+                    name = "T-Shirt - Small",
+                    subtotal = BigDecimal("40.00"),
+                    total = BigDecimal("40.00"),
+                    totalTax = BigDecimal.ZERO,
+                    price = BigDecimal("20.00"),
+                    orderItemId = 1L // Refund targets item1 only
+                )
+            ),
+            shippingLines = emptyList(),
+            feeLines = emptyList()
+        )
+
+        // WHEN
+        val result = sut.invoke(order, listOf(refund))
+
+        // THEN
+        // Item1: 3 - 2 = 1 remaining
+        // Item2: 2 - 0 = 2 remaining (unchanged)
+        // Total: 1 + 2 = 3
+        assertThat(result).hasSize(3)
+        assertThat(result.filter { it.orderItemId == 1L }).hasSize(1)
+        assertThat(result.filter { it.orderItemId == 2L }).hasSize(2)
+    }
+
     // Price Calculations
 
     @Test
@@ -650,7 +725,7 @@ class WooPosGetRefundableItemsTest {
     }
 
     @Test
-    fun `given order item with quantity zero, when invoke called, then unit price equals total`() {
+    fun `given order item with quantity zero, when invoke called, then returns empty list`() {
         // GIVEN
         val orderItem = Order.Item(
             itemId = 1L,
@@ -740,7 +815,7 @@ class WooPosGetRefundableItemsTest {
     }
 
     @Test
-    fun `given order item with quantity zero, when invoke called, then unit tax equals total tax`() {
+    fun `given order item with zero quantity and non-zero tax, when invoke called, then returns empty list`() {
         // GIVEN
         val orderItem = Order.Item(
             itemId = 1L,
@@ -937,8 +1012,8 @@ class WooPosGetRefundableItemsTest {
         // THEN
         assertThat(result).hasSize(3)
         result.forEach { item ->
-            assertThat(item.unitPrice).isEqualTo(BigDecimal.ZERO)
-            assertThat(item.unitTax).isEqualTo(BigDecimal.ZERO)
+            assertThat(item.unitPrice).isEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(item.unitTax).isEqualByComparingTo(BigDecimal.ZERO)
         }
     }
 
