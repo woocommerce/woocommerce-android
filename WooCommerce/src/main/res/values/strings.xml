@@ -3799,7 +3799,6 @@
     <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
     <string name="woopos_orders_select_items_to_refund">Select items to refund</string>
-    <string name="woopos_orders_items_selected">ITEMS (%1$d SELECTED)</string>
     <string name="woopos_orders_select_all_items">SELECT ALL ITEMS</string>
     <string name="woopos_orders_items_selected_count">(%1$d SELECTED)</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
