@@ -49,17 +49,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import java.math.BigDecimal
 
-private val COLUMN_WIDTH = 104.dp
-
 @Composable
 fun WooPosIssueRefundDialog(
     orderId: Long,
     onDismissRequest: () -> Unit,
     onContinue: () -> Unit
 ) {
-    val viewModel: WooPosRefundViewModel = hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
-        factory.create(orderId)
-    }
+    val viewModel: WooPosRefundViewModel =
+        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
+            factory.create(orderId)
+        }
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     WooPosDialogWrapper(
@@ -238,7 +237,6 @@ private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
 @Composable
 private fun ItemsHeaderRow(itemsLabel: String) {
     val selectAllContentDescription = stringResource(R.string.order_refunds_items_select_all)
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -246,50 +244,26 @@ private fun ItemsHeaderRow(itemsLabel: String) {
             .padding(bottom = WooPosSpacing.Medium.value),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Large.value)
-        ) {
-            Checkbox(
-                checked = true,
-                onCheckedChange = null,
-                modifier = Modifier
-                    .size(32.dp)
-                    .semantics {
-                        contentDescription = selectAllContentDescription
-                    },
-                colors = CheckboxDefaults.colors(
-                    checkedColor = MaterialTheme.colorScheme.primary,
-                    checkmarkColor = MaterialTheme.colorScheme.onPrimary,
-                    disabledCheckedColor = MaterialTheme.colorScheme.primary
-                )
+        Checkbox(
+            checked = true,
+            onCheckedChange = null,
+            modifier = Modifier
+                .size(32.dp)
+                .semantics {
+                    contentDescription = selectAllContentDescription
+                },
+            colors = CheckboxDefaults.colors(
+                checkedColor = MaterialTheme.colorScheme.primary,
+                checkmarkColor = MaterialTheme.colorScheme.onPrimary,
+                disabledCheckedColor = MaterialTheme.colorScheme.primary
             )
-            WooPosText(
-                text = itemsLabel,
-                style = WooPosTypography.Caption,
-                fontWeight = FontWeight.Bold,
-                color = WooPosTheme.colors.onSurfaceVariantHighest
-            )
-        }
-        WooPosText(
-            modifier = Modifier.width(COLUMN_WIDTH),
-            text = stringResource(R.string.woopos_orders_amount),
-            style = WooPosTypography.Caption,
-            fontWeight = FontWeight.Bold,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            textAlign = TextAlign.End,
-            overflow = TextOverflow.Ellipsis
         )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
+        Spacer(modifier = Modifier.width(WooPosSpacing.Large.value))
         WooPosText(
-            modifier = Modifier.width(COLUMN_WIDTH),
-            text = stringResource(R.string.woopos_orders_tax),
+            text = itemsLabel,
             style = WooPosTypography.Caption,
             fontWeight = FontWeight.Bold,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            textAlign = TextAlign.End,
-            overflow = TextOverflow.Ellipsis
+            color = WooPosTheme.colors.onSurfaceVariantHighest
         )
     }
 }
@@ -340,31 +314,11 @@ private fun RefundableItemRow(item: WooPosRefundableItem) {
                 overflow = TextOverflow.Ellipsis
             )
             WooPosText(
-                text = "1",
+                text = item.formattedUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
         }
-
-        WooPosText(
-            text = item.formattedUnitPrice,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-            modifier = Modifier.width(COLUMN_WIDTH),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
-        WooPosText(
-            text = item.formattedUnitTax,
-            style = WooPosTypography.BodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.End,
-            modifier = Modifier.width(COLUMN_WIDTH),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }
 
@@ -412,7 +366,7 @@ fun WooPosIssueRefundDialogPreview() {
         orderNumber = "#123",
         currency = "USD",
         refundableItems = sampleItems,
-        itemsLabel = "ITEMS (3)",
+        itemsLabel = "SELECT ALL ITEMS (3 SELECTED)",
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
         total = BigDecimal("62.65")

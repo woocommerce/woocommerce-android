@@ -3800,7 +3800,7 @@
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
     <string name="woopos_orders_select_items_to_refund">Select items to refund</string>
     <string name="woopos_orders_items_selected">ITEMS (%1$d SELECTED)</string>
-    <string name="woopos_orders_items_count">ITEMS (%1$d)</string>
+    <string name="woopos_orders_items_count">SELECT ALL ITEMS (%1$d SELECTED)</string>
     <string name="woopos_orders_amount">AMOUNT</string>
     <string name="woopos_orders_tax">TAX</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
