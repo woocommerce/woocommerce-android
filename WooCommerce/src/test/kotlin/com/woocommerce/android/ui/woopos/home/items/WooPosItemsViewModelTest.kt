@@ -9,6 +9,8 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceiver
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -16,8 +18,10 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -57,15 +61,21 @@ class WooPosItemsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
+    private val syncTimestampManager: WooPosSyncTimestampManager = mock()
+    private val dateTimeProvider: DateTimeProvider = mock()
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         whenever(searchHelper.getInitialSearchState()).thenReturn(
             WooPosItemsToolbarViewState.SearchState.Visible(
                 state = WooPosSearchInputState.Closed
             )
         )
         whenever(parentToChildrenEventReceiver.events).thenReturn(flowOf())
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NotRequired(System.currentTimeMillis())
+        )
+        whenever(dateTimeProvider.now()).thenReturn(1000)
     }
 
     @Test
@@ -450,6 +460,45 @@ class WooPosItemsViewModelTest {
         verify(preferencesRepository).setWasOpenedOnce(true)
     }
 
+    @Test
+    fun `given sync overdue, when view model created, then stale warning tracking event is sent`() = runTest {
+        // GIVEN
+        val currentTime = 1000000L
+        val lastSyncTime = currentTime - (25 * 60 * 60 * 1000L)
+        val expectedHours = 25
+
+        whenever(dateTimeProvider.now()).thenReturn(currentTime)
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTime, isOverdue = true)
+        )
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(analyticsTracker).track(
+            eq(WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(expectedHours))
+        )
+    }
+
+    @Test
+    fun `given sync not overdue, when view model created, then no stale warning tracking event is sent`() = runTest {
+        // GIVEN
+        runBlocking {
+            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+                WooPosFullSyncRequirement.NonBlockingRequired(System.currentTimeMillis(), isOverdue = false)
+            )
+        }
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(analyticsTracker, org.mockito.kotlin.never()).track(
+            any<WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown>()
+        )
+    }
+
     private fun createViewModel(): WooPosItemsViewModel {
         return WooPosItemsViewModel(
             searchHelper = searchHelper,
@@ -460,6 +509,8 @@ class WooPosItemsViewModelTest {
             preferencesRepository = preferencesRepository,
             analyticsTracker = analyticsTracker,
             syncStatusChecker = syncStatusChecker,
+            syncTimestampManager = syncTimestampManager,
+            dateTimeProvider = dateTimeProvider,
         )
     }
 }
