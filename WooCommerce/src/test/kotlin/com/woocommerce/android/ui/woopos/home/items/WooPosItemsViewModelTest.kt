@@ -20,7 +20,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -482,11 +481,9 @@ class WooPosItemsViewModelTest {
     @Test
     fun `given sync not overdue, when view model created, then no stale warning tracking event is sent`() = runTest {
         // GIVEN
-        runBlocking {
-            whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
-                WooPosFullSyncRequirement.NonBlockingRequired(System.currentTimeMillis(), isOverdue = false)
-            )
-        }
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NonBlockingRequired(System.currentTimeMillis(), isOverdue = false)
+        )
 
         // WHEN
         createViewModel()

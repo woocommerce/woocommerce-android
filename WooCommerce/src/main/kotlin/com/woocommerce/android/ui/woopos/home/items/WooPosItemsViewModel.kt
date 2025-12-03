@@ -86,16 +86,14 @@ class WooPosItemsViewModel @Inject constructor(
         }
     }
 
-    private fun trackStaleWarningShown(lastSyncTimestamp: Long) {
-        viewModelScope.launch {
-            val currentTime = dateTimeProvider.now()
-            val timeDifferenceMs = currentTime - lastSyncTimestamp
-            val hoursSinceLastSync = timeDifferenceMs.milliseconds.inWholeHours.toInt()
+    private suspend fun trackStaleWarningShown(lastSyncTimestamp: Long) {
+        val currentTime = dateTimeProvider.now()
+        val timeDifferenceMs = currentTime - lastSyncTimestamp
+        val hoursSinceLastSync = timeDifferenceMs.milliseconds.inWholeHours.toInt()
 
-            analyticsTracker.track(
-                WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
-            )
-        }
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
+        )
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
