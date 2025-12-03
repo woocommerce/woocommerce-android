@@ -138,7 +138,7 @@ class BookingsRestClient @Inject constructor(
         }
         if (paymentStatus != null) TODO()
         if (customer != null) set("customer", customer.customerId.toString())
-        if (dateRange != null) {
+        if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
             // Plus/minus one minute to make the range inclusive
             dateRange.before?.let {
                 val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusMinutes(1).toInstant()

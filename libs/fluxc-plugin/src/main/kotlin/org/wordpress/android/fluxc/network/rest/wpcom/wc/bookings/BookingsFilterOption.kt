@@ -32,8 +32,12 @@ sealed interface BookingsFilterOption {
 
     data class DateRange(
         val before: Instant?,
-        val after: Instant?
-    ) : BookingsFilterOption
+        val after: Instant?,
+    ) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = DateRange(null, null)
+        }
+    }
 
     object Location : BookingsFilterOption
 
@@ -56,7 +60,7 @@ data class BookingFilters(
     val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val customer: BookingsFilterOption.Customer? = null,
-    val dateRange: BookingsFilterOption.DateRange? = null,
+    val dateRange: BookingsFilterOption.DateRange = BookingsFilterOption.DateRange.DEFAULT,
     val location: BookingsFilterOption.Location? = null,
 ) {
     val enabledFiltersCount: Int
@@ -68,7 +72,7 @@ data class BookingFilters(
             if (attendanceStatuses != BookingsFilterOption.AttendanceStatuses.DEFAULT) count++
             if (paymentStatus != null) count++
             if (customer != null) count++
-            if (dateRange != null) count++
+            if (dateRange != BookingsFilterOption.DateRange.DEFAULT) count++
             if (location != null) count++
             return count
         }

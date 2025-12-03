@@ -11,6 +11,11 @@ UI.user_error!('Please run fastlane via `bundle exec`') unless FastlaneCore::Hel
 # The valid values for `app:` parameter, i.e. the two possible top-level modules we can build (mobile and wear app)
 MOBILE_APP = 'WooCommerce'
 WEAR_APP = 'WooCommerce-Wear'
+# Display names for the apps (used in comments, release notes, etc.)
+APP_DISPLAY_NAMES = {
+  WEAR_APP => '⌚️ Wear OS',
+  MOBILE_APP => '📱 Mobile'
+}.freeze
 
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
@@ -70,6 +75,12 @@ VERSION_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::RCNotationVersionFo
 BUILD_CODE_FORMATTER = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeFormatter.new
 BUILD_CODE_CALCULATOR = Fastlane::Wpmreleasetoolkit::Versioning::SimpleBuildCodeCalculator.new
 VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(version_properties_path: VERSION_PROPERTIES_PATH)
+
+########################################################################
+# Firebase App Distribution (FAD)
+########################################################################
+FIREBASE_APP_ID = '1:124902176124:android:4046dc320bf1825b1620f9'
+FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 
 ########################################################################
 # Environment
@@ -1167,8 +1178,8 @@ platform :android do
   # ProximaNova-Bold doesn't support non-Latin scripts, so we fall back to system fonts.
   def select_font_for_text(text_content, default_font)
     return 'Hiragino-Sans-W6' if text_content.match?(/[\p{Hiragana}\p{Katakana}]/)
-    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/[\p{Hangul}]/)
-    return 'Heiti-SC-Medium' if text_content.match?(/[\p{Han}]/)
+    return 'Apple-SD-Gothic-Neo-Bold' if text_content.match?(/\p{Hangul}/)
+    return 'Heiti-SC-Medium' if text_content.match?(/\p{Han}/)
     return 'Arial' if text_content.match?(/[\p{Arabic}\p{Hebrew}\p{Cyrillic}\p{Thai}]/)
 
     default_font
@@ -1364,7 +1375,7 @@ platform :android do
     )
 
     install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = { WEAR_APP => '⌚️ Wear OS', MOBILE_APP => '📱 Mobile' }.fetch(app, '_(Unknown)_')
+    platform_name = APP_DISPLAY_NAMES.fetch(app, app)
     comment_body = prototype_build_details_comment(
       app_display_name: "#{app} Android",
       download_url: install_url,
@@ -1384,6 +1395,43 @@ platform :android do
         body: comment_body
       )
     end
+  end
+
+  # This lane builds a prototype build and uploads it to Firebase App Distribution
+  #
+  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
+  #
+  desc 'Builds a prototype build and uploads it to Firebase App Distribution'
+  lane :build_and_upload_prototype_build_fad do |app:|
+    UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
+
+    validate_app_param!(app)
+
+    prototype_build_type = 'Debug'
+    prototype_flavor = 'Jalapeno'
+
+    # Build release notes with branch, commit, and app info
+    platform_name = APP_DISPLAY_NAMES.fetch(app, app)
+    release_notes = <<~NOTES
+      App: #{platform_name}
+      Branch: `#{ENV.fetch('BUILDKITE_BRANCH', 'N/A')}`
+      Commit: #{ENV.fetch('BUILDKITE_COMMIT', 'N/A')[0...7]}
+    NOTES
+
+    # Build the APK
+    gradle(
+      task: ":#{app}:assemble",
+      flavor: prototype_flavor,
+      build_type: prototype_build_type
+    )
+
+    # Upload to Firebase App Distribution
+    firebase_app_distribution(
+      app: FIREBASE_APP_ID,
+      service_credentials_json_data: ENV.fetch('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY', nil),
+      release_notes: release_notes,
+      groups: FIREBASE_TESTERS_GROUP
+    )
   end
 
   #####################################################################################
