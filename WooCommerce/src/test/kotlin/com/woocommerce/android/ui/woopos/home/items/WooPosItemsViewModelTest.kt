@@ -18,7 +18,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
@@ -61,7 +60,6 @@ class WooPosItemsViewModelTest {
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
-    private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
 
     @Before
@@ -509,7 +507,6 @@ class WooPosItemsViewModelTest {
             preferencesRepository = preferencesRepository,
             analyticsTracker = analyticsTracker,
             syncStatusChecker = syncStatusChecker,
-            syncTimestampManager = syncTimestampManager,
             dateTimeProvider = dateTimeProvider,
         )
     }
