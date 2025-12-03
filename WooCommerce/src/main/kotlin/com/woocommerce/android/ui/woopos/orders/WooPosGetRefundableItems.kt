@@ -7,6 +7,12 @@ import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
 import javax.inject.Inject
 
+/**
+ * Get a list of refundable items for an order, taking into account previous refunds.
+ *
+ * @returns A list of [WooPosRefundableItem] representing each refundable unit. In case line item has quantity > 1,
+ * each unit will be represented as a separate [WooPosRefundableItem] with a unique rowIndex.
+ */
 class WooPosGetRefundableItems @Inject constructor(
     private val currencyFormatter: CurrencyFormatter
 ) {
@@ -14,17 +20,15 @@ class WooPosGetRefundableItems @Inject constructor(
         order: Order,
         refunds: List<Refund>
     ): List<WooPosRefundableItem> {
-        // Step 1: Filter to only product items (exclude fees, shipping, etc.)
         val productItems = order.items.filter { it.productId != 0L }
 
         if (productItems.isEmpty()) {
             return emptyList()
         }
 
-        // Step 2: Calculate max refundable quantities
         val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, productItems)
 
-        // Step 3: Expand items into individual rows
+        // Expand grouped items (items with quantity > 1) into individual rows
         return productItems.flatMap { orderItem ->
             val maxQuantity = maxQuantities[orderItem.itemId]?.toInt() ?: 0
 
