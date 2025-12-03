@@ -4,6 +4,7 @@
 
 23.9
 -----
+- [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 
 
 23.8
