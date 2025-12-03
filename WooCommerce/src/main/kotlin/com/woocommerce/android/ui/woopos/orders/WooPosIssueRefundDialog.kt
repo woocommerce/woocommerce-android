@@ -271,10 +271,7 @@ private fun ItemsHeaderRow(itemsCount: Int) {
                 fontWeight = FontWeight.Bold,
                 color = WooPosTheme.colors.onSurfaceVariantHighest
             )
-            WooPosText(
-                text = " ",
-                style = WooPosTypography.Caption
-            )
+            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
             WooPosText(
                 text = stringResource(R.string.woopos_orders_items_selected_count, itemsCount),
                 style = WooPosTypography.Caption,
