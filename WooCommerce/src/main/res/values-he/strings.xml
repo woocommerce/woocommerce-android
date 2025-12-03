@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-04 13:54:05+0000
+Translation-Revision-Date: 2025-11-20 13:54:09+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">לא נבחרה הזמנה</string>
+    <string name="bookings_filters_selected_option_content_description">אפשרות הסינון שנבחרה</string>
+    <string name="bookings_filter_customer">לקוח</string>
+    <string name="bookings_filters_title_with_count">מסננים (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">כתובת פיזית</string>
+    <string name="woopos_settings_store_general_title">כללי</string>
+    <string name="woopos_orders_details_refund_error">לא ניתן לטעון את ההחזר הכספי</string>
+    <string name="woopos_cart_product_unknown_item">הפריט שנסרק לא מוכר</string>
+    <string name="woopos_totals_product_not_found_remove_products">להסיר את המוצר</string>
+    <string name="woopos_totals_product_not_found_edit_order">לערוך את ההזמנה</string>
+    <string name="woopos_totals_product_not_found_reason">מוצר בעגלת הקניות לא זמין עוד.</string>
+    <string name="woopos_totals_product_not_found_error">המוצר לא נמצא</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">עליך לעדכן את גרסת הקושחה כדי להמשיך לקבל תשלומים.</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">לעדכן את גרסת הקושחה</string>
+    <string name="woopos_settings_card_reader_device_name_title">שם המכשיר</string>
+    <string name="woopos_settings_local_catalog_refresh_description">לעדכן את הקטלוג באופן ידני</string>
+    <string name="woopos_settings_local_catalog_manual_update">עדכון הקטלוג</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">לאפשר סנכרון באמצעות נתונים סלולריים</string>
+    <string name="woopos_settings_local_catalog_cellular_data">נתונים סלולריים</string>
+    <string name="woopos_settings_local_catalog_last_update">הסנכרון המצטבר האחרון</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">לאחסן את קטלוג המוצרים שלך במכשיר זה כדי לאפשר חיפוש מהיר יותר, סריקות ברקוד וזמני טעינה.</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">קטלוג מקומי של POS</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">להסיר את הקורא מההגדרות של Bluetooth ב-Android</string>
     <string name="booking_mark_as_paid_error">שגיאה בסימון ההזמנה כ\'שולמה\'</string>
     <string name="booking_cancel_error">שגיאה בביטול ההזמנה</string>
     <string name="booking_note_screen_update_error">שגיאה בשמירת הערה בהזמנה</string>
@@ -41,8 +64,8 @@ Language: he_IL
     <string name="woopos_orders_details_total_label">סכום כולל</string>
     <string name="woopos_orders_details_breakdown_shipping_label">משלוח</string>
     <string name="woopos_orders_details_breakdown_taxes_label">מיסים</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">הנחה (⁦%1$s⁩)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">הנחה</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">סך כל ההנחה (⁦%1$s⁩)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">סך כל ההנחה</string>
     <string name="woopos_orders_details_breakdown_products_label">מוצרים</string>
     <string name="woopos_orders_details_qty_unit_price_format">‎%1$d x %2$s‎</string>
     <string name="woopos_orders_details_totals_title">סך הכול</string>
@@ -78,13 +101,11 @@ Language: he_IL
     <string name="bookings_filter_title_service_event">שירות / אירוע</string>
     <string name="bookings_filter_title_date">תאריך ושעה</string>
     <string name="bookings_filter_location">מיקום</string>
-    <string name="bookings_filter_customer_name">שם הלקוח</string>
     <string name="bookings_filter_title_type">סוג ההזמנה</string>
     <string name="bookings_filter_title_payment_status">מצב התשלום</string>
     <string name="bookings_filter_title_attendance_status">סטטוס נוכחות</string>
     <string name="bookings_filter_title_team_member">חבר צוות שהוקצה</string>
     <string name="bookings_filters_show_bookings">להציג הזמנות</string>
-    <string name="bookings_filters_count_title">מסננים (%d)</string>
     <string name="bookings_filters_default_title">מסננים</string>
     <string name="bookings_empty_state_clear_filters_button">לנקות את המסננים</string>
     <string name="bookings_empty_state_change_filters_button">לשנות את המסננים</string>
@@ -123,15 +144,10 @@ Language: he_IL
     <string name="woopos_date_today_at">היום בשעה %s</string>
     <string name="woopos_date_just_now">ממש עכשיו</string>
     <string name="woopos_date_never">לעולם לא</string>
-    <string name="woopos_settings_local_catalog_refresh_button">לרענן את הקטלוג</string>
-    <string name="woopos_settings_local_catalog_refresh_description">ניתן להשתמש ברענון הזה רק כאשר משהו נראה לא כשורה – האפשרות של POS שומרת שהנתונים יהיו מעודכנים באופן אוטומטי.</string>
-    <string name="woopos_settings_local_catalog_actions">עדכון ידני לקטלוג</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">להוריד את עדכוני הקטלוג באמצעות נתונים ניידים</string>
-    <string name="woopos_settings_local_catalog_cellular_data">לאפשר עדכון מלא באמצעות נתונים סלולריים</string>
+    <string name="woopos_settings_local_catalog_refresh_button">לעדכן את הקטלוג</string>
     <string name="woopos_settings_local_catalog_settings">לנהל את השימוש בנתונים</string>
-    <string name="woopos_settings_local_catalog_last_full_update">עדכון מלא אחרון</string>
-    <string name="woopos_settings_local_catalog_last_update">עדכון אחרון</string>
-    <string name="woopos_settings_local_catalog_size">גודל הקטלוג</string>
+    <string name="woopos_settings_local_catalog_last_full_update">סנכרון מלא אחרון</string>
+    <string name="woopos_settings_local_catalog_size">גודל</string>
     <string name="woopos_settings_local_catalog_status">מצב הקטלוג</string>
     <string name="woopos_settings_local_catalog_category_subtitle">לנהל את הגדרות הקטלוג</string>
     <string name="woopos_settings_local_catalog_category">קטלוג</string>
@@ -192,7 +208,6 @@ Language: he_IL
     <string name="woopos_cart_empty_scan_barcode">לסרוק ברקוד</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">יש להקיש על מוצר או </string>
     <string name="woopos_orders_title">הזמנות</string>
-    <string name="woopos_settings_help_category">עזרה</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">WP-admin</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">תשלום באינטרנט</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">לא ניתן להעביר מוצרים לתוך המשלוח או מחוץ למשלוח.</string>
@@ -208,7 +223,7 @@ Language: he_IL
     <string name="woopos_settings_store_not_set">לא הוגדר</string>
     <string name="woopos_settings_refund_policy_label">מדיניות החזרים כספיים והחזרות</string>
     <string name="woopos_settings_store_email_label">אימייל</string>
-    <string name="woopos_settings_store_phone_label">טלפון</string>
+    <string name="woopos_settings_store_phone_label">מספר טלפון</string>
     <string name="woopos_settings_store_address_label">כתובת</string>
     <string name="woopos_settings_store_name_label">שם החנות</string>
     <string name="woopos_settings_receipt_information_title">פרטי הקבלה</string>
@@ -216,12 +231,12 @@ Language: he_IL
     <string name="woopos_settings_help_get_support_subtitle">ניתן לפנות אל צוות התמיכה שלנו</string>
     <string name="woopos_settings_help_documentation_subtitle">להציג מדריכים והדרכות</string>
     <string name="woopos_settings_help_product_limitations_subtitle">לקבל מידע לגבי המוצרים הנתמכים ב-POS</string>
-    <string name="woopos_settings_help_category_subtitle">לקבל עזרה ותמיכה</string>
+    <string name="woopos_settings_help_category">לקבל עזרה ותמיכה</string>
     <string name="woopos_settings_card_reader_connected_reader">הקורא מחובר</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">למידע נוסף על קבלת תשלומים באמצעות המכשיר הנייד</string>
     <string name="woopos_settings_card_reader_documentation_title">תיעוד</string>
     <string name="woopos_settings_card_reader_update_available">• עדכון זמין</string>
-    <string name="woopos_settings_card_reader_update_button">לעדכן</string>
+    <string name="woopos_settings_card_reader_update_button">לעדכן את הקושחה</string>
     <string name="woopos_settings_card_reader_unknown_firmware">לא ידוע</string>
     <string name="woopos_settings_card_reader_unknown_reader">קורא לא מוכר</string>
     <string name="woopos_settings_card_reader_firmware_title">קושחה</string>

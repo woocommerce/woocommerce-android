@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
@@ -54,6 +56,7 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
                 autoCorrectEnabled = false
             ),
         )
+        HorizontalDivider(thickness = 0.5.dp)
         BookingsFilterSelectionPage(items = state.items)
     }
 }

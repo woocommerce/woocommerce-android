@@ -206,8 +206,8 @@ private fun CellularDataSection(
                     checkedTrackColor = MaterialTheme.colorScheme.primaryContainer
                 ),
                 modifier = Modifier.constrainAs(switch) {
-                    bottom.linkTo(subtitle.bottom)
-                    top.linkTo(subtitle.top)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
             )
@@ -264,8 +264,8 @@ private fun ManualUpdateSection(
                     WooPosSettingsLocalCatalogState.CatalogStatus.RefreshingCatalog -> WooPosButtonState.LOADING
                 },
                 modifier = Modifier.constrainAs(button) {
-                    bottom.linkTo(subtitle.bottom)
-                    top.linkTo(subtitle.top)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
                     end.linkTo(parent.end)
                 }
             )

@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-04 09:54:05+0000
+Translation-Revision-Date: 2025-11-18 09:54:05+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_not_selected">予約が選択されていません</string>
+    <string name="bookings_filters_selected_option_content_description">選択済みのフィルターオプション</string>
+    <string name="bookings_filter_customer">顧客</string>
+    <string name="bookings_filters_title_with_count">絞り込み (%s)</string>
+    <string name="woopos_settings_store_physical_address_label">住所</string>
+    <string name="woopos_settings_store_general_title">一般</string>
+    <string name="woopos_orders_details_refund_error">返金を読み込めません</string>
+    <string name="woopos_cart_product_unknown_item">不明なアイテム</string>
+    <string name="woopos_totals_product_not_found_remove_products">商品を削除</string>
+    <string name="woopos_totals_product_not_found_edit_order">注文を編集</string>
+    <string name="woopos_totals_product_not_found_reason">お買い物カゴ内の商品は現在利用できません。</string>
+    <string name="woopos_totals_product_not_found_error">商品が見つかりません</string>
+    <string name="woopos_settings_card_reader_update_firmware_message">引き続き支払いを受け取るには、ファームウェアのバージョンを更新します。</string>
+    <string name="woopos_settings_card_reader_update_firmware_title">ファームウェアのバージョンを更新</string>
+    <string name="woopos_settings_card_reader_device_name_title">デバイス名</string>
+    <string name="woopos_settings_local_catalog_refresh_description">カタログを手動で更新</string>
+    <string name="woopos_settings_local_catalog_manual_update">カタログの更新</string>
+    <string name="woopos_settings_local_catalog_cellular_data_subtitle">モバイルデータを使用した同期を許可</string>
+    <string name="woopos_settings_local_catalog_cellular_data">モバイルデータ</string>
+    <string name="woopos_settings_local_catalog_last_update">前回の増分同期</string>
+    <string name="settings_enable_woo_pos_local_catalog_message">商品カタログをこの端末に保存すると、検索、バーコードスキャン、読み込み時間が短縮されます。</string>
+    <string name="settings_enable_woo_pos_local_catalog_title">POS ローカルカタログ</string>
+    <string name="card_reader_connect_failed_bluetooth_pairing_removed_hint">Android の Bluetooth 設定でリーダーの記憶を消去</string>
     <string name="booking_mark_as_paid_error">予約を支払い済みとしてマークする際にエラーが発生しました</string>
     <string name="booking_cancel_error">予約のキャンセル中にエラーが発生しました</string>
     <string name="booking_note_screen_update_error">予約メモの保存中にエラーが発生しました</string>
@@ -41,8 +64,8 @@ Language: ja_JP
     <string name="woopos_orders_details_total_label">合計</string>
     <string name="woopos_orders_details_breakdown_shipping_label">配送</string>
     <string name="woopos_orders_details_breakdown_taxes_label">税</string>
-    <string name="woopos_orders_details_breakdown_discount_with_code_label">割引 (%1$s)</string>
-    <string name="woopos_orders_details_breakdown_discount_label">割引</string>
+    <string name="woopos_orders_details_breakdown_discount_with_code_label">割引合計 (%1$s)</string>
+    <string name="woopos_orders_details_breakdown_discount_label">割引合計</string>
     <string name="woopos_orders_details_breakdown_products_label">商品</string>
     <string name="woopos_orders_details_qty_unit_price_format">%1$d x %2$s</string>
     <string name="woopos_orders_details_totals_title">合計</string>
@@ -78,13 +101,11 @@ Language: ja_JP
     <string name="bookings_filter_title_service_event">サービス / イベント</string>
     <string name="bookings_filter_title_date">日付と時刻</string>
     <string name="bookings_filter_location">場所</string>
-    <string name="bookings_filter_customer_name">顧客名</string>
     <string name="bookings_filter_title_type">予約タイプ</string>
     <string name="bookings_filter_title_payment_status">支払いステータス</string>
     <string name="bookings_filter_title_attendance_status">出席状況</string>
     <string name="bookings_filter_title_team_member">アサインされたチームメンバー</string>
     <string name="bookings_filters_show_bookings">予約を表示</string>
-    <string name="bookings_filters_count_title">フィルター (%d)</string>
     <string name="bookings_filters_default_title">フィルター</string>
     <string name="bookings_empty_state_clear_filters_button">フィルターをクリア</string>
     <string name="bookings_empty_state_change_filters_button">フィルターを変更</string>
@@ -123,15 +144,10 @@ Language: ja_JP
     <string name="woopos_date_today_at">本日 %s</string>
     <string name="woopos_date_just_now">たった今</string>
     <string name="woopos_date_never">なし</string>
-    <string name="woopos_settings_local_catalog_refresh_button">カタログを再読み込み</string>
-    <string name="woopos_settings_local_catalog_refresh_description">POS はデータを自動的に最新の状態に保つため、この読み込みは何か問題があると思われる場合にのみ使用します。</string>
-    <string name="woopos_settings_local_catalog_actions">カタログの手動更新</string>
-    <string name="woopos_settings_local_catalog_cellular_data_subtitle">モバイルデータを使用してカタログの更新をダウンロード</string>
-    <string name="woopos_settings_local_catalog_cellular_data">携帯データでのフル更新を許可</string>
+    <string name="woopos_settings_local_catalog_refresh_button">カタログを更新</string>
     <string name="woopos_settings_local_catalog_settings">データ使用量を管理</string>
-    <string name="woopos_settings_local_catalog_last_full_update">最終フル更新</string>
-    <string name="woopos_settings_local_catalog_last_update">最終更新</string>
-    <string name="woopos_settings_local_catalog_size">カタログのサイズ</string>
+    <string name="woopos_settings_local_catalog_last_full_update">前回の完全同期</string>
+    <string name="woopos_settings_local_catalog_size">サイズ</string>
     <string name="woopos_settings_local_catalog_status">カタログのステータス</string>
     <string name="woopos_settings_local_catalog_category_subtitle">カタログ設定を管理</string>
     <string name="woopos_settings_local_catalog_category">カタログ</string>
@@ -192,7 +208,6 @@ Language: ja_JP
     <string name="woopos_cart_empty_scan_barcode">バーコードをスキャンする</string>
     <string name="woopos_cart_empty_subtitle_with_scanner">商品をタップするか </string>
     <string name="woopos_orders_title">注文</string>
-    <string name="woopos_settings_help_category">ヘルプ</string>
     <string name="orderfilters_sales_channel_filter_wp_admin">WP 管理画面</string>
     <string name="orderfilters_sales_channel_filter_web_checkout">ウェブでの購入手続き</string>
     <string name="woo_shipping_split_shipment_purchased_message_desc">商品を出し入れできません。</string>
@@ -208,7 +223,7 @@ Language: ja_JP
     <string name="woopos_settings_store_not_set">未設定</string>
     <string name="woopos_settings_refund_policy_label">返金および返品ポリシー</string>
     <string name="woopos_settings_store_email_label">メールアドレス</string>
-    <string name="woopos_settings_store_phone_label">電話</string>
+    <string name="woopos_settings_store_phone_label">電話番号</string>
     <string name="woopos_settings_store_address_label">住所</string>
     <string name="woopos_settings_store_name_label">ストア名</string>
     <string name="woopos_settings_receipt_information_title">領収書情報</string>
@@ -216,12 +231,12 @@ Language: ja_JP
     <string name="woopos_settings_help_get_support_subtitle">サポートチームにお問い合わせください</string>
     <string name="woopos_settings_help_documentation_subtitle">ガイドとチュートリアルを表示</string>
     <string name="woopos_settings_help_product_limitations_subtitle">POS 対象の商品についてさらに詳しく</string>
-    <string name="woopos_settings_help_category_subtitle">ヘルプとサポートを利用</string>
+    <string name="woopos_settings_help_category">ヘルプとサポートを利用</string>
     <string name="woopos_settings_card_reader_connected_reader">接続済み Reader</string>
     <string name="woopos_settings_card_reader_documentation_subtitle">モバイルでの支払いの承認についてさらに詳しく</string>
     <string name="woopos_settings_card_reader_documentation_title">ドキュメント</string>
     <string name="woopos_settings_card_reader_update_available">• 利用可能な更新があります</string>
-    <string name="woopos_settings_card_reader_update_button">更新</string>
+    <string name="woopos_settings_card_reader_update_button">ファームウェアを更新</string>
     <string name="woopos_settings_card_reader_unknown_firmware">不明</string>
     <string name="woopos_settings_card_reader_unknown_reader">不明な Reader</string>
     <string name="woopos_settings_card_reader_firmware_title">ファームウェア</string>

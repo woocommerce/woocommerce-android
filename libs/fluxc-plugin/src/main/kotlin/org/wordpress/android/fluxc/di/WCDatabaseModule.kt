@@ -5,7 +5,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import org.wordpress.android.fluxc.module.DatabaseModule
-import org.wordpress.android.fluxc.persistence.OrderSqlUtils
 import org.wordpress.android.fluxc.persistence.ProductSqlUtils
 import org.wordpress.android.fluxc.persistence.TransactionExecutor
 import org.wordpress.android.fluxc.persistence.WCAndroidDatabase
@@ -68,11 +67,6 @@ interface WCDatabaseModule {
             database.wooPaymentsDepositsOverviewDao
 
         /**
-         * OrderSqlUtils is a Kotlin object, we can't use [Inject] to inject it.
-         */
-        @Provides fun provideOrderSqlUtils() = OrderSqlUtils
-
-        /**
          * ProductSqlUtils is a Kotlin object, we can't use [Inject] to inject it.
          */
         @Provides internal fun provideProductSqlUtils() = ProductSqlUtils
@@ -110,6 +104,8 @@ interface WCDatabaseModule {
 
         @Provides internal fun provideOrderShipmentProvidersDao(database: WCAndroidDatabase) = database.orderShipmentProvidersDao
 
+        @Provides internal fun provideOrderShipmentTrackingDao(database: WCAndroidDatabase) = database.orderShipmentTrackingDao
+
         @Provides internal fun provideTaxClassDao(database: WCAndroidDatabase) = database.taxClassDao
 
         @Provides internal fun provideWCSettingsDao(database: WCAndroidDatabase) = database.settingsDao
@@ -135,6 +131,8 @@ interface WCDatabaseModule {
         @Provides internal fun provideBookingsDao(database: WCAndroidDatabase) = database.bookingsDao
 
         @Provides internal fun provideRevenueStatsDao(database: WCAndroidDatabase) = database.revenueStatsDao
+
+        @Provides internal fun provideShippingLabelDao(database: WCAndroidDatabase) = database.shippingLabelDao
     }
     @Binds fun bindTransactionExecutor(database: WCAndroidDatabase): TransactionExecutor
 }

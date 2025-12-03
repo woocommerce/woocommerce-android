@@ -132,7 +132,10 @@ private fun WooPosOrdersScreen(
 ) {
     BackHandler { onBackClicked() }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         when (state) {
             is WooPosOrdersState.Content -> OrdersContent(
                 state = state,
@@ -148,11 +151,13 @@ private fun WooPosOrdersScreen(
             )
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
-                onActionClicked = onOrdersEmptyActionClicked
+                onActionClicked = onOrdersEmptyActionClicked,
+                modifier = Modifier.statusBarsPadding()
             )
 
             is WooPosOrdersState.Error -> OrdersError(
-                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked
+                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
+                modifier = Modifier.statusBarsPadding()
             )
 
             is WooPosOrdersState.Loading -> WooPosOrdersLoadingScreen()
@@ -162,7 +167,9 @@ private fun WooPosOrdersScreen(
             WooPosToolbar(
                 titleText = stringResource(R.string.woopos_orders_title),
                 onBackClicked = onBackClicked,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
             )
         }
     }
@@ -238,7 +245,9 @@ private fun OrdersListPane(
     onSearchErrorRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier.statusBarsPadding()
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -249,9 +258,7 @@ private fun OrdersListPane(
                 state = state.searchInputState,
                 searchIconBackgroundColor = MaterialTheme.colorScheme.surface,
                 onEvent = onSearchEvent,
-                modifier = Modifier
-                    .statusBarsPadding()
-                    .align(Alignment.CenterEnd)
+                modifier = Modifier.align(Alignment.CenterEnd)
             )
         }
 
@@ -480,10 +487,11 @@ private fun LoadedOrdersList(
 
 @Composable
 private fun OrdersEmpty(
-    onActionClicked: () -> Unit
+    onActionClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     WooPosEmptyScreen(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
         icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
@@ -495,9 +503,11 @@ private fun OrdersEmpty(
 
 @Composable
 private fun OrdersError(
-    onRetryClicked: () -> Unit
+    onRetryClicked: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     WooPosErrorScreen(
+        modifier = modifier,
         message = stringResource(id = R.string.woopos_orders_loading_error_title),
         reason = stringResource(id = R.string.woopos_orders_loading_error_message),
         primaryButton = WooPosErrorScreenButtonState(

@@ -83,7 +83,9 @@ data class BookingFilterListUiState(
             }
 
             BookingFilterPage.DateTime -> {
-                updatedBookingFilters.dateRange?.let {
+                if (updatedBookingFilters.dateRange == BookingsFilterOption.DateRange.DEFAULT) {
+                    UiString.UiStringRes(R.string.bookings_filter_default)
+                } else {
                     UiString.UiStringRes(R.string.bookings_filter_date_filter_value)
                 }
             }

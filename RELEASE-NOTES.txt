@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+23.9
+-----
+
+
 23.8
 -----
 - [*] Fixed system back button not working on Order Creation screen [https://github.com/woocommerce/woocommerce-android/pull/15016]
@@ -10,6 +14,7 @@
 - [*][Woo POS] Fixed payment screen layout to properly position payment instructions text [https://github.com/woocommerce/woocommerce-android/pull/14991]
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
+- [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
 
 23.7
 -----
