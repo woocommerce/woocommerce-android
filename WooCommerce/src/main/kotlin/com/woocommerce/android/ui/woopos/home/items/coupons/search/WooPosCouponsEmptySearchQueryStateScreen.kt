@@ -14,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -48,8 +47,7 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
             )
         }
 
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(104.dp))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Gigantic.value))
     }
 }
 

@@ -73,7 +73,7 @@ fun WooPosItemList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(vertical = 2.dp),
+        contentPadding = PaddingValues(vertical = WooPosSpacing.XXSmall.value),
         state = listState,
     ) {
         items(
@@ -133,8 +133,7 @@ fun WooPosItemList(
         }
 
         item {
-            @Suppress("WooPosDesignSystemSpacingUsageRule")
-            Spacer(modifier = Modifier.height(104.dp))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Gigantic.value))
         }
     }
     InfiniteListHandler(listState, state, onEndOfProductsListReached)
@@ -438,7 +437,7 @@ fun WooPosItemsLoadingIndicator(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(2.dp),
+        contentPadding = PaddingValues(WooPosSpacing.XXSmall.value),
     ) {
         items(itemsCount) {
             ItemsLoadingItem()
