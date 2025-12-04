@@ -118,6 +118,11 @@ class WooPosItemsViewModel @Inject constructor(
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
             WooPosItemsUIEvent.SyncOverdueBannerDismissed -> {
                 _catalogSyncOverdueBannerState.value = CatalogSyncOverdueBannerState.Hidden
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed
+                    )
+                }
             }
         }
     }

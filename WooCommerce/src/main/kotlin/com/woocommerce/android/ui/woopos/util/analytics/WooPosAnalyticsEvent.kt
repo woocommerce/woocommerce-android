@@ -807,6 +807,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data object LocalCatalogStaleWarningDismissed : Event() {
+            override val name: String = "local_catalog_stale_warning_dismissed"
+        }
+
         data object SplashScreenErrorShown : Event() {
             override val name: String = "splash_screen_error_shown"
         }

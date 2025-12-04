@@ -479,6 +479,27 @@ class WooPosItemsViewModelTest {
     }
 
     @Test
+    fun `given stale warning shown, when dismiss tapped, then stale warning dismissed event is sent`() = runTest {
+        // GIVEN
+        val currentTime = 1000000L
+        val lastSyncTime = currentTime - (25 * 60 * 60 * 1000L)
+        val expectedHours = 25
+
+        whenever(dateTimeProvider.now()).thenReturn(currentTime)
+        whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
+            WooPosFullSyncRequirement.NonBlockingRequired(lastSyncTime, isOverdue = true)
+        )
+        val vm = createViewModel()
+
+        // WHEN
+        vm.onUIEvent(WooPosItemsUIEvent.SyncOverdueBannerDismissed)
+        // THEN
+        verify(analyticsTracker).track(
+            eq(WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed)
+        )
+    }
+
+    @Test
     fun `given sync not overdue, when view model created, then no stale warning tracking event is sent`() = runTest {
         // GIVEN
         whenever(syncStatusChecker.checkSyncRequirement()).thenReturn(
