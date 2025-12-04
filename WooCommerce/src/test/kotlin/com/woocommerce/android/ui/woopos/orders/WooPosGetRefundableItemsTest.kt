@@ -33,6 +33,80 @@ class WooPosGetRefundableItemsTest {
         )
     }
 
+    private fun generateOrderItem(
+        itemId: Long = 1L,
+        productId: Long = 50L,
+        name: String = "Test Product",
+        price: BigDecimal = BigDecimal("20.00"),
+        sku: String = "",
+        quantity: Float = 1f,
+        subtotal: BigDecimal = price.multiply(quantity.toBigDecimal()),
+        subtotalTax: BigDecimal = BigDecimal.ZERO,
+        totalTax: BigDecimal = BigDecimal.ZERO,
+        total: BigDecimal = subtotal,
+        variationId: Long = 0,
+        attributesList: List<Order.Item.Attribute> = emptyList(),
+        taxes: List<Order.LineTaxEntry> = emptyList()
+    ) = Order.Item(
+        itemId = itemId,
+        productId = productId,
+        name = name,
+        price = price,
+        sku = sku,
+        quantity = quantity,
+        subtotal = subtotal,
+        subtotalTax = subtotalTax,
+        totalTax = totalTax,
+        total = total,
+        variationId = variationId,
+        attributesList = attributesList,
+        taxes = taxes
+    )
+
+    private fun generateRefundItem(
+        id: Long = 1L,
+        productId: Long = 50L,
+        variationId: Long = 0,
+        quantity: Int = 1,
+        name: String = "Test Product",
+        price: BigDecimal = BigDecimal("20.00"),
+        subtotal: BigDecimal = price.multiply(quantity.toBigDecimal()),
+        total: BigDecimal = subtotal,
+        totalTax: BigDecimal = BigDecimal.ZERO,
+        orderItemId: Long = 1L
+    ) = Refund.Item(
+        id = id,
+        productId = productId,
+        variationId = variationId,
+        quantity = quantity,
+        name = name,
+        subtotal = subtotal,
+        total = total,
+        totalTax = totalTax,
+        price = price,
+        orderItemId = orderItemId
+    )
+
+    private fun generateRefund(
+        id: Long = 1L,
+        amount: BigDecimal = BigDecimal("20.00"),
+        dateCreated: Date = Date(),
+        reason: String = "Test refund",
+        automaticGatewayRefund: Boolean = true,
+        items: List<Refund.Item> = emptyList(),
+        shippingLines: List<Refund.ShippingLine> = emptyList(),
+        feeLines: List<Refund.FeeLine> = emptyList()
+    ) = Refund(
+        id = id,
+        amount = amount,
+        dateCreated = dateCreated,
+        reason = reason,
+        automaticGatewayRefund = automaticGatewayRefund,
+        items = items,
+        shippingLines = shippingLines,
+        feeLines = feeLines
+    )
+
     // Basic Cases
 
     @Test
@@ -51,21 +125,7 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with only non-product items, when invoke called, then returns empty list`() {
         // GIVEN
-        val nonProductItem = Order.Item(
-            itemId = 1L,
-            productId = 0L, // non-product
-            name = "Fee Item",
-            price = BigDecimal.TEN,
-            sku = "",
-            quantity = 1f,
-            subtotal = BigDecimal.TEN,
-            subtotalTax = BigDecimal.ZERO,
-            totalTax = BigDecimal.ZERO,
-            total = BigDecimal.TEN,
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
-        )
+        val nonProductItem = generateOrderItem(productId = 0L, name = "Fee Item")
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(nonProductItem))
         val refunds = emptyList<Refund>()
 
@@ -79,20 +139,10 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with single product item quantity 1 and no refunds, when invoke called, then returns one refundable item with correct details`() {
         // GIVEN
-        val orderItem = Order.Item(
+        val orderItem = generateOrderItem(
             itemId = 100L,
-            productId = 50L,
-            name = "Test Product",
-            price = BigDecimal("20.00"),
             sku = "SKU123",
-            quantity = 1f,
-            subtotal = BigDecimal("20.00"),
-            subtotalTax = BigDecimal("2.00"),
-            totalTax = BigDecimal("2.00"),
-            total = BigDecimal("20.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
+            totalTax = BigDecimal("2.00")
         )
         val order = OrderTestUtils.generateTestOrder().copy(
             items = listOf(orderItem),
@@ -120,20 +170,10 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with single product item quantity 3 and no refunds, when invoke called, then returns three refundable items with sequential row indices`() {
         // GIVEN
-        val orderItem = Order.Item(
+        val orderItem = generateOrderItem(
             itemId = 100L,
-            productId = 50L,
-            name = "Test Product",
-            price = BigDecimal("20.00"),
-            sku = "SKU123",
             quantity = 3f,
-            subtotal = BigDecimal("60.00"),
-            subtotalTax = BigDecimal("6.00"),
-            totalTax = BigDecimal("6.00"),
-            total = BigDecimal("60.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
+            totalTax = BigDecimal("6.00")
         )
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
         val refunds = emptyList<Refund>()
@@ -158,35 +198,18 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with multiple product items, when invoke called, then returns all items expanded by quantity`() {
         // GIVEN
-        val item1 = Order.Item(
+        val item1 = generateOrderItem(
             itemId = 1L,
             productId = 10L,
             name = "Product 1",
             price = BigDecimal("10.00"),
-            sku = "",
-            quantity = 2f,
-            subtotal = BigDecimal("20.00"),
-            subtotalTax = BigDecimal.ZERO,
-            totalTax = BigDecimal.ZERO,
-            total = BigDecimal("20.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
+            quantity = 2f
         )
-        val item2 = Order.Item(
+        val item2 = generateOrderItem(
             itemId = 2L,
             productId = 20L,
             name = "Product 2",
-            price = BigDecimal("15.00"),
-            sku = "",
-            quantity = 1f,
-            subtotal = BigDecimal("15.00"),
-            subtotalTax = BigDecimal.ZERO,
-            totalTax = BigDecimal.ZERO,
-            total = BigDecimal("15.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
+            price = BigDecimal("15.00")
         )
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(item1, item2))
         val refunds = emptyList<Refund>()
@@ -205,45 +228,12 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with single item and full refund, when invoke called, then returns empty list`() {
         // GIVEN
-        val orderItem = Order.Item(
-            itemId = 1L,
-            productId = 50L,
-            name = "Test Product",
-            price = BigDecimal("20.00"),
-            sku = "",
-            quantity = 2f,
-            subtotal = BigDecimal("40.00"),
-            subtotalTax = BigDecimal.ZERO,
-            totalTax = BigDecimal.ZERO,
-            total = BigDecimal("40.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
-        )
+        val orderItem = generateOrderItem(quantity = 2f)
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
-
-        val refund = Refund(
-            id = 1L,
+        val refund = generateRefund(
             amount = BigDecimal("40.00"),
-            dateCreated = Date(),
             reason = "Full refund",
-            automaticGatewayRefund = true,
-            items = listOf(
-                Refund.Item(
-                    id = 1L,
-                    productId = 50L,
-                    variationId = 0,
-                    quantity = 2,
-                    name = "Test Product",
-                    subtotal = BigDecimal("40.00"),
-                    total = BigDecimal("40.00"),
-                    totalTax = BigDecimal.ZERO,
-                    price = BigDecimal("20.00"),
-                    orderItemId = 1L
-                )
-            ),
-            shippingLines = emptyList(),
-            feeLines = emptyList()
+            items = listOf(generateRefundItem(quantity = 2))
         )
 
         // WHEN
@@ -256,45 +246,12 @@ class WooPosGetRefundableItemsTest {
     @Test
     fun `given order with single item and partial refund, when invoke called, then returns remaining quantity as refundable items`() {
         // GIVEN
-        val orderItem = Order.Item(
-            itemId = 1L,
-            productId = 50L,
-            name = "Test Product",
-            price = BigDecimal("20.00"),
-            sku = "",
-            quantity = 5f,
-            subtotal = BigDecimal("100.00"),
-            subtotalTax = BigDecimal.ZERO,
-            totalTax = BigDecimal.ZERO,
-            total = BigDecimal("100.00"),
-            variationId = 0,
-            attributesList = emptyList(),
-            taxes = emptyList()
-        )
+        val orderItem = generateOrderItem(quantity = 5f)
         val order = OrderTestUtils.generateTestOrder().copy(items = listOf(orderItem))
-
-        val refund = Refund(
-            id = 1L,
+        val refund = generateRefund(
             amount = BigDecimal("40.00"),
-            dateCreated = Date(),
             reason = "Partial refund",
-            automaticGatewayRefund = true,
-            items = listOf(
-                Refund.Item(
-                    id = 1L,
-                    productId = 50L,
-                    variationId = 0,
-                    quantity = 2,
-                    name = "Test Product",
-                    subtotal = BigDecimal("40.00"),
-                    total = BigDecimal("40.00"),
-                    totalTax = BigDecimal.ZERO,
-                    price = BigDecimal("20.00"),
-                    orderItemId = 1L
-                )
-            ),
-            shippingLines = emptyList(),
-            feeLines = emptyList()
+            items = listOf(generateRefundItem(quantity = 2))
         )
 
         // WHEN
