@@ -10,8 +10,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
+import org.wordpress.android.fluxc.utils.createTestTheme
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)
@@ -37,7 +37,7 @@ class ThemeDaoTest {
     @Test
     fun `when upserting new theme, then theme is inserted`(): Unit = runBlocking {
         // given
-        val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
+        val theme = createTestTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
 
         // when
         dao.upsert(theme)
@@ -54,7 +54,7 @@ class ThemeDaoTest {
     @Test
     fun `when upserting existing theme, then theme is updated`(): Unit = runBlocking {
         // given
-        val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
+        val theme = createTestTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
         dao.upsert(theme)
 
         // when
@@ -70,12 +70,12 @@ class ThemeDaoTest {
     @Test
     fun `when replacing all WP-com themes, then all previous WP-com themes are replaced`(): Unit = runBlocking {
         // given
-        val theme1 = createTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
-        val theme2 = createTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
+        val theme1 = createTestTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
+        val theme2 = createTestTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
         dao.replaceAllWpComThemes(listOf(theme1, theme2))
 
         // when
-        val newTheme = createTheme(0, THEME_ID_3, "New WP.com Theme", isWpComTheme = true)
+        val newTheme = createTestTheme(0, THEME_ID_3, "New WP.com Theme", isWpComTheme = true)
         dao.replaceAllWpComThemes(listOf(newTheme))
 
         // then
@@ -88,8 +88,8 @@ class ThemeDaoTest {
     @Test
     fun `when upserting themes with different active states, then previous active theme is deactivated and new one is activated`(): Unit = runBlocking {
         // given
-        val theme1 = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1", active = true)
-        val theme2 = createTheme(SITE_ID_1, THEME_ID_2, "Theme 2")
+        val theme1 = createTestTheme(SITE_ID_1, THEME_ID_1, "Theme 1", active = true)
+        val theme2 = createTestTheme(SITE_ID_1, THEME_ID_2, "Theme 2")
         dao.upsert(theme1)
 
         // when - deactivate first and activate second
@@ -108,8 +108,8 @@ class ThemeDaoTest {
     @Test
     fun `when getting active themes for site, then only active themes are returned`(): Unit = runBlocking {
         // given
-        val activeTheme = createTheme(SITE_ID_1, THEME_ID_1, "Active Theme", active = true)
-        val inactiveTheme = createTheme(SITE_ID_1, THEME_ID_2, "Inactive Theme", active = false)
+        val activeTheme = createTestTheme(SITE_ID_1, THEME_ID_1, "Active Theme", active = true)
+        val inactiveTheme = createTestTheme(SITE_ID_1, THEME_ID_2, "Inactive Theme", active = false)
         dao.upsertThemes(listOf(activeTheme, inactiveTheme))
 
         // when
@@ -124,9 +124,9 @@ class ThemeDaoTest {
     @Test
     fun `when getting WP-com themes by IDs, then themes with matching IDs are returned`(): Unit = runBlocking {
         // given
-        val theme1 = createTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
-        val theme2 = createTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
-        val theme3 = createTheme(0, THEME_ID_3, "WP.com Theme 3", isWpComTheme = true)
+        val theme1 = createTestTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
+        val theme2 = createTestTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
+        val theme3 = createTestTheme(0, THEME_ID_3, "WP.com Theme 3", isWpComTheme = true)
         dao.replaceAllWpComThemes(listOf(theme1, theme2, theme3))
 
         // when
@@ -140,7 +140,7 @@ class ThemeDaoTest {
     @Test
     fun `when getting WP-com theme by theme ID, then correct theme is returned`(): Unit = runBlocking {
         // given
-        val theme = createTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
+        val theme = createTestTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
         dao.replaceAllWpComThemes(listOf(theme))
 
         // when
@@ -164,7 +164,7 @@ class ThemeDaoTest {
     @Test
     fun `when getting site theme by theme ID, then correct theme is returned`(): Unit = runBlocking {
         // given
-        val theme = createTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
+        val theme = createTestTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
         dao.upsert(theme)
 
         // when
@@ -188,7 +188,7 @@ class ThemeDaoTest {
     @Test
     fun `when getting themes for different sites, then themes are isolated by site`(): Unit = runBlocking {
         // given
-        val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
+        val theme = createTestTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
         dao.upsert(theme)
 
         // when
@@ -203,8 +203,8 @@ class ThemeDaoTest {
     @Test
     fun `when storing WP-com and site themes with same ID, then themes are separated`(): Unit = runBlocking {
         // given
-        val siteTheme = createTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
-        val wpComTheme = createTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
+        val siteTheme = createTestTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
+        val wpComTheme = createTestTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
         dao.upsert(siteTheme)
         dao.replaceAllWpComThemes(listOf(wpComTheme))
 
@@ -220,21 +220,6 @@ class ThemeDaoTest {
         assertThat(wpComResult?.name).isEqualTo("WP.com Theme")
         assertThat(wpComResult?.isWpComTheme).isTrue
     }
-
-    private fun createTheme(
-        siteId: Int,
-        themeId: String,
-        name: String,
-        isWpComTheme: Boolean = false,
-        active: Boolean = false
-    ) = ThemeModel(
-        siteId = LocalId(siteId),
-        themeId = themeId,
-        name = name,
-        demoUrl = null,
-        active = active,
-        isWpComTheme = isWpComTheme
-    )
 
     private companion object {
         const val SITE_ID_1 = 1
