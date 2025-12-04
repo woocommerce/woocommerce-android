@@ -11,7 +11,6 @@ import org.mockito.Mockito
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.network.rest.wpcom.theme.ThemeRestClient
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
@@ -48,7 +47,7 @@ class ThemeStoreUnitTest {
     }
 
     @Test
-    fun testActiveTheme() {
+    fun `when setting active theme, then previous theme is deactivated and new theme is activated`() {
         val site = SiteUtils.generateWPComSite()
         val firstTheme = generateTestTheme(site.id, "first-active", "First Active")
         val secondTheme = generateTestTheme(site.id, "second-active", "Second Active")
@@ -76,7 +75,7 @@ class ThemeStoreUnitTest {
     }
 
     @Test
-    fun testGetWpComThemeByThemeId() {
+    fun `when setting active theme for site, then theme can be retrieved by theme id`() {
         val testThemeId = "fluxc-ftw"
         val testThemeName = "FluxC FTW"
         val testThemes = listOf(generateTestTheme(0, testThemeId, testThemeName))

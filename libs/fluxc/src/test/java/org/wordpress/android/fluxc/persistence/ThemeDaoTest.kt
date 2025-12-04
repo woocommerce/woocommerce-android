@@ -10,7 +10,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import java.io.IOException
@@ -36,7 +35,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `upsert inserts new theme`(): Unit = runBlocking {
+    fun `when upserting new theme, then theme is inserted`(): Unit = runBlocking {
         // given
         val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
 
@@ -53,7 +52,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `upsert updates existing theme`(): Unit = runBlocking {
+    fun `when upserting existing theme, then theme is updated`(): Unit = runBlocking {
         // given
         val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
         dao.upsert(theme)
@@ -69,7 +68,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `replaceAllWpComThemes replaces all WP-com themes`(): Unit = runBlocking {
+    fun `when replacing all WP-com themes, then all previous WP-com themes are replaced`(): Unit = runBlocking {
         // given
         val theme1 = createTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
         val theme2 = createTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
@@ -87,7 +86,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `upsertThemes can deactivate previous active themes and activate new one`(): Unit = runBlocking {
+    fun `when upserting themes with different active states, then previous active theme is deactivated and new one is activated`(): Unit = runBlocking {
         // given
         val theme1 = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1", active = true)
         val theme2 = createTheme(SITE_ID_1, THEME_ID_2, "Theme 2")
@@ -107,7 +106,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getActiveThemesForSite returns only active themes`(): Unit = runBlocking {
+    fun `when getting active themes for site, then only active themes are returned`(): Unit = runBlocking {
         // given
         val activeTheme = createTheme(SITE_ID_1, THEME_ID_1, "Active Theme", active = true)
         val inactiveTheme = createTheme(SITE_ID_1, THEME_ID_2, "Inactive Theme", active = false)
@@ -123,7 +122,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getWpComThemes returns themes with matching IDs`(): Unit = runBlocking {
+    fun `when getting WP-com themes by IDs, then themes with matching IDs are returned`(): Unit = runBlocking {
         // given
         val theme1 = createTheme(0, THEME_ID_1, "WP.com Theme 1", isWpComTheme = true)
         val theme2 = createTheme(0, THEME_ID_2, "WP.com Theme 2", isWpComTheme = true)
@@ -139,7 +138,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getWpComThemeByThemeId returns correct theme`(): Unit = runBlocking {
+    fun `when getting WP-com theme by theme ID, then correct theme is returned`(): Unit = runBlocking {
         // given
         val theme = createTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
         dao.replaceAllWpComThemes(listOf(theme))
@@ -154,7 +153,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getWpComThemeByThemeId returns null for non-existent theme`(): Unit = runBlocking {
+    fun `when getting WP-com theme by non-existent theme ID, then null is returned`(): Unit = runBlocking {
         // when
         val result = dao.getWpComThemeByThemeId("non-existent")
 
@@ -163,7 +162,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getSiteThemeByThemeId returns correct theme`(): Unit = runBlocking {
+    fun `when getting site theme by theme ID, then correct theme is returned`(): Unit = runBlocking {
         // given
         val theme = createTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
         dao.upsert(theme)
@@ -178,7 +177,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `getSiteThemeByThemeId returns null for non-existent theme`(): Unit = runBlocking {
+    fun `when getting site theme by non-existent theme ID, then null is returned`(): Unit = runBlocking {
         // when
         val result = dao.getSiteThemeByThemeId(LocalId(SITE_ID_1), "non-existent")
 
@@ -187,7 +186,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `themes are isolated by site`(): Unit = runBlocking {
+    fun `when getting themes for different sites, then themes are isolated by site`(): Unit = runBlocking {
         // given
         val theme = createTheme(SITE_ID_1, THEME_ID_1, "Theme 1")
         dao.upsert(theme)
@@ -202,7 +201,7 @@ class ThemeDaoTest {
     }
 
     @Test
-    fun `WP-com themes and site themes are separated`(): Unit = runBlocking {
+    fun `when storing WP-com and site themes with same ID, then themes are separated`(): Unit = runBlocking {
         // given
         val siteTheme = createTheme(SITE_ID_1, THEME_ID_1, "Site Theme")
         val wpComTheme = createTheme(0, THEME_ID_1, "WP.com Theme", isWpComTheme = true)
@@ -220,10 +219,6 @@ class ThemeDaoTest {
         assertThat(wpComResult).isNotNull
         assertThat(wpComResult?.name).isEqualTo("WP.com Theme")
         assertThat(wpComResult?.isWpComTheme).isTrue
-    }
-
-    private fun createSite(id: Int) = SiteModel().apply {
-        this.id = id
     }
 
     private fun createTheme(
