@@ -184,11 +184,8 @@ class CouponDetailsViewModel @Inject constructor(
     fun onShareButtonClick() {
         coupon.value?.let { coupon ->
             couponUtils.formatSharingMessage(
-                amount = coupon.amount,
-                currencyCode = currencyCode,
-                couponCode = coupon.code,
-                includedProducts = coupon.productIds.size,
-                excludedProducts = coupon.restrictions.excludedProductIds.size
+                coupon = coupon,
+                currencyCode = currencyCode
             )
         }?.let {
             triggerEvent(ShareCodeEvent(it))
