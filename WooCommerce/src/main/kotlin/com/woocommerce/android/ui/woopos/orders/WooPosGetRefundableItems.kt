@@ -65,23 +65,14 @@ class WooPosGetRefundableItems @Inject constructor(
         refunds: List<Refund>,
         productItems: List<Order.Item>
     ): Map<Long, Float> {
-        val allRefundedItems = refunds.flatMap { it.items }
+        val refundedByItemId = refunds
+            .flatMap { it.items }
+            .groupingBy { it.orderItemId }
+            .fold(0f) { acc, item -> acc + item.quantity }
 
-        return productItems.mapNotNull { orderItem ->
-            val refundedQuantity = allRefundedItems
-                .filter { refundedItem ->
-                    refundedItem.orderItemId == orderItem.itemId
-                }
-                .sumOf { it.quantity }
-
-            val remainingQuantity = orderItem.quantity - refundedQuantity
-
-            if (remainingQuantity > 0) {
-                orderItem.itemId to remainingQuantity
-            } else {
-                null
-            }
-        }.toMap()
+        return productItems
+            .associate { it.itemId to (it.quantity - (refundedByItemId[it.itemId] ?: 0f)) }
+            .filterValues { it > 0 }
     }
 
     private fun calculateUnitPrice(item: Order.Item): BigDecimal {
