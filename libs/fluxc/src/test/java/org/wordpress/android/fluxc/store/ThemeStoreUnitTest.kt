@@ -2,8 +2,6 @@ package org.wordpress.android.fluxc.store
 
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
-import java.io.IOException
-import kotlin.test.assertNull
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
@@ -15,6 +13,8 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.utils.createTestTheme
 import org.wordpress.android.fluxc.utils.generateWPComSite
+import java.io.IOException
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ThemeStoreUnitTest {
