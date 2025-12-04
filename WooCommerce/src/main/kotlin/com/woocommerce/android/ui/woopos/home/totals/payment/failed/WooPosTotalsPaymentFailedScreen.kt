@@ -50,18 +50,18 @@ fun WooPosPaymentFailedScreen(
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosText(
             text = state.title,
             style = WooPosTypography.BodyXLarge,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         WooPosText(
             text = state.subtitle,
             style = WooPosTypography.BodyLarge,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
             text = state.retryPaymentButtonLabel,
             modifier = Modifier
@@ -69,7 +69,7 @@ fun WooPosPaymentFailedScreen(
                 .width(604.dp)
         ) { onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked) }
         if (state.isReturnToCheckoutButtonVisible) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             WooPosOutlinedButton(
                 modifier = Modifier
                     .width(604.dp),

@@ -110,7 +110,7 @@ private fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            val textsMargin = WooPosSpacing.Small.value.toAdaptivePadding()
+            val textsMargin = WooPosSpacing.Small.value
             WooPosText(
                 text = stringResource(R.string.woopos_payment_successful_label),
                 style = WooPosTypography.Heading,
@@ -137,7 +137,7 @@ private fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            val marginBetweenButtons = WooPosSpacing.Medium.value.toAdaptivePadding()
+            val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(
                 modifier = Modifier
                     .constrainAs(buttonNewOrder) {

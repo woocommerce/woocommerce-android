@@ -40,7 +40,7 @@ fun WooPosErrorScreen(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -55,7 +55,7 @@ fun WooPosErrorScreen(
                 tint = WooPosTheme.colors.unspecified,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
             WooPosText(
                 text = message,
@@ -64,7 +64,7 @@ fun WooPosErrorScreen(
                 textAlign = TextAlign.Center,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosText(
                 text = reason,
@@ -81,14 +81,14 @@ fun WooPosErrorScreen(
                 )
             }
             secondaryButton?.let {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
                     modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
     }
 }

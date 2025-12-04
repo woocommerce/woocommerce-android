@@ -19,7 +19,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosCouponsEmptySearchQueryStateScreen(
@@ -37,7 +36,7 @@ fun WooPosCouponsEmptySearchQueryStateScreen(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(top = WooPosSpacing.Large.value.toAdaptivePadding())
+            .padding(top = WooPosSpacing.Large.value)
             .verticalScroll(scrollState)
     ) {
         if (state.recentSearches.isNotEmpty()) {

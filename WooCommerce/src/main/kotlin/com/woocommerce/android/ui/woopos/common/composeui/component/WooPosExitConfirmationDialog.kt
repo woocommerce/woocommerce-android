@@ -48,7 +48,7 @@ fun WooPosExitConfirmationDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Box(
-            modifier = modifier.padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = modifier.padding(WooPosSpacing.XLarge.value)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 @Suppress("WooPosDesignSystemSpacingUsageRule")
@@ -59,7 +59,7 @@ fun WooPosExitConfirmationDialog(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(modifier = modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.Medium.value))
                 WooPosText(
                     text = message,
                     style = WooPosTypography.BodyLarge,

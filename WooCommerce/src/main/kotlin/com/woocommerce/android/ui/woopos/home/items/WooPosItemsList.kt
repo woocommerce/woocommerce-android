@@ -54,7 +54,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
@@ -348,7 +347,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             .padding(
                 end = WooPosSpacing.Medium.value,
             )
-            .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Medium.value),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(

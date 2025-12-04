@@ -55,7 +55,7 @@ fun WooPosSettingsProductInfoDialog(
         Box(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(WooPosSpacing.XLarge.value)
                 .semantics(mergeDescendants = true) {
                     contentDescription = dialogContentDescription
                 },
@@ -73,8 +73,8 @@ fun WooPosSettingsProductInfoDialog(
 
                     modifier = Modifier
                         .padding(
-                            top = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                            bottom = WooPosSpacing.Medium.value.toAdaptivePadding()
+                            top = WooPosSpacing.XLarge.value,
+                            bottom = WooPosSpacing.Medium.value
                         )
                         .constrainAs(header) {
                             top.linkTo(closeIcon.bottom)
@@ -96,13 +96,13 @@ fun WooPosSettingsProductInfoDialog(
                         text = stringResource(id = state.primaryMessage),
                         style = WooPosTypography.BodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
                     )
                     WooPosText(
                         text = stringResource(id = state.secondaryMessage),
                         style = WooPosTypography.BodyLarge,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+                        modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
                     )
                     @Suppress("WooPosDesignSystemSpacingUsageRule")
                     Spacer(Modifier.height(40.dp.toAdaptivePadding()))
@@ -113,8 +113,8 @@ fun WooPosSettingsProductInfoDialog(
                                 color = MaterialTheme.colorScheme.surfaceDim
                             )
                             .padding(
-                                vertical = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()
+                                vertical = WooPosSpacing.XLarge.value,
+                                horizontal = WooPosSpacing.Medium.value
                             ),
                         contentAlignment = Alignment.Center,
                     ) {
@@ -129,7 +129,7 @@ fun WooPosSettingsProductInfoDialog(
                             )
                         }
                     }
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
                     WooPosOutlinedButton(
                         onClick = { onDismissRequest() },
                         text = stringResource(id = state.primaryButton.label),
