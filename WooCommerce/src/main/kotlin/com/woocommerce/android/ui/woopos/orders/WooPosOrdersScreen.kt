@@ -146,8 +146,7 @@ private fun WooPosOrdersScreen(
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
-                onUIEvent = onUIEvent,
-                onIssueRefundDialogDismissed = onIssueRefundDialogDismissed
+                onUIEvent = onUIEvent
             )
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
@@ -172,6 +171,19 @@ private fun WooPosOrdersScreen(
                     .statusBarsPadding()
             )
         }
+
+        if (state is WooPosOrdersState.Content) {
+            when (val dialogState = state.dialogState) {
+                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+                    WooPosIssueRefundDialog(
+                        orderId = dialogState.orderId,
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onContinue = onIssueRefundDialogDismissed
+                    )
+                }
+                WooPosOrdersState.Content.DialogState.Hidden -> Unit
+            }
+        }
     }
 }
 
@@ -185,8 +197,7 @@ private fun OrdersContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         OrdersListPane(
@@ -217,17 +228,6 @@ private fun OrdersContent(
                 onUIEvent = onUIEvent
             )
         }
-    }
-
-    when (val dialogState = state.dialogState) {
-        is WooPosOrdersState.Content.DialogState.IssueRefund -> {
-            WooPosIssueRefundDialog(
-                isVisible = true,
-                orderId = dialogState.orderId,
-                onDismissRequest = onIssueRefundDialogDismissed
-            )
-        }
-        WooPosOrdersState.Content.DialogState.Hidden -> Unit
     }
 }
 
