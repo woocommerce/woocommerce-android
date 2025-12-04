@@ -15,13 +15,16 @@ enum class WooPosCornerRadius(val value: Dp) {
     XLarge(24.dp)
 }
 
-enum class WooPosSpacing(val value: Dp) {
+enum class WooPosSpacing(private val baseValue: Dp) {
     None(0.dp),
     XSmall(4.dp),
     Small(8.dp),
     Medium(16.dp),
     Large(24.dp),
-    XLarge(32.dp)
+    XLarge(32.dp);
+
+    val value: Dp
+        @Composable get() = baseValue.toAdaptivePadding()
 }
 
 enum class WooPosElevation(val value: Dp) {
