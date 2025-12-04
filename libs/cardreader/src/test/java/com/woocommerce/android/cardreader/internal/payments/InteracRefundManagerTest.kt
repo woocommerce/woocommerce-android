@@ -37,6 +37,7 @@ private const val USD_CURRENCY = "USD"
 private const val DUMMY_CHARGE_ID = "ch_abcdefgh"
 private const val TIMEOUT = 1000L
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class InteracRefundManagerTest : CardReaderBaseUnitTest() {

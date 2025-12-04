@@ -31,6 +31,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 internal class CreatePaymentActionTest : CardReaderBaseUnitTest() {
     private lateinit var action: CreatePaymentAction
