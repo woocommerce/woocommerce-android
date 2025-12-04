@@ -89,6 +89,10 @@ class WooPosGetRefundableItems @Inject constructor(
     }
 
     private fun calculateUnitTax(item: Order.Item): BigDecimal {
+        // Calculate per-unit tax by dividing total tax by quantity.
+        // This matches the approach used in store management refunds (RefundsExt.calculateTotalTaxes).
+        // Note: Hardcoded 2 decimal places - matches existing implementation, but could be improved
+        // by fetching decimal places from store settings (see WooPosCashPaymentRepository.getNumberOfDecimals).
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
