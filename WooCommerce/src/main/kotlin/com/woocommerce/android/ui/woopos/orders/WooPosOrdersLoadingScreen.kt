@@ -48,10 +48,10 @@ fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
     ) {
         WooPosOrdersListLoadingPane(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceBright)
                 .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
         )
 
         OrderDetailsLoadingPane(
@@ -113,15 +113,13 @@ fun WooPosOrdersOrderLoadingRow() {
 
 @Composable
 fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
-    Column(modifier = modifier.statusBarsPadding()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
-            contentPadding = PaddingValues(WooPosSpacing.Medium.value)
-        ) {
-            items(7) {
-                WooPosOrdersOrderLoadingRow()
-            }
+    LazyColumn(
+        modifier = modifier.statusBarsPadding(),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
+        contentPadding = PaddingValues(WooPosSpacing.Medium.value)
+    ) {
+        items(7) {
+            WooPosOrdersOrderLoadingRow()
         }
     }
 }
