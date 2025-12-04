@@ -85,11 +85,7 @@ class WooPosGetRefundableItems @Inject constructor(
     }
 
     private fun calculateUnitPrice(item: Order.Item): BigDecimal {
-        return if (item.quantity == 0f) {
-            item.total
-        } else {
-            item.total.divide(item.quantity.toBigDecimal(), 2, RoundingMode.HALF_UP)
-        }
+        return item.price
     }
 
     private fun calculateUnitTax(item: Order.Item): BigDecimal {
