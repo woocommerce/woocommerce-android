@@ -50,7 +50,6 @@ class BookingsStoreTest {
             bookingDtoMapper = bookingDtoMapper,
             headersParser = headersParser,
             coroutineEngine = CoroutineEngine(EmptyCoroutineContext, mock()),
-            clock = clock,
         )
     }
 
