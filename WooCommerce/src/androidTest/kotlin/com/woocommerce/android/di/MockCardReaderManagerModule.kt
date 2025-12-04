@@ -80,7 +80,7 @@ class MockCardReaderManagerModule {
 
         override fun setupTapToPayUx(config: TapToPayUxConfig) {}
 
-        override fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
+        override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {}
 
         override suspend fun disconnectReader(): Boolean = true
 
