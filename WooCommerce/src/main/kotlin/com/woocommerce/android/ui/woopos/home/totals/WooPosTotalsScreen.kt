@@ -426,7 +426,7 @@ private fun TotalsLoading() {
         ) {
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(WooPosSpacing.Large.value)
+                    .height(24.dp)
                     .width(332.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
@@ -435,7 +435,7 @@ private fun TotalsLoading() {
 
             WooPosShimmerBox(
                 modifier = Modifier
-                    .height(WooPosSpacing.Large.value)
+                    .height(24.dp)
                     .width(332.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )

@@ -271,7 +271,7 @@ private fun PopUpMenuItem(
             imageVector = menuItem.icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(WooPosSpacing.Large.value)
+            modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         WooPosText(
