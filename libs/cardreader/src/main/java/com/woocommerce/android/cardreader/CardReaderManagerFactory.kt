@@ -18,11 +18,10 @@ import com.woocommerce.android.cardreader.internal.payments.PaymentManager
 import com.woocommerce.android.cardreader.internal.payments.PaymentUtils
 import com.woocommerce.android.cardreader.internal.payments.RefundErrorMapper
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
 import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessRefundAction
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentIntentParametersFactory
 import com.woocommerce.android.cardreader.internal.wrappers.PaymentMethodTypeMapper
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
@@ -69,8 +68,7 @@ object CardReaderManagerFactory {
                 cardReaderConfigFactory
             ),
             InteracRefundManager(
-                CollectInteracRefundAction(terminal),
-                ProcessInteracRefundAction(terminal),
+                ProcessRefundAction(terminal),
                 RefundErrorMapper(),
                 paymentUtils,
             ),
