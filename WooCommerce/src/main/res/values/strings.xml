@@ -3798,6 +3798,11 @@
 
     <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
+    <string name="woopos_orders_select_items_to_refund">Select items to refund</string>
+    <string name="woopos_orders_select_all_items">SELECT ALL ITEMS</string>
+    <string name="woopos_orders_items_selected_count">(%1$d SELECTED)</string>
+    <string name="woopos_orders_loading_refund_items">Loading refundable items</string>
+    <string name="woopos_orders_no_items_available_for_refund">No items available for refund</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>

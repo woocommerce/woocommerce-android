@@ -108,7 +108,9 @@ sealed class WooPosOrdersState {
 
         sealed class DialogState {
             data object Hidden : DialogState()
-            data class IssueRefund(val orderId: Long) : DialogState()
+            data class IssueRefund(
+                val orderId: Long
+            ) : DialogState()
         }
     }
 
