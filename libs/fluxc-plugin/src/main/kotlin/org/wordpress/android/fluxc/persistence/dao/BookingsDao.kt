@@ -56,10 +56,10 @@ interface BookingsDao {
     fun observeBookingsCount(localSiteId: LocalId): Flow<Long>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(entity: BookingEntity): Long
+    suspend fun upsert(entity: BookingEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(entities: List<BookingEntity>)
+    suspend fun upsert(entities: List<BookingEntity>)
 
     @Query("DELETE FROM Bookings WHERE localSiteId = :localSiteId")
     suspend fun deleteAllForSite(localSiteId: LocalId)
@@ -67,7 +67,7 @@ interface BookingsDao {
     @Transaction
     suspend fun replaceAllForSite(siteId: LocalId, entities: List<BookingEntity>) {
         deleteAllForSite(siteId)
-        insertOrReplace(entities)
+        upsert(entities)
     }
 
     @Suppress("LongParameterList")
@@ -139,7 +139,7 @@ interface BookingsDao {
             filters = filters,
             keepIds = entities.map { it.id.value },
         )
-        insertOrReplace(entities)
+        upsert(entities)
     }
 
     fun observeBookings(
@@ -183,10 +183,10 @@ interface BookingsDao {
     suspend fun getResource(localSiteId: LocalId, resourceId: Long): BookingResourceEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplace(resource: BookingResourceEntity): Long
+    suspend fun upsert(resource: BookingResourceEntity): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertOrReplaceResources(resources: List<BookingResourceEntity>)
+    suspend fun upsertResources(resources: List<BookingResourceEntity>)
 
     @Query("DELETE FROM BookingResources WHERE localSiteId = :localSiteId")
     suspend fun deleteAllResourcesForSite(localSiteId: LocalId)
@@ -194,6 +194,6 @@ interface BookingsDao {
     @Transaction
     suspend fun replaceAllResourcesForSite(siteId: LocalId, resources: List<BookingResourceEntity>) {
         deleteAllResourcesForSite(siteId)
-        insertOrReplaceResources(resources)
+        upsertResources(resources)
     }
 }

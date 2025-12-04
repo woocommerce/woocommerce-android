@@ -67,8 +67,7 @@ class BookingsStore @Inject internal constructor(
                         }
 
                         else -> {
-                            // Paging or Searching: just insert or update the new data.
-                            bookingsDao.insertOrReplace(entities)
+                            bookingsDao.upsert(entities)
                         }
                     }
 
@@ -134,7 +133,7 @@ class BookingsStore @Inject internal constructor(
                             orderEntity = orderResult?.model,
                         )
                     }
-                    bookingsDao.insertOrReplace(listOf(entity))
+                    bookingsDao.upsert(listOf(entity))
                     WooResult(entity)
                 }
 
@@ -170,7 +169,7 @@ class BookingsStore @Inject internal constructor(
                 val entity = with(bookingDtoMapper) {
                     response.result.toEntity(site.localId())
                 }
-                bookingsDao.insertOrReplace(entity)
+                bookingsDao.upsert(entity)
                 WooResult(entity)
             }
 
@@ -214,7 +213,7 @@ class BookingsStore @Inject internal constructor(
                     if (updatedBookingEntity == null) {
                         return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                     } else {
-                        bookingsDao.insertOrReplace(updatedBookingEntity)
+                        bookingsDao.upsert(updatedBookingEntity)
                         return@withDefaultContext WooResult(updatedBookingEntity)
                     }
                 }

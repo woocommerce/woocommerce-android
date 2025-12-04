@@ -63,7 +63,7 @@ class BookingsStoreTest {
             whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(note = "n")))
                 .thenReturn(WooPayload(dto))
-            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+            whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
             val result = sut.updateBooking(
@@ -77,7 +77,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             assertThat(result.model).isNotNull
             // The store preserves the stored order on the mapped entity
-            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+            verify(bookingsDao).upsert(argThat<BookingEntity> { this.order == storedBooking.order })
         }
 
     @Test
@@ -91,7 +91,7 @@ class BookingsStoreTest {
             whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
                 .thenReturn(WooPayload(dto))
-            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+            whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
             val result = sut.updateBooking(
@@ -105,7 +105,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
             assertThat(result.model).isEqualTo(expected)
-            verify(bookingsDao).insertOrReplace(expected)
+            verify(bookingsDao).upsert(expected)
             verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
         }
 
@@ -127,7 +127,7 @@ class BookingsStoreTest {
 
         // then
         assertThat(result.isError).isTrue()
-        verify(bookingsDao, never()).insertOrReplace(any<BookingEntity>())
+        verify(bookingsDao, never()).upsert(any<BookingEntity>())
     }
 
     @Test
@@ -170,7 +170,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse
             verify(bookingsDao).getBooking(TEST_LOCAL_SITE_ID, dto.id)
             // The store preserves the stored order on the mapped entity
-            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+            verify(bookingsDao).upsert(argThat<BookingEntity> { this.order == storedBooking.order })
         }
 
     @Test
@@ -250,7 +250,7 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             // We delete only matching filtered rows then insert the fetched page
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao).upsert(any<List<BookingEntity>>())
             verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
                 any<BookingsFilterOption.DateRange>(),
@@ -336,7 +336,7 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao).upsert(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
             verify(bookingsDao, never())
                 .cleanAndUpsertBookings(any(), any<BookingsFilterOption.DateRange>(), any<List<BookingEntity>>())
@@ -415,7 +415,7 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao).upsert(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
             verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
