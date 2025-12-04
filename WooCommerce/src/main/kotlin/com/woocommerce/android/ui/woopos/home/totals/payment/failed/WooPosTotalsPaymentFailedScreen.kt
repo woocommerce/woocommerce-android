@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
@@ -39,11 +38,10 @@ fun WooPosPaymentFailedScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 96.dp.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Huge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(96.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
         Icon(
             modifier = Modifier.size(84.dp),
             imageVector = WooPosIcons.ErrorX,
@@ -76,8 +74,7 @@ fun WooPosPaymentFailedScreen(
                 text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
             ) { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment) }
         }
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(80.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
     }
 }
 

@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -51,8 +50,7 @@ fun WooPosExitConfirmationDialog(
             modifier = modifier.padding(WooPosSpacing.XLarge.value)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                @Suppress("WooPosDesignSystemSpacingUsageRule")
-                Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
                 WooPosText(
                     text = title,
                     style = WooPosTypography.Heading,
@@ -65,8 +63,7 @@ fun WooPosExitConfirmationDialog(
                     style = WooPosTypography.BodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                @Suppress("WooPosDesignSystemSpacingUsageRule")
-                Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
                 WooPosButton(
                     modifier = modifier
                         .fillMaxWidth(),

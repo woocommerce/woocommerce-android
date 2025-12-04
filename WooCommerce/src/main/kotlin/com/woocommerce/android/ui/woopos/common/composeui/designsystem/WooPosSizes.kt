@@ -21,7 +21,10 @@ enum class WooPosSpacing(private val baseValue: Dp) {
     Small(8.dp),
     Medium(16.dp),
     Large(24.dp),
-    XLarge(32.dp);
+    XLarge(32.dp),
+    XXLarge(40.dp),
+    XXXLarge(48.dp),
+    Huge(80.dp);
 
     val value: Dp
         @Composable get() = baseValue.toAdaptivePadding()

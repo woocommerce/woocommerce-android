@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosErrorScreen(
@@ -71,8 +70,7 @@ fun WooPosErrorScreen(
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
             )
-            @Suppress("WooPosDesignSystemSpacingUsageRule")
-            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXLarge.value))
             primaryButton?.let {
                 WooPosButton(
                     text = it.text,
