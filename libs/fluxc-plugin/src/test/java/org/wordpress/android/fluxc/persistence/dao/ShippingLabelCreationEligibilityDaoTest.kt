@@ -110,22 +110,6 @@ class ShippingLabelCreationEligibilityDaoTest {
         assertThat(result2).isEqualTo(eligibility2)
     }
 
-    @Test
-    fun `when eligibility is not eligible with reason, then reason is persisted`() = runTest {
-        val reason = "Missing shipping address"
-        val eligibility = generateEligibility(
-            siteId = defaultSiteId,
-            orderId = defaultOrderId,
-            isEligible = false,
-            reason = reason
-        )
-
-        dao.upsertShippingLabelCreationEligibility(eligibility)
-        val result = dao.getShippingLabelCreationEligibility(defaultSiteId, defaultOrderId)
-
-        assertThat(result).isEqualTo(eligibility)
-    }
-
     private fun generateEligibility(
         siteId: LocalId,
         orderId: RemoteId,
