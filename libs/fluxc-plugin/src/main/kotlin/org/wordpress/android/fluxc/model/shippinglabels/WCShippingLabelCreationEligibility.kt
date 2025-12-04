@@ -6,11 +6,11 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 
 @Entity(
     tableName = "ShippingLabelCreationEligibilityEntity",
-    primaryKeys = ["localSiteId", "remoteOrderId"]
+    primaryKeys = ["siteId", "orderId"]
 )
 data class WCShippingLabelCreationEligibility(
-    val localSiteId: LocalId,
-    val remoteOrderId: RemoteId,
+    val siteId: LocalId,
+    val orderId: RemoteId,
     val canCreatePackage: Boolean,
     val canCreatePaymentMethod: Boolean,
     val canCreateCustomsForm: Boolean,

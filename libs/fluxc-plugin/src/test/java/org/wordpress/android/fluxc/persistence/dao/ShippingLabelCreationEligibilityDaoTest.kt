@@ -135,8 +135,8 @@ class ShippingLabelCreationEligibilityDaoTest {
         isEligible: Boolean = false,
         reason: String? = "test reason"
     ) = WCShippingLabelCreationEligibility(
-        localSiteId = siteId,
-        remoteOrderId = orderId,
+        siteId = siteId,
+        orderId = orderId,
         canCreatePackage = canCreatePackage,
         canCreatePaymentMethod = canCreatePaymentMethod,
         canCreateCustomsForm = canCreateCustomsForm,

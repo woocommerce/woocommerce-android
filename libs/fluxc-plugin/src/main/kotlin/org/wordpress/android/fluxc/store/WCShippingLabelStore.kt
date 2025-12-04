@@ -177,8 +177,8 @@ class WCShippingLabelStore @Inject internal constructor(
                 }
                 response.result != null -> {
                     val eligibility = WCShippingLabelCreationEligibility(
-                        localSiteId = site.localId(),
-                        remoteOrderId = RemoteId(orderId),
+                        siteId = site.localId(),
+                        orderId = RemoteId(orderId),
                         canCreatePackage = canCreatePackage,
                         canCreatePaymentMethod = canCreatePaymentMethod,
                         canCreateCustomsForm = canCreateCustomsForm,

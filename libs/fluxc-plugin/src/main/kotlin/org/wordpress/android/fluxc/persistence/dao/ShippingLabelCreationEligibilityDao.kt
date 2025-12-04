@@ -18,8 +18,8 @@ internal abstract class ShippingLabelCreationEligibilityDao {
     @Query(
         """
         SELECT * FROM ShippingLabelCreationEligibilityEntity
-        WHERE localSiteId = :siteId
-        AND remoteOrderId = :orderId
+        WHERE siteId = :siteId
+        AND orderId = :orderId
         LIMIT 1
         """
     )

@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 76,
-    "identityHash": "9decb8efb65424ae05ea934d61a4ba40",
+    "identityHash": "20aac1f015b36155e34db4c7c38cc187",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -4490,17 +4490,17 @@
       },
       {
         "tableName": "ShippingLabelCreationEligibilityEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteOrderId` INTEGER NOT NULL, `canCreatePackage` INTEGER NOT NULL, `canCreatePaymentMethod` INTEGER NOT NULL, `canCreateCustomsForm` INTEGER NOT NULL, `isEligible` INTEGER NOT NULL, `reason` TEXT, PRIMARY KEY(`localSiteId`, `remoteOrderId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `orderId` INTEGER NOT NULL, `canCreatePackage` INTEGER NOT NULL, `canCreatePaymentMethod` INTEGER NOT NULL, `canCreateCustomsForm` INTEGER NOT NULL, `isEligible` INTEGER NOT NULL, `reason` TEXT, PRIMARY KEY(`siteId`, `orderId`))",
         "fields": [
           {
-            "fieldPath": "localSiteId",
-            "columnName": "localSiteId",
+            "fieldPath": "siteId",
+            "columnName": "siteId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "remoteOrderId",
-            "columnName": "remoteOrderId",
+            "fieldPath": "orderId",
+            "columnName": "orderId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -4537,15 +4537,15 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "localSiteId",
-            "remoteOrderId"
+            "siteId",
+            "orderId"
           ]
         }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9decb8efb65424ae05ea934d61a4ba40')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '20aac1f015b36155e34db4c7c38cc187')"
     ]
   }
 }
