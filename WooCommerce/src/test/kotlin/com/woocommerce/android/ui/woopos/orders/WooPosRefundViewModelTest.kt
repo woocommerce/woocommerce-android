@@ -182,7 +182,7 @@ class WooPosRefundViewModelTest {
     }
 
     @Test
-    fun `given order with refunds, when init, then calculates remaining refundable items correctly`() = runTest {
+    fun `given order with refunds, when init, then builds content state with refundable items`() = runTest {
         // GIVEN
         val refunds = listOf(
             Refund(
