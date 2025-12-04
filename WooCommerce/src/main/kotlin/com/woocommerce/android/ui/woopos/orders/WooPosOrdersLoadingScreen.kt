@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.orders
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,15 +42,16 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosOrdersLoadingState() {
-    Row(modifier = Modifier.fillMaxSize()) {
+fun WooPosOrdersLoadingScreen(modifier: Modifier = Modifier) {
+    Row(
+        modifier = modifier.fillMaxSize()
+    ) {
         WooPosOrdersListLoadingPane(
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.surfaceBright)
+                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
                 .weight(0.3f)
                 .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(top = WOO_POS_ORDERS_TOOLBAR_HEIGHT)
-                .padding(top = WooPosSpacing.XLarge.value)
         )
 
         OrderDetailsLoadingPane(
@@ -56,7 +59,6 @@ fun WooPosOrdersLoadingState() {
                 .weight(0.7f)
                 .fillMaxHeight()
                 .background(MaterialTheme.colorScheme.surface)
-                .padding(top = WooPosSpacing.Large.value)
         )
     }
 }
@@ -112,7 +114,7 @@ fun WooPosOrdersOrderLoadingRow() {
 @Composable
 fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier,
+        modifier = modifier.statusBarsPadding(),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
@@ -127,7 +129,8 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(WooPosSpacing.Medium.value)
+            .statusBarsPadding()
+            .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
         Row(
             modifier = Modifier
@@ -135,20 +138,22 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
-                WooPosShimmerText(
-                    text = "Order #123",
-                    style = WooPosTypography.Heading.style,
-                    fontWeight = FontWeight.Bold
-                )
+                Box(Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
+                    WooPosShimmerText(
+                        text = "Order #123",
+                        style = WooPosTypography.Heading.style,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
                 WooPosShimmerText(
                     text = "Jul 28, 2025 at 10:31 PM",
                     style = WooPosTypography.BodyMedium.style
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
                 WooPosShimmerText(
                     text = "Completed",
@@ -158,6 +163,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 
             WooPosShimmerBox(
                 modifier = Modifier
+                    .padding(vertical = WooPosSpacing.Small.value)
                     .width(140.dp)
                     .height(36.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
@@ -178,7 +184,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         text = stringResource(R.string.woopos_orders_details_products_title),
                         style = WooPosTypography.BodyXLarge,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
 
                     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
@@ -208,7 +214,7 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
                         text = stringResource(R.string.woopos_orders_details_totals_title),
                         style = WooPosTypography.BodyXLarge,
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.SemiBold
                     )
 
                     Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
@@ -304,6 +310,6 @@ private fun TotalLoadingItem() {
 @Composable
 fun WooPosOrdersLoadingStatePreview() {
     WooPosTheme {
-        WooPosOrdersLoadingState()
+        WooPosOrdersLoadingScreen()
     }
 }
