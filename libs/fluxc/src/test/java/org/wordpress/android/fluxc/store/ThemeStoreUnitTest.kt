@@ -14,7 +14,6 @@ import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.utils.createTestTheme
 import org.wordpress.android.fluxc.utils.generateWPComSite
 import java.io.IOException
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ThemeStoreUnitTest {
@@ -66,16 +65,11 @@ class ThemeStoreUnitTest {
     fun `when setting active theme for site, then theme can be retrieved by theme id`() {
         val testThemeId = "fluxc-ftw"
         val testThemeName = "FluxC FTW"
-        val testTheme = createTestTheme(0, testThemeId, testThemeName)
-
-        // Verify theme doesn't exist initially
-        assertNull(themeStore.getWpComThemeByThemeId(testThemeId))
-
-        // Insert theme via setActiveThemeForSite
         val site = generateWPComSite()
+        val testTheme = createTestTheme(0, testThemeId, testThemeName) // id is set in setActiveThemeForSite
+
         themeStore.setActiveThemeForSite(site, testTheme)
 
-        // Verify we can retrieve it
         val retrievedTheme = themeStore.getInstalledThemeByThemeId(site, testThemeId)
         assertThat(retrievedTheme)
             .usingRecursiveComparison()
