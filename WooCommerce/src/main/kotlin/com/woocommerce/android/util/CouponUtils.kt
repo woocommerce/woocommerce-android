@@ -160,23 +160,26 @@ class CouponUtils @Inject constructor(
     - If only some products: "Apply 15% off to select products with the promo code ABCDE"
      */
     fun formatSharingMessage(
-        amount: BigDecimal?,
-        currencyCode: String?,
-        couponCode: String?,
-        includedProducts: Int,
-        excludedProducts: Int
+        coupon: Coupon,
+        currencyCode: String?
     ): String? {
+        val amount = coupon.amount
+        val couponCode = coupon.code
+        val includedProducts = coupon.productIds.size
+        val excludedProducts = coupon.restrictions.excludedProductIds.size
+
         return if (amount != null && currencyCode != null && couponCode != null) {
+            val formattedDiscount = formatDiscount(amount, coupon.type, currencyCode)
             if (includedProducts == 0 && excludedProducts == 0) {
                 resourceProvider.getString(
                     R.string.coupon_details_share_coupon_all,
-                    formatCurrency(amount, currencyCode),
+                    formattedDiscount,
                     couponCode
                 )
             } else {
                 resourceProvider.getString(
                     R.string.coupon_details_share_coupon_some,
-                    formatCurrency(amount, currencyCode),
+                    formattedDiscount,
                     couponCode
                 )
             }
