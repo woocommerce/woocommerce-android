@@ -6,8 +6,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,15 +47,18 @@ fun WooPosOrderDetails(
     Column(
         modifier = modifier
             .fillMaxSize()
+            .statusBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(
                 start = WooPosSpacing.Medium.value,
                 end = WooPosSpacing.Medium.value,
-                top = WooPosSpacing.XLarge.value,
                 bottom = WooPosSpacing.XLarge.value
             )
     ) {
-        Row {
+        Row(
+            modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             WooPosText(
                 text = details.number,
                 style = WooPosTypography.Heading,
