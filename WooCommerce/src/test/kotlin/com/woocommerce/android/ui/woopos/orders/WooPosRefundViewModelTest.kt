@@ -83,6 +83,31 @@ class WooPosRefundViewModelTest {
         )
     }
 
+    /**
+     * Helper to create a WooPosRefundableItem with default values.
+     * Note: Items with the same orderItemId but different rowIndex represent
+     * expanded units from an order item with quantity > 1.
+     */
+    private fun createRefundableItem(
+        orderItemId: Long,
+        productId: Long = 10L,
+        variationId: Long = 0,
+        name: String = "Product $orderItemId",
+        unitPrice: BigDecimal,
+        unitTax: BigDecimal,
+        rowIndex: Int = 0
+    ) = WooPosRefundableItem(
+        orderItemId = orderItemId,
+        productId = productId,
+        variationId = variationId,
+        name = name,
+        unitPrice = unitPrice,
+        unitTax = unitTax,
+        formattedUnitPrice = "$$unitPrice",
+        formattedUnitTax = "$$unitTax",
+        rowIndex = rowIndex
+    )
+
     @Test
     fun `given viewmodel created, when order fetch fails, then state transitions from Loading to Error`() = runTest {
         // GIVEN
@@ -230,37 +255,30 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(
-                WooPosRefundableItem(
+                // Two units of the same order item (orderItemId=1, quantity=2)
+                createRefundableItem(
                     orderItemId = 1L,
                     productId = 10L,
-                    variationId = 0,
                     name = "Product 1",
                     unitPrice = BigDecimal("10.00"),
                     unitTax = BigDecimal("1.00"),
-                    formattedUnitPrice = "$10.00",
-                    formattedUnitTax = "$1.00",
                     rowIndex = 0
                 ),
-                WooPosRefundableItem(
+                createRefundableItem(
                     orderItemId = 1L,
                     productId = 10L,
-                    variationId = 0,
                     name = "Product 1",
                     unitPrice = BigDecimal("10.00"),
                     unitTax = BigDecimal("1.00"),
-                    formattedUnitPrice = "$10.00",
-                    formattedUnitTax = "$1.00",
                     rowIndex = 1
                 ),
-                WooPosRefundableItem(
+                // One unit of a different order item (orderItemId=2, quantity=1)
+                createRefundableItem(
                     orderItemId = 2L,
                     productId = 20L,
-                    variationId = 0,
                     name = "Product 2",
                     unitPrice = BigDecimal("15.50"),
                     unitTax = BigDecimal("1.55"),
-                    formattedUnitPrice = "$15.50",
-                    formattedUnitTax = "$1.55",
                     rowIndex = 0
                 )
             )
