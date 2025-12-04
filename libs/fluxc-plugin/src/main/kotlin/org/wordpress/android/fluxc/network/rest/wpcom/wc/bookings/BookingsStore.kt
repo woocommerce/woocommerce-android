@@ -54,26 +54,24 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    // Clear existing bookings when fetching the first page.
-                    // If filters are applied, only clear entries that match the applied filters,
-                    // otherwise (no filters) clear all entries for the site.
-                    if (page == 1 && query.isNullOrEmpty()) {
-                        when (filters) {
-                            BookingFilters.EMPTY -> {
-                                bookingsDao.replaceAllForSite(site.localId(), entities)
-                            }
 
-                            else -> {
-                                bookingsDao.cleanAndUpsertBookings(
-                                    site.localId(),
-                                    filters,
-                                    entities
-                                )
-                            }
+                    when {
+                        page == 1 && query.isNullOrEmpty() && filters == BookingFilters.EMPTY -> {
+                            // Refreshing with no filters applied: perform a bulk delete.
+                            bookingsDao.replaceAllForSite(site.localId(), entities)
                         }
-                    } else {
-                        bookingsDao.insertOrReplace(entities)
+
+                        page == 1 && query.isNullOrEmpty() -> {
+                            // Refreshing with filters applied: selectively remove only the stale entries.
+                            bookingsDao.cleanAndUpsertBookings(site.localId(), filters, entities)
+                        }
+
+                        else -> {
+                            // Paging or Searching: just insert or update the new data.
+                            bookingsDao.insertOrReplace(entities)
+                        }
                     }
+
                     val totalPages = headersParser.getTotalPages(response.headers)
                     // Determine if we can load more from the total pages header if available, otherwise
                     // infer it from the number of items returned
