@@ -103,6 +103,11 @@ internal class CardReaderManagerImpl(
         return connectionManager.disconnectReader()
     }
 
+    override fun cancelReconnection() {
+        if (!terminal.isInitialized()) error("Terminal not initialized")
+        connectionManager.cancelReconnection()
+    }
+
     override suspend fun collectPayment(paymentInfo: PaymentInfo): Flow<CardPaymentStatus> {
         resetBluetoothDisplayMessage()
         return paymentManager.acceptPayment(paymentInfo)

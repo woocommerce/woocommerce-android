@@ -303,6 +303,10 @@ class CardReaderConnectViewModel @Inject constructor(
                     connectionStarted = true
                     viewState.value = provideConnectingState()
                 }
+
+                CardReaderStatus.Reconnecting -> {
+                    // Reconnecting is handled by the SDK, no action needed during connection flow
+                }
             }
         }
     }

@@ -100,6 +100,8 @@ class MockCardReaderManagerModule {
 
         override fun cancelPayment(paymentData: PaymentData) {}
 
+        override fun cancelReconnection() {}
+
         override suspend fun startAsyncSoftwareUpdate() {}
 
         override suspend fun clearCachedCredentials() {}

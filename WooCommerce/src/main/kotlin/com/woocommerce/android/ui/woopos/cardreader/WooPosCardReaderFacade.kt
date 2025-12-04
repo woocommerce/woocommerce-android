@@ -49,6 +49,10 @@ class WooPosCardReaderFacade @Inject constructor(
         cardReaderManager.disconnectReader()
     }
 
+    fun cancelReconnection() {
+        cardReaderManager.cancelReconnection()
+    }
+
     @Suppress("DEPRECATION")
     private fun startActivity(intent: Intent) {
         val options = ActivityOptionsCompat.makeCustomAnimation(

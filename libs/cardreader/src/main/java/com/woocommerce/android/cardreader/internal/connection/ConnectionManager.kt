@@ -163,6 +163,20 @@ internal class ConnectionManager(
         })
     }
 
+    fun cancelReconnection() {
+        val callback = object : Callback {
+            override fun onFailure(e: TerminalException) {
+                updateReaderStatus(CardReaderStatus.NotConnected())
+            }
+
+            override fun onSuccess() {
+                updateReaderStatus(CardReaderStatus.NotConnected())
+            }
+        }
+        bluetoothReaderListener.cancelReconnection(callback)
+        tapToPayReaderListener.cancelReconnection(callback)
+    }
+
     private fun startStateResettingJobIfNeeded(currentStatus: CardReaderStatus) {
         if (currentStatus !is CardReaderStatus.Connecting) return
 
