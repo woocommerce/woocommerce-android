@@ -6,33 +6,41 @@ import com.stripe.stripeterminal.external.models.PaymentIntent
 import com.stripe.stripeterminal.external.models.TerminalException
 import com.woocommerce.android.cardreader.LogWrapper
 import com.woocommerce.android.cardreader.internal.LOG_TAG
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Failure
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus.Success
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus.Failure
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus.Success
 import com.woocommerce.android.cardreader.internal.sendAndLog
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
-internal class CollectPaymentAction(private val terminal: TerminalWrapper, private val logWrapper: LogWrapper) {
-    sealed class CollectPaymentStatus {
-        data class Success(val paymentIntent: PaymentIntent) : CollectPaymentStatus()
-        data class Failure(val exception: TerminalException) : CollectPaymentStatus()
+internal class ProcessPaymentIntentAction(
+    private val terminal: TerminalWrapper,
+    private val logWrapper: LogWrapper
+) {
+    sealed class ProcessPaymentIntentStatus {
+        data class Success(val paymentIntent: PaymentIntent) : ProcessPaymentIntentStatus()
+        data class Failure(val exception: TerminalException) : ProcessPaymentIntentStatus()
     }
 
-    fun collectPayment(paymentIntent: PaymentIntent): Flow<CollectPaymentStatus> {
+    fun processPaymentIntent(paymentIntent: PaymentIntent): Flow<ProcessPaymentIntentStatus> {
         return callbackFlow {
-            val cancelable = terminal.collectPaymentMethod(
+            logWrapper.d(LOG_TAG, "Processing payment intent")
+            val cancelable = terminal.processPaymentIntent(
                 paymentIntent,
                 object : PaymentIntentCallback {
                     override fun onSuccess(paymentIntent: PaymentIntent) {
-                        logWrapper.d(LOG_TAG, "Payment collected")
+                        logWrapper.d(LOG_TAG, "Processing payment intent succeeded")
                         this@callbackFlow.sendAndLog(Success(paymentIntent), logWrapper)
                         this@callbackFlow.close()
                     }
 
                     override fun onFailure(e: TerminalException) {
-                        logWrapper.d(LOG_TAG, "Payment collection failed")
+                        logWrapper.e(
+                            LOG_TAG,
+                            "Processing payment intent failed. " +
+                                "Message: ${e.errorMessage}, DeclineCode: ${e.apiError?.declineCode}"
+                        )
                         this@callbackFlow.sendAndLog(Failure(e), logWrapper)
                         this@callbackFlow.close()
                     }
@@ -46,11 +54,7 @@ internal class CollectPaymentAction(private val terminal: TerminalWrapper, priva
 }
 
 private val noop = object : Callback {
-    override fun onFailure(e: TerminalException) {
-        // noop
-    }
+    override fun onFailure(e: TerminalException) = Unit
 
-    override fun onSuccess() {
-        // noop
-    }
+    override fun onSuccess() = Unit
 }

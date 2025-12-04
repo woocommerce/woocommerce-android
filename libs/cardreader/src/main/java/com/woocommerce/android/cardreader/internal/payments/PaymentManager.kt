@@ -8,17 +8,21 @@ import com.woocommerce.android.cardreader.CardReaderStore.CapturePaymentResponse
 import com.woocommerce.android.cardreader.config.CardReaderConfigFactory
 import com.woocommerce.android.cardreader.config.CardReaderConfigForSupportedCountry
 import com.woocommerce.android.cardreader.internal.payments.actions.CancelPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectPaymentAction.CollectPaymentStatus
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Failure
 import com.woocommerce.android.cardreader.internal.payments.actions.CreatePaymentAction.CreatePaymentStatus.Success
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentAction.ProcessPaymentStatus
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessPaymentIntentAction.ProcessPaymentIntentStatus
 import com.woocommerce.android.cardreader.internal.wrappers.TerminalWrapper
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
-import com.woocommerce.android.cardreader.payments.CardPaymentStatus.*
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CapturingPayment
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus.CardPaymentStatusErrorType.Generic
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.InitializingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentCompleted
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentFailed
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.PaymentMethodType
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPayment
+import com.woocommerce.android.cardreader.payments.CardPaymentStatus.ProcessingPaymentCompleted
 import com.woocommerce.android.cardreader.payments.PaymentData
 import com.woocommerce.android.cardreader.payments.PaymentInfo
 import kotlinx.coroutines.flow.Flow
@@ -30,8 +34,7 @@ internal class PaymentManager(
     private val terminalWrapper: TerminalWrapper,
     private val cardReaderStore: CardReaderStore,
     private val createPaymentAction: CreatePaymentAction,
-    private val collectPaymentAction: CollectPaymentAction,
-    private val processPaymentAction: ProcessPaymentAction,
+    private val processPaymentIntentAction: ProcessPaymentIntentAction,
     private val cancelPaymentAction: CancelPaymentAction,
     private val paymentUtils: PaymentUtils,
     private val errorMapper: PaymentErrorMapper,
@@ -68,10 +71,9 @@ internal class PaymentManager(
             return@flow
         }
 
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD) {
-            paymentIntent = collectPayment(paymentIntent)
-        }
-        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION) {
+        if (paymentIntent.status == PaymentIntentStatus.REQUIRES_PAYMENT_METHOD ||
+            paymentIntent.status == PaymentIntentStatus.REQUIRES_CONFIRMATION
+        ) {
             paymentIntent = processPayment(paymentIntent)
         }
 
@@ -125,29 +127,15 @@ internal class PaymentManager(
         return paymentIntent
     }
 
-    private suspend fun FlowCollector<CardPaymentStatus>.collectPayment(
-        paymentIntent: PaymentIntent
-    ): PaymentIntent {
-        var result = paymentIntent
-        emit(CollectingPayment)
-        collectPaymentAction.collectPayment(paymentIntent).collect {
-            when (it) {
-                is CollectPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
-                is CollectPaymentStatus.Success -> result = it.paymentIntent
-            }
-        }
-        return result
-    }
-
     private suspend fun FlowCollector<CardPaymentStatus>.processPayment(
         paymentIntent: PaymentIntent
     ): PaymentIntent {
         var result = paymentIntent
         emit(ProcessingPayment)
-        processPaymentAction.processPayment(paymentIntent).collect {
+        processPaymentIntentAction.processPaymentIntent(paymentIntent).collect {
             when (it) {
-                is ProcessPaymentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
-                is ProcessPaymentStatus.Success -> {
+                is ProcessPaymentIntentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
+                is ProcessPaymentIntentStatus.Success -> {
                     val paymentMethodType = determinePaymentMethodType(it)
                     emit(ProcessingPaymentCompleted(paymentMethodType))
                     result = it.paymentIntent
@@ -188,7 +176,7 @@ internal class PaymentManager(
         }
     }
 
-    private fun determinePaymentMethodType(status: ProcessPaymentStatus.Success): PaymentMethodType {
+    private fun determinePaymentMethodType(status: ProcessPaymentIntentStatus.Success): PaymentMethodType {
         val charge = status.paymentIntent.getCharges().firstOrNull()
         return when {
             charge?.paymentMethodDetails?.interacPresentDetails != null -> PaymentMethodType.INTERAC_PRESENT
