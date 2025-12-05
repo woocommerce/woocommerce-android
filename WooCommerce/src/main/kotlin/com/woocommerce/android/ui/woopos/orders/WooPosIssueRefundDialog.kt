@@ -401,7 +401,7 @@ private fun ReviewRefundContent(
                     isTotal = true
                 )
                 WooPosText(
-                    text = stringResource(R.string.woopos_orders_via_payment_card),
+                    text = "Via payment card ••••1456",
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Normal,
                     color = WooPosTheme.colors.onSurfaceVariantHighest
@@ -436,7 +436,7 @@ private fun ReviewRefundContent(
                     )
                 }
                 WooPosText(
-                    text = stringResource(R.string.woopos_orders_refund_reason_default),
+                    text = "Customer bought an extra item.",
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Normal,
                     color = WooPosTheme.colors.onSurfaceVariantHighest

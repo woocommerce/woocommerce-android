@@ -3813,10 +3813,8 @@
         <item quantity="other">Items subtotal (%d items)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
-    <string name="woopos_orders_via_payment_card">Via payment card ••••1456</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
-    <string name="woopos_orders_refund_reason_default">Customer bought an extra item.</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
