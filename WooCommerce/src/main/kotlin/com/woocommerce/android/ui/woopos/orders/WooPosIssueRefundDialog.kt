@@ -66,7 +66,10 @@ fun WooPosIssueRefundDialog(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_orders_issue_refund_content_description
         ),
-        onDismissRequest = onDismissRequest
+        onDismissRequest = {
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            onDismissRequest()
+        }
     ) {
         when (val currentState = state) {
             is WooPosRefundState.Loading -> {
