@@ -602,7 +602,6 @@ private fun ConfirmRefundMessage(message: String) {
         style = WooPosTypography.BodyLarge,
         fontWeight = FontWeight.Normal,
         color = WooPosTheme.colors.onSurfaceVariantHighest,
-        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = WooPosSpacing.XLarge.value)
