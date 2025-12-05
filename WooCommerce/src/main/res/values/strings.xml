@@ -3814,7 +3814,7 @@
     <string name="woopos_orders_edit_reason">Edit reason</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
-    <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process to refund %1$s via %2$s?\nThis action cannot be undone.</string>
+    <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
