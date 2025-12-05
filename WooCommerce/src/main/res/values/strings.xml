@@ -3803,6 +3803,21 @@
     <string name="woopos_orders_items_selected_count">(%1$d SELECTED)</string>
     <string name="woopos_orders_loading_refund_items">Loading refundable items</string>
     <string name="woopos_orders_no_items_available_for_refund">No items available for refund</string>
+    <string name="woopos_orders_review_refund_content_description">Review refund details</string>
+    <string name="woopos_orders_review_refund">Review refund</string>
+    <string name="woopos_orders_refund_for_order">Refund for %1$s</string>
+    <string name="woopos_orders_issue_refund">Issue Refund</string>
+    <string name="woopos_orders_items_subtotal_count">Items subtotal (%1$d item)</string>
+    <plurals name="woopos_orders_items_subtotal_count_plural">
+        <item quantity="one">Items subtotal (%d item)</item>
+        <item quantity="other">Items subtotal (%d items)</item>
+    </plurals>
+    <string name="woopos_orders_refund_total">Refund total</string>
+    <string name="woopos_orders_via_payment_card">Via payment card ••••1456</string>
+    <string name="woopos_orders_refund_reason">Refund reason</string>
+    <string name="woopos_orders_edit_reason">Edit reason</string>
+    <string name="woopos_orders_refund_reason_default">Customer bought an extra item.</string>
+    <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>

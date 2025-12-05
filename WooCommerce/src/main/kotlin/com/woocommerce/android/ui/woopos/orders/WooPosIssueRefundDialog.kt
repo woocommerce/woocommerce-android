@@ -42,6 +42,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -52,8 +53,7 @@ import java.math.BigDecimal
 @Composable
 fun WooPosIssueRefundDialog(
     orderId: Long,
-    onDismissRequest: () -> Unit,
-    onContinue: () -> Unit
+    onDismissRequest: () -> Unit
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
@@ -73,11 +73,23 @@ fun WooPosIssueRefundDialog(
                 LoadingContent()
             }
             is WooPosRefundState.Content -> {
-                RefundDialogContent(
-                    state = currentState,
-                    onDismissRequest = onDismissRequest,
-                    onContinue = onContinue
-                )
+                when (currentState.step) {
+                    WooPosRefundState.Content.RefundStep.SelectItems -> {
+                        SelectItemsContent(
+                            state = currentState,
+                            onDismissRequest = onDismissRequest,
+                            onContinue = viewModel::onContinueToReview
+                        )
+                    }
+                    WooPosRefundState.Content.RefundStep.ReviewRefund -> {
+                        ReviewRefundContent(
+                            state = currentState,
+                            onDismissRequest = onDismissRequest,
+                            onIssueRefund = onDismissRequest,
+                            onEditRefund = viewModel::onBackToSelectItems
+                        )
+                    }
+                }
             }
             is WooPosRefundState.Error -> {
                 ErrorContent(
@@ -159,7 +171,7 @@ private fun NoItemsContent(onDismissRequest: () -> Unit) {
 }
 
 @Composable
-private fun RefundDialogContent(
+private fun SelectItemsContent(
     state: WooPosRefundState.Content,
     onDismissRequest: () -> Unit,
     onContinue: () -> Unit
@@ -336,6 +348,188 @@ private fun RefundableItemRow(item: WooPosRefundableItem) {
     }
 }
 
+@Composable
+private fun ReviewRefundContent(
+    state: WooPosRefundState.Content,
+    onDismissRequest: () -> Unit,
+    onIssueRefund: () -> Unit,
+    onEditRefund: () -> Unit
+) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        ReviewRefundHeader(onDismissRequest = onDismissRequest)
+
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .padding(horizontal = WooPosSpacing.XLarge.value),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+        ) {
+            // Items subtotal and tax
+            ReviewSummaryRow(
+                label = stringResource(
+                    R.string.woopos_orders_items_subtotal_count,
+                    state.itemsCount
+                ),
+                value = state.formattedSubtotal,
+                isTotal = false
+            )
+            ReviewSummaryRow(
+                label = stringResource(R.string.taxes),
+                value = state.formattedTaxes,
+                isTotal = false
+            )
+
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                thickness = 0.25.dp
+            )
+
+            // Refund total section
+            Column(
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
+            ) {
+                ReviewSummaryRow(
+                    label = stringResource(R.string.woopos_orders_refund_total),
+                    value = state.formattedTotal,
+                    isTotal = true
+                )
+                WooPosText(
+                    text = stringResource(R.string.woopos_orders_via_payment_card),
+                    style = WooPosTypography.BodyMedium,
+                    fontWeight = FontWeight.Normal,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
+                )
+            }
+
+            HorizontalDivider(
+                color = WooPosTheme.colors.outlineVariant,
+                thickness = 0.25.dp
+            )
+
+            // Refund reason section
+            Column(
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_refund_reason),
+                        style = WooPosTypography.BodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_edit_reason),
+                        style = WooPosTypography.BodyMedium,
+                        fontWeight = FontWeight.Normal,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+                WooPosText(
+                    text = stringResource(R.string.woopos_orders_refund_reason_default),
+                    style = WooPosTypography.BodyMedium,
+                    fontWeight = FontWeight.Normal,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest
+                )
+            }
+        }
+
+        HorizontalDivider(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
+            color = WooPosTheme.colors.outlineVariant,
+            thickness = 0.25.dp
+        )
+
+        ReviewActionButtons(
+            onIssueRefund = onIssueRefund,
+            onEditRefund = onEditRefund
+        )
+    }
+}
+
+@Composable
+private fun ReviewRefundHeader(onDismissRequest: () -> Unit) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WooPosSpacing.XLarge.value),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        WooPosText(
+            text = stringResource(R.string.woopos_orders_review_refund),
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        IconButton(
+            modifier = Modifier.size(48.dp),
+            onClick = onDismissRequest,
+        ) {
+            Icon(
+                modifier = Modifier.size(32.dp),
+                imageVector = Icons.Default.Close,
+                contentDescription = stringResource(R.string.close),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReviewSummaryRow(
+    label: String,
+    value: String,
+    isTotal: Boolean
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        WooPosText(
+            text = label,
+            style = if (isTotal) WooPosTypography.BodyLarge else WooPosTypography.BodyMedium,
+            fontWeight = if (isTotal) FontWeight.Bold else FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+        WooPosText(
+            text = value,
+            style = if (isTotal) WooPosTypography.BodyLarge else WooPosTypography.BodyMedium,
+            fontWeight = if (isTotal) FontWeight.Bold else FontWeight.Normal,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+    }
+}
+
+@Composable
+private fun ReviewActionButtons(
+    onIssueRefund: () -> Unit,
+    onEditRefund: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WooPosSpacing.XLarge.value),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+    ) {
+        WooPosButton(
+            text = stringResource(R.string.continue_button),
+            onClick = onIssueRefund,
+            modifier = Modifier.fillMaxWidth()
+        )
+        WooPosOutlinedButton(
+            text = stringResource(R.string.woopos_orders_edit_refund),
+            onClick = onEditRefund,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 @WooPosPreview
 @Composable
 fun WooPosIssueRefundDialogPreview() {
@@ -383,11 +577,15 @@ fun WooPosIssueRefundDialogPreview() {
         itemsCount = 3,
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
-        total = BigDecimal("62.65")
+        total = BigDecimal("62.65"),
+        formattedSubtotal = "$57.00",
+        formattedTaxes = "$5.65",
+        formattedTotal = "$62.65",
+        step = WooPosRefundState.Content.RefundStep.SelectItems
     )
 
     WooPosTheme {
-        RefundDialogContent(
+        SelectItemsContent(
             state = state,
             onDismissRequest = {},
             onContinue = {}
