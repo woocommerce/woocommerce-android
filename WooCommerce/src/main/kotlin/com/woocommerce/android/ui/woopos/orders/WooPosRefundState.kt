@@ -30,6 +30,9 @@ sealed class WooPosRefundState {
 
             @Immutable
             data object ReviewRefund : RefundStep()
+
+            @Immutable
+            data object ConfirmRefund : RefundStep()
         }
     }
 
