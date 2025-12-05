@@ -106,6 +106,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.ReviewRefund
             WooPosRefundUIEvent.BackToSelectItemsClicked ->
                 WooPosRefundState.Content.RefundStep.SelectItems
+            WooPosRefundUIEvent.ContinueToConfirmClicked ->
+                WooPosRefundState.Content.RefundStep.ConfirmRefund
+            WooPosRefundUIEvent.BackToReviewClicked ->
+                WooPosRefundState.Content.RefundStep.ReviewRefund
             WooPosRefundUIEvent.DialogDismissed ->
                 WooPosRefundState.Content.RefundStep.SelectItems
         }
