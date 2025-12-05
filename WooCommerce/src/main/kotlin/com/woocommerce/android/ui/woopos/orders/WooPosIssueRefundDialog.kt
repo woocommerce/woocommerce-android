@@ -56,7 +56,7 @@ fun WooPosIssueRefundDialog(
     onDismissRequest: () -> Unit
 ) {
     val viewModel: WooPosRefundViewModel =
-        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
+        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
     val state by viewModel.state.collectAsStateWithLifecycle()
