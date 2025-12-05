@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -371,10 +372,10 @@ private fun ReviewRefundContent(
                 .padding(horizontal = WooPosSpacing.XLarge.value),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
-            // Items subtotal and tax
             ReviewSummaryRow(
-                label = stringResource(
-                    R.string.woopos_orders_items_subtotal_count,
+                label = pluralStringResource(
+                    R.plurals.woopos_orders_items_subtotal_count_plural,
+                    state.itemsCount,
                     state.itemsCount
                 ),
                 value = state.formattedSubtotal,
@@ -391,7 +392,6 @@ private fun ReviewRefundContent(
                 thickness = 0.25.dp
             )
 
-            // Refund total section
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
             ) {
@@ -413,7 +413,6 @@ private fun ReviewRefundContent(
                 thickness = 0.25.dp
             )
 
-            // Refund reason section
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
             ) {

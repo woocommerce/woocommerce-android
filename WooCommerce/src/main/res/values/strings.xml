@@ -3807,7 +3807,6 @@
     <string name="woopos_orders_review_refund">Review refund</string>
     <string name="woopos_orders_refund_for_order">Refund for %1$s</string>
     <string name="woopos_orders_issue_refund">Issue Refund</string>
-    <string name="woopos_orders_items_subtotal_count">Items subtotal (%1$d item)</string>
     <plurals name="woopos_orders_items_subtotal_count_plural">
         <item quantity="one">Items subtotal (%d item)</item>
         <item quantity="other">Items subtotal (%d items)</item>
