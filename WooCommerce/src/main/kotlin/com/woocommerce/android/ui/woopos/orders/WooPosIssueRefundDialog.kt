@@ -176,7 +176,7 @@ private fun SelectItemsContent(
     onDismissRequest: () -> Unit,
     onContinue: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         RefundDialogHeader(onDismissRequest = onDismissRequest)
 
         ItemsHeaderRow(itemsCount = state.itemsCount)
@@ -189,7 +189,7 @@ private fun SelectItemsContent(
 
         LazyColumn(
             modifier = Modifier
-                .weight(1f)
+                .weight(1f, fill = false)
                 .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.XLarge.value)
                 .padding(vertical = WooPosSpacing.Medium.value),
@@ -355,12 +355,11 @@ private fun ReviewRefundContent(
     onIssueRefund: () -> Unit,
     onEditRefund: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxWidth()) {
         ReviewRefundHeader(onDismissRequest = onDismissRequest)
 
         Column(
             modifier = Modifier
-                .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = WooPosSpacing.XLarge.value),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
