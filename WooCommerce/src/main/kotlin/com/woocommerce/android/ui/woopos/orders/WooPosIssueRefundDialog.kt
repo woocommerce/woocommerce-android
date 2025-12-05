@@ -189,11 +189,7 @@ private fun SelectItemsContent(
 
         ItemsHeaderRow(itemsCount = state.itemsCount)
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         LazyColumn(
             modifier = Modifier
@@ -206,19 +202,12 @@ private fun SelectItemsContent(
             itemsIndexed(state.refundableItems) { index, item ->
                 RefundableItemRow(item = item)
                 if (index < state.refundableItems.lastIndex) {
-                    HorizontalDivider(
-                        color = WooPosTheme.colors.outlineVariant,
-                        thickness = 0.25.dp
-                    )
+                    Divider()
                 }
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         WooPosButton(
             text = stringResource(R.string.continue_button),
@@ -387,10 +376,7 @@ private fun ReviewRefundContent(
                 isTotal = false
             )
 
-            HorizontalDivider(
-                color = WooPosTheme.colors.outlineVariant,
-                thickness = 0.25.dp
-            )
+            Divider()
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
@@ -408,10 +394,7 @@ private fun ReviewRefundContent(
                 )
             }
 
-            HorizontalDivider(
-                color = WooPosTheme.colors.outlineVariant,
-                thickness = 0.25.dp
-            )
+            HorizontalDivider()
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
@@ -443,11 +426,7 @@ private fun ReviewRefundContent(
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         ReviewActionButtons(
             onContinue = onContinue,
@@ -533,6 +512,15 @@ private fun ReviewActionButtons(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+private fun Divider(modifier: Modifier = Modifier) {
+    HorizontalDivider(
+        modifier = modifier,
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.25.dp
+    )
 }
 
 @WooPosPreview
