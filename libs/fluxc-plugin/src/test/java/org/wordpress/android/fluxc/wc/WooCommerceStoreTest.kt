@@ -41,7 +41,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.TaxBasedOnDao
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.SiteStore
@@ -128,9 +127,8 @@ class WooCommerceStoreTest {
             appContext,
             listOf(
                 SitePluginModel::class.java,
-                SiteModel::class.java,
-            ),
-            WellSqlConfig.ADDON_WOOCOMMERCE
+                SiteModel::class.java
+            )
         )
         WellSql.init(config)
         config.reset()

@@ -897,4 +897,132 @@ class WooPosOrdersViewModelTest {
         assertThat(breakdown.discount).isEqualTo("-$3.50")
         assertThat(breakdown.shipping).isEqualTo("$4.00")
     }
+
+    @Test
+    fun `given content loaded, when onIssueRefundButtonClicked called, then issue refund dialog is shown`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(123)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onIssueRefundButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(state.dialogState).isInstanceOf(WooPosOrdersState.Content.DialogState.IssueRefund::class.java)
+        val dialogState = state.dialogState as WooPosOrdersState.Content.DialogState.IssueRefund
+        assertThat(dialogState.orderId).isEqualTo(123L)
+    }
+
+    @Test
+    fun `given non-Content state, when onIssueRefundButtonClicked called, then state remains unchanged`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.Error("error")) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        val beforeState = viewModel.state.value
+
+        // WHEN
+        viewModel.onIssueRefundButtonClicked(123L)
+        advanceUntilIdle()
+
+        // THEN
+        val afterState = viewModel.state.value
+        assertThat(afterState).isEqualTo(beforeState)
+        assertThat(afterState).isInstanceOf(WooPosOrdersState.Error::class.java)
+    }
+
+    @Test
+    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed called, then dialog is hidden`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(456)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onIssueRefundButtonClicked(456L)
+        advanceUntilIdle()
+
+        val beforeState = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(beforeState.dialogState).isInstanceOf(WooPosOrdersState.Content.DialogState.IssueRefund::class.java)
+
+        // WHEN
+        viewModel.onIssueRefundDialogDismissed()
+        advanceUntilIdle()
+
+        // THEN
+        val afterState = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(afterState.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
+    }
+
+    @Test
+    fun `given non-Content state, when onIssueRefundDialogDismissed called, then state remains unchanged`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(emptyMap())) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+        val beforeState = viewModel.state.value
+
+        // WHEN
+        viewModel.onIssueRefundDialogDismissed()
+        advanceUntilIdle()
+
+        // THEN
+        val afterState = viewModel.state.value
+        assertThat(afterState).isEqualTo(beforeState)
+        assertThat(afterState).isInstanceOf(WooPosOrdersState.Empty::class.java)
+    }
+
+    @Test
+    fun `given Content state, when showing and hiding dialog, then other state properties remain unchanged`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(200L)
+        advanceUntilIdle()
+
+        val initialState = viewModel.state.value as WooPosOrdersState.Content
+        val initialItems = initialState.items
+        val initialSelectedDetails = initialState.selectedDetails
+        val initialPullToRefreshState = initialState.pullToRefreshState
+        val initialPaginationState = initialState.paginationState
+        val initialSearchInputState = initialState.searchInputState
+
+        // WHEN
+        viewModel.onIssueRefundButtonClicked(200L)
+        advanceUntilIdle()
+
+        // THEN
+        var currentState = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(currentState.items).isEqualTo(initialItems)
+        assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
+        assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
+        assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
+        assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+
+        // WHEN
+        viewModel.onIssueRefundDialogDismissed()
+        advanceUntilIdle()
+
+        // THEN
+        currentState = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(currentState.items).isEqualTo(initialItems)
+        assertThat(currentState.selectedDetails).isEqualTo(initialSelectedDetails)
+        assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
+        assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
+        assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+    }
 }

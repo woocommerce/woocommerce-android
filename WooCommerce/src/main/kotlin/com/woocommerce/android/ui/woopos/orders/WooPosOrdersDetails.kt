@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,14 +12,24 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Inventory2
+import androidx.compose.material.icons.outlined.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,8 +53,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Composable
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
-    details: OrderDetailsViewState.Computed.Details,
-    onEmailReceiptButtonClicked: (Long) -> Unit
+    details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -67,10 +79,31 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
-            WooPosButtonSmall(
-                text = stringResource(R.string.woopos_orders_email_receipt),
-                onClick = { onEmailReceiptButtonClicked(details.id) },
-            )
+            when {
+                details.actions.size > 1 -> {
+                    val primaryAction = details.actions.first()
+                    val overflowActions = details.actions.drop(1)
+
+                    OrderActionButton(
+                        action = primaryAction,
+                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
+                    )
+
+                    Spacer(Modifier.width(WooPosSpacing.Small.value))
+
+                    OrderDetailsOverflowMenu(
+                        actions = overflowActions,
+                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
+                    )
+                }
+
+                details.actions.size == 1 -> {
+                    OrderActionButton(
+                        action = details.actions.first(),
+                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
+                    )
+                }
+            }
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
@@ -88,7 +121,7 @@ fun WooPosOrderDetails(
 }
 
 @Composable
-private fun OrdersHeader(details: OrderDetailsViewState.Computed.Details) {
+private fun OrdersHeader(details: WooPosOrdersState.OrderDetailsViewState.Computed.Details) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosText(
             text = details.dateTime,
@@ -112,7 +145,7 @@ private fun OrdersHeader(details: OrderDetailsViewState.Computed.Details) {
 }
 
 @Composable
-private fun OrdersProducts(lineItems: List<OrderDetailsViewState.Computed.Details.LineItemRow>) {
+private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow>) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -136,11 +169,10 @@ private fun OrdersProducts(lineItems: List<OrderDetailsViewState.Computed.Detail
 
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
-private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineItemRow) {
+private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow) {
     val marginMedium = WooPosSpacing.Medium.value
     val marginSmall = WooPosSpacing.Small.value
     val marginXSmall = WooPosSpacing.XSmall.value
-
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
@@ -192,7 +224,7 @@ private fun OrderProductItem(row: OrderDetailsViewState.Computed.Details.LineIte
 }
 
 @Composable
-private fun OrdersTotals(details: OrderDetailsViewState.Computed.Details) {
+private fun OrdersTotals(details: WooPosOrdersState.OrderDetailsViewState.Computed.Details) {
     WooPosCard(shadowType = ShadowType.Soft) {
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
@@ -335,19 +367,99 @@ private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 
+@Composable
+private fun OrderActionButton(
+    action: WooPosOrdersState.OrderAction,
+    onClick: (WooPosOrdersState.OrderAction) -> Unit
+) {
+    when (action) {
+        is WooPosOrdersState.OrderAction.IssueRefund -> {
+            WooPosButtonSmall(
+                text = stringResource(R.string.orderdetail_issue_refund_button),
+                onClick = { onClick(action) }
+            )
+        }
+        is WooPosOrdersState.OrderAction.EmailReceipt -> {
+            WooPosButtonSmall(
+                text = stringResource(R.string.woopos_orders_email_receipt),
+                onClick = { onClick(action) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun OrderDetailsOverflowMenu(
+    actions: List<WooPosOrdersState.OrderAction>,
+    onClick: (WooPosOrdersState.OrderAction) -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box {
+        IconButton(onClick = { showMenu = true }) {
+            Icon(
+                imageVector = Icons.Outlined.MoreVert,
+                contentDescription = stringResource(R.string.more_menu),
+                tint = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        DropdownMenu(
+            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            actions.forEach { action ->
+                DropdownMenuItem(
+                    text = {
+                        val text = when (action) {
+                            is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(
+                                R.string.orderdetail_issue_refund_button
+                            )
+                            is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(
+                                R.string.woopos_orders_email_receipt
+                            )
+                        }
+                        WooPosText(
+                            text = text,
+                            style = WooPosTypography.BodyMedium
+                        )
+                    },
+                    onClick = {
+                        showMenu = false
+                        onClick(action)
+                    }
+                )
+            }
+        }
+    }
+}
+
 @WooPosPreview
 @Composable
 fun WooPosOrderDetailsPreview() {
-    val orderDetails = OrderDetailsViewState.Computed.Details(
+    val orderDetails = WooPosOrdersState.OrderDetailsViewState.Computed.Details(
         id = 1L,
         number = "#014",
         dateTime = "Aug 28, 2025 at 10:31 AM",
         customerEmail = "johndoe@mail.com",
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
         lineItems = listOf(
-            OrderDetailsViewState.Computed.Details.LineItemRow(101, "Cup", "2 x $4.00", "$8.00", null),
-            OrderDetailsViewState.Computed.Details.LineItemRow(102, "Coffee Container", "1 x $10.00", "$10.00", null),
-            OrderDetailsViewState.Computed.Details.LineItemRow(
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                101,
+                "Cup",
+                "2 x $4.00",
+                "$8.00",
+                null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                102,
+                "Coffee Container",
+                "1 x $10.00",
+                "$10.00",
+                null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
                 103,
                 "A vey tasty coffee that incidentally has a very long name " +
                     "and should go over a few lines without overlapping anything",
@@ -356,7 +468,7 @@ fun WooPosOrderDetailsPreview() {
                 null
             )
         ),
-        breakdown = OrderDetailsViewState.Computed.Details.TotalsBreakdown(
+        breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
             products = "$23.00",
             discount = "-$5.00",
             discountCode = "SAVE5",
@@ -367,13 +479,17 @@ fun WooPosOrderDetailsPreview() {
         ),
         total = "$18.00",
         totalPaid = "$18.00",
-        paymentMethodTitle = "WooCommerce In-Person Payments"
+        paymentMethodTitle = "WooCommerce In-Person Payments",
+        actions = listOf(
+            WooPosOrdersState.OrderAction.IssueRefund(1L),
+            WooPosOrdersState.OrderAction.EmailReceipt(1L)
+        )
     )
 
     WooPosTheme {
         WooPosOrderDetails(
             details = orderDetails,
-            onEmailReceiptButtonClicked = {}
+            onUIEvent = {}
         )
     }
 }
