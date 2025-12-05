@@ -28,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -56,7 +57,7 @@ fun WooPosIssueRefundDialog(
     onDismissRequest: () -> Unit
 ) {
     val viewModel: WooPosRefundViewModel =
-        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory> { factory ->
+        hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -200,11 +201,7 @@ private fun SelectItemsContent(
 
         ItemsHeaderRow(itemsCount = state.itemsCount)
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         LazyColumn(
             modifier = Modifier
@@ -217,19 +214,12 @@ private fun SelectItemsContent(
             itemsIndexed(state.refundableItems) { index, item ->
                 RefundableItemRow(item = item)
                 if (index < state.refundableItems.lastIndex) {
-                    HorizontalDivider(
-                        color = WooPosTheme.colors.outlineVariant,
-                        thickness = 0.25.dp
-                    )
+                    Divider()
                 }
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         WooPosButton(
             text = stringResource(R.string.continue_button),
@@ -383,10 +373,10 @@ private fun ReviewRefundContent(
                 .padding(horizontal = WooPosSpacing.XLarge.value),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
-            // Items subtotal and tax
             ReviewSummaryRow(
-                label = stringResource(
-                    R.string.woopos_orders_items_subtotal_count,
+                label = pluralStringResource(
+                    R.plurals.woopos_orders_items_subtotal_count_plural,
+                    state.itemsCount,
                     state.itemsCount
                 ),
                 value = state.formattedSubtotal,
@@ -398,12 +388,8 @@ private fun ReviewRefundContent(
                 isTotal = false
             )
 
-            HorizontalDivider(
-                color = WooPosTheme.colors.outlineVariant,
-                thickness = 0.25.dp
-            )
+            Divider()
 
-            // Refund total section
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
             ) {
@@ -420,12 +406,8 @@ private fun ReviewRefundContent(
                 )
             }
 
-            HorizontalDivider(
-                color = WooPosTheme.colors.outlineVariant,
-                thickness = 0.25.dp
-            )
+            Divider()
 
-            // Refund reason section
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
             ) {
@@ -456,11 +438,7 @@ private fun ReviewRefundContent(
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value),
-            color = WooPosTheme.colors.outlineVariant,
-            thickness = 0.25.dp
-        )
+        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         ReviewActionButtons(
             onContinue = onContinue,
@@ -546,6 +524,15 @@ private fun ReviewActionButtons(
             modifier = Modifier.fillMaxWidth()
         )
     }
+}
+
+@Composable
+private fun Divider(modifier: Modifier = Modifier) {
+    HorizontalDivider(
+        modifier = modifier,
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.25.dp
+    )
 }
 
 @Composable
