@@ -98,17 +98,16 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
-    fun onContinueToReview() {
+    fun onUIEvent(event: WooPosRefundUIEvent) {
         val currentState = _state.value as? WooPosRefundState.Content ?: return
-        _state.value = currentState.copy(
-            step = WooPosRefundState.Content.RefundStep.ReviewRefund
-        )
-    }
 
-    fun onBackToSelectItems() {
-        val currentState = _state.value as? WooPosRefundState.Content ?: return
-        _state.value = currentState.copy(
-            step = WooPosRefundState.Content.RefundStep.SelectItems
-        )
+        val newStep = when (event) {
+            WooPosRefundUIEvent.ContinueToReviewClicked ->
+                WooPosRefundState.Content.RefundStep.ReviewRefund
+            WooPosRefundUIEvent.BackToSelectItemsClicked ->
+                WooPosRefundState.Content.RefundStep.SelectItems
+        }
+
+        _state.value = currentState.copy(step = newStep)
     }
 }

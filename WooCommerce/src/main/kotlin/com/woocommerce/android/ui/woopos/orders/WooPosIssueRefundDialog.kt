@@ -78,15 +78,19 @@ fun WooPosIssueRefundDialog(
                         SelectItemsContent(
                             state = currentState,
                             onDismissRequest = onDismissRequest,
-                            onContinue = viewModel::onContinueToReview
+                            onContinue = {
+                                viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+                            }
                         )
                     }
                     WooPosRefundState.Content.RefundStep.ReviewRefund -> {
                         ReviewRefundContent(
                             state = currentState,
                             onDismissRequest = onDismissRequest,
-                            onIssueRefund = onDismissRequest,
-                            onEditRefund = viewModel::onBackToSelectItems
+                            onContinue = onDismissRequest,
+                            onEditRefund = {
+                                viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                            }
                         )
                     }
                 }
@@ -352,7 +356,7 @@ private fun RefundableItemRow(item: WooPosRefundableItem) {
 private fun ReviewRefundContent(
     state: WooPosRefundState.Content,
     onDismissRequest: () -> Unit,
-    onIssueRefund: () -> Unit,
+    onContinue: () -> Unit,
     onEditRefund: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -444,7 +448,7 @@ private fun ReviewRefundContent(
         )
 
         ReviewActionButtons(
-            onIssueRefund = onIssueRefund,
+            onContinue = onContinue,
             onEditRefund = onEditRefund
         )
     }
@@ -507,7 +511,7 @@ private fun ReviewSummaryRow(
 
 @Composable
 private fun ReviewActionButtons(
-    onIssueRefund: () -> Unit,
+    onContinue: () -> Unit,
     onEditRefund: () -> Unit
 ) {
     Column(
@@ -518,7 +522,7 @@ private fun ReviewActionButtons(
     ) {
         WooPosButton(
             text = stringResource(R.string.continue_button),
-            onClick = onIssueRefund,
+            onClick = onContinue,
             modifier = Modifier.fillMaxWidth()
         )
         WooPosOutlinedButton(
