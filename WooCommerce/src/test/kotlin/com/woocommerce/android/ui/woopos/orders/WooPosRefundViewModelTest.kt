@@ -336,7 +336,6 @@ class WooPosRefundViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            // Navigate to ReviewRefund step
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val reviewState = viewModel.state.value as WooPosRefundState.Content
             assertThat(reviewState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
@@ -361,7 +360,6 @@ class WooPosRefundViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            // Navigate to ReviewRefund step
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val reviewState = viewModel.state.value as WooPosRefundState.Content
             assertThat(reviewState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
@@ -413,7 +411,7 @@ class WooPosRefundViewModelTest {
         // WHEN
         viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
 
-        // THEN - State should remain unchanged
+        // THEN
         assertThat(viewModel.state.value).isEqualTo(errorState)
     }
 }
