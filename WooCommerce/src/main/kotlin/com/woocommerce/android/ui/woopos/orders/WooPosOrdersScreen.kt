@@ -709,7 +709,8 @@ fun WooPosOrdersEmptyStatePreview() {
             onSearchErrorRetry = {},
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
-            onEmailReceiptButtonClicked = {}
+            onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
         )
     }
 }
