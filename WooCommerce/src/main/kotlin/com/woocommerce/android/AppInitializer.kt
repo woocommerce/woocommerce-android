@@ -1,10 +1,13 @@
 package com.woocommerce.android
 
+import android.app.Activity
 import android.app.Application
 import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Lifecycle.State.STARTED
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.work.Constraints
@@ -42,6 +45,7 @@ import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.ui.login.AgeCheckViewModel
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
@@ -85,7 +89,9 @@ import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
+import java.lang.ref.WeakReference
 import java.util.Date
+import java.util.WeakHashMap
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -149,6 +155,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
+    @Inject lateinit var ageCheckViewModel: AgeCheckViewModel
+
     @Inject
     @AppCoroutineScope
     lateinit var appCoroutineScope: CoroutineScope
@@ -174,6 +182,26 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     private var connectionReceiverRegistered = false
 
     private lateinit var application: Application
+
+    private var currentResumedActivity: WeakReference<Activity>? = null
+    private val activityDialogs = WeakHashMap<Activity, AlertDialog>()
+
+    private fun showAgeRestrictionDialog(activity: Activity) {
+        if (activityDialogs[activity]?.isShowing == true) return
+
+        val dialog = AlertDialog.Builder(activity)
+            .setTitle(R.string.age_restriction_title)
+            .setMessage(R.string.age_restriction_message)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                activity.finishAffinity()
+            }
+            .create()
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        activityDialogs[activity] = dialog
+    }
 
     /**
      * Update WP.com and WooCommerce settings in a background task.
@@ -258,6 +286,35 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         observeSiteChangesForCatalogSync()
 
         appShortcutsHandler.init()
+
+        application.registerActivityLifecycleCallbacks(object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityPaused(activity: Activity) {
+                if (currentResumedActivity?.get() == activity) {
+                    currentResumedActivity = null
+                }
+            }
+            override fun onActivityStarted(activity: Activity) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivityStopped(activity: Activity) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+
+            override fun onActivityResumed(activity: Activity) {
+                currentResumedActivity = WeakReference(activity)
+                if (ageCheckViewModel.isUnder13.value == true) {
+                    showAgeRestrictionDialog(activity)
+                }
+            }
+        })
+
+        appCoroutineScope.launch {
+            ageCheckViewModel.isUnder13.collect { isUnder13 ->
+                if (isUnder13 == true) {
+                    currentResumedActivity?.get()?.let { showAgeRestrictionDialog(it) }
+                }
+            }
+        }
+        ageCheckViewModel.checkAge()
     }
 
     @Suppress("DEPRECATION")
