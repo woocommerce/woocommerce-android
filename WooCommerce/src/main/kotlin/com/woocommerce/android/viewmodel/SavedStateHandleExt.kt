@@ -27,6 +27,8 @@ class NavArgsLazy<Args : NavArgs>(
 ) : Lazy<Args> {
     private var cached: Args? = null
 
+hacka-waka-waka-waka
+
     override val value: Args
         get() {
             var args = cached
