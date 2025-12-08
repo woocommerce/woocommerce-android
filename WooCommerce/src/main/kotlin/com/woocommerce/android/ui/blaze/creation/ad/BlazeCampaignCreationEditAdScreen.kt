@@ -41,10 +41,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest.Builder
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
 import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
@@ -103,10 +99,10 @@ private fun BlazeCampaignCreationEditAdScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                title = stringResource(id = string.blaze_campaign_preview_edit_ad),
+                title = stringResource(id = R.string.blaze_campaign_preview_edit_ad),
                 onNavigationButtonClick = onBackButtonTapped,
                 onActionButtonClick = onSaveTapped,
-                actionButtonText = stringResource(id = string.save).uppercase()
+                actionButtonText = stringResource(id = R.string.save).uppercase()
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -148,9 +144,9 @@ fun CampaignEditAdContent(
         AdImageSection(viewState, onChangeImageTapped)
 
         Divider(
-            color = colorResource(id = color.divider_color),
+            color = colorResource(id = R.color.divider_color),
             thickness = 1.dp,
-            modifier = Modifier.padding(vertical = dimensionResource(id = dimen.minor_100))
+            modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.minor_100))
         )
 
         AdDataSection(
@@ -175,7 +171,7 @@ private fun AdDataSection(
 ) {
     Column(
         modifier = Modifier
-            .padding(dimensionResource(id = dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -183,33 +179,33 @@ private fun AdDataSection(
         DescriptionInputText(
             viewState,
             onDescriptionChanged,
-            modifier = Modifier.padding(top = dimensionResource(id = dimen.major_150))
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150))
         )
         CallToActionInputText(
             viewState,
             onCtaTextChanged,
-            modifier = Modifier.padding(top = dimensionResource(id = dimen.major_150))
+            modifier = Modifier.padding(top = dimensionResource(id = R.dimen.major_150))
         )
 
         if (viewState.suggestions.size > 1) {
             Row(
                 modifier = Modifier
-                    .padding(top = dimensionResource(id = dimen.major_100))
+                    .padding(top = dimensionResource(id = R.dimen.major_100))
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = drawable.ic_ai),
+                    painter = painterResource(id = R.drawable.ic_ai),
                     contentDescription = null,
-                    colorFilter = ColorFilter.tint(colorResource(id = color.color_on_surface_medium)),
+                    colorFilter = ColorFilter.tint(colorResource(id = R.color.color_on_surface_medium)),
                     modifier = Modifier
-                        .size(dimensionResource(id = dimen.image_minor_80))
-                        .padding(end = dimensionResource(id = dimen.minor_100))
+                        .size(dimensionResource(id = R.dimen.image_minor_80))
+                        .padding(end = dimensionResource(id = R.dimen.minor_100))
                 )
                 Text(
-                    text = stringResource(id = string.blaze_campaign_edit_ad_suggested_by_ai),
+                    text = stringResource(id = R.string.blaze_campaign_edit_ad_suggested_by_ai),
                     style = MaterialTheme.typography.subtitle2,
-                    color = colorResource(id = color.color_on_surface_medium),
+                    color = colorResource(id = R.color.color_on_surface_medium),
                 )
                 Spacer(modifier = Modifier.weight(1f))
 
@@ -224,7 +220,7 @@ private fun AdDataSection(
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
                     icon = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
                     contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_back_description),
-                    modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_150))
                 )
             }
         }
@@ -242,15 +238,15 @@ private fun DescriptionInputText(
         WCOutlinedTextField(
             value = viewState.description,
             onValueChange = onDescriptionChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_description_title),
+            label = stringResource(id = R.string.blaze_campaign_edit_ad_change_description_title),
             maxLines = 3,
             minLines = 3,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             helperText = when {
-                isError -> stringResource(id = string.blaze_campaign_edit_ad_change_description_empty_error)
+                isError -> stringResource(id = R.string.blaze_campaign_edit_ad_change_description_empty_error)
                 else ->
                     stringResource(
-                        id = string.blaze_campaign_edit_ad_characters_remaining,
+                        id = R.string.blaze_campaign_edit_ad_characters_remaining,
                         viewState.descriptionCharactersRemaining
                     )
             },
@@ -275,14 +271,14 @@ private fun TaglineInputText(
         WCOutlinedTextField(
             value = viewState.tagLine,
             onValueChange = onTagLineChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_tagline_title),
+            label = stringResource(id = R.string.blaze_campaign_edit_ad_change_tagline_title),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             helperText = when {
-                isError -> stringResource(id = string.blaze_campaign_edit_ad_change_tagline_empty_error)
+                isError -> stringResource(id = R.string.blaze_campaign_edit_ad_change_tagline_empty_error)
                 else ->
                     stringResource(
-                        id = string.blaze_campaign_edit_ad_characters_remaining,
+                        id = R.string.blaze_campaign_edit_ad_characters_remaining,
                         viewState.taglineCharactersRemaining
                     )
             },
@@ -306,11 +302,11 @@ private fun CallToActionInputText(
         WCOutlinedTextField(
             value = viewState.ctaText,
             onValueChange = onCtaTextChanged,
-            label = stringResource(id = string.blaze_campaign_edit_ad_change_cta_text_title),
+            label = stringResource(id = R.string.blaze_campaign_edit_ad_change_cta_text_title),
             singleLine = true,
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
             helperText = stringResource(
-                id = string.blaze_campaign_edit_ad_characters_remaining,
+                id = R.string.blaze_campaign_edit_ad_characters_remaining,
                 viewState.ctaTextCharactersRemaining
             ),
         )
@@ -328,12 +324,12 @@ private fun CornerCharacterWarning(charsLeft: Int, modifier: Modifier = Modifier
         Text(
             text = charsLeft.toString(),
             style = MaterialTheme.typography.caption,
-            color = colorResource(id = color.color_error),
+            color = colorResource(id = R.color.color_error),
             textAlign = TextAlign.End,
             modifier = modifier
                 .padding(
-                    top = dimensionResource(id = dimen.major_75),
-                    end = dimensionResource(id = dimen.minor_75)
+                    top = dimensionResource(id = R.dimen.major_75),
+                    end = dimensionResource(id = R.dimen.minor_75)
                 )
         )
     }
@@ -348,7 +344,7 @@ private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit
     ) {
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = dimen.major_100))
+                .padding(dimensionResource(id = R.dimen.major_100))
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -356,21 +352,21 @@ private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit
                 model = Builder(LocalContext.current)
                     .data(viewState.adImage.uri)
                     .crossfade(true)
-                    .fallback(drawable.blaze_campaign_product_placeholder)
-                    .placeholder(drawable.blaze_campaign_product_placeholder)
-                    .error(drawable.blaze_campaign_product_placeholder)
+                    .fallback(R.drawable.blaze_campaign_product_placeholder)
+                    .placeholder(R.drawable.blaze_campaign_product_placeholder)
+                    .error(R.drawable.blaze_campaign_product_placeholder)
                     .build(),
                 contentScale = ContentScale.Crop,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(dimensionResource(id = dimen.image_major_140))
-                    .clip(shape = RoundedCornerShape(size = dimensionResource(id = dimen.minor_100))),
+                    .size(dimensionResource(id = R.dimen.image_major_140))
+                    .clip(shape = RoundedCornerShape(size = dimensionResource(id = R.dimen.minor_100))),
                 loading = {
                     Box(modifier = Modifier.fillMaxSize()) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .align(Alignment.Center)
-                                .size(dimensionResource(id = dimen.progress_bar_small))
+                                .size(dimensionResource(id = R.dimen.progress_bar_small))
                         )
                     }
                 }
@@ -380,7 +376,7 @@ private fun AdImageSection(viewState: ViewState, onChangeImageTapped: () -> Unit
                 modifier = Modifier.padding(top = 8.dp),
                 onClick = onChangeImageTapped,
             ) {
-                Text(stringResource(id = string.blaze_campaign_edit_ad_change_image_button))
+                Text(stringResource(id = R.string.blaze_campaign_edit_ad_change_image_button))
             }
         }
     }
@@ -398,10 +394,10 @@ private fun SuggestionButton(
         modifier = modifier
             .border(
                 width = 1.dp,
-                color = colorResource(id = color.image_border_color),
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_100))
+                color = colorResource(id = R.color.image_border_color),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_100))
             )
-            .clip(RoundedCornerShape(dimensionResource(id = dimen.minor_100)))
+            .clip(RoundedCornerShape(dimensionResource(id = R.dimen.minor_100)))
             .clickable(onClick = onClick, enabled = isEnabled)
     ) {
         Icon(
@@ -410,12 +406,12 @@ private fun SuggestionButton(
             tint = if (isEnabled) {
                 MaterialTheme.colors.primary
             } else {
-                colorResource(id = color.color_on_surface_disabled)
+                colorResource(id = R.color.color_on_surface_disabled)
             },
             modifier = Modifier
                 .align(Alignment.Center)
-                .size(dimensionResource(id = dimen.major_200))
-                .padding(dimensionResource(id = dimen.minor_75))
+                .size(dimensionResource(id = R.dimen.major_200))
+                .padding(dimensionResource(id = R.dimen.minor_75))
         )
     }
 }
