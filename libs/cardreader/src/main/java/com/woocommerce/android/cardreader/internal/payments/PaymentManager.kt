@@ -116,33 +116,31 @@ internal class PaymentManager(
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.createPaymentIntent(paymentInfo: PaymentInfo): PaymentIntent? {
-        var paymentIntent: PaymentIntent? = null
         emit(InitializingPayment)
-        createPaymentAction.createPaymentIntent(paymentInfo).collect {
-            when (it) {
-                is Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
-                is Success -> paymentIntent = it.paymentIntent
+        return when (val result = createPaymentAction.createPaymentIntent(paymentInfo)) {
+            is Failure -> {
+                emit(errorMapper.mapTerminalError(null, result.exception))
+                null
             }
+            is Success -> result.paymentIntent
         }
-        return paymentIntent
     }
 
     private suspend fun FlowCollector<CardPaymentStatus>.processPayment(
         paymentIntent: PaymentIntent
     ): PaymentIntent {
-        var result = paymentIntent
         emit(ProcessingPayment)
-        processPaymentIntentAction.processPaymentIntent(paymentIntent).collect {
-            when (it) {
-                is ProcessPaymentIntentStatus.Failure -> emit(errorMapper.mapTerminalError(paymentIntent, it.exception))
-                is ProcessPaymentIntentStatus.Success -> {
-                    val paymentMethodType = determinePaymentMethodType(it)
-                    emit(ProcessingPaymentCompleted(paymentMethodType))
-                    result = it.paymentIntent
-                }
+        return when (val result = processPaymentIntentAction.processPaymentIntent(paymentIntent)) {
+            is ProcessPaymentIntentStatus.Failure -> {
+                emit(errorMapper.mapTerminalError(paymentIntent, result.exception))
+                paymentIntent
+            }
+            is ProcessPaymentIntentStatus.Success -> {
+                val paymentMethodType = determinePaymentMethodType(result)
+                emit(ProcessingPaymentCompleted(paymentMethodType))
+                result.paymentIntent
             }
         }
-        return result
     }
 
     // Stripe new SDk now has paymentIntent.id as nullable to support offline payment. But we don't support offline yet

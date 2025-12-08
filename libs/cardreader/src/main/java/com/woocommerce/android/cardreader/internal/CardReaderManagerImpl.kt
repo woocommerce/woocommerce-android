@@ -92,7 +92,7 @@ internal class CardReaderManagerImpl(
         connectionManager.setupTapToPayUx(config)
     }
 
-    override fun startConnectionToReader(cardReader: CardReader, locationId: String) {
+    override suspend fun startConnectionToReader(cardReader: CardReader, locationId: String) {
         if (!terminal.isInitialized()) error("Terminal not initialized")
         connectionManager.startConnectionToReader(cardReader, locationId)
     }

@@ -10,7 +10,6 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
@@ -69,7 +68,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     fun `given process refund success, when refund starts, then InteracRefundSuccess is emitted`() =
         testBlocking {
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Success(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Success(mock()))
             val result = manager.refundInteracPayment(createRefundParams(), refundConfig)
                 .takeUntil(CardInteracRefundStatus.InteracRefundSuccess::class).toList()
 
@@ -80,7 +79,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     fun `given process refund failure, when refund starts, then failure is emitted`() =
         testBlocking {
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Failure(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(Generic, "", mock())
@@ -95,7 +94,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val expectedErrorMessage = "Generic Error"
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Failure(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(Generic, expectedErrorMessage, mock())
@@ -113,7 +112,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val expectedErrorType = DeclinedByBackendError.Unknown
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Failure(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(expectedErrorType, "Declined", mock())
@@ -131,7 +130,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         testBlocking {
             val expectedRefundParams = createRefundParams()
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Failure(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(
@@ -152,7 +151,7 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     fun `given process refund failure, when refund starts, then flow terminates`() =
         testBlocking {
             whenever(processRefundAction.processRefund(any(), any()))
-                .thenReturn(flow { emit(ProcessRefundAction.ProcessRefundStatus.Failure(mock())) })
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             val result = withTimeoutOrNull(TIMEOUT) {
                 manager.refundInteracPayment(createRefundParams(), refundConfig).toList()
             }
@@ -162,8 +161,6 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
-            // the below lines are here just as a safeguard to verify that the
-            // expectedInteracRefundSequence is defined correctly
             .withIndex()
             .onEach {
                 if (expectedInteracRefundSequence[it.index] != it.value!!::class) {
