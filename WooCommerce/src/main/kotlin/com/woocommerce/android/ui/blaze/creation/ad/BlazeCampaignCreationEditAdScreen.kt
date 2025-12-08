@@ -22,7 +22,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,6 +36,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -48,6 +48,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
 import com.woocommerce.android.R.string
 import com.woocommerce.android.mediapicker.MediaPickerDialog
+import com.woocommerce.android.ui.blaze.BlazeRepository.AiSuggestionForAd
 import com.woocommerce.android.ui.blaze.BlazeRepository.BlazeCampaignImage
 import com.woocommerce.android.ui.blaze.creation.ad.BlazeCampaignCreationEditAdViewModel.ViewState
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -217,7 +218,7 @@ private fun AdDataSection(
                 SuggestionButton(
                     onClick = onPreviousSuggestionTapped,
                     isEnabled = viewState.isPreviousSuggestionButtonEnabled,
-                    icon = Icons.AutoMirrored.Filled.ArrowBackIos,
+                    icon = ImageVector.vectorResource(R.drawable.ic_arrow_back_ios_24dp),
                     contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_forward_description),
                 )
                 SuggestionButton(
@@ -427,7 +428,11 @@ fun PreviewCampaignEditAdContent() {
     WooThemeWithBackground {
         CampaignEditAdContent(
             viewState = ViewState(
-                adImage = BlazeCampaignImage.RemoteImage("https://rb.gy/gmjuwb", "image/jpeg")
+                adImage = BlazeCampaignImage.RemoteImage("https://rb.gy/gmjuwb", "image/jpeg"),
+                suggestions = listOf(
+                    AiSuggestionForAd("tag line", "description", "cta text"),
+                    AiSuggestionForAd("tag line", "description", "cta text")
+                ),
             ),
             onTagLineChanged = { },
             onDescriptionChanged = { },
