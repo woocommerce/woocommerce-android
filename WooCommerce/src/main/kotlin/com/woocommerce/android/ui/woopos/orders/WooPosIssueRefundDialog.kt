@@ -394,7 +394,7 @@ private fun ReviewRefundContent(
                 )
             }
 
-            HorizontalDivider()
+            Divider()
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
@@ -425,8 +425,6 @@ private fun ReviewRefundContent(
                 )
             }
         }
-
-        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
 
         ReviewActionButtons(
             onContinue = onContinue,
