@@ -18,10 +18,6 @@ class WhatsNewSqlUtils
         const val APP_VERSION_TARGETS_SEPARATOR = ";@;"
     }
 
-    fun hasCachedAnnouncements(): Boolean {
-        return WellSql.select(WhatsNewAnnouncementBuilder::class.java).count() > 0
-    }
-
     fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
         val announcements = mutableListOf<WhatsNewAnnouncementModel>()
 

@@ -90,11 +90,4 @@ class WhatsNewSqlUtilsTest {
         val cachedAnnouncements = whatsNewSqlUtils.getAnnouncements()
         assertEquals(testAnnouncements, cachedAnnouncements)
     }
-
-    @Test
-    fun `hasCachedAnnouncements returns true when there are cached announcements`() {
-        assertEquals(whatsNewSqlUtils.hasCachedAnnouncements(), false)
-        whatsNewSqlUtils.updateAnnouncementCache(testAnnouncements)
-        assertEquals(whatsNewSqlUtils.hasCachedAnnouncements(), true)
-    }
 }
