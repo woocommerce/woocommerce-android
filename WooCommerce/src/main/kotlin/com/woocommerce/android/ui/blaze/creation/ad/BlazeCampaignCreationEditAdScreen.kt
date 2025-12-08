@@ -21,8 +21,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -224,7 +222,7 @@ private fun AdDataSection(
                 SuggestionButton(
                     onClick = onNextSuggestionTapped,
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
-                    icon = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                    icon = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
                     contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_back_description),
                     modifier = Modifier.padding(start = dimensionResource(id = dimen.major_150))
                 )
