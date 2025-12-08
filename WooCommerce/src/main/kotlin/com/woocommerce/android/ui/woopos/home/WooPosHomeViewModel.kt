@@ -266,7 +266,9 @@ class WooPosHomeViewModel @Inject constructor(
     private fun prepopulateOrdersCache() {
         viewModelScope.launch {
             delay(ORDERS_CACHE_WARMUP_DELAY_MS)
-            ordersDataSource.loadOrders(pageSize = WooPosOrdersDataSource.POS_ORDERS_CACHE_PREPOPULATION_SIZE).collect {}
+            ordersDataSource.loadOrders(
+                pageSize = WooPosOrdersDataSource.POS_ORDERS_CACHE_PREPOPULATION_SIZE
+            ).collect {}
         }
     }
 
