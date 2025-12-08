@@ -44,10 +44,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import com.woocommerce.android.R
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -166,7 +162,7 @@ private fun ThemePreviewBottomSection(
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(
-            dimensionResource(id = dimen.major_100)
+            dimensionResource(id = R.dimen.major_100)
         ),
         modifier = modifier
     ) {
@@ -175,12 +171,12 @@ private fun ThemePreviewBottomSection(
             onClick = onActivateThemeClicked,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = dimen.major_100))
-                .padding(bottom = dimensionResource(id = dimen.major_100))
+                .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                .padding(bottom = dimensionResource(id = R.dimen.major_100))
         ) {
             if (isActivatingTheme) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(size = dimensionResource(id = dimen.major_150)),
+                    modifier = Modifier.size(size = dimensionResource(id = R.dimen.major_150)),
                     color = LocalContentColor.current,
                 )
             } else {
@@ -200,14 +196,14 @@ private fun DemoSectionsToolbar(
     Column(
         modifier = Modifier
             .wrapContentHeight()
-            .padding(start = dimensionResource(id = dimen.major_150))
+            .padding(start = dimensionResource(id = R.dimen.major_150))
             .clickable(
                 enabled = state.shouldShowPagesDropdown,
                 onClick = onDropdownTapped
             )
     ) {
         Text(
-            text = stringResource(id = string.theme_preview_title),
+            text = stringResource(id = R.string.theme_preview_title),
             style = MaterialTheme.typography.body1,
         )
         if (state.shouldShowPagesDropdown) {
@@ -218,14 +214,14 @@ private fun DemoSectionsToolbar(
                 )
                 Icon(
                     modifier = Modifier
-                        .size(dimensionResource(id = dimen.major_100))
+                        .size(dimensionResource(id = R.dimen.major_100))
                         .padding(
-                            start = dimensionResource(id = dimen.minor_50),
-                            top = dimensionResource(id = dimen.minor_75),
+                            start = dimensionResource(id = R.dimen.minor_50),
+                            top = dimensionResource(id = R.dimen.minor_75),
                         ),
-                    painter = painterResource(drawable.ic_arrow_down),
+                    painter = painterResource(R.drawable.ic_arrow_down),
                     contentDescription = "",
-                    tint = colorResource(id = color.color_on_surface)
+                    tint = colorResource(id = R.color.color_on_surface)
                 )
             }
         }
@@ -246,7 +242,7 @@ private fun ThemePreviewMenu(
     ) {
         DropdownMenuItem(
             modifier = Modifier
-                .height(dimensionResource(id = dimen.major_175)),
+                .height(dimensionResource(id = R.dimen.major_175)),
             onClick = {
                 showMenu = false
                 onPreviewTypeChanged(previewType)
@@ -257,13 +253,13 @@ private fun ThemePreviewMenu(
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
-                        .defaultMinSize(dimensionResource(id = dimen.major_300))
+                        .defaultMinSize(dimensionResource(id = R.dimen.major_300))
                 )
                 if (selectedType == previewType) {
                     Icon(
                         imageVector = Outlined.Check,
                         tint = MaterialTheme.colors.primary,
-                        contentDescription = stringResource(string.toggle_option_checked)
+                        contentDescription = stringResource(R.string.toggle_option_checked)
                     )
                 }
             }
@@ -274,18 +270,18 @@ private fun ThemePreviewMenu(
         Icon(
             imageVector = Outlined.Devices,
             tint = MaterialTheme.colors.onSurface,
-            contentDescription = stringResource(string.theme_preview_title),
+            contentDescription = stringResource(R.string.theme_preview_title),
         )
     }
     DropdownMenu(
         expanded = showMenu,
         onDismissRequest = { showMenu = false }
     ) {
-        PreviewMenuItem(MOBILE, string.theme_preview_type_mobile)
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-        PreviewMenuItem(TABLET, string.theme_preview_type_tablet)
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
-        PreviewMenuItem(DESKTOP, string.theme_preview_type_desktop)
+        PreviewMenuItem(MOBILE, R.string.theme_preview_type_mobile)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        PreviewMenuItem(TABLET, R.string.theme_preview_type_tablet)
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+        PreviewMenuItem(DESKTOP, R.string.theme_preview_type_desktop)
     }
 }
 
@@ -298,17 +294,17 @@ private fun ThemeDemoPagesBottomSheet(
     Column(modifier = modifier) {
         Text(
             modifier = Modifier
-                .padding(start = dimensionResource(id = dimen.major_100)),
-            text = stringResource(id = string.theme_preview_bottom_sheet_pages_title),
+                .padding(start = dimensionResource(id = R.dimen.major_100)),
+            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_title),
             style = MaterialTheme.typography.h6,
         )
         Text(
             modifier = Modifier
                 .padding(
-                    horizontal = dimensionResource(id = dimen.major_100),
-                    vertical = dimensionResource(id = dimen.minor_100)
+                    horizontal = dimensionResource(id = R.dimen.major_100),
+                    vertical = dimensionResource(id = R.dimen.minor_100)
                 ),
-            text = stringResource(id = string.theme_preview_bottom_sheet_pages_subtitle),
+            text = stringResource(id = R.string.theme_preview_bottom_sheet_pages_subtitle),
             style = MaterialTheme.typography.subtitle2,
             color = colorResource(id = R.color.color_on_surface_medium)
         )
@@ -321,14 +317,14 @@ private fun ThemeDemoPagesBottomSheet(
                     .clickable { onPageSelected(page) }
                     .fillMaxWidth()
                     .padding(
-                        top = dimensionResource(id = dimen.major_85),
-                        start = dimensionResource(id = dimen.major_100),
-                        end = dimensionResource(id = dimen.major_100),
-                        bottom = dimensionResource(id = dimen.major_85)
+                        top = dimensionResource(id = R.dimen.major_85),
+                        start = dimensionResource(id = R.dimen.major_100),
+                        end = dimensionResource(id = R.dimen.major_100),
+                        bottom = dimensionResource(id = R.dimen.major_85)
                     )
             )
             if (index == pages.lastIndex) {
-                Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_150)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_150)))
             }
         }
     }
