@@ -51,17 +51,18 @@ class WooPosOrdersDataSource @Inject constructor(
 
     companion object {
         const val POS_ORDERS_PAGE_SIZE = 25
+        const val POS_ORDERS_CACHE_WARMUP_SIZE = 3
         private const val UNKNOWN_ERROR = "Unknown error"
     }
 
-    fun loadOrders(): Flow<LoadOrdersResult> = flow {
+    fun loadOrders(pageSize: Int = POS_ORDERS_PAGE_SIZE): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) {
             val cachedWithRefunds = fetchRefundsForOrders(cached)
             emit(LoadOrdersResult.SuccessCache(cachedWithRefunds))
         }
 
-        val result = loadFirstPage()
+        val result = loadFirstPage(pageSize = pageSize)
         result.onSuccess { orders ->
             ordersCache.setAll(orders)
             val ordersWithRefunds = fetchRefundsForOrders(orders)
@@ -123,18 +124,24 @@ class WooPosOrdersDataSource @Inject constructor(
         ordersCache.setAll(updated)
     }
 
-    private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
+    private suspend fun loadFirstPage(
+        searchQuery: String? = null,
+        pageSize: Int = POS_ORDERS_PAGE_SIZE
+    ): Result<List<Order>> {
         page.set(1)
         canLoadMore.set(false)
-        return fetchAndMap(searchQuery)
+        return fetchAndMap(searchQuery, pageSize)
     }
 
     private suspend fun loadNextPage(searchQuery: String? = null): Result<List<Order>> {
         return fetchAndMap(searchQuery)
     }
 
-    private suspend fun fetchAndMap(searchQuery: String? = null): Result<List<Order>> {
-        val result = fetchOrdersFromRemote(page.get(), searchQuery)
+    private suspend fun fetchAndMap(
+        searchQuery: String? = null,
+        pageSize: Int = POS_ORDERS_PAGE_SIZE
+    ): Result<List<Order>> {
+        val result = fetchOrdersFromRemote(page.get(), searchQuery, pageSize)
         return if (result.isError) {
             Result.failure(result.error.toThrowable())
         } else {
@@ -146,10 +153,11 @@ class WooPosOrdersDataSource @Inject constructor(
 
     private suspend fun fetchOrdersFromRemote(
         page: Int,
-        searchQuery: String?
+        searchQuery: String?,
+        count: Int = POS_ORDERS_PAGE_SIZE
     ) = restClient.fetchOrders(
         site = selectedSite.get(),
-        count = POS_ORDERS_PAGE_SIZE,
+        count = count,
         page = page,
         orderBy = OrderBy.DATE,
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
