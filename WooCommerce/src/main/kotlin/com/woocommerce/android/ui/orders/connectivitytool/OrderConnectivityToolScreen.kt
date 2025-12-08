@@ -22,7 +22,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
@@ -38,6 +37,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -275,7 +275,7 @@ fun ConnectivitySummary(
                     allCaps = false,
                     onClick = onReturnClick,
                     text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    icon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentPadding = PaddingValues(
                         vertical = dimensionResource(id = R.dimen.minor_100),
                         horizontal = dimensionResource(id = R.dimen.minor_00)

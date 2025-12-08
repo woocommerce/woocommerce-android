@@ -19,16 +19,17 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -72,7 +73,7 @@ fun ApplicationPasswordTutorialScreen(
                 onNavigationButtonClick = onNavigationButtonClicked,
                 navigationIcon = when {
                     authorizationStarted -> Icons.Filled.Close
-                    else -> Icons.AutoMirrored.Filled.ArrowBack
+                    else -> ImageVector.vectorResource(R.drawable.ic_back_24dp)
                 }
             )
         }

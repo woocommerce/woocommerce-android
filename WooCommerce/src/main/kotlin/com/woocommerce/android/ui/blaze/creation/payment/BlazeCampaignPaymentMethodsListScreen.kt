@@ -19,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
@@ -29,9 +28,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
@@ -62,7 +63,8 @@ private fun BlazeCampaignPaymentMethodsListScreen(
                 onNavigationButtonClick = viewState.onDismiss,
                 navigationIcon = when (viewState) {
                     is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList ->
-                        Icons.AutoMirrored.Filled.ArrowBack
+                        ImageVector.vectorResource(R.drawable.ic_back_24dp)
+
                     is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> Icons.Default.Clear
                 }
             )

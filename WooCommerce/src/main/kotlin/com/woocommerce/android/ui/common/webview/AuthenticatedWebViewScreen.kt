@@ -5,11 +5,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.MODAL
 import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewViewModel.DisplayMode.REGULAR
@@ -43,7 +44,7 @@ private fun AuthenticatedWebViewScreen(
                 title = viewState.title ?: stringResource(id = R.string.app_name),
                 onNavigationButtonClick = onClose,
                 navigationIcon = when (viewState.displayMode) {
-                    REGULAR -> Icons.AutoMirrored.Filled.ArrowBack
+                    REGULAR -> ImageVector.vectorResource(R.drawable.ic_back_24dp)
                     MODAL -> Icons.Filled.Clear
                 }
             )

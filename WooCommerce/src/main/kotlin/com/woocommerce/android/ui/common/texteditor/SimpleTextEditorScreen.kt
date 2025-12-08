@@ -10,13 +10,14 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
 
@@ -56,7 +57,9 @@ fun SimpleTextEditorScreen(
                 onNavigationButtonClick = onBackPressed,
                 navigationIcon = when (strategy) {
                     SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION -> Icons.Default.Clear
-                    SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK -> Icons.AutoMirrored.Filled.ArrowBack
+                    SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK -> {
+                        ImageVector.vectorResource(R.drawable.ic_back_24dp)
+                    }
                 },
                 actions = {
                     if (strategy == SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION) {
