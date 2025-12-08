@@ -22,7 +22,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.runtime.Composable
@@ -107,7 +106,6 @@ private fun BlazeCampaignCreationEditAdScreen(
             Toolbar(
                 title = stringResource(id = string.blaze_campaign_preview_edit_ad),
                 onNavigationButtonClick = onBackButtonTapped,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onActionButtonClick = onSaveTapped,
                 actionButtonText = stringResource(id = string.save).uppercase()
             )

@@ -35,7 +35,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -136,10 +135,7 @@ fun AiProductPromptScreen(
 
     Scaffold(
         topBar = {
-            Toolbar(
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
-                onNavigationButtonClick = onBackButtonClick,
-            )
+            Toolbar(onNavigationButtonClick = onBackButtonClick)
         }
     ) { padding ->
         Column(

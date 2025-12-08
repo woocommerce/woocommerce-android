@@ -11,7 +11,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -74,7 +73,6 @@ private fun CustomerListSelectionScreen(
             if (showToolbar) {
                 Toolbar(
                     title = stringResource(id = R.string.order_creation_add_customer),
-                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationButtonClick = onNavigateBack,
                     windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
                 )

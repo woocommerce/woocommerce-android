@@ -27,7 +27,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
@@ -97,7 +96,6 @@ private fun BlazeCampaignCreationPreviewScreen(
                 title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
                 onNavigationButtonClick = onBackPressed,
                 onHelpButtonClick = onHelpTapped,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)

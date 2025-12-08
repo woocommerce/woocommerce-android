@@ -21,7 +21,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -52,8 +51,7 @@ fun PluginsScreen(viewModel: PluginsViewModel) {
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.settings_plugins),
-                onNavigationButtonClick = viewModel::onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+                onNavigationButtonClick = viewModel::onBackPressed
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)

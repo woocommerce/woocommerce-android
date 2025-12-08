@@ -35,7 +35,6 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
@@ -172,8 +171,7 @@ fun WooShippingEditAddressScreen(
         topBar = {
             Toolbar(
                 title = screenTitle,
-                onNavigationButtonClick = onNavigateBack,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+                onNavigationButtonClick = onNavigateBack
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -778,8 +776,8 @@ private fun SelectAddress(
 
             AddressSelectionItem(
                 address = addressSelection.addressNormalization.normalizedAddress,
-                isSelected =
-                addressSelection.selectedAddress == addressSelection.addressNormalization.normalizedAddress,
+                isSelected = addressSelection.selectedAddress ==
+                    addressSelection.addressNormalization.normalizedAddress,
                 onClick = {
                     onAddressSelectionChange(
                         addressSelection.copy(selectedAddress = addressSelection.addressNormalization.normalizedAddress)

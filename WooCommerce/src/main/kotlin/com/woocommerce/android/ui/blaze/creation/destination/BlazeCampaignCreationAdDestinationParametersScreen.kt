@@ -21,7 +21,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -83,7 +82,6 @@ fun AdDestinationParametersScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
