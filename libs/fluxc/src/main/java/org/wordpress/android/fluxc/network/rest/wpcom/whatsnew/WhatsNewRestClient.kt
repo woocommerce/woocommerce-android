@@ -63,14 +63,11 @@ class WhatsNewRestClient @Inject constructor(
     ): WhatsNewFetchedPayload {
         return WhatsNewFetchedPayload(announcements?.map { announce ->
             WhatsNewAnnouncementModel(
-                    appVersionName = announce.appVersionName,
                     announcementVersion = announce.announcementVersion,
                     minimumAppVersion = announce.minimumAppVersion,
                     maximumAppVersion = announce.maximumAppVersion,
                     appVersionTargets = announce.appVersionTargets ?: emptyList(),
-                    detailsUrl = announce.detailsUrl,
                     isLocalized = announce.isLocalized,
-                    responseLocale = announce.responseLocale,
                     features = announce.features.map {
                         WhatsNewAnnouncementFeature(
                                 title = it.title,

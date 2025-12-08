@@ -33,12 +33,9 @@ class FeatureAnnouncementRepository @Inject constructor(
 
     fun WhatsNewAnnouncementModel.build(): FeatureAnnouncement {
         return FeatureAnnouncement(
-            appVersionName,
-            announcementVersion,
             minimumAppVersion,
             maximumAppVersion,
             appVersionTargets,
-            detailsUrl,
             isLocalized,
             features.map {
                 it.build()

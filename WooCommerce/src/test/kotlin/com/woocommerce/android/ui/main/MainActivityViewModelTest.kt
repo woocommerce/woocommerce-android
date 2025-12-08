@@ -116,12 +116,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     private val testAnnouncement = FeatureAnnouncement(
-        appVersionName = "14.2",
-        announcementVersion = 1337,
         minimumAppVersion = "14.2",
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
-        detailsUrl = "https://woocommerce.com/",
         isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(
