@@ -19,8 +19,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
 import com.woocommerce.android.ui.compose.autoMirror
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,6 +29,7 @@ fun ToolbarWithHelpButton(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     onHelpButtonClick: (() -> Unit)
 ) {
@@ -40,9 +39,9 @@ fun ToolbarWithHelpButton(
         onNavigationButtonClick = onNavigationButtonClick,
         navigationIcon = navigationIcon,
         navigationIconContentDescription = navigationIconContentDescription,
-        actionButtonIcon = ImageVector.vectorResource(id = drawable.ic_help_24dp),
+        actionButtonIcon = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
         onActionButtonClick = onHelpButtonClick,
-        actionIconContentDescription = stringResource(id = string.help),
+        actionIconContentDescription = stringResource(id = R.string.help),
         windowInsets = windowInsets
     )
 }
@@ -55,6 +54,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit),
     navigationIcon: ImageVector = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
 ) {
     Toolbar(
@@ -75,6 +75,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     actionButtonIcon: ImageVector,
     onActionButtonClick: (() -> Unit),
@@ -106,6 +107,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
@@ -128,6 +130,7 @@ fun Toolbar(
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = Icons.AutoMirrored.Filled.ArrowBack,
     navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     onActionButtonClick: (() -> Unit),
     actionButtonText: String
@@ -154,7 +157,7 @@ fun Toolbar(
     title: @Composable () -> Unit,
     onNavigationButtonClick: (() -> Unit)? = null,
     navigationIcon: ImageVector? = null,
-    navigationIconContentDescription: String = stringResource(id = string.back),
+    navigationIconContentDescription: String = stringResource(id = R.string.back),
     windowInsets: WindowInsets = WindowInsets(0),
     actions: @Composable RowScope.() -> Unit = {}
 ) {
