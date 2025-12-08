@@ -51,7 +51,7 @@ class WooPosOrdersDataSource @Inject constructor(
 
     companion object {
         const val POS_ORDERS_PAGE_SIZE = 25
-        const val POS_ORDERS_CACHE_WARMUP_SIZE = 3
+        const val POS_ORDERS_CACHE_WARMUP_SIZE = 5
         private const val UNKNOWN_ERROR = "Unknown error"
     }
 
