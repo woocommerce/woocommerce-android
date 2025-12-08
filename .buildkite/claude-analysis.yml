@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
+---
+
+# This pipeline is dynamically uploaded at the end of the build after a wait step
+
+agents:
+  queue: default
+
+steps:
+  - label: ":claude: Claude Build Analysis"
+    key: claude-analysis
+    if: build.state == "failing"
+    command: "exit 0"
+    plugins:
+      - $CLAUDE_PLUGIN:
+          api_key: "$ANTHROPIC_API_KEY"
+          buildkite_api_token: "$BUILDKITE_TOKEN_FOR_CLAUDE"
+          analysis_level: "build"
+          trigger: "always"
+          model: "claude-sonnet-4-5"
+
+  - label: ":claude: 💬 Comment Claude Analysis"
+    command: .buildkite/commands/comment-claude-analysis.sh
+    depends_on: claude-analysis
+    allow_dependency_failure: true
+    if: build.pull_request.id != null
+    plugins:
+      - $CI_TOOLKIT
