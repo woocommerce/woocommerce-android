@@ -445,7 +445,10 @@ class WooPosOrdersViewModel @Inject constructor(
                                 searchInputState = WooPosSearchInputState.Closed
                             )
                         } else {
-                            replaceOrders(result.ordersWithRefunds)
+                            replaceOrders(
+                                ordersWithRefunds = result.ordersWithRefunds,
+                                paginationState = WooPosPaginationState.Loading
+                            )
                         }
                     }
 
