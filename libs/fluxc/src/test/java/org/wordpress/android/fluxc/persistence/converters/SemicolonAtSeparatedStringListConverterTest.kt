@@ -13,7 +13,7 @@ class SemicolonAtSeparatedStringListConverterTest {
     }
 
     @Test
-    fun `round trip conversion preserves data`() {
+    fun `when converting list to string and back, then original list is preserved`() {
         // Given
         val originalList = listOf("alpha-111", "alpha-112", "beta-113")
 
