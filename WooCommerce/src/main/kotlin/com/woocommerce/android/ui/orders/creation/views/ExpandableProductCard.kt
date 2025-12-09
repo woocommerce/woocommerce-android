@@ -40,7 +40,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -590,11 +589,9 @@ private fun AmountPicker(
                 else -> MaterialTheme.colors.primary
             }
 
-            val decreaseIcon = if (isLastItem) {
-                ImageVector.vectorResource(R.drawable.ic_delete_24dp)
-            } else {
-                Icons.Filled.Remove
-            }
+            val decreaseIcon = ImageVector.vectorResource(
+                if (isLastItem) R.drawable.ic_delete_24dp else R.drawable.ic_remove_24dp
+            )
             IconButton(
                 onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) },
                 enabled = isPlusMinusEnabled
