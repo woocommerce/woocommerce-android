@@ -18,7 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreHoriz
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -458,10 +457,12 @@ fun AddressStatusIndicator(
         else -> colorResource(id = R.color.woo_shipping_label_error)
     }
 
-    val icon = when (addressStatus) {
-        AddressStatus.Verified -> ImageVector.vectorResource(R.drawable.ic_check_circle_24dp)
-        else -> Icons.Outlined.Info
-    }
+    val icon = ImageVector.vectorResource(
+        when (addressStatus) {
+            AddressStatus.Verified -> R.drawable.ic_check_circle_24dp
+            else -> R.drawable.ic_tintable_info_outline_24dp
+        }
+    )
 
     Row(modifier) {
         Icon(

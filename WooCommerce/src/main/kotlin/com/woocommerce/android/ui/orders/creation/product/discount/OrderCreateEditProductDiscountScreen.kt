@@ -24,8 +24,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -134,7 +132,7 @@ fun OrderCreateEditProductDiscountScreen(
                         trailingIcon = {
                             if (discountValidationState is Invalid) {
                                 Icon(
-                                    imageVector = Icons.Default.Info,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_info_filled_24dp),
                                     contentDescription = null,
                                     tint = colorResource(id = R.color.woo_red_50)
                                 )
