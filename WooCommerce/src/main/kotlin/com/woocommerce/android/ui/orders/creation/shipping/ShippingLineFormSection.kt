@@ -15,8 +15,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -170,7 +168,7 @@ fun ShippingLineEditCard(
         )
         if (isEnabled) {
             Icon(
-                imageVector = Icons.Outlined.Edit,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)
