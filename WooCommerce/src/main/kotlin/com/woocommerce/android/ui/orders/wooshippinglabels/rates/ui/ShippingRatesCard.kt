@@ -29,8 +29,6 @@ import androidx.compose.material.LeadingIconTab
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -464,7 +462,7 @@ private fun ShippingRateItemExpandedDescription(
         options.forEach {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(
-                    imageVector = Icons.Filled.Done,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_done_secondary),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.size(24.dp)
