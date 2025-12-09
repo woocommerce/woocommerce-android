@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Error
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -107,7 +105,7 @@ fun WooShippingCustomsProductListItem(
 
             if (itemData.isValid.not()) {
                 Icon(
-                    imageVector = Icons.Outlined.Error,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_error_filled_24dp),
                     tint = MaterialTheme.colors.error,
                     contentDescription = stringResource(
                         id = R.string.shipping_label_package_details_items_expand_content_description
