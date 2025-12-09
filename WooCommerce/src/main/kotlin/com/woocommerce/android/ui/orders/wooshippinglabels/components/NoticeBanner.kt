@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -28,6 +26,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
@@ -94,7 +93,7 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
             )
             if (!noticeBannerUiState.autoDismiss) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     tint = colorResource(color),
                     contentDescription = null,
                     modifier = Modifier.clickable { noticeBannerUiState.onDismissed?.invoke() }
@@ -102,4 +101,16 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun NoticeBannerPreview() {
+    NoticeBanner(
+        noticeBannerUiState = NoticeBannerUiState(
+            message = R.string.woo_shipping_address_verified,
+            type = NoticeType.VERIFIED_DESTINATION_ADDRESS,
+            error = false
+        )
+    )
 }
