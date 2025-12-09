@@ -18,7 +18,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -465,7 +464,7 @@ private fun ButtonsPreview() {
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = colorResource(id = R.color.woo_white),
@@ -494,7 +493,11 @@ private fun ButtonsPreview() {
                     )
                 },
                 trailingIcon = {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             )
             WCOutlinedButton(

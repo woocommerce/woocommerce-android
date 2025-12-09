@@ -19,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
@@ -209,7 +208,7 @@ private fun PaymentMethodItem(
 
         if (isSelected) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                 tint = MaterialTheme.colors.primary,
                 contentDescription = null
             )

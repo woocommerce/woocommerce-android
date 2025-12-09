@@ -34,8 +34,6 @@ import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -264,7 +262,7 @@ private fun ToneDropDown(
                             Spacer(modifier = Modifier.weight(1f))
                             if (tone == it) {
                                 Icon(
-                                    imageVector = Icons.Default.Check,
+                                    imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                                     contentDescription = stringResource(id = androidx.compose.ui.R.string.selected),
                                     tint = MaterialTheme.colors.primary
                                 )
