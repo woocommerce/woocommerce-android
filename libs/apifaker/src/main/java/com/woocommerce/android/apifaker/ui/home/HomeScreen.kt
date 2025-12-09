@@ -32,7 +32,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
@@ -152,7 +151,10 @@ private fun HomeScreen(
                 contentColor = MaterialTheme.colors.onPrimary,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add endpoint")
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = "Add endpoint"
+                )
             }
         }
     }

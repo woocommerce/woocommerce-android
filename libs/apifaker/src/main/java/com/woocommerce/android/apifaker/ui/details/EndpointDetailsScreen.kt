@@ -38,7 +38,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -473,7 +472,7 @@ private fun QueryParametersField(
                 modifier = Modifier.size(32.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = "Add query parameter"
                 )
             }
