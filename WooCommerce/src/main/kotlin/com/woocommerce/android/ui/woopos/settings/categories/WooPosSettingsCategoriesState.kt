@@ -1,9 +1,7 @@
 package com.woocommerce.android.ui.woopos.settings.categories
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.HelpOutline
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.settings.WooPosSettingsDetailDestination
 
@@ -11,7 +9,7 @@ enum class WooPosSettingsCategory(
     @StringRes val titleRes: Int,
     @StringRes val subtitleRes: Int?,
     val rootDestination: WooPosSettingsDetailDestination,
-    val icon: ImageVector? = null,
+    @DrawableRes val icon: Int? = null,
     val isFixedAtBottom: Boolean = false
 ) {
     STORE(
@@ -33,7 +31,7 @@ enum class WooPosSettingsCategory(
         titleRes = R.string.woopos_settings_help_category,
         subtitleRes = null,
         WooPosSettingsDetailDestination.Help.Overview,
-        Icons.AutoMirrored.Outlined.HelpOutline,
+        R.drawable.ic_help_24dp,
         isFixedAtBottom = true
     )
 }

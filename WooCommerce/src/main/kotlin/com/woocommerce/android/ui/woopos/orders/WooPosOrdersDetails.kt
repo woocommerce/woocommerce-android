@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -356,7 +354,7 @@ private fun OrderLineItemImage(
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 24.dp
     )
 }

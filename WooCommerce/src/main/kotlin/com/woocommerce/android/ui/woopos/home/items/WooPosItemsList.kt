@@ -21,9 +21,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -295,7 +292,7 @@ private fun ProductImage(item: Product) {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 44.dp
     )
 }
@@ -397,7 +394,7 @@ private fun CouponImage() {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        placeholderIcon = Icons.Outlined.LocalOffer,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_sell_24dp),
         placeholderIconSize = 36.dp
     )
 }

@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -226,7 +224,7 @@ private fun SearchInput(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.Cancel,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_clear),
                             contentDescription = stringResource(
                                 R.string.woopos_search_clear_content_description
                             ),
