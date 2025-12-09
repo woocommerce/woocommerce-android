@@ -28,8 +28,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -552,7 +550,7 @@ private fun PaymentSection(
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Icon(
-                    imageVector = Icons.Default.Edit,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                     contentDescription = stringResource(R.string.shipping_label_shipment_details_edit_payment_method),
                     tint = MaterialTheme.colors.primary,
                     modifier = Modifier.padding(end = 8.dp)

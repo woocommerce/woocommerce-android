@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -458,7 +457,7 @@ private fun ButtonsPreview() {
                 text = "Button With icon",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Edit,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = colorResource(id = R.color.woo_white),
@@ -488,7 +487,11 @@ private fun ButtonsPreview() {
                 onClick = {},
                 text = "Outlined Button with icon",
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
                 },
                 trailingIcon = {
                     Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))

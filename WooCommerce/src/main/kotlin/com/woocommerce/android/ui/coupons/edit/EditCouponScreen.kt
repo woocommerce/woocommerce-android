@@ -20,7 +20,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -230,7 +229,7 @@ private fun ConditionsSection(
             leadingIcon = {
                 if (viewState.couponDraft.productIds.isNotEmpty()) {
                     Icon(
-                        imageVector = Icons.Filled.Edit,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                     )
@@ -251,11 +250,13 @@ private fun ConditionsSection(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.couponDraft.categoryIds.isEmpty()) {
-                        ImageVector.vectorResource(R.drawable.ic_add)
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.couponDraft.categoryIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -348,7 +349,9 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
         ),
         leadingIcon = {
             Icon(
-                imageVector = if (description.isNullOrEmpty()) ImageVector.vectorResource(R.drawable.ic_add) else Icons.Filled.Edit,
+                imageVector = ImageVector.vectorResource(
+                    if (description.isNullOrEmpty()) R.drawable.ic_add else R.drawable.ic_edit_filled_24dp
+                ),
                 contentDescription = null,
                 modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
             )

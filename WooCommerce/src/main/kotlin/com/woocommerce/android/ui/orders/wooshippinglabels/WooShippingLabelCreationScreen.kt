@@ -30,7 +30,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
@@ -386,7 +385,7 @@ private fun LabelCreationScreenWithBottomSheet(
                                     modifier = Modifier.align(Alignment.CenterVertically)
                                 ) {
                                     Icon(
-                                        imageVector = Icons.Filled.Edit,
+                                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                                         tint = colorResource(id = R.color.color_icon_menu),
                                         contentDescription = stringResource(id = R.string.woo_shipping_split_shipment)
                                     )
@@ -606,7 +605,7 @@ private fun CustomsCard(
                     .align(Alignment.CenterVertically)
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Edit,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                     tint = colorResource(id = R.color.color_icon_menu),
                     contentDescription = stringResource(id = R.string.shipping_label_package_selected_description)
                 )
@@ -715,7 +714,7 @@ private fun PackageSelectionAvailableCard(
                 onClick = onSelectPackageClick
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Edit,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                     tint = colorResource(id = R.color.color_icon_menu),
                     contentDescription = stringResource(id = R.string.shipping_label_package_selected_description)
                 )

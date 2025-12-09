@@ -19,8 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -298,11 +296,13 @@ private fun ExclusionsSection(
             text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) {
-                        ImageVector.vectorResource(R.drawable.ic_add)
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.restrictions.excludedProductIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -321,11 +321,13 @@ private fun ExclusionsSection(
             text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
-                        ImageVector.vectorResource(R.drawable.ic_add)
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )

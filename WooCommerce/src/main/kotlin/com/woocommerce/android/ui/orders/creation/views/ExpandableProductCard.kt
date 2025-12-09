@@ -40,7 +40,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material.icons.filled.Tune
@@ -260,8 +259,9 @@ fun ExpandableProductCard(
             Icon(
                 modifier = Modifier.rotate(chevronRotation),
                 imageVector = Icons.Filled.KeyboardArrowDown,
-                contentDescription =
-                stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
+                contentDescription = stringResource(
+                    R.string.order_creation_collapse_expand_product_card_content_description
+                ),
                 tint = MaterialTheme.colors.primary
             )
         }
@@ -413,7 +413,7 @@ fun ExtendedProductCardContent(
                 Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_100)))
                 Icon(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40)),
-                    imageVector = Icons.Filled.Edit,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                     contentDescription = null
                 )
             }
@@ -598,8 +598,9 @@ private fun AmountPicker(
             ) {
                 Icon(
                     imageVector = decreaseIcon,
-                    contentDescription =
-                    stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
+                    contentDescription = stringResource(
+                        R.string.order_creation_decrease_item_amount_content_description
+                    ),
                     tint = minusButtonTint
                 )
             }
@@ -646,8 +647,9 @@ private fun AmountPicker(
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_add),
-                    contentDescription =
-                    stringResource(id = R.string.order_creation_increase_item_amount_content_description),
+                    contentDescription = stringResource(
+                        R.string.order_creation_increase_item_amount_content_description
+                    ),
                     tint = plusButtonTint
                 )
             }
