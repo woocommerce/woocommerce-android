@@ -30,7 +30,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosExitConfirmationDialog
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.isPreviewMode
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartScreen
@@ -164,7 +163,7 @@ private fun WooPosHomeScreen(
 
         WooPosHomeScreenToolbar(
             modifier = Modifier
-                .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                .padding(WooPosSpacing.Large.value)
                 .align(Alignment.BottomStart),
         )
 
