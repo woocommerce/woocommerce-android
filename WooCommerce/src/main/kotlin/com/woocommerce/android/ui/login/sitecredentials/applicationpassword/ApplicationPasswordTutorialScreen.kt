@@ -18,8 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -71,10 +69,9 @@ fun ApplicationPasswordTutorialScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onNavigationButtonClicked,
-                navigationIcon = when {
-                    authorizationStarted -> Icons.Filled.Close
-                    else -> ImageVector.vectorResource(R.drawable.ic_back_24dp)
-                }
+                navigationIcon = ImageVector.vectorResource(
+                    if (authorizationStarted) R.drawable.ic_close_24dp else R.drawable.ic_back_24dp
+                )
             )
         }
     ) { paddingValues ->

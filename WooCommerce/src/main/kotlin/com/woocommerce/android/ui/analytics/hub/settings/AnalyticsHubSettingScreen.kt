@@ -19,14 +19,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -72,7 +72,7 @@ fun AnalyticsHubSettingScreen(
             navigationIcon = {
                 IconButton(onBackPressed) {
                     Icon(
-                        Icons.Filled.Close,
+                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = stringResource(id = R.string.back)
                     )
                 }
@@ -97,7 +97,9 @@ fun AnalyticsHubSettingScreen(
                     onOrderChange = onOrderChange,
                     itemKey = { _, card -> card.card },
                     isItemDraggable = { it is AnalyticCardConfigurationUI.SelectableCardConfigurationUI },
-                    modifier = Modifier.fillMaxSize().padding(padding)
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
                 ) { item, dragDropState ->
                     when (item) {
                         is AnalyticCardConfigurationUI.SelectableCardConfigurationUI -> {

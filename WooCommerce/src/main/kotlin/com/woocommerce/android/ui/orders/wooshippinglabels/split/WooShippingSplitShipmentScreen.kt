@@ -28,8 +28,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
@@ -238,7 +236,7 @@ private fun TopBar(onBack: (() -> Unit)? = null, onDone: (() -> Unit)? = null) {
         navigationIcon = {
             IconButton(onBack ?: {}) {
                 Icon(
-                    imageVector = Icons.Filled.Close,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     contentDescription = stringResource(id = R.string.close)
                 )
             }
@@ -392,7 +390,7 @@ private fun InstructionsMessage(
             )
             IconButton(onClick = { onClose() }) {
                 Icon(
-                    imageVector = Icons.Filled.Close,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     tint = MaterialTheme.colors.onPrimary.copy(alpha = .60f),
                     contentDescription = stringResource(id = R.string.close),
                     modifier = Modifier.padding(14.dp)

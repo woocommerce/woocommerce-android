@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.outlined.Inventory2
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -28,8 +27,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
@@ -76,6 +77,7 @@ fun WooPosIssueRefundDialog(
             is WooPosRefundState.Loading -> {
                 LoadingContent()
             }
+
             is WooPosRefundState.Content -> {
                 when (currentState.step) {
                     WooPosRefundState.Content.RefundStep.SelectItems -> {
@@ -87,6 +89,7 @@ fun WooPosIssueRefundDialog(
                             }
                         )
                     }
+
                     WooPosRefundState.Content.RefundStep.ReviewRefund -> {
                         ReviewRefundContent(
                             state = currentState,
@@ -102,12 +105,14 @@ fun WooPosIssueRefundDialog(
                     }
                 }
             }
+
             is WooPosRefundState.Error -> {
                 ErrorContent(
                     message = currentState.message,
                     onDismissRequest = onDismissRequest
                 )
             }
+
             is WooPosRefundState.NoRefundableItems -> {
                 NoItemsContent(onDismissRequest = onDismissRequest)
             }
@@ -243,7 +248,7 @@ private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = Icons.Default.Close,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.close),
                 tint = MaterialTheme.colorScheme.onSurface
             )
@@ -457,7 +462,7 @@ private fun ReviewRefundHeader(onDismissRequest: () -> Unit) {
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = Icons.Default.Close,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.close),
                 tint = MaterialTheme.colorScheme.onSurface
             )
