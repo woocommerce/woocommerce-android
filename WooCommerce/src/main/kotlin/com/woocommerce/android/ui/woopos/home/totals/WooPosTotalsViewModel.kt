@@ -168,7 +168,11 @@ class WooPosTotalsViewModel @Inject constructor(
 
             WooPosTotalsUIEvent.RetryFailedTransactionClicked -> handleRetryFailedTransactionClicked()
 
-            WooPosTotalsUIEvent.ConnectReaderClicked -> cardReaderFacade.connectToReader()
+            WooPosTotalsUIEvent.ConnectReaderClicked -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+                }
+            }
 
             WooPosTotalsUIEvent.OnBackClicked -> handleBackPress()
 

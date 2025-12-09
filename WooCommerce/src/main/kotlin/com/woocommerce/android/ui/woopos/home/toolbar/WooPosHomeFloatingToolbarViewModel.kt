@@ -12,6 +12,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarUIEvent.MenuItemClicked
@@ -35,8 +37,14 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
+
+    private val controller: WooPosCardReaderConnectionController by lazy {
+        controllerFactory.create(viewModelScope)
+    }
+
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
             cardReaderStatus = WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected,
@@ -111,7 +119,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         when (_state.value.cardReaderStatus) {
             WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
                 viewModelScope.launch {
-                    cardReaderFacade.disconnectFromReader()
+                    controller.disconnect()
                 }
             }
 
@@ -125,7 +133,9 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                         )
                     }
                 } else {
-                    cardReaderFacade.connectToReader()
+                    viewModelScope.launch {
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
+                    }
                 }
             }
         }

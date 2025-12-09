@@ -702,7 +702,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given reader not connected, when checkout clicked and error CTA clicked, then should try connecting to reader`() =
+    fun `given reader not connected, when checkout clicked and error CTA clicked, then should send show connection dialog event`() =
         runTest {
             // GIVEN
             val readerStatus: StateFlow<CardReaderStatus> =
@@ -715,7 +715,7 @@ class WooPosTotalsViewModelTest {
             viewModel.onUIEvent(WooPosTotalsUIEvent.ConnectReaderClicked)
 
             // THEN
-            verify(cardReaderFacade).connectToReader()
+            verify(childrenToParentEventSender).sendToParent(ChildToParentEvent.ShowCardReaderConnectionDialog)
         }
 
     @Test

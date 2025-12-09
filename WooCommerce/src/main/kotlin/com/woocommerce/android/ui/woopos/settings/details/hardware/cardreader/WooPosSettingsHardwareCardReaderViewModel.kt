@@ -10,8 +10,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.WOOCOMMERCE_PAYMENTS
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_LEARN_MORE_ABOUT_PAYMENTS
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_STRIPE_LEARN_MORE_ABOUT_PAYMENTS
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -28,8 +32,14 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     private val cardReaderFacade: WooPosCardReaderFacade,
     private val resourceProvider: ResourceProvider,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    controllerFactory: WooPosCardReaderConnectionControllerFactory,
 ) : ViewModel() {
+
+    private val controller: WooPosCardReaderConnectionController by lazy {
+        controllerFactory.create(viewModelScope)
+    }
 
     private val _uiState = MutableStateFlow<WooPosSettingsHardwareCardReaderUiState>(
         WooPosSettingsHardwareCardReaderUiState.Disconnected
@@ -48,12 +58,14 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     fun onConnectClicked() {
-        cardReaderFacade.connectToReader()
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.SettingsEvent.ShowCardReaderConnectionDialog)
+        }
     }
 
     fun onDisconnectClicked() {
         viewModelScope.launch {
-            cardReaderFacade.disconnectFromReader()
+            controller.disconnect()
         }
     }
 
@@ -73,7 +85,9 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     fun onUpdateClick() {
-        cardReaderFacade.updateReader()
+        viewModelScope.launch {
+            childrenToParentEventSender.sendToParent(ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog)
+        }
     }
 
     private fun listenForSoftwareUpdateAvailability() {

@@ -14,6 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionDialog
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderUpdateDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -116,6 +118,20 @@ private fun WooPosSettingsContent(
         onRetry = onRetrySync,
         onDismissRequest = onDismissDialog
     )
+
+    if (dialogState is WooPosSettingsDialogState.CardReaderConnectionDialog) {
+        WooPosCardReaderConnectionDialog(
+            onDismiss = onDismissDialog,
+            onConnectionSuccess = onDismissDialog
+        )
+    }
+
+    if (dialogState is WooPosSettingsDialogState.CardReaderUpdateDialog) {
+        WooPosCardReaderUpdateDialog(
+            onDismiss = onDismissDialog,
+            onUpdateComplete = onDismissDialog
+        )
+    }
 }
 
 @WooPosPreview
