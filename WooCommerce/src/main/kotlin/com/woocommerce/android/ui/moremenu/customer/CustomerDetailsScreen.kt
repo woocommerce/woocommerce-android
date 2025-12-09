@@ -19,8 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -133,7 +131,7 @@ fun CustomerSection(
         action = onEmailTapped
     ) {
         Icon(
-            imageVector = Icons.Filled.Email,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_email),
             contentDescription = "",
             tint = MaterialTheme.colors.primary
         )
@@ -415,7 +413,7 @@ fun SectionValueComposablePreview() {
             title = "Name"
         ) {
             Icon(
-                imageVector = Icons.Filled.Email,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_email),
                 contentDescription = "",
                 tint = MaterialTheme.colors.primary
             )
