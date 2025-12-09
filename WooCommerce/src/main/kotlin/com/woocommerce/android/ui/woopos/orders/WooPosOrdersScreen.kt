@@ -177,8 +177,7 @@ private fun WooPosOrdersScreen(
                 is WooPosOrdersState.Content.DialogState.IssueRefund -> {
                     WooPosIssueRefundDialog(
                         orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onContinue = onIssueRefundDialogDismissed
+                        onDismissRequest = onIssueRefundDialogDismissed
                     )
                 }
                 WooPosOrdersState.Content.DialogState.Hidden -> Unit

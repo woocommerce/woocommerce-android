@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
+import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -21,7 +23,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
-    private val resourceProvider: ResourceProvider
+    private val resourceProvider: ResourceProvider,
+    private val currencyFormatter: CurrencyFormatter
 ) : ViewModel() {
 
     @AssistedFactory
@@ -87,7 +90,28 @@ class WooPosRefundViewModel @AssistedInject constructor(
             itemsCount = refundableItems.size,
             subtotal = subtotal,
             taxes = taxes,
-            total = total
+            total = total,
+            formattedSubtotal = PriceUtils.formatCurrency(subtotal, order.currency, currencyFormatter),
+            formattedTaxes = PriceUtils.formatCurrency(taxes, order.currency, currencyFormatter),
+            formattedTotal = PriceUtils.formatCurrency(total, order.currency, currencyFormatter),
+            step = WooPosRefundState.Content.RefundStep.SelectItems
         )
+    }
+
+    fun onUIEvent(event: WooPosRefundUIEvent) {
+        val currentState = _state.value as? WooPosRefundState.Content ?: return
+
+        val newStep = when (event) {
+            WooPosRefundUIEvent.ContinueToReviewClicked ->
+                WooPosRefundState.Content.RefundStep.ReviewRefund
+            WooPosRefundUIEvent.BackToSelectItemsClicked ->
+                WooPosRefundState.Content.RefundStep.SelectItems
+            WooPosRefundUIEvent.DialogDismissed ->
+                WooPosRefundState.Content.RefundStep.SelectItems
+
+            WooPosRefundUIEvent.ContinueToConfirmRefundClicked -> WooPosRefundState.Content.RefundStep.SelectItems
+        }
+
+        _state.value = currentState.copy(step = newStep)
     }
 }
