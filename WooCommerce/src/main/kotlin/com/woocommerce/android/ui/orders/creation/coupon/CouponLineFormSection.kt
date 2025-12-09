@@ -12,8 +12,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -106,7 +104,7 @@ fun CouponLineEditCard(
             overflow = TextOverflow.Ellipsis
         )
         Icon(
-            imageVector = Icons.Outlined.DeleteOutline,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
             contentDescription = stringResource(id = R.string.order_creation_remove_coupon),
             modifier = Modifier
                 .align(Alignment.CenterVertically)

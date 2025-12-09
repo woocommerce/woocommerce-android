@@ -20,8 +20,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -212,7 +210,7 @@ private fun ParameterItem(
                 onClick = { onDeleteParameterTapped(key) }
             ) {
                 Icon(
-                    imageVector = Icons.Default.DeleteOutline,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
                     contentDescription = stringResource(id = R.string.delete),
                     tint = colorResource(id = R.color.color_on_surface_medium)
                 )
