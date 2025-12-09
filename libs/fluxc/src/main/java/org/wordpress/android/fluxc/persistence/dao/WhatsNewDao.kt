@@ -10,17 +10,27 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFeatures
 
 @Dao
-internal interface WhatsNewDao {
+internal abstract class WhatsNewDao {
     @Transaction
     @Query("SELECT * FROM WhatsNewAnnouncementEntity")
-    suspend fun getAnnouncementsWithFeatures(): List<WhatsNewAnnouncementWithFeatures>
+    abstract suspend fun getAnnouncementsWithFeatures(): List<WhatsNewAnnouncementWithFeatures>
+
+    @Transaction
+    open suspend fun insertAnnouncementsWithFeatures(
+        announcementsWithFeatures: List<WhatsNewAnnouncementWithFeatures>
+    ) {
+        val announcements = announcementsWithFeatures.map { it.announcement }
+        val features = announcementsWithFeatures.flatMap { it.features }
+        insertAnnouncements(announcements)
+        insertFeatures(features)
+    }
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertAnnouncements(announcements: List<WhatsNewAnnouncementEntity>)
+    protected abstract suspend fun insertAnnouncements(announcements: List<WhatsNewAnnouncementEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFeatures(features: List<WhatsNewAnnouncementFeatureEntity>)
+    protected abstract suspend fun insertFeatures(features: List<WhatsNewAnnouncementFeatureEntity>)
 
     @Query("DELETE FROM WhatsNewAnnouncementEntity")
-    suspend fun deleteAllAnnouncements()
+    abstract suspend fun deleteAllAnnouncements()
 }

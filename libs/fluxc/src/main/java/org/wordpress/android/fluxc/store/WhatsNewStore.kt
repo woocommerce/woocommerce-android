@@ -86,17 +86,9 @@ class WhatsNewStore @Inject internal constructor(
                 return@runBlocking
             }
 
-            // Convert domain models to entities
-            val announcementEntities = announcements.map { it.toEntity() }
-            val featureEntities = announcements.flatMap { announcement ->
-                announcement.features.map { feature ->
-                    feature.toEntity(announcement.announcementVersion)
-                }
-            }
-
-            // Insert new data
-            whatsNewDao.insertAnnouncements(announcementEntities)
-            whatsNewDao.insertFeatures(featureEntities)
+            // Convert domain models to entities and insert
+            val announcementsWithFeatures = announcements.map { it.toEntityWithFeatures() }
+            whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
         }
     }
 
@@ -120,23 +112,28 @@ class WhatsNewStore @Inject internal constructor(
         )
     }
 
-    private fun WhatsNewAnnouncementModel.toEntity(): WhatsNewAnnouncementEntity {
-        return WhatsNewAnnouncementEntity(
+    private fun WhatsNewAnnouncementModel.toEntityWithFeatures(): WhatsNewAnnouncementWithFeatures {
+        val announcementEntity = WhatsNewAnnouncementEntity(
             announcementId = RemoteId(announcementVersion.toLong()),
             minimumAppVersion = minimumAppVersion,
             maximumAppVersion = maximumAppVersion,
             appVersionTargets = appVersionTargets,
             localized = isLocalized
         )
-    }
 
-    private fun WhatsNewAnnouncementFeature.toEntity(announcementVersion: Int): WhatsNewAnnouncementFeatureEntity {
-        return WhatsNewAnnouncementFeatureEntity(
-            announcementId = RemoteId(announcementVersion.toLong()),
-            title = title ?: "",
-            subtitle = subtitle,
-            iconUrl = iconUrl,
-            iconBase64 = iconBase64
+        val featureEntities = features.map { feature ->
+            WhatsNewAnnouncementFeatureEntity(
+                announcementId = RemoteId(announcementVersion.toLong()),
+                title = feature.title ?: "",
+                subtitle = feature.subtitle,
+                iconUrl = feature.iconUrl,
+                iconBase64 = feature.iconBase64
+            )
+        }
+
+        return WhatsNewAnnouncementWithFeatures(
+            announcement = announcementEntity,
+            features = featureEntities
         )
     }
 

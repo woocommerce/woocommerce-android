@@ -84,18 +84,12 @@ class WhatsNewDaoTest {
     }
 
     @Test
-    fun `announcements are stored and retrieved correctly`() = runBlocking {
+    fun `when announcements are inserted, then they are retrieved correctly with features`() = runBlocking {
         // Convert domain models to entities
-        val announcementEntities = testAnnouncements.map { it.toEntity() }
-        val featureEntities = testAnnouncements.flatMap { announcement ->
-            announcement.features.map { feature ->
-                feature.toEntity(announcement.announcementVersion)
-            }
-        }
+        val announcementsWithFeatures = testAnnouncements.map { it.toEntityWithFeatures() }
 
-        // Insert test data
-        whatsNewDao.insertAnnouncements(announcementEntities)
-        whatsNewDao.insertFeatures(featureEntities)
+        // Insert test data using single method
+        whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
 
         // Retrieve and convert back to domain models using Room's @Relation
         val cachedAnnouncementsWithFeatures = whatsNewDao.getAnnouncementsWithFeatures()
@@ -104,23 +98,28 @@ class WhatsNewDaoTest {
         assertEquals(testAnnouncements, cachedAnnouncements)
     }
 
-    private fun WhatsNewAnnouncementModel.toEntity(): WhatsNewAnnouncementEntity {
-        return WhatsNewAnnouncementEntity(
+    private fun WhatsNewAnnouncementModel.toEntityWithFeatures(): WhatsNewAnnouncementWithFeatures {
+        val announcementEntity = WhatsNewAnnouncementEntity(
                 announcementId = RemoteId(announcementVersion.toLong()),
                 minimumAppVersion = minimumAppVersion,
                 maximumAppVersion = maximumAppVersion,
                 appVersionTargets = appVersionTargets,
                 localized = isLocalized
         )
-    }
 
-    private fun WhatsNewAnnouncementFeature.toEntity(announcementVersion: Int): WhatsNewAnnouncementFeatureEntity {
-        return WhatsNewAnnouncementFeatureEntity(
-                announcementId = RemoteId(announcementVersion.toLong()),
-                title = title ?: "",
-                subtitle = subtitle,
-                iconUrl = iconUrl,
-                iconBase64 = iconBase64
+        val featureEntities = features.map { feature ->
+            WhatsNewAnnouncementFeatureEntity(
+                    announcementId = RemoteId(announcementVersion.toLong()),
+                    title = feature.title ?: "",
+                    subtitle = feature.subtitle,
+                    iconUrl = feature.iconUrl,
+                    iconBase64 = feature.iconBase64
+            )
+        }
+
+        return WhatsNewAnnouncementWithFeatures(
+                announcement = announcementEntity,
+                features = featureEntities
         )
     }
 
