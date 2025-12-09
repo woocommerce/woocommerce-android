@@ -24,8 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -170,7 +168,7 @@ private fun SearchSection(
                 searchState.onQueryChanged("")
             }) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
                     contentDescription = stringResource(R.string.search)
                 )
             }

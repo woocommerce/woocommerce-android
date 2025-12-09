@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,7 +37,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -80,9 +81,10 @@ fun WooPosSearchInput(
                     onEvent = onEvent,
                 )
             }
+
             is WooPosSearchInputState.Closed -> {
                 WooPosCircularIconButton(
-                    icon = Icons.Default.Search,
+                    icon = ImageVector.vectorResource(R.drawable.ic_search_24dp),
                     contentDescription = stringResource(
                         id = R.string.woopos_search_products,
                     ),
@@ -210,7 +212,7 @@ private fun SearchInput(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Search,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onSurface,
                         )
