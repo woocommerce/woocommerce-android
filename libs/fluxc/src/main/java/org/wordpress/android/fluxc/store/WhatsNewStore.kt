@@ -1,16 +1,14 @@
 package org.wordpress.android.fluxc.store
 
-import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
+import javax.inject.Singleton
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
-import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewFetchedPayload
 import org.wordpress.android.fluxc.persistence.WhatsNewMapper
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T
-import javax.inject.Inject
-import javax.inject.Singleton
 
 @Singleton
 class WhatsNewStore @Inject internal constructor(
@@ -20,43 +18,39 @@ class WhatsNewStore @Inject internal constructor(
 ) {
 
     suspend fun fetchCachedAnnouncements() =
-            coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
-                return@withDefaultContext OnWhatsNewFetched(getAnnouncements(), true)
-            }
+        coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
+            return@withDefaultContext OnWhatsNewFetched(getAnnouncements(), true)
+        }
 
     suspend fun fetchRemoteAnnouncements(versionName: String) =
-            coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
-                val fetchedWhatsNewPayload = whatsNewRestClient.fetchWhatsNew(versionName)
+        coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
+            val fetchedWhatsNewPayload = whatsNewRestClient.fetchWhatsNew(versionName)
 
-                return@withDefaultContext if (!fetchedWhatsNewPayload.isError) {
-                    val fetchedAnnouncements = fetchedWhatsNewPayload.whatsNewItems
-                    updateAnnouncementCache(fetchedAnnouncements)
-                    OnWhatsNewFetched(fetchedAnnouncements)
-                } else {
-                    OnWhatsNewFetched(
-                            fetchError = WhatsNewFetchError(GENERIC_ERROR, fetchedWhatsNewPayload.error.message)
-                    )
-                }
+            return@withDefaultContext if (!fetchedWhatsNewPayload.isError) {
+                val fetchedAnnouncements = fetchedWhatsNewPayload.whatsNewItems
+                updateAnnouncementCache(fetchedAnnouncements)
+                OnWhatsNewFetched(fetchedAnnouncements)
+            } else {
+                OnWhatsNewFetched(
+                    fetchError = WhatsNewFetchError(GENERIC_ERROR, fetchedWhatsNewPayload.error.message)
+                )
             }
+        }
 
-    private fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
-        val announcementsWithFeatures = runBlocking { whatsNewDao.getAnnouncementsWithFeatures() }
+    private suspend fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
+        val announcementsWithFeatures = whatsNewDao.getAnnouncementsWithFeatures()
         return announcementsWithFeatures.map { WhatsNewMapper.toDomainModel(it) }
     }
 
-    private fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
-        runBlocking {
-            // Delete all existing data (features are cascade deleted)
-            whatsNewDao.deleteAllAnnouncements()
+    private suspend fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
+        whatsNewDao.deleteAllAnnouncements()
 
-            if (announcements.isNullOrEmpty()) {
-                return@runBlocking
-            }
-
-            // Convert domain models to entities and insert
-            val announcementsWithFeatures = announcements.map { WhatsNewMapper.fromDomainModel(it) }
-            whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
+        if (announcements.isNullOrEmpty()) {
+            return
         }
+
+        val announcementsWithFeatures = announcements.map { WhatsNewMapper.fromDomainModel(it) }
+        whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
     }
 
     data class OnWhatsNewFetched(
