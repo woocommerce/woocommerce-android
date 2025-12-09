@@ -39,7 +39,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -646,7 +645,7 @@ private fun AmountPicker(
                 enabled = isPlusMinusEnabled
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription =
                     stringResource(id = R.string.order_creation_increase_item_amount_content_description),
                     tint = plusButtonTint

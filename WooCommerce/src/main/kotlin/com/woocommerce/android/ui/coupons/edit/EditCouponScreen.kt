@@ -19,7 +19,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
@@ -31,11 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
@@ -240,8 +241,7 @@ private fun ConditionsSection(
         )
         WCOutlinedButton(
             onClick = onSelectCategoriesButtonClick,
-            text =
-            if (viewState.couponDraft.categoryIds.isEmpty()) {
+            text = if (viewState.couponDraft.categoryIds.isEmpty()) {
                 stringResource(R.string.coupon_edit_select_categories_title)
             } else {
                 stringResource(
@@ -252,7 +252,7 @@ private fun ConditionsSection(
             leadingIcon = {
                 Icon(
                     imageVector = if (viewState.couponDraft.categoryIds.isEmpty()) {
-                        Icons.Filled.Add
+                        ImageVector.vectorResource(R.drawable.ic_add)
                     } else {
                         Icons.Filled.Edit
                     },
@@ -348,7 +348,7 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
         ),
         leadingIcon = {
             Icon(
-                imageVector = if (description.isNullOrEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                imageVector = if (description.isNullOrEmpty()) ImageVector.vectorResource(R.drawable.ic_add) else Icons.Filled.Edit,
                 contentDescription = null,
                 modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
             )

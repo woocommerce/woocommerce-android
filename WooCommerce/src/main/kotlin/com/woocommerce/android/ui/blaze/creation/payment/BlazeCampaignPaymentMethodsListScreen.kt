@@ -19,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.VerifiedUser
@@ -172,7 +171,7 @@ private fun PaymentMethodsListView(
         item {
             WCTextButton(
                 onClick = onAddPaymentMethodClicked,
-                icon = Icons.Default.Add,
+                icon = ImageVector.vectorResource(R.drawable.ic_add),
                 text = stringResource(id = R.string.blaze_campaign_payment_list_add_new_payment_method_button)
             )
         }

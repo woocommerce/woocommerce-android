@@ -21,7 +21,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -29,9 +28,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.R
@@ -99,7 +100,7 @@ fun AdDestinationParametersScreen(
                         .padding(dimensionResource(id = R.dimen.minor_50)),
                     onClick = onAddParameterTapped,
                     text = stringResource(id = R.string.blaze_campaign_edit_ad_destination_add_parameter_button),
-                    icon = Icons.Default.Add
+                    icon = ImageVector.vectorResource(R.drawable.ic_add)
                 )
             }
 
