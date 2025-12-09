@@ -14,8 +14,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Campaign
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -54,7 +52,7 @@ fun ExpandableTopBanner(
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.Campaign,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_campaign_filled_24dp),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary
                 )
