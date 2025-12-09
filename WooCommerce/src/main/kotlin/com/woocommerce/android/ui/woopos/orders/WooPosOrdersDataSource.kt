@@ -51,18 +51,17 @@ class WooPosOrdersDataSource @Inject constructor(
 
     companion object {
         const val POS_ORDERS_PAGE_SIZE = 25
-        const val POS_ORDERS_CACHE_PREPOPULATION_SIZE = 5
         private const val UNKNOWN_ERROR = "Unknown error"
     }
 
-    fun loadOrders(pageSize: Int = POS_ORDERS_PAGE_SIZE): Flow<LoadOrdersResult> = flow {
+    fun loadOrders(): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) {
             val cachedWithRefunds = fetchRefundsForOrders(cached)
             emit(LoadOrdersResult.SuccessCache(cachedWithRefunds))
         }
 
-        val result = loadFirstPage(pageSize = pageSize)
+        val result = loadFirstPage()
         result.onSuccess { orders ->
             ordersCache.setAll(orders)
             val ordersWithRefunds = fetchRefundsForOrders(orders)
@@ -125,12 +124,11 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     private suspend fun loadFirstPage(
-        searchQuery: String? = null,
-        pageSize: Int = POS_ORDERS_PAGE_SIZE
+        searchQuery: String? = null
     ): Result<List<Order>> {
         page.set(1)
         canLoadMore.set(false)
-        return fetchAndMap(searchQuery, pageSize)
+        return fetchAndMap(searchQuery)
     }
 
     private suspend fun loadNextPage(searchQuery: String? = null): Result<List<Order>> {

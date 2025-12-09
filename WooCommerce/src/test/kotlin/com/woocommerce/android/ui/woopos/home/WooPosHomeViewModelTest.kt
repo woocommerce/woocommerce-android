@@ -7,19 +7,16 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.OrderSuccess
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.ExitPosClicked
 import com.woocommerce.android.ui.woopos.home.WooPosHomeUIEvent.SystemBackClicked
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitConfirmed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
-import org.mockito.kotlin.any
 import org.mockito.kotlin.argThat
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -40,7 +37,6 @@ class WooPosHomeViewModelTest {
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val soundHelper: WooPosSoundHelper = mock()
-    private val ordersDataSource: WooPosOrdersDataSource = mock()
 
     @Test
     fun `when order created, then pass event to cart`() =
@@ -346,13 +342,11 @@ class WooPosHomeViewModelTest {
     }
 
     private fun createViewModel(): WooPosHomeViewModel {
-        whenever(ordersDataSource.loadOrders(any())).thenReturn(emptyFlow())
         return WooPosHomeViewModel(
             childrenToParentEventReceiver,
             parentToChildrenEventSender,
             analyticsTracker,
             soundHelper,
-            ordersDataSource,
             SavedStateHandle()
         )
     }

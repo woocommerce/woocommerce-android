@@ -14,13 +14,11 @@ import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent.SearchEvent.RecentSearchSelected
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.DialogState
 import com.woocommerce.android.ui.woopos.home.WooPosHomeState.ScreenPositionState
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCartTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,12 +31,8 @@ class WooPosHomeViewModel @Inject constructor(
     private val parentToChildrenEventSender: WooPosParentToChildrenEventSender,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val soundHelper: WooPosSoundHelper,
-    private val ordersDataSource: WooPosOrdersDataSource,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-    companion object {
-        private const val ORDERS_CACHE_WARMUP_DELAY_MS = 5000L
-    }
 
     private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -61,7 +55,6 @@ class WooPosHomeViewModel @Inject constructor(
         viewModelScope.launch {
             soundHelper.preloadChaChing()
         }
-        prepopulateOrdersCache()
     }
 
     override fun onCleared() {
@@ -260,15 +253,6 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.SettingsEvent -> Unit
                 }
             }
-        }
-    }
-
-    private fun prepopulateOrdersCache() {
-        viewModelScope.launch {
-            delay(ORDERS_CACHE_WARMUP_DELAY_MS)
-            ordersDataSource.loadOrders(
-                pageSize = WooPosOrdersDataSource.POS_ORDERS_CACHE_PREPOPULATION_SIZE
-            ).collect {}
         }
     }
 
