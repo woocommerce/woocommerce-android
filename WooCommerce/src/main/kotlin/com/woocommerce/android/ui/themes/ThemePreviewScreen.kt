@@ -23,8 +23,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -256,7 +254,7 @@ private fun ThemePreviewMenu(
                 )
                 if (selectedType == previewType) {
                     Icon(
-                        imageVector = Outlined.Check,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                         tint = MaterialTheme.colors.primary,
                         contentDescription = stringResource(R.string.toggle_option_checked)
                     )
