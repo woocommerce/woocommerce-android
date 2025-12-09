@@ -16,8 +16,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreHoriz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -147,7 +145,7 @@ internal fun AddressSectionPortrait(
                         )
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.MoreHoriz,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_more_horiz_24dp),
                         contentDescription = null,
                         tint = MaterialTheme.colors.primary
                     )
@@ -369,7 +367,7 @@ private fun ShipFromSelection(
                     )
             ) {
                 Icon(
-                    imageVector = Icons.Filled.MoreHoriz,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_more_horiz_24dp),
                     contentDescription = null,
                     tint = MaterialTheme.colors.primary
                 )
