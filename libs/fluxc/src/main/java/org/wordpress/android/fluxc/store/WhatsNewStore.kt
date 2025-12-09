@@ -43,14 +43,8 @@ class WhatsNewStore @Inject internal constructor(
     }
 
     private suspend fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
-        whatsNewDao.deleteAllAnnouncements()
-
-        if (announcements.isNullOrEmpty()) {
-            return
-        }
-
-        val announcementsWithFeatures = announcements.map { WhatsNewMapper.fromDomainModel(it) }
-        whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
+        val announcementsWithFeatures = announcements?.map { WhatsNewMapper.fromDomainModel(it) } ?: emptyList()
+        whatsNewDao.replaceAnnouncements(announcementsWithFeatures)
     }
 
     data class OnWhatsNewFetched(

@@ -16,7 +16,15 @@ internal abstract class WhatsNewDao {
     abstract suspend fun getAnnouncementsWithFeatures(): List<WhatsNewAnnouncementWithFeatures>
 
     @Transaction
-    open suspend fun insertAnnouncementsWithFeatures(
+    open suspend fun replaceAnnouncements(
+        announcementsWithFeatures: List<WhatsNewAnnouncementWithFeatures>
+    ) {
+        deleteAllAnnouncements()
+        insertAnnouncementsWithFeatures(announcementsWithFeatures)
+    }
+
+    @Transaction
+    protected open suspend fun insertAnnouncementsWithFeatures(
         announcementsWithFeatures: List<WhatsNewAnnouncementWithFeatures>
     ) {
         val announcements = announcementsWithFeatures.map { it.announcement }
@@ -32,5 +40,5 @@ internal abstract class WhatsNewDao {
     protected abstract suspend fun insertFeatures(features: List<WhatsNewAnnouncementFeatureEntity>)
 
     @Query("DELETE FROM WhatsNewAnnouncementEntity")
-    abstract suspend fun deleteAllAnnouncements()
+    protected abstract suspend fun deleteAllAnnouncements()
 }

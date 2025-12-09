@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.whatsnew
 
 import androidx.room.Room
 import kotlinx.coroutines.runBlocking
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -97,11 +98,41 @@ class WhatsNewDaoTest {
     }
 
     @Test
-    fun `when announcements are inserted, then they are retrieved correctly with features`() = runBlocking {
-        whatsNewDao.insertAnnouncementsWithFeatures(testAnnouncementsWithFeatures)
+    fun `when announcements are replaced, then they are retrieved correctly with features`() = runBlocking {
+        whatsNewDao.replaceAnnouncements(testAnnouncementsWithFeatures)
 
         val result = whatsNewDao.getAnnouncementsWithFeatures()
 
         assertEquals(testAnnouncementsWithFeatures, result)
+    }
+
+    @Test
+    fun `when announcements are replaced twice, then old announcements and features are deleted`(): Unit = runBlocking {
+        whatsNewDao.replaceAnnouncements(testAnnouncementsWithFeatures)
+        val newAnnouncement = WhatsNewAnnouncementWithFeatures(
+            announcement = WhatsNewAnnouncementEntity(
+                announcementId = RemoteId(3),
+                minimumAppVersion = "16.0",
+                maximumAppVersion = "17.0",
+                appVersionTargets = emptyList(),
+                localized = true
+            ),
+            features = listOf(
+                WhatsNewAnnouncementFeatureEntity(
+                    announcementId = RemoteId(3),
+                    title = "new feature",
+                    subtitle = "new subtitle",
+                    iconBase64 = "",
+                    iconUrl = ""
+                )
+            )
+        )
+
+        whatsNewDao.replaceAnnouncements(listOf(newAnnouncement))
+        val result = whatsNewDao.getAnnouncementsWithFeatures()
+
+        assertThat(result).hasSize(1).first().matches {
+            it.announcement.announcementId == RemoteId(3)
+        }
     }
 }
