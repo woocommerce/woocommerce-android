@@ -238,7 +238,7 @@ fun PreviewAdDestinationParametersScreen() {
                     "utm_medium" to "android",
                     "utm_campaign" to "blaze"
                 ),
-                bottomSheetState = ViewState.ParameterBottomSheetState.Hidden
+                bottomSheetState = ParameterBottomSheetState.Hidden
             ),
             onBackPressed = {},
             onAddParameterTapped = {},
