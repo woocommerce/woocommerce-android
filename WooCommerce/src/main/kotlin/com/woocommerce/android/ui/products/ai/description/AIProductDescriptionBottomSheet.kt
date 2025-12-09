@@ -24,8 +24,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -301,7 +299,7 @@ private fun GeneratedDescription(
             )
         ) {
             Icon(
-                imageVector = Icons.Default.ContentCopy,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
                 contentDescription = null,
                 modifier = Modifier.size(dimensionResource(id = R.dimen.major_150))
             )
