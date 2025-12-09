@@ -113,6 +113,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.ReviewRefund
             WooPosRefundUIEvent.DialogDismissed ->
                 WooPosRefundState.Content.RefundStep.SelectItems
+            WooPosRefundUIEvent.OnRefundConfirmed -> WooPosRefundState.Content.RefundStep.SelectItems
         }
 
         _state.value = currentState.copy(step = newStep)
