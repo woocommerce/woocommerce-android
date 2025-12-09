@@ -19,8 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Reviews
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -101,7 +99,7 @@ fun FeedbackDialog(
                         )
                         WCTextButton(
                             onClick = { onAction() },
-                            icon = Icons.Outlined.Reviews,
+                            icon = ImageVector.vectorResource(R.drawable.ic_reviews_24dp),
                             text = action,
                             colors = ButtonDefaults
                                 .textButtonColors(contentColor = colorResource(R.color.woo_message_on_surface)),
