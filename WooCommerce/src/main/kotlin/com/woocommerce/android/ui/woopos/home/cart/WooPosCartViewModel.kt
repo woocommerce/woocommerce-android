@@ -276,9 +276,9 @@ class WooPosCartViewModel @Inject constructor(
         _state.value = _state.value.copy(
             body = body.copy(
                 itemsInCart = body.itemsInCart.map {
-                    if ((it as? Product.Variation)?.variationId == variationId) it.copy(
-                        productDoesNotExist = true
-                    ) else it
+                    if ((it as? Product.Variation)?.variationId == variationId) {
+                        it.copy(productDoesNotExist = true)
+                    } else { it }
                 },
             ),
         )

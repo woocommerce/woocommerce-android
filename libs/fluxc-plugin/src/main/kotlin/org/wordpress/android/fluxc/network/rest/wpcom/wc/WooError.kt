@@ -59,6 +59,7 @@ fun WPAPINetworkError.toWooError() = WooError(
     errorData = errorData,
 )
 
+@Suppress("CyclomaticComplexMethod")
 private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
     TIMEOUT -> WooErrorType.TIMEOUT
     NO_CONNECTION -> WooErrorType.NO_CONNECTION
