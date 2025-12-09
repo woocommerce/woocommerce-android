@@ -18,8 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
@@ -125,7 +123,7 @@ private fun PaymentMethodsList(
 private fun PaymentMethodsHeader(modifier: Modifier = Modifier) {
     Row(modifier.padding(dimensionResource(id = R.dimen.major_100))) {
         Icon(
-            imageVector = Icons.Outlined.VerifiedUser,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_verified_user_24dp),
             tint = MaterialTheme.colors.primary,
             contentDescription = null
         )
