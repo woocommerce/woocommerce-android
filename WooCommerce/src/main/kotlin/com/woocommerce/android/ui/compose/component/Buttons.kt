@@ -19,7 +19,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Button
@@ -531,7 +530,7 @@ private fun ButtonsPreview() {
                 text = "Remove",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )

@@ -17,7 +17,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.SwipeToDismissBox
@@ -26,8 +25,10 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -64,7 +65,7 @@ fun WooShippingPackageListItem(
                 backgroundContent = {
                     if (swipeToDismissBoxState.dismissDirection == SwipeToDismissBoxValue.EndToStart) {
                         Icon(
-                            Icons.Default.Delete,
+                            ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                             contentDescription = stringResource(id = R.string.remove),
                             modifier = Modifier
                                 .fillMaxSize()
