@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -543,7 +541,7 @@ private fun ButtonsPreview() {
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Recycling,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_remove_bg),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
