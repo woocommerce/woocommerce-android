@@ -21,8 +21,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -216,7 +214,7 @@ fun ConnectivityCheckCard(
 
                 WCTextButton(
                     allCaps = false,
-                    icon = Icons.Default.Repeat,
+                    icon = ImageVector.vectorResource(R.drawable.ic_repeat_24dp),
                     onClick = onRetryConnectionClicked,
                     modifier = modifier.align(Alignment.Start),
                     text = stringResource(id = R.string.orderlist_connectivity_tool_retry_action),
