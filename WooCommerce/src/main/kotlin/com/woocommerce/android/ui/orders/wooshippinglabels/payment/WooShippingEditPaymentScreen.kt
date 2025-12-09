@@ -32,7 +32,6 @@ import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
@@ -221,7 +220,7 @@ private fun WooShippingEditPaymentWebView(
             modifier = Modifier.align(Alignment.End)
         ) {
             Icon(
-                imageVector = Icons.Default.Clear,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.dismiss),
                 tint = MaterialTheme.colors.onSurface
             )

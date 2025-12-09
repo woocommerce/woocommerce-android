@@ -24,8 +24,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -85,7 +83,7 @@ fun ProductCategorySelectorScreen(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.product_category_selector_title),
-                navigationIcon = Icons.Default.Clear,
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 onNavigationButtonClick = onBackPressed
             )
         }

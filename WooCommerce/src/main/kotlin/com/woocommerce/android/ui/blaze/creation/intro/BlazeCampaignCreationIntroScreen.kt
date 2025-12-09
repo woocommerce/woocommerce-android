@@ -23,8 +23,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.ripple
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -87,7 +85,7 @@ fun BlazeCampaignCreationIntroScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onDismissClick,
-                navigationIcon = Icons.Default.Clear
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         },
     ) { paddingValues ->

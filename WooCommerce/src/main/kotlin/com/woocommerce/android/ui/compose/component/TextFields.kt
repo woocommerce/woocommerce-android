@@ -24,8 +24,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -267,7 +265,7 @@ fun WCSearchField(
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_250))
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Clear,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                             contentDescription = stringResource(id = R.string.clear),
                             tint = colorResource(id = R.color.color_on_surface_high)
                         )

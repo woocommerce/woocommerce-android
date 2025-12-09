@@ -38,7 +38,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -53,11 +52,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -78,7 +79,7 @@ fun AnimatedVisibilityScope.InstallWCShippingFlow(viewState: InstallationState) 
 }
 
 @Composable
-private fun AnimatedVisibilityScope.PreInstallationContent(viewState: InstallationState.PreInstallation) {
+private fun AnimatedVisibilityScope.PreInstallationContent(viewState: PreInstallation) {
     val initialOffset = with(LocalDensity.current) { 120.dp.roundToPx() }
     Column(
         modifier = Modifier
@@ -90,7 +91,7 @@ private fun AnimatedVisibilityScope.PreInstallationContent(viewState: Installati
     ) {
         IconButton(onClick = viewState.onCancelClick) {
             Icon(
-                imageVector = Icons.Default.Clear,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(id = R.string.cancel)
             )
         }
@@ -101,8 +102,7 @@ private fun AnimatedVisibilityScope.PreInstallationContent(viewState: Installati
                 .verticalScroll(rememberScrollState())
                 .animateEnterExit(
                     enter = slideInVertically(
-                        animationSpec =
-                        tween(
+                        animationSpec = tween(
                             durationMillis = 500,
                             delayMillis = 500,
                             // Ensure a bit of elasticity at the end of the animation
@@ -152,8 +152,7 @@ private fun AnimatedVisibilityScope.PreInstallationContent(viewState: Installati
                     .fillMaxWidth()
                     .animateEnterExit(
                         enter = slideInVertically(
-                            animationSpec =
-                            tween(
+                            animationSpec = tween(
                                 durationMillis = 500,
                                 delayMillis = 500,
                                 // Ensure a bit of elasticity at the end of the animation

@@ -9,8 +9,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -55,12 +53,12 @@ fun SimpleTextEditorScreen(
             Toolbar(
                 title = screenTitle,
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = when (strategy) {
-                    SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION -> Icons.Default.Clear
-                    SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK -> {
-                        ImageVector.vectorResource(R.drawable.ic_back_24dp)
+                navigationIcon = ImageVector.vectorResource(
+                    when (strategy) {
+                        SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION -> R.drawable.ic_close_24dp
+                        SimpleTextEditorStrategy.SEND_RESULT_ON_NAVIGATE_BACK -> R.drawable.ic_back_24dp
                     }
-                },
+                ),
                 actions = {
                     if (strategy == SimpleTextEditorStrategy.SEND_RESULT_ON_CONFIRMATION) {
                         TextButton(onClick = onDonePressed) {
