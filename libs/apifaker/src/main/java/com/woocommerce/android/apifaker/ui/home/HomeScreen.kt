@@ -31,8 +31,6 @@ import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -169,7 +167,7 @@ private fun TopMenu(
 
     IconButton(onClick = { expanded = !expanded }) {
         Icon(
-            Icons.Default.MoreVert,
+            ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
             contentDescription = "More"
         )
     }
