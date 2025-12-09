@@ -277,7 +277,7 @@ fun WooPosButtonsPreview() {
                 .padding(WooPosSpacing.Medium.value)
                 .width(600.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
             WooPosButton(
                 text = "Button",
@@ -333,7 +333,7 @@ fun WooPosSmallButtonsPreview() {
                 .padding(WooPosSpacing.Medium.value)
                 .width(600.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
             WooPosButtonSmall(
                 text = "Button Small",

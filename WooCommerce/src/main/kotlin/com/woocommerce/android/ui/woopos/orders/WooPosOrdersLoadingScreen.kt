@@ -238,10 +238,13 @@ private fun OrderDetailsLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun ProductLoadingItem() {
+    val marginSmall = WooPosSpacing.Small.value
+    val marginMedium = WooPosSpacing.Medium.value
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = WooPosSpacing.Small.value)
+            .padding(vertical = marginSmall)
     ) {
         val (image, nameShimmer, qtyShimmer, totalShimmer) = createRefs()
 
@@ -261,7 +264,7 @@ private fun ProductLoadingItem() {
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameShimmer) {
                 top.linkTo(image.top)
-                start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
+                start.linkTo(image.end, margin = marginMedium)
             }
         )
 
