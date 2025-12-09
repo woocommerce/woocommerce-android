@@ -416,7 +416,7 @@ class WooPosRefundViewModelTest {
     }
 
     @Test
-    fun `given content state at ReviewRefund step, when ContinueToConfirmClicked event, then step changes to ConfirmRefund`() =
+    fun `given content state at ReviewRefund step, when ContinueToConfirmRefundClicked event, then step changes to ConfirmRefund`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -432,7 +432,7 @@ class WooPosRefundViewModelTest {
             assertThat(reviewState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
 
             // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
 
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
@@ -452,7 +452,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
             val confirmState = viewModel.state.value as WooPosRefundState.Content
             assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
 
@@ -477,7 +477,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
             val confirmState = viewModel.state.value as WooPosRefundState.Content
             assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
 
