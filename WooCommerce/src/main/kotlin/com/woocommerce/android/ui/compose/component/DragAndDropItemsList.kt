@@ -81,33 +81,6 @@ fun <T> DragAndDropItemsList(
 }
 
 @Composable
-fun <T> DragAndDropSelectableItemsList(
-    items: List<T>,
-    selectedItems: List<T>,
-    onSelectionChange: (T, Boolean) -> Unit,
-    onOrderChange: (fromIndex: Int, toIndex: Int) -> Unit,
-    itemKey: ((index: Int, item: T) -> Any),
-    modifier: Modifier = Modifier,
-    itemFormatter: @Composable T.() -> String = { toString() }
-) {
-    DragAndDropItemsList(
-        items = items,
-        onOrderChange = onOrderChange,
-        itemKey = itemKey,
-        modifier
-    ) { item, dragDropState ->
-        DragAndDropSelectableItem(
-            item = item,
-            isSelected = item in selectedItems,
-            dragDropState = dragDropState,
-            onSelectionChange = onSelectionChange,
-            itemKey = { itemKey(items.indexOf(item), item) },
-            itemFormatter = itemFormatter
-        )
-    }
-}
-
-@Composable
 fun <T> DragAndDropSelectableItem(
     item: T,
     isSelected: Boolean,
