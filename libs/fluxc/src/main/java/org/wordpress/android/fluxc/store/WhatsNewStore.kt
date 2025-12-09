@@ -17,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClien
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFeatures
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -72,14 +73,8 @@ class WhatsNewStore @Inject internal constructor(
             }
 
     private fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
-        val announcements = runBlocking { whatsNewDao.getAllAnnouncements() }
-
-        return announcements.map { announcementEntity ->
-            val features = runBlocking {
-                whatsNewDao.getFeaturesForAnnouncement(announcementEntity.announcementId.value)
-            }
-            announcementEntity.toDomainModel(features)
-        }
+        val announcementsWithFeatures = runBlocking { whatsNewDao.getAnnouncementsWithFeatures() }
+        return announcementsWithFeatures.map { it.toDomainModel() }
     }
 
     private fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
@@ -105,15 +100,13 @@ class WhatsNewStore @Inject internal constructor(
         }
     }
 
-    private fun WhatsNewAnnouncementEntity.toDomainModel(
-        features: List<WhatsNewAnnouncementFeatureEntity>
-    ): WhatsNewAnnouncementModel {
+    private fun WhatsNewAnnouncementWithFeatures.toDomainModel(): WhatsNewAnnouncementModel {
         return WhatsNewAnnouncementModel(
-            announcementVersion = announcementId.value.toInt(),
-            minimumAppVersion = minimumAppVersion,
-            maximumAppVersion = maximumAppVersion,
-            appVersionTargets = appVersionTargets,
-            isLocalized = localized,
+            announcementVersion = announcement.announcementId.value.toInt(),
+            minimumAppVersion = announcement.minimumAppVersion,
+            maximumAppVersion = announcement.maximumAppVersion,
+            appVersionTargets = announcement.appVersionTargets,
+            isLocalized = announcement.localized,
             features = features.map { it.toDomainModel() }
         )
     }
