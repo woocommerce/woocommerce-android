@@ -23,7 +23,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -193,7 +192,7 @@ fun ConnectivityCheckCard(
                 )
 
                 is Failure -> ResultIcon(
-                    icon = Icons.Default.Error,
+                    icon = ImageVector.vectorResource(R.drawable.ic_error_filled_24dp),
                     color = R.color.woo_red_50
                 )
 
