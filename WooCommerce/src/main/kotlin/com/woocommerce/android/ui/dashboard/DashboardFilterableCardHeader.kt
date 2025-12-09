@@ -14,8 +14,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +66,7 @@ fun <T> DashboardFilterableCardHeader(
                 onClick = { isMenuExpanded = true }
             ) {
                 Icon(
-                    imageVector = Icons.Default.FilterList,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_filter),
                     contentDescription = stringResource(
                         id = R.string.dashboard_filter_menu_content_description
                     ),
