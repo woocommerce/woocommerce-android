@@ -65,7 +65,7 @@ class WhatsNewDaoTest {
         WhatsNewAnnouncementFeatureEntity(
             announcementId = RemoteId(2),
             title = "second announcement feature 2",
-            subtitle = "first announcement subtitle 2",
+            subtitle = "second announcement subtitle 2",
             iconBase64 = "<second image data>",
             iconUrl = ""
         )
