@@ -124,7 +124,6 @@ androidx-cardview = { group = "androidx.cardview", name = "cardview", version.re
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation-main = { group = "androidx.compose.animation", name = "animation" }
 androidx-compose-material-main = { group = "androidx.compose.material", name = "material" }
-androidx-compose-material-icons-extended = { group = "androidx.compose.material", name = "material-icons-extended" }
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata" }
 androidx-compose-ui-main = { group = "androidx.compose.ui", name = "ui" }
 androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }

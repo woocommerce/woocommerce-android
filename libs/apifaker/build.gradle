@@ -36,7 +36,6 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.material.main)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.tooling.preview)
     debugImplementation(libs.androidx.compose.ui.tooling.main)
 
@@ -60,8 +59,6 @@ dependencies {
 dependencyAnalysis {
     issues {
         onUnusedDependencies {
-            // This dependency is actually needed otherwise the app will crash with a runtime exception.
-            exclude(libs.androidx.compose.material.icons.extended.get().module.toString())
             // This dependency is actually needed otherwise the app will crash with a runtime exception.
             exclude(libs.androidx.hilt.navigation.compose.get().module.toString())
         }
