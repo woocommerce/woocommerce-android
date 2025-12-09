@@ -19,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
@@ -29,9 +28,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -290,7 +291,7 @@ private fun LabelPaperSizeDropdownMenu(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
                 contentDescription = stringResource(
                     R.string.sorted_by,
                     stringResource(selectedLabelPaperSizeOption.stringResource)

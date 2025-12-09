@@ -29,7 +29,6 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
@@ -47,9 +46,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
@@ -453,7 +454,7 @@ private fun SplitMovements(
                                 modifier = Modifier.padding(8.dp)
                             )
                             Icon(
-                                imageVector = Icons.Filled.ArrowDropDown,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_drop_down),
                                 contentDescription = null,
                                 tint = MaterialTheme.colors.primary
                             )

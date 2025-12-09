@@ -30,7 +30,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ScrollableTabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,11 +41,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -236,7 +237,7 @@ private fun SortingDropdownMenu(
                 color = MaterialTheme.colors.primary
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_drop_down),
                 contentDescription = stringResource(
                     R.string.sorted_by,
                     stringResource(selectedSortOption.stringResource)
