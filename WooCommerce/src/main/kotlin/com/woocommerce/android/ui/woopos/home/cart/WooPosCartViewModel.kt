@@ -297,12 +297,17 @@ class WooPosCartViewModel @Inject constructor(
     private fun removeNotFoundProductsFromCart(event: ParentToChildrenEvent.RemoveProductsClicked) {
         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
 
-        val productsToRemove = cartBody.itemsInCart
-            .filterIsInstance<Product.Simple>()
-            .filter { it.id in event.productIdsToRemove }
+        val itemsToRemove = cartBody.itemsInCart
+            .filterIsInstance<Product>()
+            .filter { product ->
+                when (product) {
+                    is Product.Simple -> product.id in event.productIdsToRemove
+                    is Product.Variation -> product.variationId in event.productIdsToRemove
+                }
+            }
             .toSet()
 
-        removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
+        removeItemsFromCart(itemsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
 
         sendEventToParent(ChildToParentEvent.ProductsRemoved(getCartItemsDataList()))
     }

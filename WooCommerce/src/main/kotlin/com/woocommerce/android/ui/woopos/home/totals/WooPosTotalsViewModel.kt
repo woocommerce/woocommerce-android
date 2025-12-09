@@ -85,6 +85,7 @@ class WooPosTotalsViewModel @Inject constructor(
 
     private var createDraftOrderJob: Job? = null
     private var newOrder: Order? = null
+    private var deletedVariationFromApiError: Long? = null
 
     private val dataState: MutableStateFlow<TotalsDataState> = savedState.getStateFlow(
         scope = viewModelScope,
@@ -269,11 +270,14 @@ class WooPosTotalsViewModel @Inject constructor(
     private fun handleRemoveProductsClicked() {
         viewModelScope.launch {
             totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedRemoveTapped()
+            val itemIdsToRemove: List<Long> = deletedVariationFromApiError?.let { missingVariation ->
+                listOf(missingVariation)
+            } ?: getProductsIdsMissingFromOrder(requireNotNull(newOrder))
+
             childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.RemoveProductsClicked(
-                    getProductsIdsMissingFromOrder(requireNotNull(newOrder))
-                )
+                ChildToParentEvent.RemoveProductsClicked(itemIdsToRemove)
             )
+            deletedVariationFromApiError = null
         }
     }
 
@@ -510,16 +514,40 @@ class WooPosTotalsViewModel @Inject constructor(
     private suspend fun onCreateOrderDraftFails(exception: Throwable) {
         wooPosLogWrapper.e("Order creation failed - $exception")
         val wooError = (exception as? WooException)?.error
-        if (wooError != null && wooError.type == WooErrorType.INVALID_COUPON) {
-            uiState.value = WooPosTotalsViewState.InvalidCouponError(
-                message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
-                reason = wooError.message ?: ""
-            )
-            childrenToParentEventSender.sendToParent(ChildToParentEvent.CouponsValidationFailed)
-        } else {
-            uiState.value = WooPosTotalsViewState.Error(
-                resourceProvider.getString(R.string.woopos_totals_order_creation_error)
-            )
+
+        when {
+            wooError != null && wooError.type == WooErrorType.INVALID_COUPON -> {
+                uiState.value = WooPosTotalsViewState.InvalidCouponError(
+                    message = resourceProvider.getString(R.string.woopos_totals_invalid_coupon_error),
+                    reason = wooError.message ?: ""
+                )
+                childrenToParentEventSender.sendToParent(ChildToParentEvent.CouponsValidationFailed)
+            }
+            wooError != null && wooError.type == WooErrorType.INVALID_VARIATION_ID -> {
+                /**
+                 * When a variation gets deleted, the server might react in three ways.
+                 * 1. Returns an error with `variation_id` in the error data, indicating which variation is invalid.
+                 * 2. Returns an error without error data - versions of Woo before the variation_id was added.
+                 * 3. Doesn't return an error but the variation is missing from the order - happens on all versions of
+                 * Woo and depends on timing of cache. The server knows roughly for 24 hours that a variation was
+                 * deleted, but after this period it can't differentiate between deleted variation and variation
+                 * that never existed, so it returns a successfully created order but the variation is ignored (this
+                 * is consistent behavior with permanently deleted products).
+                 */
+                wooError.errorData?.getLong("variation_id")?.let {
+                    deletedVariationFromApiError = it
+                }
+                totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
+                uiState.value = WooPosTotalsViewState.ProductNotFoundError(
+                    message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
+                    reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+                )
+            }
+            else -> {
+                uiState.value = WooPosTotalsViewState.Error(
+                    resourceProvider.getString(R.string.woopos_totals_order_creation_error)
+                )
+            }
         }
         totalsAnalyticsTracker.trackOrderCreationFailed(exception)
     }
@@ -551,15 +579,24 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun getProductsIdsMissingFromOrder(order: Order): List<Long> {
-        val simpleProductsInCart = dataState.value.itemClickedDataList
-            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product.Simple>()
+        val productsInCart = dataState.value.itemClickedDataList
+            .filterIsInstance<WooPosItemsViewModel.ItemClickedData.Product>()
 
         val orderProductIds: Set<Long> = order.items
             .map { it.productId }
             .toSet()
 
-        return simpleProductsInCart.filter { simple ->
-            simple.id !in orderProductIds
+        val orderVariationIds: Set<Long> = order.items
+            .mapNotNull { it.variationId?.takeIf { id -> id > 0 } }
+            .toSet()
+
+        return productsInCart.filter { product ->
+            when (product) {
+                is WooPosItemsViewModel.ItemClickedData.Product.Simple ->
+                    product.id !in orderProductIds
+                is WooPosItemsViewModel.ItemClickedData.Product.Variation ->
+                    product.id !in orderVariationIds
+            }
         }.map { it.id }
     }
 
