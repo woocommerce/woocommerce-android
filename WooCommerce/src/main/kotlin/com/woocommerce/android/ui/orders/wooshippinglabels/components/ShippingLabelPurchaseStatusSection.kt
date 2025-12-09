@@ -17,8 +17,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -340,7 +338,7 @@ private fun ShippingLabelLink(
         )
         if (showIcon) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                 contentDescription = null,
                 tint = colorResource(id = R.color.woo_shipping_label_success),
                 modifier = Modifier.padding(start = 8.dp)
