@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,11 +43,9 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
     ) {
         if (noticeBannerUiState == null) return@AnimatedVisibility
 
-        val icon = if (noticeBannerUiState.error) {
-            Icons.Outlined.Info
-        } else {
-            ImageVector.vectorResource(R.drawable.ic_check_circle_24dp)
-        }
+        val icon = ImageVector.vectorResource(
+            if (noticeBannerUiState.error) R.drawable.ic_tintable_info_outline_24dp else R.drawable.ic_check_circle_24dp
+        )
 
         val color = if (noticeBannerUiState.error) {
             R.color.woo_shipping_label_error

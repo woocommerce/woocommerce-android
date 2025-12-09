@@ -31,8 +31,6 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -354,7 +352,7 @@ private fun PaymentMethodsList(
         }
         Spacer(Modifier.height(16.dp))
         Row(Modifier.fillMaxWidth()) {
-            Icon(Icons.Outlined.Info, contentDescription = null)
+            Icon(ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp), contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(
@@ -444,7 +442,7 @@ private fun EditDisabledWarning(
             .padding(16.dp)
     ) {
         Icon(
-            imageVector = Icons.Outlined.Info,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
             tint = colorResource(R.color.warning_banner_foreground_color),
             contentDescription = null
         )

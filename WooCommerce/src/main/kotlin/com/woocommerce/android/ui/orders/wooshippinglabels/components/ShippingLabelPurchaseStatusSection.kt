@@ -19,7 +19,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -159,7 +158,7 @@ private fun PurchasedLabelSection(
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Info,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 8.dp)

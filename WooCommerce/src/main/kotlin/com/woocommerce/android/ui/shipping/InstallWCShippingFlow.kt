@@ -37,8 +37,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -313,7 +311,7 @@ private fun InstallationInfoLink(onClick: () -> Unit, modifier: Modifier = Modif
             .clickable(onClick = onClick)
     ) {
         Icon(
-            imageVector = Icons.Outlined.Info,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
             contentDescription = null,
             tint = colorResource(id = R.color.link_text)
         )

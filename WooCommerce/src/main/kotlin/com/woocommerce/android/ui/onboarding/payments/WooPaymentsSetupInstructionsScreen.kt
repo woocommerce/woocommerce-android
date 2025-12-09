@@ -21,8 +21,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -210,7 +208,7 @@ private fun WooPaymentsSetupInstructionsFooter(
                 .padding(dimensionResource(id = R.dimen.major_100)),
         ) {
             Icon(
-                imageVector = Icons.Outlined.Info,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)

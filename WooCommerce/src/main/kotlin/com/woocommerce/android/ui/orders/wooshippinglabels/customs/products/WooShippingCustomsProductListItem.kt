@@ -21,7 +21,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Error
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -36,11 +35,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -235,7 +236,7 @@ fun WooShippingCustomsProductExpandedListItem(
             WCTextButton(
                 text = stringResource(id = R.string.woo_shipping_labels_customs_hs_tariff_info_button),
                 onClick = { uriHandler.openUri(AppUrls.SHIPPING_LABEL_CUSTOMS_HS_TARIFF_NUMBER) },
-                icon = Icons.Outlined.Info,
+                icon = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                 allCaps = false,
                 contentPadding = PaddingValues(
                     horizontal = 4.dp,
@@ -317,7 +318,7 @@ private fun DescriptionField(
         trailingIcon = {
             IconButton(onClick = { isDialogOpen = true }) {
                 Icon(
-                    imageVector = Icons.Outlined.Info,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                     tint = MaterialTheme.colors.primary,
                     contentDescription = stringResource(R.string.woo_shipping_labels_customs_description_info_button)
                 )
@@ -375,7 +376,7 @@ private fun OriginCountrySelector(
                 onClick = { isDialogOpen = true }
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Info,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                     tint = MaterialTheme.colors.primary,
                     contentDescription = stringResource(R.string.woo_shipping_labels_customs_origin_country_info_button)
                 )
