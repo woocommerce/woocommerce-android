@@ -22,7 +22,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -187,7 +186,7 @@ fun ConnectivityCheckCard(
                 )
 
                 is Success -> ResultIcon(
-                    icon = Icons.Default.CheckCircle,
+                    icon = ImageVector.vectorResource(R.drawable.ic_check_circle_filled_24dp),
                     color = R.color.woo_green_50
                 )
 
