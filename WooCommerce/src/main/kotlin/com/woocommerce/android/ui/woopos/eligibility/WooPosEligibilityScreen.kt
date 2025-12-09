@@ -29,7 +29,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
@@ -71,7 +70,7 @@ fun WooPosEligibilityScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.Large.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -80,7 +79,7 @@ fun WooPosEligibilityScreen(
             contentDescription = null
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         WooPosText(
             text = stringResource(R.string.woopos_eligibility_screen_unable_to_load),
@@ -88,7 +87,7 @@ fun WooPosEligibilityScreen(
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         val suggestionText = when (retryState) {
             is WooPosEligibilityRetryState.Ineligible -> retryState.suggestionText
@@ -104,7 +103,7 @@ fun WooPosEligibilityScreen(
                 modifier = Modifier.width(547.dp)
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         }
 
         WooPosButton(
@@ -118,7 +117,7 @@ fun WooPosEligibilityScreen(
             modifier = Modifier.size(width = 366.dp, height = 80.dp)
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosOutlinedButton(
             text = stringResource(id = R.string.woopos_eligibility_exit_pos_label),

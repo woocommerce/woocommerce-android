@@ -15,14 +15,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.SectionHeader
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosRecentSearchesChips
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductCard
 
@@ -42,7 +40,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
     Column(
         modifier
             .fillMaxHeight()
-            .padding(top = WooPosSpacing.Large.value.toAdaptivePadding())
+            .padding(top = WooPosSpacing.Large.value)
             .verticalScroll(scrollState)
     ) {
         if (state.recentSearches.isNotEmpty()) {
@@ -59,7 +57,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                    .padding(horizontal = WooPosSpacing.Medium.value),
             ) {
                 PopularItemsSection(
                     popularItems = state.popularItems,
@@ -70,8 +68,7 @@ fun WooPosItemsEmptySearchQueryStateScreen(
             }
         }
 
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(104.dp))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Gigantic.value))
     }
 }
 
@@ -85,7 +82,7 @@ private fun PopularItemsSection(
             title = stringResource(R.string.woopos_search_popular_items_title)
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         popularItems.forEach { popularItem ->
             val itemContentDescription = stringResource(
@@ -101,7 +98,7 @@ private fun PopularItemsSection(
                 item = popularItem,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
     }
 }

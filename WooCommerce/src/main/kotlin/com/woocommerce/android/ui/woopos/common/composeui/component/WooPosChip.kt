@@ -87,7 +87,7 @@ fun WooPosChipPreview() {
                 modifier = Modifier
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.Start),
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     WooPosChip(

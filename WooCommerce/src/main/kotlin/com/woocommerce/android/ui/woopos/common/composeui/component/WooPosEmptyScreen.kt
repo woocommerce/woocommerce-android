@@ -22,7 +22,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosEmptyScreen(
@@ -88,7 +87,7 @@ private fun WooPosItemsEmptyListInternal(
                 contentDescription = contentDescription,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
             WooPosText(
                 text = title,
@@ -96,7 +95,7 @@ private fun WooPosItemsEmptyListInternal(
                 fontWeight = FontWeight.Bold,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosText(
                 text = message,
@@ -105,7 +104,7 @@ private fun WooPosItemsEmptyListInternal(
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
             if (onActionClicked != null && actionLabel != null) {
                 WooPosButton(

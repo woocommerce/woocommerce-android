@@ -28,7 +28,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -98,7 +97,7 @@ private fun WooPosPaginationErrorIndicatorContent(
 
                 Column(
                     modifier = if (icon == null) {
-                        Modifier.padding(start = WooPosSpacing.Medium.value.toAdaptivePadding())
+                        Modifier.padding(start = WooPosSpacing.Medium.value)
                     } else {
                         Modifier
                     }
@@ -111,7 +110,7 @@ private fun WooPosPaginationErrorIndicatorContent(
                     WooPosText(
                         text = description,
                         style = WooPosTypography.BodyMedium,
-                        modifier = Modifier.padding(top = WooPosSpacing.Small.value.toAdaptivePadding())
+                        modifier = Modifier.padding(top = WooPosSpacing.Small.value)
                     )
                 }
             }
@@ -120,7 +119,7 @@ private fun WooPosPaginationErrorIndicatorContent(
                 text = primaryButton.text,
                 onClick = primaryButton.click,
                 modifier = Modifier
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value)
             )
         }
     }

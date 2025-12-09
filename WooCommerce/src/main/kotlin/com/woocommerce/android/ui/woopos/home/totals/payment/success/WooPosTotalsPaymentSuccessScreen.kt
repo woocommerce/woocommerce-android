@@ -36,7 +36,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
 import kotlinx.coroutines.delay
@@ -92,15 +91,19 @@ private fun WooPosPaymentSuccessScreen(
             .background(MaterialTheme.colorScheme.surfaceBright),
         contentAlignment = Alignment.Center
     ) {
+        val hugeSpacing = WooPosSpacing.Huge.value
+        val mediumSpacing = WooPosSpacing.Medium.value
         val marginBetweenButtonAndText by animateDpAsState(
-            targetValue = if (animationStage >= AnimationStage.BUTTONS) 80.dp else WooPosSpacing.Medium.value,
+            targetValue = if (animationStage >= AnimationStage.BUTTONS) hugeSpacing else mediumSpacing,
             label = "Check mark size"
         )
+        val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
+        val textsMargin = WooPosSpacing.Small.value
+
         @Suppress("DestructuringDeclarationWithTooManyEntries")
         ConstraintLayout {
             val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
-            val checkMarkIconMargin = 56.dp.toAdaptivePadding()
             CheckMarkIcon(
                 animationStage = animationStage,
                 modifier = Modifier.constrainAs(icon) {
@@ -110,7 +113,6 @@ private fun WooPosPaymentSuccessScreen(
                 }
             )
 
-            val textsMargin = WooPosSpacing.Small.value.toAdaptivePadding()
             WooPosText(
                 text = stringResource(R.string.woopos_payment_successful_label),
                 style = WooPosTypography.Heading,
@@ -123,8 +125,6 @@ private fun WooPosPaymentSuccessScreen(
                     bottom.linkTo(message.top, margin = textsMargin)
                 }
             )
-
-            val marginBetweenButtonAndTextAdaptive = marginBetweenButtonAndText.toAdaptivePadding()
             WooPosText(
                 text = state.orderTotalText,
                 style = WooPosTypography.BodyLarge,
@@ -133,11 +133,11 @@ private fun WooPosPaymentSuccessScreen(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndTextAdaptive)
+                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
                 }
             )
 
-            val marginBetweenButtons = WooPosSpacing.Medium.value.toAdaptivePadding()
+            val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(
                 modifier = Modifier
                     .constrainAs(buttonNewOrder) {

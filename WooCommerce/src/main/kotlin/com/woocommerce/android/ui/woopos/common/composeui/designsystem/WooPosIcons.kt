@@ -637,8 +637,8 @@ private fun WooPosIconsPreview() {
         ) {
             FlowRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
                 maxItemsInEachRow = 4
             ) {
                 Box(
