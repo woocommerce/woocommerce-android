@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store
 
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -8,10 +9,14 @@ import org.wordpress.android.fluxc.action.WhatsNewAction
 import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_CACHED_ANNOUNCEMENT
 import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_REMOTE_ANNOUNCEMENT
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
+import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
-import org.wordpress.android.fluxc.persistence.WhatsNewSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -21,9 +26,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WhatsNewStore @Inject constructor(
+class WhatsNewStore @Inject internal constructor(
     private val whatsNewRestClient: WhatsNewRestClient,
-    private val whatsNewSqlUtils: WhatsNewSqlUtils,
+    private val whatsNewDao: WhatsNewDao,
     private val coroutineEngine: CoroutineEngine,
     dispatcher: Dispatcher
 ) : Store(dispatcher) {
@@ -48,7 +53,7 @@ class WhatsNewStore @Inject constructor(
 
     suspend fun fetchCachedAnnouncements() =
             coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
-                return@withDefaultContext OnWhatsNewFetched(whatsNewSqlUtils.getAnnouncements(), true)
+                return@withDefaultContext OnWhatsNewFetched(getAnnouncements(), true)
             }
 
     suspend fun fetchRemoteAnnouncements(versionName: String, appId: WhatsNewAppId) =
@@ -57,7 +62,7 @@ class WhatsNewStore @Inject constructor(
 
                 return@withDefaultContext if (!fetchedWhatsNewPayload.isError) {
                     val fetchedAnnouncements = fetchedWhatsNewPayload.whatsNewItems
-                    whatsNewSqlUtils.updateAnnouncementCache(fetchedAnnouncements)
+                    updateAnnouncementCache(fetchedAnnouncements)
                     OnWhatsNewFetched(fetchedAnnouncements)
                 } else {
                     OnWhatsNewFetched(
@@ -65,6 +70,82 @@ class WhatsNewStore @Inject constructor(
                     )
                 }
             }
+
+    private fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
+        val announcements = runBlocking { whatsNewDao.getAllAnnouncements() }
+
+        return announcements.map { announcementEntity ->
+            val features = runBlocking {
+                whatsNewDao.getFeaturesForAnnouncement(announcementEntity.announcementId.value)
+            }
+            announcementEntity.toDomainModel(features)
+        }
+    }
+
+    private fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
+        runBlocking {
+            // Delete all existing data (features are cascade deleted)
+            whatsNewDao.deleteAllAnnouncements()
+
+            if (announcements.isNullOrEmpty()) {
+                return@runBlocking
+            }
+
+            // Convert domain models to entities
+            val announcementEntities = announcements.map { it.toEntity() }
+            val featureEntities = announcements.flatMap { announcement ->
+                announcement.features.map { feature ->
+                    feature.toEntity(announcement.announcementVersion)
+                }
+            }
+
+            // Insert new data
+            whatsNewDao.insertAnnouncements(announcementEntities)
+            whatsNewDao.insertFeatures(featureEntities)
+        }
+    }
+
+    private fun WhatsNewAnnouncementEntity.toDomainModel(
+        features: List<WhatsNewAnnouncementFeatureEntity>
+    ): WhatsNewAnnouncementModel {
+        return WhatsNewAnnouncementModel(
+            announcementVersion = announcementId.value.toInt(),
+            minimumAppVersion = minimumAppVersion,
+            maximumAppVersion = maximumAppVersion,
+            appVersionTargets = appVersionTargets,
+            isLocalized = localized,
+            features = features.map { it.toDomainModel() }
+        )
+    }
+
+    private fun WhatsNewAnnouncementFeatureEntity.toDomainModel(): WhatsNewAnnouncementFeature {
+        return WhatsNewAnnouncementFeature(
+            title = title,
+            subtitle = subtitle,
+            iconBase64 = iconBase64,
+            iconUrl = iconUrl
+        )
+    }
+
+    private fun WhatsNewAnnouncementModel.toEntity(): WhatsNewAnnouncementEntity {
+        return WhatsNewAnnouncementEntity(
+            announcementId = RemoteId(announcementVersion.toLong()),
+            minimumAppVersion = minimumAppVersion,
+            maximumAppVersion = maximumAppVersion,
+            appVersionTargets = appVersionTargets,
+            localized = isLocalized
+        )
+    }
+
+    private fun WhatsNewAnnouncementFeature.toEntity(announcementVersion: Int): WhatsNewAnnouncementFeatureEntity {
+        return WhatsNewAnnouncementFeatureEntity(
+            announcementId = RemoteId(announcementVersion.toLong()),
+            title = title ?: "",
+            subtitle = subtitle,
+            iconUrl = iconUrl,
+            iconBase64 = iconBase64
+        )
+    }
 
     override fun onRegister() {
         AppLog.d(API, WhatsNewStore::class.java.simpleName + " onRegister")
