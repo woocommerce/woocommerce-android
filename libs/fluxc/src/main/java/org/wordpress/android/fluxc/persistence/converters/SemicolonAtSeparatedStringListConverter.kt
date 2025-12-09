@@ -2,9 +2,6 @@ package org.wordpress.android.fluxc.persistence.converters
 
 import androidx.room.TypeConverter
 
-/**
- * TypeConverter for List<String> using ";@;" as separator.
- */
 class SemicolonAtSeparatedStringListConverter {
     @TypeConverter
     fun fromStringList(value: List<String>?): String? {
