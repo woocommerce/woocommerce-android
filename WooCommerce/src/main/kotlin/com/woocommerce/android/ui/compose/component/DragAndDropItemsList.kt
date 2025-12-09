@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,21 +18,25 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.DragDropState
 import com.woocommerce.android.ui.compose.DraggableItem
 import com.woocommerce.android.ui.compose.dragContainerForDragHandle
 import com.woocommerce.android.ui.compose.rememberDragDropState
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -116,7 +121,7 @@ fun <T> DragAndDropSelectableItem(
         )
 
         Icon(
-            imageVector = Filled.DragHandle,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_drag_handle_24dp),
             contentDescription = stringResource(id = R.string.drag_handle),
             modifier = Modifier
                 .dragContainerForDragHandle(
@@ -128,6 +133,25 @@ fun <T> DragAndDropSelectableItem(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
                 )
+        )
+    }
+}
+
+@Preview
+@Composable
+fun DragAndDropSelectableItemPreview() {
+    WooThemeWithBackground {
+        DragAndDropSelectableItem(
+            item = Unit,
+            isSelected = false,
+            dragDropState = DragDropState(
+                state = LazyListState(),
+                scope = CoroutineScope(Job()),
+                onMove = { _, _ -> },
+                isDraggable = { _ -> true }
+            ),
+            onSelectionChange = { _, _ -> },
+            itemKey = { it }
         )
     }
 }
