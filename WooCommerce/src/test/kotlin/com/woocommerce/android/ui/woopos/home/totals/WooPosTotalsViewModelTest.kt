@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTrackingD
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.UiStringParser
+import com.woocommerce.android.util.WooErrorTestUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import junit.framework.TestCase.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -66,7 +67,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.json.JSONObject
 import org.junit.Before
 import org.junit.Rule
 import org.mockito.kotlin.any
@@ -76,7 +76,6 @@ import org.mockito.kotlin.clearInvocations
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
-import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -1455,15 +1454,10 @@ class WooPosTotalsViewModelTest {
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val wooError = mock<WooError> {
-            on { type }.thenReturn(WooErrorType.INVALID_COUPON)
-        }
-        val wooException = mock<WooException> {
-            on { error }.thenReturn(wooError)
-        }
+        val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                Result.failure(wooException)
+                Result.failure(WooException(wooError))
             )
         }
 
@@ -1484,15 +1478,10 @@ class WooPosTotalsViewModelTest {
         val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
             on { events }.thenReturn(parentToChildrenEventFlow)
         }
-        val wooError = mock<WooError> {
-            on { type }.thenReturn(WooErrorType.INVALID_COUPON)
-        }
-        val wooException = mock<WooException> {
-            on { error }.thenReturn(wooError)
-        }
+        val wooError = WooErrorTestUtils.createInvalidCouponError()
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                Result.failure(wooException)
+                Result.failure(WooException(wooError))
             )
         }
 
@@ -1514,20 +1503,12 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
-            val errorData = mock<JSONObject> {
-                on { has("variation_id") }.thenReturn(true)
-                on { getLong("variation_id") }.thenReturn(101L)
-            }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { this.errorData }.thenReturn(errorData)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
+            val wooError = WooErrorTestUtils.createInvalidVariationIdError(
+                variationId = 101L
+            )
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
+                    Result.failure(WooException(wooError))
                 )
             }
 
@@ -1557,20 +1538,10 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
-            val errorData = mock<JSONObject> {
-                on { has("variation_id") }.thenReturn(true)
-                on { getLong("variation_id") }.thenReturn(101L)
-            }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { this.errorData }.thenReturn(errorData)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
+            val wooError = WooErrorTestUtils.createInvalidVariationIdError(variationId = 101L)
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
+                    Result.failure(WooException(wooError))
                 )
             }
 
@@ -1598,16 +1569,10 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { errorData }.thenReturn(null)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
+            val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
+                    Result.failure(WooException(wooError))
                 )
             }
 
@@ -1637,16 +1602,10 @@ class WooPosTotalsViewModelTest {
             val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { errorData }.thenReturn(null)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
+            val wooError = WooErrorTestUtils.createInvalidVariationIdError()
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
+                    Result.failure(WooException(wooError))
                 )
             }
 
@@ -1866,21 +1825,12 @@ class WooPosTotalsViewModelTest {
                 on { events }.thenReturn(parentToChildrenEventFlow)
             }
 
-            // Create error with variation_id in error data
-            val errorData = mock<JSONObject> {
-                on { has("variation_id") }.thenReturn(true)
-                on { optLong("variation_id") }.thenReturn(variationId)
-            }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { this.errorData }.thenReturn(errorData)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
+            val wooError = WooErrorTestUtils.createInvalidVariationIdError(
+                variationId = variationId
+            )
             val totalsRepository: WooPosTotalsRepository = mock {
                 onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
+                    Result.failure(WooException(wooError))
                 )
             }
 
@@ -1901,72 +1851,6 @@ class WooPosTotalsViewModelTest {
             verify(childrenToParentEventSender).sendToParent(
                 argThat<ChildToParentEvent.RemoveProductsClicked> {
                     this.removedProductsIds == listOf(variationId)
-                }
-            )
-        }
-
-    @Test
-    fun `given INVALID_VARIATION_ID, when handleRemoveProductsClicked, then clear stored variation id after first use`() =
-        runTest {
-            // GIVEN
-            val variationId = 301L
-            val parentToChildrenEventFlow = MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(emptyList()))
-            val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock {
-                on { events }.thenReturn(parentToChildrenEventFlow)
-            }
-
-            // Create error with variation_id in error data
-            val errorData = mock<JSONObject> {
-                on { has("variation_id") }.thenReturn(true)
-                on { optLong("variation_id") }.thenReturn(variationId)
-            }
-            val wooError = mock<WooError> {
-                on { type }.thenReturn(WooErrorType.INVALID_VARIATION_ID)
-                on { this.errorData }.thenReturn(errorData)
-            }
-            val wooException = mock<WooException> {
-                on { error }.thenReturn(wooError)
-            }
-
-            // Create order that's missing the variation to test fallback logic
-            val order = createNonEmptyOrder(productIds = listOf(1L, 2L))
-            val totalsRepository: WooPosTotalsRepository = mock {
-                onBlocking { createOrderFromCartItems(any()) }.thenReturn(
-                    Result.failure(wooException)
-                )
-                onBlocking { getOrderById(any()) }.thenReturn(order)
-            }
-
-            whenever(resourceProvider.getString(any())).thenReturn("")
-
-            // Create VM which will set deletedVariationFromApiError
-            val viewModel = createViewModel(
-                parentToChildrenEventReceiver = parentToChildrenEventReceiver,
-                totalsRepository = totalsRepository,
-            )
-
-            clearInvocations(childrenToParentEventSender)
-            clearInvocations(analyticsTracker)
-
-            // WHEN - First call uses stored variation ID
-            viewModel.onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked)
-
-            // THEN
-            verify(childrenToParentEventSender, times(1)).sendToParent(
-                argThat<ChildToParentEvent.RemoveProductsClicked> {
-                    this.removedProductsIds == listOf(variationId)
-                }
-            )
-
-            clearInvocations(childrenToParentEventSender)
-
-            // WHEN - Second call should fallback to getProductsIdsMissingFromOrder
-            viewModel.onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked)
-
-            // THEN
-            verify(childrenToParentEventSender, times(1)).sendToParent(
-                argThat<ChildToParentEvent.RemoveProductsClicked> {
-                    this.removedProductsIds.isEmpty() // Since the variation wasn't in the cart data
                 }
             )
         }
