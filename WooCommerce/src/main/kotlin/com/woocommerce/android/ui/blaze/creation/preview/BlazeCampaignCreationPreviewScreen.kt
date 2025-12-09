@@ -425,7 +425,7 @@ private fun DefaultBlazeButton(modifier: Modifier = Modifier) {
             .background(color = colorResource(id = R.color.blaze_ad_cta_background))
     ) {
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
             contentDescription = null,
             tint = colorResource(id = R.color.color_on_primary_surface),
             modifier = Modifier

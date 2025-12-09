@@ -218,7 +218,7 @@ private fun AdDataSection(
                 SuggestionButton(
                     onClick = onNextSuggestionTapped,
                     isEnabled = viewState.isNextSuggestionButtonEnabled,
-                    icon = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
+                    icon = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
                     contentDescription = stringResource(id = R.string.blaze_campaign_edit_ad_arrow_back_description),
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.major_150))
                 )

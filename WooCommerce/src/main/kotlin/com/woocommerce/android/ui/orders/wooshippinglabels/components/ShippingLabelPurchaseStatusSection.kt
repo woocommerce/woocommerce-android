@@ -291,7 +291,7 @@ private fun LabelPaperSizeDropdownMenu(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
                 contentDescription = stringResource(
                     R.string.sorted_by,
                     stringResource(selectedLabelPaperSizeOption.stringResource)

@@ -315,7 +315,7 @@ private fun CustomFieldItem(
         }
 
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.arrow_forward_ios_24dp),
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
             contentDescription = null,
             modifier = Modifier
                 .padding(start = 8.dp)
