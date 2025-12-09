@@ -22,7 +22,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowOutward
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Error
 import androidx.compose.material.icons.filled.Repeat
@@ -187,15 +186,20 @@ fun ConnectivityCheckCard(
                 is InProgress -> CircularProgressIndicator(
                     modifier = modifier.size(dimensionResource(id = R.dimen.major_150))
                 )
+
                 is Success -> ResultIcon(
                     icon = Icons.Default.CheckCircle,
                     color = R.color.woo_green_50
                 )
+
                 is Failure -> ResultIcon(
                     icon = Icons.Default.Error,
                     color = R.color.woo_red_50
                 )
-                is NotStarted -> { /* Do nothing */ }
+
+                is NotStarted -> {
+                    /* Do nothing */
+                }
             }
         }
 
@@ -228,7 +232,7 @@ fun ConnectivityCheckCard(
                     WCTextButton(
                         allCaps = false,
                         onClick = onReadMoreClicked,
-                        icon = Icons.Default.ArrowOutward,
+                        icon = ImageVector.vectorResource(R.drawable.arrow_outward_24dp),
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.orderlist_connectivity_tool_read_more_action),
                         contentPadding = PaddingValues(
