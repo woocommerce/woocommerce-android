@@ -7,7 +7,7 @@ CLAUDE_OUTCOME=$(buildkite-agent step get outcome --step claude-analysis 2>/dev/
 if [[ "${CLAUDE_OUTCOME}" == "soft_failed" ]]; then
   comment_on_pr --id claude-build-analysis "## 🤖 Build Failure Analysis
 
-This build has failures. Claude has analyzed them - <a href=\"${BUILDKITE_BUILD_URL}\" target=\"_blank\">check the build annotations</a> for details."
+This build has failures. Claude has analyzed them - <a href=\"${BUILDKITE_BUILD_URL}/annotations\" target=\"_blank\">check the build annotations</a> for details."
 else
   # Remove the comment if the build is now passing (claude-analysis did not run)
   comment_on_pr --id claude-build-analysis --if-exist delete
