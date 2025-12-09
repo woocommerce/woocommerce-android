@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosRecentSearchesChips(
@@ -29,7 +28,7 @@ fun WooPosRecentSearchesChips(
 ) {
     Column {
         SectionHeader(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_search_recent_searches_title)
         )
 
@@ -42,7 +41,7 @@ fun WooPosRecentSearchesChips(
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
 
             recentSearches.forEach { recentSearch ->
                 WooPosChip(
@@ -52,7 +51,7 @@ fun WooPosRecentSearchesChips(
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }

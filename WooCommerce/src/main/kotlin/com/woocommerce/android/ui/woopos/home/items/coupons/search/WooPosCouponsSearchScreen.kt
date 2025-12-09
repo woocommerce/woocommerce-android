@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemList
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsLoadingIndicator
@@ -86,7 +85,7 @@ private fun WooPosCouponsSearchScreen(
                     if (state is WooPosCouponsSearchViewState.Content) {
                         WooPosCouponsSearchContent(
                             modifier = Modifier.padding(
-                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                                horizontal = WooPosSpacing.Medium.value,
                             ),
                             listState = listState,
                             state = state,
@@ -100,7 +99,7 @@ private fun WooPosCouponsSearchScreen(
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(
-                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                                horizontal = WooPosSpacing.Medium.value,
                             )
                             .imePadding(),
                         title = stringResource(id = R.string.woopos_search_coupons_empty_title),
@@ -116,7 +115,7 @@ private fun WooPosCouponsSearchScreen(
                         WooPosErrorScreen(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+                                .padding(horizontal = WooPosSpacing.Medium.value)
                                 .verticalScroll(rememberScrollState())
                                 .imePadding(),
                             message = stringResource(id = R.string.woopos_search_coupons_error_title),
@@ -132,8 +131,8 @@ private fun WooPosCouponsSearchScreen(
                 WooPosCouponsSearchViewState.Loading::class.java -> {
                     WooPosItemsLoadingIndicator(
                         modifier = Modifier.padding(
-                            start = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                            end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
                             top = WooPosSpacing.Large.value
                         ),
                         itemsCount = 5
