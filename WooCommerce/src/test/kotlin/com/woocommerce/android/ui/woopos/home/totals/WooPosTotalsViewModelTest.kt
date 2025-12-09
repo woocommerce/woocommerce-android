@@ -1972,7 +1972,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `when handleRemoveProductsClicked called variation id, then exec getProductsIdsMissingFromOrder logic`() =
+    fun `when OnRemoveProductsClicked without variation id, then exec getProductsIdsMissingFromOrder logic`() =
         runTest {
             // GIVEN
             val itemClickedData = listOf(

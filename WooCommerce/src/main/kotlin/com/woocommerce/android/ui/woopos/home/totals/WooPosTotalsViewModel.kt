@@ -372,6 +372,7 @@ class WooPosTotalsViewModel @Inject constructor(
     }
 
     private fun onCartDataReceived(newCartData: List<WooPosItemsViewModel.ItemClickedData>) {
+        deletedVariationFromApiError = null
         dataState.value = dataState.value.copy(itemClickedDataList = newCartData)
         createOrderDraft(dataState.value.itemClickedDataList)
     }
@@ -536,7 +537,7 @@ class WooPosTotalsViewModel @Inject constructor(
                  * is consistent behavior with permanently deleted products).
                  */
                 if (wooError.errorData?.has("variation_id") == true) {
-                    wooError.errorData?.getLong("variation_id")?.let {
+                    wooError.errorData?.optLong("variation_id", 0L)?.takeIf { it > 0L }?.let {
                         deletedVariationFromApiError = it
                         childrenToParentEventSender.sendToParent(ChildToParentEvent.MissingVariationEvent(it))
                     }
