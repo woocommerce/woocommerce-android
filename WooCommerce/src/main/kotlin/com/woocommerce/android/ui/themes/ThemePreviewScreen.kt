@@ -25,7 +25,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons.Outlined
 import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -268,7 +267,7 @@ private fun ThemePreviewMenu(
 
     IconButton(onClick = { showMenu = !showMenu }) {
         Icon(
-            imageVector = Outlined.Devices,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_devices_24dp),
             tint = MaterialTheme.colors.onSurface,
             contentDescription = stringResource(R.string.theme_preview_title),
         )
