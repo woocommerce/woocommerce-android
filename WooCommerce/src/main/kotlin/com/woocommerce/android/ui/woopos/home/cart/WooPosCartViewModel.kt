@@ -223,6 +223,10 @@ class WooPosCartViewModel @Inject constructor(
                         onCouponsValidationFails()
                     }
 
+                    is ParentToChildrenEvent.MissingVariationEvent -> {
+                        markVariationAsUnknown(event.variationId)
+                    }
+
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
@@ -265,6 +269,19 @@ class WooPosCartViewModel @Inject constructor(
                 ChildToParentEvent.RefreshProductList
             )
         }
+    }
+
+    private fun markVariationAsUnknown(variationId: Long) {
+        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+        _state.value = _state.value.copy(
+            body = body.copy(
+                itemsInCart = body.itemsInCart.map {
+                    if ((it as? Product.Variation)?.variationId == variationId) it.copy(
+                        productDoesNotExist = true
+                    ) else it
+                },
+            ),
+        )
     }
 
     private fun onCouponsValidationFails() {

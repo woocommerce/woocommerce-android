@@ -364,6 +364,7 @@ class WooPosTotalsViewModel @Inject constructor(
                     ParentToChildrenEvent.CouponsValidationFailed,
                     is ParentToChildrenEvent.BarcodeEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
+                    is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }
             }
@@ -537,6 +538,7 @@ class WooPosTotalsViewModel @Inject constructor(
                 if (wooError.errorData?.has("variation_id") == true) {
                     wooError.errorData?.getLong("variation_id")?.let {
                         deletedVariationFromApiError = it
+                        childrenToParentEventSender.sendToParent(ChildToParentEvent.MissingVariationEvent(it))
                     }
                 }
 
@@ -592,7 +594,7 @@ class WooPosTotalsViewModel @Inject constructor(
             .toSet()
 
         val orderVariationIds: Set<Long> = order.items
-            .mapNotNull { it.variationId?.takeIf { id -> id > 0 } }
+            .mapNotNull { it.variationId.takeIf { id -> id > 0 } }
             .toSet()
 
         return productsInCart.filter { product ->

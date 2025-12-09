@@ -229,6 +229,10 @@ class WooPosHomeViewModel @Inject constructor(
                         sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
                     }
 
+                    is ChildToParentEvent.MissingVariationEvent -> {
+                        sendEventToChildren(ParentToChildrenEvent.MissingVariationEvent(event.variationId))
+                    }
+
                     is ChildToParentEvent.RemoveCouponsClicked -> {
                         sendEventToChildren(ParentToChildrenEvent.RemoveCouponsClicked)
                     }
