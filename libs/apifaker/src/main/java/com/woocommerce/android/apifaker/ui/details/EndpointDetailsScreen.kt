@@ -38,7 +38,6 @@ import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
@@ -50,8 +49,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.buildAnnotatedString
@@ -66,6 +67,7 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.apifaker.AutoCompleteSuggestion
+import com.woocommerce.android.apifaker.R
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.models.QueryParameter
@@ -126,7 +128,7 @@ private fun EndpointDetailsScreen(
                 navigationIcon = {
                     IconButton(onClick = navController::navigateUp) {
                         Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
+                            ImageVector.vectorResource(R.drawable.ic_back_24dp),
                             contentDescription = "Back"
                         )
                     }
