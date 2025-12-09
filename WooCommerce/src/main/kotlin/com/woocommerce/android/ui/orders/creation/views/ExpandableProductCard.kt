@@ -38,8 +38,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -487,7 +485,7 @@ fun ExtendedProductCardContent(
                 enabled = editableControlsEnabled
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Tune,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tune_24dp),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.size(4.dp))

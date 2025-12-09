@@ -15,8 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -137,11 +135,9 @@ fun SelectorListItem(
         }
 
         if (isArrowVisible || isCogwheelVisible) {
-            val image = if (isArrowVisible) {
-                ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp)
-            } else {
-                Icons.Filled.Tune
-            }
+            val image = ImageVector.vectorResource(
+                if (isArrowVisible) R.drawable.ic_chevron_right_24dp else R.drawable.ic_tune_24dp
+            )
 
             val contentDescription = if (isArrowVisible) {
                 stringResource(id = string.product_selector_arrow_content_description)
