@@ -9,15 +9,11 @@ import org.wordpress.android.fluxc.action.WhatsNewAction
 import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_CACHED_ANNOUNCEMENT
 import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_REMOTE_ANNOUNCEMENT
 import org.wordpress.android.fluxc.annotations.action.Action
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
-import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
+import org.wordpress.android.fluxc.persistence.WhatsNewMapper
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
-import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
-import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
-import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFeatures
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -74,7 +70,7 @@ class WhatsNewStore @Inject internal constructor(
 
     private fun getAnnouncements(): List<WhatsNewAnnouncementModel> {
         val announcementsWithFeatures = runBlocking { whatsNewDao.getAnnouncementsWithFeatures() }
-        return announcementsWithFeatures.map { it.toDomainModel() }
+        return announcementsWithFeatures.map { WhatsNewMapper.toDomainModel(it) }
     }
 
     private fun updateAnnouncementCache(announcements: List<WhatsNewAnnouncementModel>?) {
@@ -87,54 +83,9 @@ class WhatsNewStore @Inject internal constructor(
             }
 
             // Convert domain models to entities and insert
-            val announcementsWithFeatures = announcements.map { it.toEntityWithFeatures() }
+            val announcementsWithFeatures = announcements.map { WhatsNewMapper.fromDomainModel(it) }
             whatsNewDao.insertAnnouncementsWithFeatures(announcementsWithFeatures)
         }
-    }
-
-    private fun WhatsNewAnnouncementWithFeatures.toDomainModel(): WhatsNewAnnouncementModel {
-        return WhatsNewAnnouncementModel(
-            announcementVersion = announcement.announcementId.value.toInt(),
-            minimumAppVersion = announcement.minimumAppVersion,
-            maximumAppVersion = announcement.maximumAppVersion,
-            appVersionTargets = announcement.appVersionTargets,
-            isLocalized = announcement.localized,
-            features = features.map { it.toDomainModel() }
-        )
-    }
-
-    private fun WhatsNewAnnouncementFeatureEntity.toDomainModel(): WhatsNewAnnouncementFeature {
-        return WhatsNewAnnouncementFeature(
-            title = title,
-            subtitle = subtitle,
-            iconBase64 = iconBase64,
-            iconUrl = iconUrl
-        )
-    }
-
-    private fun WhatsNewAnnouncementModel.toEntityWithFeatures(): WhatsNewAnnouncementWithFeatures {
-        val announcementEntity = WhatsNewAnnouncementEntity(
-            announcementId = RemoteId(announcementVersion.toLong()),
-            minimumAppVersion = minimumAppVersion,
-            maximumAppVersion = maximumAppVersion,
-            appVersionTargets = appVersionTargets,
-            localized = isLocalized
-        )
-
-        val featureEntities = features.map { feature ->
-            WhatsNewAnnouncementFeatureEntity(
-                announcementId = RemoteId(announcementVersion.toLong()),
-                title = feature.title ?: "",
-                subtitle = feature.subtitle,
-                iconUrl = feature.iconUrl,
-                iconBase64 = feature.iconBase64
-            )
-        }
-
-        return WhatsNewAnnouncementWithFeatures(
-            announcement = announcementEntity,
-            features = featureEntities
-        )
     }
 
     override fun onRegister() {
