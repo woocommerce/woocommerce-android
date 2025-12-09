@@ -32,9 +32,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -243,7 +240,7 @@ private fun ProductPreviewContent(
                 .then(sectionsBorder)
         )
 
-        if (state.shouldShowVariantSelector) {
+        if (!state.shouldShowVariantSelector) {
             Spacer(Modifier)
             ProductVariantSelector(
                 selectedVariant = state.selectedVariant,
@@ -380,7 +377,7 @@ private fun ProductVariantSelector(
                 .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
         ) {
             Icon(
-                imageVector = Icons.Default.ChevronLeft,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
                 contentDescription = stringResource(id = R.string.product_creation_ai_select_previous_option),
                 tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
                 modifier = Modifier
@@ -395,7 +392,7 @@ private fun ProductVariantSelector(
                 .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
         ) {
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                 contentDescription = stringResource(id = R.string.product_creation_ai_select_next_option),
                 tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
                 modifier = Modifier
