@@ -1,5 +1,10 @@
 package com.woocommerce.android.ui.login
 
+import android.content.Context
+import com.google.android.play.agesignals.AgeSignalsManagerFactory
+import com.google.android.play.agesignals.AgeSignalsRequest
+import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -11,42 +16,51 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class AgeCheckViewModel @Inject constructor() {
+class AgeCheckViewModel @Inject constructor(
+    @ApplicationContext private val context: Context
+) {
 
     private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
     private val _isUnder13 = MutableStateFlow<Boolean?>(null)
     val isUnder13: StateFlow<Boolean?> = _isUnder13.asStateFlow()
 
-    companion object {
-        // https://developer.android.com/google/play/age-signals/use-age-signals-api#age-signals-responses
-        const val USER_STATUS_VERIFIED = 1
-        const val USER_STATUS_SUPERVISED = 2
-        const val USER_STATUS_SUPERVISED_APPROVAL_PENDING = 3
-        const val USER_STATUS_SUPERVISED_APPROVAL_DENIED = 4
-        const val USER_STATUS_UNKNOWN = 5
-        const val USER_STATUS_EMPTY = 0
+    fun checkAge(userStatus: Int? = null, ageUpper: Int? = null) {
+        scope.launch {
+            if (userStatus != null) {
+                processAgeCheck(userStatus, ageUpper)
+            } else {
+                try {
+                    val ageSignalsManager = AgeSignalsManagerFactory.create(context)
+                    ageSignalsManager
+                        .checkAgeSignals(AgeSignalsRequest.builder().build())
+                        .addOnSuccessListener { ageSignalsResult ->
+                            processAgeCheck(ageSignalsResult.userStatus(), ageSignalsResult.ageUpper())
+                        }
+                        .addOnFailureListener {
+                            // Default to false (allow access) on failure
+                            _isUnder13.value = false
+                        }
+                } catch (e: Exception) {
+                    _isUnder13.value = false
+                }
+            }
+        }
     }
 
-    fun checkAge(userStatus: Int = USER_STATUS_EMPTY, ageUpper: Int? = null) {
-        scope.launch {
-            // TODO: Integrate Google Play Age Signals API here.
-            // Documentation: https://developer.android.com/google/play/age-signals/use-age-signals-api
-            // Since the library might not be fully configured, we are using the passed values or defaults.
-
-            val isUnderage = when (userStatus) {
-                USER_STATUS_VERIFIED -> false
-                USER_STATUS_SUPERVISED,
-                USER_STATUS_SUPERVISED_APPROVAL_PENDING,
-                USER_STATUS_SUPERVISED_APPROVAL_DENIED -> {
-                    // Check if ageUpper is known and below 13
-                    ageUpper != null && ageUpper < 13
-                }
-                USER_STATUS_UNKNOWN -> false // Safe default: allow access if unknown
-                USER_STATUS_EMPTY -> false // Safe default
-                else -> false
+    private fun processAgeCheck(userStatus: Int?, ageUpper: Int?) {
+        val isUnderage = when (userStatus) {
+            AgeSignalsVerificationStatus.VERIFIED -> false
+            AgeSignalsVerificationStatus.SUPERVISED,
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING,
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> {
+                // Check if ageUpper is known and below 13
+                ageUpper != null && ageUpper < 13
             }
-
-            _isUnder13.value = isUnderage
+            AgeSignalsVerificationStatus.UNKNOWN -> false // Safe default: allow access if unknown
+            // Handle other cases or default
+            else -> false
         }
+
+        _isUnder13.value = isUnderage
     }
 }
