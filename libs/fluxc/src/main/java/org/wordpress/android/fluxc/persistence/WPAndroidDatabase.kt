@@ -19,12 +19,17 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDeviceEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingLanguageEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
+import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
+import org.wordpress.android.fluxc.persistence.converters.SemicolonAtSeparatedStringListConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
+import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 30,
+        version = 31,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -33,6 +38,8 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
             BlazeTargetingLanguageEntity::class,
             BlazeTargetingDeviceEntity::class,
             BlazeTargetingTopicEntity::class,
+            WhatsNewAnnouncementEntity::class,
+            WhatsNewAnnouncementFeatureEntity::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -47,11 +54,14 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
             AutoMigration(from = 27, to = 28),
             AutoMigration(from = 28, to = 29),
             AutoMigration(from = 29, to = 30, spec = AutoMigration29to30::class),
+            AutoMigration(from = 30, to = 31),
         ]
 )
 @TypeConverters(
     value = [
-        StringListConverter::class
+        StringListConverter::class,
+        SemicolonAtSeparatedStringListConverter::class,
+        RemoteIdConverter::class
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
@@ -64,6 +74,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun blazeTargetingDao(): BlazeTargetingDao
 
     abstract fun blazeObjectivesDao(): BlazeObjectivesDao
+
+    internal abstract fun whatsNewDao(): WhatsNewDao
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {
