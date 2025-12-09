@@ -58,7 +58,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.Menu
 import com.woocommerce.android.ui.woopos.home.toolbar.WooPosHomeFloatingToolbarState.WooPosCardReaderStatus
 
@@ -129,7 +128,7 @@ private fun WooPosFloatingToolbar(
                         onUIEvent = onUIEvent
                     )
 
-                    val marginBetweenCards = WooPosSpacing.Small.value.toAdaptivePadding()
+                    val marginBetweenCards = WooPosSpacing.Small.value
                     PopUpMenu(
                         modifier = Modifier
                             .constrainAs(popupMenu) {
@@ -161,7 +160,7 @@ private fun Toolbar(
 
     ConstraintLayout(modifier = modifier) {
         val (menuCard, cardReaderStatusCard) = createRefs()
-        val marginBetweenCards = WooPosSpacing.Small.value.toAdaptivePadding()
+        val marginBetweenCards = WooPosSpacing.Small.value
 
         CardReaderStatusButton(
             modifier = Modifier
@@ -232,7 +231,7 @@ private fun MenuButtonWithPopUpMenu(
                 repeat(3) {
                     Circle(size = 6.dp, color = MaterialTheme.colorScheme.onSurface)
                     if (it < 2) {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                     }
                 }
             }
@@ -252,11 +251,11 @@ private fun PopUpMenu(
         backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
     ) {
         Column {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             menuItems.forEach { menuItem ->
                 PopUpMenuItem(menuItem, onClick)
             }
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
     }
 }
@@ -267,17 +266,17 @@ private fun PopUpMenuItem(
     onClick: (Menu.MenuItem) -> Unit
 ) {
     TextButton(onClick = { onClick(menuItem) }) {
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         Icon(
             imageVector = menuItem.icon,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
-            modifier = Modifier.size(WooPosSpacing.Large.value)
+            modifier = Modifier.size(24.dp)
         )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         WooPosText(
             modifier = Modifier
-                .padding(vertical = WooPosSpacing.Small.value.toAdaptivePadding())
+                .padding(vertical = WooPosSpacing.Small.value)
                 .weight(1f),
             text = stringResource(id = menuItem.title),
             style = WooPosTypography.BodyMedium,
@@ -285,7 +284,7 @@ private fun PopUpMenuItem(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
-        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
     }
 }
 
@@ -346,7 +345,7 @@ private fun CardReaderStatusButton(
             TextButton(
                 onClick = onClick,
                 modifier = Modifier
-                    .padding(WooPosSpacing.Small.value.toAdaptivePadding())
+                    .padding(WooPosSpacing.Small.value)
                     .border(
                         width = 2.dp,
                         color = borderColor,
@@ -354,14 +353,14 @@ private fun CardReaderStatusButton(
                     )
                     .height(40.dp),
             ) {
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 Circle(size = 14.dp, color = illustrationColor)
-                Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
                 ReaderStatusText(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
-                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
             }
         }
     }
@@ -373,7 +372,7 @@ private fun ReaderStatusText(
     title: String,
 ) {
     WooPosText(
-        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value.toAdaptivePadding()),
+        modifier = modifier.padding(horizontal = WooPosSpacing.Small.value),
         text = title,
         style = WooPosTypography.BodyMedium,
         color = MaterialTheme.colorScheme.onSurface,
@@ -505,7 +504,7 @@ private fun Preview(state: MutableState<WooPosHomeFloatingToolbarState>) {
         ) {
             WooPosFloatingToolbar(
                 modifier = Modifier
-                    .padding(WooPosSpacing.Large.value.toAdaptivePadding())
+                    .padding(WooPosSpacing.Large.value)
                     .align(Alignment.BottomStart),
                 state
             ) {}

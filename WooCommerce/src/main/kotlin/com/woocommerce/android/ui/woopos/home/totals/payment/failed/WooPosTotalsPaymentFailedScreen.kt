@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
@@ -39,29 +38,28 @@ fun WooPosPaymentFailedScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(vertical = 96.dp.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Huge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(96.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
         Icon(
             modifier = Modifier.size(84.dp),
             imageVector = WooPosIcons.ErrorX,
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosText(
             text = state.title,
             style = WooPosTypography.BodyXLarge,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         WooPosText(
             text = state.subtitle,
             style = WooPosTypography.BodyLarge,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
             text = state.retryPaymentButtonLabel,
             modifier = Modifier
@@ -69,15 +67,14 @@ fun WooPosPaymentFailedScreen(
                 .width(604.dp)
         ) { onUIEvent(WooPosTotalsUIEvent.RetryFailedTransactionClicked) }
         if (state.isReturnToCheckoutButtonVisible) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             WooPosOutlinedButton(
                 modifier = Modifier
                     .width(604.dp),
                 text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
             ) { onUIEvent(WooPosTotalsUIEvent.GoBackToCheckoutAfterFailedPayment) }
         }
-        @Suppress("WooPosDesignSystemSpacingUsageRule")
-        Spacer(modifier = Modifier.height(80.dp.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
     }
 }
 
