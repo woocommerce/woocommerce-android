@@ -4,7 +4,6 @@ import androidx.room.TypeConverter
 
 /**
  * TypeConverter for List<String> using ";@;" as separator.
- * Used for WhatsNew appVersionTargets field.
  */
 class SemicolonAtSeparatedStringListConverter {
     @TypeConverter

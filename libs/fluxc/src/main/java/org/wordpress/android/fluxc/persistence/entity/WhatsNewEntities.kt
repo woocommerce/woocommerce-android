@@ -4,7 +4,9 @@ import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Relation
+import androidx.room.TypeConverters
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.persistence.converters.SemicolonAtSeparatedStringListConverter
 
 @Entity(tableName = "WhatsNewAnnouncementEntity")
 data class WhatsNewAnnouncementEntity(
@@ -12,6 +14,7 @@ data class WhatsNewAnnouncementEntity(
     val announcementId: RemoteId,
     val minimumAppVersion: String,
     val maximumAppVersion: String,
+    @TypeConverters(SemicolonAtSeparatedStringListConverter::class)
     val appVersionTargets: List<String>,
     val localized: Boolean
 )
