@@ -232,7 +232,7 @@ fun ConnectivityCheckCard(
                     WCTextButton(
                         allCaps = false,
                         onClick = onReadMoreClicked,
-                        icon = ImageVector.vectorResource(R.drawable.arrow_outward_24dp),
+                        icon = ImageVector.vectorResource(R.drawable.ic_arrow_outward_24dp),
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.orderlist_connectivity_tool_read_more_action),
                         contentPadding = PaddingValues(
