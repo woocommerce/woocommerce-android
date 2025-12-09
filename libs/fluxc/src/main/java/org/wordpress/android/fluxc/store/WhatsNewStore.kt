@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.store
 
-import javax.inject.Inject
-import javax.inject.Singleton
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
 import org.wordpress.android.fluxc.persistence.WhatsNewMapper
@@ -9,6 +7,8 @@ import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog.T
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Singleton
 class WhatsNewStore @Inject internal constructor(
