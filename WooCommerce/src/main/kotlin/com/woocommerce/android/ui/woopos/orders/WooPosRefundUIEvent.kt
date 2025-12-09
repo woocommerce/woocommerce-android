@@ -5,5 +5,6 @@ sealed class WooPosRefundUIEvent {
     data object BackToSelectItemsClicked : WooPosRefundUIEvent()
     data object ContinueToConfirmRefundClicked : WooPosRefundUIEvent()
     data object BackToReviewClicked : WooPosRefundUIEvent()
+    data object OnRefundConfirmed : WooPosRefundUIEvent()
     data object DialogDismissed : WooPosRefundUIEvent()
 }

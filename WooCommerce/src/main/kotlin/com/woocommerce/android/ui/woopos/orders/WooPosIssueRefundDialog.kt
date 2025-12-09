@@ -103,7 +103,10 @@ fun WooPosIssueRefundDialog(
                         ConfirmRefundContent(
                             state = currentState,
                             onDismissRequest = onDismissRequest,
-                            onConfirm = onDismissRequest,
+                            onConfirm = {
+                                viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+                                onDismissRequest()
+                            },
                             onBack = {
                                 viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
                             }
