@@ -1,25 +1,14 @@
 package org.wordpress.android.fluxc.store
 
 import kotlinx.coroutines.runBlocking
-import org.greenrobot.eventbus.Subscribe
-import org.greenrobot.eventbus.ThreadMode
-import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.Payload
-import org.wordpress.android.fluxc.action.WhatsNewAction
-import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_CACHED_ANNOUNCEMENT
-import org.wordpress.android.fluxc.action.WhatsNewAction.FETCH_REMOTE_ANNOUNCEMENT
-import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
-import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewFetchedPayload
 import org.wordpress.android.fluxc.persistence.WhatsNewMapper
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
 import org.wordpress.android.fluxc.tools.CoroutineEngine
-import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.AppLog.T.API
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,26 +16,8 @@ import javax.inject.Singleton
 class WhatsNewStore @Inject internal constructor(
     private val whatsNewRestClient: WhatsNewRestClient,
     private val whatsNewDao: WhatsNewDao,
-    private val coroutineEngine: CoroutineEngine,
-    dispatcher: Dispatcher
-) : Store(dispatcher) {
-    @Subscribe(threadMode = ThreadMode.ASYNC)
-    override fun onAction(action: Action<*>) {
-        val actionType = action.type as? WhatsNewAction ?: return
-        when (actionType) {
-            FETCH_REMOTE_ANNOUNCEMENT -> {
-                val versionName = (action.payload as WhatsNewFetchPayload).versionName
-                coroutineEngine.launch(AppLog.T.API, this, "FETCH_REMOTE_ANNOUNCEMENT") {
-                    emitChange(fetchRemoteAnnouncements(versionName))
-                }
-            }
-            FETCH_CACHED_ANNOUNCEMENT -> {
-                coroutineEngine.launch(AppLog.T.API, this, "FETCH_CACHED_ANNOUNCEMENT") {
-                    emitChange(fetchCachedAnnouncements())
-                }
-            }
-        }
-    }
+    private val coroutineEngine: CoroutineEngine
+) {
 
     suspend fun fetchCachedAnnouncements() =
             coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
@@ -88,30 +59,16 @@ class WhatsNewStore @Inject internal constructor(
         }
     }
 
-    override fun onRegister() {
-        AppLog.d(API, WhatsNewStore::class.java.simpleName + " onRegister")
-    }
-
-    class WhatsNewFetchPayload(
-        val versionName: String
-    ) : Payload<BaseNetworkError>()
-
     data class OnWhatsNewFetched(
         val whatsNewItems: List<WhatsNewAnnouncementModel>? = null,
         val isFromCache: Boolean = false,
         val fetchError: WhatsNewFetchError? = null
-    ) : Store.OnChanged<WhatsNewFetchError>() {
-        init {
-            // we allow setting error from constructor, so it will be a part of data class
-            // and used during comparison, so we can test error events
-            this.error = fetchError
-        }
-    }
+    )
 
     data class WhatsNewFetchError(
         val type: WhatsNewErrorType,
         val message: String = ""
-    ) : OnChangedError
+    )
 
     enum class WhatsNewErrorType {
         GENERIC_ERROR
