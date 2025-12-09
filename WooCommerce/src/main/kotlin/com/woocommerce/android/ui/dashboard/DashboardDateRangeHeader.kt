@@ -16,8 +16,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -31,12 +29,17 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection
 import com.woocommerce.android.ui.analytics.ranges.StatsTimeRangeSelection.SelectionType
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsTestTags
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun DashboardDateRangeHeader(
@@ -96,7 +99,7 @@ fun DashboardDateRangeHeader(
                 modifier = Modifier.testTag(DashboardStatsTestTags.STATS_RANGE_DROPDOWN_BUTTON)
             ) {
                 Icon(
-                    imageVector = Icons.Default.DateRange,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_date_range_24dp),
                     contentDescription = stringResource(
                         id = R.string.dashboard_stats_edit_granularity_content_description
                     ),
@@ -137,6 +140,24 @@ fun DashboardDateRangeHeader(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun DashboardDateRangeHeaderPreview() {
+    WooThemeWithBackground {
+        DashboardDateRangeHeader(
+            rangeSelection = SelectionType.TODAY.generateSelectionData(
+                Date(),
+                Date(),
+                Calendar.getInstance(),
+                Locale.getDefault()
+            ),
+            dateFormatted = "Today",
+            onCustomRangeClick = {},
+            onTabSelected = {}
+        )
     }
 }
 
