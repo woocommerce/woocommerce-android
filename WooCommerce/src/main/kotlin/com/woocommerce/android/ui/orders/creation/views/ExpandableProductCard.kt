@@ -39,7 +39,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -256,7 +255,7 @@ fun ExpandableProductCard(
         ) {
             Icon(
                 modifier = Modifier.rotate(chevronRotation),
-                imageVector = Icons.Filled.KeyboardArrowDown,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
                 contentDescription = stringResource(
                     R.string.order_creation_collapse_expand_product_card_content_description
                 ),

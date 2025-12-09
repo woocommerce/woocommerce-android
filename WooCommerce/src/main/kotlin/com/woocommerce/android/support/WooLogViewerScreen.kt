@@ -21,9 +21,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -287,7 +284,7 @@ private fun SearchNavigationActions(
             enabled = currentMatchIndex > 0
         ) {
             Icon(
-                Icons.Filled.KeyboardArrowUp,
+                ImageVector.vectorResource(R.drawable.ic_arrow_up),
                 contentDescription = "",
                 tint = if (currentMatchIndex > 0) {
                     MaterialTheme.colorScheme.primary
@@ -301,7 +298,7 @@ private fun SearchNavigationActions(
             enabled = currentMatchIndex < totalMatches - 1
         ) {
             Icon(
-                Icons.Filled.KeyboardArrowDown,
+                ImageVector.vectorResource(R.drawable.ic_arrow_down),
                 contentDescription = "",
                 tint = if (currentMatchIndex < totalMatches - 1) {
                     MaterialTheme.colorScheme.primary
