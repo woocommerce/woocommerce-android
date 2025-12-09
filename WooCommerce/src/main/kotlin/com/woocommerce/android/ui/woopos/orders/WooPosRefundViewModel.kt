@@ -94,7 +94,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedSubtotal = PriceUtils.formatCurrency(subtotal, order.currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(taxes, order.currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(total, order.currency, currencyFormatter),
-            paymentMethod = "TEST: payment card ••••1456",//TBD: use real payment method value
+            paymentMethod = "TEST: payment card ••••1456", // TBD: use real payment method value
             step = WooPosRefundState.Content.RefundStep.SelectItems
         )
     }
