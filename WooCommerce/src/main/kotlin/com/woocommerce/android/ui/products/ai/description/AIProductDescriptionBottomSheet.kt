@@ -26,8 +26,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -357,7 +355,7 @@ private fun GeneratedDescription(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbUp,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_up_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                         tint = colorResource(id = R.color.color_on_surface_medium)
@@ -377,7 +375,7 @@ private fun GeneratedDescription(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbDown,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_down_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                         tint = colorResource(id = R.color.color_on_surface_medium)
@@ -508,6 +506,29 @@ fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
             generationState = Start(true),
+            description = "This stylish and comfortable set is designed to enhance your performance and " +
+                "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
+                "make a statement with the \"Fit Fashionista\" activewear set.",
+            isProductTitleInitiallyPresent = true
+        ),
+        onTitleChanged = {},
+        onFeaturesChanged = {},
+        onGenerateButtonClicked = {},
+        onRegenerateButtonClicked = {},
+        onCopyButtonClicked = {},
+        onApplyButtonClicked = {},
+        onDescriptionFeedbackReceived = {},
+        onCelebrationButtonClicked = {}
+    )
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewAIDescriptionGeneratedForm() {
+    DescriptionGenerationForm(
+        ViewState(
+            generationState = Generated(false),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set.",

@@ -23,8 +23,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -37,11 +35,13 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.orders.AIThankYouNoteViewModel.GenerationState
 
 @Composable
@@ -238,7 +238,7 @@ fun Survey(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbUp,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_up_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                         tint = colorResource(id = R.color.color_on_surface_medium)
@@ -258,7 +258,7 @@ fun Survey(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbDown,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_down_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
                         tint = colorResource(id = R.color.color_on_surface_medium)
@@ -266,6 +266,15 @@ fun Survey(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+@Suppress("UnusedPrivateMember")
+private fun SurveyPreview() {
+    WooThemeWithBackground {
+        Survey(onDescriptionFeedbackReceived = {})
     }
 }
 
