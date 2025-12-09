@@ -29,8 +29,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.material.rememberBottomSheetState
 import androidx.compose.material3.HorizontalDivider
@@ -759,7 +757,7 @@ private fun PackageSelectionAvailableCard(
                 if (packageData.isStarred) {
                     Icon(
                         tint = colorResource(id = R.color.color_on_surface_disabled),
-                        imageVector = Icons.Outlined.Star,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_star_filled_24dp),
                         contentDescription = "Star",
                     )
                 }

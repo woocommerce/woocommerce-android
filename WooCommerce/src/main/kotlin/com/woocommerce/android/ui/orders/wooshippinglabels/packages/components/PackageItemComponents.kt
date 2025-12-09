@@ -16,9 +16,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.rememberSwipeToDismissBoxState
@@ -136,10 +133,9 @@ fun WooShippingPackageListItemContent(
                 Icon(
                     modifier = Modifier.clickable { onPackageStarred(packageData, !packageData.isStarred) },
                     tint = colorResource(id = R.color.color_on_surface_disabled),
-                    imageVector = when (packageData.isStarred) {
-                        true -> Icons.Filled.Star
-                        false -> Icons.Outlined.StarOutline
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (packageData.isStarred) R.drawable.ic_star_filled_24dp else R.drawable.ic_star_24dp
+                    ),
                     contentDescription = stringResource(
                         id = when (packageData.isStarred) {
                             true -> R.string.woo_shipping_labels_package_creation_unstarred
