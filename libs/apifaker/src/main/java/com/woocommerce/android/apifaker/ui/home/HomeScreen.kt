@@ -32,7 +32,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
@@ -318,7 +317,7 @@ private fun EndpointItem(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
-                    Icons.Default.Delete,
+                    ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                     contentDescription = "Delete"
                 )
             }

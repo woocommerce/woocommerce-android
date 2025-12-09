@@ -37,8 +37,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -500,7 +498,7 @@ private fun QueryParametersField(
                         modifier = Modifier.size(32.dp)
                     ) {
                         Icon(
-                            imageVector = Icons.Default.Delete,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                             contentDescription = "Delete query parameter"
                         )
                     }
