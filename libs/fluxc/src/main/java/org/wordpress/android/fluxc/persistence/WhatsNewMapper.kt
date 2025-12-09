@@ -17,14 +17,18 @@ internal object WhatsNewMapper {
             localized = model.isLocalized
         )
 
-        val featureEntities = model.features.map { feature ->
-            WhatsNewAnnouncementFeatureEntity(
-                announcementId = RemoteId(model.announcementVersion.toLong()),
-                title = feature.title ?: "",
-                subtitle = feature.subtitle,
-                iconUrl = feature.iconUrl,
-                iconBase64 = feature.iconBase64
-            )
+        val featureEntities = model.features.mapNotNull { feature ->
+            if (feature.title != null) {
+                WhatsNewAnnouncementFeatureEntity(
+                    announcementId = RemoteId(model.announcementVersion.toLong()),
+                    title = feature.title,
+                    subtitle = feature.subtitle,
+                    iconUrl = feature.iconUrl,
+                    iconBase64 = feature.iconBase64
+                )
+            } else {
+                null
+            }
         }
 
         return WhatsNewAnnouncementWithFeatures(
