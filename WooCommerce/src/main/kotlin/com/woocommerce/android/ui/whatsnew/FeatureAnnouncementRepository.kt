@@ -22,10 +22,7 @@ class FeatureAnnouncementRepository @Inject constructor(
         val onWhatsNewFetched = if (fromCache) {
             whatsNewStore.fetchCachedAnnouncements()
         } else {
-            whatsNewStore.fetchRemoteAnnouncements(
-                buildConfigWrapper.versionName,
-                WhatsNewStore.WhatsNewAppId.WOO_ANDROID
-            )
+            whatsNewStore.fetchRemoteAnnouncements(buildConfigWrapper.versionName)
         }
         onWhatsNewFetched.whatsNewItems?.map { featureAnnouncements.add(it.build()) }?.toList()
         return featureAnnouncements

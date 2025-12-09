@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewFetchedPayload
 import org.wordpress.android.fluxc.persistence.WhatsNewMapper
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewErrorType.GENERIC_ERROR
@@ -35,9 +36,8 @@ class WhatsNewStore @Inject internal constructor(
         when (actionType) {
             FETCH_REMOTE_ANNOUNCEMENT -> {
                 val versionName = (action.payload as WhatsNewFetchPayload).versionName
-                val appId = (action.payload as WhatsNewFetchPayload).appId
                 coroutineEngine.launch(AppLog.T.API, this, "FETCH_REMOTE_ANNOUNCEMENT") {
-                    emitChange(fetchRemoteAnnouncements(versionName, appId))
+                    emitChange(fetchRemoteAnnouncements(versionName))
                 }
             }
             FETCH_CACHED_ANNOUNCEMENT -> {
@@ -53,9 +53,9 @@ class WhatsNewStore @Inject internal constructor(
                 return@withDefaultContext OnWhatsNewFetched(getAnnouncements(), true)
             }
 
-    suspend fun fetchRemoteAnnouncements(versionName: String, appId: WhatsNewAppId) =
+    suspend fun fetchRemoteAnnouncements(versionName: String) =
             coroutineEngine.withDefaultContext(T.API, this, "fetchWhatsNew") {
-                val fetchedWhatsNewPayload = whatsNewRestClient.fetchWhatsNew(versionName, appId)
+                val fetchedWhatsNewPayload = whatsNewRestClient.fetchWhatsNew(versionName)
 
                 return@withDefaultContext if (!fetchedWhatsNewPayload.isError) {
                     val fetchedAnnouncements = fetchedWhatsNewPayload.whatsNewItems
@@ -93,12 +93,7 @@ class WhatsNewStore @Inject internal constructor(
     }
 
     class WhatsNewFetchPayload(
-        val versionName: String,
-        val appId: WhatsNewAppId
-    ) : Payload<BaseNetworkError>()
-
-    class WhatsNewFetchedPayload(
-        val whatsNewItems: List<WhatsNewAnnouncementModel>? = null
+        val versionName: String
     ) : Payload<BaseNetworkError>()
 
     data class OnWhatsNewFetched(
@@ -120,9 +115,5 @@ class WhatsNewStore @Inject internal constructor(
 
     enum class WhatsNewErrorType {
         GENERIC_ERROR
-    }
-
-    enum class WhatsNewAppId(val id: Int) {
-        WOO_ANDROID(3),
     }
 }

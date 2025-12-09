@@ -3,9 +3,12 @@ package org.wordpress.android.fluxc.network.rest.wpcom.whatsnew
 import android.content.Context
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
+import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAppId
+import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.Response
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
@@ -13,8 +16,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewResponse.Announcement
-import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewAppId
-import org.wordpress.android.fluxc.store.WhatsNewStore.WhatsNewFetchedPayload
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -28,11 +29,11 @@ class WhatsNewRestClient @Inject constructor(
     accessToken: AccessToken,
     userAgent: UserAgent
 ) : BaseWPComRestClient(appContext, dispatcher, requestQueue, accessToken, userAgent) {
-    suspend fun fetchWhatsNew(versionName: String, appId: WhatsNewAppId): WhatsNewFetchedPayload {
+    suspend fun fetchWhatsNew(versionName: String): WhatsNewFetchedPayload {
         val url = WPCOMV2.mobile.feature_announcements.url
 
         val params = mapOf(
-                "app_id" to appId.id.toString(),
+                "app_id" to WhatsNewAppId.WOO_ANDROID.id.toString(),
                 "app_version" to versionName
         )
 
@@ -102,4 +103,8 @@ class WhatsNewRestClient @Inject constructor(
             val iconUrl: String
         )
     }
+
+    class WhatsNewFetchedPayload(
+        val whatsNewItems: List<WhatsNewAnnouncementModel>? = null
+    ) : Payload<BaseNetworkError>()
 }
