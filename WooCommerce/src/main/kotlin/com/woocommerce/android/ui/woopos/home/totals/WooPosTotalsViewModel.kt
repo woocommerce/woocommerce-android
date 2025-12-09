@@ -534,13 +534,17 @@ class WooPosTotalsViewModel @Inject constructor(
                  * that never existed, so it returns a successfully created order but the variation is ignored (this
                  * is consistent behavior with permanently deleted products).
                  */
-                wooError.errorData?.getLong("variation_id")?.let {
-                    deletedVariationFromApiError = it
+                if (wooError.errorData?.has("variation_id") == true) {
+                    wooError.errorData?.getLong("variation_id")?.let {
+                        deletedVariationFromApiError = it
+                    }
                 }
+
                 totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
                 uiState.value = WooPosTotalsViewState.ProductNotFoundError(
                     message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
                     reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+                    isRemoveProductSupported = deletedVariationFromApiError != null
                 )
             }
             else -> {
@@ -562,6 +566,7 @@ class WooPosTotalsViewModel @Inject constructor(
             uiState.value = WooPosTotalsViewState.ProductNotFoundError(
                 message = resourceProvider.getString(R.string.woopos_totals_product_not_found_error),
                 reason = resourceProvider.getString(R.string.woopos_totals_product_not_found_reason),
+                isRemoveProductSupported = true,
             )
             totalsAnalyticsTracker.trackCheckoutOutdatedItemDetectedScreenShown()
             return

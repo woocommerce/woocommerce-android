@@ -131,6 +131,7 @@ private fun WooPosTotalsScreen(
                 TotalsProductNotFoundErrorScreen(
                     errorMessage = state.message,
                     errorReason = state.reason,
+                    isRemoveProductSupported = state.isRemoveProductSupported,
                     onUIEvent = onUIEvent
                 )
             }
@@ -492,6 +493,7 @@ private fun TotalsInvalidCouponsErrorScreen(
 private fun TotalsProductNotFoundErrorScreen(
     errorMessage: String,
     errorReason: String,
+    isRemoveProductSupported: Boolean,
     onUIEvent: (WooPosTotalsUIEvent) -> Unit
 ) {
     return WooPosErrorScreen(
@@ -501,10 +503,14 @@ private fun TotalsProductNotFoundErrorScreen(
             text = stringResource(R.string.woopos_totals_product_not_found_edit_order),
             click = { onUIEvent(WooPosTotalsUIEvent.GoBackToOrderEditAfterProductNotFound) }
         ),
-        secondaryButton = WooPosErrorScreenButtonState(
-            text = stringResource(R.string.woopos_totals_product_not_found_remove_products),
-            click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked) }
-        )
+        secondaryButton = if (isRemoveProductSupported) {
+            WooPosErrorScreenButtonState(
+                text = stringResource(R.string.woopos_totals_product_not_found_remove_products),
+                click = { onUIEvent(WooPosTotalsUIEvent.OnRemoveProductsClicked) }
+            )
+        } else {
+            null
+        }
     )
 }
 
