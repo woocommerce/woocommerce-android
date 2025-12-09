@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc
 
+import org.json.JSONObject
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.AUTHORIZATION_REQUIRED
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.CENSORED
@@ -22,7 +23,8 @@ data class WooError(
     val type: WooErrorType,
     val original: GenericErrorType,
     val message: String? = null,
-    val apiErrorCode: String? = null
+    val apiErrorCode: String? = null,
+    val errorData: JSONObject? = null
 ) : OnChangedError
 
 enum class WooErrorType {
@@ -37,6 +39,7 @@ enum class WooErrorType {
     API_NOT_FOUND,
     EMPTY_RESPONSE,
     INVALID_COUPON,
+    INVALID_VARIATION_ID,
     RESOURCE_ALREADY_EXISTS
 }
 
@@ -44,14 +47,16 @@ fun WPComGsonNetworkError.toWooError() = WooError(
     type = type.getWooErrorType(apiError),
     original = type,
     message = message,
-    apiErrorCode = apiError
+    apiErrorCode = apiError,
+    errorData = errorData,
 )
 
 fun WPAPINetworkError.toWooError() = WooError(
     type = type.getWooErrorType(errorCode),
     original = type,
     message = message,
-    apiErrorCode = errorCode
+    apiErrorCode = errorCode,
+    errorData = errorData,
 )
 
 private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
@@ -81,6 +86,7 @@ private fun GenericErrorType?.getWooErrorType(apiError: String?) = when (this) {
             "rest_invalid_param" -> WooErrorType.INVALID_PARAM
             "rest_no_route" -> WooErrorType.API_NOT_FOUND
             "woocommerce_rest_invalid_coupon" -> WooErrorType.INVALID_COUPON
+            "order_item_product_invalid_variation_id" -> WooErrorType.INVALID_VARIATION_ID
             else -> WooErrorType.GENERIC_ERROR
         }
     }
