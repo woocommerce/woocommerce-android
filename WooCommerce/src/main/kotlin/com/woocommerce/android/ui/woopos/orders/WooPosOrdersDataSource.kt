@@ -123,9 +123,7 @@ class WooPosOrdersDataSource @Inject constructor(
         ordersCache.setAll(updated)
     }
 
-    private suspend fun loadFirstPage(
-        searchQuery: String? = null
-    ): Result<List<Order>> {
+    private suspend fun loadFirstPage(searchQuery: String? = null): Result<List<Order>> {
         page.set(1)
         canLoadMore.set(false)
         return fetchAndMap(searchQuery)
@@ -135,11 +133,8 @@ class WooPosOrdersDataSource @Inject constructor(
         return fetchAndMap(searchQuery)
     }
 
-    private suspend fun fetchAndMap(
-        searchQuery: String? = null,
-        pageSize: Int = POS_ORDERS_PAGE_SIZE
-    ): Result<List<Order>> {
-        val result = fetchOrdersFromRemote(page.get(), searchQuery, pageSize)
+    private suspend fun fetchAndMap(searchQuery: String? = null): Result<List<Order>> {
+        val result = fetchOrdersFromRemote(page.get(), searchQuery)
         return if (result.isError) {
             Result.failure(result.error.toThrowable())
         } else {
@@ -151,11 +146,10 @@ class WooPosOrdersDataSource @Inject constructor(
 
     private suspend fun fetchOrdersFromRemote(
         page: Int,
-        searchQuery: String?,
-        count: Int = POS_ORDERS_PAGE_SIZE
+        searchQuery: String?
     ) = restClient.fetchOrders(
         site = selectedSite.get(),
-        count = count,
+        count = POS_ORDERS_PAGE_SIZE,
         page = page,
         orderBy = OrderBy.DATE,
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
