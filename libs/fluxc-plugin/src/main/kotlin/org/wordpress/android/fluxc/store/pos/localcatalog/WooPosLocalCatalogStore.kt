@@ -492,7 +492,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * Generates a new catalog on the server.
      *
      * @param [site] The site to generate catalog for
-     * @return [Result] containing PosGenerateCatalogResult with job ID or error
+     * @return [Result] containing PosGenerateCatalogResult with catalog generation details or error
      */
     suspend fun generateCatalog(
         site: SiteModel
@@ -511,14 +511,19 @@ class WooPosLocalCatalogStore @Inject constructor(
                     Result.failure(WooPosLocalCatalogError.EmptyResponse)
                 }
 
-                response.model.jobId == null -> {
-                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
-                }
-
                 else -> {
-                    val jobId = response.model.jobId.toString()
                     Result.success(
-                        WooPosGenerateCatalogResult(jobId = jobId)
+                        WooPosGenerateCatalogResult(
+                            scheduledAt = response.model.scheduledAt,
+                            completedAt = response.model.completedAt,
+                            state = response.model.state,
+                            progress = response.model.progress,
+                            processed = response.model.processed,
+                            total = response.model.total,
+                            url = response.model.url,
+                            productFields = response.model.args?.productFields,
+                            variationFields = response.model.args?.variationFields,
+                        )
                     )
                 }
             }

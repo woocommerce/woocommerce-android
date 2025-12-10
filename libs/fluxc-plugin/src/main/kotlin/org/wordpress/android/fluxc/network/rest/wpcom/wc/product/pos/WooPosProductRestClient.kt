@@ -91,9 +91,10 @@ class WooPosProductRestClient @Inject constructor(
     suspend fun postGenerateCatalog(
         site: SiteModel,
     ): WooResult<WooPosGenerateCatalogResponse> {
-        val url = WOOCOMMERCE.catalog.pathV3
+        val url = WOOCOMMERCE.product_catalog.create.pathPosV1
         val params = mutableMapOf(
-            "_fields" to PRODUCT_FIELDS
+            "_product_fields" to PRODUCT_FIELDS,
+            "_variation_fields" to VARIATIONS_FIELDS
         )
 
         val response = wooNetwork.executePostGsonRequest(
