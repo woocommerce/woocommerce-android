@@ -22,12 +22,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **libs/pos** - Point of sale functionality (POS)
 
 ## Documentation
-- [CONVENTION.md](CONVENTION.md) - Naming conventions and test patterns
-
 See `/docs` folder for detailed guidelines:
 - [coding-style.md](docs/coding-style.md) - Code style and detekt
 - [compose.md](docs/compose.md) - Jetpack Compose guidelines
 - [pull-request-guidelines.md](docs/pull-request-guidelines.md) - Branch naming and PR format
+- [CONVENTION.md](CONVENTION.md) - Naming conventions and test patterns
 
 ## Key Rules
 - Use Kotlin for all new code
