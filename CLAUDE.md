@@ -33,7 +33,6 @@ See `/docs` folder for detailed guidelines:
 - Use Jetpack Compose for new UI
 - Standard detekt rules (see `config/detekt/detekt.yml` for customizations)
 - Do not add comments to code (keep existing comments if present)
-- Use AssertJ for test assertions
 
 ## Commit Guidelines
 - Never use "Co-Authored-By" in commit messages
