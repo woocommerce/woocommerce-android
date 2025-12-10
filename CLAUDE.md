@@ -31,13 +31,9 @@ See `/docs` folder for detailed guidelines:
 ## Key Rules
 - Use Kotlin for all new code
 - Use Jetpack Compose for new UI
-- No wildcard imports
-- Line length: 120 characters
-- Use TODO (not FIXME) in committed code
+- Standard detekt rules (see `config/detekt/detekt.yml` for customizations)
 - Do not add comments to code (keep existing comments if present)
-- Exception: tests can use `// GIVEN`, `// WHEN`, `// THEN` markers
 - Use AssertJ for test assertions
-- Test names: `given X, when Y, then Z` format
 
 ## Commit Guidelines
 - Never use "Co-Authored-By" in commit messages
