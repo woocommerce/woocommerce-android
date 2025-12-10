@@ -1,4 +1,5 @@
 [versions]
+ageSignals = "0.0.1"
 agp = '8.13.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
@@ -110,6 +111,7 @@ wordpress-utils = '3.15.0'
 zendesk = '5.5.1'
 
 [libraries]
+age-signals = { module = "com.google.android.play:age-signals", version.ref = "ageSignals" }
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
 android-security-lint = { group = "com.android.security.lint", name = "lint", version.ref = "android-security-lint" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }

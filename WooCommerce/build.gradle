@@ -219,7 +219,7 @@ dependencies {
     implementation(libs.google.firebase.analytics)
 
     implementation(libs.google.play.services.auth)
-    implementation 'com.google.android.play:age-signals:0.0.1'
+    implementation libs.age.signals
 
     // Support library
     implementation(libs.androidx.core.ktx)
