@@ -328,7 +328,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `given existing announcement cache, when app is upgraded and announcement is valid, then show announcement`() =
         testBlocking {
-            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = true)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
@@ -353,6 +353,41 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when app version changes, then fetch fresh announcements from API`() = testBlocking {
+        doReturn("19.0").whenever(prefs).getLastVersionWithAnnouncement()
+        doReturn("20.0").whenever(buildConfigWrapper).versionName
+
+        viewModel.showFeatureAnnouncementIfNeeded()
+
+        verify(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
+        verify(prefs).setLastVersionWithAnnouncement("20.0")
+    }
+
+    @Test
+    fun `when app version unchanged, then do not fetch announcements`() = testBlocking {
+        doReturn("20.0").whenever(prefs).getLastVersionWithAnnouncement()
+        doReturn("20.0").whenever(buildConfigWrapper).versionName
+
+        viewModel.showFeatureAnnouncementIfNeeded()
+
+        verify(featureAnnouncementRepository, never()).getLatestFeatureAnnouncement(any())
+    }
+
+    @Test
+    fun `when version changes but no new announcements available, then still update preference`() = testBlocking {
+        val oldAnnouncement = testAnnouncement.copy(appVersionTargets = listOf("19.0"))
+        doReturn("19.0").whenever(prefs).getLastVersionWithAnnouncement()
+        doReturn("20.0").whenever(buildConfigWrapper).versionName
+        doReturn(oldAnnouncement).whenever(featureAnnouncementRepository)
+            .getLatestFeatureAnnouncement(fromCache = false)
+
+        viewModel.showFeatureAnnouncementIfNeeded()
+
+        verify(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
+        verify(prefs).setLastVersionWithAnnouncement("20.0")
+    }
 
     @Test
     fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =
