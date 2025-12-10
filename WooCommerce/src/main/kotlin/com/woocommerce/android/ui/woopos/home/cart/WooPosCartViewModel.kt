@@ -400,6 +400,7 @@ class WooPosCartViewModel @Inject constructor(
                 is BarcodeInputDetector.BarcodeResult.Success -> {
                     processBarcodeSuccess(result.barcode)
                 }
+
                 is BarcodeInputDetector.BarcodeResult.Error -> {
                     processBarcodeError(result)
                 }
@@ -439,6 +440,7 @@ class WooPosCartViewModel @Inject constructor(
             BarcodeInputDetector.FailureReason.TOO_SHORT -> {
                 resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short)
             }
+
             BarcodeInputDetector.FailureReason.NO_TERMINATOR -> {
                 resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator)
             }
