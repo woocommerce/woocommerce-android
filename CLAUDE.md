@@ -9,7 +9,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Run single test: `./gradlew :WooCommerce:testWasabiDebug --tests "com.woocommerce.android.path.to.TestClass"`
 - Run detekt: `./gradlew detektAll --auto-correct`
 
+## Main Modules
+- **WooCommerce** - Main Android application
+- **WooCommerce-Wear** - Wear OS companion app
+- **libs/fluxc** - Core networking and data layer
+- **libs/cardreader** - Card reader functionality for payments
+- **libs/login** - Authentication and login flows
+
 ## Documentation
+- [CONVENTION.md](CONVENTION.md) - Naming conventions and test patterns
+
 See `/docs` folder for detailed guidelines:
 - [coding-style.md](docs/coding-style.md) - Code style and detekt
 - [compose.md](docs/compose.md) - Jetpack Compose guidelines
