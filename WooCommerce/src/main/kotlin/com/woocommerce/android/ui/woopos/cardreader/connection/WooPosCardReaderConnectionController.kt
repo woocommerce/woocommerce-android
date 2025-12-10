@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cardreader.connection
 import android.bluetooth.BluetoothAdapter
 import android.content.Context
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.cardreader.CardReaderManager
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderDiscoveryEvents
@@ -192,7 +193,7 @@ class WooPosCardReaderConnectionController(
             cardReaderManager.initialize(
                 updateFrequency = developerOptionsRepository.getUpdateSimulatedReaderOption(),
                 useInterac = developerOptionsRepository.isInteracPaymentEnabled(),
-                isDebug = true,
+                isDebug = BuildConfig.DEBUG,
             )
         }
     }
