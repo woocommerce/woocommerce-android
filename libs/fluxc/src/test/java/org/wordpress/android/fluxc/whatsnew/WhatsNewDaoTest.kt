@@ -13,6 +13,7 @@ import org.robolectric.RuntimeEnvironment
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
+import org.wordpress.android.fluxc.persistence.entity.AppVersionTargets
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFeatures
@@ -26,7 +27,7 @@ class WhatsNewDaoTest {
         announcementId = RemoteId(1),
         minimumAppVersion = "14.7",
         maximumAppVersion = "14.9",
-        appVersionTargets = emptyList(),
+        appVersionTargets = AppVersionTargets(emptyList()),
         localized = true
     )
 
@@ -51,7 +52,7 @@ class WhatsNewDaoTest {
         announcementId = RemoteId(2),
         minimumAppVersion = "14.9",
         maximumAppVersion = "16.0",
-        appVersionTargets = listOf("alpha-111", "alpha-112"),
+        appVersionTargets = AppVersionTargets(listOf("alpha-111", "alpha-112")),
         localized = false
     )
 
@@ -114,7 +115,7 @@ class WhatsNewDaoTest {
                 announcementId = RemoteId(3),
                 minimumAppVersion = "16.0",
                 maximumAppVersion = "17.0",
-                appVersionTargets = emptyList(),
+                appVersionTargets = AppVersionTargets(emptyList()),
                 localized = true
             ),
             features = listOf(
@@ -135,4 +136,26 @@ class WhatsNewDaoTest {
             it.announcement.announcementId == RemoteId(3)
         }
     }
+
+    @Test
+    fun `when appVersionTargets contains commas, then they are preserved using semicolon separator`(): Unit =
+        runBlocking {
+            val announcementWithCommas = WhatsNewAnnouncementWithFeatures(
+                announcement = WhatsNewAnnouncementEntity(
+                    announcementId = RemoteId(999),
+                    minimumAppVersion = "1.0",
+                    maximumAppVersion = "2.0",
+                    appVersionTargets = AppVersionTargets(listOf("alpha-1,2", "beta-3,4,5")),
+                    localized = false
+                ),
+                features = emptyList()
+            )
+
+            whatsNewDao.replaceAnnouncements(listOf(announcementWithCommas))
+            val result = whatsNewDao.getAnnouncementsWithFeatures()
+
+            assertThat(result).hasSize(1).first().matches {
+                it.announcement.appVersionTargets == AppVersionTargets(listOf("alpha-1,2", "beta-3,4,5"))
+            }
+        }
 }

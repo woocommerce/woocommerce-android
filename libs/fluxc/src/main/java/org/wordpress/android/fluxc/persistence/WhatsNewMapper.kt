@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.persistence
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
+import org.wordpress.android.fluxc.persistence.entity.AppVersionTargets
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementWithFeatures
@@ -13,7 +14,7 @@ internal object WhatsNewMapper {
             announcementId = RemoteId(model.announcementVersion.toLong()),
             minimumAppVersion = model.minimumAppVersion,
             maximumAppVersion = model.maximumAppVersion,
-            appVersionTargets = model.appVersionTargets,
+            appVersionTargets = AppVersionTargets(model.appVersionTargets),
             localized = model.isLocalized
         )
 
@@ -42,7 +43,7 @@ internal object WhatsNewMapper {
             announcementVersion = entity.announcement.announcementId.value.toInt(),
             minimumAppVersion = entity.announcement.minimumAppVersion,
             maximumAppVersion = entity.announcement.maximumAppVersion,
-            appVersionTargets = entity.announcement.appVersionTargets,
+            appVersionTargets = entity.announcement.appVersionTargets.value,
             isLocalized = entity.announcement.localized,
             features = entity.features.map { featureToDomainModel(it) }
         )
