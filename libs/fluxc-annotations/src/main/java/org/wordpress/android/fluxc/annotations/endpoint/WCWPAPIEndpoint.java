@@ -15,7 +15,7 @@ public class WCWPAPIEndpoint {
 
     private static final String WC_PREFIX_V1_ADDONS = "wc-product-add-ons/v1";
 
-    private static final String WC_PREFIX_POS_V1 = "pos/v1";
+    private static final String WC_PREFIX_POS_V1 = "wc/pos/v1";
 
     private static final String WC_PREFIX_TELEMETRY = "wc-telemetry";
 
