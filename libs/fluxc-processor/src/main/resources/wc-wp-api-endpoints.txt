@@ -36,7 +36,6 @@
 /variations/
 
 /product-catalog/create
-/catalog/status/<id>#String/
 
 /product-add-ons/
 

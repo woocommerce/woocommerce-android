@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.WooPosCatalogStatusResponse
 import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogArgs
 import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -495,84 +494,6 @@ class WooPosLocalCatalogStoreTest {
     }
 
     @Test
-    fun `when fetching catalog status successfully, then returns status and download URL`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        val expectedStatus = "completed"
-        val expectedDownloadUrl = "https://example.com/catalog.zip"
-        val response = WooPosCatalogStatusResponse(
-            status = expectedStatus,
-            downloadUrl = expectedDownloadUrl
-        )
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(response))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId).getOrThrow()
-
-        // THEN
-        assertThat(result.status).isEqualTo(expectedStatus)
-        assertThat(result.downloadUrl).isEqualTo(expectedDownloadUrl)
-        verify(posProductRestClient).getCatalogStatus(testSite, jobId)
-    }
-
-    @Test
-    fun `when fetching catalog status returns null response, then returns empty response error`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(null))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()).isInstanceOf(WooPosLocalCatalogError.EmptyResponse::class.java)
-    }
-
-    @Test
-    fun `when fetching catalog status fails with timeout, then returns timeout error`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        val timeoutError = WooError(
-            type = WooErrorType.TIMEOUT,
-            original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.TIMEOUT,
-            message = "Request timed out"
-        )
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(timeoutError))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as WooPosLocalCatalogError.NetworkError
-        assertThat(error.errorMessage).contains("Request timed out")
-        assertThat(error.code).isEqualTo("TIMEOUT")
-    }
-
-    @Test
-    fun `when fetching catalog status for in-progress job, then returns processing status`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        val response = WooPosCatalogStatusResponse(
-            status = "processing",
-            downloadUrl = null
-        )
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(response))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId).getOrThrow()
-
-        // THEN
-        assertThat(result.status).isEqualTo("processing")
-        assertThat(result.downloadUrl).isNull()
-    }
-
-    @Test
     fun `when generating catalog returns partial response, then returns catalog details with null fields`() = runTest {
         // GIVEN
         val response = WooPosGenerateCatalogResponse(
@@ -592,46 +513,6 @@ class WooPosLocalCatalogStoreTest {
         assertThat(result.progress).isNull()
         assertThat(result.url).isNull()
         verify(posProductRestClient).postGenerateCatalog(testSite)
-    }
-
-    @Test
-    fun `when fetching catalog status with null status field, then returns invalid response error`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        val response = WooPosCatalogStatusResponse(
-            status = null,
-            downloadUrl = "https://example.com/catalog.zip"
-        )
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(response))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
-        assertThat(error.message).isEqualTo("Missing job ID in response")
-    }
-
-    @Test
-    fun `when fetching catalog status with empty status field, then returns invalid response error`() = runTest {
-        // GIVEN
-        val jobId = "12345"
-        val response = WooPosCatalogStatusResponse(
-            status = "",
-            downloadUrl = "https://example.com/catalog.zip"
-        )
-        whenever(posProductRestClient.getCatalogStatus(testSite, jobId))
-            .thenReturn(WooResult(response))
-
-        // WHEN
-        val result = store.fetchCatalogStatus(testSite, jobId)
-
-        // THEN
-        assertThat(result.isFailure).isTrue()
-        val error = result.exceptionOrNull() as WooPosLocalCatalogError.InvalidResponse
-        assertThat(error.message).isEqualTo("Missing job ID in response")
     }
 
     @Test

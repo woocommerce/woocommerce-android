@@ -529,46 +529,6 @@ class WooPosLocalCatalogStore @Inject constructor(
             }
         }
 
-    /**
-     * Fetches the status of a catalog generation job.
-     *
-     * @param [site] The site to check catalog status for
-     * @param [jobId] The job ID from generateCatalog
-     * @return [Result] containing PosCatalogStatusResult with status and download URL or error
-     */
-    suspend fun fetchCatalogStatus(
-        site: SiteModel,
-        jobId: String
-    ): Result<WooPosCatalogStatusResult> =
-        coroutineEngine.withDefaultContext(API, this, "fetchCatalogStatus") {
-            val response = posProductRestClient.getCatalogStatus(site, jobId)
-
-            when {
-                response.isError -> {
-                    Result.failure(
-                        mapResponseError(response.error)
-                    )
-                }
-
-                response.model == null -> {
-                    Result.failure(WooPosLocalCatalogError.EmptyResponse)
-                }
-
-                response.model.status.isNullOrEmpty() -> {
-                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
-                }
-
-                else -> {
-                    Result.success(
-                        WooPosCatalogStatusResult(
-                            status = response.model.status,
-                            downloadUrl = response.model.downloadUrl
-                        )
-                    )
-                }
-            }
-        }
-
     private fun mapResponseError(error: WooError?): WooPosLocalCatalogError {
         return when (error?.type) {
             WooErrorType.TIMEOUT -> WooPosLocalCatalogError.NetworkError(
