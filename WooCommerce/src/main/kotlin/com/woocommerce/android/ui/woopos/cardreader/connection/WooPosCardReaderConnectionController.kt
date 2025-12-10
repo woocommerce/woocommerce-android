@@ -175,11 +175,11 @@ class WooPosCardReaderConnectionController(
     }
 
     fun cancel() {
-        _state.value = WooPosCardReaderConnectionState.Scanning
         discoveryJob?.cancel()
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
         selectedReader = null
+        _state.value = WooPosCardReaderConnectionState.Scanning
         emitEvent(ControllerEvent.Cancelled)
     }
 
