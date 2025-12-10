@@ -33,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
     private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         key = "home_state",
