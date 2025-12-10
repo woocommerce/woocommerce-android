@@ -19,6 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **libs/fluxc** - Core networking and data layer
 - **libs/cardreader** - Card reader functionality for payments
 - **libs/login** - Authentication and login flows
+- **libs/pos** - Point of sale functionality (POS)
 
 ## Documentation
 - [CONVENTION.md](CONVENTION.md) - Naming conventions and test patterns
