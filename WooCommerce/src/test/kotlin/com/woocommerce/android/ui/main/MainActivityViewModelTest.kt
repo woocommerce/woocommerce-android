@@ -328,7 +328,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `given existing announcement cache, when app is upgraded and announcement is valid, then show announcement`() =
         testBlocking {
-            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = true)
+            doReturn(
+                testAnnouncement
+            ).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
@@ -339,7 +341,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     @Test
     fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`() =
         testBlocking {
-            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn(
+                testAnnouncement
+            ).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
