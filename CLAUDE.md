@@ -5,9 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Build Commands
 - Build debug: `./gradlew assembleWasabiDebug`
 - Install debug: `./gradlew installWasabiDebug`
-- Run unit tests: `./gradlew testWasabiDebug`
-- Run single test: `./gradlew :WooCommerce:testWasabiDebug --tests "com.woocommerce.android.path.to.TestClass"`
 - Run detekt: `./gradlew detektAll --auto-correct`
+
+## Unit Test Commands
+- Main app: `./gradlew :WooCommerce:testWasabiDebugUnitTest --tests "*.TestName"`
+- CardReader: `./gradlew :libs:cardreader:testDebugUnitTest --tests "*.TestName"`
+- Login: `./gradlew :libs:login:testDebugUnitTest --tests "*.TestName"`
+- FluxC: `./gradlew :libs:fluxc:testDebugUnitTest --tests "*.TestName"`
 
 ## Main Modules
 - **WooCommerce** - Main Android application
