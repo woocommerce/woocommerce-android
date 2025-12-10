@@ -170,10 +170,13 @@ private fun OrdersProducts(lineItems: List<WooPosOrdersState.OrderDetailsViewSta
 @Composable
 @Suppress("DestructuringDeclarationWithTooManyEntries")
 private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow) {
+    val marginMedium = WooPosSpacing.Medium.value
+    val marginSmall = WooPosSpacing.Small.value
+    val marginXSmall = WooPosSpacing.XSmall.value
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = WooPosSpacing.Small.value)
+            .padding(vertical = marginSmall)
     ) {
         val (image, nameText, qtyText, totalText) = createRefs()
 
@@ -191,8 +194,8 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameText) {
                 top.linkTo(image.top)
-                start.linkTo(image.end, margin = WooPosSpacing.Medium.value)
-                end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
+                start.linkTo(image.end, margin = marginMedium)
+                end.linkTo(totalText.start, margin = marginSmall)
                 width = Dimension.fillToConstraints
             }
         )
@@ -202,9 +205,9 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest,
             modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(nameText.bottom, margin = WooPosSpacing.XSmall.value)
+                top.linkTo(nameText.bottom, margin = marginXSmall)
                 start.linkTo(nameText.start)
-                end.linkTo(totalText.start, margin = WooPosSpacing.Small.value)
+                end.linkTo(totalText.start, margin = marginSmall)
                 width = Dimension.fillToConstraints
             }
         )
