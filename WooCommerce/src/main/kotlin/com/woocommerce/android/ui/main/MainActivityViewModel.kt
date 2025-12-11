@@ -25,6 +25,7 @@ import com.woocommerce.android.notifications.push.NotificationMessageHandler
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType.Jetpack
 import com.woocommerce.android.tools.connectionType
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.feedback.SurveyType
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.Hidden
 import com.woocommerce.android.ui.main.MainActivityViewModel.MoreMenuBadgeState.NewFeature
@@ -62,6 +63,7 @@ class MainActivityViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val resolveAppLink: ResolveAppLink,
     private val privacyRepository: PrivacySettingsRepository,
+    private val ageEligibilityChecker: AgeEligibilityChecker,
     moreMenuNewFeatureHandler: MoreMenuNewFeatureHandler,
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
@@ -88,6 +90,8 @@ class MainActivityViewModel @Inject constructor(
     val isNotificationsPermissionCardVisible = _isNotificationPermissionCardVisible.asLiveData()
 
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
+
+    val isUserAgeRangeEligible = ageEligibilityChecker.isUserAgeRangeEligible.asLiveData()
 
     fun handleShortcutAction(action: String?) {
         if (!selectedSite.exists()) return

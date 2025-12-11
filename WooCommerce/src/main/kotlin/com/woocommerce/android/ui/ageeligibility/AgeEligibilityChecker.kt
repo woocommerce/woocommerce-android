@@ -1,18 +1,24 @@
 package com.woocommerce.android.ui.ageeligibility
 
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class AgeEligibilityChecker @Inject constructor(
     private val client: AgeSignalsClient,
+    private val prefsWrapper: AppPrefsWrapper,
+    private val accountRepository: AccountRepository
 ) {
 
-    private val _isUserAgeRangeEligible = MutableStateFlow<Boolean?>(null)
-    val isUserAgeRangeEligible: StateFlow<Boolean?> = _isUserAgeRangeEligible.asStateFlow()
+    private val _isUserAgeRangeEligible = MutableStateFlow(prefsWrapper.isUserAgeEligibleForAppUse)
+    val isUserAgeRangeEligible: StateFlow<Boolean> = _isUserAgeRangeEligible.asStateFlow()
 
     suspend fun checkAge() {
         try {
@@ -21,9 +27,13 @@ class AgeEligibilityChecker @Inject constructor(
         } catch (e: Exception) {
             WooLog.i(
                 WooLog.T.UTILS,
-                "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
+                "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}, " +
+                    "setting age eligibility to default value: eligible to use the app"
             )
             _isUserAgeRangeEligible.value = true
+        }
+        if(isUserAgeRangeEligible.value.not()){
+            accountRepository.logout()
         }
     }
 
@@ -39,9 +49,10 @@ class AgeEligibilityChecker @Inject constructor(
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
 
             AgeSignalsVerificationStatus.UNKNOWN -> true // Safe default: allow access if unknown
-            else -> true // Handle other cases or default
+            else -> true // Handle any other cases as default
         }
 
+        prefsWrapper.isUserAgeEligibleForAppUse = isUserAgeEligible
         _isUserAgeRangeEligible.value = isUserAgeEligible
     }
 }

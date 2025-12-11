@@ -43,6 +43,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var isWooPosSurveyNotificationCurrentUserShown by AppPrefs::isWooPosSurveyNotificationCurrentUserShown
 
+    var isUserAgeEligibleForAppUse by AppPrefs::isUserAgeEligibleForAppUse
+
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 

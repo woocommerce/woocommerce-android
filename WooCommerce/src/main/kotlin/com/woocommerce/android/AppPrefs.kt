@@ -218,7 +218,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN,
 
-        WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN
+        WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
+
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
     }
 
     fun init(context: Context) {
@@ -322,6 +324,10 @@ object AppPrefs {
     var isWooPosSurveyNotificationPotentialUserShown: Boolean
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
+
+        var isUserAgeEligibleForAppUse: Boolean
+        get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
+        set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

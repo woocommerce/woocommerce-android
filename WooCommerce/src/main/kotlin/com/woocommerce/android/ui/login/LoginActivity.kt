@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -205,6 +206,9 @@ class LoginActivity :
             unifiedLoginTracker.setSource(ss.getString(KEY_UNIFIED_TRACKER_SOURCE, Source.DEFAULT.value))
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
+        }
+        if(appPrefsWrapper.isUserAgeEligibleForAppUse.not()){
+            showAgeRestrictionDialog()
         }
     }
 
@@ -1041,6 +1045,18 @@ class LoginActivity :
                 showPrologue()
             }
         }
+    }
+
+    private fun showAgeRestrictionDialog() {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle(R.string.age_restriction_dialog_title)
+            .setMessage(R.string.age_restriction_dialog_message)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _, _ -> finishAffinity() }
+            .create()
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
     }
 
     /**
