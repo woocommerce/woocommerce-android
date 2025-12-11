@@ -232,7 +232,6 @@ class MainActivityViewModel @Inject constructor(
             }
 
             val announcement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = false)
-            prefs.setLastVersionWithAnnouncement(buildConfigWrapper.versionName)
 
             announcement?.let {
                 if (announcement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {

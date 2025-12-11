@@ -366,7 +366,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.showFeatureAnnouncementIfNeeded()
 
         verify(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
-        verify(prefs).setLastVersionWithAnnouncement("20.0")
     }
 
     @Test
@@ -377,20 +376,6 @@ class MainActivityViewModelTest : BaseUnitTest() {
         viewModel.showFeatureAnnouncementIfNeeded()
 
         verify(featureAnnouncementRepository, never()).getLatestFeatureAnnouncement(any())
-    }
-
-    @Test
-    fun `when version changes but no new announcements available, then still update preference`() = testBlocking {
-        val oldAnnouncement = testAnnouncement.copy(appVersionTargets = listOf("19.0"))
-        doReturn("19.0").whenever(prefs).getLastVersionWithAnnouncement()
-        doReturn("20.0").whenever(buildConfigWrapper).versionName
-        doReturn(oldAnnouncement).whenever(featureAnnouncementRepository)
-            .getLatestFeatureAnnouncement(fromCache = false)
-
-        viewModel.showFeatureAnnouncementIfNeeded()
-
-        verify(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
-        verify(prefs).setLastVersionWithAnnouncement("20.0")
     }
 
     @Test
