@@ -14,20 +14,16 @@ class AgeEligibilityChecker @Inject constructor(
     private val _isUserAgeRangeEligible = MutableStateFlow<Boolean?>(null)
     val isUserAgeRangeEligible: StateFlow<Boolean?> = _isUserAgeRangeEligible.asStateFlow()
 
-    suspend fun checkAge(userStatus: Int? = null, ageUpper: Int? = null) {
-        if (userStatus != null) {
-            processAgeCheck(userStatus, ageUpper)
-        } else {
-            try {
-                val result = client.checkAge()
-                processAgeCheck(result.userStatus, result.ageUpper)
-            } catch (e: Exception) {
-                WooLog.i(
-                    WooLog.T.UTILS,
-                    "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
-                )
-                _isUserAgeRangeEligible.value = true
-            }
+    suspend fun checkAge() {
+        try {
+            val result = client.checkAge()
+            processAgeCheck(result.userStatus, result.ageUpper)
+        } catch (e: Exception) {
+            WooLog.i(
+                WooLog.T.UTILS,
+                "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
+            )
+            _isUserAgeRangeEligible.value = true
         }
     }
 

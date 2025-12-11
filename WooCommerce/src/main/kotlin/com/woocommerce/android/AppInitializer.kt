@@ -186,30 +186,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     private var currentResumedActivity: WeakReference<Activity>? = null
     private val activityDialogs = WeakHashMap<Activity, AlertDialog>()
 
-    private fun showAgeRestrictionDialog(activity: Activity) {
-        if (activityDialogs[activity]?.isShowing == true) return
-
-        val dialog = AlertDialog.Builder(activity)
-            .setTitle(R.string.age_restriction_title)
-            .setMessage(R.string.age_restriction_message)
-            .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
-                if (accountStore.hasAccessToken()) {
-                    appCoroutineScope.launch {
-                        logUserOut()
-                        activity.finishAffinity()
-                    }
-                } else {
-                    activity.finishAffinity()
-                }
-            }
-            .create()
-        dialog.setCancelable(false)
-        dialog.setCanceledOnTouchOutside(false)
-        dialog.show()
-        activityDialogs[activity] = dialog
-    }
-
     /**
      * Update WP.com and WooCommerce settings in a background task.
      */
@@ -389,12 +365,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             }
         }
         appCoroutineScope.launch {
+            ageEligibilityChecker.checkAge()
             ageEligibilityChecker.isUserAgeRangeEligible.collect { isAgeEligible ->
                 if (isAgeEligible == false) {
                     currentResumedActivity?.get()?.let { showAgeRestrictionDialog(it) }
                 }
             }
-            ageEligibilityChecker.checkAge()
         }
     }
 
@@ -588,5 +564,29 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     private fun clearRefreshDataPeriodically() {
         WorkManager.getInstance(application).cancelUniqueWork(UpdateDataOnBackgroundWorker.WORK_NAME)
+    }
+
+    private fun showAgeRestrictionDialog(activity: Activity) {
+        if (activityDialogs[activity]?.isShowing == true) return
+
+        val dialog = AlertDialog.Builder(activity)
+            .setTitle(R.string.age_restriction_dialog_title)
+            .setMessage(R.string.age_restriction_dialog_message)
+            .setCancelable(false)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (accountStore.hasAccessToken()) {
+                    appCoroutineScope.launch {
+                        logUserOut()
+                        activity.finishAffinity()
+                    }
+                } else {
+                    activity.finishAffinity()
+                }
+            }
+            .create()
+        dialog.setCancelable(false)
+        dialog.setCanceledOnTouchOutside(false)
+        dialog.show()
+        activityDialogs[activity] = dialog
     }
 }
