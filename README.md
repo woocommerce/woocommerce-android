@@ -42,6 +42,7 @@
    1. Make sure [`git-conceal` is installed](https://github.com/Automattic/git-conceal?tab=readme-ov-file#installation) on your machine
    1. Open [the "WooCommerce Android git-conceal encryption key" entry in our Secret Store](https://mc.a8c.com/secret-store/?secret_id=13697), and copy the Base64 value in your clipboard
    1. Run `pbpaste | base64 -d | git-conceal unlock -` to decrypt the encrypted files (including `secrets.properties` and `WooCommerce/google-services.json`)
+   1. Note: you only need to do this **once per clone**. After unlocking, you can read and update secret files as often as you need, manipulating them as any other non-secret files, without repeating this command—git filters will take care of encrypting/decrypting them on the fly during commit/checkout transparently for you.
 1. If you are an external contributor:
    1. Generate developer OAuth2 tokens. See the [OAuth2 Authentication](docs/project-overview.md#oauth2-authentication) section for details.
    1. Edit `defaults.properties` and adjust the values as needed — especially including `wp.oauth.*` ones. See the [Configuration Files](docs/project-overview.md#configuration-files) section for a breakdown of the properties.
