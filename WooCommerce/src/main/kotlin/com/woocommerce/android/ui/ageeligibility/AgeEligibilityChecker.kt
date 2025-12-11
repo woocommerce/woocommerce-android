@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.ageeligibility
 
+import com.google.android.gms.common.api.ApiException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.ui.login.AccountRepository
@@ -24,10 +25,10 @@ class AgeEligibilityChecker @Inject constructor(
         try {
             val result = client.checkAge()
             processAgeCheck(result.userStatus, result.ageUpper)
-        } catch (exception: Exception) {
+        } catch (exception: ApiException) {
             WooLog.i(
                 WooLog.T.UTILS,
-                "AgeCheckViewModel exception ${exception.javaClass.simpleName} checking age: ${exception.message}, " +
+                "AgeEligibilityChecker exception ${exception.javaClass.simpleName} checking age: ${exception.message}, " +
                     "setting age eligibility to default value: eligible to use the app"
             )
             _isUserAgeRangeEligible.value = true
