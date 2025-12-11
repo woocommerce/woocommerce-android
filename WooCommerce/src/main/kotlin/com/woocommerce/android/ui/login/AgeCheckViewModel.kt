@@ -1,66 +1,60 @@
 package com.woocommerce.android.ui.login
 
-import android.content.Context
-import com.google.android.play.agesignals.AgeSignalsManagerFactory
-import com.google.android.play.agesignals.AgeSignalsRequest
+import androidx.lifecycle.SavedStateHandle
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
+import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.WooLog.T
+import com.woocommerce.android.viewmodel.ScopedViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@HiltViewModel
 class AgeCheckViewModel @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+    savedStateHandle: SavedStateHandle,
+    private val client: AgeSignalsClient
+) : ScopedViewModel(savedStateHandle) {
 
-    private val scope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val _isUnder13 = MutableStateFlow<Boolean?>(null)
-    val isUnder13: StateFlow<Boolean?> = _isUnder13.asStateFlow()
+    private val _isUserAgeRangeEligible = MutableStateFlow<Boolean?>(null)
+    val isUserAgeRangeEligible: StateFlow<Boolean?> = _isUserAgeRangeEligible.asStateFlow()
 
     fun checkAge(userStatus: Int? = null, ageUpper: Int? = null) {
-        scope.launch {
+        launch {
             if (userStatus != null) {
                 processAgeCheck(userStatus, ageUpper)
             } else {
                 try {
-                    val ageSignalsManager = AgeSignalsManagerFactory.create(context)
-                    ageSignalsManager
-                        .checkAgeSignals(AgeSignalsRequest.builder().build())
-                        .addOnSuccessListener { ageSignalsResult ->
-                            processAgeCheck(ageSignalsResult.userStatus(), ageSignalsResult.ageUpper())
-                        }
-                        .addOnFailureListener {
-                            // Default to false (allow access) on failure
-                            _isUnder13.value = false
-                        }
+                    val result = client.checkAge()
+                    processAgeCheck(result.userStatus, result.ageUpper)
                 } catch (e: Exception) {
-                    _isUnder13.value = false
+                    WooLog.i(
+                        T.UTILS,
+                        "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
+                    )
+                    _isUserAgeRangeEligible.value = true
                 }
             }
         }
     }
 
     private fun processAgeCheck(userStatus: Int?, ageUpper: Int?) {
-        val isUnderage = when (userStatus) {
-            AgeSignalsVerificationStatus.VERIFIED -> false
+        val isUserAgeEligible = when (userStatus) {
+            AgeSignalsVerificationStatus.VERIFIED -> true
             AgeSignalsVerificationStatus.SUPERVISED,
-            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING,
-            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> {
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> {
                 // Check if ageUpper is known and below 13
-                ageUpper != null && ageUpper < 13
+                ageUpper != null && ageUpper < 13 // Woo TOS states our apps are for 13+ years old users
             }
-            AgeSignalsVerificationStatus.UNKNOWN -> false // Safe default: allow access if unknown
-            // Handle other cases or default
-            else -> false
+
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
+
+            AgeSignalsVerificationStatus.UNKNOWN -> true // Safe default: allow access if unknown
+            else -> true // Handle other cases or default
         }
 
-        _isUnder13.value = isUnderage
+        _isUserAgeRangeEligible.value = isUserAgeEligible
     }
 }

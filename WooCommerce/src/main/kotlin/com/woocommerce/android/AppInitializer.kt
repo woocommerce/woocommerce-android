@@ -194,7 +194,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             .setMessage(R.string.age_restriction_message)
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ ->
-                activity.finishAffinity()
+                if (accountStore.hasAccessToken()) {
+                    appCoroutineScope.launch {
+                        logUserOut()
+                        activity.finishAffinity()
+                    }
+                } else {
+                    activity.finishAffinity()
+                }
             }
             .create()
         dialog.setCancelable(false)
@@ -293,6 +300,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     currentResumedActivity = null
                 }
             }
+
             override fun onActivityStarted(activity: Activity) {}
             override fun onActivityDestroyed(activity: Activity) {}
             override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
@@ -301,20 +309,11 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
             override fun onActivityResumed(activity: Activity) {
                 currentResumedActivity = WeakReference(activity)
-                if (ageCheckViewModel.isUnder13.value == true) {
+                if (ageCheckViewModel.isUserAgeRangeEligible.value == true) {
                     showAgeRestrictionDialog(activity)
                 }
             }
         })
-
-        appCoroutineScope.launch {
-            ageCheckViewModel.isUnder13.collect { isUnder13 ->
-                if (isUnder13 == true) {
-                    currentResumedActivity?.get()?.let { showAgeRestrictionDialog(it) }
-                }
-            }
-        }
-        ageCheckViewModel.checkAge()
     }
 
     @Suppress("DEPRECATION")
@@ -392,6 +391,14 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                 }
             }
         }
+        appCoroutineScope.launch {
+            ageCheckViewModel.isUserAgeRangeEligible.collect { isUnder13 ->
+                if (isUnder13 == true) {
+                    currentResumedActivity?.get()?.let { showAgeRestrictionDialog(it) }
+                }
+            }
+        }
+        ageCheckViewModel.checkAge()
     }
 
     override fun onAppGoesToBackground() {
@@ -412,11 +419,12 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
         }
     }
 
+    private suspend fun logUserOut() {
+        accountRepository.get().logout()
+        restartMainActivity()
+    }
+
     private fun monitorApplicationPasswordsStatus() {
-        suspend fun logUserOut() {
-            accountRepository.get().logout()
-            restartMainActivity()
-        }
 
         appCoroutineScope.launch {
             // Log user out if the Application Passwords feature gets disabled
