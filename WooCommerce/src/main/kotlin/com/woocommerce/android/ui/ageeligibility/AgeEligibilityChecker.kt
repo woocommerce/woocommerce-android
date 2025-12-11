@@ -28,8 +28,8 @@ class AgeEligibilityChecker @Inject constructor(
         } catch (exception: ApiException) {
             WooLog.i(
                 WooLog.T.UTILS,
-                "AgeEligibilityChecker exception ${exception.javaClass.simpleName} checking age: ${exception.message}, " +
-                    "setting age eligibility to default value: eligible to use the app"
+                "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
+                    "age: ${exception.message}, reverting user eligibility to true"
             )
             prefsWrapper.isUserAgeEligibleForAppUse = true
             _isUserAgeRangeEligible.value = true

@@ -144,7 +144,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         override suspend fun checkAge(): AgeCheckResult {
             if (shouldThrow) {
-                throw AgeSignalsException(0)
+                throw AgeSignalsException(-5)
             }
             return AgeCheckResult(userStatus, ageUpper)
         }
