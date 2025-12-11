@@ -326,7 +326,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given existing announcement cache, when app is upgraded and announcement is valid, then show announcement`() =
+    fun `given announcement is available on remote, when app is upgraded and announcement is valid, then show announcement`() =
         testBlocking {
             doReturn(
                 testAnnouncement
@@ -339,7 +339,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`() =
+    fun `given announcement is available on remote, when app is upgraded and announcement is valid, track event is tracked`() =
         testBlocking {
             doReturn(
                 testAnnouncement
