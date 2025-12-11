@@ -70,7 +70,7 @@ class WooPosTotalsRepository @Inject constructor(
         return itemClickedDataList
             .groupingBy { it.id }
             .eachCount()
-            .map { (id, quantity) ->
+            .mapNotNull { (id, quantity) ->
                 val itemData = itemClickedDataList.find { it.id == id }!!
                 when (itemData) {
                     is WooPosItemsViewModel.ItemClickedData.Product.Simple -> createSimpleProductOrderItem(
@@ -97,8 +97,8 @@ class WooPosTotalsRepository @Inject constructor(
     private suspend fun createSimpleProductOrderItem(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Simple
-    ): Order.Item {
-        val productResult = getProductById(itemData.id) ?: error("Product not found: ${itemData.id}")
+    ): Order.Item? {
+        val productResult = getProductById(itemData.id) ?: return null
         return Order.Item.EMPTY.copy(
             itemId = 0L,
             productId = itemData.id,
@@ -114,8 +114,8 @@ class WooPosTotalsRepository @Inject constructor(
     private suspend fun createVariationOrderItem(
         quantity: Int,
         itemData: WooPosItemsViewModel.ItemClickedData.Product.Variation
-    ): Order.Item {
-        val productResult = getProductById(itemData.productId) ?: error("Product not found: ${itemData.productId}")
+    ): Order.Item? {
+        val productResult = getProductById(itemData.productId) ?: return null
         val variationResult = getVariationById(
             productId = itemData.productId,
             variationId = itemData.id

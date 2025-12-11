@@ -222,6 +222,35 @@ class WooPosTotalsRepositoryTest {
         assertThat(orderCapture.lastValue.couponLines.size).isEqualTo(1)
     }
 
+    @Test
+    fun `given deleted simple product, when createOrderFromCartItems, then product filtered out`() = runTest {
+        // GIVEN
+        repository = createRepository()
+        val itemClickedData = listOf(
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+            WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L)
+        )
+
+        whenever(getProductById(1L)).thenReturn(product1)
+        whenever(getProductById(2L)).thenReturn(null)
+        whenever(getProductById(3L)).thenReturn(product1)
+
+        // WHEN
+        repository.createOrderFromCartItems(itemClickedData)
+
+        // THEN
+        val orderCapture = argumentCaptor<Order>()
+        verify(orderCreateEditRepository).createOrUpdateOrder(
+            orderCapture.capture(),
+            eq(OrderCreationSource.POINT_OF_SALE),
+            eq("")
+        )
+
+        assertThat(orderCapture.lastValue.items.size).isEqualTo(2)
+        assertThat(orderCapture.lastValue.items.map { it.productId }).containsExactly(1L, 3L)
+    }
+
     private fun createRepository() = WooPosTotalsRepository(
         orderCreateEditRepository,
         dateUtils,
