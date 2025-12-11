@@ -66,11 +66,6 @@ class MainActivityViewModel @Inject constructor(
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
-    init {
-        launch {
-            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
-        }
-    }
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
