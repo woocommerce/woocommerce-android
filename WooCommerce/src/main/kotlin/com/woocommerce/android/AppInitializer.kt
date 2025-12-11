@@ -40,12 +40,12 @@ import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
 import com.woocommerce.android.ui.jitm.JitmStoreInMemoryCache
 import com.woocommerce.android.ui.login.AccountRepository
-import com.woocommerce.android.ui.login.AgeCheckViewModel
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingChecker
 import com.woocommerce.android.ui.shortcuts.AppShortcutsHandler
@@ -155,7 +155,7 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
 
-    @Inject lateinit var ageCheckViewModel: AgeCheckViewModel
+    @Inject lateinit var ageEligibilityChecker: AgeEligibilityChecker
 
     @Inject
     @AppCoroutineScope
@@ -309,9 +309,6 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
 
             override fun onActivityResumed(activity: Activity) {
                 currentResumedActivity = WeakReference(activity)
-                if (ageCheckViewModel.isUserAgeRangeEligible.value == true) {
-                    showAgeRestrictionDialog(activity)
-                }
             }
         })
     }
@@ -392,13 +389,13 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
             }
         }
         appCoroutineScope.launch {
-            ageCheckViewModel.isUserAgeRangeEligible.collect { isUnder13 ->
-                if (isUnder13 == true) {
+            ageEligibilityChecker.isUserAgeRangeEligible.collect { isAgeEligible ->
+                if (isAgeEligible == false) {
                     currentResumedActivity?.get()?.let { showAgeRestrictionDialog(it) }
                 }
             }
+            ageEligibilityChecker.checkAge()
         }
-        ageCheckViewModel.checkAge()
     }
 
     override fun onAppGoesToBackground() {

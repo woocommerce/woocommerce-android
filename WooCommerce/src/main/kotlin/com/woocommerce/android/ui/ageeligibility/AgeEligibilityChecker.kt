@@ -1,41 +1,32 @@
-package com.woocommerce.android.ui.login
+package com.woocommerce.android.ui.ageeligibility
 
-import androidx.lifecycle.SavedStateHandle
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T
-import com.woocommerce.android.viewmodel.ScopedViewModel
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@HiltViewModel
-class AgeCheckViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
-    private val client: AgeSignalsClient
-) : ScopedViewModel(savedStateHandle) {
+class AgeEligibilityChecker @Inject constructor(
+    private val client: AgeSignalsClient,
+) {
 
     private val _isUserAgeRangeEligible = MutableStateFlow<Boolean?>(null)
     val isUserAgeRangeEligible: StateFlow<Boolean?> = _isUserAgeRangeEligible.asStateFlow()
 
-    fun checkAge(userStatus: Int? = null, ageUpper: Int? = null) {
-        launch {
-            if (userStatus != null) {
-                processAgeCheck(userStatus, ageUpper)
-            } else {
-                try {
-                    val result = client.checkAge()
-                    processAgeCheck(result.userStatus, result.ageUpper)
-                } catch (e: Exception) {
-                    WooLog.i(
-                        T.UTILS,
-                        "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
-                    )
-                    _isUserAgeRangeEligible.value = true
-                }
+    suspend fun checkAge(userStatus: Int? = null, ageUpper: Int? = null) {
+        if (userStatus != null) {
+            processAgeCheck(userStatus, ageUpper)
+        } else {
+            try {
+                val result = client.checkAge()
+                processAgeCheck(result.userStatus, result.ageUpper)
+            } catch (e: Exception) {
+                WooLog.i(
+                    WooLog.T.UTILS,
+                    "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}"
+                )
+                _isUserAgeRangeEligible.value = true
             }
         }
     }
