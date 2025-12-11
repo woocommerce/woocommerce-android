@@ -1,5 +1,5 @@
 [versions]
-ageSignals = "0.0.1"
+ageSignals = "0.0.2"
 agp = '8.13.1'
 android-desugar = '2.1.5'
 android-security-lint = '1.0.3'
