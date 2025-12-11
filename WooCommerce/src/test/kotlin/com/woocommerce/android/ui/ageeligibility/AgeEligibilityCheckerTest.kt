@@ -125,6 +125,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         ageEligibilityChecker.checkAge()
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
     }
 
     class FakeAgeSignalsClient : AgeSignalsClient {

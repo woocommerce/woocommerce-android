@@ -31,6 +31,7 @@ class AgeEligibilityChecker @Inject constructor(
                 "AgeEligibilityChecker exception ${exception.javaClass.simpleName} checking age: ${exception.message}, " +
                     "setting age eligibility to default value: eligible to use the app"
             )
+            prefsWrapper.isUserAgeEligibleForAppUse = true
             _isUserAgeRangeEligible.value = true
         }
         if (isUserAgeRangeEligible.value.not()) {
