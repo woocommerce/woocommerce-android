@@ -24,15 +24,15 @@ class AgeEligibilityChecker @Inject constructor(
         try {
             val result = client.checkAge()
             processAgeCheck(result.userStatus, result.ageUpper)
-        } catch (e: Exception) {
+        } catch (exception: Exception) {
             WooLog.i(
                 WooLog.T.UTILS,
-                "AgeCheckViewModel exception ${e.javaClass.simpleName} checking age: ${e.message}, " +
+                "AgeCheckViewModel exception ${exception.javaClass.simpleName} checking age: ${exception.message}, " +
                     "setting age eligibility to default value: eligible to use the app"
             )
             _isUserAgeRangeEligible.value = true
         }
-        if(isUserAgeRangeEligible.value.not()){
+        if (isUserAgeRangeEligible.value.not()) {
             accountRepository.logout()
         }
     }
@@ -42,8 +42,7 @@ class AgeEligibilityChecker @Inject constructor(
             AgeSignalsVerificationStatus.VERIFIED -> true
             AgeSignalsVerificationStatus.SUPERVISED,
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> {
-                // Check if ageUpper is known and 13 or above
-                ageUpper != null && ageUpper >= 13 // Woo TOS states our apps are for 13+ years old users
+                ageUpper != null && ageUpper >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE
             }
 
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
@@ -54,5 +53,9 @@ class AgeEligibilityChecker @Inject constructor(
 
         prefsWrapper.isUserAgeEligibleForAppUse = isUserAgeEligible
         _isUserAgeRangeEligible.value = isUserAgeEligible
+    }
+
+    companion object {
+        private const val WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE = 13
     }
 }

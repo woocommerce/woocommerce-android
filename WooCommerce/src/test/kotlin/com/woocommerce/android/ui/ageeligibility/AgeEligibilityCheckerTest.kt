@@ -32,7 +32,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is verified, When checkAge called, Then user is eligible`() = testBlocking {
+    fun `given user is verified, when checkAge called, then user is eligible`() = testBlocking {
         client.setExpectedValues(AgeSignalsVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
 
         ageEligibilityChecker.checkAge()
@@ -42,7 +42,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is supervised and age is under 13, When checkAge called, Then user is NOT eligible`() =
+    fun `given user is supervised and age is under 13, when checkAge called, then user is NOT eligible`() =
         testBlocking {
             client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 12)
 
@@ -54,7 +54,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is supervised and age is 13 or over, When checkAge called, Then user is eligible`() = testBlocking {
+    fun `given user is supervised and age is 13 or over, when checkAge called, then user is eligible`() = testBlocking {
         client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 13)
 
         ageEligibilityChecker.checkAge()
@@ -64,7 +64,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user is supervised approval pending and age is under 13, When checkAge called, Then user is NOT eligible`() =
+    fun `given user is supervised approval pending and age is under 13, when checkAge called, then user is NOT eligible`() =
         testBlocking {
             client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
 
@@ -76,7 +76,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is supervised approval pending and age is 13 or over, When checkAge called, Then user is eligible`() =
+    fun `given user is supervised approval pending and age is 13 or over, when checkAge called, then user is eligible`() =
         testBlocking {
             client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 13)
 
@@ -87,7 +87,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is supervised approval pending and age is 12, When checkAge called, user is not eligible`() =
+    fun `given user is supervised approval pending and age is 12, when checkAge called, then user is not eligible`() =
         testBlocking {
             client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
 
@@ -98,7 +98,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `Given user is supervised approval denied, When checkAge called, Then user is NOT eligible`() = testBlocking {
+    fun `given user is supervised approval denied, when checkAge called, then user is NOT eligible`() = testBlocking {
         client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED, DEFAULT_USER_AGE_UPPER)
 
         ageEligibilityChecker.checkAge()
@@ -109,7 +109,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given user status is unknown, When checkAge called, Then user is eligible`() = testBlocking {
+    fun `given user status is unknown, when checkAge called, then user is eligible`() = testBlocking {
         client.setExpectedValues(AgeSignalsVerificationStatus.UNKNOWN, DEFAULT_USER_AGE_UPPER)
 
         ageEligibilityChecker.checkAge()
@@ -119,7 +119,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Given checkAge throws exception, When checkAge called, Then user is eligible`() = testBlocking {
+    fun `given checkAge throws exception, when checkAge called, then user is eligible`() = testBlocking {
         client.setThrowException(true)
 
         ageEligibilityChecker.checkAge()

@@ -325,7 +325,7 @@ object AppPrefs {
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
 
-        var isUserAgeEligibleForAppUse: Boolean
+    var isUserAgeEligibleForAppUse: Boolean
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
 
