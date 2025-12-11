@@ -2,6 +2,8 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
 }
 
@@ -19,6 +21,10 @@ android {
         targetCompatibility = libs.versions.java.get()
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     testFixtures.enable = true
 }
 
@@ -28,8 +34,19 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.automattic.tracks.crashlogging)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.eventbus.android)
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.wordpress.utils)
+
+    // Hilt annotation processing
+    ksp(libs.google.dagger.hilt.compiler)
+
+    // FluxC - WordPress/WooCommerce data layer
+    // Using 'api' instead of 'implementation' to expose FluxC types to consumers (app module)
+    // This is needed for KSP/Dagger annotation processing in the app module
+    api project(":libs:fluxc")
+    api project(":libs:fluxc-plugin")
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.assertj.core)

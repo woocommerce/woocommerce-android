@@ -257,8 +257,7 @@ dependencies {
     implementation(libs.automattic.tracks.android)
     implementation(libs.automattic.tracks.crashlogging)
 
-    implementation(project(":libs:fluxc"))
-    implementation(project(":libs:fluxc-plugin"))
+    // FluxC now comes transitively through commons module
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
 

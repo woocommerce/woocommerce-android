@@ -16,7 +16,6 @@
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
 - [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
-- [*] Improve UI in POS Orders screen to handle status bar height correctly [https://github.com/woocommerce/woocommerce-android/pull/15023]
 
 23.7
 -----
