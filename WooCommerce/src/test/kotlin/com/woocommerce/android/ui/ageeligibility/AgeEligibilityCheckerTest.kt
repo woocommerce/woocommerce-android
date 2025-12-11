@@ -1,0 +1,156 @@
+package com.woocommerce.android.ui.ageeligibility
+
+import com.google.android.play.agesignals.AgeSignalsException
+import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+
+@ExperimentalCoroutinesApi
+class AgeEligibilityCheckerTest : BaseUnitTest() {
+
+    private lateinit var ageEligibilityChecker: AgeEligibilityChecker
+    private val client = FakeAgeSignalsClient()
+    private val prefsWrapper: AppPrefsWrapper = mock()
+    private val accountRepository: AccountRepository = mock()
+
+    @Before
+    fun setup() {
+        whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenReturn(true)
+        ageEligibilityChecker = AgeEligibilityChecker(
+            client,
+            prefsWrapper,
+            accountRepository
+        )
+    }
+
+    @Test
+    fun `Given user is verified, When checkAge called, Then user is eligible`() = testBlocking {
+        client.setExpectedValues(AgeSignalsVerificationStatus.VERIFIED, DEFAULT_USER_AGE_UPPER)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+    }
+
+    @Test
+    fun `Given user is supervised and age is under 13, When checkAge called, Then user is NOT eligible`() =
+        testBlocking {
+            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 12)
+
+            ageEligibilityChecker.checkAge()
+
+            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+            verify(accountRepository).logout()
+        }
+
+    @Test
+    fun `Given user is supervised and age is 13 or over, When checkAge called, Then user is eligible`() = testBlocking {
+        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, 13)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+    }
+
+    @Test
+    fun `Given user is supervised approval pending and age is under 13, When checkAge called, Then user is NOT eligible`() =
+        testBlocking {
+            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
+
+            ageEligibilityChecker.checkAge()
+
+            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+            verify(accountRepository).logout()
+        }
+
+    @Test
+    fun `Given user is supervised approval pending and age is 13 or over, When checkAge called, Then user is eligible`() =
+        testBlocking {
+            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 13)
+
+            ageEligibilityChecker.checkAge()
+
+            assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+        }
+
+    @Test
+    fun `Given user is supervised approval pending and age is 12, When checkAge called, user is not eligible`() =
+        testBlocking {
+            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
+
+            ageEligibilityChecker.checkAge()
+
+            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+        }
+
+    @Test
+    fun `Given user is supervised approval denied, When checkAge called, Then user is NOT eligible`() = testBlocking {
+        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED, DEFAULT_USER_AGE_UPPER)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = false
+        verify(accountRepository).logout()
+    }
+
+    @Test
+    fun `Given user status is unknown, When checkAge called, Then user is eligible`() = testBlocking {
+        client.setExpectedValues(AgeSignalsVerificationStatus.UNKNOWN, DEFAULT_USER_AGE_UPPER)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+    }
+
+    @Test
+    fun `Given checkAge throws exception, When checkAge called, Then user is eligible`() = testBlocking {
+        client.setThrowException(true)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+    }
+
+    class FakeAgeSignalsClient : AgeSignalsClient {
+        private var shouldThrow = false
+        private var userStatus: Int = DEFAULT_USER_AGE_STATUS
+        private var ageUpper: Int = DEFAULT_USER_AGE_UPPER
+
+        fun setExpectedValues(userStatus: Int, ageUpper: Int) {
+            this.userStatus = userStatus
+            this.ageUpper = ageUpper
+        }
+
+        fun setThrowException(shouldThrow: Boolean) {
+            this.shouldThrow = shouldThrow
+        }
+
+        override suspend fun checkAge(): AgeCheckResult {
+            if (shouldThrow) {
+                throw AgeSignalsException(0)
+            }
+            return AgeCheckResult(userStatus, ageUpper)
+        }
+    }
+
+    companion object {
+        private const val DEFAULT_USER_AGE_STATUS = AgeSignalsVerificationStatus.VERIFIED
+        private const val DEFAULT_USER_AGE_UPPER = 19
+    }
+}

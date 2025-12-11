@@ -42,8 +42,8 @@ class AgeEligibilityChecker @Inject constructor(
             AgeSignalsVerificationStatus.VERIFIED -> true
             AgeSignalsVerificationStatus.SUPERVISED,
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> {
-                // Check if ageUpper is known and below 13
-                ageUpper != null && ageUpper < 13 // Woo TOS states our apps are for 13+ years old users
+                // Check if ageUpper is known and 13 or above
+                ageUpper != null && ageUpper >= 13 // Woo TOS states our apps are for 13+ years old users
             }
 
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
