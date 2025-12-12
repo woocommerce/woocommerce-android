@@ -7,6 +7,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.DateDialog
 import com.woocommerce.android.ui.bookings.filter.datetime.PickerDialogState.TimeDialog
 import com.woocommerce.android.ui.compose.component.Time
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.assisted.Assisted
@@ -22,21 +23,17 @@ import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
-import java.time.format.FormatStyle
 
 @HiltViewModel(assistedFactory = DateTimeFilterViewModel.Factory::class)
 class DateTimeFilterViewModel @AssistedInject constructor(
     savedStateHandle: SavedStateHandle,
     private val clock: Clock,
+    private val dateFormatter: DateFormatter,
     @Assisted private val initialRange: BookingsFilterOption.DateRange? = null,
     @Assisted private val onTypeFilterChanged: (BookingsFilterOption.DateRange) -> Unit,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val zone: ZoneId = ZoneOffset.UTC
-
-    private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)
-    private val timeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
 
     private val _uiState = MutableStateFlow(
         DateTimeFilterUiState(
@@ -255,8 +252,8 @@ class DateTimeFilterViewModel @AssistedInject constructor(
         )
     }
 
-    private fun LocalDateTime?.formatDate(): String = this?.let { dateFormatter.format(it) }.orEmpty()
-    private fun LocalDateTime?.formatTime(): String = this?.let { timeFormatter.format(it) }.orEmpty()
+    private fun LocalDateTime?.formatDate(): String = this?.let { dateFormatter.formatDate(it) }.orEmpty()
+    private fun LocalDateTime?.formatTime(): String = this?.let { dateFormatter.formatTime(it) }.orEmpty()
 
     @AssistedFactory
     interface Factory {
