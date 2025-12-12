@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-20 13:54:09+0000
+Translation-Revision-Date: 2025-12-03 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: he_IL
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">המשתמש ⁦%1$s⁩ לא יכול עוד להשתתף במפגש \"⁦%2$s⁩\" בתאריך ⁦%3$s⁩ בשעה ⁦%4$s⁩.</string>
+    <string name="booking_customer_note_label">הערה</string>
+    <string name="booking_appointment_label_team_member">חלק מצוות</string>
+    <string name="booking_details_section_header">פרטי הזמנה</string>
+    <string name="booking_filter_date_time_swap_info">המועד שנבחר סודר מחדש כדי ליצור טווח חוקי</string>
+    <string name="bookings_filter_date_filter_value">טווח מותאם</string>
+    <string name="bookings_filter_time_picker_title">לבחור זמן</string>
+    <string name="bookings_filter_date_to">עד</string>
+    <string name="bookings_filter_date_from">ממועד</string>
+    <string name="bookings_filter_time_label">שעה</string>
+    <string name="bookings_filter_date_label">תאריך</string>
+    <string name="bookings_filter_search_service_event">לחפש שירותים / אירוע</string>
+    <string name="bookings_filter_title_member">חלק מצוות</string>
+    <string name="bookings_empty_state_description_upcoming_v2">הזמנות חדשות יופיעו כאן כשלקוחות יקבעו תזמון לקבלת שירותים ממך או יירשמו לאירועים שלך.</string>
+    <string name="bookings_empty_state_description_today_v2">כל ההזמנות המתוזמנות להיום יופיעו כאן.</string>
+    <string name="bookings_empty_state_description_all">הזמנות יופיעו כאן לאחר שלקוחות יקבעו תזמון לקבלת שירותים ממך או יירשמו לאירועים שלך.</string>
+    <string name="bookings_empty_state_title_all">עדיין אין הזמנות</string>
+    <string name="bookings_resources_fetch_error">שגיאה בהבאת חברי הצוות</string>
+    <string name="product_type_bookable_service">שירות</string>
     <string name="booking_not_selected">לא נבחרה הזמנה</string>
     <string name="bookings_filters_selected_option_content_description">אפשרות הסינון שנבחרה</string>
     <string name="bookings_filter_customer">לקוח</string>
@@ -53,7 +72,7 @@ Language: he_IL
     <string name="bookings_filters_enabled_title">מסננים • %d</string>
     <string name="woopos_search_orders_error_description">יש לנסות שוב.</string>
     <string name="woopos_search_orders_error_title">לא ניתן לטעון את ההזמנות</string>
-    <string name="woopos_search_orders_empty_description">לא הצלחנו למצוא הזמנות תואמות – כדאי לשנות את מונח החיפוש.</string>
+    <string name="woopos_search_orders_empty_description">לא הצלחנו למצוא הזמנות בשם זה. כדאי לשנות את מונח החיפוש.</string>
     <string name="woopos_search_orders_empty_title">לא נמצאו הזמנות</string>
     <string name="woopos_search_orders">חיפוש הזמנות</string>
     <string name="woopos_orders_details_totals_card_content_description">פירוט הסכומים הכוללים של ההזמנה</string>
@@ -95,7 +114,7 @@ Language: he_IL
     <string name="booking_cancel_dialog_confirm">כן, אני רוצה לבטל</string>
     <string name="booking_cancel_dialog_keep">לא, אני רוצה להשאיר</string>
     <string name="booking_cancel_dialog_message">המשתמש ⁦%1$s⁩ לא יוכל עוד להשתתף במפגש \"⁦%2$s⁩\" בתאריך ⁦%3$s⁩ בשעה ⁦%4$s⁩.</string>
-    <string name="booking_cancel_dialog_title">לבטל את ההזמנה</string>
+    <string name="booking_cancel_dialog_title_v2">לבטל את ההזמנה?</string>
     <string name="booking_fetch_error">שגיאה בהבאת ההזמנה</string>
     <string name="bookings_filter_default">הכול</string>
     <string name="bookings_filter_title_service_event">שירות / אירוע</string>
@@ -104,7 +123,6 @@ Language: he_IL
     <string name="bookings_filter_title_type">סוג ההזמנה</string>
     <string name="bookings_filter_title_payment_status">מצב התשלום</string>
     <string name="bookings_filter_title_attendance_status">סטטוס נוכחות</string>
-    <string name="bookings_filter_title_team_member">חבר צוות שהוקצה</string>
     <string name="bookings_filters_show_bookings">להציג הזמנות</string>
     <string name="bookings_filters_default_title">מסננים</string>
     <string name="bookings_empty_state_clear_filters_button">לנקות את המסננים</string>
@@ -112,9 +130,6 @@ Language: he_IL
     <string name="bookings_empty_state_description_with_filters">אין הזמנות שתואמות למסננים שלך. כדאי לשנות את ההגדרות כדי להציג תוצאות נוספות.</string>
     <string name="bookings_search_no_results_with_filters">לא הצלחנו למצוא הזמנות עם השם הזה – כדאי לשנות את המונח לחיפוש או את המסננים כדי להציג תוצאות נוספות.</string>
     <string name="bookings_search_no_results_without_filters">לא הצלחנו למצוא הזמנות עם השם הזה – כדאי לשנות את המונח לחיפוש כדי להציג תוצאות נוספות.</string>
-    <string name="bookings_empty_state_description_upcoming">עדיין אין לך פגישות או אירועים עתידיים המתוזמנים לפרסום.</string>
-    <string name="bookings_empty_state_description_today">אין לך פגישות או אירועים מתוזמנים להיום.</string>
-    <string name="bookings_empty_state_description_default">הזמנות נכנסות יופיעו כאן, וניתן יהיה להציג ולנהל אותן.</string>
     <string name="bookings_empty_state_title_upcoming">אין הזמנות קרובות</string>
     <string name="bookings_empty_state_title_today">אין הזמנות היום</string>
     <string name="bookings_empty_state_title_default">לא נמצאו הזמנות</string>
@@ -150,12 +165,11 @@ Language: he_IL
     <string name="woopos_settings_local_catalog_size">גודל</string>
     <string name="woopos_settings_local_catalog_status">מצב הקטלוג</string>
     <string name="woopos_settings_local_catalog_category_subtitle">לנהל את הגדרות הקטלוג</string>
-    <string name="woopos_settings_local_catalog_category">קטלוג</string>
+    <string name="woopos_settings_local_catalog_category">קטלוג מוצרים</string>
     <string name="local_notification_woo_pos_survey_current_user_description">כדאי לשתף את החוויה שלך בסקר מהיר בן שתי דקות ולעזור לנו להשתפר.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">איך POS עובד אצלך?</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">אנחנו מזמינים אותך לענות על סקר קצר בן שתי דקות כדי לעזור לנו לעצב את האפשרויות האהובות עליך.</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">רוצה להתחיל למכור באופן אישי?</string>
-    <string name="product_type_booking">מוצר שניתן להזמנה</string>
     <string name="date_time_connector">בשעה</string>
     <string name="booking_payment_view_order">להציג את ההזמנה</string>
     <string name="booking_payment_mark_as_paid">לסמן כ\'שולמה\'</string>
@@ -184,13 +198,10 @@ Language: he_IL
     <string name="booking_payment_status_pending_confirmation">בהמתנה לאישור</string>
     <string name="booking_payment_status_paid">שולם</string>
     <string name="booking_payment_status_unpaid">לא שולם</string>
-    <string name="booking_appointment_label_price">מחיר</string>
     <string name="booking_appointment_label_duration">משך זמן</string>
     <string name="booking_appointment_label_location">מיקום</string>
-    <string name="booking_appointment_label_staff">צוות שהוקצה</string>
     <string name="booking_appointment_label_time">שעה</string>
     <string name="booking_appointment_label_date">תאריך</string>
-    <string name="booking_appointment_details_header">פרטי הפגישה</string>
     <string name="booking_details_title">הזמנה מס\' %s</string>
     <string name="bookings_tab_all">הכול</string>
     <string name="bookings_tab_upcoming">אירועים קרובים</string>
@@ -402,8 +413,8 @@ Language: he_IL
     <string name="woopos_search_items_error_description">יש לנסות שוב.</string>
     <string name="woopos_search_coupons_error_title">אין אפשרות להעלות את הקופונים</string>
     <string name="woopos_search_items_error_title">אין אפשרות לטעון את המוצרים</string>
-    <string name="woopos_search_empty_coupons_description">לא הצלחנו למצוא קופונים תואמים – כדאי לשנות את מונח החיפוש.</string>
-    <string name="woopos_search_empty_description">לא הצלחנו למצוא מוצרים תואמים – כדאי לשנות את מונח החיפוש.</string>
+    <string name="woopos_search_empty_coupons_description">לא הצלחנו למצוא קופונים תואמים. כדאי לשנות את מונח החיפוש.</string>
+    <string name="woopos_search_empty_description">לא הצלחנו למצוא מוצרים תואמים. כדאי לשנות את מונח החיפוש.</string>
     <string name="woopos_search_coupons_empty_title">לא נמצאו קופונים</string>
     <string name="woopos_search_coupons">לחפש קופונים</string>
     <string name="woopos_coupons_pagination_error_description">יש לבדוק את החיבור לאינטרנט ולנסות שוב.</string>

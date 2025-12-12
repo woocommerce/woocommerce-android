@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-18 09:54:05+0000
+Translation-Revision-Date: 2025-12-03 10:54:04+0000
 Plural-Forms: nplurals=2; plural=n > 1;
 Generator: GlotPress/2.4.0-alpha
 Language: fr
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">%1$s ne peut plus assister à « %2$s » le %3$s à %4$s.</string>
+    <string name="booking_customer_note_label">Remarque</string>
+    <string name="booking_appointment_label_team_member">Membre à l’équipe</string>
+    <string name="booking_details_section_header">DÉTAILS DE LA RÉSERVATION</string>
+    <string name="booking_filter_date_time_swap_info">Votre sélection d’heures a été modifiée pour créer une plage valide</string>
+    <string name="bookings_filter_date_filter_value">Plage personnalisée</string>
+    <string name="bookings_filter_time_picker_title">Sélectionner l’heure</string>
+    <string name="bookings_filter_date_to">AU</string>
+    <string name="bookings_filter_date_from">DU</string>
+    <string name="bookings_filter_time_label">Heure</string>
+    <string name="bookings_filter_date_label">Date</string>
+    <string name="bookings_filter_search_service_event">Rechercher un service / un événement</string>
+    <string name="bookings_filter_title_member">Membre à l’équipe</string>
+    <string name="bookings_empty_state_description_upcoming_v2">Les nouvelles réservations apparaîtront ici lorsque les clients réservent vos services ou s’inscrivent à des événements.</string>
+    <string name="bookings_empty_state_description_today_v2">Toute réservation programmée pour aujourd’hui apparaîtra ici.</string>
+    <string name="bookings_empty_state_description_all">Les réservations apparaîtront ici lorsque les clients commenceront à réserver vos services ou à s’inscrire à des événements.</string>
+    <string name="bookings_empty_state_title_all">Pas encore de réservations</string>
+    <string name="bookings_resources_fetch_error">Erreur lors de l’extraction des membres de l’équipe</string>
+    <string name="product_type_bookable_service">Service</string>
     <string name="booking_not_selected">Réservation non sélectionnée</string>
     <string name="bookings_filters_selected_option_content_description">Option de filtrage sélectionnée</string>
     <string name="bookings_filter_customer">Client</string>
@@ -53,7 +72,7 @@ Language: fr
     <string name="bookings_filters_enabled_title">Filtres • %d</string>
     <string name="woopos_search_orders_error_description">Veuillez réessayer.</string>
     <string name="woopos_search_orders_error_title">Impossible de charger les commandes</string>
-    <string name="woopos_search_orders_empty_description">Nous n’avons trouvé aucune commande correspondante. Essayez d’ajuster votre terme de recherche.</string>
+    <string name="woopos_search_orders_empty_description">Nous n’avons trouvé aucune commande portant ce nom. Essayez d’ajuster votre terme de recherche.</string>
     <string name="woopos_search_orders_empty_title">Aucune commande trouvée</string>
     <string name="woopos_search_orders">Rechercher des commandes</string>
     <string name="woopos_orders_details_totals_card_content_description">Répartition des totaux de commande</string>
@@ -95,7 +114,7 @@ Language: fr
     <string name="booking_cancel_dialog_confirm">Oui, l’annuler</string>
     <string name="booking_cancel_dialog_keep">Non, la garder</string>
     <string name="booking_cancel_dialog_message">%1$s ne pourra plus assister à « %2$s » le %3$s à %4$s.</string>
-    <string name="booking_cancel_dialog_title">Annuler la réservation</string>
+    <string name="booking_cancel_dialog_title_v2">Annuler les réservations ?</string>
     <string name="booking_fetch_error">Erreur lors de l’extraction de la réservation</string>
     <string name="bookings_filter_default">Tout</string>
     <string name="bookings_filter_title_service_event">Service/Événement</string>
@@ -104,7 +123,6 @@ Language: fr
     <string name="bookings_filter_title_type">Type de réservation</string>
     <string name="bookings_filter_title_payment_status">État du paiement</string>
     <string name="bookings_filter_title_attendance_status">État de présence</string>
-    <string name="bookings_filter_title_team_member">Membre de l’équipe assigné</string>
     <string name="bookings_filters_show_bookings">Afficher les réservations</string>
     <string name="bookings_filters_default_title">Filtres</string>
     <string name="bookings_empty_state_clear_filters_button">Effacer les filtres</string>
@@ -112,9 +130,6 @@ Language: fr
     <string name="bookings_empty_state_description_with_filters">Aucune réservation ne correspond à vos filtres. Essayez de les ajuster pour voir plus de résultats.</string>
     <string name="bookings_search_no_results_with_filters">Nous n’avons trouvé aucune réservation avec ce nom. Essayez d’ajuster votre terme de recherche ou vos filtres pour voir plus de résultats.</string>
     <string name="bookings_search_no_results_without_filters">Nous n’avons trouvé aucune réservation avec ce nom. Essayez d’ajuster votre terme de recherche pour voir plus de résultats.</string>
-    <string name="bookings_empty_state_description_upcoming">Vous n’avez pas de futurs rendez-vous ou d’événements planifiés.</string>
-    <string name="bookings_empty_state_description_today">Vous n’avez aucun rendez-vous ou événement planifié pour aujourd’hui.</string>
-    <string name="bookings_empty_state_description_default">Les réservations entrantes apparaîtront ici, où vous pourrez les voir et les gérer.</string>
     <string name="bookings_empty_state_title_upcoming">Aucune réservation à venir</string>
     <string name="bookings_empty_state_title_today">Aucune réservation aujourd’hui</string>
     <string name="bookings_empty_state_title_default">Aucune réservation trouvée</string>
@@ -150,12 +165,11 @@ Language: fr
     <string name="woopos_settings_local_catalog_size">Taille</string>
     <string name="woopos_settings_local_catalog_status">État du catalogue</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Gérer les réglages du catalogue</string>
-    <string name="woopos_settings_local_catalog_category">Catalogue</string>
+    <string name="woopos_settings_local_catalog_category">Catalogue de produits</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Partagez votre expérience dans un rapide sondage de 2 minutes et aidez-nous à nous améliorer.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">Comment fonctionne le PDV pour vous ?</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">Répondez à un rapide sondage de 2 minutes pour nous aider à façonner les fonctionnalités que vous allez adorer.</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">Vous pensez à des ventes en personne ?</string>
-    <string name="product_type_booking">Produit réservable</string>
     <string name="date_time_connector">à</string>
     <string name="booking_payment_view_order">Voir la commande</string>
     <string name="booking_payment_mark_as_paid">Marquer comme payée</string>
@@ -184,13 +198,10 @@ Language: fr
     <string name="booking_payment_status_pending_confirmation">En attente de confirmation</string>
     <string name="booking_payment_status_paid">Payé</string>
     <string name="booking_payment_status_unpaid">Non payé</string>
-    <string name="booking_appointment_label_price">Prix</string>
     <string name="booking_appointment_label_duration">Durée</string>
     <string name="booking_appointment_label_location">Lieu</string>
-    <string name="booking_appointment_label_staff">Personnel assigné</string>
     <string name="booking_appointment_label_time">Heure</string>
     <string name="booking_appointment_label_date">Date</string>
-    <string name="booking_appointment_details_header">DÉTAILS DU RENDEZ-VOUS</string>
     <string name="booking_details_title">Réservation nº %s</string>
     <string name="bookings_tab_all">Tout</string>
     <string name="bookings_tab_upcoming">À venir</string>

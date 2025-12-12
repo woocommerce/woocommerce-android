@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-17 16:54:04+0000
+Translation-Revision-Date: 2025-12-01 16:54:03+0000
 Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;
 Generator: GlotPress/2.4.0-alpha
 Language: ar
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">⁦%1$s⁩ لا يمكنه حضور \"⁦%2$s⁩\" في ⁦%3$s⁩ في ⁦%4$s⁩ بعد الآن.</string>
+    <string name="booking_customer_note_label">ملاحظة</string>
+    <string name="booking_appointment_label_team_member">عضو الفريق</string>
+    <string name="booking_details_section_header">تفاصيل الحجز</string>
+    <string name="booking_filter_date_time_swap_info">تمت إعادة ترتيب تحديد الوقت الخاص بك لإنشاء نطاق صالح</string>
+    <string name="bookings_filter_date_filter_value">نطاق مخصص</string>
+    <string name="bookings_filter_time_picker_title">تحديد وقت</string>
+    <string name="bookings_filter_date_to">إلى</string>
+    <string name="bookings_filter_date_from">من</string>
+    <string name="bookings_filter_time_label">الوقت</string>
+    <string name="bookings_filter_date_label">التاريخ</string>
+    <string name="bookings_filter_search_service_event">البحث في الخدمات / الفعاليات</string>
+    <string name="bookings_filter_title_member">عضو الفريق</string>
+    <string name="bookings_empty_state_description_upcoming_v2">ستظهر الحجوزات الجديدة هنا عندما يقوم العملاء بجدولة خدماتك أو التسجيل في الفعاليات.</string>
+    <string name="bookings_empty_state_description_today_v2">ستظهر أي حجوزات مجدولة اليوم هنا.</string>
+    <string name="bookings_empty_state_description_all">ستظهر الحجوزات هنا بمجرد أن يبدأ العملاء في جدولة خدماتك أو التسجيل للفعاليات.</string>
+    <string name="bookings_empty_state_title_all">لا توجد حجوزات حتى الآن</string>
+    <string name="bookings_resources_fetch_error">حدث خطأ في إحضار أعضاء الفريق</string>
+    <string name="product_type_bookable_service">الخدمة</string>
     <string name="booking_not_selected">لم يُحدد الحجز</string>
     <string name="bookings_filters_selected_option_content_description">خيار عامل التصفية المُحدَّد</string>
     <string name="bookings_filter_customer">العميل</string>
@@ -53,7 +72,7 @@ Language: ar
     <string name="bookings_filters_enabled_title">عوامل التصفية • %d</string>
     <string name="woopos_search_orders_error_description">يُرجى إعادة المحاولة.</string>
     <string name="woopos_search_orders_error_title">يتعذّر تحميل الطلبات</string>
-    <string name="woopos_search_orders_empty_description">لم نتمكن من العثور على أي طلبات مماثلة – حاول تعديل مصطلح البحث.</string>
+    <string name="woopos_search_orders_empty_description">لم نتمكن من العثور على أي طلبات تحمل هذا الاسم. حاول ضبط مصطلح البحث.</string>
     <string name="woopos_search_orders_empty_title">تعذّر العثور على طلبات</string>
     <string name="woopos_search_orders">البحث عن الطلبات</string>
     <string name="woopos_orders_details_totals_card_content_description">تفاصيل إجمالي الطلب</string>
@@ -95,7 +114,7 @@ Language: ar
     <string name="booking_cancel_dialog_confirm">نعم، إلغاء الحجز</string>
     <string name="booking_cancel_dialog_keep">لا، الاحتفاظ بالحجز</string>
     <string name="booking_cancel_dialog_message">⁦%1$s⁩ لن يتمكن من حضور \"⁦%2$s⁩\" المقرّر في ⁦%3$s⁩ في ⁦%4$s⁩ بعد الآن.</string>
-    <string name="booking_cancel_dialog_title">إلغاء الحجز</string>
+    <string name="booking_cancel_dialog_title_v2">إلغاء الحجز؟</string>
     <string name="booking_fetch_error">حدث خطأ في أثناء إحضار الحجز</string>
     <string name="bookings_filter_default">أخرى</string>
     <string name="bookings_filter_title_service_event">الخدمة / الحدث</string>
@@ -104,7 +123,6 @@ Language: ar
     <string name="bookings_filter_title_type">نوع الحجز</string>
     <string name="bookings_filter_title_payment_status">حالة المدفوعات</string>
     <string name="bookings_filter_title_attendance_status">حالة الحضور</string>
-    <string name="bookings_filter_title_team_member">عضو الفريق المعيّن</string>
     <string name="bookings_filters_show_bookings">عرض الحجوزات</string>
     <string name="bookings_filters_default_title">عوامل التصفية</string>
     <string name="bookings_empty_state_clear_filters_button">مسح عوامل التصفية</string>
@@ -112,9 +130,6 @@ Language: ar
     <string name="bookings_empty_state_description_with_filters">لا تتطابق أي حجوزات مع عوامل التصفية الخاصة بك. حاول تعديلها لرؤية مزيد من النتائج.</string>
     <string name="bookings_search_no_results_with_filters">لم نتمكن من العثور على أي حجوزات بهذا الاسم — حاول تعديل مصطلح البحث أو عوامل التصفية للحصول على المزيد من النتائج.</string>
     <string name="bookings_search_no_results_without_filters">لم نتمكن من العثور على أي حجوزات بهذا الاسم — حاول تعديل مصطلح البحث للحصول على المزيد من النتائج.</string>
-    <string name="bookings_empty_state_description_upcoming">ليست لديك أية مواعيد أو أحداث مستقبلية مجدولة حتى الآن.</string>
-    <string name="bookings_empty_state_description_today">ليس لديك أي مواعيد أو أحداث مجدولة اليوم.</string>
-    <string name="bookings_empty_state_description_default">ستظهر الحجوزات الواردة هنا، حيث يمكنك عرضها وإدارتها.</string>
     <string name="bookings_empty_state_title_upcoming">لا توجد حجوزات مقبلة</string>
     <string name="bookings_empty_state_title_today">لا توجد حجوزات اليوم</string>
     <string name="bookings_empty_state_title_default">لم يتم العثور على أي حجوزات</string>
@@ -150,12 +165,11 @@ Language: ar
     <string name="woopos_settings_local_catalog_size">الحجم</string>
     <string name="woopos_settings_local_catalog_status">حالة الكتالوج</string>
     <string name="woopos_settings_local_catalog_category_subtitle">إدارة إعدادات الكتالوج</string>
-    <string name="woopos_settings_local_catalog_category">الكتالوج</string>
+    <string name="woopos_settings_local_catalog_category">قائمة المنتجات</string>
     <string name="local_notification_woo_pos_survey_current_user_description">شاركنا تجربتك في استطلاع رأي سريع مدته دقيقتان وساعدنا على التحسن.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">كيف أداء نظام نقاط البيع لديك؟</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">شارك في استطلاع رأي سريع مدته دقيقتان لمساعدتنا على تشكيل الميزات التي ستعجبك.</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">هل تفكر في البيع مباشرةً للعملاء؟</string>
-    <string name="product_type_booking">منتج قابل للحجز</string>
     <string name="date_time_connector">في</string>
     <string name="booking_payment_view_order">عرض الطلب</string>
     <string name="booking_payment_mark_as_paid">وضع علامة كـ \"مدفوع\"</string>
@@ -184,13 +198,10 @@ Language: ar
     <string name="booking_payment_status_pending_confirmation">معلق للتأكيد</string>
     <string name="booking_payment_status_paid">مدفوع</string>
     <string name="booking_payment_status_unpaid">غير مدفوع</string>
-    <string name="booking_appointment_label_price">السعر</string>
     <string name="booking_appointment_label_duration">المدة</string>
     <string name="booking_appointment_label_location">الموقع</string>
-    <string name="booking_appointment_label_staff">الموظفون المعيِّنون</string>
     <string name="booking_appointment_label_time">الوقت</string>
     <string name="booking_appointment_label_date">التاريخ</string>
-    <string name="booking_appointment_details_header">تفاصيل الموعد</string>
     <string name="booking_details_title">الحجز رقم %s</string>
     <string name="bookings_tab_all">الكل</string>
     <string name="bookings_tab_upcoming">القادم</string>
@@ -402,8 +413,8 @@ Language: ar
     <string name="woopos_search_items_error_description">يُرجى المحاولة مجددًا.</string>
     <string name="woopos_search_coupons_error_title">يتعذر تحميل القسائم</string>
     <string name="woopos_search_items_error_title">يتعذر تحميل المنتجات</string>
-    <string name="woopos_search_empty_coupons_description">لم نتمكن من العثور على أي قسائم مطابقة - حاول ضبط مصطلح البحث.</string>
-    <string name="woopos_search_empty_description">لم نتمكن من العثور على أي منتجات مطابقة - حاول ضبط مصطلح البحث.</string>
+    <string name="woopos_search_empty_coupons_description">لم نتمكن من العثور على أي قسائم مطابقة. حاول ضبط مصطلح البحث.</string>
+    <string name="woopos_search_empty_description">لم نتمكن من العثور على أي منتجات مطابقة. حاول ضبط مصطلح البحث.</string>
     <string name="woopos_search_coupons_empty_title">لم يتم العثور على قسائم</string>
     <string name="woopos_search_coupons">البحث عن القسائم</string>
     <string name="woopos_coupons_pagination_error_description">يُرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.</string>

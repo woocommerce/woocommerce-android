@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-18 09:54:05+0000
+Translation-Revision-Date: 2025-12-02 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: ja_JP
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">%1$s は %3$s の %4$sに「%2$s」に参加できなくなりました。</string>
+    <string name="booking_customer_note_label">注意</string>
+    <string name="booking_appointment_label_team_member">チームメンバー</string>
+    <string name="booking_details_section_header">予約詳細</string>
+    <string name="booking_filter_date_time_swap_info">有効な範囲を作成するため、選択した時間の順序が変更されました</string>
+    <string name="bookings_filter_date_filter_value">カスタム範囲</string>
+    <string name="bookings_filter_time_picker_title">時間を選択</string>
+    <string name="bookings_filter_date_to">宛先</string>
+    <string name="bookings_filter_date_from">送信元</string>
+    <string name="bookings_filter_time_label">時間</string>
+    <string name="bookings_filter_date_label">日付</string>
+    <string name="bookings_filter_search_service_event">サービス / イベントを検索</string>
+    <string name="bookings_filter_title_member">チームメンバー</string>
+    <string name="bookings_empty_state_description_upcoming_v2">顧客がサービスを予約したりイベントに登録したりすると、新しい予約がこちらに表示されます。</string>
+    <string name="bookings_empty_state_description_today_v2">本日予定されている予約はすべてこちらに表示されます。</string>
+    <string name="bookings_empty_state_description_all">顧客がサービスの予約やイベントの登録を始めると、こちらに予約が表示されます。</string>
+    <string name="bookings_empty_state_title_all">まだ予約がありません</string>
+    <string name="bookings_resources_fetch_error">チームメンバーの取得エラー</string>
+    <string name="product_type_bookable_service">サービス</string>
     <string name="booking_not_selected">予約が選択されていません</string>
     <string name="bookings_filters_selected_option_content_description">選択済みのフィルターオプション</string>
     <string name="bookings_filter_customer">顧客</string>
@@ -53,7 +72,7 @@ Language: ja_JP
     <string name="bookings_filters_enabled_title">フィルター • %d</string>
     <string name="woopos_search_orders_error_description">もう一度お試しください。</string>
     <string name="woopos_search_orders_error_title">注文を読み込めません</string>
-    <string name="woopos_search_orders_empty_description">一致する注文が見つかりませんでした。検索語句を調整してみてください。</string>
+    <string name="woopos_search_orders_empty_description">その名前の注文が見つかりませんでした。 検索語を修正してみてください。</string>
     <string name="woopos_search_orders_empty_title">注文がありません</string>
     <string name="woopos_search_orders">注文を検索</string>
     <string name="woopos_orders_details_totals_card_content_description">注文合計の内訳</string>
@@ -95,7 +114,7 @@ Language: ja_JP
     <string name="booking_cancel_dialog_confirm">はい、キャンセルします</string>
     <string name="booking_cancel_dialog_keep">いいえ、そのままにします</string>
     <string name="booking_cancel_dialog_message">%1$sが %3$s、%4$sの「%2$s」に出席できなくなりました。</string>
-    <string name="booking_cancel_dialog_title">予約をキャンセル</string>
+    <string name="booking_cancel_dialog_title_v2">予約をキャンセルしますか ?</string>
     <string name="booking_fetch_error">予約取得時のエラー</string>
     <string name="bookings_filter_default">すべて</string>
     <string name="bookings_filter_title_service_event">サービス / イベント</string>
@@ -104,7 +123,6 @@ Language: ja_JP
     <string name="bookings_filter_title_type">予約タイプ</string>
     <string name="bookings_filter_title_payment_status">支払いステータス</string>
     <string name="bookings_filter_title_attendance_status">出席状況</string>
-    <string name="bookings_filter_title_team_member">アサインされたチームメンバー</string>
     <string name="bookings_filters_show_bookings">予約を表示</string>
     <string name="bookings_filters_default_title">フィルター</string>
     <string name="bookings_empty_state_clear_filters_button">フィルターをクリア</string>
@@ -112,9 +130,6 @@ Language: ja_JP
     <string name="bookings_empty_state_description_with_filters">フィルターに一致する予約がありません。 より多くの結果を表示するには、調整してみてください。</string>
     <string name="bookings_search_no_results_with_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索語句またはフィルターを調整してみてください。</string>
     <string name="bookings_search_no_results_without_filters">その名前の予約は見つかりませんでした。より多くの結果を表示するには、検索キーワードを調整してみてください。</string>
-    <string name="bookings_empty_state_description_upcoming">今後の予定やイベントはまだスケジュールされていません。</string>
-    <string name="bookings_empty_state_description_today">今日予定された予約やイベントはありません。</string>
-    <string name="bookings_empty_state_description_default">追加された予約がこちらに表示され、閲覧および管理できます。</string>
     <string name="bookings_empty_state_title_upcoming">今後の予約はありません</string>
     <string name="bookings_empty_state_title_today">今日の予約はありません</string>
     <string name="bookings_empty_state_title_default">予約はありません</string>
@@ -150,12 +165,11 @@ Language: ja_JP
     <string name="woopos_settings_local_catalog_size">サイズ</string>
     <string name="woopos_settings_local_catalog_status">カタログのステータス</string>
     <string name="woopos_settings_local_catalog_category_subtitle">カタログ設定を管理</string>
-    <string name="woopos_settings_local_catalog_category">カタログ</string>
+    <string name="woopos_settings_local_catalog_category">商品カタログ</string>
     <string name="local_notification_woo_pos_survey_current_user_description">2分間の簡単なアンケートで体験を共有し、改善にご協力ください。</string>
     <string name="local_notification_woo_pos_survey_current_user_title">POS 機能はいかがですか ?</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">よりよい機能を実現するため、2分間の簡単なアンケートにご協力ください。</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">オフラインでの販売についてお考えですか ?</string>
-    <string name="product_type_booking">予約商品</string>
     <string name="date_time_connector">\@</string>
     <string name="booking_payment_view_order">注文を表示</string>
     <string name="booking_payment_mark_as_paid">支払い済みとしてマーク</string>
@@ -184,13 +198,10 @@ Language: ja_JP
     <string name="booking_payment_status_pending_confirmation">確認待ち</string>
     <string name="booking_payment_status_paid">支払い済み</string>
     <string name="booking_payment_status_unpaid">未払い</string>
-    <string name="booking_appointment_label_price">価格</string>
     <string name="booking_appointment_label_duration">期間</string>
     <string name="booking_appointment_label_location">場所</string>
-    <string name="booking_appointment_label_staff">担当スタッフ</string>
     <string name="booking_appointment_label_time">時刻</string>
     <string name="booking_appointment_label_date">日付</string>
-    <string name="booking_appointment_details_header">予約の詳細</string>
     <string name="booking_details_title">予約番号%s</string>
     <string name="bookings_tab_all">すべて</string>
     <string name="bookings_tab_upcoming">予定済み</string>
@@ -402,8 +413,8 @@ Language: ja_JP
     <string name="woopos_search_items_error_description">もう一度お試しください。</string>
     <string name="woopos_search_coupons_error_title">クーポンを読み込めません</string>
     <string name="woopos_search_items_error_title">商品を読み込めません</string>
-    <string name="woopos_search_empty_coupons_description">一致するクーポンが見つかりませんでした。検索語句を調整してみてください。</string>
-    <string name="woopos_search_empty_description">一致する商品が見つかりませんでした。検索語句を調整してみてください。</string>
+    <string name="woopos_search_empty_coupons_description">一致するクーポンが見つかりませんでした。 検索語を修正してみてください。</string>
+    <string name="woopos_search_empty_description">一致する商品が見つかりませんでした。 検索語を修正してみてください。</string>
     <string name="woopos_search_coupons_empty_title">クーポンが見つかりません</string>
     <string name="woopos_search_coupons">クーポンを検索</string>
     <string name="woopos_coupons_pagination_error_description">ネットワーク接続を確認して、もう一度お試しください。</string>
