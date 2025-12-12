@@ -44,7 +44,11 @@ class AgeEligibilityChecker @Inject constructor(
             AgeSignalsVerificationStatus.VERIFIED -> true
             AgeSignalsVerificationStatus.SUPERVISED,
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> {
-                ageUpper != null && ageUpper >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE
+                if (ageUpper == null) {
+                    true // If we can't determine the age return true
+                } else {
+                    ageUpper >= WOOCOMMERCE_TOS_MINIMUM_AGE_FOR_APP_USE
+                }
             }
 
             AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> false
