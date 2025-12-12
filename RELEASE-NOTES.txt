@@ -6,6 +6,7 @@
 -----
 - [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 - [*][Woo POS] Fixed loading indicator colors to match the design [https://github.com/woocommerce/woocommerce-android/pull/15043]
+- [**][Woo POS] Fixed crash when deleted products are in cart during checkout [https://github.com/woocommerce/woocommerce-android/pull/15083]
 - [*][Woo POS] Display specific error when removed variation is added to the cart [https://github.com/woocommerce/woocommerce-android/pull/15076]
 
 23.8
