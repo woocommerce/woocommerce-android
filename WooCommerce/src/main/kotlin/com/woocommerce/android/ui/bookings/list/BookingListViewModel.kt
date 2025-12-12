@@ -195,10 +195,9 @@ class BookingListViewModel @Inject constructor(
 
                 if (!isRefreshing && lastFetchParams == fetchParams) return@collectLatest
 
-                val initialLoadingState = if (isRefreshing) {
-                    BookingListLoadingState.Refreshing
-                } else if (lastFetchParams != null && lastFetchParams?.sortOption != fetchParams.sortOption) {
-                    // When sort option changes, force refreshing state to indicate data reload
+                val initialLoadingState = if (isRefreshing ||
+                    (lastFetchParams != null && lastFetchParams?.sortOption != fetchParams.sortOption)
+                ) {
                     BookingListLoadingState.Refreshing
                 } else {
                     BookingListLoadingState.Loading
