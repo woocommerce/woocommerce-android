@@ -33,7 +33,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given catalog is already generated, when generateCatalogWithPolling, then returns success immediately`() =
+    fun `given catalog is already generated, when syncCatalog, then returns success immediately`() =
         runTest {
             // GIVEN
             val initialResult = WooPosGenerateCatalogResult(
@@ -43,7 +43,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             whenever(posLocalCatalogStore.generateCatalog(site)).thenReturn(Result.success(initialResult))
 
             // WHEN
-            val result = sut.generateCatalogWithPolling(site)
+            val result = sut.syncCatalog(site)
 
             // THEN
             assertThat(result.isSuccess).isTrue()
@@ -70,7 +70,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             .thenReturn(Result.success(completedResult))
 
         // WHEN
-        val result = sut.generateCatalogWithPolling(site)
+        val result = sut.syncCatalog(site)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -93,14 +93,14 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             .thenReturn(Result.success(completedWithoutUrl))
 
         // WHEN
-        val result = sut.generateCatalogWithPolling(site)
+        val result = sut.syncCatalog(site)
 
         // THEN
         assertThat(result.isFailure).isTrue()
     }
 
     @Test
-    fun `given initial request fails, when generateCatalogWithPolling, then retries and returns success`() = runTest {
+    fun `given initial request fails, when syncCatalog, then retries and returns success`() = runTest {
         // GIVEN
         val error = Exception("Network error")
         val completed = WooPosGenerateCatalogResult(
@@ -112,14 +112,14 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             .thenReturn(Result.success(completed))
 
         // WHEN
-        val result = sut.generateCatalogWithPolling(site)
+        val result = sut.syncCatalog(site)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
     }
 
     @Test
-    fun `given two requests fails, when generateCatalogWithPolling, then continues until success`() =
+    fun `given two requests fails, when syncCatalog, then continues until success`() =
         runTest {
             // GIVEN
             val initialResult = WooPosGenerateCatalogResult(state = WooPosGenerateCatalogState.SCHEDULED)
@@ -137,7 +137,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
                 .thenReturn(Result.success(completedResult))
 
             // WHEN
-            val result = sut.generateCatalogWithPolling(site)
+            val result = sut.syncCatalog(site)
 
             // THEN
             assertThat(result.isSuccess).isTrue()
@@ -145,7 +145,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given 3 consecutive requests fail, when generateCatalogWithPolling, then returns failure`() = runTest {
+    fun `given 3 consecutive requests fail, when syncCatalog, then returns failure`() = runTest {
         // GIVEN
         val error = Exception("Network error")
         val completed = WooPosGenerateCatalogResult(
@@ -159,7 +159,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             .thenReturn(Result.success(completed)) // unreachable
 
         // WHEN
-        val result = sut.generateCatalogWithPolling(site)
+        val result = sut.syncCatalog(site)
 
         // THEN
         assertThat(result.isFailure).isTrue
@@ -177,7 +177,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
             .thenReturn(Result.success(inProgressResult))
 
         // WHEN
-        val result = sut.generateCatalogWithPolling(site)
+        val result = sut.syncCatalog(site)
 
         // THEN
         assertThat(result.isFailure).isTrue()

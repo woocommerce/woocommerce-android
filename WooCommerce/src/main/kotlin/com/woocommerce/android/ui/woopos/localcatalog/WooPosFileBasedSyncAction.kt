@@ -24,7 +24,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     @Suppress("ReturnCount")
-    suspend fun generateCatalogWithPolling(
+    suspend fun syncCatalog(
         site: SiteModel
     ): Result<FileBasedSyncResult> {
         logger.d("Starting file-based catalog generation for site ${site.id}")
