@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
 }
 
@@ -27,6 +28,8 @@ dependencies {
     implementation(libs.androidx.datastore.main)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.compose.ui.main)
+
+    ksp(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
