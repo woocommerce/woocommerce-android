@@ -25,6 +25,8 @@ dependencies {
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.datastore.main)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.compose.ui.main)
 
     testImplementation(libs.junit)
     testImplementation(libs.mockito.kotlin)
