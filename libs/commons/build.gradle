@@ -30,6 +30,8 @@ android {
 
 dependencies {
     implementation(libs.androidx.annotation)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.compose.ui.main)
     implementation(libs.glassfish.javax.annotation)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.automattic.tracks.crashlogging)
@@ -38,13 +40,10 @@ dependencies {
     implementation(libs.eventbus.android)
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.wordpress.utils)
+    implementation(libs.apache.commons.text)
 
-    // Hilt annotation processing
     ksp(libs.google.dagger.hilt.compiler)
 
-    // FluxC - WordPress/WooCommerce data layer
-    // Using 'api' instead of 'implementation' to expose FluxC types to consumers (app module)
-    // This is needed for KSP/Dagger annotation processing in the app module
     api project(":libs:fluxc")
     api project(":libs:fluxc-plugin")
 
