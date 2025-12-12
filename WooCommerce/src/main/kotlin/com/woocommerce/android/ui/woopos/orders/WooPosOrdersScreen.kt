@@ -220,12 +220,37 @@ private fun OrdersContent(
                 .weight(0.7f)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
-            WooPosOrderDetails(
-                modifier = Modifier
-                    .fillMaxHeight(),
-                details = state.selectedDetails,
-                onUIEvent = onUIEvent
-            )
+            when {
+                state.selectedDetails != null -> {
+                    WooPosOrderDetails(
+                        modifier = Modifier
+                            .fillMaxHeight(),
+                        details = state.selectedDetails,
+                        onUIEvent = onUIEvent
+                    )
+                }
+                state.items is WooPosOrdersState.Content.Items.Searching -> {
+                    OrderDetailsLoadingPane(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .padding(
+                                start = WooPosSpacing.Medium.value,
+                                end = WooPosSpacing.Medium.value,
+                                top = WooPosSpacing.XLarge.value,
+                                bottom = WooPosSpacing.XLarge.value
+                            )
+                    )
+                }
+                else -> {
+                    WooPosEmptyScreen(
+                        modifier = Modifier.fillMaxSize(),
+                        icon = WooPosIcons.OrdersEmpty,
+                        title = stringResource(R.string.woopos_orders_no_order_selected),
+                        message = "",
+                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                    )
+                }
+            }
         }
     }
 }
@@ -660,6 +685,31 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosOrdersEmptyStatePreview() {
+    WooPosTheme {
+        WooPosOrdersScreen(
+            state = WooPosOrdersState.Empty(
+                pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                searchInputState = WooPosSearchInputState.Closed,
+            ),
+            scrollToTopEvent = MutableSharedFlow(),
+            onBackClicked = {},
+            onRefresh = {},
+            onOrderSelected = {},
+            onEndOfOrdersListReached = {},
+            onPaginationErrorTryAgain = {},
+            onSearchEvent = {},
+            onSearchErrorRetry = {},
+            onOrdersEmptyActionClicked = {},
+            onOrdersLoadingErrorRetryButtonClicked = {},
+            onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
         )
     }
 }
