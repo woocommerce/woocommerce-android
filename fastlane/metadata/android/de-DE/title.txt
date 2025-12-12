@@ -1,1 +1,1 @@
-WooCommerce: Shop-Verwaltung und POS
+WooCommerce

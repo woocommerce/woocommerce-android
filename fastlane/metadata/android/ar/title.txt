@@ -1,1 +1,1 @@
-متجر WooCommerce: إدارة المتاجر ونقاط البيع
+WooCommerce
