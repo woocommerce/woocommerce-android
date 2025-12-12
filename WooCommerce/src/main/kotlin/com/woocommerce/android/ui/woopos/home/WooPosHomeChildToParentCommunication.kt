@@ -40,6 +40,7 @@ sealed class ChildToParentEvent {
     data object ExitPosClicked : ChildToParentEvent()
     data object SetupBarcodeScannerClicked : ChildToParentEvent()
     data object CouponsValidationFailed : ChildToParentEvent()
+    data class MissingVariationEvent(val variationId: Long) : ChildToParentEvent()
     data object RemoveCouponsClicked : ChildToParentEvent()
     data class CouponsRemoved(
         val cartDataList: List<WooPosItemsViewModel.ItemClickedData>

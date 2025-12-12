@@ -21,7 +21,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosToolbar(
@@ -50,11 +49,11 @@ fun WooPosToolbar(
             }
         ) {
             WooPosBackButton(
-                modifier = Modifier.padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
+                modifier = Modifier.padding(start = WooPosSpacing.Small.value)
             ) { onBackClicked?.invoke() }
         }
 
-        val startPadding = WooPosSpacing.Small.value.toAdaptivePadding()
+        val startPadding = WooPosSpacing.Small.value
         WooPosText(
             text = titleText,
             style = titleStyle,

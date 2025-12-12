@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.bookings.filter.teammember
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -50,7 +51,8 @@ fun BookingTeamMemberFilterPage(state: BookingTeamMemberFilterUiState, event: Li
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.surface,
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        contentWindowInsets = WindowInsets()
     ) { paddingValues ->
         if (state.skeletonVisible) {
             BookingTeamMemberFilterPageLoading(modifier = Modifier.padding(paddingValues))

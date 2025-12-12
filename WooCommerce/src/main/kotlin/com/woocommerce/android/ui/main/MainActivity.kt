@@ -373,6 +373,8 @@ class MainActivity :
             viewModel.handleShortcutAction(intent?.action?.lowercase(Locale.ROOT))
             handleIncomingImages()
         }
+
+        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     private fun setOnBackNavigationCallback() {
@@ -430,7 +432,6 @@ class MainActivity :
         }
 
         checkConnection()
-        viewModel.showFeatureAnnouncementIfNeeded()
     }
 
     override fun onPause() {
