@@ -3,13 +3,16 @@ package com.woocommerce.android.ui.woopos.splash
 import com.woocommerce.android.ui.woopos.common.data.WooPosPopularProductsProvider
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.WooPosPrepopulatingDataStatus
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersInMemoryCache
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -25,6 +28,7 @@ import kotlin.test.Test
 class WooPosSplashViewModelTest {
     private val productsDataSource: WooPosProductsDataSource = mock()
     private val ordersCache: WooPosOrdersInMemoryCache = mock()
+    private val ordersDataSource: WooPosOrdersDataSource = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val popularProductsProvider: WooPosPopularProductsProvider = mock()
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab = mock()
@@ -46,6 +50,7 @@ class WooPosSplashViewModelTest {
         )
         whenever(productsDataSource.getCurrentSyncStrategy())
             .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(ordersDataSource.loadOrders()).thenReturn(emptyFlow())
     }
 
     @Test
@@ -281,7 +286,9 @@ class WooPosSplashViewModelTest {
             analyticsTracker,
             posCanBeLaunchedInTab,
             ordersCache,
+            ordersDataSource,
             preferencesRepository,
+            CoroutineScope(coroutinesTestRule.testDispatcher),
         )
     }
 }

@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewFontScale
@@ -264,11 +263,8 @@ private fun Button(
 
 @Composable
 private fun ButtonsLoadingIndicator(size: Dp) {
-    WooPosCircularLoadingIndicator(
+    WooPosButtonLoadingIndicator(
         modifier = Modifier.size(size),
-        spinnerPrimaryColor = MaterialTheme.colorScheme.secondary,
-        spinnerSecondaryColor = Color.White.copy(alpha = 0.2f)
-            .compositeOver(MaterialTheme.colorScheme.primaryContainer),
     )
 }
 
@@ -281,7 +277,7 @@ fun WooPosButtonsPreview() {
                 .padding(WooPosSpacing.Medium.value)
                 .width(600.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
             WooPosButton(
                 text = "Button",
@@ -337,7 +333,7 @@ fun WooPosSmallButtonsPreview() {
                 .padding(WooPosSpacing.Medium.value)
                 .width(600.dp)
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
             WooPosButtonSmall(
                 text = "Button Small",

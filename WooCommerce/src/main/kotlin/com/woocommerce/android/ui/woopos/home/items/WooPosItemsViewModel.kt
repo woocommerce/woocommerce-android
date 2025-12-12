@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -27,6 +28,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class WooPosItemsViewModel @Inject constructor(
@@ -38,6 +40,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
+    private val dateTimeProvider: DateTimeProvider,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -72,6 +75,7 @@ class WooPosItemsViewModel @Inject constructor(
             _catalogSyncOverdueBannerState.value = when (requirement) {
                 is WooPosFullSyncRequirement.NonBlockingRequired -> {
                     if (requirement.isOverdue) {
+                        trackStaleWarningShown(requirement.lastSyncTimestamp)
                         CatalogSyncOverdueBannerState.Visible
                     } else {
                         CatalogSyncOverdueBannerState.Hidden
@@ -80,6 +84,16 @@ class WooPosItemsViewModel @Inject constructor(
                 else -> CatalogSyncOverdueBannerState.Hidden
             }
         }
+    }
+
+    private suspend fun trackStaleWarningShown(lastSyncTimestamp: Long) {
+        val currentTime = dateTimeProvider.now()
+        val timeDifferenceMs = currentTime - lastSyncTimestamp
+        val hoursSinceLastSync = timeDifferenceMs.milliseconds.inWholeHours.toInt()
+
+        analyticsTracker.track(
+            WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningShown(hoursSinceLastSync)
+        )
     }
 
     fun onUIEvent(event: WooPosItemsUIEvent) {
@@ -104,6 +118,11 @@ class WooPosItemsViewModel @Inject constructor(
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
             WooPosItemsUIEvent.SyncOverdueBannerDismissed -> {
                 _catalogSyncOverdueBannerState.value = CatalogSyncOverdueBannerState.Hidden
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed
+                    )
+                }
             }
         }
     }
@@ -124,6 +143,7 @@ class WooPosItemsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
                     is ParentToChildrenEvent.BarcodeEvent,
+                    is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.RemoveProductsClicked,
                     is ParentToChildrenEvent.ProductsRemoved,
                     is ParentToChildrenEvent.SettingsEvent -> Unit

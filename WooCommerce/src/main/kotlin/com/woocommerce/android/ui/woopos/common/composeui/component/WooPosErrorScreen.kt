@@ -25,7 +25,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosErrorScreen(
@@ -40,7 +39,7 @@ fun WooPosErrorScreen(
         modifier = modifier
             .fillMaxSize()
             .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
-            .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.XLarge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
@@ -55,7 +54,7 @@ fun WooPosErrorScreen(
                 tint = WooPosTheme.colors.unspecified,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
             WooPosText(
                 text = message,
@@ -64,15 +63,14 @@ fun WooPosErrorScreen(
                 textAlign = TextAlign.Center,
             )
 
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosText(
                 text = reason,
                 style = WooPosTypography.BodyLarge,
                 textAlign = TextAlign.Center,
             )
-            @Suppress("WooPosDesignSystemSpacingUsageRule")
-            Spacer(modifier = Modifier.height(40.dp.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXLarge.value))
             primaryButton?.let {
                 WooPosButton(
                     text = it.text,
@@ -81,14 +79,14 @@ fun WooPosErrorScreen(
                 )
             }
             secondaryButton?.let {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosOutlinedButton(
                     text = it.text,
                     onClick = it.click,
                     modifier = WooPosErrorAndEmptyStateButtonModifier
                 )
             }
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
     }
 }

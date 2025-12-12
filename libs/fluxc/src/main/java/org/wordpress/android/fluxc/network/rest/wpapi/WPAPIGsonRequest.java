@@ -48,6 +48,7 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
     @Override
     public BaseNetworkError deliverBaseNetworkError(@NonNull BaseNetworkError error) {
         String errorCode = null;
+        JSONObject errorData = null;
         if (error.hasVolleyError() && error.volleyError.networkResponse != null) {
             String jsonString;
             try {
@@ -57,6 +58,10 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
 
                 String errorMessage = jsonObject.optString("message", "");
                 errorCode = jsonObject.optString("code", "");
+
+                if (jsonObject.has("data")) {
+                    errorData = jsonObject.optJSONObject("data");
+                }
                 if (!errorMessage.isEmpty()) {
                     error.message = errorMessage;
                 }
@@ -81,6 +86,6 @@ public class WPAPIGsonRequest<T> extends GsonRequest<T> {
             }
         }
 
-        return new WPAPINetworkError(error, errorCode);
+        return new WPAPINetworkError(error, errorCode, errorData);
     }
 }
