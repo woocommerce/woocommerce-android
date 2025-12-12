@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: управление магазином и POS

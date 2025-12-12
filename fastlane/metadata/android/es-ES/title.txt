@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: gestión de tiendas y puntos de venta

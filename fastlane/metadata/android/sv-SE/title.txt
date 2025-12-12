@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: Butikshantering och POS
