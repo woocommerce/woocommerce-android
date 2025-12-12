@@ -21,6 +21,7 @@ sealed class WooPosRefundState {
         val formattedSubtotal: String,
         val formattedTaxes: String,
         val formattedTotal: String,
+        val paymentMethod: String,
         val step: RefundStep
     ) : WooPosRefundState() {
         @Immutable
@@ -30,6 +31,9 @@ sealed class WooPosRefundState {
 
             @Immutable
             data object ReviewRefund : RefundStep()
+
+            @Immutable
+            data object ConfirmRefund : RefundStep()
         }
     }
 

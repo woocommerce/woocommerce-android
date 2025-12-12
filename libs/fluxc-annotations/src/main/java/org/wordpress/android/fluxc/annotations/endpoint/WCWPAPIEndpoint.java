@@ -15,6 +15,8 @@ public class WCWPAPIEndpoint {
 
     private static final String WC_PREFIX_V1_ADDONS = "wc-product-add-ons/v1";
 
+    private static final String WC_PREFIX_POS_V1 = "wc/pos/v1";
+
     private static final String WC_PREFIX_TELEMETRY = "wc-telemetry";
 
     private static final String WC_PREFIX_ADMIN = "wc-admin";
@@ -65,6 +67,10 @@ public class WCWPAPIEndpoint {
 
     public String getPathV1Addons() {
         return "/" + WC_PREFIX_V1_ADDONS + mEndpoint;
+    }
+
+    public String getPathPosV1() {
+        return "/" + WC_PREFIX_POS_V1 + mEndpoint;
     }
 
     public String getPathWcTelemetry() {
