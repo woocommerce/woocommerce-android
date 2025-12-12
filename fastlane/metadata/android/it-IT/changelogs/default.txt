@@ -1,0 +1,2 @@
+23.8:
+Questo aggiornamento semplifica il flusso di lavoro con correzioni alla navigazione, agli arresti anomali delle tariffe di spedizione e al layout della schermata di pagamento. Inoltre, POS riceve miglioramenti, tra cui impostazioni del Catalogo locale più veloci, una migliore gestione dei prodotti eliminati e lo scorrimento automatico ai tuoi ordini più recenti.
