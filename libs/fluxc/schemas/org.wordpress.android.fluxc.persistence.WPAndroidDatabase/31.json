@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 31,
-    "identityHash": "acd6844473131a56592e8a04be17386c",
+    "identityHash": "170c715c7279c4691cfd3d797a79fa3b",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -316,7 +316,7 @@
         }
       },
       {
-        "tableName": "ThemeModel",
+        "tableName": "ThemeEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `themeId` TEXT NOT NULL, `name` TEXT NOT NULL, `demoUrl` TEXT, `active` INTEGER NOT NULL, `isWpComTheme` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `themeId`, `isWpComTheme`))",
         "fields": [
           {
@@ -367,7 +367,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'acd6844473131a56592e8a04be17386c')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '170c715c7279c4691cfd3d797a79fa3b')"
     ]
   }
 }

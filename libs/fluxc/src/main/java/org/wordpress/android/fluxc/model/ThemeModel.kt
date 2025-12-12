@@ -2,10 +2,9 @@ package org.wordpress.android.fluxc.model
 
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import java.io.Serializable
 
 @Entity(
-    tableName = "ThemeModel",
+    tableName = "ThemeEntity",
     primaryKeys = ["siteId", "themeId", "isWpComTheme"]
 )
 data class ThemeModel(
@@ -15,8 +14,4 @@ data class ThemeModel(
     val demoUrl: String?,
     val active: Boolean,
     val isWpComTheme: Boolean
-) : Serializable {
-    companion object {
-        private const val serialVersionUID = 5966516212440517166L
-    }
-}
+)

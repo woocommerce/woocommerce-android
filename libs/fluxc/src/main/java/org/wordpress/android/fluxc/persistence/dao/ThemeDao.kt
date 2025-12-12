@@ -11,7 +11,7 @@ import org.wordpress.android.fluxc.model.ThemeModel
 internal abstract class ThemeDao {
     @Query(
         """
-        SELECT * FROM ThemeModel
+        SELECT * FROM ThemeEntity
         WHERE siteId = :siteId
         AND active = 1
         """
@@ -20,7 +20,7 @@ internal abstract class ThemeDao {
 
     @Query(
         """
-        SELECT * FROM ThemeModel
+        SELECT * FROM ThemeEntity
         WHERE isWpComTheme = 1
         AND themeId IN (:themeIds)
         """
@@ -29,7 +29,7 @@ internal abstract class ThemeDao {
 
     @Query(
         """
-        SELECT * FROM ThemeModel
+        SELECT * FROM ThemeEntity
         WHERE themeId = :themeId
         AND isWpComTheme = 1
         LIMIT 1
@@ -39,7 +39,7 @@ internal abstract class ThemeDao {
 
     @Query(
         """
-        SELECT * FROM ThemeModel
+        SELECT * FROM ThemeEntity
         WHERE siteId = :siteId
         AND themeId = :themeId
         AND isWpComTheme = 0
@@ -57,7 +57,7 @@ internal abstract class ThemeDao {
         upsertThemes(themes)
     }
 
-    @Query("DELETE FROM ThemeModel WHERE isWpComTheme = 1")
+    @Query("DELETE FROM ThemeEntity WHERE isWpComTheme = 1")
     protected abstract suspend fun deleteWpComThemes()
 
     @Upsert
