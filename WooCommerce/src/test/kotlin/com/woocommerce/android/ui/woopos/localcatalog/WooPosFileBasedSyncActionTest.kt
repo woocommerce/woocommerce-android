@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -74,7 +73,6 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         val result = sut.generateCatalogWithPolling(site)
 
         // THEN
-        advanceUntilIdle()
         assertThat(result.isSuccess).isTrue()
         verify(posLocalCatalogStore, times(3)).generateCatalog(site)
     }
@@ -98,7 +96,6 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         val result = sut.generateCatalogWithPolling(site)
 
         // THEN
-        advanceUntilIdle()
         assertThat(result.isFailure).isTrue()
     }
 
@@ -165,7 +162,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         val result = sut.generateCatalogWithPolling(site)
 
         // THEN
-        assertThat(result.isFailure).isFalse
+        assertThat(result.isFailure).isTrue
     }
 
     @Test

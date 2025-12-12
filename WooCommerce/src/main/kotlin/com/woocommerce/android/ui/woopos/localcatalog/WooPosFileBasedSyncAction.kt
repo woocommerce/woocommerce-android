@@ -16,6 +16,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     companion object {
         private const val INITIAL_POLL_INTERVAL_MS = 3000L
         private const val MAX_POLL_ATTEMPTS = 20
+        private const val MAX_CONSECUTIVE_FAILED_ATTEMPTS = 3
 
         // Backoff settings
         private const val MAX_POLL_INTERVAL_MS = 30_000L
@@ -37,13 +38,13 @@ class WooPosFileBasedSyncAction @Inject constructor(
             if (attemptCount > 1) {
                 val delayMs = computeBackoffDelay(attemptCount)
                 logger.d("Waiting ${delayMs}ms before poll attempt $attemptCount")
-                delay(INITIAL_POLL_INTERVAL_MS)
+                delay(delayMs)
             }
 
             val response = posLocalCatalogStore.generateCatalog(site)
 
             if (response.isFailure) {
-                if (failedConsecutiveAttempts++ > 2) {
+                if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
                     return Result.failure(response.exceptionOrNull() ?: Exception("Unknown error"))
                 } else {
                     logger.w("Poll attempt $attemptCount failed: ${response.exceptionOrNull()?.message}")
