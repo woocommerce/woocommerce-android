@@ -414,4 +414,78 @@ class WooPosRefundViewModelTest {
         // THEN
         assertThat(viewModel.state.value).isEqualTo(errorState)
     }
+
+    @Test
+    fun `given content state at ReviewRefund step, when ContinueToConfirmRefundClicked event, then step changes to ConfirmRefund`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            val reviewState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+        }
+
+    @Test
+    fun `given content state at ConfirmRefund step, when BackToReviewClicked event, then step changes to ReviewRefund`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+            val confirmState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+        }
+
+    @Test
+    fun `given content state at ConfirmRefund step, when DialogDismissed event, then step resets to SelectItems`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+            val confirmState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(confirmState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+        }
 }
