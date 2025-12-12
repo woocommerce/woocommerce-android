@@ -1,6 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.system
 
 import com.google.gson.annotations.SerializedName
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 
@@ -29,12 +30,12 @@ data class WCSystemPluginResponse(
  * Check class-wp-rest-plugins-controller.php and plugin.php in WPCore for more information.
  */
 fun SystemPluginModel.toDomainModel(siteId: Int): SitePluginModel {
-    return SitePluginModel().apply {
-        localSiteId = siteId
-        name = this@toDomainModel.plugin.substringBeforeLast(".")
-        authorName = this@toDomainModel.authorName
-        slug = this@toDomainModel.plugin.substringBeforeLast("/")
-        version = this@toDomainModel.version
-        setIsActive(this@toDomainModel.isActive)
-    }
+    return SitePluginModel(
+        siteId = LocalId(siteId),
+        name = this.plugin?.substringBeforeLast(".") ?: "",
+        version = this.version ?: "",
+        slug = this.plugin?.substringBeforeLast("/") ?: "",
+        authorName = this.authorName ?: "",
+        isActive = this.isActive
+    )
 }
