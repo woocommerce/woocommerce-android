@@ -55,7 +55,8 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
 
-    testFixturesCompileOnly(libs.kotlinx.coroutines.test)
+    testFixturesImplementation(libs.kotlinx.coroutines.test)
+    testFixturesImplementation(libs.junit)
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
