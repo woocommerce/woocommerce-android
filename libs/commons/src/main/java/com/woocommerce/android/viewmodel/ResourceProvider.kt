@@ -45,11 +45,11 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         @StringRes zero: Int? = null,
         @StringRes one: Int? = null
     ) = StringUtils.getQuantityString(
-        context = context,
-        quantity = quantity,
-        default = default,
-        zero = zero,
-        one = one,
+        context,
+        quantity,
+        default,
+        zero,
+        one
     )
 
     fun isDarkMode() = context.resources.configuration.uiMode and
