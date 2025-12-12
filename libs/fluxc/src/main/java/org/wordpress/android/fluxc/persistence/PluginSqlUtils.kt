@@ -13,7 +13,7 @@ object PluginSqlUtils {
             .where()
             .equals(SitePluginModelTable.LOCAL_SITE_ID, site.id)
             .endWhere()
-            .orderBy(SitePluginModelTable.DISPLAY_NAME, SelectQuery.ORDER_ASCENDING)
+            .orderBy(SitePluginModelTable.NAME, SelectQuery.ORDER_ASCENDING)
             .asModel
 
     @JvmStatic

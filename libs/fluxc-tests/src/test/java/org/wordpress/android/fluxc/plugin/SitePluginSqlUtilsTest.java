@@ -67,27 +67,27 @@ public class SitePluginSqlUtilsTest {
     public void testUpdateSitePlugin() {
         SiteModel site = getTestSite();
         String slug = randomString("slug");
-        String displayName = randomString("displayName");
+        String name = randomString("name");
 
         // First install a plugin and retrieve the DB copy
         SitePluginModel plugin = getTestPluginBySlug(slug);
-        plugin.setDisplayName(displayName);
+        plugin.setName(name);
         Assert.assertEquals(1, PluginSqlUtils.insertOrUpdateSitePlugin(site, plugin));
         List<SitePluginModel> sitePlugins = PluginSqlUtils.getSitePlugins(site);
         Assert.assertEquals(1, sitePlugins.size());
         SitePluginModel insertedPlugin = sitePlugins.get(0);
-        Assert.assertEquals(insertedPlugin.getDisplayName(), displayName);
+        Assert.assertEquals(insertedPlugin.getName(), name);
 
-        // Then, update the plugin's display name
-        String newDisplayName = randomString("newDisplayName");
-        insertedPlugin.setDisplayName(newDisplayName);
+        // Then, update the plugin's name
+        String newName = randomString("newName");
+        insertedPlugin.setName(newName);
         Assert.assertEquals(1, PluginSqlUtils.insertOrUpdateSitePlugin(site, insertedPlugin));
 
-        // Assert that we still have only one plugin in DB and it has the new display name
+        // Assert that we still have only one plugin in DB and it has the new name
         List<SitePluginModel> updatedSitePluginList = PluginSqlUtils.getSitePlugins(site);
         Assert.assertEquals(1, updatedSitePluginList.size());
         SitePluginModel updatedPlugin = updatedSitePluginList.get(0);
-        Assert.assertEquals(updatedPlugin.getDisplayName(), newDisplayName);
+        Assert.assertEquals(updatedPlugin.getName(), newName);
 
         // Verify that local id of the plugin didn't change
         Assert.assertEquals(insertedPlugin.getId(), updatedPlugin.getId());

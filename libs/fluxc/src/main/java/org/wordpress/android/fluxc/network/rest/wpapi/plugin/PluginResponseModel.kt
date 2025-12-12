@@ -51,11 +51,7 @@ fun PluginResponseModel.toDomainModel(siteId: Int): SitePluginModel {
     val model = SitePluginModel().apply {
         localSiteId = siteId
         name = this@toDomainModel.plugin
-        displayName = this@toDomainModel.name
         authorName = StringEscapeUtils.unescapeHtml4(this@toDomainModel.author)
-        authorUrl = this@toDomainModel.authorUri
-        description = this@toDomainModel.description?.raw
-        pluginUrl = this@toDomainModel.pluginUri
         slug = this@toDomainModel.textDomain
         version = this@toDomainModel.version
     }

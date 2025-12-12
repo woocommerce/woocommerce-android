@@ -16,16 +16,10 @@ public class SitePluginModel implements Identifiable, Serializable {
     @PrimaryKey @Column private int mId;
     @Column private int mLocalSiteId;
     @Column private String mName;
-    @Column private String mDisplayName;
-    @Column private String mPluginUrl;
     @Column private String mVersion;
     @Column private String mSlug;
-    @Column private String mDescription;
     @Column private String mAuthorName;
-    @Column private String mAuthorUrl;
-    @Column private String mSettingsUrl;
     @Column private boolean mIsActive;
-    @Column private boolean mIsAutoUpdateEnabled;
 
     @Override
     public int getId() {
@@ -53,22 +47,6 @@ public class SitePluginModel implements Identifiable, Serializable {
         mName = name;
     }
 
-    public String getDisplayName() {
-        return mDisplayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        mDisplayName = displayName;
-    }
-
-    public String getPluginUrl() {
-        return mPluginUrl;
-    }
-
-    public void setPluginUrl(String pluginUrl) {
-        mPluginUrl = pluginUrl;
-    }
-
     public String getVersion() {
         return mVersion;
     }
@@ -85,14 +63,6 @@ public class SitePluginModel implements Identifiable, Serializable {
         mSlug = slug;
     }
 
-    public String getDescription() {
-        return mDescription;
-    }
-
-    public void setDescription(String description) {
-        mDescription = description;
-    }
-
     public String getAuthorName() {
         return mAuthorName;
     }
@@ -101,35 +71,11 @@ public class SitePluginModel implements Identifiable, Serializable {
         mAuthorName = authorName;
     }
 
-    public String getAuthorUrl() {
-        return mAuthorUrl;
-    }
-
-    public void setAuthorUrl(String authorUrl) {
-        mAuthorUrl = authorUrl;
-    }
-
-    public String getSettingsUrl() {
-        return mSettingsUrl;
-    }
-
-    public void setSettingsUrl(String settingsUrl) {
-        mSettingsUrl = settingsUrl;
-    }
-
     public boolean isActive() {
         return mIsActive;
     }
 
     public void setIsActive(boolean isActive) {
         mIsActive = isActive;
-    }
-
-    public boolean isAutoUpdateEnabled() {
-        return mIsAutoUpdateEnabled;
-    }
-
-    public void setIsAutoUpdateEnabled(boolean isAutoUpdateEnabled) {
-        mIsAutoUpdateEnabled = isAutoUpdateEnabled;
     }
 }

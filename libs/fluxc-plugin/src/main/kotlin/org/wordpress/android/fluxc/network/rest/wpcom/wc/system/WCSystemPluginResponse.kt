@@ -18,7 +18,6 @@ data class WCSystemPluginResponse(
         val url: String?,
         @SerializedName("version_latest") val versionLatest: String? = null,
         @SerializedName("author_name") val authorName: String? = null,
-        @SerializedName("author_url") val authorUrl: String? = null,
         val isActive: Boolean = false
     )
 }
@@ -33,9 +32,7 @@ fun SystemPluginModel.toDomainModel(siteId: Int): SitePluginModel {
     return SitePluginModel().apply {
         localSiteId = siteId
         name = this@toDomainModel.plugin.substringBeforeLast(".")
-        displayName = this@toDomainModel.name
         authorName = this@toDomainModel.authorName
-        authorUrl = this@toDomainModel.authorUrl
         slug = this@toDomainModel.plugin.substringBeforeLast("/")
         version = this@toDomainModel.version
         setIsActive(this@toDomainModel.isActive)
