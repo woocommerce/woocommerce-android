@@ -49,7 +49,7 @@ class ResourceProvider @Inject constructor(private val context: Context) {
         quantity,
         default,
         zero,
-        one
+        one,
     )
 
     fun isDarkMode() = context.resources.configuration.uiMode and

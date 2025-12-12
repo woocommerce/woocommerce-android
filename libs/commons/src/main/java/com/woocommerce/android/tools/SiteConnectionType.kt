@@ -1,7 +1,7 @@
 package com.woocommerce.android.tools
 
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.commons.BuildConfig
+import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
 
 enum class SiteConnectionType {
