@@ -2,6 +2,7 @@ package org.wordpress.android.fluxc.network.rest.wpapi.plugin
 
 import com.google.gson.annotations.SerializedName
 import org.apache.commons.text.StringEscapeUtils
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 
 /**
@@ -48,13 +49,12 @@ data class PluginResponseModel(
 }
 
 fun PluginResponseModel.toDomainModel(siteId: Int): SitePluginModel {
-    val model = SitePluginModel().apply {
-        localSiteId = siteId
-        name = this@toDomainModel.plugin
-        authorName = StringEscapeUtils.unescapeHtml4(this@toDomainModel.author)
-        slug = this@toDomainModel.textDomain
-        version = this@toDomainModel.version
-    }
-    model.setIsActive(this.status == "active")
-    return model
+    return SitePluginModel(
+        siteId = LocalId(siteId),
+        name = this.plugin ?: "",
+        version = this.version ?: "",
+        slug = this.textDomain,
+        authorName = StringEscapeUtils.unescapeHtml4(this.author),
+        isActive = this.status == "active"
+    )
 }

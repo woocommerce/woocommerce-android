@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpapi.plugin.PluginWPAPIRestClient
-import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
+import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.FetchSitePluginError
 import org.wordpress.android.fluxc.store.PluginStore.FetchedSitePluginPayload
@@ -25,7 +25,7 @@ class PluginCoroutineStore
     private val coroutineEngine: CoroutineEngine,
     private val dispatcher: Dispatcher,
     private val pluginWPAPIRestClient: PluginWPAPIRestClient,
-    private val pluginSqlUtils: PluginSqlUtilsWrapper
+    private val sitePluginDao: SitePluginDao
 ) {
     fun fetchWPApiPlugin(site: SiteModel, pluginName: String) =
         coroutineEngine.launch(T.PLUGINS, this, "Fetching WPAPI plugin") {
@@ -43,7 +43,7 @@ class PluginCoroutineStore
                     this.error = fetchError
                 }
         } else {
-            pluginSqlUtils.insertOrUpdateSitePlugin(site, payload.data)
+            payload.data?.let { sitePluginDao.upsert(it) }
             OnSitePluginFetched(
                 FetchedSitePluginPayload(payload.data)
             )
@@ -62,14 +62,14 @@ class PluginCoroutineStore
         slug: String,
         isActive: Boolean
     ): OnSitePluginConfigured {
-        val plugin = pluginSqlUtils.getSitePluginBySlug(site, slug)
+        val plugin = sitePluginDao.getSitePluginBySlug(site.localId(), slug)
         val payload = pluginWPAPIRestClient.updatePlugin(site, plugin?.name ?: pluginName, isActive)
         val event = OnSitePluginConfigured(payload.site, pluginName, slug)
         val error = payload.error
         if (error != null) {
             event.error = ConfigureSitePluginError(error, isActive)
         } else {
-            pluginSqlUtils.insertOrUpdateSitePlugin(site, payload.data)
+            payload.data?.let { sitePluginDao.upsert(it) }
         }
         return event
     }
@@ -89,7 +89,7 @@ class PluginCoroutineStore
         if (error != null) {
             event.error = InstallSitePluginError(error)
         } else {
-            pluginSqlUtils.insertOrUpdateSitePlugin(site, payload.data)
+            payload.data?.let { sitePluginDao.upsert(it) }
         }
         dispatcher.emitChange(event)
 

@@ -1,5 +1,7 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.plugin;
 
+import static org.wordpress.android.fluxc.model.LocalOrRemoteId.*;
+
 import android.content.Context;
 
 import com.android.volley.RequestQueue;
@@ -105,13 +107,14 @@ public class PluginRestClient extends BaseWPComRestClient {
     }
 
     private SitePluginModel pluginModelFromResponse(SiteModel siteModel, PluginWPComRestResponse response) {
-        SitePluginModel sitePluginModel = new SitePluginModel();
-        sitePluginModel.setLocalSiteId(siteModel.getId());
-        sitePluginModel.setName(response.name);
-        sitePluginModel.setIsActive(response.active);
-        sitePluginModel.setSlug(response.slug);
-        sitePluginModel.setVersion(response.version);
-        return sitePluginModel;
+        return new SitePluginModel(
+                new LocalId(siteModel.getId()),
+                response.name != null ? response.name : "",
+                response.version != null ? response.version : "",
+                response.slug != null ? response.slug : "",
+                "", // authorName not provided in this response
+                response.active
+        );
     }
 
     private String getEncodedPluginName(String pluginName) {
