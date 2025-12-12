@@ -48,6 +48,9 @@ dependencies {
     api project(":libs:fluxc")
     api project(":libs:fluxc-plugin")
 
+    // Expose FluxC test utilities to dependent modules (pos, app)
+    api testFixtures(project(":libs:fluxc-plugin"))
+
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
