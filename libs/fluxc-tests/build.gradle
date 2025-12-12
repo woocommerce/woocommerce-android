@@ -50,6 +50,7 @@ dependencies {
     testImplementation libs.assertj.core
     testImplementation libs.androidx.arch.core.testing
     testImplementation libs.androidx.paging.runtime
+    testImplementation libs.kotlinx.coroutines.test
 }
 
 dependencyAnalysis {
