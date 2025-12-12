@@ -339,7 +339,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given announcement is available on remote, when app is upgraded and announcement is valid, track event is tracked`() =
+    fun `given announcement is available on remote, when app is upgraded and announcement is valid, then track event is tracked`() =
         testBlocking {
             doReturn(
                 testAnnouncement
