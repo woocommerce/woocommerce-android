@@ -102,7 +102,6 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         assertThat(result.isFailure).isTrue()
     }
 
-
     @Test
     fun `given initial request fails, when generateCatalogWithPolling, then retries and returns success`() = runTest {
         // GIVEN

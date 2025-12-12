@@ -20,9 +20,9 @@ class WooPosFileBasedSyncAction @Inject constructor(
         // Backoff settings
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
-
     }
 
+    @Suppress("ReturnCount")
     suspend fun generateCatalogWithPolling(
         site: SiteModel
     ): Result<FileBasedSyncResult> {
