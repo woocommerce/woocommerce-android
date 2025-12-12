@@ -1,1 +1,1 @@
-WooCommerce: PDV e gerenciamento da loja
+WooCommerce

@@ -1,1 +1,1 @@
-WooCommerce: Winkelbeheer en POS
+WooCommerce

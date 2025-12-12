@@ -1,1 +1,1 @@
-WooCommerce: Manajemen & POS Toko
+WooCommerce
