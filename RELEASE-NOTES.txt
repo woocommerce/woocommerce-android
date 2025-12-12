@@ -6,6 +6,7 @@
 -----
 - [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 - [*][Woo POS] Fixed loading indicator colors to match the design [https://github.com/woocommerce/woocommerce-android/pull/15043]
+- [*][Woo POS] Display specific error when removed variation is added to the cart [https://github.com/woocommerce/woocommerce-android/pull/15076]
 - [*][Internal] Migrated legacy Material Icons to Material Symbols [https://github.com/woocommerce/woocommerce-android/pull/15081]
 
 23.8

@@ -79,5 +79,6 @@ sealed class WooPosTotalsViewState : Parcelable {
     data class ProductNotFoundError(
         val message: String,
         val reason: String,
+        val isRemoveProductSupported: Boolean,
     ) : WooPosTotalsViewState()
 }
