@@ -53,7 +53,7 @@ data class BookingListControlsState(
     val onClearFiltersClick: () -> Unit
 ) {
     val areFiltersActive: Boolean
-        get() = enabledFiltersCount > 0
+        get() = enabledFiltersCount > 0 && isFilterButtonVisible
 }
 
 data class BookingListItem(

@@ -3814,6 +3814,9 @@
     <string name="woopos_orders_refund_reason">Refund reason</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
+    <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
+    <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
+    <string name="woopos_orders_yes_proceed">Yes, proceed</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
@@ -4224,9 +4227,9 @@
     <string name="bookings_empty_state_description_all">Bookings will appear here once customers start scheduling your services or registering for events.</string>
     <string name="bookings_empty_state_description_today_v2">Any bookings scheduled for today will appear here.</string>
     <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
-    <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
-    <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
-    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
+    <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
+    <string name="bookings_filtered_empty_state_description">Try adjusting or clearing your filters to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
