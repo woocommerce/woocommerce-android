@@ -111,6 +111,7 @@ fun StoreStatsScreen(
                             style = WooTypography.body1,
                             modifier = modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
                                 .padding(top = 8.dp)
                         )
                     }
