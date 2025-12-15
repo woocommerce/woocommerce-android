@@ -112,6 +112,7 @@ fun StoreStatsScreen(
                                     .fillMaxWidth()
                                     .padding(horizontal = 8.dp)
                                     .padding(top = 8.dp)
+                                    .basicMarquee(Int.MAX_VALUE)
                             )
                         }
                     }
