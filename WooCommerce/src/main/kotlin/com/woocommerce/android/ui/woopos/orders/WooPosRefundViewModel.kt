@@ -94,6 +94,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedSubtotal = PriceUtils.formatCurrency(subtotal, order.currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(taxes, order.currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(total, order.currency, currencyFormatter),
+            paymentMethod = "TEST: payment card ••••1456", // TBD: use real payment method value
             step = WooPosRefundState.Content.RefundStep.SelectItems
         )
     }
@@ -106,10 +107,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.ReviewRefund
             WooPosRefundUIEvent.BackToSelectItemsClicked ->
                 WooPosRefundState.Content.RefundStep.SelectItems
+            WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
+                WooPosRefundState.Content.RefundStep.ConfirmRefund
+            WooPosRefundUIEvent.BackToReviewClicked ->
+                WooPosRefundState.Content.RefundStep.ReviewRefund
             WooPosRefundUIEvent.DialogDismissed ->
                 WooPosRefundState.Content.RefundStep.SelectItems
-
-            WooPosRefundUIEvent.ContinueToConfirmRefundClicked -> WooPosRefundState.Content.RefundStep.SelectItems
+            WooPosRefundUIEvent.OnRefundConfirmed -> WooPosRefundState.Content.RefundStep.SelectItems
         }
 
         _state.value = currentState.copy(step = newStep)

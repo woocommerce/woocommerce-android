@@ -1,0 +1,2 @@
+23.8:
+Den här uppdateringen gör ditt arbetsflöde smidigare med åtgärder av bakåtnavigering, krascher för fraktpriser och layout för betalningsskärm. POS får också förbättringar, däribland snabbare inställningar för lokal katalog, bättre hantering av borttagna produkter och automatisk bläddring till dina senaste ordrar.
