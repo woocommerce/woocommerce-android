@@ -83,7 +83,11 @@ class RefundSummaryViewModel @Inject constructor(
         }
     }
 
-    private lateinit var gateway: PaymentGateway
+    private val gateway: Deferred<PaymentGateway> by lazy {
+        viewModelScope.async {
+            loadPaymentGateway(order.await())
+        }
+    }
 
     private var cardType = PaymentMethodType.CARD_PRESENT
     private var refundJob: Job? = null
@@ -93,13 +97,14 @@ class RefundSummaryViewModel @Inject constructor(
     init {
         launch {
             val order = order.await()
-            gateway = loadPaymentGateway(order)
+            gateway.await() // Ensure gateway is initialized
             initRefundSummaryState(order)
         }
     }
 
     fun onRefundIssued(reason: String) = launch {
         val order = order.await()
+        gateway.await() // Ensure gateway is initialized
         analyticsTrackerWrapper.track(
             CREATE_ORDER_REFUND_SUMMARY_REFUND_BUTTON_TAPPED,
             mapOf(
@@ -151,7 +156,7 @@ class RefundSummaryViewModel @Inject constructor(
                             AnalyticsTracker.KEY_ORDER_ID to order.id,
                             AnalyticsTracker.KEY_REFUND_IS_FULL to
                                 (refundSummaryState.refundAmount isEqualTo order.maxRefund).toString(),
-                            AnalyticsTracker.KEY_REFUND_METHOD to gateway.methodTitle,
+                            AnalyticsTracker.KEY_REFUND_METHOD to gateway.await().methodTitle,
                             AnalyticsTracker.KEY_AMOUNT to refundSummaryState.refundAmount.toString()
                         )
                     )
@@ -171,7 +176,7 @@ class RefundSummaryViewModel @Inject constructor(
         refundSummaryState = refundSummaryState.copy(isSummaryTextTooLong = currLength > maxLength)
     }
 
-    private fun initRefundSummaryState(order: Order) {
+    private suspend fun initRefundSummaryState(order: Order) {
         if (refundSummaryStateLiveData.hasInitialValue) {
             val refundAmount = navArgs.refundAmount.toBigDecimal()
             refundSummaryState = refundSummaryState.copy(
@@ -181,16 +186,17 @@ class RefundSummaryViewModel @Inject constructor(
                 isFormEnabled = true
             )
 
+            val paymentGateway = gateway.await()
             val manualRefundMethod = resourceProvider.getString(R.string.order_refunds_manual_refund)
-            if (!order.paymentMethod.isCashPayment && (!gateway.isEnabled || !gateway.supportsRefunds)) {
-                val paymentTitle = if (gateway.title.isNotBlank()) {
-                    resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, gateway.title)
+            if (!order.paymentMethod.isCashPayment && (!paymentGateway.isEnabled || !paymentGateway.supportsRefunds)) {
+                val paymentTitle = if (paymentGateway.title.isNotBlank()) {
+                    resourceProvider.getString(R.string.order_refunds_method, manualRefundMethod, paymentGateway.title)
                 } else {
                     manualRefundMethod
                 }
                 updateRefundSummaryState(paymentTitle, isMethodDescriptionVisible = true)
             } else {
-                enrichRefundMethodWithCardDetails(order, gateway.title.ifBlank { gateway.methodTitle })
+                enrichRefundMethodWithCardDetails(order, paymentGateway.title.ifBlank { paymentGateway.methodTitle })
             }
         }
     }
@@ -282,7 +288,7 @@ class RefundSummaryViewModel @Inject constructor(
             amount = refundSummaryState.refundAmount,
             reason = refundSummaryState.refundReason ?: "",
             restockItems = true,
-            autoRefund = gateway.supportsRefunds,
+            autoRefund = gateway.await().supportsRefunds,
             items = navArgs.refundItems.map { it.toDataModel() }
         )
     }
