@@ -1,4 +1,4 @@
-package com.woocommerce.android.pos.util
+package com.woocommerce.android.ui.woopos.util
 
 enum class ConnectionType {
     WIFI,

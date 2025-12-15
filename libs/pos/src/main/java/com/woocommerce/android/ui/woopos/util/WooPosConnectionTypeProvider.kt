@@ -1,4 +1,4 @@
-package com.woocommerce.android.pos.util
+package com.woocommerce.android.ui.woopos.util
 
 import android.content.Context
 import android.net.ConnectivityManager

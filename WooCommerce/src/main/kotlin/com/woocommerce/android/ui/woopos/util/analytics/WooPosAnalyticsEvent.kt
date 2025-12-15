@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
-import com.woocommerce.android.pos.util.ConnectionType
+import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.CartSource
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsHeaderType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.ItemsListItemType
