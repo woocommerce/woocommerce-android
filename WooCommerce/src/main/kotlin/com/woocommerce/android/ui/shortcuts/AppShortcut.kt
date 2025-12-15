@@ -1,5 +1,8 @@
 package com.woocommerce.android.ui.shortcuts
 
+
+// Adding this to trigger file change check and lint in CI
+
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
