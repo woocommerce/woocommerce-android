@@ -115,7 +115,7 @@ private fun OrdersLazyColumn(
                     viewportHeightPx = height,
                 ),
                 indicatorHeight = 100.dp,
-                indicatorWidth = 4.dp,
+                indicatorWidth = 7.dp,
                 paddingHorizontal = 5.dp,
                 reverseDirection = false,
             )
