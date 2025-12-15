@@ -7,6 +7,12 @@ import dagger.Reusable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
+enum class ConnectionType {
+    WIFI,
+    CELLULAR,
+    UNKNOWN
+}
+
 @Reusable
 class WooPosConnectionTypeProvider @Inject constructor(
     @ApplicationContext private val context: Context
@@ -23,10 +29,4 @@ class WooPosConnectionTypeProvider @Inject constructor(
             else -> ConnectionType.UNKNOWN
         }
     }
-}
-
-enum class ConnectionType {
-    WIFI,
-    CELLULAR,
-    UNKNOWN
 }
