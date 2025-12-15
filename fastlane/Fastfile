@@ -516,22 +516,10 @@ platform :android do
   lane :finalize_release do |skip_confirm: false, include_wear_app: false|
     UI.user_error!('Please use `finalize_hotfix_release` lane for hotfixes') if android_current_branch_is_hotfix(version_properties_path: VERSION_PROPERTIES_PATH)
 
-    ensure_git_status_clean
-    ensure_git_branch_is_release_branch!
-
     UI.important("Finalizing release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
     configure_apply(force: is_ci)
-
-    # Bump the release version and build code
-    UI.message 'Bumping final release version and build code...'
-    VERSION_FILE.write_version(
-      version_name: release_version_current,
-      version_code: build_code_next
-    )
-    commit_version_bump
-    UI.success("Done! New Release Version: #{release_version_current}. New Build Code: #{build_code_current}")
 
     version = release_version_current
 
@@ -539,31 +527,7 @@ platform :android do
     UI.important('Pushing changes to remote and triggering the release build')
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
 
-    push_to_git_remote(tags: false)
-
     trigger_release_build(branch_to_build: "release/#{version}", include_wear_app: include_wear_app)
-
-    create_backmerge_pr
-
-    remove_branch_protection(
-      repository: GITHUB_REPO,
-      branch: "release/#{version}"
-    )
-
-    # Close milestone
-    begin
-      set_milestone_frozen_marker(
-        repository: GITHUB_REPO,
-        milestone: version,
-        freeze: false
-      )
-      close_milestone(
-        repository: GITHUB_REPO,
-        milestone: version
-      )
-    rescue StandardError => e
-      report_milestone_error(error_title: "Error closing milestone `#{version}`: #{e.message}")
-    end
   end
 
   # This lane publishes a release on GitHub and creates a PR to backmerge the current release branch into the next release/ branch
