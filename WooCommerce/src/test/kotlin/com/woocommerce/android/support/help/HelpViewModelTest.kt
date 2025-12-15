@@ -11,12 +11,12 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @ExperimentalCoroutinesApi
 class HelpViewModelTest : BaseUnitTest() {
@@ -352,8 +352,9 @@ class HelpViewModelTest : BaseUnitTest() {
         }
 
     private fun buildPluginModel(name: String, isActive: Boolean) =
-        SitePluginModel().apply {
-            this.setIsActive(isActive)
-            this.name = name
-        }
+        createTestSitePlugin(
+            siteId = 1,
+            name = name,
+            isActive = isActive
+        )
 }

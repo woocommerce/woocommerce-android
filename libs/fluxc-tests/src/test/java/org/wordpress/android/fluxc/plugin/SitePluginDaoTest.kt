@@ -9,11 +9,10 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @RunWith(RobolectricTestRunner::class)
 class SitePluginDaoTest {
@@ -40,7 +39,7 @@ class SitePluginDaoTest {
     fun `when plugin is inserted, then it is retrieved correctly`() = runTest {
         val site = getTestSite()
         val slug = "test-plugin-slug"
-        val plugin = getTestPluginBySlug(slug)
+        val plugin = createTestPluginBySlug(slug)
 
         sitePluginDao.upsert(plugin)
         val sitePlugins = sitePluginDao.getSitePlugins(site.localId())
@@ -54,7 +53,7 @@ class SitePluginDaoTest {
         val slug = "test-slug"
         val name = "Original Name"
 
-        val plugin = getTestPluginBySlug(slug).copy(name = name)
+        val plugin = createTestPluginBySlug(slug).copy(name = name)
         sitePluginDao.upsert(plugin)
         val newName = "Updated Name"
         val updatedPlugin = plugin.copy(name = newName)
@@ -92,7 +91,7 @@ class SitePluginDaoTest {
 
         insertBasicTestPlugins(SMALL_TEST_POOL)
         val newSitePluginSlug = "new-replacement-plugin"
-        val singleSitePlugin = getTestPluginBySlug(newSitePluginSlug)
+        val singleSitePlugin = createTestPluginBySlug(newSitePluginSlug)
         sitePluginDao.replaceAllSitePlugins(site.localId(), listOf(singleSitePlugin))
 
         val updatedSitePluginList = sitePluginDao.getSitePlugins(site.localId())
@@ -105,8 +104,8 @@ class SitePluginDaoTest {
         val pluginSlug1 = "woocommerce-payments"
         val pluginSlug2 = "jetpack"
 
-        val plugin1 = getTestPluginBySlug(pluginSlug1)
-        val plugin2 = getTestPluginBySlug(pluginSlug2)
+        val plugin1 = createTestPluginBySlug(pluginSlug1)
+        val plugin2 = createTestPluginBySlug(pluginSlug2)
         sitePluginDao.upsert(plugin1)
         sitePluginDao.upsert(plugin2)
 
@@ -117,23 +116,12 @@ class SitePluginDaoTest {
         assertThat(pluginBySlug2).isEqualTo(plugin2)
     }
 
-    // Helper methods
-
-    private fun getTestPluginBySlug(slug: String): SitePluginModel {
-        return SitePluginModel(
-            siteId = LocalId(TEST_LOCAL_SITE_ID),
-            slug = slug,
-            name = "",
-            version = "",
-            authorName = "",
-            isActive = false
-        )
-    }
+    private fun createTestPluginBySlug(slug: String) = createTestSitePlugin(siteId = TEST_LOCAL_SITE_ID, slug = slug)
 
     private suspend fun insertBasicTestPlugins(numberOfPlugins: Int) {
         for (i in 0 until numberOfPlugins) {
             val slug = "test-plugin-$i"
-            sitePluginDao.upsert(getTestPluginBySlug(slug))
+            sitePluginDao.upsert(createTestPluginBySlug(slug))
         }
     }
 
