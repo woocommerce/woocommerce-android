@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.material3.Icon
@@ -54,7 +53,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WOO_POS_ITEMS_TOOLBAR_HEIGHT
 import kotlinx.coroutines.delay
 import kotlinx.parcelize.Parcelize
@@ -126,21 +124,10 @@ private fun SearchInput(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
     ) {
-        IconButton(
-            onClick = { onEvent(WooPosSearchUIEvent.Close) },
-            modifier = Modifier
-                .size(48.dp)
-                .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = stringResource(
-                    R.string.woopos_search_back_content_description
-                ),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.size(28.dp)
-            )
-        }
+        WooPosBackButton(
+            modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+            contentDescription = stringResource(R.string.woopos_search_back_content_description)
+        ) { onEvent(WooPosSearchUIEvent.Close) }
 
         Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
 

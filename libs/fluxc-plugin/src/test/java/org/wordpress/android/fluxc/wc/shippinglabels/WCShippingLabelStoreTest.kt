@@ -39,7 +39,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.LabelIte
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.SLCreationEligibilityApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCShippingLabelStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.tools.initCoroutineEngine
@@ -187,11 +186,7 @@ class WCShippingLabelStoreTest {
         val appContext = RuntimeEnvironment.application.applicationContext
         val config = SingleStoreWellSqlConfigForTests(
             appContext,
-            listOf(
-                SiteModel::class.java,
-                WCShippingLabelCreationEligibility::class.java
-            ),
-            WellSqlConfig.Companion.ADDON_WOOCOMMERCE
+            SiteModel::class.java
         )
         WellSql.init(config)
         config.reset()
@@ -200,7 +195,8 @@ class WCShippingLabelStoreTest {
             restClient,
             initCoroutineEngine(),
             mapper,
-            databaseRule.db.shippingLabelDao
+            databaseRule.db.shippingLabelDao,
+            databaseRule.db.shippingLabelCreationEligibilityDao
         )
 
         // Insert the site into the db so it's available later when testing shipping labels

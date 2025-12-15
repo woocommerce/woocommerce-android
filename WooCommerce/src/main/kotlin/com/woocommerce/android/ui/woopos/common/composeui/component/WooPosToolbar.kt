@@ -10,25 +10,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosToolbar(
@@ -56,23 +48,12 @@ fun WooPosToolbar(
                 top.linkTo(parent.top)
             }
         ) {
-            IconButton(
-                onClick = { onBackClicked?.invoke() },
-                modifier = Modifier
-                    .size(48.dp)
-                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(28.dp)
-                )
-            }
+            WooPosBackButton(
+                modifier = Modifier.padding(start = WooPosSpacing.Small.value)
+            ) { onBackClicked?.invoke() }
         }
 
-        val startPadding = WooPosSpacing.Small.value.toAdaptivePadding()
+        val startPadding = WooPosSpacing.Small.value
         WooPosText(
             text = titleText,
             style = titleStyle,

@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearch
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Coupons
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.HighlightLevel
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
@@ -116,7 +115,7 @@ private fun MainItemsList(
                 modifier = Modifier
                     .statusBarsPadding()
                     .padding(
-                        end = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                        end = WooPosSpacing.Medium.value,
                     ),
                 state = state.value,
                 onTabClicked = onTabClicked,
@@ -129,7 +128,7 @@ private fun MainItemsList(
                 modifier =
                 Modifier
                     .height(WooPosSpacing.Small.value)
-                    .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(horizontal = WooPosSpacing.Medium.value)
             )
 
             WooPosCatalogSyncOverdueBanner(
@@ -151,7 +150,7 @@ private fun MainItemsList(
                 when (screenState) {
                     ScreenState.Products -> WooPosProductsScreen(
                         modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            horizontal = WooPosSpacing.Medium.value,
                         ),
                         listState = productsViewState
                     )
@@ -159,7 +158,7 @@ private fun MainItemsList(
                     ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
                     ScreenState.Coupons -> WooPosCouponsScreen(
                         modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                            horizontal = WooPosSpacing.Medium.value,
                         ),
                         listState = couponsListState,
                     )
@@ -167,7 +166,7 @@ private fun MainItemsList(
                     is ScreenState.Variations -> {
                         WooPosVariationsScreen(
                             modifier = Modifier.padding(
-                                horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                                horizontal = WooPosSpacing.Medium.value,
                             ),
                             variableProductData = screenState.variableProductData,
                             onBackClicked = { onBackClicked() },

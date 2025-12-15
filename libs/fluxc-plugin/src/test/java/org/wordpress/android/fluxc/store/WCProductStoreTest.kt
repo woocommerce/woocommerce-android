@@ -46,7 +46,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClie
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductVariationApiResponse
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
 import org.wordpress.android.fluxc.persistence.ProductStorageHelper
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.persistence.dao.ProductVariationsDao
 import org.wordpress.android.fluxc.persistence.dao.ProductsDao
 import org.wordpress.android.fluxc.store.WCProductStore.BatchGenerateVariationsPayload
@@ -89,8 +88,7 @@ class WCProductStoreTest {
             listOf(
                 SiteModel::class.java,
                 AccountModel::class.java
-            ),
-            WellSqlConfig.ADDON_WOOCOMMERCE
+            )
         )
         WellSql.init(config)
         config.reset()

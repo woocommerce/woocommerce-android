@@ -7,14 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -26,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
@@ -34,7 +31,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.SearchState
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -76,22 +72,9 @@ fun WooPosItemsToolbar(
                         .heightIn(min = WOO_POS_ITEMS_TOOLBAR_HEIGHT),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
-                    IconButton(
-                        onClick = { onBackClicked() },
-                        modifier = Modifier
-                            .size(48.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = stringResource(R.string.woopos_toolbar_icon_content_description),
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier
-                                .size(28.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                    WooPosBackButton { onBackClicked() }
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
 
                     TabsRow(
                         tabs = state.tabs,
@@ -106,7 +89,7 @@ fun WooPosItemsToolbar(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
                     TabsRow(
                         tabs = state.tabs,
@@ -115,7 +98,7 @@ fun WooPosItemsToolbar(
                     )
 
                     if (state is WooPosItemsToolbarViewState.CouponList) {
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                         WooPosCircularIconButton(
                             icon = Icons.Default.Add,
                             contentDescription = stringResource(
@@ -123,7 +106,7 @@ fun WooPosItemsToolbar(
                             ),
                             onClick = { onAddCouponEvent() }
                         )
-                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                        Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                     }
 
                     when (val search = state.search) {

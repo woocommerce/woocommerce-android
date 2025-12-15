@@ -6,6 +6,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -27,8 +28,30 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 @Composable
 fun WooPosCircularLoadingIndicator(
     modifier: Modifier = Modifier,
-    spinnerPrimaryColor: Color = MaterialTheme.colorScheme.primary,
-    spinnerSecondaryColor: Color = MaterialTheme.colorScheme.secondary,
+) {
+    WooPosLoadingIndicatorInternal(
+        modifier = modifier,
+        spinnerPrimaryColor = MaterialTheme.colorScheme.primary,
+        spinnerSecondaryColor = MaterialTheme.colorScheme.secondary,
+    )
+}
+
+@Composable
+fun WooPosButtonLoadingIndicator(
+    modifier: Modifier = Modifier,
+) {
+    WooPosLoadingIndicatorInternal(
+        modifier = modifier,
+        spinnerPrimaryColor = MaterialTheme.colorScheme.onPrimary,
+        spinnerSecondaryColor = MaterialTheme.colorScheme.secondary,
+    )
+}
+
+@Composable
+private fun WooPosLoadingIndicatorInternal(
+    modifier: Modifier = Modifier,
+    spinnerPrimaryColor: Color,
+    spinnerSecondaryColor: Color,
 ) {
     val infiniteTransition = rememberInfiniteTransition(label = "RotationTransition")
     val animatedRotation by infiniteTransition.animateFloat(
@@ -73,7 +96,7 @@ fun WooPosCircularLoadingIndicator(
 
 @Composable
 @WooPosPreview
-fun PreviewCircularLoadingIndicatorBig() {
+fun PreviewWooPosCircularLoadingIndicator() {
     WooPosTheme {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -88,14 +111,16 @@ fun PreviewCircularLoadingIndicatorBig() {
 
 @Composable
 @WooPosPreview
-fun PreviewCircularLoadingIndicatorSmall() {
+fun PreviewWooPosButtonLoadingIndicator() {
     WooPosTheme {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.primary),
             contentAlignment = Alignment.Center
         ) {
-            WooPosCircularLoadingIndicator(
-                modifier = Modifier.size(64.dp)
+            WooPosButtonLoadingIndicator(
+                modifier = Modifier.size(32.dp)
             )
         }
     }

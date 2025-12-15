@@ -18,7 +18,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.leaderboards.WCProductLeaderboardsMapper
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.leaderboards.LeaderboardsApiResponse.Type.PRODUCTS
 import org.wordpress.android.fluxc.persistence.DatabaseTestRule
-import org.wordpress.android.fluxc.persistence.WellSqlConfig
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.test
 import org.wordpress.android.fluxc.wc.leaderboards.WCLeaderboardsTestFixtures.generateSampleLeaderboardsApiResponse
@@ -51,8 +50,7 @@ class WCProductLeaderboardsMapperTest {
     fun setUp() {
         SingleStoreWellSqlConfigForTests(
                 context,
-                listOf(SiteModel::class.java),
-                WellSqlConfig.ADDON_WOOCOMMERCE
+                SiteModel::class.java
         ).let {
             WellSql.init(it)
             it.reset()

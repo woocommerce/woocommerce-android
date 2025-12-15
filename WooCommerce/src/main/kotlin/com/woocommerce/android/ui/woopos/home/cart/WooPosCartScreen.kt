@@ -34,7 +34,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.outlined.AddShoppingCart
 import androidx.compose.material.icons.outlined.Delete
@@ -77,6 +76,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosBackButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -91,7 +91,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartItemViewState.Coupon.CouponValidationState
 import com.woocommerce.android.ui.woopos.home.cart.WooPosCartUIEvent.ItemRemovedFromCart
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
@@ -145,7 +144,7 @@ private fun WooPosCartScreen(
             }
 
             is WooPosCartState.Body.WithItems -> {
-                val productsTopMargin = WooPosSpacing.Large.value.toAdaptivePadding()
+                val productsTopMargin = WooPosSpacing.Large.value
                 CartBodyWithItems(
                     modifier = Modifier.constrainAs(body) {
                         top.linkTo(toolbar.bottom, margin = productsTopMargin)
@@ -168,8 +167,8 @@ private fun WooPosCartScreen(
             exit = fadeOut(animationSpec = tween(300)),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
-                .padding(bottom = WooPosSpacing.Small.value.toAdaptivePadding())
+                .padding(WooPosSpacing.Medium.value)
+                .padding(bottom = WooPosSpacing.Small.value)
                 .constrainAs(checkoutButton) {
                     bottom.linkTo(parent.bottom)
                     start.linkTo(parent.start)
@@ -199,7 +198,7 @@ fun CartBodyEmpty(
 ) {
     Column(
         modifier = modifier
-            .padding(WooPosSpacing.XLarge.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.XLarge.value),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -210,7 +209,7 @@ fun CartBodyEmpty(
             tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         val annotatedText = buildAnnotatedString {
             append(stringResource(R.string.woopos_cart_empty_subtitle_with_scanner))
@@ -241,8 +240,8 @@ fun CartBodyEmpty(
             modifier = Modifier
                 .clickable { onBarcodeSetupClicked() }
                 .padding(
-                    horizontal = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                    vertical = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    horizontal = WooPosSpacing.XLarge.value,
+                    vertical = WooPosSpacing.Medium.value,
                 )
         )
     }
@@ -266,14 +265,14 @@ private fun CartBodyWithItems(
 
     WooPosLazyColumn(
         modifier = modifier
-            .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding())
+            .padding(horizontal = WooPosSpacing.Medium.value)
             .fillMaxSize(),
         state = listState,
-        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding()),
+        verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         horizontalAlignment = Alignment.CenterHorizontally,
         contentPadding = PaddingValues(
-            top = WooPosSpacing.XSmall.value.toAdaptivePadding(),
-            bottom = WooPosSpacing.Small.value.toAdaptivePadding()
+            top = WooPosSpacing.XSmall.value,
+            bottom = WooPosSpacing.Small.value
         ),
         withBottomShadow = true,
     ) {
@@ -341,7 +340,7 @@ private fun CartToolbar(
     onBackClicked: () -> Unit
 ) {
     val iconSize = 28.dp
-    val iconTitlePadding = WooPosSpacing.Medium.value.toAdaptivePadding()
+    val iconTitlePadding = WooPosSpacing.Medium.value
     val titleOffset by animateDpAsState(
         targetValue = if (toolbar.backIconVisible) iconSize + iconTitlePadding else 0.dp,
         animationSpec = tween(durationMillis = 300),
@@ -361,25 +360,18 @@ private fun CartToolbar(
             enter = fadeIn(animationSpec = tween(300)) + expandHorizontally(),
             exit = fadeOut(animationSpec = tween(300)) + shrinkHorizontally()
         ) {
-            IconButton(
-                onClick = { onBackClicked() },
+            WooPosBackButton(
                 modifier = Modifier
                     .constrainAs(backButton) {
                         start.linkTo(parent.start)
                         centerVerticallyTo(parent)
                     }
-                    .size(48.dp)
-                    .padding(start = WooPosSpacing.Small.value.toAdaptivePadding())
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = stringResource(R.string.woopos_cart_back_content_description),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .size(iconSize)
-                        .offset(y = 4.dp)
-                )
-            }
+                    .padding(start = WooPosSpacing.Small.value),
+                contentDescription = stringResource(R.string.woopos_cart_back_content_description),
+                iconModifier = Modifier
+                    .size(iconSize)
+                    .offset(y = 4.dp)
+            ) { onBackClicked() }
         }
 
         WooPosText(
@@ -393,7 +385,7 @@ private fun CartToolbar(
                     centerVerticallyTo(parent)
                 }
                 .padding(
-                    start = WooPosSpacing.Medium.value.toAdaptivePadding(),
+                    start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.XSmall.value,
                 )
         )
@@ -408,7 +400,7 @@ private fun CartToolbar(
         )
 
         toolbar.itemsCount?.let {
-            val itemsEndMargin = WooPosSpacing.Medium.value.toAdaptivePadding()
+            val itemsEndMargin = WooPosSpacing.Medium.value
             WooPosText(
                 text = it,
                 style = WooPosTypography.BodySmall,
@@ -437,7 +429,7 @@ private fun CartToolbar(
                         end.linkTo(parent.end)
                         centerVerticallyTo(parent)
                     }
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                    .padding(end = WooPosSpacing.Medium.value),
                 onClearCartClicked = onClearAllClicked
             )
         }
@@ -532,13 +524,13 @@ private fun ProductItem(
                 placeholderIconSize = 36.dp
             )
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value)
             ) {
                 WooPosText(
                     text = item.name,
@@ -550,7 +542,7 @@ private fun ProductItem(
                     modifier = Modifier
                         .clearAndSetSemantics { }
                 )
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                 if (item.description.isNotNullOrEmpty()) {
                     WooPosText(
                         text = item.description ?: "",
@@ -561,7 +553,7 @@ private fun ProductItem(
                         modifier = Modifier
                             .clearAndSetSemantics { }
                     )
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                 }
                 WooPosText(
                     text = item.price,
@@ -572,7 +564,7 @@ private fun ProductItem(
                 )
 
                 if (item.productDoesNotExist) {
-                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                     WooPosText(
                         text = stringResource(R.string.woopos_cart_product_unknown_item),
                         style = WooPosTypography.BodySmall,
@@ -587,7 +579,7 @@ private fun ProductItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }
@@ -646,13 +638,13 @@ private fun CouponItem(
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value)
             ) {
                 WooPosText(
                     text = item.name,
@@ -663,7 +655,7 @@ private fun CouponItem(
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.clearAndSetSemantics { }
                 )
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = item.summary,
                     style = WooPosTypography.BodySmall,
@@ -675,7 +667,7 @@ private fun CouponItem(
                 when (item.validationState) {
                     CouponValidationState.Unknown -> Unit
                     CouponValidationState.Invalid -> {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosText(
                             text = stringResource(R.string.woopos_cart_coupon_invalid_subtitle),
                             style = WooPosTypography.BodySmall,
@@ -687,7 +679,7 @@ private fun CouponItem(
                     }
 
                     is CouponValidationState.Valid -> {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
                         WooPosText(
                             text = item.validationState.formattedDiscount,
                             style = WooPosTypography.BodySmall,
@@ -703,7 +695,7 @@ private fun CouponItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }
@@ -741,12 +733,12 @@ private fun LoadingItem(
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value)
             ) {
                 WooPosShimmerText(
                     text = item.name,
@@ -754,7 +746,7 @@ private fun LoadingItem(
                     fontWeight = FontWeight.Bold
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
                 WooPosShimmerText(
                     text = "$10.00",
@@ -765,7 +757,7 @@ private fun LoadingItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }
@@ -812,13 +804,13 @@ private fun ErrorItem(
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
 
             Column(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(end = WooPosSpacing.Medium.value.toAdaptivePadding())
-                    .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding())
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .padding(vertical = WooPosSpacing.Medium.value)
             ) {
                 WooPosText(
                     text = item.name,
@@ -830,7 +822,7 @@ private fun ErrorItem(
                     modifier = Modifier.clearAndSetSemantics { }
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
 
                 WooPosText(
                     text = item.message,
@@ -845,7 +837,7 @@ private fun ErrorItem(
             if (canRemoveItems) {
                 RemoveItemFromCartButton(item, onUIEvent)
             }
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }
