@@ -1,16 +1,16 @@
 package com.woocommerce.android.wear.ui.stats
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material.icons.filled.Group
@@ -28,9 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.wear.compose.foundation.lazy.ScalingLazyColumn
-import androidx.wear.compose.foundation.lazy.ScalingLazyListAnchorType
-import androidx.wear.compose.foundation.lazy.rememberScalingLazyListState
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.PositionIndicator
 import androidx.wear.compose.material.Text
@@ -40,6 +37,7 @@ import com.google.android.horologist.compose.layout.ScreenScaffold
 import com.woocommerce.android.R
 import com.woocommerce.android.wear.compose.component.ErrorScreen
 import com.woocommerce.android.wear.compose.component.LoadingScreen
+import com.woocommerce.android.wear.compose.component.ScrollStateAdapter
 import com.woocommerce.android.wear.compose.theme.WooColors
 import com.woocommerce.android.wear.compose.theme.WooTheme
 import com.woocommerce.android.wear.compose.theme.WooTypography
@@ -76,63 +74,60 @@ fun StoreStatsScreen(
     modifier: Modifier = Modifier
 ) {
     WooTheme {
-        val listState = rememberScalingLazyListState()
+        val scrollState = rememberScrollState()
         ScreenScaffold(
-            scrollState = listState,
+            scrollState = scrollState,
             positionIndicator = {
                 PositionIndicator(
-                    scalingLazyListState = listState
+                    state = ScrollStateAdapter(scrollState),
+                    indicatorHeight = 100.dp,
+                    indicatorWidth = 7.dp,
+                    paddingHorizontal = 5.dp,
+                    reverseDirection = false,
                 )
             }
         ) {
             Box(
                 modifier = modifier
                     .fillMaxSize()
-                    .background(Color.Black),
+                    .background(Color.Black)
+                    .verticalScroll(scrollState),
                 contentAlignment = Alignment.Center
             ) {
                 TimeText(
                     modifier = modifier
                         .align(Alignment.TopCenter)
                 )
-                ScalingLazyColumn(
-                    modifier = modifier.fillMaxSize(),
-                    state = listState,
-                    contentPadding = PaddingValues(start = 12.dp, top = 32.dp, end = 12.dp),
-                    anchorType = ScalingLazyListAnchorType.ItemStart,
-                    autoCentering = null
+                Column(
+                    modifier = modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 12.dp)
+                        .padding(top = 24.dp)
                 ) {
                     if (isError.not()) {
-                        item {
-                            Text(
-                                text = currentSiteName,
-                                textAlign = TextAlign.Center,
-                                style = WooTypography.body1,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(top = 8.dp)
-                            )
-                        }
+                        Text(
+                            text = currentSiteName,
+                            textAlign = TextAlign.Center,
+                            style = WooTypography.body1,
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                        )
                     }
                     when {
-                        isLoading -> item { LoadingScreen() }
-                        isError -> item {
-                            ErrorScreen(
-                                errorText = stringResource(id = R.string.stats_screen_error_message),
-                                onRetryClicked = onRetryClicked
-                            )
-                        }
-
-                        else -> item {
-                            StatsContentScreen(
-                                modifier,
-                                totalRevenue,
-                                visitorsCount,
-                                ordersCount,
-                                conversionRate,
-                                timestamp
-                            )
-                        }
+                        isLoading -> LoadingScreen()
+                        isError -> ErrorScreen(
+                            errorText = stringResource(id = R.string.stats_screen_error_message),
+                            onRetryClicked = onRetryClicked
+                        )
+                        else -> StatsContentScreen(
+                            modifier,
+                            totalRevenue,
+                            visitorsCount,
+                            ordersCount,
+                            conversionRate,
+                            timestamp
+                        )
                     }
                 }
             }
