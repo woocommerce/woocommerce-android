@@ -71,7 +71,7 @@ fun OrderDetailsScreen(
                     state = ScrollStateAdapter(scrollState),
                     indicatorHeight = 100.dp,
                     indicatorWidth = 4.dp,
-                    paddingHorizontal = 2.dp,
+                    paddingHorizontal = 5.dp,
                     reverseDirection = false,
                 )
             }
