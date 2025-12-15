@@ -24,3 +24,9 @@ class WooPosConnectionTypeProvider @Inject constructor(
         }
     }
 }
+
+enum class ConnectionType {
+    WIFI,
+    CELLULAR,
+    UNKNOWN
+}
