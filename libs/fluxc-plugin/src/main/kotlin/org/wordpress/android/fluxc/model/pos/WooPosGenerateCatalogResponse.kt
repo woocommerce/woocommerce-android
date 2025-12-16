@@ -10,7 +10,7 @@ data class WooPosGenerateCatalogResponse(
     @SerializedName("state")
     val state: String? = null,
     @SerializedName("progress")
-    val progress: Int? = null,
+    val progress: Float? = null,
     @SerializedName("processed")
     val processed: Int? = null,
     @SerializedName("total")
