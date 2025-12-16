@@ -31,7 +31,7 @@ class WooPosCatalogFileDownloader @Inject constructor(
         localSiteId: LocalOrRemoteId.LocalId,
     ): Result<File> = withContext(dispatchers.io) {
         val file =
-            File(context.cacheDir, "${FILE_NAME_PREFIX}_site_${localSiteId.value}_${System.currentTimeMillis()}")
+            File(context.cacheDir, "${FILE_NAME_PREFIX}_site_${localSiteId.value}_${System.currentTimeMillis()}.json")
 
         try {
             logger.d("WooPosCatalogFileDownloader: Starting catalog file download from: $fileUrl")
