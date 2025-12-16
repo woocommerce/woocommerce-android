@@ -34,10 +34,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -69,10 +65,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -172,8 +170,7 @@ fun WooShippingEditAddressScreen(
         topBar = {
             Toolbar(
                 title = screenTitle,
-                onNavigationButtonClick = onNavigateBack,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
+                onNavigationButtonClick = onNavigateBack
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -643,7 +640,7 @@ private fun CollapsedField(
                 modifier = modifier.clickable { onExpand() }
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.primary
                 )
@@ -730,7 +727,7 @@ private fun SelectAddress(
     Column(modifier = modifier) {
         IconButton(onClick = onCloseAddressSelection) {
             Icon(
-                imageVector = Icons.Filled.Close,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurface
             )
@@ -778,8 +775,8 @@ private fun SelectAddress(
 
             AddressSelectionItem(
                 address = addressSelection.addressNormalization.normalizedAddress,
-                isSelected =
-                addressSelection.selectedAddress == addressSelection.addressNormalization.normalizedAddress,
+                isSelected = addressSelection.selectedAddress ==
+                    addressSelection.addressNormalization.normalizedAddress,
                 onClick = {
                     onAddressSelectionChange(
                         addressSelection.copy(selectedAddress = addressSelection.addressNormalization.normalizedAddress)

@@ -9,6 +9,7 @@
 - [**][Woo POS] Fixed crash when deleted products are in cart during checkout [https://github.com/woocommerce/woocommerce-android/pull/15083]
 - [*][Woo POS] Display specific error when removed variation is added to the cart [https://github.com/woocommerce/woocommerce-android/pull/15076]
 - [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
+- [*][Internal] Migrated legacy Material Icons to Material Symbols [https://github.com/woocommerce/woocommerce-android/pull/15081]
 
 23.8
 -----

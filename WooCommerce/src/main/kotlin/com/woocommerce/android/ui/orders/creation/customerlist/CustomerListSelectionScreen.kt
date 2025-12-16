@@ -10,15 +10,14 @@ import androidx.compose.material.AppBarDefaults
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -74,7 +73,6 @@ private fun CustomerListSelectionScreen(
             if (showToolbar) {
                 Toolbar(
                     title = stringResource(id = R.string.order_creation_add_customer),
-                    navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                     onNavigationButtonClick = onNavigateBack,
                     windowInsets = if (handleInsets) AppBarDefaults.topAppBarWindowInsets else WindowInsets(0),
                 )
@@ -88,7 +86,15 @@ private fun CustomerListSelectionScreen(
         CustomerListScreen(
             modifier = Modifier
                 .padding(padding)
-                .then(if (handleInsets) Modifier.navigationBarsPadding().imePadding() else Modifier),
+                .then(
+                    if (handleInsets) {
+                        Modifier
+                            .navigationBarsPadding()
+                            .imePadding()
+                    } else {
+                        Modifier
+                    }
+                ),
             state = state,
             onCustomerSelected = onCustomerSelected,
             onSearchQueryChanged = onSearchQueryChanged,
@@ -106,7 +112,7 @@ private fun CustomerListAddCustomerButton(onClick: () -> Unit) {
         contentColor = colorResource(id = R.color.woo_white),
     ) {
         Icon(
-            imageVector = Icons.Filled.Add,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_add),
             contentDescription = stringResource(id = R.string.order_creation_add_customer_content_description)
         )
     }

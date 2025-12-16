@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.login.jetpack.connection
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.common.webview.WebViewAuthenticator
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -27,7 +27,7 @@ fun JetpackActivationWebViewScreen(
             Toolbar(
                 title = stringResource(id = R.string.login_jetpack_installation_approve_connection),
                 onNavigationButtonClick = onDismiss,
-                navigationIcon = Icons.Filled.Clear
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         }
     ) { paddingValues ->

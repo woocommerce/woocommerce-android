@@ -15,29 +15,25 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.products.selector.SelectionState
 import com.woocommerce.android.ui.products.selector.SelectionState.DISABLED
@@ -71,29 +67,29 @@ fun SelectorListItem(
                 onClickLabel = onClickLabel
             )
             .padding(
-                start = dimensionResource(id = dimen.major_100),
-                top = dimensionResource(id = dimen.major_75),
-                bottom = dimensionResource(id = dimen.major_75),
-                end = dimensionResource(id = dimen.minor_75)
+                start = dimensionResource(id = R.dimen.major_100),
+                top = dimensionResource(id = R.dimen.major_75),
+                bottom = dimensionResource(id = R.dimen.major_75),
+                end = dimensionResource(id = R.dimen.minor_75)
             )
             .fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
+        horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100))
     ) {
         val selectionDrawable = when (selectionState) {
-            SELECTED -> drawable.ic_rounded_checkbox_checked
-            UNSELECTED -> drawable.ic_rounded_checkbox_unchecked
-            PARTIALLY_SELECTED -> drawable.ic_rounded_checkbox_partially_checked
-            is DISABLED -> drawable.ic_rounded_checkbox_unchecked
+            SELECTED -> R.drawable.ic_rounded_checkbox_checked
+            UNSELECTED -> R.drawable.ic_rounded_checkbox_unchecked
+            PARTIALLY_SELECTED -> R.drawable.ic_rounded_checkbox_partially_checked
+            is DISABLED -> R.drawable.ic_rounded_checkbox_unchecked
         }
         Crossfade(
             targetState = selectionDrawable,
-            modifier = Modifier.padding(top = dimensionResource(dimen.major_75))
+            modifier = Modifier.padding(top = dimensionResource(R.dimen.major_75))
         ) { icon ->
             Image(
                 painter = painterResource(id = icon),
                 contentDescription = imageContentDescription,
                 colorFilter = if (!enabled) {
-                    ColorFilter.tint(colorResource(color.color_on_surface_disabled))
+                    ColorFilter.tint(colorResource(R.color.color_on_surface_disabled))
                 } else {
                     null
                 }
@@ -105,12 +101,12 @@ fun SelectorListItem(
                 .data(imageUrl)
                 .crossfade(true)
                 .build(),
-            placeholder = painterResource(drawable.ic_product),
-            error = painterResource(drawable.ic_product),
-            contentDescription = stringResource(string.product_image_content_description),
+            placeholder = painterResource(R.drawable.ic_product),
+            error = painterResource(R.drawable.ic_product),
+            contentDescription = stringResource(R.string.product_image_content_description),
             contentScale = ContentScale.FillWidth,
             modifier = Modifier
-                .size(dimensionResource(dimen.major_300))
+                .size(dimensionResource(R.dimen.major_300))
                 .clip(RoundedCornerShape(3.dp))
         )
 
@@ -135,16 +131,14 @@ fun SelectorListItem(
         }
 
         if (isArrowVisible || isCogwheelVisible) {
-            val image = if (isArrowVisible) {
-                Icons.Filled.ChevronRight
-            } else {
-                Icons.Filled.Tune
-            }
+            val image = ImageVector.vectorResource(
+                if (isArrowVisible) R.drawable.ic_chevron_right_24dp else R.drawable.ic_tune_24dp
+            )
 
             val contentDescription = if (isArrowVisible) {
-                stringResource(id = string.product_selector_arrow_content_description)
+                stringResource(id = R.string.product_selector_arrow_content_description)
             } else {
-                stringResource(id = string.extension_configure_button)
+                stringResource(id = R.string.extension_configure_button)
             }
 
             val color = if (isArrowVisible) {
@@ -155,12 +149,12 @@ fun SelectorListItem(
 
             val iconModifier = if (isArrowVisible) {
                 Modifier
-                    .size(dimensionResource(id = dimen.major_200))
+                    .size(dimensionResource(id = R.dimen.major_200))
             } else {
                 Modifier
                     .clickable { onEditConfiguration() }
                     .padding(8.dp)
-                    .size(dimensionResource(id = dimen.major_150))
+                    .size(dimensionResource(id = R.dimen.major_150))
             }
 
             Icon(
@@ -180,7 +174,7 @@ private fun SelectorListItemInfo(
     Text(
         text = summary,
         style = MaterialTheme.typography.caption,
-        color = colorResource(id = color.color_on_surface_medium)
+        color = colorResource(id = R.color.color_on_surface_medium)
     )
 }
 

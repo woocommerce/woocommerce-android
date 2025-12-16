@@ -24,11 +24,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.icons.filled.ThumbDown
-import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
@@ -36,18 +31,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.woocommerce.android.R.color
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.drawable
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCTextButton
@@ -107,11 +101,13 @@ fun DescriptionGenerationForm(
                     )
                 }
             }
+
             GenerationState.Generating -> {
                 GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = false) {
                     ProductDescriptionSkeletonView()
                 }
             }
+
             is Start -> {
                 GenerationFlow(viewState, onTitleChanged, onFeaturesChanged) {
                     if (generationState.showError) {
@@ -121,22 +117,24 @@ fun DescriptionGenerationForm(
                     WCColoredButton(
                         onClick = onGenerateButtonClicked,
                         modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(id = string.product_sharing_write_with_ai),
+                        text = stringResource(id = R.string.product_sharing_write_with_ai),
                         leadingIcon = {
                             Icon(
-                                painter = painterResource(id = drawable.ic_ai),
+                                painter = painterResource(id = R.drawable.ic_ai),
                                 contentDescription = null,
-                                tint = colorResource(id = color.woo_white)
+                                tint = colorResource(id = R.color.woo_white)
                             )
                         }
                     )
                 }
             }
+
             Regenerating -> {
                 GenerationFlow(viewState, onTitleChanged, onFeaturesChanged, enableTextFields = true) {
                     RegenerationInProgress(onApplyButtonClicked)
                 }
             }
+
             Celebration -> CelebrationDialog(onCelebrationButtonClicked)
         }
     }
@@ -148,13 +146,13 @@ private fun Error() {
         modifier = Modifier
             .background(
                 color = MaterialTheme.colors.error,
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
             )
             .fillMaxWidth()
-            .padding(dimensionResource(id = dimen.major_100))
+            .padding(dimensionResource(id = R.dimen.major_100))
     ) {
         Text(
-            text = stringResource(id = string.ai_product_description_error),
+            text = stringResource(id = R.string.ai_product_description_error),
             style = MaterialTheme.typography.body1,
             color = MaterialTheme.colors.onError,
             textAlign = TextAlign.Center,
@@ -178,10 +176,10 @@ private fun GenerationFlow(
     ) {
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = dimen.major_100)),
+                .padding(dimensionResource(id = R.dimen.major_100)),
         ) {
             Text(
-                text = stringResource(id = string.ai_product_description_title),
+                text = stringResource(id = R.string.ai_product_description_title),
                 style = MaterialTheme.typography.h6
             )
 
@@ -189,32 +187,32 @@ private fun GenerationFlow(
                 Text(
                     text = state.productTitle,
                     style = MaterialTheme.typography.caption,
-                    color = colorResource(id = color.color_on_surface_medium)
+                    color = colorResource(id = R.color.color_on_surface_medium)
                 )
             } else {
                 OutlinedTextField(
                     value = state.productTitle,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimensionResource(id = dimen.minor_100)),
+                        .padding(top = dimensionResource(id = R.dimen.minor_100)),
                     maxLines = 1,
                     enabled = enableTextFields,
                     isError = state.shouldShowErrorOutlineIfEmpty && state.productTitle.isEmpty(),
                     onValueChange = onTitleChanged,
                     placeholder = {
-                        Text(stringResource(id = string.ai_product_description_title_hint))
+                        Text(stringResource(id = R.string.ai_product_description_title_hint))
                     }
                 )
             }
         }
         Divider(
-            color = colorResource(id = color.divider_color),
-            thickness = dimensionResource(id = dimen.minor_10)
+            color = colorResource(id = R.color.divider_color),
+            thickness = dimensionResource(id = R.dimen.minor_10)
         )
         Column(
             modifier = Modifier
-                .padding(dimensionResource(id = dimen.major_100)),
-            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
+                .padding(dimensionResource(id = R.dimen.major_100)),
+            verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
         ) {
             OutlinedTextField(
                 value = state.features,
@@ -223,17 +221,17 @@ private fun GenerationFlow(
                 enabled = enableTextFields,
                 isError = state.shouldShowErrorOutlineIfEmpty && state.features.isEmpty(),
                 placeholder = {
-                    Text(stringResource(id = string.ai_product_description_hint))
+                    Text(stringResource(id = R.string.ai_product_description_hint))
                 }
             )
 
             Text(
-                text = stringResource(id = string.ai_product_description_example),
+                text = stringResource(id = R.string.ai_product_description_example),
                 style = MaterialTheme.typography.caption,
-                color = colorResource(id = color.color_on_surface_medium)
+                color = colorResource(id = R.color.color_on_surface_medium)
             )
 
-            Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_75)))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
 
             content()
         }
@@ -244,7 +242,7 @@ private fun GenerationFlow(
 private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
     ProductDescriptionSkeletonView()
 
-    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_75)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
 
     Box(
         modifier = Modifier
@@ -261,8 +259,8 @@ private fun RegenerationInProgress(onApplyButtonClicked: () -> Unit) {
             enabled = false
         ) {
             Text(
-                text = stringResource(id = string.apply),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = dimen.major_100))
+                text = stringResource(id = R.string.apply),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
         }
     }
@@ -281,11 +279,11 @@ private fun GeneratedDescription(
         modifier = Modifier
             .background(
                 color = MaterialTheme.colors.background,
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
             )
             .fillMaxWidth()
-            .padding(dimensionResource(id = dimen.major_100)),
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.minor_100))
+            .padding(dimensionResource(id = R.dimen.major_100)),
+        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.minor_100))
     ) {
         Text(
             modifier = Modifier.fillMaxWidth(),
@@ -297,17 +295,17 @@ private fun GeneratedDescription(
             modifier = Modifier.align(Alignment.End),
             onClick = onCopyButtonClicked,
             colors = ButtonDefaults.textButtonColors(
-                contentColor = colorResource(id = color.color_on_surface_medium)
+                contentColor = colorResource(id = R.color.color_on_surface_medium)
             )
         ) {
             Icon(
-                imageVector = Icons.Default.ContentCopy,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
                 contentDescription = null,
-                modifier = Modifier.size(dimensionResource(id = dimen.major_150))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_150))
             )
             Text(
-                modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100)),
-                text = stringResource(id = string.copy)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+                text = stringResource(id = R.string.copy)
             )
         }
 
@@ -316,14 +314,14 @@ private fun GeneratedDescription(
             ConstraintLayout(
                 modifier = Modifier
                     .background(
-                        color = colorResource(id = color.woo_black_alpha_008),
-                        shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+                        color = colorResource(id = R.color.woo_black_alpha_008),
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
                     )
                     .fillMaxWidth()
                     .padding(
-                        start = dimensionResource(id = dimen.major_100),
-                        top = dimensionResource(id = dimen.minor_100),
-                        bottom = dimensionResource(id = dimen.minor_100)
+                        start = dimensionResource(id = R.dimen.major_100),
+                        top = dimensionResource(id = R.dimen.minor_100),
+                        bottom = dimensionResource(id = R.dimen.minor_100)
                     )
             ) {
                 val (text, like, dislike) = createRefs()
@@ -337,8 +335,8 @@ private fun GeneratedDescription(
                             end.linkTo(like.start)
                             width = Dimension.fillToConstraints
                         },
-                    text = stringResource(id = string.ai_product_description_feedback),
-                    color = colorResource(id = color.color_on_surface_medium),
+                    text = stringResource(id = R.string.ai_product_description_feedback),
+                    color = colorResource(id = R.color.color_on_surface_medium),
                     style = MaterialTheme.typography.caption
                 )
 
@@ -355,10 +353,10 @@ private fun GeneratedDescription(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbUp,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_up_filled_24dp),
                         contentDescription = null,
-                        modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
-                        tint = colorResource(id = color.color_on_surface_medium)
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
+                        tint = colorResource(id = R.color.color_on_surface_medium)
                     )
                 }
 
@@ -375,17 +373,17 @@ private fun GeneratedDescription(
                     }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.ThumbDown,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_thumb_down_filled_24dp),
                         contentDescription = null,
-                        modifier = Modifier.size(dimensionResource(id = dimen.major_150)),
-                        tint = colorResource(id = color.color_on_surface_medium)
+                        modifier = Modifier.size(dimensionResource(id = R.dimen.major_150)),
+                        tint = colorResource(id = R.color.color_on_surface_medium)
                     )
                 }
             }
         }
     }
 
-    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_75)))
+    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_75)))
 
     Box(
         modifier = Modifier
@@ -395,17 +393,17 @@ private fun GeneratedDescription(
             onClick = onRegenerateButtonClicked,
             modifier = Modifier.align(Alignment.CenterStart),
             colors = ButtonDefaults.textButtonColors(
-                contentColor = colorResource(id = color.color_on_surface)
+                contentColor = colorResource(id = R.color.color_on_surface)
             )
         ) {
             Icon(
-                imageVector = Icons.Default.Refresh,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_gridicons_refresh),
                 contentDescription = null,
-                modifier = Modifier.size(dimensionResource(id = dimen.major_150))
+                modifier = Modifier.size(dimensionResource(id = R.dimen.major_150))
             )
             Text(
-                modifier = Modifier.padding(start = dimensionResource(id = dimen.minor_100)),
-                text = stringResource(id = string.ai_product_description_regenerate_button)
+                modifier = Modifier.padding(start = dimensionResource(id = R.dimen.minor_100)),
+                text = stringResource(id = R.string.ai_product_description_regenerate_button)
             )
         }
         WCColoredButton(
@@ -414,8 +412,8 @@ private fun GeneratedDescription(
                 .align(Alignment.CenterEnd),
         ) {
             Text(
-                text = stringResource(id = string.apply),
-                modifier = Modifier.padding(horizontal = dimensionResource(id = dimen.major_100))
+                text = stringResource(id = R.string.apply),
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.major_100))
             )
         }
     }
@@ -427,39 +425,39 @@ fun ProductDescriptionSkeletonView() {
         modifier = Modifier
             .background(
                 color = MaterialTheme.colors.background,
-                shape = RoundedCornerShape(dimensionResource(id = dimen.minor_50))
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.minor_50))
             )
-            .padding(dimensionResource(id = dimen.major_110))
+            .padding(dimensionResource(id = R.dimen.major_110))
             .fillMaxWidth()
     ) {
         SkeletonView(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimensionResource(id = dimen.major_100))
+                .height(dimensionResource(id = R.dimen.major_100))
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = dimen.skeleton_text_large_width))
-                .height(dimensionResource(id = dimen.major_100))
+                .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = dimen.skeleton_text_extra_large_width))
-                .height(dimensionResource(id = dimen.major_100))
+                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = dimen.skeleton_text_large_width))
-                .height(dimensionResource(id = dimen.major_100))
+                .width(dimensionResource(id = R.dimen.skeleton_text_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
         SkeletonView(
             modifier = Modifier
-                .width(dimensionResource(id = dimen.skeleton_text_extra_large_width))
-                .height(dimensionResource(id = dimen.major_100))
+                .width(dimensionResource(id = R.dimen.skeleton_text_extra_large_width))
+                .height(dimensionResource(id = R.dimen.major_100))
         )
     }
 }
@@ -471,30 +469,30 @@ fun CelebrationDialog(
     Column(
         modifier = Modifier
             .background(MaterialTheme.colors.surface)
-            .padding(all = dimensionResource(id = dimen.major_100))
+            .padding(all = dimensionResource(id = R.dimen.major_100))
             .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            painter = painterResource(id = drawable.img_ai_generated_content),
+            painter = painterResource(id = R.drawable.img_ai_generated_content),
             contentDescription = null,
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = string.ai_product_description_note_dialog_heading),
+            text = stringResource(id = R.string.ai_product_description_note_dialog_heading),
             style = MaterialTheme.typography.h6,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         Text(
-            text = stringResource(id = string.ai_product_description_note_dialog_message),
+            text = stringResource(id = R.string.ai_product_description_note_dialog_message),
             style = MaterialTheme.typography.body2,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(dimensionResource(id = dimen.major_100)))
+        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
         WCColoredButton(onClick = onConfirmClick, modifier = Modifier.fillMaxWidth()) {
-            Text(text = stringResource(id = string.ai_product_description_note_dialog_confirmation))
+            Text(text = stringResource(id = R.string.ai_product_description_note_dialog_confirmation))
         }
     }
 }
@@ -506,6 +504,29 @@ fun PreviewAIDescriptionGenerationForm() {
     DescriptionGenerationForm(
         ViewState(
             generationState = Start(true),
+            description = "This stylish and comfortable set is designed to enhance your performance and " +
+                "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
+                "make a statement with the \"Fit Fashionista\" activewear set.",
+            isProductTitleInitiallyPresent = true
+        ),
+        onTitleChanged = {},
+        onFeaturesChanged = {},
+        onGenerateButtonClicked = {},
+        onRegenerateButtonClicked = {},
+        onCopyButtonClicked = {},
+        onApplyButtonClicked = {},
+        onDescriptionFeedbackReceived = {},
+        onCelebrationButtonClicked = {}
+    )
+}
+
+@Preview
+@Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PreviewAIDescriptionGeneratedForm() {
+    DescriptionGenerationForm(
+        ViewState(
+            generationState = Generated(false),
             description = "This stylish and comfortable set is designed to enhance your performance and " +
                 "keep you looking and feeling great during your workouts. Upgrade your fitness game and " +
                 "make a statement with the \"Fit Fashionista\" activewear set.",

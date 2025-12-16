@@ -24,9 +24,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -34,10 +31,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -84,7 +83,7 @@ fun ProductCategorySelectorScreen(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.product_category_selector_title),
-                navigationIcon = Icons.Default.Clear,
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 onNavigationButtonClick = onBackPressed
             )
         }
@@ -208,7 +207,7 @@ private fun LazyListScope.categoryItem(item: CategoryUiModel, depth: Int = 0) {
                 )
 
                 Icon(
-                    imageVector = Icons.Default.Check,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                     contentDescription = stringResource(
                         id = R.string.product_category_selector_check_content_description
                     ),

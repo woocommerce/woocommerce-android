@@ -31,11 +31,6 @@ import androidx.compose.material.Switch
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -47,6 +42,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -55,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.woocommerce.android.apifaker.ExportImportDestination
+import com.woocommerce.android.apifaker.R
 import com.woocommerce.android.apifaker.models.ApiType
 import com.woocommerce.android.apifaker.models.HttpMethod
 import com.woocommerce.android.apifaker.models.MockedEndpoint
@@ -101,7 +99,7 @@ private fun HomeScreen(
                 navigationIcon = {
                     IconButton(onClick = onExit) {
                         Icon(
-                            Icons.AutoMirrored.Default.ArrowBack,
+                            ImageVector.vectorResource(R.drawable.ic_back_24dp),
                             contentDescription = "Back"
                         )
                     }
@@ -150,7 +148,10 @@ private fun HomeScreen(
                 contentColor = MaterialTheme.colors.onPrimary,
                 modifier = Modifier.align(Alignment.BottomEnd)
             ) {
-                Icon(imageVector = Icons.Filled.Add, contentDescription = "Add endpoint")
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = "Add endpoint"
+                )
             }
         }
     }
@@ -166,7 +167,7 @@ private fun TopMenu(
 
     IconButton(onClick = { expanded = !expanded }) {
         Icon(
-            Icons.Default.MoreVert,
+            ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
             contentDescription = "More"
         )
     }
@@ -314,7 +315,7 @@ private fun EndpointItem(
                 contentAlignment = Alignment.CenterEnd
             ) {
                 Icon(
-                    Icons.Default.Delete,
+                    ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                     contentDescription = "Delete"
                 )
             }
