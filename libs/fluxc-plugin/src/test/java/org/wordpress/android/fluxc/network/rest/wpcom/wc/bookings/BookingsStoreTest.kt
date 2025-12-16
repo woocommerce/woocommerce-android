@@ -50,7 +50,6 @@ class BookingsStoreTest {
             bookingDtoMapper = bookingDtoMapper,
             headersParser = headersParser,
             coroutineEngine = CoroutineEngine(EmptyCoroutineContext, mock()),
-            clock = clock,
         )
     }
 
@@ -64,7 +63,7 @@ class BookingsStoreTest {
             whenever(bookingsDao.getBooking(TEST_LOCAL_SITE_ID, dto.id)).thenReturn(storedBooking)
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(note = "n")))
                 .thenReturn(WooPayload(dto))
-            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+            whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
             val result = sut.updateBooking(
@@ -78,7 +77,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             assertThat(result.model).isNotNull
             // The store preserves the stored order on the mapped entity
-            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+            verify(bookingsDao).upsert(argThat<BookingEntity> { this.order == storedBooking.order })
         }
 
     @Test
@@ -92,7 +91,7 @@ class BookingsStoreTest {
             whenever(orderStore.fetchSingleOrderSync(site, dto.orderId)).thenReturn(WooResult(fetchedOrder))
             whenever(bookingsRestClient.updateBooking(site, dto.id, BookingUpdatePayload(status = Status.Confirmed)))
                 .thenReturn(WooPayload(dto))
-            whenever(bookingsDao.insertOrReplace(any<BookingEntity>())).thenReturn(1L)
+            whenever(bookingsDao.upsert(any<BookingEntity>())).thenReturn(1L)
 
             // when
             val result = sut.updateBooking(
@@ -106,7 +105,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse()
             val expected = with(bookingDtoMapper) { dto.toEntity(TEST_LOCAL_SITE_ID, fetchedOrder) }
             assertThat(result.model).isEqualTo(expected)
-            verify(bookingsDao).insertOrReplace(expected)
+            verify(bookingsDao).upsert(expected)
             verify(bookingsDao, never()).getBooking(TEST_LOCAL_SITE_ID, dto.id)
         }
 
@@ -128,7 +127,7 @@ class BookingsStoreTest {
 
         // then
         assertThat(result.isError).isTrue()
-        verify(bookingsDao, never()).insertOrReplace(any<BookingEntity>())
+        verify(bookingsDao, never()).upsert(any<BookingEntity>())
     }
 
     @Test
@@ -171,7 +170,7 @@ class BookingsStoreTest {
             assertThat(result.isError).isFalse
             verify(bookingsDao).getBooking(TEST_LOCAL_SITE_ID, dto.id)
             // The store preserves the stored order on the mapped entity
-            verify(bookingsDao).insertOrReplace(argThat<BookingEntity> { this.order == storedBooking.order })
+            verify(bookingsDao).upsert(argThat<BookingEntity> { this.order == storedBooking.order })
         }
 
     @Test
@@ -210,14 +209,14 @@ class BookingsStoreTest {
             // We delete only matching filtered rows then insert the fetched page
             verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingsFilterOption.DateRange>(),
+                any<BookingFilters>(),
                 any<List<BookingEntity>>()
             )
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
         }
 
     @Test
-    fun `given page 1, today date filter, customer filter and no query, when fetchBookings, then only insertOrReplace is called`(): Unit =
+    fun `given page 1, today date filter, customer filter and no query, when fetchBookings, then cleanAndUpsertBookings is called`(): Unit =
         runBlocking {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
@@ -251,12 +250,12 @@ class BookingsStoreTest {
             // then
             assertThat(result.isError).isFalse()
             // We delete only matching filtered rows then insert the fetched page
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
-            verify(bookingsDao, never()).cleanAndUpsertBookings(
+            verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingsFilterOption.DateRange>(),
+                any<BookingFilters>(),
                 any<List<BookingEntity>>()
             )
+            verify(bookingsDao, never()).upsert(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
         }
 
@@ -296,7 +295,7 @@ class BookingsStoreTest {
             // We delete only matching filtered rows then insert the fetched page
             verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingsFilterOption.DateRange>(),
+                any<BookingFilters>(),
                 any<List<BookingEntity>>()
             )
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
@@ -337,10 +336,10 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
+            verify(bookingsDao).upsert(any<List<BookingEntity>>())
             verify(bookingsDao, never()).replaceAllForSite(any(), any())
             verify(bookingsDao, never())
-                .cleanAndUpsertBookings(any(), any<BookingsFilterOption.DateRange>(), any<List<BookingEntity>>())
+                .cleanAndUpsertBookings(any(), any<BookingFilters>(), any<List<BookingEntity>>())
         }
 
     @Test
@@ -377,13 +376,13 @@ class BookingsStoreTest {
             verify(bookingsDao).replaceAllForSite(any(), any())
             verify(bookingsDao, never()).cleanAndUpsertBookings(
                 any(),
-                any<BookingsFilterOption.DateRange>(),
+                any<BookingFilters>(),
                 any<List<BookingEntity>>()
             )
         }
 
     @Test
-    fun `given page 1 with custom date range filter and no query, when fetchBookings, then only insertOrReplace is called`(): Unit =
+    fun `given page 1 with custom date range filter and no query, when fetchBookings, then cleanAndUpsertBookings is called`(): Unit =
         runBlocking {
             // given
             val site = SiteModel().apply { id = TEST_LOCAL_SITE_ID.value }
@@ -416,11 +415,9 @@ class BookingsStoreTest {
 
             // then
             assertThat(result.isError).isFalse()
-            verify(bookingsDao).insertOrReplace(any<List<BookingEntity>>())
-            verify(bookingsDao, never()).replaceAllForSite(any(), any())
-            verify(bookingsDao, never()).cleanAndUpsertBookings(
+            verify(bookingsDao).cleanAndUpsertBookings(
                 any(),
-                any<BookingsFilterOption.DateRange>(),
+                any<BookingFilters>(),
                 any<List<BookingEntity>>()
             )
         }
