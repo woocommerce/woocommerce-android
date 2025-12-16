@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-18 09:54:05+0000
+Translation-Revision-Date: 2025-12-02 09:54:06+0000
 Plural-Forms: nplurals=1; plural=0;
 Generator: GlotPress/2.4.0-alpha
 Language: zh_TW
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">「%1$s」無法出席 %3$s於「%4$s」舉行的「%2$s」。</string>
+    <string name="booking_customer_note_label">備註</string>
+    <string name="booking_appointment_label_team_member">團隊成員</string>
+    <string name="booking_details_section_header">預訂詳細資料</string>
+    <string name="booking_filter_date_time_swap_info">系統已將時間選取範圍重新排序，以建立有效的範圍</string>
+    <string name="bookings_filter_date_filter_value">自訂範圍…</string>
+    <string name="bookings_filter_time_picker_title">選取時間</string>
+    <string name="bookings_filter_date_to">至</string>
+    <string name="bookings_filter_date_from">從</string>
+    <string name="bookings_filter_time_label">時間</string>
+    <string name="bookings_filter_date_label">日期</string>
+    <string name="bookings_filter_search_service_event">搜尋服務/活動</string>
+    <string name="bookings_filter_title_member">團隊成員</string>
+    <string name="bookings_empty_state_description_upcoming_v2">當顧客排程你的服務或註冊活動時，新的預訂會顯示於此處。</string>
+    <string name="bookings_empty_state_description_today_v2">排程於今天的任何預訂都會顯示於此處。</string>
+    <string name="bookings_empty_state_description_all">只要顧客開始排程服務或註冊活動，這裡就會顯示預訂資料。</string>
+    <string name="bookings_empty_state_title_all">尚無預訂</string>
+    <string name="bookings_resources_fetch_error">擷取團隊成員時發生錯誤</string>
+    <string name="product_type_bookable_service">服務</string>
     <string name="booking_not_selected">未選取預訂</string>
     <string name="bookings_filters_selected_option_content_description">所選篩選選項</string>
     <string name="bookings_filter_customer">顧客</string>
@@ -53,7 +72,7 @@ Language: zh_TW
     <string name="bookings_filters_enabled_title">篩選條件 • %d</string>
     <string name="woopos_search_orders_error_description">請再試一次。</string>
     <string name="woopos_search_orders_error_title">無法載入訂單</string>
-    <string name="woopos_search_orders_empty_description">找不到任何相符的訂單，請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_orders_empty_description">我們找不到任何採用該名稱的訂單。 請嘗試調整搜尋字詞。</string>
     <string name="woopos_search_orders_empty_title">找不到訂單</string>
     <string name="woopos_search_orders">搜尋訂單</string>
     <string name="woopos_orders_details_totals_card_content_description">訂單總計明細</string>
@@ -95,7 +114,7 @@ Language: zh_TW
     <string name="booking_cancel_dialog_confirm">是，取消</string>
     <string name="booking_cancel_dialog_keep">不，保留</string>
     <string name="booking_cancel_dialog_message">%1$s 將無法於 %3$s %4$s 出席「%2$s」。</string>
-    <string name="booking_cancel_dialog_title">取消預訂</string>
+    <string name="booking_cancel_dialog_title_v2">要取消預訂嗎？</string>
     <string name="booking_fetch_error">擷取預訂時發生錯誤</string>
     <string name="bookings_filter_default">任何</string>
     <string name="bookings_filter_title_service_event">服務/事件</string>
@@ -104,7 +123,6 @@ Language: zh_TW
     <string name="bookings_filter_title_type">預訂類型</string>
     <string name="bookings_filter_title_payment_status">付款狀態</string>
     <string name="bookings_filter_title_attendance_status">出席狀態</string>
-    <string name="bookings_filter_title_team_member">指派的團隊成員</string>
     <string name="bookings_filters_show_bookings">顯示預訂</string>
     <string name="bookings_filters_default_title">篩選條件</string>
     <string name="bookings_empty_state_clear_filters_button">清除篩選條件</string>
@@ -112,9 +130,6 @@ Language: zh_TW
     <string name="bookings_empty_state_description_with_filters">沒有符合篩選條件的預訂。 請調整後查看更多結果。</string>
     <string name="bookings_search_no_results_with_filters">找不到符合該名稱的預訂。請嘗試調整搜尋字詞或篩選條件，以便查看更多結果。</string>
     <string name="bookings_search_no_results_without_filters">找不到符合該名稱的預訂。請嘗試調整搜尋字詞，以便查看更多結果。</string>
-    <string name="bookings_empty_state_description_upcoming">您尚未安排任何未來的預約或活動。</string>
-    <string name="bookings_empty_state_description_today">你今天沒有排程任何預約或事件。</string>
-    <string name="bookings_empty_state_description_default">即將到來的預訂會顯示在這裡，供你檢視及管理。</string>
     <string name="bookings_empty_state_title_upcoming">沒有即將到來的預訂</string>
     <string name="bookings_empty_state_title_today">今天沒有預訂</string>
     <string name="bookings_empty_state_title_default">找不到預訂</string>
@@ -150,12 +165,11 @@ Language: zh_TW
     <string name="woopos_settings_local_catalog_size">尺寸</string>
     <string name="woopos_settings_local_catalog_status">型錄狀態</string>
     <string name="woopos_settings_local_catalog_category_subtitle">管理型錄設定</string>
-    <string name="woopos_settings_local_catalog_category">型錄</string>
+    <string name="woopos_settings_local_catalog_category">商品目錄</string>
     <string name="local_notification_woo_pos_survey_current_user_description">請透過簡短的 2 分鐘問卷調查分享體驗，協助我們進行改善。</string>
     <string name="local_notification_woo_pos_survey_current_user_title">你對 POS 有什麼感想？</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">請透過簡短的 2 分鐘問卷調查，協助我們開發你會喜歡的功能。</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">希望親自銷售嗎？</string>
-    <string name="product_type_booking">可預訂的產品</string>
     <string name="date_time_connector">於</string>
     <string name="booking_payment_view_order">檢視訂單</string>
     <string name="booking_payment_mark_as_paid">標示為已付款</string>
@@ -184,13 +198,10 @@ Language: zh_TW
     <string name="booking_payment_status_pending_confirmation">待確認</string>
     <string name="booking_payment_status_paid">已付款</string>
     <string name="booking_payment_status_unpaid">未付款</string>
-    <string name="booking_appointment_label_price">價格</string>
     <string name="booking_appointment_label_duration">時間長度</string>
     <string name="booking_appointment_label_location">地點</string>
-    <string name="booking_appointment_label_staff">指派員工</string>
     <string name="booking_appointment_label_time">時間</string>
     <string name="booking_appointment_label_date">日期</string>
-    <string name="booking_appointment_details_header">預約詳細資料</string>
     <string name="booking_details_title">預訂 #%s</string>
     <string name="bookings_tab_all">全部</string>
     <string name="bookings_tab_upcoming">即將到來</string>
@@ -404,8 +415,8 @@ Language: zh_TW
     <string name="woopos_search_items_error_description">請再試一次。</string>
     <string name="woopos_search_coupons_error_title">無法載入優惠券</string>
     <string name="woopos_search_items_error_title">無法載入商品</string>
-    <string name="woopos_search_empty_coupons_description">找不到任何相符的優惠券，請嘗試調整搜尋字詞。</string>
-    <string name="woopos_search_empty_description">找不到任何相符的商品，請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_empty_coupons_description">我們找不到任何相符的優惠券。 請嘗試調整搜尋字詞。</string>
+    <string name="woopos_search_empty_description">我們找不到任何相符的商品。 請嘗試調整搜尋字詞。</string>
     <string name="woopos_search_coupons_empty_title">找不到優惠券</string>
     <string name="woopos_search_coupons">搜尋優惠券</string>
     <string name="woopos_coupons_pagination_error_description">請檢查你的網際網路連線並再試一次。</string>

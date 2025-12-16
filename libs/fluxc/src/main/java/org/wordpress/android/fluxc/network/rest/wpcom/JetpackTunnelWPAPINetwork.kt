@@ -109,7 +109,13 @@ class JetpackTunnelWPAPINetwork @Inject constructor(
     private fun <T> JetpackResponse<T>.toWPAPIResponse(): WPAPIResponse<T> {
         return when (this) {
             is JetpackSuccess -> WPAPIResponse.Success(data, headers)
-            is JetpackError -> WPAPIResponse.Error(WPAPINetworkError(error, errorCode = error.apiError))
+            is JetpackError -> WPAPIResponse.Error(
+                WPAPINetworkError(
+                    error,
+                    errorCode = error.apiError,
+                    errorData = error.errorData
+                )
+            )
         }
     }
 }

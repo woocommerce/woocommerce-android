@@ -18,6 +18,7 @@ import java.lang.reflect.Type;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 public class WPComGsonRequest<T> extends GsonRequest<T> {
     public interface WPComErrorListener {
@@ -47,9 +48,11 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
 
     public static class WPComGsonNetworkError extends BaseNetworkError {
         @NonNull public String apiError;
+        @Nullable public JSONObject errorData;
         public WPComGsonNetworkError(@NonNull BaseNetworkError error) {
             super(error);
             this.apiError = "";
+            this.errorData = null;
         }
     }
 
@@ -211,6 +214,13 @@ public class WPComGsonRequest<T> extends GsonRequest<T> {
             // Augment BaseNetworkError by what we can parse from the response
             returnedError.apiError = apiError;
             returnedError.message = apiMessage;
+
+            if (jsonObject.has("data")) {
+                JSONObject dataObject = jsonObject.optJSONObject("data");
+                if (dataObject != null) {
+                    returnedError.errorData = dataObject;
+                }
+            }
 
             // Check if we know this error
             if (apiError.equals("authorization_required") || apiError.equals("invalid_token")
