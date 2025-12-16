@@ -390,7 +390,7 @@ class WooPosCardReaderConnectionController(
                     errorMessage = errorMessage ?: "Connection failed",
                     onRetryClicked = {
                         selectedReader?.let { connectToReader(it) } ?: run {
-                            _state.value = WooPosCardReaderConnectionState.Discovering
+                            _state.value = WooPosCardReaderConnectionState.Scanning
                             startDiscovery()
                         }
                     },
