@@ -84,9 +84,10 @@ class ProductListRepository @Inject constructor(
         loadMore: Boolean = false,
         productFilterOptions: Map<WCProductStore.ProductFilterOption, String> = emptyMap(),
         excludedProductIds: List<Long> = emptyList(),
-        sortType: WCProductStore.ProductSorting? = null
+        sortType: WCProductStore.ProductSorting? = null,
+        pageSize: Int = PRODUCT_PAGE_SIZE,
     ): Result<List<Product>> {
-        offset = if (loadMore) offset + PRODUCT_PAGE_SIZE else 0
+        offset = if (loadMore) offset + pageSize else 0
         lastSearchQuery = null
         lastIsSkuSearch = WCProductStore.SkuSearchOptions.Disabled
 

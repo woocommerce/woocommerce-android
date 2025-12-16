@@ -35,6 +35,11 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
 
     init {
         observeProducts()
+        // In parallel, fetch products from the network using pagination so the DB keeps getting
+        // populated with more booking products while the UI observes the DB changes.
+        launch {
+            paginateBookingProducts()
+        }
     }
 
     private fun observeProducts() = launch {
@@ -55,6 +60,31 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
                         }
                 )
             }
+        }
+    }
+
+    /**
+     * Fetch booking products from the network with pagination while the UI observes DB updates.
+     */
+    private suspend fun paginateBookingProducts() {
+        // First page
+        val firstPage = productListRepository.fetchProductList(
+            loadMore = false,
+            productFilterOptions = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)
+        )
+
+        if (firstPage.isFailure) return
+
+        // Load subsequent pages while available
+        while (productListRepository.canLoadMoreProducts) {
+            val next = productListRepository.fetchProductList(
+                loadMore = true,
+                productFilterOptions = mapOf(
+                    WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value
+                ),
+                pageSize = BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE
+            )
+            if (next.isFailure) break
         }
     }
 
@@ -92,5 +122,9 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
             initial: BookingsFilterOption.ServiceEvents?,
             onFilterChanged: (BookingsFilterOption.ServiceEvents) -> Unit
         ): BookingServiceEventFilterViewModel
+    }
+
+    companion object {
+        private const val BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE = 100 //Setting big page size to minimise num of requests
     }
 }
