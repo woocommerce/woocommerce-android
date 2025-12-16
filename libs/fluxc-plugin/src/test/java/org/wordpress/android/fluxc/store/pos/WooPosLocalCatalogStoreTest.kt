@@ -28,6 +28,7 @@ import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosVariationsDao
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
+import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogState
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogError
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import org.wordpress.android.fluxc.utils.HeadersParser
@@ -448,7 +449,7 @@ class WooPosLocalCatalogStoreTest {
         // THEN
         assertThat(result.scheduledAt).isEqualTo("2025-12-10T11:21:48")
         assertThat(result.completedAt).isEqualTo("2025-12-10T11:21:55")
-        assertThat(result.state).isEqualTo("completed")
+        assertThat(result.state).isEqualTo(WooPosGenerateCatalogState.COMPLETED)
         assertThat(result.progress).isEqualTo(100)
         assertThat(result.processed).isEqualTo(881)
         assertThat(result.total).isEqualTo(881)
@@ -508,7 +509,7 @@ class WooPosLocalCatalogStoreTest {
 
         // THEN
         assertThat(result.scheduledAt).isEqualTo("2025-12-10T11:21:48")
-        assertThat(result.state).isEqualTo("scheduled")
+        assertThat(result.state).isEqualTo(WooPosGenerateCatalogState.SCHEDULED)
         assertThat(result.completedAt).isNull()
         assertThat(result.progress).isNull()
         assertThat(result.url).isNull()
