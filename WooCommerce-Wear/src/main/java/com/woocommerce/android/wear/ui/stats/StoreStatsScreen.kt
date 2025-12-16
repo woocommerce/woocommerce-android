@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.ui.stats
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -108,7 +109,9 @@ fun StoreStatsScreen(
                             style = WooTypography.body1,
                             modifier = modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
                                 .padding(top = 8.dp)
+                                .basicMarquee(Int.MAX_VALUE)
                         )
                     }
                     when {

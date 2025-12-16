@@ -39,6 +39,7 @@ android {
         sourceCompatibility = libs.versions.java.get()
         targetCompatibility = libs.versions.java.get()
     }
+    testFixtures.enable = true
 }
 
 android.buildTypes.all { buildType ->

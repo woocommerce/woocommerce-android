@@ -66,11 +66,6 @@ class MainActivityViewModel @Inject constructor(
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
-    init {
-        launch {
-            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
-        }
-    }
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
@@ -227,15 +222,14 @@ class MainActivityViewModel @Inject constructor(
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
-            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+            if (prefs.getLastVersionWithAnnouncement() == buildConfigWrapper.versionName) {
+                return@launch
+            }
 
-            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
-            // 1. Current version is different from the last version where announcement was shown
-            // 2. Announcement content is valid and can be displayed
-            cachedAnnouncement?.let {
-                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
-                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
-                ) {
+            val announcement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = false)
+
+            announcement?.let {
+                if (announcement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
                     WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
                     analyticsTrackerWrapper.track(
                         AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,

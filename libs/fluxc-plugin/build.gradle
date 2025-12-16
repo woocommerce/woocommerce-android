@@ -59,6 +59,7 @@ dependencies {
     testFixturesCompileOnly libs.junit
     testFixturesCompileOnly libs.kotlinx.coroutines.core
     testFixturesCompileOnly libs.androidx.room.runtime
+    testFixturesCompileOnly testFixtures(project(":libs:fluxc"))
 
     // WordPress libs
     implementation(libs.wordpress.utils) {
@@ -97,6 +98,7 @@ dependencies {
     testImplementation libs.mockito.kotlin
     testImplementation libs.kotlinx.coroutines.test
     testImplementation libs.kotlin.test.junit
+    testImplementation(testFixtures(project(":libs:fluxc")))
 
     androidTestImplementation libs.androidx.room.testing
     androidTestRuntimeOnly libs.androidx.test.main.runner
