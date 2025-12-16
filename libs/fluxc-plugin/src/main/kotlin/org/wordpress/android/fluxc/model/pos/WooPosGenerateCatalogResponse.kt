@@ -15,15 +15,6 @@ data class WooPosGenerateCatalogResponse(
     val processed: Int? = null,
     @SerializedName("total")
     val total: Int? = null,
-    @SerializedName("args")
-    val args: WooPosGenerateCatalogArgs? = null,
     @SerializedName("url")
     val url: String? = null,
-)
-
-data class WooPosGenerateCatalogArgs(
-    @SerializedName("_product_fields")
-    val productFields: List<String>? = null,
-    @SerializedName("_variation_fields")
-    val variationFields: List<String>? = null,
 )

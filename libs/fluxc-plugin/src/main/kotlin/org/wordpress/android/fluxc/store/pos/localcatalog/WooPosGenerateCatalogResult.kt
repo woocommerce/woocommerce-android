@@ -8,8 +8,6 @@ data class WooPosGenerateCatalogResult(
     val processed: Int? = null,
     val total: Int? = null,
     val url: String? = null,
-    val productFields: List<String>? = null,
-    val variationFields: List<String>? = null,
 )
 
 enum class WooPosGenerateCatalogState(val rawValue: String) {
