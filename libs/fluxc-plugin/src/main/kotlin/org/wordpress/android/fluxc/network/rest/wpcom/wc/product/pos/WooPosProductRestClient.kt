@@ -16,7 +16,7 @@ class WooPosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
 ) {
     companion object {
-        private const val PRODUCT_FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
+        private const val PRODUCT_FIELDS = "id,name,sku,global_unique_id,type,price,downloadable," +
             "images,attributes,parent_id,status,regular_price,sale_price,on_sale,description," +
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +
             "backordered,categories,tags,date_modified"
