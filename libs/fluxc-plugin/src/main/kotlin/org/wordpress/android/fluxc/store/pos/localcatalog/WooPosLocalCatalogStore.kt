@@ -521,8 +521,6 @@ class WooPosLocalCatalogStore @Inject constructor(
                             processed = response.model.processed,
                             total = response.model.total,
                             url = response.model.url,
-                            productFields = response.model.args?.productFields,
-                            variationFields = response.model.args?.variationFields,
                         )
                     )
                 }

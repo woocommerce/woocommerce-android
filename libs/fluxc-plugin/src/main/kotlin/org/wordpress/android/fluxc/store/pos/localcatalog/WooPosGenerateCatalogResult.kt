@@ -4,7 +4,7 @@ data class WooPosGenerateCatalogResult(
     val scheduledAt: String? = null,
     val completedAt: String? = null,
     val state: WooPosGenerateCatalogState,
-    val progress: Int? = null,
+    val progress: Float? = null,
     val processed: Int? = null,
     val total: Int? = null,
     val url: String? = null,
