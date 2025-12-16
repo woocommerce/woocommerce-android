@@ -90,7 +90,7 @@ class WooPosProductRestClient @Inject constructor(
     suspend fun postGenerateCatalog(
         site: SiteModel,
     ): WooResult<WooPosGenerateCatalogResponse> {
-        val url = WOOCOMMERCE.product_catalog.create.pathPosV1
+        val url = WOOCOMMERCE.catalog.create.pathPosV1
         val params = mutableMapOf(
             "_product_fields" to PRODUCT_FIELDS,
             "_variation_fields" to VARIATIONS_FIELDS
