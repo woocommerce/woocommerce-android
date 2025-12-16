@@ -1,0 +1,2 @@
+23.8 :
+Cette mise à jour fluidifie votre flux de travail avec des correctifs sur la navigation en arrière-plan, les incidents de frais d’expédition et la mise en page de l’écran de paiement. Le PDV bénéficie également d’améliorations, notamment de réglages de catalogue local plus rapides, une meilleure gestion des produits supprimés et un défilement automatique vers vos commandes les plus récentes.

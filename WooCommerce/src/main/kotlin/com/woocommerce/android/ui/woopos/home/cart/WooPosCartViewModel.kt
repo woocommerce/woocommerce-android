@@ -223,6 +223,10 @@ class WooPosCartViewModel @Inject constructor(
                         onCouponsValidationFails()
                     }
 
+                    is ParentToChildrenEvent.MissingVariationEvent -> {
+                        markVariationAsUnknown(event.variationId)
+                    }
+
                     is ParentToChildrenEvent.RemoveCouponsClicked -> {
                         removeCouponsFromCart()
                     }
@@ -267,6 +271,19 @@ class WooPosCartViewModel @Inject constructor(
         }
     }
 
+    private fun markVariationAsUnknown(variationId: Long) {
+        val body = _state.value.body as? WooPosCartState.Body.WithItems ?: return
+        _state.value = _state.value.copy(
+            body = body.copy(
+                itemsInCart = body.itemsInCart.map {
+                    if ((it as? Product.Variation)?.variationId == variationId) {
+                        it.copy(productDoesNotExist = true)
+                    } else { it }
+                },
+            ),
+        )
+    }
+
     private fun onCouponsValidationFails() {
         val currentState = _state.value
         val body = currentState.body as? WooPosCartState.Body.WithItems ?: return
@@ -297,12 +314,17 @@ class WooPosCartViewModel @Inject constructor(
     private fun removeNotFoundProductsFromCart(event: ParentToChildrenEvent.RemoveProductsClicked) {
         val cartBody = _state.value.body as? WooPosCartState.Body.WithItems ?: return
 
-        val productsToRemove = cartBody.itemsInCart
-            .filterIsInstance<Product.Simple>()
-            .filter { it.id in event.productIdsToRemove }
+        val itemsToRemove = cartBody.itemsInCart
+            .filterIsInstance<Product>()
+            .filter { product ->
+                when (product) {
+                    is Product.Simple -> product.id in event.productIdsToRemove
+                    is Product.Variation -> product.variationId in event.productIdsToRemove
+                }
+            }
             .toSet()
 
-        removeItemsFromCart(productsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
+        removeItemsFromCart(itemsToRemove, WooPosAnalyticsEventConstant.CartSource.ERROR)
 
         sendEventToParent(ChildToParentEvent.ProductsRemoved(getCartItemsDataList()))
     }
@@ -400,6 +422,7 @@ class WooPosCartViewModel @Inject constructor(
                 is BarcodeInputDetector.BarcodeResult.Success -> {
                     processBarcodeSuccess(result.barcode)
                 }
+
                 is BarcodeInputDetector.BarcodeResult.Error -> {
                     processBarcodeError(result)
                 }
@@ -439,6 +462,7 @@ class WooPosCartViewModel @Inject constructor(
             BarcodeInputDetector.FailureReason.TOO_SHORT -> {
                 resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_too_short)
             }
+
             BarcodeInputDetector.FailureReason.NO_TERMINATOR -> {
                 resourceProvider.getString(R.string.woopos_cart_barcode_scan_result_no_terminator)
             }

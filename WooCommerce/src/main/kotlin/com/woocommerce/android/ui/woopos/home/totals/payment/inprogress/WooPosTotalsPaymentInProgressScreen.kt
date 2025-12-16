@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsUIEvent
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsViewState
 
@@ -50,7 +49,7 @@ fun WooPosPaymentInProgressScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.woopos_card_ilustration))
             LottieAnimation(
                 modifier = Modifier.size(256.dp),
@@ -59,14 +58,14 @@ fun WooPosPaymentInProgressScreen(
                 clipToCompositionBounds = false,
                 clipSpec = LottieClipSpec.Markers("payment_processing_start", "payment_processing_end")
             )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 WooPosText(
                     text = state.title,
                     color = MaterialTheme.colorScheme.onPrimary,
                     style = WooPosTypography.BodyLarge,
                 )
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 WooPosText(
                     text = state.subtitle,
                     color = MaterialTheme.colorScheme.onPrimary,
@@ -75,7 +74,7 @@ fun WooPosPaymentInProgressScreen(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
     }
 }
 

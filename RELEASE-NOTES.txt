@@ -6,6 +6,9 @@
 -----
 - [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 - [*][Woo POS] Fixed loading indicator colors to match the design [https://github.com/woocommerce/woocommerce-android/pull/15043]
+- [**][Woo POS] Fixed crash when deleted products are in cart during checkout [https://github.com/woocommerce/woocommerce-android/pull/15083]
+- [*][Woo POS] Display specific error when removed variation is added to the cart [https://github.com/woocommerce/woocommerce-android/pull/15076]
+- [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
 
 23.8
 -----
@@ -16,6 +19,7 @@
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
 - [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
+- [*] [WEAR] Resolved title clipping on round screens for Wear [https://github.com/woocommerce/woocommerce-android/pull/15108]
 
 23.7
 -----

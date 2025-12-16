@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 31,
-    "identityHash": "28dda2698cc2438a0d421fcae9ee5407",
+    "identityHash": "aa2684d22c5ec8552e80cd32e2ec522a",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -316,6 +316,55 @@
         }
       },
       {
+        "tableName": "ThemeEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `themeId` TEXT NOT NULL, `name` TEXT NOT NULL, `demoUrl` TEXT, `active` INTEGER NOT NULL, `isWpComTheme` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `themeId`, `isWpComTheme`))",
+        "fields": [
+          {
+            "fieldPath": "siteId",
+            "columnName": "siteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "themeId",
+            "columnName": "themeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "demoUrl",
+            "columnName": "demoUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "active",
+            "columnName": "active",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWpComTheme",
+            "columnName": "isWpComTheme",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "siteId",
+            "themeId",
+            "isWpComTheme"
+          ]
+        }
+      },
+      {
         "tableName": "WhatsNewAnnouncementEntity",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `minimumAppVersion` TEXT NOT NULL, `maximumAppVersion` TEXT NOT NULL, `appVersionTargets` TEXT NOT NULL, `localized` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
         "fields": [
@@ -413,7 +462,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '28dda2698cc2438a0d421fcae9ee5407')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aa2684d22c5ec8552e80cd32e2ec522a')"
     ]
   }
 }

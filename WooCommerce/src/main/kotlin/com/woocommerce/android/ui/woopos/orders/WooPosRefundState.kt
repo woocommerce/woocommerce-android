@@ -17,8 +17,25 @@ sealed class WooPosRefundState {
         val itemsCount: Int,
         val subtotal: BigDecimal,
         val taxes: BigDecimal,
-        val total: BigDecimal
-    ) : WooPosRefundState()
+        val total: BigDecimal,
+        val formattedSubtotal: String,
+        val formattedTaxes: String,
+        val formattedTotal: String,
+        val paymentMethod: String,
+        val step: RefundStep
+    ) : WooPosRefundState() {
+        @Immutable
+        sealed class RefundStep {
+            @Immutable
+            data object SelectItems : RefundStep()
+
+            @Immutable
+            data object ReviewRefund : RefundStep()
+
+            @Immutable
+            data object ConfirmRefund : RefundStep()
+        }
+    }
 
     @Immutable
     data class Error(

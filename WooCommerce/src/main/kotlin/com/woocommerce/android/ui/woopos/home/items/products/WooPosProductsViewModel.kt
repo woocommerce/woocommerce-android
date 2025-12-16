@@ -87,6 +87,7 @@ class WooPosProductsViewModel @Inject constructor(
                     is ParentToChildrenEvent.SearchEvent.RecentSearchSelected,
                     ParentToChildrenEvent.SearchEvent.Started,
                     is ParentToChildrenEvent.RemoveProductsClicked,
+                    is ParentToChildrenEvent.MissingVariationEvent,
                     is ParentToChildrenEvent.ProductsRemoved,
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                 }

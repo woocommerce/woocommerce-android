@@ -2,7 +2,6 @@ package org.wordpress.android.fluxc.network.rest.wpcom.wc.product.pos
 
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.WooPosCatalogStatusResponse
 import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
 import org.wordpress.android.fluxc.model.pos.WooPosVariationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
@@ -91,9 +90,10 @@ class WooPosProductRestClient @Inject constructor(
     suspend fun postGenerateCatalog(
         site: SiteModel,
     ): WooResult<WooPosGenerateCatalogResponse> {
-        val url = WOOCOMMERCE.catalog.pathV3
+        val url = WOOCOMMERCE.product_catalog.create.pathPosV1
         val params = mutableMapOf(
-            "_fields" to PRODUCT_FIELDS
+            "_product_fields" to PRODUCT_FIELDS,
+            "_variation_fields" to VARIATIONS_FIELDS
         )
 
         val response = wooNetwork.executePostGsonRequest(
@@ -101,33 +101,6 @@ class WooPosProductRestClient @Inject constructor(
             path = url,
             body = params,
             clazz = WooPosGenerateCatalogResponse::class.java
-        )
-
-        return when (response) {
-            is WPAPIResponse.Success -> {
-                WooResult(response.data)
-            }
-
-            is WPAPIResponse.Error -> {
-                WooResult(response.error.toWooError())
-            }
-        }
-    }
-
-    suspend fun getCatalogStatus(
-        site: SiteModel,
-        jobId: String,
-    ): WooResult<WooPosCatalogStatusResponse> {
-        val url = WOOCOMMERCE.catalog.status.id(jobId).pathV3
-        val params = mutableMapOf(
-            "_fields" to PRODUCT_FIELDS
-        )
-
-        val response = wooNetwork.executeGetGsonRequest(
-            site = site,
-            path = url,
-            params = params,
-            clazz = WooPosCatalogStatusResponse::class.java
         )
 
         return when (response) {

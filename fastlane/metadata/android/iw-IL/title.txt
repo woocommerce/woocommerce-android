@@ -1,1 +1,1 @@
-WooCommerce
+WooCommerce: ניהול חנות ו-POS

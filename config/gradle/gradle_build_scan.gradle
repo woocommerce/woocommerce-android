@@ -1,15 +1,12 @@
 develocity {
     buildScan {
-        server = "https://develocity.a8c-ci.services/"
-        accessKey = gradle.ext.secretProperties["develocityToken"]
-
         if (gradle.ext.isCi) {
+            termsOfUseUrl = 'https://gradle.com/terms-of-service'
+            termsOfUseAgree = 'yes'
+            tag 'CI'
             uploadInBackground = false
         } else {
-            obfuscation {
-                hostname { "" }
-                ipAddresses { it.collect { "0.0.0.0" } }
-            }
+            publishing.onlyIf { false }
         }
     }
 }

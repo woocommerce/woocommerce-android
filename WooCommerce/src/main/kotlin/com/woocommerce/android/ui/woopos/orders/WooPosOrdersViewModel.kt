@@ -325,7 +325,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun refreshSelectedOrder() {
         val current = _state.value as? WooPosOrdersState.Content ?: return
-        val selectedOrderId = current.selectedDetails.id
+        val selectedOrderId = current.selectedDetails?.id ?: return
 
         viewModelScope.launch {
             ordersDataSource.refreshOrderById(selectedOrderId)
@@ -372,7 +372,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
-        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails!!
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
             if (!isRefreshing) {
@@ -398,7 +398,7 @@ class WooPosOrdersViewModel @Inject constructor(
                         ),
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
-                        selectedDetails = currentSelectedDetails,
+                        selectedDetails = null,
                         paginationState = WooPosPaginationState.None
                     )
                 }
@@ -412,7 +412,7 @@ class WooPosOrdersViewModel @Inject constructor(
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
-                            selectedDetails = currentSelectedDetails,
+                            selectedDetails = null,
                             paginationState = WooPosPaginationState.None
                         )
                     } else {
@@ -499,7 +499,15 @@ class WooPosOrdersViewModel @Inject constructor(
 
         val orders = ordersWithRefunds.keys.toList()
         val newFirstOrderId = orders.firstOrNull()?.id
-        val newSelectedId = requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+
+        val currentSelectedId = (currentState as? WooPosOrdersState.Content)?.selectedDetails?.id
+        val isSelectedOrderStillInList = currentSelectedId != null && orders.any { it.id == currentSelectedId }
+        val newSelectedId =
+            if (isSelectedOrderStillInList) {
+                currentSelectedId
+            } else {
+                requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+            }
         val items = buildItemsMap(ordersWithRefunds, newSelectedId)
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
         val selectedDetails = when (val details = selectedEntry.value) {

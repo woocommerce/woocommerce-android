@@ -23,4 +23,8 @@ android {
 dependencies {
     implementation(project(":libs:commons"))
     implementation(libs.google.dagger.hilt.android.main)
+
+    testImplementation(libs.junit)
+    testImplementation(libs.mockito.kotlin)
+    testImplementation(libs.assertj.core)
 }

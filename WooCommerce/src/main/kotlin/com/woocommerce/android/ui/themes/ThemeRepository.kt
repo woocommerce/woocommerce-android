@@ -91,7 +91,17 @@ class ThemeRepository @Inject constructor(
 
         val activationResult: OnThemeActivated = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newActivateThemeAction(
-                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
+                SiteThemePayload(
+                    selectedSite.get(),
+                    ThemeModel(
+                        siteId = selectedSite.get().localId(),
+                        themeId = themeId,
+                        name = themeId,
+                        demoUrl = null,
+                        active = false,
+                        isWpComTheme = false
+                    )
+                )
             )
         )
 
@@ -113,9 +123,17 @@ class ThemeRepository @Inject constructor(
     private suspend fun installThemeIfNeeded(themeId: String): Result<Unit> {
         val installationResult: OnThemeInstalled = dispatcher.dispatchAndAwait(
             ThemeActionBuilder.newInstallThemeAction(
-                // The Default constructor ThemeModel() is deprecated.
-                // We should add a new method to ThemeStore install a theme by themeId
-                SiteThemePayload(selectedSite.get(), ThemeModel().apply { this.themeId = themeId })
+                SiteThemePayload(
+                    selectedSite.get(),
+                    ThemeModel(
+                        siteId = selectedSite.get().localId(),
+                        themeId = themeId,
+                        name = themeId,
+                        demoUrl = null,
+                        active = false,
+                        isWpComTheme = false
+                    )
+                )
             )
         )
 
