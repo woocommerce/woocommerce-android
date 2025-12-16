@@ -100,6 +100,7 @@ fun WooPosIssueRefundDialog(
                             }
                         )
                     }
+
                     WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
                         ConfirmRefundContent(
                             state = currentState,
@@ -591,7 +592,7 @@ private fun ConfirmRefundHeader(
         ) {
             Icon(
                 modifier = Modifier.size(32.dp),
-                imageVector = Icons.Default.Close,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.close),
                 tint = MaterialTheme.colorScheme.onSurface
             )
