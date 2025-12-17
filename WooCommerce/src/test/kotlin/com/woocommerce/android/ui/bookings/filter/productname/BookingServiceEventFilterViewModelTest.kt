@@ -37,6 +37,12 @@ class BookingServiceEventFilterViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `when ViewModel is initialized, then loading state is true`() {
+        val state = viewModel.uiState.value
+        assertThat(state.isLoading).isTrue()
+    }
+
+    @Test
     fun `given an initial selection, when ViewModel is initialized, then state reflects it`() {
         val initial = BookingsFilterOption.ServiceEvents(
             values = setOf(BookingsFilterOption.ProductInfo(1L, "Haircut"))

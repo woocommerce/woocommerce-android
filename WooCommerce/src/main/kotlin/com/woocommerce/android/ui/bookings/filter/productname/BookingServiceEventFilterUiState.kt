@@ -11,6 +11,7 @@ data class BookingServiceEventFilterUiState(
     val availableProducts: List<BookableProduct> = emptyList(),
     val selectedProducts: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
     val searchQuery: String = "",
+    val isLoading: Boolean = false,
     val onProductSelected: (BookableProduct) -> Unit = {},
     val onSearchQueryChanged: (String) -> Unit = {},
 ) {

@@ -1,9 +1,13 @@
 package com.woocommerce.android.ui.bookings.filter.productname
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -19,6 +23,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -57,7 +62,31 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
             ),
         )
         HorizontalDivider(thickness = 0.5.dp)
-        BookingsFilterSelectionPage(items = state.items)
+        if (state.isLoading && state.availableProducts.isEmpty()) {
+            BookingServiceEventFilterSkeletons()
+        } else {
+            BookingsFilterSelectionPage(items = state.items)
+        }
+    }
+}
+
+@Composable
+private fun BookingServiceEventFilterSkeletons() {
+    LazyColumn {
+        items(5) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = dimen.major_100)),
+                horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
+            ) {
+                SkeletonView(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(64.dp)
+                )
+            }
+        }
     }
 }
 

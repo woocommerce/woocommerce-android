@@ -27,6 +27,7 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     private val _uiState = MutableStateFlow(
         BookingServiceEventFilterUiState(
             selectedProducts = selectedServiceEvents ?: BookingsFilterOption.ServiceEvents.DEFAULT,
+            isLoading = true,
             onProductSelected = ::onProductSelected,
             onSearchQueryChanged = ::onSearchQueryChanged
         )
@@ -35,11 +36,7 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
 
     init {
         observeProducts()
-        // In parallel, fetch products from the network using pagination so the DB keeps getting
-        // populated with more booking products while the UI observes the DB changes.
-        launch {
-            paginateBookingProducts()
-        }
+        loadAllBookingProducts()
     }
 
     private fun observeProducts() = launch {
@@ -57,23 +54,25 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
                                 id = product.remoteId,
                                 name = UiStringText(product.name)
                             )
-                        }
+                        },
+                    isLoading = false
                 )
             }
         }
     }
 
     /**
-     * Fetch booking products from the network with pagination while the UI observes DB updates.
+     * Fetch booking products from the network with big page size to minimize request and ensure search bar
+     * has all available results
      */
-    private suspend fun paginateBookingProducts() {
-        // First page
+    private fun loadAllBookingProducts() = launch {
         val firstPage = productListRepository.fetchProductList(
             loadMore = false,
-            productFilterOptions = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)
+            productFilterOptions = mapOf(WCProductStore.ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value),
+            pageSize = BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE
         )
 
-        if (firstPage.isFailure) return
+        if (firstPage.isFailure) return@launch
 
         // Load subsequent pages while available
         while (productListRepository.canLoadMoreProducts) {
@@ -125,6 +124,6 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE = 100 //Setting big page size to minimise num of requests
+        private const val BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE = 100 // Setting big page size to minimise num of requests
     }
 }
