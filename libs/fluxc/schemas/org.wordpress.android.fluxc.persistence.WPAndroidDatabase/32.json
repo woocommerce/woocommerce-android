@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 31,
-    "identityHash": "170c715c7279c4691cfd3d797a79fa3b",
+    "version": 32,
+    "identityHash": "aa2684d22c5ec8552e80cd32e2ec522a",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -363,11 +363,106 @@
             "isWpComTheme"
           ]
         }
+      },
+      {
+        "tableName": "WhatsNewAnnouncementEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `minimumAppVersion` TEXT NOT NULL, `maximumAppVersion` TEXT NOT NULL, `appVersionTargets` TEXT NOT NULL, `localized` INTEGER NOT NULL, PRIMARY KEY(`announcementId`))",
+        "fields": [
+          {
+            "fieldPath": "announcementId",
+            "columnName": "announcementId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "minimumAppVersion",
+            "columnName": "minimumAppVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "maximumAppVersion",
+            "columnName": "maximumAppVersion",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "appVersionTargets",
+            "columnName": "appVersionTargets",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localized",
+            "columnName": "localized",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "announcementId"
+          ]
+        }
+      },
+      {
+        "tableName": "WhatsNewAnnouncementFeatureEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`announcementId` INTEGER NOT NULL, `title` TEXT NOT NULL, `subtitle` TEXT, `iconUrl` TEXT, `iconBase64` TEXT, PRIMARY KEY(`announcementId`, `title`), FOREIGN KEY(`announcementId`) REFERENCES `WhatsNewAnnouncementEntity`(`announcementId`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "announcementId",
+            "columnName": "announcementId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtitle",
+            "columnName": "subtitle",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "iconUrl",
+            "columnName": "iconUrl",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "iconBase64",
+            "columnName": "iconBase64",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "announcementId",
+            "title"
+          ]
+        },
+        "foreignKeys": [
+          {
+            "table": "WhatsNewAnnouncementEntity",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "announcementId"
+            ],
+            "referencedColumns": [
+              "announcementId"
+            ]
+          }
+        ]
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '170c715c7279c4691cfd3d797a79fa3b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'aa2684d22c5ec8552e80cd32e2ec522a')"
     ]
   }
 }
