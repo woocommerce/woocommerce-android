@@ -31,10 +31,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
         var attemptCount = 0
         var failedConsecutiveAttempts = 0
 
-        while (attemptCount < MAX_POLL_ATTEMPTS) {
-            attemptCount++
-
-            if (attemptCount > 1) {
+        repeat(MAX_POLL_ATTEMPTS) { attemptCount ->
+            if (attemptCount > 0) {
                 val delayMs = computeBackoffDelay(attemptCount)
                 logger.d("Waiting ${delayMs}ms before poll attempt $attemptCount")
                 delay(delayMs)
@@ -47,7 +45,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                     return Result.failure(response.exceptionOrNull() ?: Exception("Unknown error"))
                 } else {
                     logger.w("Poll attempt $attemptCount failed: ${response.exceptionOrNull()?.message}")
-                    continue
+                    return@repeat
                 }
             }
             failedConsecutiveAttempts = 0
