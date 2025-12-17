@@ -49,7 +49,7 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
         WCSearchField(
             value = state.searchQuery,
             onValueChange = state.onSearchQueryChanged,
-            hint = stringResource(string.bookings_filter_search_service_event),
+            hint = stringResource(string.bookings_filter_search_service),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
