@@ -35,7 +35,7 @@
 
 /variations/
 
-/product-catalog/create
+/catalog/create
 
 /product-add-ons/
 
