@@ -93,7 +93,7 @@ class ProductListRepository @Inject constructor(
 
         return productStore.fetchProducts(
             site = selectedSite.get(),
-            pageSize = PRODUCT_PAGE_SIZE,
+            pageSize = pageSize,
             offset = offset,
             sortType = sortType ?: productSortingChoice,
             filterOptions = productFilterOptions,
