@@ -30,6 +30,7 @@ tasks.withType(KotlinCompile).configureEach {
 }
 
 dependencies {
+    testImplementation(testFixtures(project(":libs:fluxc")))
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 
     implementation project(':libs:fluxc')

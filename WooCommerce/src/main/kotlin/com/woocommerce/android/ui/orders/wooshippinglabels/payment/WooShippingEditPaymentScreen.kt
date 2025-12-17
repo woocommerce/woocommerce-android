@@ -31,10 +31,6 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -42,12 +38,14 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -220,7 +218,7 @@ private fun WooShippingEditPaymentWebView(
             modifier = Modifier.align(Alignment.End)
         ) {
             Icon(
-                imageVector = Icons.Default.Clear,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 contentDescription = stringResource(R.string.dismiss),
                 tint = MaterialTheme.colors.onSurface
             )
@@ -338,7 +336,7 @@ private fun PaymentMethodsList(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Add,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                         tint = if (viewState.canManagePaymentMethods) {
                             MaterialTheme.colors.primary
                         } else {
@@ -354,7 +352,7 @@ private fun PaymentMethodsList(
         }
         Spacer(Modifier.height(16.dp))
         Row(Modifier.fillMaxWidth()) {
-            Icon(Icons.Outlined.Info, contentDescription = null)
+            Icon(ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp), contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text(
                 text = stringResource(
@@ -444,7 +442,7 @@ private fun EditDisabledWarning(
             .padding(16.dp)
     ) {
         Icon(
-            imageVector = Icons.Outlined.Info,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
             tint = colorResource(R.color.warning_banner_foreground_color),
             contentDescription = null
         )

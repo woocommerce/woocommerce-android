@@ -21,16 +21,15 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -54,7 +53,7 @@ fun WooPaymentsSetupInstructionsScreen(
     Scaffold(
         topBar = {
             Toolbar(
-                navigationIcon = Icons.Filled.Close,
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 onNavigationButtonClick = onCloseButtonClick,
             )
         },
@@ -209,7 +208,7 @@ private fun WooPaymentsSetupInstructionsFooter(
                 .padding(dimensionResource(id = R.dimen.major_100)),
         ) {
             Icon(
-                imageVector = Icons.Outlined.Info,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)

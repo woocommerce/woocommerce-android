@@ -8,10 +8,12 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
 fun PrivacySettingsPolicesScreen(
@@ -32,7 +34,7 @@ fun PrivacySettingsPolicesScreen(
                     onClick = onPrivacyPolicyClicked
                 ) {
                     Icon(
-                        imageVector = OpenInNew,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                         contentDescription = stringResource(id = R.string.settings_privacy_policy)
                     )
                 }
@@ -47,11 +49,20 @@ fun PrivacySettingsPolicesScreen(
                     onClick = onCookiePolicyClicked
                 ) {
                     Icon(
-                        imageVector = OpenInNew,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                         contentDescription = stringResource(id = R.string.settings_privacy_cookies_polices)
                     )
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun PrivacySettingsPolicesScreenPreview() {
+    PrivacySettingsPolicesScreen(
+        onPrivacyPolicyClicked = {},
+        onCookiePolicyClicked = {}
+    )
 }

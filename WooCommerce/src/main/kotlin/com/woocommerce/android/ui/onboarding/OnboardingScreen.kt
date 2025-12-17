@@ -30,8 +30,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -43,10 +41,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -173,7 +173,7 @@ private fun OnboardingMoreMenu(
     var showMenu by remember { mutableStateOf(false) }
     IconButton(onClick = { showMenu = !showMenu }) {
         Icon(
-            imageVector = Outlined.MoreVert,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
             contentDescription = stringResource(string.more_menu),
         )
     }
@@ -251,8 +251,7 @@ fun TaskItem(
                 }
             ),
             contentDescription = "",
-            colorFilter =
-            if (!task.isCompleted) {
+            colorFilter = if (!task.isCompleted) {
                 ColorFilter.tint(color = colorResource(id = R.color.color_icon))
             } else {
                 null

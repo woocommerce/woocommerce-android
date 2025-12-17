@@ -17,10 +17,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.OpenInNew
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults.buttonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,9 +25,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -158,7 +156,7 @@ private fun PurchasedLabelSection(
                     .padding(vertical = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Info,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 8.dp)
@@ -290,7 +288,7 @@ private fun LabelPaperSizeDropdownMenu(
                 modifier = Modifier.weight(1f)
             )
             Icon(
-                imageVector = Icons.Filled.ArrowDropDown,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
                 contentDescription = stringResource(
                     R.string.sorted_by,
                     stringResource(selectedLabelPaperSizeOption.stringResource)
@@ -340,7 +338,7 @@ private fun ShippingLabelLink(
         )
         if (showIcon) {
             Icon(
-                imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                 contentDescription = null,
                 tint = colorResource(id = R.color.woo_shipping_label_success),
                 modifier = Modifier.padding(start = 8.dp)

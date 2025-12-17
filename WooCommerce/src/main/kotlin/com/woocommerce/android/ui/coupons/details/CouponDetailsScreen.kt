@@ -21,8 +21,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -30,13 +28,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.ui.compose.component.Toolbar
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.coupons.components.CouponExpirationLabel
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponDetailsState
 import com.woocommerce.android.ui.coupons.details.CouponDetailsViewModel.CouponPerformanceState
@@ -83,7 +85,7 @@ fun CouponDetailsScreen(
             actions = {
                 IconButton(onClick = { showMenu = !showMenu }) {
                     Icon(
-                        imageVector = Icons.Filled.MoreVert,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
                         contentDescription = "Coupons Menu",
                         tint = MaterialTheme.colors.primary
                     )
@@ -178,6 +180,46 @@ fun CouponDetailsScreen(
                 }
             )
         }
+    }
+}
+
+@Preview
+@Composable
+fun CouponDetailsScreenPreview() {
+    WooThemeWithBackground {
+        CouponDetailsScreen(
+            state = CouponDetailsState(
+                couponSummary = CouponSummaryUi(
+                    code = "COUPON_CODE",
+                    isEditable = true,
+                    isActive = true,
+                    description = "This is a coupon description.",
+                    summary = "10% off entire order",
+                    isForIndividualUse = true,
+                    isShippingFree = false,
+                    areSaleItemsExcluded = true,
+                    discountType = "Percentage discount",
+                    minimumSpending = "Minimum spend: $100.00",
+                    maximumSpending = null,
+                    usageLimitPerCoupon = "Usage limit: 100",
+                    usageLimitPerUser = "Usage limit per user: 1",
+                    usageLimitPerItems = null,
+                    expiration = "Expires on December 31, 2024",
+                    emailRestrictions = "Restricted to: user@example.com"
+                ),
+                couponPerformanceState = Success(
+                    CouponDetailsViewModel.CouponPerformanceUi(
+                        ordersCount = 50,
+                        formattedAmount = "$500.00"
+                    )
+                )
+            ),
+            onBackPress = {},
+            onCopyButtonClick = {},
+            onShareButtonClick = {},
+            onEditButtonClick = {},
+            onDeleteButtonClick = {}
+        )
     }
 }
 

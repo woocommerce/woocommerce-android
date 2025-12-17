@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -53,7 +51,6 @@ fun ProductImagePickerScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_product_photo_picker_title),
                 onNavigationButtonClick = onBackButtonTapped,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
         },
         backgroundColor = MaterialTheme.colors.surface

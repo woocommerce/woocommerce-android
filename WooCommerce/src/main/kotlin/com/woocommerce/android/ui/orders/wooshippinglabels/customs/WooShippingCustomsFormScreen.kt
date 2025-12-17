@@ -15,8 +15,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -27,9 +25,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -190,7 +190,7 @@ fun WooShippingCustomsFormScreen(
             WCTextButton(
                 text = stringResource(id = R.string.woo_shipping_labels_customs_itn_info_button),
                 onClick = { uriHandler.openUri(AppUrls.SHIPPING_LABEL_CUSTOMS_ITN) },
-                icon = Icons.Outlined.Info,
+                icon = ImageVector.vectorResource(R.drawable.ic_tintable_info_outline_24dp),
                 allCaps = false,
                 contentPadding = PaddingValues(
                     horizontal = 4.dp,

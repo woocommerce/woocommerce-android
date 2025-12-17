@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.components
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -15,7 +13,9 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -42,7 +42,7 @@ fun ShippingLabelsSnackbar(visuals: ShippingLabelsSnackbarVisuals, action: () ->
         ) {
             if (visuals.hasSuccessCheckmark) {
                 Icon(
-                    imageVector = Icons.Filled.CheckCircle,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_check_circle_filled_24dp),
                     contentDescription = null,
                     tint = colorResource(R.color.woo_green_20),
                 )

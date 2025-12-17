@@ -27,8 +27,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -40,10 +38,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -101,7 +101,9 @@ fun ExpandableGroupedProductCard(
             isExpanded = isExpanded
         )
 
-        if (isExpanded.not()) { Divider() }
+        if (isExpanded.not()) {
+            Divider()
+        }
 
         children.forEachIndexed { index, child ->
             var isChildrenExpanded by rememberSaveable { mutableStateOf(false) }
@@ -366,9 +368,10 @@ fun ExpandableChildrenProductCard(
         ) {
             Icon(
                 modifier = Modifier.rotate(chevronRotation),
-                imageVector = Icons.Filled.KeyboardArrowDown,
-                contentDescription =
-                stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+                contentDescription = stringResource(
+                    R.string.order_creation_collapse_expand_product_card_content_description
+                ),
                 tint = colorResource(id = R.color.color_on_surface_disabled)
             )
         }
