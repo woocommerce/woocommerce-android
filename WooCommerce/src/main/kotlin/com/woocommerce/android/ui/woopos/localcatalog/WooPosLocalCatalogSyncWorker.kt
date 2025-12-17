@@ -83,7 +83,8 @@ constructor(
             is PosLocalCatalogSyncResult.Failure.NetworkError,
             is PosLocalCatalogSyncResult.Failure.DatabaseError,
             is PosLocalCatalogSyncResult.Failure.InvalidResponse,
-            is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
+            is PosLocalCatalogSyncResult.Failure.UnexpectedError,
+            is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> {
                 logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }
