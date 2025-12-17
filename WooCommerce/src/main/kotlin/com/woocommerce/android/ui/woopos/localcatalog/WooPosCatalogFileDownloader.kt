@@ -29,7 +29,7 @@ class WooPosCatalogFileDownloader @Inject constructor(
         localSiteId: LocalOrRemoteId.LocalId,
     ): Result<File> = withContext(dispatchers.io) {
         val file =
-            File(context.cacheDir, "${FILE_NAME_PREFIX}_site_${localSiteId.value}_${System.currentTimeMillis()}")
+            File(context.cacheDir, "${FILE_NAME_PREFIX}_site_${localSiteId.value}_${System.currentTimeMillis()}.json")
 
         try {
             logger.d("WooPosCatalogFileDownloader: Starting catalog file download from: $fileUrl")
@@ -85,11 +85,11 @@ class WooPosCatalogFileDownloader @Inject constructor(
         }
     }
 
-    fun cleanupOldCatalogFiles(keepLatest: File? = null) {
+    suspend fun cleanupOldCatalogFiles(keepLatest: File? = null) = withContext(dispatchers.io) {
         try {
             val catalogFiles = context.cacheDir.listFiles { file ->
                 file.name.startsWith(FILE_NAME_PREFIX) && file.name.endsWith(".json")
-            } ?: return
+            } ?: return@withContext
 
             catalogFiles.forEach { file ->
                 if (file != keepLatest) {
