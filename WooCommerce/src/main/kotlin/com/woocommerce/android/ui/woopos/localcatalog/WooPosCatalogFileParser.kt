@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
+import com.google.gson.JsonSyntaxException
 import com.google.gson.stream.JsonReader
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
@@ -66,7 +67,7 @@ class WooPosCatalogFileParser @Inject constructor(
             val (products, variations) = catalogItems.partition { it is CatalogItem.Product }
             val productEntities = products.mapNotNull { (it as? CatalogItem.Product)?.entity }
             val variationEntities = variations.mapNotNull { (it as? CatalogItem.Variation)?.entity }
-            logger.d("Parsed ${productEntities.size} products and ${variationEntities.size} variations from catalog file")
+            logger.d("Parsed ${productEntities.size} products and ${variationEntities.size} variations")
             ParsedCatalogData(
                 products = productEntities,
                 variations = variationEntities
@@ -136,7 +137,7 @@ class WooPosCatalogFileParser @Inject constructor(
                     CatalogItem.Unknown
                 }
             }
-        } catch (e: RuntimeException) {
+        } catch (e: JsonSyntaxException) {
             logger.w("Failed to parse catalog item of type $type: ${e.message}")
             CatalogItem.Unknown
         }
