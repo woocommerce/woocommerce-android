@@ -9,12 +9,12 @@ data class RefundRequestItem(
     @SerializedName("quantity")
     val quantity: Int?,
     @SerializedName("refund_total")
-    val refundTotal: BigDecimal,
+    val refundTotal: BigDecimal? = null,
     @SerializedName("refund_tax")
-    val refundTax: List<RefundRequestTax>
+    val refundTax: List<RefundRequestTax>? = null
 ) {
     val total: BigDecimal
-        get() = refundTotal + refundTax.sumOf { it.refundTotal }
+        get() = (refundTotal ?: BigDecimal.ZERO) + (refundTax?.sumOf { it.refundTotal } ?: BigDecimal.ZERO)
 }
 
 data class RefundRequestTax(

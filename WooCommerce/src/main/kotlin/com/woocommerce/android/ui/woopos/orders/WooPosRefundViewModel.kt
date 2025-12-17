@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
@@ -16,6 +17,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.store.WCRefundStore
 
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
 class WooPosRefundViewModel @AssistedInject constructor(
@@ -24,7 +27,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val refundStore: WCRefundStore,
+    private val selectedSite: SelectedSite
 ) : ViewModel() {
 
     @AssistedFactory
@@ -43,7 +48,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
-            val orderResult = ordersDataSource.getOrderById(orderId)
+            val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
@@ -100,22 +105,76 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     fun onUIEvent(event: WooPosRefundUIEvent) {
-        val currentState = _state.value as? WooPosRefundState.Content ?: return
+        when (event) {
+            WooPosRefundUIEvent.DialogDismissed -> {
+                when (val currentState = _state.value) {
 
-        val newStep = when (event) {
-            WooPosRefundUIEvent.ContinueToReviewClicked ->
-                WooPosRefundState.Content.RefundStep.ReviewRefund
-            WooPosRefundUIEvent.BackToSelectItemsClicked ->
-                WooPosRefundState.Content.RefundStep.SelectItems
-            WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
-                WooPosRefundState.Content.RefundStep.ConfirmRefund
-            WooPosRefundUIEvent.BackToReviewClicked ->
-                WooPosRefundState.Content.RefundStep.ReviewRefund
-            WooPosRefundUIEvent.DialogDismissed ->
-                WooPosRefundState.Content.RefundStep.SelectItems
-            WooPosRefundUIEvent.OnRefundConfirmed -> WooPosRefundState.Content.RefundStep.SelectItems
+                    is WooPosRefundState.RefundSuccess,
+                    is WooPosRefundState.RefundError,
+                    is WooPosRefundState.Error,
+                    is WooPosRefundState.Loading,
+                    is WooPosRefundState.NoRefundableItems, -> loadRefundableItems()
+                    is WooPosRefundState.Content -> {
+                        loadRefundableItems()
+                        _state.value = currentState.copy(
+                            step = WooPosRefundState.Content.RefundStep.SelectItems
+                        )
+                    }
+                }
+                loadRefundableItems()
+
+            }
+            else -> {
+                val currentState = _state.value as? WooPosRefundState.Content ?: return
+
+                when (event) {
+                    WooPosRefundUIEvent.ContinueToReviewClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+                    WooPosRefundUIEvent.BackToSelectItemsClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+                    WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+                    WooPosRefundUIEvent.BackToReviewClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+                    WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
+                    WooPosRefundUIEvent.DialogDismissed -> Unit
+                }
+            }
         }
+    }
 
-        _state.value = currentState.copy(step = newStep)
+    private fun processRefund(contentState: WooPosRefundState.Content) {
+        viewModelScope.launch {
+            _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
+
+            val refundItems = contentState.refundableItems.map { item ->
+                RefundRequestItem(
+                    itemId = item.orderItemId,
+                    quantity = 1// TODO: group items with the same id
+                )
+            }
+
+            val result = refundStore.createItemsRefund(
+                site = selectedSite.get(),
+                orderId = contentState.orderId,
+                amount = contentState.total,
+                reason = "",
+                restockItems = true,
+                autoRefund = false,
+                items = refundItems
+            )
+
+            if (result.isError) {
+                _state.value = WooPosRefundState.RefundError(
+                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic)
+                )
+            } else {
+                _state.value = WooPosRefundState.RefundSuccess(
+                    orderId = contentState.orderId,
+                    orderNumber = contentState.orderNumber,
+                    refundedAmount = contentState.formattedTotal
+                )
+            }
+        }
     }
 }

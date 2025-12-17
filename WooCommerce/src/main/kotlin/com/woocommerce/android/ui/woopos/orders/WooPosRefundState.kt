@@ -34,6 +34,9 @@ sealed class WooPosRefundState {
 
             @Immutable
             data object ConfirmRefund : RefundStep()
+
+            @Immutable
+            data object Processing : RefundStep()
         }
     }
 
@@ -44,4 +47,16 @@ sealed class WooPosRefundState {
 
     @Immutable
     data object NoRefundableItems : WooPosRefundState()
+
+    @Immutable
+    data class RefundSuccess(
+        val orderId: Long,
+        val orderNumber: String,
+        val refundedAmount: String
+    ) : WooPosRefundState()
+
+    @Immutable
+    data class RefundError(
+        val message: String
+    ) : WooPosRefundState()
 }
