@@ -18,7 +18,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val MAX_POLL_ATTEMPTS = 20
         private const val MAX_CONSECUTIVE_FAILED_ATTEMPTS = 3
 
-        // Backoff settings
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
     }
