@@ -1054,8 +1054,6 @@ class LoginActivity :
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ -> finishAffinity() }
             .create()
-        dialog.setCancelable(false)
-        dialog.setCanceledOnTouchOutside(false)
         dialog.show()
     }
 
