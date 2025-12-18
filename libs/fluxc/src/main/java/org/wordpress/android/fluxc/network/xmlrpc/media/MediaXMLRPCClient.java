@@ -545,36 +545,20 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
 
         String link = MapUtils.getMapStr(response, "link");
         String fileExtension = MediaUtils.getExtension(link);
-        Map metadataMap = null;
-        if (response.get("metadata") instanceof Map) {
-            metadataMap = (Map) response.get("metadata");
-        }
         return new MediaModel(
                 0,
                 MapUtils.getMapLong(response, "attachment_id"),
                 MapUtils.getMapLong(response, "parent"),
-                0,
-                "",
                 DateTimeUtils.iso8601UTCFromDate(MapUtils.getMapDate(response, "date_created_gmt")),
                 link,
                 MapUtils.getMapStr(response, "thumbnail"),
                 MediaUtils.getFileName(link),
-                fileExtension,
                 MediaUtils.getMimeTypeForExtension(fileExtension),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "title")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "caption")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "description")),
                 "",
-                metadataMap != null ? MapUtils.getMapInt(metadataMap, "width") : 0,
-                metadataMap != null ? MapUtils.getMapInt(metadataMap, "height") : 0,
-                0,
-                MapUtils.getMapStr(response, "videopress_shortcode"),
-                false,
-                MediaUploadState.UPLOADED,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "medium") : null,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "medium_large") : null,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "large") : null,
-                false
+                MediaUploadState.UPLOADED
         );
     }
 
