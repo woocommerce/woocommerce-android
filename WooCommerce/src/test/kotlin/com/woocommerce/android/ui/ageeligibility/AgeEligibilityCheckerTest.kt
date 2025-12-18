@@ -87,17 +87,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is supervised approval pending and age is 12, when checkAge called, then user is not eligible`() =
-        testBlocking {
-            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, 12)
-
-            ageEligibilityChecker.checkAge()
-
-            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
-            verify(prefsWrapper).isUserAgeEligibleForAppUse = false
-        }
-
-    @Test
     fun `given user is supervised approval denied, when checkAge called, then user is NOT eligible`() = testBlocking {
         client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED, DEFAULT_USER_AGE_UPPER)
 
@@ -128,12 +117,33 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
     }
 
+    @Test
+    fun `given user is supervised and ageUpper is null, when checkAge called, then user is eligible`() = testBlocking {
+        client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED, null)
+
+        ageEligibilityChecker.checkAge()
+
+        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+    }
+
+    @Test
+    fun `given user is supervised approval pending and ageUpper is null, when checkAge called, then user is eligible`() =
+        testBlocking {
+            client.setExpectedValues(AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING, null)
+
+            ageEligibilityChecker.checkAge()
+
+            assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+        }
+
     class FakeAgeSignalsClient : AgeSignalsClient {
         private var shouldThrow = false
         private var userStatus: Int = DEFAULT_USER_AGE_STATUS
-        private var ageUpper: Int = DEFAULT_USER_AGE_UPPER
+        private var ageUpper: Int? = DEFAULT_USER_AGE_UPPER
 
-        fun setExpectedValues(userStatus: Int, ageUpper: Int) {
+        fun setExpectedValues(userStatus: Int, ageUpper: Int?) {
             this.userStatus = userStatus
             this.ageUpper = ageUpper
         }
