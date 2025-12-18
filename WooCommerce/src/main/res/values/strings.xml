@@ -4348,6 +4348,6 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
-    <string name="age_restriction_dialog_title">App Access Restricted</string>
-    <string name="age_restriction_dialog_message">Your Google Account lost access because you’re underage. Contact your parent or guardian to get permission again.</string>
+    <string name="age_restriction_dialog_title">Account Access Required</string>
+    <string name="age_restriction_dialog_message">Your Google Account settings indicate that you need a parent or guardian's permission to continue. They can grant access using their Google account to get you back online.</string>
 </resources>
