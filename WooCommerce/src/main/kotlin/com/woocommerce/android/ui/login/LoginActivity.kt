@@ -207,7 +207,7 @@ class LoginActivity :
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
         }
-        if(appPrefsWrapper.isUserAgeEligibleForAppUse.not()){
+        if (appPrefsWrapper.isUserAgeEligibleForAppUse.not()) {
             showAgeRestrictionDialog()
         }
     }
