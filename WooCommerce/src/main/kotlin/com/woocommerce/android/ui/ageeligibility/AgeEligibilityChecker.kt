@@ -29,6 +29,9 @@ class AgeEligibilityChecker @Inject constructor(
         try {
             val result = client.checkAge()
             processAgeCheck(result.userStatus, result.ageUpper)
+            if (isUserAgeRangeEligible.value.not()) {
+                accountRepository.logout()
+            }
             trackingProperties["retrieved_age"] = result.ageUpper ?: -1
             trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
         } catch (exception: ApiException) {
@@ -37,14 +40,11 @@ class AgeEligibilityChecker @Inject constructor(
                 "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
                     "age: ${exception.message}, reverting user eligibility to true"
             )
-            prefsWrapper.isUserAgeEligibleForAppUse = true
             _isUserAgeRangeEligible.value = true
-        }
-        if (isUserAgeRangeEligible.value.not()) {
-            accountRepository.logout()
         }
         trackingProperties["access_restricted"] = _isUserAgeRangeEligible.value
         trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
+        prefsWrapper.isUserAgeEligibleForAppUse = _isUserAgeRangeEligible.value
     }
 
     private fun processAgeCheck(userStatus: Int?, ageUpper: Int?) {
@@ -64,8 +64,6 @@ class AgeEligibilityChecker @Inject constructor(
             AgeSignalsVerificationStatus.UNKNOWN -> true // Safe default: allow access if unknown
             else -> true // Handle any other cases as default
         }
-
-        prefsWrapper.isUserAgeEligibleForAppUse = isUserAgeEligible
         _isUserAgeRangeEligible.value = isUserAgeEligible
     }
 

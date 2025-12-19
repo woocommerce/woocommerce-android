@@ -38,6 +38,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueListener
@@ -151,6 +152,9 @@ class LoginActivity :
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
@@ -207,9 +211,8 @@ class LoginActivity :
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
         }
-        if (appPrefsWrapper.isUserAgeEligibleForAppUse.not()) {
-            showAgeRestrictionDialog()
-        }
+
+        keepTrackOfAgeEligibility()
     }
 
     private fun applyDefaultWindowInsets() {
@@ -1047,14 +1050,22 @@ class LoginActivity :
         }
     }
 
-    private fun showAgeRestrictionDialog() {
+    private fun keepTrackOfAgeEligibility() {
         val dialog = AlertDialog.Builder(this)
             .setTitle(R.string.age_restriction_dialog_title)
             .setMessage(R.string.age_restriction_dialog_message)
             .setCancelable(false)
             .setPositiveButton(android.R.string.ok) { _, _ -> finishAffinity() }
             .create()
-        dialog.show()
+        lifecycleScope.launch {
+            ageEligibilityChecker.isUserAgeRangeEligible.collect { isEligible ->
+                if (!isEligible) {
+                    dialog.show()
+                } else {
+                    dialog.hide()
+                }
+            }
+        }
     }
 
     /**
