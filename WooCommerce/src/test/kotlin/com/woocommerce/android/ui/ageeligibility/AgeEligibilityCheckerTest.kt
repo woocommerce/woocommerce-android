@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.ageeligibility
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +21,8 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     private val client = FakeAgeSignalsClient()
     private val prefsWrapper: AppPrefsWrapper = mock()
     private val accountRepository: AccountRepository = mock()
+    private val trackerWrapper: AnalyticsTrackerWrapper = mock()
+
 
     @Before
     fun setup() {
@@ -27,7 +30,8 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         ageEligibilityChecker = AgeEligibilityChecker(
             client,
             prefsWrapper,
-            accountRepository
+            accountRepository,
+            trackerWrapper
         )
     }
 
