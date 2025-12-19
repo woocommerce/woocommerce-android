@@ -1061,6 +1061,7 @@ class LoginActivity :
             ageEligibilityChecker.isUserAgeRangeEligible.collect { isEligible ->
                 if (!isEligible) {
                     dialog.show()
+                    AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN)
                 } else {
                     dialog.hide()
                 }
