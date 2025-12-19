@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -17,6 +18,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.Date
 
@@ -30,8 +32,11 @@ class WooPosRefundViewModelTest {
     private val ordersDataSource: WooPosOrdersDataSource = mock()
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
+    private val groupRefundItems: WooPosGroupRefundItems = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
+    private val refundStore: WCRefundStore = mock()
+    private val selectedSite: SelectedSite = mock()
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -81,8 +86,11 @@ class WooPosRefundViewModelTest {
             ordersDataSource = ordersDataSource,
             retrieveOrderRefunds = retrieveOrderRefunds,
             getRefundableItems = getRefundableItems,
+            groupRefundItems = groupRefundItems,
             resourceProvider = resourceProvider,
-            currencyFormatter = currencyFormatter
+            currencyFormatter = currencyFormatter,
+            refundStore = refundStore,
+            selectedSite = selectedSite
         )
     }
 
@@ -114,7 +122,7 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given viewmodel created, when order fetch fails, then state transitions from Loading to Error`() = runTest {
         // GIVEN
-        whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.failure(Exception()))
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.failure(Exception()))
 
         // WHEN
         viewModel = createViewModel()
@@ -133,7 +141,7 @@ class WooPosRefundViewModelTest {
                 testRefundableItem.copy(rowIndex = 0),
                 testRefundableItem.copy(rowIndex = 1)
             )
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -159,7 +167,7 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given order fetch fails, when init, then state is Error`() = runTest {
         // GIVEN
-        whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
             Result.failure(Exception("Network error"))
         )
 
@@ -177,7 +185,7 @@ class WooPosRefundViewModelTest {
     fun `given order fetch succeeds but no refundable items, when init, then state is NoRefundableItems`() =
         runTest {
             // GIVEN
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(emptyList())
 
@@ -193,7 +201,7 @@ class WooPosRefundViewModelTest {
     fun `given order fetch succeeds and refunds fetch fails, when init, then uses empty refunds list`() = runTest {
         // GIVEN
         val refundableItems = listOf(testRefundableItem)
-        whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
         whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(
             Result.failure(Exception("Refunds fetch failed"))
         )
@@ -239,7 +247,7 @@ class WooPosRefundViewModelTest {
         )
         val refundableItems = listOf(testRefundableItem)
 
-        whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
         whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(refunds))
         whenever(getRefundableItems.invoke(testOrder, refunds)).thenReturn(refundableItems)
 
@@ -286,7 +294,7 @@ class WooPosRefundViewModelTest {
                 )
             )
 
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -306,7 +314,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -329,7 +337,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -353,7 +361,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -377,7 +385,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -398,7 +406,7 @@ class WooPosRefundViewModelTest {
     @Test
     fun `given non-content state, when onUIEvent called, then state remains unchanged`() = runTest {
         // GIVEN
-        whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(
+        whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
             Result.failure(Exception("Network error"))
         )
 
@@ -420,7 +428,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -444,7 +452,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
@@ -469,7 +477,7 @@ class WooPosRefundViewModelTest {
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.getOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
 
