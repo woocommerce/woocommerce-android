@@ -1,6 +1,8 @@
 package org.wordpress.android.fluxc.whatsnew
 
+import android.app.Application
 import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
 import kotlinx.coroutines.runBlocking
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
@@ -9,7 +11,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
@@ -86,7 +87,7 @@ class WhatsNewDaoTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
+        val appContext = ApplicationProvider.getApplicationContext<Application>()
         database = Room.inMemoryDatabaseBuilder(appContext, WPAndroidDatabase::class.java)
             .allowMainThreadQueries()
             .build()
