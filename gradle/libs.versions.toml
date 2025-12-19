@@ -111,7 +111,6 @@ wordpress-utils = '3.15.0'
 zendesk = '5.5.1'
 
 [libraries]
-
 android-desugar = { group = "com.android.tools", name = "desugar_jdk_libs", version.ref = "android-desugar" }
 android-security-lint = { group = "com.android.security.lint", name = "lint", version.ref = "android-security-lint" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose" }
