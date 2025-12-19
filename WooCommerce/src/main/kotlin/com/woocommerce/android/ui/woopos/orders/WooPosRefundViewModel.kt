@@ -147,12 +147,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            val refundItems = contentState.refundableItems.map { item ->
-                RefundRequestItem(
-                    itemId = item.orderItemId,
-                    quantity = 1// TODO: group items with the same id
-                )
-            }
+            val refundItems = contentState.refundableItems
+                .groupBy { it.orderItemId }
+                .map { (orderItemId, items) ->
+                    RefundRequestItem(
+                        itemId = orderItemId,
+                        quantity = items.size
+                    )
+                }
 
             val result = refundStore.createItemsRefund(
                 site = selectedSite.get(),
