@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.ageeligibility
 import com.google.android.gms.common.api.ApiException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,16 +17,20 @@ import javax.inject.Singleton
 class AgeEligibilityChecker @Inject constructor(
     private val client: AgeSignalsClient,
     private val prefsWrapper: AppPrefsWrapper,
-    private val accountRepository: AccountRepository
+    private val accountRepository: AccountRepository,
+    private val trackerWrapper: AnalyticsTrackerWrapper
 ) {
 
     private val _isUserAgeRangeEligible = MutableStateFlow(prefsWrapper.isUserAgeEligibleForAppUse)
     val isUserAgeRangeEligible: StateFlow<Boolean> = _isUserAgeRangeEligible.asStateFlow()
 
     suspend fun checkAge() {
+        val trackingProperties = mutableMapOf<String, Any>()
         try {
             val result = client.checkAge()
             processAgeCheck(result.userStatus, result.ageUpper)
+            trackingProperties["retrieved_age"] = result.ageUpper ?: -1
+            trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
         } catch (exception: ApiException) {
             WooLog.i(
                 WooLog.T.UTILS,
@@ -37,6 +43,8 @@ class AgeEligibilityChecker @Inject constructor(
         if (isUserAgeRangeEligible.value.not()) {
             accountRepository.logout()
         }
+        trackingProperties["access_restricted"] = _isUserAgeRangeEligible.value
+        trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
     }
 
     private fun processAgeCheck(userStatus: Int?, ageUpper: Int?) {
@@ -59,6 +67,17 @@ class AgeEligibilityChecker @Inject constructor(
 
         prefsWrapper.isUserAgeEligibleForAppUse = isUserAgeEligible
         _isUserAgeRangeEligible.value = isUserAgeEligible
+    }
+
+    private fun getUserStatusAsString(userStatus: Int?): String {
+        return when (userStatus) {
+            AgeSignalsVerificationStatus.VERIFIED -> "VERIFIED"
+            AgeSignalsVerificationStatus.SUPERVISED -> "SUPERVISED"
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_PENDING -> "SUPERVISED_APPROVAL_PENDING"
+            AgeSignalsVerificationStatus.SUPERVISED_APPROVAL_DENIED -> "SUPERVISED_APPROVAL_DENIED"
+            AgeSignalsVerificationStatus.UNKNOWN -> "UNKNOWN"
+            else -> "UNKNOWN"
+        }
     }
 
     companion object {
