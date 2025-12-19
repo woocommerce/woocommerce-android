@@ -26,6 +26,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
+    private val groupRefundItems: WooPosGroupRefundItems,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
@@ -147,14 +148,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            val refundItems = contentState.refundableItems
-                .groupBy { it.orderItemId }
-                .map { (orderItemId, items) ->
-                    RefundRequestItem(
-                        itemId = orderItemId,
-                        quantity = items.size
-                    )
-                }
+            val refundItems = groupRefundItems(contentState.refundableItems)
 
             val result = refundStore.createItemsRefund(
                 site = selectedSite.get(),
