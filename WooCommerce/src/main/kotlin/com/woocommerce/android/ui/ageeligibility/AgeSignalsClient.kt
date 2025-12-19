@@ -18,7 +18,7 @@ data class AgeCheckResult(
 )
 
 @Singleton
-class DefaultAgeSignalsClient @Inject constructor(
+class GoogleAgeSignalsClient @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AgeSignalsClient {
     override suspend fun checkAge(): AgeCheckResult {

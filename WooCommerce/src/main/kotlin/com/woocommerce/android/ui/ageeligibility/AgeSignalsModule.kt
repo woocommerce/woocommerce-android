@@ -11,5 +11,5 @@ import javax.inject.Singleton
 abstract class AgeSignalsModule {
     @Binds
     @Singleton
-    abstract fun bindAgeSignalsClient(impl: DefaultAgeSignalsClient): AgeSignalsClient
+    abstract fun bindAgeSignalsClient(impl: GoogleAgeSignalsClient): AgeSignalsClient
 }
