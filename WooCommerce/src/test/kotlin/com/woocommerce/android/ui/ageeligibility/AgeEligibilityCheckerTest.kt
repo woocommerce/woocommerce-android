@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.ageeligibility
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.model.AgeSignalsVerificationStatus
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -23,7 +24,6 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
     private val accountRepository: AccountRepository = mock()
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
 
-
     @Before
     fun setup() {
         whenever(prefsWrapper.isUserAgeEligibleForAppUse).thenReturn(true)
@@ -43,6 +43,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
+                "user_status" to "VERIFIED",
+                "access_restricted" to true
+            )
+        )
     }
 
     @Test
@@ -55,6 +64,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
+
+            verify(trackerWrapper).track(
+                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+                mapOf(
+                    "retrieved_age" to 12,
+                    "user_status" to "SUPERVISED",
+                    "access_restricted" to false
+                )
+            )
         }
 
     @Test
@@ -65,6 +83,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "retrieved_age" to 13,
+                "user_status" to "SUPERVISED",
+                "access_restricted" to true
+            )
+        )
     }
 
     @Test
@@ -77,6 +104,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
+
+            verify(trackerWrapper).track(
+                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+                mapOf(
+                    "retrieved_age" to 12,
+                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
+                    "access_restricted" to false
+                )
+            )
         }
 
     @Test
@@ -88,6 +124,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+            verify(trackerWrapper).track(
+                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+                mapOf(
+                    "retrieved_age" to 13,
+                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
+                    "access_restricted" to true
+                )
+            )
         }
 
     @Test
@@ -99,6 +144,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
         assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = false
         verify(accountRepository).logout()
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
+                "user_status" to "SUPERVISED_APPROVAL_DENIED",
+                "access_restricted" to false
+            )
+        )
     }
 
     @Test
@@ -109,6 +163,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "retrieved_age" to DEFAULT_USER_AGE_UPPER,
+                "user_status" to "UNKNOWN",
+                "access_restricted" to true
+            )
+        )
     }
 
     @Test
@@ -119,6 +182,13 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "access_restricted" to true
+            )
+        )
     }
 
     @Test
@@ -129,6 +199,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+        verify(trackerWrapper).track(
+            AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+            mapOf(
+                "retrieved_age" to -1,
+                "user_status" to "SUPERVISED",
+                "access_restricted" to true
+            )
+        )
     }
 
     @Test
@@ -140,6 +219,15 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+
+            verify(trackerWrapper).track(
+                AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
+                mapOf(
+                    "retrieved_age" to -1,
+                    "user_status" to "SUPERVISED_APPROVAL_PENDING",
+                    "access_restricted" to true
+                )
+            )
         }
 
     class FakeAgeSignalsClient : AgeSignalsClient {
