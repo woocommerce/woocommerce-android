@@ -7,14 +7,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 @SuppressLint("ParcelCreator")
 data class WhatsNewAnnouncementModel(
-    val appVersionName: String,
     val announcementVersion: Int,
     val minimumAppVersion: String,
     val maximumAppVersion: String,
     val appVersionTargets: List<String>,
-    val detailsUrl: String?,
     val isLocalized: Boolean,
-    val responseLocale: String,
     val features: List<WhatsNewAnnouncementFeature>
 ) : Parcelable {
     @Parcelize

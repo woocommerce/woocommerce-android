@@ -15,8 +15,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -72,7 +70,6 @@ fun LoginSiteCredentialsScreen(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
                 onHelpButtonClick = onHelpButtonClick,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         }
     ) { paddingValues ->

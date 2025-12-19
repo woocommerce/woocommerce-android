@@ -44,8 +44,6 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.TabRowDefaults
 import androidx.compose.material.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -59,12 +57,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -269,9 +269,10 @@ private fun FundsOverview(
             ) {
                 Icon(
                     modifier = Modifier.rotate(chevronRotation),
-                    imageVector = Icons.Filled.KeyboardArrowDown,
-                    contentDescription =
-                    stringResource(R.string.card_reader_hub_payout_summary_collapse_expand_content_description),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+                    contentDescription = stringResource(
+                        R.string.card_reader_hub_payout_summary_collapse_expand_content_description
+                    ),
                     tint = MaterialTheme.colors.primary,
                 )
             }

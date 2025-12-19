@@ -5,16 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.window.Popup
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.woocommerce.android.R
 import com.woocommerce.android.model.Image
 import com.woocommerce.android.ui.compose.component.Toolbar
 
@@ -31,7 +32,7 @@ fun FullScreenImageViewer(
                 .background(color = MaterialTheme.colors.background)
         ) {
             Toolbar(
-                navigationIcon = Icons.Filled.Close,
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                 onNavigationButtonClick = onDismiss
             )
             AsyncImage(
