@@ -124,6 +124,6 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
     }
 
     companion object {
-        private const val BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE = 100 // Setting big page size to minimise num of requests
+        private const val BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE = 100 // Setting big page size to minimize num of requests
     }
 }
