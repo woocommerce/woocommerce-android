@@ -56,7 +56,9 @@ class WooPosRefundViewModelTest {
                 total = BigDecimal("40.00"),
                 variationId = 0,
                 attributesList = emptyList(),
-                taxes = emptyList()
+                taxes = listOf(
+                    Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("4.00"))
+                )
             )
         )
     )
@@ -262,9 +264,49 @@ class WooPosRefundViewModelTest {
     }
 
     @Test
+    @Suppress("LongMethod")
     fun `given multiple refundable items, when init, then calculates subtotal, taxes, and total correctly`() =
         runTest {
             // GIVEN
+            val orderWithMultipleItems = testOrder.copy(
+                items = listOf(
+                    Order.Item(
+                        itemId = 1L,
+                        productId = 10L,
+                        name = "Product 1",
+                        price = BigDecimal("10.00"),
+                        sku = "PROD-1",
+                        quantity = 2f,
+                        subtotal = BigDecimal("20.00"),
+                        subtotalTax = BigDecimal("2.00"),
+                        totalTax = BigDecimal("2.00"),
+                        total = BigDecimal("20.00"),
+                        variationId = 0,
+                        attributesList = emptyList(),
+                        taxes = listOf(
+                            Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("2.00"))
+                        )
+                    ),
+                    Order.Item(
+                        itemId = 2L,
+                        productId = 20L,
+                        name = "Product 2",
+                        price = BigDecimal("15.50"),
+                        sku = "PROD-2",
+                        quantity = 1f,
+                        subtotal = BigDecimal("15.50"),
+                        subtotalTax = BigDecimal("1.55"),
+                        totalTax = BigDecimal("1.55"),
+                        total = BigDecimal("15.50"),
+                        variationId = 0,
+                        attributesList = emptyList(),
+                        taxes = listOf(
+                            Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("1.55"))
+                        )
+                    )
+                )
+            )
+
             val refundableItems = listOf(
                 // Two units of the same order item (orderItemId=1, quantity=2)
                 createRefundableItem(
@@ -294,9 +336,9 @@ class WooPosRefundViewModelTest {
                 )
             )
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithMultipleItems)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(orderWithMultipleItems, emptyList())).thenReturn(refundableItems)
 
             // WHEN
             viewModel = createViewModel()

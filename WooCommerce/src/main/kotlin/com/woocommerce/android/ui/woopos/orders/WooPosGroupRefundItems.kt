@@ -1,17 +1,59 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import com.woocommerce.android.model.Order
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
+import java.math.BigDecimal
+import java.math.RoundingMode
 import javax.inject.Inject
 
 class WooPosGroupRefundItems @Inject constructor() {
-    operator fun invoke(refundableItems: List<WooPosRefundableItem>): List<RefundRequestItem> {
+    operator fun invoke(
+        refundableItems: List<WooPosRefundableItem>,
+        order: Order
+    ): List<RefundRequestItem> {
         return refundableItems
             .groupBy { it.orderItemId }
             .map { (orderItemId, items) ->
+                val originalItem = order.items.find { it.itemId == orderItemId }
+                val refundQuantity = items.size
+
                 RefundRequestItem(
                     itemId = orderItemId,
-                    quantity = items.size
+                    quantity = refundQuantity,
+                    refundTotal = calculateRefundTotal(items, refundQuantity),
+                    refundTax = calculateRefundTaxes(originalItem, refundQuantity)
                 )
             }
+    }
+
+    private fun calculateRefundTotal(
+        items: List<WooPosRefundableItem>,
+        quantity: Int
+    ): BigDecimal {
+        return items.first().unitPrice.multiply(quantity.toBigDecimal())
+    }
+
+    private fun calculateRefundTaxes(
+        originalItem: Order.Item?,
+        quantity: Int
+    ): List<RefundRequestTax> {
+        if (originalItem == null || originalItem.quantity == 0f) {
+            return emptyList()
+        }
+
+        val refundQuantity = quantity.toBigDecimal()
+
+        return originalItem.taxes.map { tax ->
+            val singleItemTax = tax.taxAmount.divide(
+                originalItem.quantity.toBigDecimal(),
+                2,
+                RoundingMode.HALF_UP
+            )
+            RefundRequestTax(
+                taxRateId = tax.rateId,
+                refundTotal = refundQuantity.multiply(singleItemTax)
+            )
+        }
     }
 }

@@ -17,8 +17,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.store.WCRefundStore
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
 class WooPosRefundViewModel @AssistedInject constructor(
@@ -41,6 +42,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val _state = MutableStateFlow<WooPosRefundState>(WooPosRefundState.Loading)
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
+    private var currentOrder: Order? = null
+
     init {
         loadRefundableItems()
     }
@@ -58,6 +61,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             val order = orderResult.getOrThrow()
+            currentOrder = order
 
             val refundsResult = retrieveOrderRefunds(order)
             val refunds = if (refundsResult.isSuccess) {
@@ -84,8 +88,33 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>
     ): WooPosRefundState.Content {
-        val subtotal = refundableItems.sumOf { it.lineTotal }
-        val taxes = refundableItems.sumOf { it.lineTax }
+        val itemsByOrderItemId = refundableItems.groupBy { it.orderItemId }
+
+        val subtotal = itemsByOrderItemId.entries.sumOf { (_, items) ->
+            val quantity = items.size.toBigDecimal()
+            quantity.multiply(items.first().unitPrice)
+        }
+
+        val taxes: BigDecimal = itemsByOrderItemId.entries.sumOf { (orderItemId, items) ->
+            val originalItem = order.items.find { it.itemId == orderItemId }
+            val refundQuantity = items.size
+
+            if (originalItem != null && originalItem.quantity > 0) {
+                if (refundQuantity.toFloat() == originalItem.quantity) {
+                    originalItem.totalTax
+                } else {
+                    val singleItemTax = originalItem.totalTax.divide(
+                        originalItem.quantity.toBigDecimal(),
+                        2,
+                        RoundingMode.HALF_UP
+                    )
+                    refundQuantity.toBigDecimal().multiply(singleItemTax)
+                }
+            } else {
+                BigDecimal.ZERO
+            }
+        }
+
         val total = subtotal + taxes
 
         return WooPosRefundState.Content(
@@ -109,7 +138,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         when (event) {
             WooPosRefundUIEvent.DialogDismissed -> {
                 when (val currentState = _state.value) {
-
                     is WooPosRefundState.RefundSuccess,
                     is WooPosRefundState.RefundError,
                     is WooPosRefundState.Error,
@@ -123,7 +151,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     }
                 }
                 loadRefundableItems()
-
             }
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
@@ -148,7 +175,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
         viewModelScope.launch {
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
-            val refundItems = groupRefundItems(contentState.refundableItems)
+            val order = currentOrder ?: run {
+                _state.value = WooPosRefundState.RefundError(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+
+            val refundItems = groupRefundItems(contentState.refundableItems, order)
 
             val result = refundStore.createItemsRefund(
                 site = selectedSite.get(),
