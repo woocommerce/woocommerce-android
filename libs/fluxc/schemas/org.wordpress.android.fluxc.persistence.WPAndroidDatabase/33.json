@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 33,
-    "identityHash": "1f3a7d2b67e1c19e75dea4301bfa4bc0",
+    "identityHash": "305010a5c4ade878adb0c3584244ef11",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -461,7 +461,7 @@
       },
       {
         "tableName": "SitePluginEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `slug` TEXT NOT NULL, `authorName` TEXT NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `slug`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`siteId` INTEGER NOT NULL, `name` TEXT NOT NULL, `version` TEXT NOT NULL, `slug` TEXT NOT NULL, `authorName` TEXT NOT NULL, `isActive` INTEGER NOT NULL, PRIMARY KEY(`siteId`, `name`, `slug`))",
         "fields": [
           {
             "fieldPath": "siteId",
@@ -504,6 +504,7 @@
           "autoGenerate": false,
           "columnNames": [
             "siteId",
+            "name",
             "slug"
           ]
         }
@@ -511,7 +512,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1f3a7d2b67e1c19e75dea4301bfa4bc0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '305010a5c4ade878adb0c3584244ef11')"
     ]
   }
 }

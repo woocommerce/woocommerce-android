@@ -6,7 +6,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 
 @Entity(
     tableName = "SitePluginEntity",
-    primaryKeys = ["siteId", "slug"]
+    primaryKeys = ["siteId", "name", "slug"]
 )
 data class SitePluginModel(
     val siteId: LocalId,
