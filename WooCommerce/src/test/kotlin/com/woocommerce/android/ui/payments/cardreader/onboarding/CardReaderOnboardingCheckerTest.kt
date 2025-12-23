@@ -36,7 +36,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.payments.inperson.WCPaymentAccountResult
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -45,6 +44,7 @@ import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.STRIPE
 import org.wordpress.android.fluxc.store.WCInPersonPaymentsStore.InPersonPaymentsPluginType.WOOCOMMERCE_PAYMENTS
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @ExperimentalCoroutinesApi
 class CardReaderOnboardingCheckerTest : BaseUnitTest() {
@@ -1715,18 +1715,18 @@ class CardReaderOnboardingCheckerTest : BaseUnitTest() {
     private fun buildWCPayPluginInfo(
         isActive: Boolean = true,
         version: String = wcPayPluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
-        this.name = "woocommerce-payments"
-    }
+    ) = createTestSitePlugin(
+        name = "woocommerce-payments",
+        version = version,
+        isActive = isActive
+    )
 
     private fun buildStripeExtensionPluginInfo(
         isActive: Boolean = true,
         version: String = stripePluginVersion
-    ) = SitePluginModel().apply {
-        this.version = version
-        this.setIsActive(isActive)
-        this.name = "woocommerce-gateway-stripe"
-    }
+    ) = createTestSitePlugin(
+        name = "woocommerce-gateway-stripe",
+        version = version,
+        isActive = isActive
+    )
 }

@@ -12,7 +12,6 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -20,6 +19,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @ExperimentalCoroutinesApi
 class TrackStoreSnapshotTest : BaseUnitTest() {
@@ -224,22 +224,26 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
             whenever(wooStore.fetchSitePlugins(selectedSiteModel)).thenReturn(
                 WooResult(
                     listOf(
-                        SitePluginModel().apply {
-                            name = "woocommerce-payments"
-                            setIsActive(false)
-                        },
-                        SitePluginModel().apply {
-                            name = "woocommerce-gateway-stripe"
-                            setIsActive(false)
-                        },
-                        SitePluginModel().apply {
-                            name = "woocommerce-square"
-                            setIsActive(false)
-                        },
-                        SitePluginModel().apply {
-                            name = "woocommerce-paypal-payments"
-                            setIsActive(false)
-                        },
+                        createTestSitePlugin(
+                            siteId = 1,
+                            name = "woocommerce-payments",
+                            isActive = false
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
+                            name = "woocommerce-gateway-stripe",
+                            isActive = false
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
+                            name = "woocommerce-square",
+                            isActive = false
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
+                            name = "woocommerce-paypal-payments",
+                            isActive = false
+                        ),
                     )
                 )
             )
@@ -281,22 +285,22 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
             whenever(wooStore.fetchSitePlugins(selectedSiteModel)).thenReturn(
                 WooResult(
                     listOf(
-                        SitePluginModel().apply {
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-payments"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-gateway-stripe"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-square"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-paypal-payments"
-                            setIsActive(true)
-                        },
+                        ),
                     )
                 )
             )
@@ -338,22 +342,22 @@ class TrackStoreSnapshotTest : BaseUnitTest() {
             whenever(wooStore.fetchSitePlugins(selectedSiteModel)).thenReturn(
                 WooResult(
                     listOf(
-                        SitePluginModel().apply {
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-payments"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-gateway-stripe"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-square"
-                            setIsActive(true)
-                        },
-                        SitePluginModel().apply {
+                        ),
+                        createTestSitePlugin(
+                            siteId = 1,
                             name = "woocommerce-paypal-payments-1"
-                            setIsActive(true)
-                        },
+                        ),
                     )
                 )
             )

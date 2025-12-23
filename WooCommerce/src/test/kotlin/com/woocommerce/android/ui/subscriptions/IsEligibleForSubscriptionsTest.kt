@@ -8,11 +8,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.spy
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @ExperimentalCoroutinesApi
 class IsEligibleForSubscriptionsTest : BaseUnitTest() {
@@ -31,9 +30,10 @@ class IsEligibleForSubscriptionsTest : BaseUnitTest() {
 
     @Test
     fun `returns true when plugin is present and active`() = testBlocking {
-        val plugin = spy(SitePluginModel().apply { slug = "woocommerce-subscriptions" })
+        val plugin = createTestSitePlugin(
+            slug = "woocommerce-subscriptions"
+        )
 
-        whenever(plugin.isActive).thenReturn(true)
         whenever(wooCommerceStore.getSitePlugins(site)).thenReturn(listOf(plugin))
 
         val result = isEligibleForSubscriptions.invoke()
@@ -52,9 +52,10 @@ class IsEligibleForSubscriptionsTest : BaseUnitTest() {
 
     @Test
     fun `returns false when plugin is present but not active`() = testBlocking {
-        val plugin = spy(SitePluginModel().apply { slug = "woocommerce-subscriptions" })
-
-        whenever(plugin.isActive).thenReturn(false)
+        val plugin = createTestSitePlugin(
+            slug = "woocommerce-subscriptions",
+            isActive = false
+        )
 
         whenever(wooCommerceStore.getSitePlugins(site)).thenReturn(listOf(plugin))
 
