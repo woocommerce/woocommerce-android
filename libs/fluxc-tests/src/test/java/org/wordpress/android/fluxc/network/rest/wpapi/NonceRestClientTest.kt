@@ -233,7 +233,7 @@ class NonceRestClientTest {
     }
 
     @Test
-    fun `basic auth required error returns correct error type`() = test {
+    fun `when basic auth required, then NetworkResponse returns correct error type`() = test {
         val error = WPAPINetworkError(
             BaseNetworkError(
                 VolleyError(
