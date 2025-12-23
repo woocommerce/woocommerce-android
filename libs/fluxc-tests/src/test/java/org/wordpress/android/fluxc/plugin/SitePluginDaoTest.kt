@@ -51,12 +51,12 @@ class SitePluginDaoTest {
     fun `when plugin is updated, then changes are persisted`() = runTest {
         val site = getTestSite()
         val slug = "test-slug"
-        val name = "Original Name"
+        val author = "Original Author"
 
-        val plugin = createTestPluginBySlug(slug).copy(name = name)
+        val plugin = createTestPluginBySlug(slug).copy(authorName = author)
         sitePluginDao.upsert(plugin)
-        val newName = "Updated Name"
-        val updatedPlugin = plugin.copy(name = newName)
+        val newAuthor = "Updated Author"
+        val updatedPlugin = plugin.copy(authorName = newAuthor)
         sitePluginDao.upsert(updatedPlugin)
 
         val updatedSitePluginList = sitePluginDao.getSitePlugins(site.localId())
