@@ -32,9 +32,12 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
         ).toWooPayload()
     }
 
-    suspend fun deletePushToken(site: SiteModel, id: Int): WooPayload<Unit> = wooNetwork.executeDeleteGsonRequest(
+    suspend fun deletePushToken(
+        site: SiteModel,
+        pushTokenId: Int
+    ): WooPayload<Unit> = wooNetwork.executeDeleteGsonRequest(
         site = site,
-        path = WOOCOMMERCE.push_tokens.id(id.toLong()).pathPushNotifications,
+        path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
         clazz = Unit::class.java,
     ).toWooPayload()
 
