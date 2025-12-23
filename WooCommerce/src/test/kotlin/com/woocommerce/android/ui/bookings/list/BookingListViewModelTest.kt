@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
@@ -55,10 +56,12 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val dateFormatter = mock<DateFormatter>()
+
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val getLocations = mock<GetLocations>()
     private val resourceProvider = mock<ResourceProvider>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
+    private val bookingMapper = BookingMapper(dateFormatter, currencyFormatter, getLocations, resourceProvider)
     private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
@@ -74,6 +77,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     ) {
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
         whenever(isWindowClassLargeThanCompact()).thenReturn(false)
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Dec 12, 2025, 11:00 AM")
         prepareMocks()
         savedStateHandle = SavedStateHandle()
         viewModel = BookingListViewModel(

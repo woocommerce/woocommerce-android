@@ -12,6 +12,7 @@
 - [*] Fixed a rare crash in the refund flow [https://github.com/woocommerce/woocommerce-android/pull/15109]
 - [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
 - [*][Internal] Migrated legacy Material Icons to Material Symbols [https://github.com/woocommerce/woocommerce-android/pull/15081]
+- [*] Fix widget sizing issues and improve refresh rate upon switching site or logging out [https://github.com/woocommerce/woocommerce-android/pull/15127]
 - [*] Unified transition animations across screens [https://github.com/woocommerce/woocommerce-android/pull/15128]
 
 23.8

@@ -90,12 +90,8 @@ class PluginWPApiRestClientTest(private val site: SiteModel) {
         plugin: PluginResponseModel
     ) {
         assertThat(responseModel.isActive).isEqualTo(plugin.status == "active")
-        assertThat(responseModel.authorUrl).isEqualTo(plugin.authorUri)
         assertThat(responseModel.authorName).isEqualTo(plugin.author)
-        assertThat(responseModel.description).isEqualTo(plugin.description!!.raw)
-        assertThat(responseModel.displayName).isEqualTo(plugin.name)
         assertThat(responseModel.name).isEqualTo(plugin.plugin)
-        assertThat(responseModel.pluginUrl).isEqualTo(plugin.pluginUri)
         assertThat(responseModel.version).isEqualTo(plugin.version)
         assertThat(responseModel.slug).isEqualTo(plugin.textDomain)
     }

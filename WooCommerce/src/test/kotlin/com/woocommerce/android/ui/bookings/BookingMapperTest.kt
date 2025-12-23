@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingStatus
 import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -20,6 +21,7 @@ import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
@@ -35,6 +37,12 @@ import java.time.format.FormatStyle
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BookingMapperTest : BaseUnitTest() {
+    companion object {
+        private const val FORMATTED_DATE_TIME = "Jul 5, 2025, 11:00 AM"
+        private const val FORMATTED_TIME = "11:00 AM"
+    }
+
+    private val dateFormatter = mock<DateFormatter>()
 
     private val currencyFormatter: CurrencyFormatter = mock {
         on { formatCurrency(any<BigDecimal>(), any(), eq(true)) } doAnswer {
@@ -72,7 +80,9 @@ class BookingMapperTest : BaseUnitTest() {
 
     @Before
     fun setup() {
-        mapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn(FORMATTED_DATE_TIME)
+        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn(FORMATTED_TIME)
+        mapper = BookingMapper(dateFormatter, currencyFormatter, getLocations, resourceProvider)
     }
 
     @Test
@@ -88,15 +98,11 @@ class BookingMapperTest : BaseUnitTest() {
             currency = "USD"
         )
 
-        val expectedDate = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT)
-            .withZone(ZoneOffset.UTC)
-            .format(start)
-
         // WHEN
         val model = mapper.run { booking.toBookingSummaryModel(AttendanceUpdateStatus.Idle) }
 
         // THEN
-        assertThat(model.date).isEqualTo(expectedDate)
+        assertThat(model.date).isEqualTo(FORMATTED_DATE_TIME)
         assertThat(model.name).isEqualTo(booking.order.productInfo?.name)
         assertThat(model.customerName)
             .isEqualTo("${booking.order.customerInfo?.billingFirstName} ${booking.order.customerInfo?.billingLastName}")
@@ -121,8 +127,7 @@ class BookingMapperTest : BaseUnitTest() {
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
             .format(start)
-        val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC)
-        val expectedTime = "${timeFormatter.format(start)} - ${timeFormatter.format(end)}"
+        val expectedTime = "$FORMATTED_TIME - $FORMATTED_TIME"
 
         // WHEN
         val model = mapper.run { booking.toAppointmentDetailsModel(staffMemberStatus, CancelStatus.Idle) }
@@ -202,7 +207,6 @@ class BookingMapperTest : BaseUnitTest() {
         val start = Instant.parse("2025-09-12T16:00:00Z")
         val booking = sampleBooking(start = start, end = start.plus(Duration.ofHours(1)))
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
-        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
 
         // WHEN
         val message = mapper.buildCancelDialogMessage(booking)
@@ -218,7 +222,7 @@ class BookingMapperTest : BaseUnitTest() {
                         UiString.UiStringText(customerName),
                         UiString.UiStringText("${booking.order.productInfo?.name}"),
                         UiString.UiStringText(expectedDate),
-                        UiString.UiStringText(expectedTime)
+                        UiString.UiStringText(FORMATTED_TIME)
                     )
                 )
             )
@@ -230,7 +234,6 @@ class BookingMapperTest : BaseUnitTest() {
         val start = Instant.parse("2025-09-12T16:00:00Z")
         val booking = sampleBooking(start = start, customerInfo = null)
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(ZoneOffset.UTC).format(start)
-        val expectedTime = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(ZoneOffset.UTC).format(start)
 
         // WHEN
         val message = mapper.buildCancelDialogMessage(booking)
@@ -244,7 +247,7 @@ class BookingMapperTest : BaseUnitTest() {
                         UiString.UiStringRes(R.string.customer_detail_guest_customer),
                         UiString.UiStringText("${booking.order.productInfo?.name}"),
                         UiString.UiStringText(expectedDate),
-                        UiString.UiStringText(expectedTime)
+                        UiString.UiStringText(FORMATTED_TIME)
                     )
                 )
             )

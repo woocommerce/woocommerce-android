@@ -1,10 +1,11 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.plugin;
 
+import static org.wordpress.android.fluxc.model.LocalOrRemoteId.*;
+
 import android.content.Context;
 
 import com.android.volley.RequestQueue;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.wordpress.android.fluxc.Dispatcher;
 import org.wordpress.android.fluxc.generated.PluginActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST;
@@ -106,22 +107,14 @@ public class PluginRestClient extends BaseWPComRestClient {
     }
 
     private SitePluginModel pluginModelFromResponse(SiteModel siteModel, PluginWPComRestResponse response) {
-        SitePluginModel sitePluginModel = new SitePluginModel();
-        sitePluginModel.setLocalSiteId(siteModel.getId());
-        sitePluginModel.setName(response.name);
-        sitePluginModel.setDisplayName(StringEscapeUtils.unescapeHtml4(response.display_name));
-        sitePluginModel.setAuthorName(StringEscapeUtils.unescapeHtml4(response.author));
-        sitePluginModel.setAuthorUrl(response.author_url);
-        sitePluginModel.setDescription(StringEscapeUtils.unescapeHtml4(response.description));
-        sitePluginModel.setIsActive(response.active);
-        sitePluginModel.setIsAutoUpdateEnabled(response.autoupdate);
-        sitePluginModel.setPluginUrl(response.plugin_url);
-        sitePluginModel.setSlug(response.slug);
-        sitePluginModel.setVersion(response.version);
-        if (response.action_links != null) {
-            sitePluginModel.setSettingsUrl(response.action_links.settings);
-        }
-        return sitePluginModel;
+        return new SitePluginModel(
+                new LocalId(siteModel.getId()),
+                response.name != null ? response.name : "",
+                response.version != null ? response.version : "",
+                response.slug != null ? response.slug : "",
+                "", // authorName not provided in this response
+                response.active
+        );
     }
 
     private String getEncodedPluginName(String pluginName) {
