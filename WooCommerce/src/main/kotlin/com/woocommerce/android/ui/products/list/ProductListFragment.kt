@@ -22,7 +22,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.FeedbackPrefs
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsTracker
@@ -151,12 +150,6 @@ class ProductListFragment :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
-        enterTransition = fadeThroughTransition
-        exitTransition = fadeThroughTransition
-        reenterTransition = fadeThroughTransition
 
         twoPanesWereShownBeforeConfigChange = savedInstanceState?.getBoolean(
             TWO_PANES_WERE_SHOWN_BEFORE_CONFIG_CHANGE_KEY,
@@ -309,6 +302,7 @@ class ProductListFragment :
                         new.filterCount?.compareTo(0) == 1 -> binding.emptyView.show(
                             WCEmptyView.EmptyViewType.FILTER_RESULTS
                         )
+
                         else -> {
                             binding.emptyView.show(WCEmptyView.EmptyViewType.PRODUCT_LIST) {
                                 showAddProductBottomSheet()

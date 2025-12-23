@@ -179,7 +179,7 @@ class BookingListViewModel @Inject constructor(
                 filters
             ) { tab, query, sort, filters ->
                 FetchParams(
-                    searchQuery = query,
+                    searchQuery = query?.takeUnless { it.isEmpty() },
                     sortOption = sort,
                     selectedTab = tab,
                     filters = filters
@@ -193,17 +193,14 @@ class BookingListViewModel @Inject constructor(
                 bookingsFetchJob?.cancel()
                 bookingsLoadMoreJob?.cancel()
 
-                val initialLoadingState = if (isRefreshing) {
+                if (!isRefreshing && lastFetchParams == fetchParams) return@collectLatest
+
+                val initialLoadingState = if (isRefreshing ||
+                    (lastFetchParams != null && lastFetchParams?.sortOption != fetchParams.sortOption)
+                ) {
                     BookingListLoadingState.Refreshing
                 } else {
-                    lastFetchParams.let { lastFetchParams ->
-                        if (lastFetchParams != null && lastFetchParams.sortOption != fetchParams.sortOption) {
-                            // When sort option changes, force refreshing state to indicate data reload
-                            BookingListLoadingState.Refreshing
-                        } else {
-                            BookingListLoadingState.Loading
-                        }
-                    }
+                    BookingListLoadingState.Loading
                 }
 
                 lastFetchParams = fetchParams
