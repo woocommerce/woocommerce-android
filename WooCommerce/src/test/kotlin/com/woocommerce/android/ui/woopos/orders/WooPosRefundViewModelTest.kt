@@ -33,6 +33,8 @@ class WooPosRefundViewModelTest {
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
     private val groupRefundItems: WooPosGroupRefundItems = mock()
+    private val calculateRefundSubtotal = WooPosCalculateRefundSubtotal()
+    private val calculateRefundTax = WooPosCalculateRefundTax()
     private val resourceProvider: ResourceProvider = mock()
     private val currencyFormatter: CurrencyFormatter = mock()
     private val refundStore: WCRefundStore = mock()
@@ -89,6 +91,8 @@ class WooPosRefundViewModelTest {
             retrieveOrderRefunds = retrieveOrderRefunds,
             getRefundableItems = getRefundableItems,
             groupRefundItems = groupRefundItems,
+            calculateRefundSubtotal = calculateRefundSubtotal,
+            calculateRefundTax = calculateRefundTax,
             resourceProvider = resourceProvider,
             currencyFormatter = currencyFormatter,
             refundStore = refundStore,

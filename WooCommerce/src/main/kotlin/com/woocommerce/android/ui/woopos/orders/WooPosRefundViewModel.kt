@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
-import java.math.RoundingMode
 
 @Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
@@ -29,6 +28,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
     private val groupRefundItems: WooPosGroupRefundItems,
+    private val calculateRefundSubtotal: WooPosCalculateRefundSubtotal,
+    private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
@@ -89,33 +90,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
         order: Order,
         refundableItems: List<WooPosRefundableItem>
     ): WooPosRefundState.Content {
-        val itemsByOrderItemId = refundableItems.groupBy { it.orderItemId }
-
-        val subtotal = itemsByOrderItemId.entries.sumOf { (_, items) ->
-            val quantity = items.size.toBigDecimal()
-            quantity.multiply(items.first().unitPrice)
-        }
-
-        val taxes: BigDecimal = itemsByOrderItemId.entries.sumOf { (orderItemId, items) ->
-            val originalItem = order.items.find { it.itemId == orderItemId }
-            val refundQuantity = items.size
-
-            if (originalItem != null && originalItem.quantity > 0) {
-                if (refundQuantity.toFloat() == originalItem.quantity) {
-                    originalItem.totalTax
-                } else {
-                    val singleItemTax = originalItem.totalTax.divide(
-                        originalItem.quantity.toBigDecimal(),
-                        2,
-                        RoundingMode.HALF_UP
-                    )
-                    refundQuantity.toBigDecimal().multiply(singleItemTax)
-                }
-            } else {
-                BigDecimal.ZERO
-            }
-        }
-
+        val subtotal = calculateRefundSubtotal(refundableItems)
+        val taxes = calculateRefundTax(refundableItems, order)
         val total = subtotal + taxes
 
         return WooPosRefundState.Content(
