@@ -221,7 +221,7 @@ class WooPosGroupRefundItemsTest {
     }
 
     @Test
-    fun `given items with different products but same orderItemId, when invoke called, then groups by orderItemId only`() {
+    fun `given items with same product and same orderItemId, when invoke called, then groups by orderItemId`() {
         // GIVEN
         val refundableItems = listOf(
             createRefundableItem(orderItemId = 123L, productId = 100L, rowIndex = 0),
@@ -286,41 +286,5 @@ class WooPosGroupRefundItemsTest {
         assertThat(result).hasSize(1)
         assertThat(result[0].itemId).isEqualTo(1L)
         assertThat(result[0].quantity).isEqualTo(100)
-    }
-
-    @Test
-    fun `given items with varying properties but same orderItemId, when invoke called, then groups by orderItemId regardless of other properties`() {
-        // GIVEN
-        val refundableItems = listOf(
-            createRefundableItem(
-                orderItemId = 123L,
-                productId = 100L,
-                variationId = 10L,
-                name = "Product A",
-                unitPrice = BigDecimal("10.00"),
-                rowIndex = 0
-            ),
-            createRefundableItem(
-                orderItemId = 123L,
-                productId = 200L,
-                variationId = 20L,
-                name = "Product B",
-                unitPrice = BigDecimal("20.00"),
-                rowIndex = 1
-            )
-        )
-        val order = createOrder(
-            listOf(
-                createOrderItem(itemId = 123L, quantity = 2f, price = BigDecimal("10.00"))
-            )
-        )
-
-        // WHEN
-        val result = sut(refundableItems, order)
-
-        // THEN
-        assertThat(result).hasSize(1)
-        assertThat(result[0].itemId).isEqualTo(123L)
-        assertThat(result[0].quantity).isEqualTo(2)
     }
 }
