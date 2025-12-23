@@ -8,6 +8,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -158,6 +159,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             val order = currentOrder ?: run {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "WooPosRefund: currentOrder is null during processRefund"
+                )
                 _state.value = WooPosRefundState.RefundError(
                     message = resourceProvider.getString(R.string.error_generic)
                 )
