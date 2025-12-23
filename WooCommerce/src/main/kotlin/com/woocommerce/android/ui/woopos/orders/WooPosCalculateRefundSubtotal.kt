@@ -9,8 +9,12 @@ class WooPosCalculateRefundSubtotal @Inject constructor() {
             .groupBy { it.orderItemId }
             .entries
             .sumOf { (_, items) ->
-                val quantity = items.size.toBigDecimal()
-                quantity.multiply(items.first().unitPrice)
+                if (items.isEmpty()) {
+                    BigDecimal.ZERO
+                } else {
+                    val quantity = items.size.toBigDecimal()
+                    quantity.multiply(items.first().unitPrice)
+                }
             }
     }
 }

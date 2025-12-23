@@ -31,6 +31,9 @@ class WooPosGroupRefundItems @Inject constructor() {
         items: List<WooPosRefundableItem>,
         quantity: Int
     ): BigDecimal {
+        if (items.isEmpty()) {
+            return BigDecimal.ZERO
+        }
         return items.first().unitPrice.multiply(quantity.toBigDecimal())
     }
 
