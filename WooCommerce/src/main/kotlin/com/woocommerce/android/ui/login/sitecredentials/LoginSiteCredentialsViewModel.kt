@@ -22,7 +22,6 @@ import com.woocommerce.android.model.UiString.UiStringText
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
-import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -220,11 +219,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
                 when (authenticationError?.errorType) {
-                    INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
-                    BASIC_AUTH_REQUIRED -> {
-                        // TODO REMOVE COMMENT AND PROVIDE PROPER ERROR AND TRACKING
-                        WooLog.w(WooLog.T.LOGIN, "Authentication failed, error: Basic auth required")
-                    }
+                    INVALID_CREDENTIALS,
+                    BASIC_AUTH_REQUIRED -> errorDialogMessage.value = authenticationError.errorMessage
                     else -> {
                         fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
                         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
