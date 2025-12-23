@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.dashboard.data
 
+import androidx.annotation.VisibleForTesting
 import androidx.datastore.core.DataStore
 import com.woocommerce.android.di.SiteComponentEntryPoint
 import com.woocommerce.android.model.DashboardWidget
@@ -53,7 +54,8 @@ class DashboardDataStore @Inject constructor(
         }
     }
 
-    private fun getDefaultWidgets(): List<DashboardWidgetDataModel> {
+    @VisibleForTesting
+    internal fun getDefaultWidgets(): List<DashboardWidgetDataModel> {
         fun DashboardWidget.Type.shouldBeEnabledByDefault() =
             this == DashboardWidget.Type.STATS ||
                 this == DashboardWidget.Type.POPULAR_PRODUCTS ||
