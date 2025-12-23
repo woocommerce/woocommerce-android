@@ -426,7 +426,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ReviewRefund step, when DialogDismissed event, then step resets to SelectItems`() =
+    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to SelectItems`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -443,6 +443,7 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            advanceUntilIdle()
 
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
@@ -542,7 +543,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ConfirmRefund step, when DialogDismissed event, then step resets to SelectItems`() =
+    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to SelectItems`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -560,6 +561,7 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+            advanceUntilIdle()
 
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
