@@ -111,22 +111,26 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
-    fun onUIEvent(event: WooPosRefundUIEvent): Boolean {
-        return when (event) {
-            WooPosRefundUIEvent.DialogDismissed -> {
-                val currentState = _state.value
-                val isProcessing = currentState is WooPosRefundState.Content &&
-                    currentState.step == WooPosRefundState.Content.RefundStep.Processing
+    fun onDismissRequest(): Boolean {
+        val currentState = _state.value
+        val isProcessing = currentState is WooPosRefundState.Content &&
+            currentState.step == WooPosRefundState.Content.RefundStep.Processing
 
-                if (!isProcessing) {
-                    loadRefundableItems()
-                    true
-                } else {
-                    false
-                }
+        return if (!isProcessing) {
+            loadRefundableItems()
+            true
+        } else {
+            false
+        }
+    }
+
+    fun onUIEvent(event: WooPosRefundUIEvent) {
+        when (event) {
+            WooPosRefundUIEvent.DialogDismissed -> {
+                onDismissRequest()
             }
             else -> {
-                val currentState = _state.value as? WooPosRefundState.Content ?: return true
+                val currentState = _state.value as? WooPosRefundState.Content ?: return
 
                 when (event) {
                     WooPosRefundUIEvent.ContinueToReviewClicked ->
@@ -140,7 +144,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
                     WooPosRefundUIEvent.DialogDismissed -> Unit
                 }
-                true
             }
         }
     }
