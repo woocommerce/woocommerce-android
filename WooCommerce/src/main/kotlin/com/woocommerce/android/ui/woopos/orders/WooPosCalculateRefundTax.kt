@@ -29,7 +29,7 @@ class WooPosCalculateRefundTax @Inject constructor() {
             return BigDecimal.ZERO
         }
 
-        return if (refundQuantity.toFloat() == originalItem.quantity) {
+        return if (refundQuantity.toBigDecimal().compareTo(originalItem.quantity.toBigDecimal()) == 0) {
             originalItem.totalTax
         } else {
             val singleItemTax = originalItem.totalTax.divide(
