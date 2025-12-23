@@ -232,6 +232,34 @@ class NonceRestClientTest {
         assertEquals(Nonce.CookieNonceErrorType.CUSTOM_ADMIN_URL, actual.type)
     }
 
+    @Test
+    fun `basic auth required error returns correct error type`() = test {
+        val error = WPAPINetworkError(
+            BaseNetworkError(
+                VolleyError(
+                    NetworkResponse(
+                        401,
+                        byteArrayOf(),
+                        false,
+                        System.currentTimeMillis(),
+                        listOf(
+                            com.android.volley.Header(
+                                "www-Authenticate",
+                                "Basic realm=token24433434"
+                            )
+                        )
+                    )
+                )
+            )
+        )
+        givenLoginResponse(WPAPIResponse.Error(error))
+
+        val actual = subject.requestNonce(site)
+
+        assertIs<Nonce.FailedRequest>(actual)
+        assertEquals(Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED, actual.type)
+    }
+
     private suspend fun givenLoginResponse(response: WPAPIResponse<String>) {
         val body = mapOf(
             "log" to site.username,
