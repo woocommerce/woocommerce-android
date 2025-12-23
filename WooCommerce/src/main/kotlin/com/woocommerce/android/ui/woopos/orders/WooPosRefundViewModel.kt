@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
-import java.math.BigDecimal
 
 @Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
@@ -149,6 +148,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun processRefund(contentState: WooPosRefundState.Content) {
+        if (contentState.step == WooPosRefundState.Content.RefundStep.Processing) {
+            return
+        }
+
         viewModelScope.launch {
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
