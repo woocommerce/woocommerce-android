@@ -16,8 +16,17 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
+import org.wordpress.android.fluxc.model.refunds.WCRefundModel
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.Date
@@ -79,9 +88,23 @@ class WooPosRefundViewModelTest {
 
     private lateinit var viewModel: WooPosRefundViewModel
 
+    private val testSite = SiteModel().apply { id = 1 }
+
+    private val testRefundModel = WCRefundModel(
+        id = 1L,
+        dateCreated = Date(),
+        amount = BigDecimal("22.00"),
+        reason = "",
+        automaticGatewayRefund = false,
+        items = emptyList(),
+        shippingLineItems = emptyList(),
+        feeLineItems = emptyList()
+    )
+
     @Before
     fun setUp() {
         whenever(resourceProvider.getString(R.string.error_generic)).thenReturn("An error occurred")
+        whenever(selectedSite.get()).thenReturn(testSite)
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -541,5 +564,276 @@ class WooPosRefundViewModelTest {
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
             assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+        }
+
+    @Test
+    fun `given valid refund request, when refund confirmed, then state transitions through Processing to RefundSuccess`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val finalState = viewModel.state.value
+            assertThat(finalState).isInstanceOf(WooPosRefundState.RefundSuccess::class.java)
+
+            val successState = finalState as WooPosRefundState.RefundSuccess
+            assertThat(successState.orderId).isEqualTo(testOrderId)
+            assertThat(successState.orderNumber).isEqualTo("#456")
+        }
+
+    @Test
+    fun `given valid refund request, when refund confirmed, then refund store called with correct parameters`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = testSite,
+                orderId = testOrderId,
+                amount = BigDecimal("22.00"), // subtotal (20.00) + taxes (2.00)
+                reason = "",
+                restockItems = true,
+                autoRefund = false,
+                items = groupedItems
+            )
+        }
+
+    @Test
+    fun `given refund store returns error, when refund confirmed, then state transitions to RefundError`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+            val errorMessage = "Payment gateway error"
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.UNKNOWN,
+                        message = errorMessage
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val finalState = viewModel.state.value
+            assertThat(finalState).isInstanceOf(WooPosRefundState.RefundError::class.java)
+            assertThat((finalState as WooPosRefundState.RefundError).message).isEqualTo(errorMessage)
+        }
+
+    @Test
+    fun `given refund store returns error without message, when refund confirmed, then uses generic error message`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(
+                WooResult(
+                    WooError(
+                        type = WooErrorType.GENERIC_ERROR,
+                        original = BaseRequest.GenericErrorType.UNKNOWN,
+                        message = null
+                    )
+                )
+            )
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val finalState = viewModel.state.value
+            assertThat(finalState).isInstanceOf(WooPosRefundState.RefundError::class.java)
+            assertThat((finalState as WooPosRefundState.RefundError).message).isEqualTo("An error occurred")
+        }
+
+    @Test
+    fun `given already processing refund, when refund confirmed again, then duplicate request is ignored`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed) // duplicate request
+            advanceUntilIdle()
+
+            // THEN - verify only called once despite two events
+            verify(refundStore).createItemsRefund(
+                site = any(),
+                orderId = any(),
+                amount = any(),
+                reason = any(),
+                restockItems = any(),
+                autoRefund = any(),
+                items = any()
+            )
+        }
+
+    @Test
+    fun `given content state not at Processing step, when dismiss requested, then dismissal is allowed`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(testOrder, emptyList())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+
+            // WHEN
+            val canDismiss = viewModel.onDismissRequest()
+
+            // THEN
+            assertThat(canDismiss).isTrue()
         }
 }
