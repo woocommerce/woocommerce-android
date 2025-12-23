@@ -42,7 +42,7 @@ class AgeEligibilityChecker @Inject constructor(
             )
             _isUserAgeRangeEligible.value = true
         }
-        trackingProperties["access_restricted"] = _isUserAgeRangeEligible.value
+        trackingProperties["access_restricted"] = !_isUserAgeRangeEligible.value
         trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
         prefsWrapper.isUserAgeEligibleForAppUse = _isUserAgeRangeEligible.value
     }
