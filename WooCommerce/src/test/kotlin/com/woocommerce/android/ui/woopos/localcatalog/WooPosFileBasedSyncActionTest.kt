@@ -170,7 +170,7 @@ class WooPosFileBasedSyncActionTest : BaseUnitTest() {
         // GIVEN
         val inProgressResult = WooPosGenerateCatalogResult(
             state = WooPosGenerateCatalogState.IN_PROGRESS,
-            progress = 50,
+            progress = 50f,
             total = 100
         )
         whenever(posLocalCatalogStore.generateCatalog(site))

@@ -4,12 +4,10 @@ data class WooPosGenerateCatalogResult(
     val scheduledAt: String? = null,
     val completedAt: String? = null,
     val state: WooPosGenerateCatalogState,
-    val progress: Int? = null,
+    val progress: Float? = null,
     val processed: Int? = null,
     val total: Int? = null,
     val url: String? = null,
-    val productFields: List<String>? = null,
-    val variationFields: List<String>? = null,
 )
 
 enum class WooPosGenerateCatalogState(val rawValue: String) {

@@ -67,8 +67,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
     data class FileBasedSyncResult(
         val fileUrl: String,
-        val productFields: List<String>?,
-        val variationFields: List<String>?,
         val totalProducts: Int?,
         val completedAt: String?
     )
@@ -97,8 +95,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
     ): FileBasedSyncResult {
         return FileBasedSyncResult(
             fileUrl = fileUrl,
-            productFields = result.productFields,
-            variationFields = result.variationFields,
             totalProducts = result.total,
             completedAt = result.completedAt
         )

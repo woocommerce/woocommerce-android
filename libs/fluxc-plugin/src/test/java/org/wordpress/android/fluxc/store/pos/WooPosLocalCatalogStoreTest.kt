@@ -16,7 +16,6 @@ import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogArgs
 import org.wordpress.android.fluxc.model.pos.WooPosGenerateCatalogResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
@@ -431,14 +430,10 @@ class WooPosLocalCatalogStoreTest {
             scheduledAt = "2025-12-10T11:21:48",
             completedAt = "2025-12-10T11:21:55",
             state = "completed",
-            progress = 100,
+            progress = 100f,
             processed = 881,
             total = 881,
             url = "https://example.com/catalog.json",
-            args = WooPosGenerateCatalogArgs(
-                productFields = listOf("id", "name", "price"),
-                variationFields = listOf("id", "parent_id")
-            )
         )
         whenever(posProductRestClient.postGenerateCatalog(testSite))
             .thenReturn(WooResult(response))
@@ -450,12 +445,10 @@ class WooPosLocalCatalogStoreTest {
         assertThat(result.scheduledAt).isEqualTo("2025-12-10T11:21:48")
         assertThat(result.completedAt).isEqualTo("2025-12-10T11:21:55")
         assertThat(result.state).isEqualTo(WooPosGenerateCatalogState.COMPLETED)
-        assertThat(result.progress).isEqualTo(100)
+        assertThat(result.progress).isEqualTo(100f)
         assertThat(result.processed).isEqualTo(881)
         assertThat(result.total).isEqualTo(881)
         assertThat(result.url).isEqualTo("https://example.com/catalog.json")
-        assertThat(result.productFields).containsExactly("id", "name", "price")
-        assertThat(result.variationFields).containsExactly("id", "parent_id")
         verify(posProductRestClient).postGenerateCatalog(testSite)
     }
 
