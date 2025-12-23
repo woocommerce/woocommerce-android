@@ -138,3 +138,6 @@
 /bookings/<id>/
 /resources/team-members/
 /resources/team-members/<id>/
+
+/push-tokens
+/push-tokens/<id>
