@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.math.RoundingMode
 
+@Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
 class WooPosRefundViewModel @AssistedInject constructor(
     @Assisted private val orderId: Long,
@@ -137,19 +138,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
     fun onUIEvent(event: WooPosRefundUIEvent) {
         when (event) {
             WooPosRefundUIEvent.DialogDismissed -> {
-                when (val currentState = _state.value) {
-                    is WooPosRefundState.RefundSuccess,
-                    is WooPosRefundState.RefundError,
-                    is WooPosRefundState.Error,
-                    is WooPosRefundState.Loading,
-                    is WooPosRefundState.NoRefundableItems, -> loadRefundableItems()
-                    is WooPosRefundState.Content -> {
-                        loadRefundableItems()
-                        _state.value = currentState.copy(
-                            step = WooPosRefundState.Content.RefundStep.SelectItems
-                        )
-                    }
-                }
                 loadRefundableItems()
             }
             else -> {
