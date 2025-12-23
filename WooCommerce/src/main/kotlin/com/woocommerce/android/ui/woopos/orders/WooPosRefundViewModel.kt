@@ -123,12 +123,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
         when (event) {
             WooPosRefundUIEvent.DialogDismissed -> {
                 val currentState = _state.value
-                val isProcessing = currentState is WooPosRefundState.Content &&
-                    currentState.step == WooPosRefundState.Content.RefundStep.Processing
 
-                // Only reset state if not processing (i.e., dismissal was allowed)
-                if (!isProcessing) {
-                    loadRefundableItems()
+
+                if (currentState is WooPosRefundState.Content &&
+                    currentState.step != WooPosRefundState.Content.RefundStep.Processing) {
+                    _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
                 }
             }
             else -> {

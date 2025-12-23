@@ -63,6 +63,7 @@ fun WooPosIssueRefundDialog(
 
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
             onDismissRequest()
         }
     }
