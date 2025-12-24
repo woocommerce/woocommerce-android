@@ -41,7 +41,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -61,7 +61,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
 
@@ -81,7 +81,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -101,7 +101,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
 
@@ -122,7 +122,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
             verify(trackerWrapper).track(
@@ -141,7 +141,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(false, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = false
         verify(accountRepository).logout()
 
@@ -161,7 +161,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -180,7 +180,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -197,7 +197,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -217,7 +217,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(true, ageEligibilityChecker.isUserAgeRangeEligible.value)
+            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
             verify(trackerWrapper).track(

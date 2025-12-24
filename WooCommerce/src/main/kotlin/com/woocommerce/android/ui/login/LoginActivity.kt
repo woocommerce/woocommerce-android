@@ -1051,15 +1051,16 @@ class LoginActivity :
     }
 
     private fun keepTrackOfAgeEligibility() {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle(R.string.age_restriction_dialog_title)
-            .setMessage(R.string.age_restriction_dialog_message)
-            .setCancelable(false)
-            .setPositiveButton(android.R.string.ok) { _, _ -> finishAffinity() }
-            .create()
         lifecycleScope.launch {
-            ageEligibilityChecker.isUserAgeRangeEligible.collect { isEligible ->
-                if (!isEligible) {
+            ageEligibilityChecker.ageEligibilityState.collect { ageEligibilityState ->
+                val dialog = AlertDialog.Builder(this@LoginActivity)
+                    .setTitle(ageEligibilityState.ageRestrictedTitle)
+                    .setMessage(ageEligibilityState.ageRestrictedMessage)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
+                    .create()
+
+                if (ageEligibilityState.isUserAgeRangeEligible.not()) {
                     dialog.show()
                     AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN)
                 } else {

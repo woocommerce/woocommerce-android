@@ -86,7 +86,7 @@ class MainActivityViewModel @Inject constructor(
 
     val trialStatusBarState = determineTrialStatusBarState(_bottomBarState).asLiveData()
 
-    val isUserAgeRangeEligible = ageEligibilityChecker.isUserAgeRangeEligible.asLiveData()
+    val isUserAgeRangeEligible = ageEligibilityChecker.ageEligibilityState.asLiveData()
 
     fun handleShortcutAction(action: String?) {
         if (!selectedSite.exists()) return

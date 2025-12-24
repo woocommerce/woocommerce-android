@@ -614,7 +614,7 @@ class MainActivityViewModelTest : BaseUnitTest() {
                     onBlocking { invoke(any()) } doReturn emptyFlow()
                 },
                 ageEligibilityChecker = mock {
-                    on { isUserAgeRangeEligible } doReturn MutableStateFlow(true)
+                    on { ageEligibilityState } doReturn MutableStateFlow(true)
                 },
             )
         )

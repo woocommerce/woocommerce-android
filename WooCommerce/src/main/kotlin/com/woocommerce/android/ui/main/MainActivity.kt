@@ -968,8 +968,8 @@ class MainActivity :
     }
 
     private fun observeUserAgeEligibilityState() {
-        viewModel.isUserAgeRangeEligible.observe(this) { isUserAgeEligible ->
-            if (isUserAgeEligible.not()) {
+        viewModel.isUserAgeRangeEligible.observe(this) { ageEligibilityState ->
+            if (ageEligibilityState.isUserAgeRangeEligible.not()) {
                 showLoginScreen()
             }
         }
