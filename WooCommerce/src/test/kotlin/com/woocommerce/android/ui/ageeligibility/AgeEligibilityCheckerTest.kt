@@ -41,7 +41,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -49,7 +49,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             mapOf(
                 "retrieved_age" to DEFAULT_USER_AGE_UPPER,
                 "user_status" to "VERIFIED",
-                "access_restricted" to true
+                "access_restricted" to false
             )
         )
     }
@@ -61,7 +61,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
+            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
 
@@ -70,7 +70,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
                 mapOf(
                     "retrieved_age" to 12,
                     "user_status" to "SUPERVISED",
-                    "access_restricted" to false
+                    "access_restricted" to true
                 )
             )
         }
@@ -81,7 +81,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -89,7 +89,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             mapOf(
                 "retrieved_age" to 13,
                 "user_status" to "SUPERVISED",
-                "access_restricted" to true
+                "access_restricted" to false
             )
         )
     }
@@ -101,7 +101,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
+            assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = false
             verify(accountRepository).logout()
 
@@ -110,7 +110,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
                 mapOf(
                     "retrieved_age" to 12,
                     "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to false
+                    "access_restricted" to true
                 )
             )
         }
@@ -122,7 +122,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
             verify(trackerWrapper).track(
@@ -130,7 +130,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
                 mapOf(
                     "retrieved_age" to 13,
                     "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to true
+                    "access_restricted" to false
                 )
             )
         }
@@ -141,7 +141,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(false, ageEligibilityChecker.ageEligibilityState.value)
+        assertEquals(false, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = false
         verify(accountRepository).logout()
 
@@ -150,7 +150,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             mapOf(
                 "retrieved_age" to DEFAULT_USER_AGE_UPPER,
                 "user_status" to "SUPERVISED_APPROVAL_DENIED",
-                "access_restricted" to false
+                "access_restricted" to true
             )
         )
     }
@@ -161,7 +161,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -169,7 +169,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             mapOf(
                 "retrieved_age" to DEFAULT_USER_AGE_UPPER,
                 "user_status" to "UNKNOWN",
-                "access_restricted" to true
+                "access_restricted" to false
             )
         )
     }
@@ -180,13 +180,12 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
-        verify(prefsWrapper).isUserAgeEligibleForAppUse = true
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
 
         verify(trackerWrapper).track(
             AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED,
             mapOf(
-                "access_restricted" to true
+                "access_restricted" to false
             )
         )
     }
@@ -197,7 +196,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
         ageEligibilityChecker.checkAge()
 
-        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+        assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
         verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
         verify(trackerWrapper).track(
@@ -205,7 +204,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
             mapOf(
                 "retrieved_age" to -1,
                 "user_status" to "SUPERVISED",
-                "access_restricted" to true
+                "access_restricted" to false
             )
         )
     }
@@ -217,7 +216,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
 
             ageEligibilityChecker.checkAge()
 
-            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value)
+            assertEquals(true, ageEligibilityChecker.ageEligibilityState.value.isUserAgeRangeEligible)
             verify(prefsWrapper).isUserAgeEligibleForAppUse = true
 
             verify(trackerWrapper).track(
@@ -225,7 +224,7 @@ class AgeEligibilityCheckerTest : BaseUnitTest() {
                 mapOf(
                     "retrieved_age" to -1,
                     "user_status" to "SUPERVISED_APPROVAL_PENDING",
-                    "access_restricted" to true
+                    "access_restricted" to false
                 )
             )
         }
