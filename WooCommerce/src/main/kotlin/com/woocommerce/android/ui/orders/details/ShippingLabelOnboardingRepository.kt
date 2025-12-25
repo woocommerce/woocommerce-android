@@ -70,5 +70,6 @@ class ShippingLabelOnboardingRepository @Inject constructor(
 
         fun isSupported() = this == WCS_SUPPORTED || this == WC_SHIPPING_SUPPORTED
         fun isWooShippingSupported() = this == WC_SHIPPING_SUPPORTED
+        fun isWooServicesSupported() = this == WCS_SUPPORTED
     }
 }
