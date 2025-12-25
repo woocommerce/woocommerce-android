@@ -31,7 +31,10 @@ class DashboardDataStore @Inject constructor(
     }
 
     val widgets: Flow<List<DashboardWidgetDataModel>> = dataStoreFlow.flatMapLatest { dataStore ->
-        val flow = dataStore?.data ?: flow { throw IOException("Site component is null") }
+        val flow = dataStore?.data ?: flow {
+            WooLog.e(T.DASHBOARD, "DashboardDataStore: Site component is null, providing default widgets.")
+            emit(DashboardDataModel.getDefaultInstance())
+        }
         flow.catch { exception ->
             // dataStore.data throws an IOException when an error is encountered when reading data
             if (exception is IOException) {
