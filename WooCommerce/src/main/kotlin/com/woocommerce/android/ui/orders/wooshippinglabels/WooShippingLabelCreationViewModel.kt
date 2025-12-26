@@ -500,9 +500,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     if (map.isEmpty()) {
                         ShippingRatesState.NoAvailable
                     } else {
+                        val sortedShippingRates = sortShippingRates(selectedRatesSortOrders[index], map)
+                        if (selectedRates[index] == null) {
+                            val defaultSelectedRate = sortedShippingRates[sortedShippingRates.keys.first()]?.first()
+                            selectedRatesFlow.update { it.toMutableList().apply { set(selectedShipmentIndex, defaultSelectedRate) } }
+                        }
                         ShippingRatesState.DataState(
                             selectedRatesSortOrder = selectedRatesSortOrders[index],
-                            shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
+                            shippingRates = sortedShippingRates,
                             selectedRate = selectedRates[index],
                             onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
                             onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
