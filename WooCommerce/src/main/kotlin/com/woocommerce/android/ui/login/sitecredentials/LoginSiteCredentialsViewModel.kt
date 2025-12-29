@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.sitecredentials
 
+import android.os.Parcelable
 import androidx.annotation.StringRes
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
@@ -36,7 +37,9 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED
 import org.wordpress.android.fluxc.network.rest.wpapi.Nonce.CookieNonceErrorType.INVALID_CREDENTIALS
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration
 import org.wordpress.android.fluxc.store.SiteStore.SiteError
@@ -70,11 +73,11 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     private val siteAddress: String = savedStateHandle[SITE_ADDRESS_KEY]!!
 
-    private val errorDialogMessage = savedStateHandle.getNullableStateFlow(
+    private val authError = savedStateHandle.getNullableStateFlow(
         scope = viewModelScope,
         initialValue = null,
-        clazz = UiString::class.java,
-        key = "error-message"
+        clazz = AuthenticationError::class.java,
+        key = "site-credentials-auth-error"
     )
     private val fetchedSiteId = savedStateHandle.getStateFlow(viewModelScope, -1, "site-id")
 
@@ -91,14 +94,14 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         savedStateHandle.getStateFlow(USERNAME_KEY, ""),
         savedStateHandle.getStateFlow(PASSWORD_KEY, ""),
         loadingMessage.map { message -> message.takeIf { it != 0 } },
-        errorDialogMessage
-    ) { siteAddress, username, password, loadingMessage, errorDialog ->
+        authError
+    ) { siteAddress, username, password, loadingMessage, authError ->
         ViewState(
             siteUrl = siteAddress,
             username = username,
             password = password,
             loadingMessage = loadingMessage,
-            errorDialogMessage = errorDialog
+            authenticationError = authError
         )
     }.asLiveData()
 
@@ -138,7 +141,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     }
 
     fun onErrorDialogDismissed() {
-        errorDialogMessage.value = null
+        authError.value = null
     }
 
     fun onResetPasswordClick() {
@@ -147,7 +150,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
 
     fun onStartWebAuthorizationClick() {
         launch {
-            errorDialogMessage.value = null
+            authError.value = null
             fetchSiteForTutorial()
         }
     }
@@ -218,7 +221,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 val authenticationError = exception as? CookieNonceAuthenticationException
 
                 when (authenticationError?.errorType) {
-                    INVALID_CREDENTIALS -> errorDialogMessage.value = authenticationError.errorMessage
+                    INVALID_CREDENTIALS -> authError.value = AuthenticationError(
+                        errorMessage = authenticationError.errorMessage,
+                        showWpAdminFallbackOption = true
+                    )
+
+                    BASIC_AUTH_REQUIRED -> authError.value = AuthenticationError(
+                        errorMessage = authenticationError.errorMessage,
+                        showWpAdminFallbackOption = false
+                    )
+
                     else -> {
                         fetchSiteForTutorial(detectedErrorMessage = authenticationError?.errorMessage)
                         analyticsTracker.track(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_INVALID_LOGIN_PAGE_DETECTED)
@@ -298,7 +310,9 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private fun handleSiteFetchingError(exception: Throwable) {
         val siteError = (exception as? OnChangedException)?.error as? SiteError
 
-        this.errorDialogMessage.value = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+        this.authError.value = AuthenticationError(
+            errorMessage = UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+        )
 
         val error = (exception as? OnChangedException)?.error ?: exception
         trackLoginFailure(
@@ -387,10 +401,16 @@ class LoginSiteCredentialsViewModel @Inject constructor(
         val username: String = "",
         val password: String = "",
         @StringRes val loadingMessage: Int? = null,
-        val errorDialogMessage: UiString? = null
+        val authenticationError: AuthenticationError? = null
     ) {
         val isValid = username.isNotBlank() && password.isNotBlank()
     }
+
+    @Parcelize
+    data class AuthenticationError(
+        val errorMessage: UiString,
+        val showWpAdminFallbackOption: Boolean = true
+    ) : Parcelable
 
     @VisibleForTesting
     enum class Step {
