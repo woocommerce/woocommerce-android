@@ -25,6 +25,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 
 @ExperimentalCoroutinesApi
 class DashboardViewModelTest : BaseUnitTest() {
@@ -53,6 +54,8 @@ class DashboardViewModelTest : BaseUnitTest() {
         )
         on { hasNewWidgets } doReturn flowOf(false)
     }
+
+    private val pushNotificationsStore: PushNotificationsStore = mock { on { hasPushToken() } doReturn true }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
     }
@@ -72,6 +75,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
+            pushNotificationsStore = pushNotificationsStore,
             feedbackPrefs = feedbackPrefs,
         )
     }
@@ -325,5 +329,27 @@ class DashboardViewModelTest : BaseUnitTest() {
             val jetpackBenefitsBannerState = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
 
             assertThat(jetpackBenefitsBannerState).isNull()
+        }
+
+    @Test
+    fun `given push notification token registered, when screen starts, then hide Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPCOM_REST
+                            setIsJetpackCPConnected(true)
+                            setIsJetpackConnected(false)
+                        }
+                    )
+                )
+                whenever(pushNotificationsStore.hasPushToken()).thenReturn(true)
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isFalse()
         }
 }
