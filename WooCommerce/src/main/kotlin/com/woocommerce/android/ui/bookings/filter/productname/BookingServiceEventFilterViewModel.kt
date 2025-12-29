@@ -55,7 +55,6 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
                                 name = UiStringText(product.name)
                             )
                         },
-                    isLoading = false
                 )
             }
         }
@@ -72,7 +71,10 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
             pageSize = BOOKABLE_PRODUCTS_FILTER_PAGE_SIZE
         )
 
-        if (firstPage.isFailure) return@launch
+        if (firstPage.isFailure) {
+            _uiState.update { currentState -> currentState.copy(isLoading = false) }
+            return@launch
+        }
 
         // Load subsequent pages while available
         while (productListRepository.canLoadMoreProducts) {
@@ -85,6 +87,7 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
             )
             if (next.isFailure) break
         }
+        _uiState.update { currentState -> currentState.copy(isLoading = false) }
     }
 
     private fun onProductSelected(product: BookableProduct?) {

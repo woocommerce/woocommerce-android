@@ -62,7 +62,7 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
             ),
         )
         HorizontalDivider(thickness = 0.5.dp)
-        if (state.isLoading && state.availableProducts.isEmpty()) {
+        if (state.isLoading) {
             BookingServiceEventFilterSkeletons()
         } else {
             BookingsFilterSelectionPage(items = state.items)
@@ -77,12 +77,12 @@ private fun BookingServiceEventFilterSkeletons() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = dimen.major_100)),
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
             ) {
                 SkeletonView(
                     modifier = Modifier
-                        .weight(1f)
+                        .fillMaxWidth()
                         .height(64.dp)
                 )
             }
