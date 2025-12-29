@@ -501,17 +501,7 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                         ShippingRatesState.NoAvailable
                     } else {
                         val sortedShippingRates = sortShippingRates(selectedRatesSortOrders[index], map)
-                        if (selectedRates[index] == null) {
-                            val defaultSelectedRate = sortedShippingRates[sortedShippingRates.keys.first()]?.first()
-                            selectedRatesFlow.update {
-                                it.toMutableList().apply {
-                                    set(
-                                        selectedShipmentIndex,
-                                        defaultSelectedRate
-                                    )
-                                }
-                            }
-                        }
+                        preselectShippingRateIfNoneSelected(selectedRates, index, sortedShippingRates)
                         ShippingRatesState.DataState(
                             selectedRatesSortOrder = selectedRatesSortOrders[index],
                             shippingRates = sortedShippingRates,
@@ -524,6 +514,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }.collectLatest {
                 shippingRatesStatesFlow.value = it
             }
+    }
+
+    private fun preselectShippingRateIfNoneSelected(
+        selectedRates: List<ShippingRateUI?>,
+        index: Int,
+        sortedShippingRates: Map<CarrierUI, List<ShippingRateUI>>
+    ) {
+        if (selectedRates[index] == null) {
+            val defaultSelectedRate = sortedShippingRates[sortedShippingRates.keys.first()]?.first()
+            selectedRatesFlow.update {
+                it.toMutableList().apply {
+                    set(
+                        selectedShipmentIndex,
+                        defaultSelectedRate
+                    )
+                }
+            }
+        }
     }
 
     @OptIn(FlowPreview::class)
