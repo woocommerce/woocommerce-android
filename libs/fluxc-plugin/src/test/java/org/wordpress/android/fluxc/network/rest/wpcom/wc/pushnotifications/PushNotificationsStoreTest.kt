@@ -44,8 +44,8 @@ class PushNotificationsStoreTest {
         runBlocking {
             // GIVEN
             val site = SiteModel().apply { id = 123 }
-            val newTokenId = 101
-            whenever(prefs.getStringSet(eq("push_tokens"), anyOrNull())).thenReturn(emptySet())
+            val newTokenId = "101"
+            whenever(prefs.getString(eq("push_token_id"), anyOrNull())).thenReturn(null)
             whenever(restClient.registerPushToken(any(), any(), any(), any()))
                 .thenReturn(WooPayload(PushTokenIdResponse(newTokenId)))
 
@@ -53,30 +53,9 @@ class PushNotificationsStoreTest {
             sut.registerPushToken(site, "token", "uuid")
 
             // THEN
-            val captor = argumentCaptor<Set<String>>()
-            verify(editor).putStringSet(eq("push_tokens"), captor.capture())
-            assertThat(captor.firstValue).containsExactly("${site.id}:$newTokenId")
-        }
-    }
-
-    @Test
-    fun `given existing token, when registerPushToken succeeds, then updates existing token`() {
-        runBlocking {
-            // GIVEN
-            val site = SiteModel().apply { id = 123 }
-            val oldTokenId = 100
-            val newTokenId = 101
-            whenever(prefs.getStringSet(eq("push_tokens"), anyOrNull())).thenReturn(setOf("${site.id}:$oldTokenId"))
-            whenever(restClient.registerPushToken(any(), any(), any(), any()))
-                .thenReturn(WooPayload(PushTokenIdResponse(newTokenId)))
-
-            // WHEN
-            sut.registerPushToken(site, "token", "uuid")
-
-            // THEN
-            val captor = argumentCaptor<Set<String>>()
-            verify(editor).putStringSet(eq("push_tokens"), captor.capture())
-            assertThat(captor.firstValue).containsExactly("${site.id}:$newTokenId")
+            val captor = argumentCaptor<String>()
+            verify(editor).putString(eq("push_token_id"), captor.capture())
+            assertThat(captor.firstValue).isEqualTo(newTokenId)
         }
     }
 
@@ -85,23 +64,20 @@ class PushNotificationsStoreTest {
         runBlocking {
             // GIVEN
             val site = SiteModel().apply { id = 123 }
-            val existingTokenId = 100
-            val otherToken = "999:200"
+            val existingTokenId = "100"
             whenever(
-                prefs.getStringSet(
-                    eq("push_tokens"),
+                prefs.getString(
+                    eq("push_token_id"),
                     anyOrNull()
                 )
-            ).thenReturn(setOf("${site.id}:$existingTokenId", otherToken))
+            ).thenReturn(existingTokenId)
             whenever(restClient.deletePushToken(any(), any())).thenReturn(WooPayload(Unit))
 
             // WHEN
             sut.deletePushToken(site)
 
             // THEN
-            val captor = argumentCaptor<Set<String>>()
-            verify(editor).putStringSet(eq("push_tokens"), captor.capture())
-            assertThat(captor.firstValue).containsExactly(otherToken)
+            verify(editor).remove(eq("push_token_id"))
         }
     }
 
@@ -110,7 +86,7 @@ class PushNotificationsStoreTest {
         runBlocking {
             // GIVEN
             val site = SiteModel().apply { id = 123 }
-            whenever(prefs.getStringSet(eq("push_tokens"), anyOrNull())).thenReturn(emptySet())
+            whenever(prefs.getString(eq("push_token_id"), anyOrNull())).thenReturn(null)
 
             // WHEN
             val result = sut.deletePushToken(site)
