@@ -248,6 +248,10 @@ class MainActivityViewModel @Inject constructor(
         analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_ALLOWED)
     }
 
+    fun onNotificationOSAlertDenied() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
+    }
+
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
         val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
             !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&

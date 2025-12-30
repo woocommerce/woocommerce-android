@@ -298,6 +298,8 @@ class MainActivity :
         if (isGranted) {
             viewModel.onNotificationOSAlertAllowed()
             viewModel.checkForNotificationsPermission(hasNotificationsPermission = true)
+        } else {
+            viewModel.onNotificationOSAlertDenied()
         }
     }
 
