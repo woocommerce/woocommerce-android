@@ -5,8 +5,8 @@ steps:
   - label: "Download Release Translations"
     plugins: [$CI_TOOLKIT]
     command: |
-      # echo '--- :robot_face: Use bot for git operations'
-      # source use-bot-for-git
+      echo '--- :robot_face: Use bot for git operations'
+      source use-bot-for-git
 
       git fetch origin iangmaia/test-mac-metal
       git checkout iangmaia/test-mac-metal
