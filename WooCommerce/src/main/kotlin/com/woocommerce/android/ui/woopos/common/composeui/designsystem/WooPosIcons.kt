@@ -81,7 +81,7 @@ object WooPosIcons {
                 wifiColor = Color(0xFF966CCF)
             )
         } else {
-            cardReaderWithWifi(
+            cardReaderWithNFC(
                 blobColor = Color(0xFFAD86E9),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
@@ -99,7 +99,7 @@ object WooPosIcons {
                 wifiColor = Color(0xFF966CCF)
             )
         } else {
-            cardReaderWithWifi(
+            cardReaderWithNFC(
                 blobColor = Color(0xFF7F54B3),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
@@ -117,7 +117,7 @@ object WooPosIcons {
                 wifiColor = Color(0xFFCFB9F6)
             )
         } else {
-            cardReaderWithWifi(
+            cardReaderWithNFC(
                 blobColor = Color(0xFFBEA0F2),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
@@ -135,7 +135,7 @@ object WooPosIcons {
                 wifiColor = Color(0xFF18CD82)
             )
         } else {
-            cardReaderWithWifi(
+            cardReaderWithNFC(
                 blobColor = Color(0xFF66EA87),
                 readerBodyColor = Color(0xFF9EFAAD),
                 readerFaceColor = Color(0xFFDBFFDB),
@@ -768,14 +768,14 @@ object WooPosIcons {
         }
     }
 
-    private fun cardReaderWithWifi(
+    private fun cardReaderWithNFC(
         blobColor: Color,
         readerBodyColor: Color,
         readerFaceColor: Color,
         wifiColor: Color
     ): ImageVector {
         return ImageVector.Builder(
-            name = "CardReaderWithWifi",
+            name = "CardReaderWithNfc",
             defaultWidth = 202.dp,
             defaultHeight = 181.dp,
             viewportWidth = 202f,
