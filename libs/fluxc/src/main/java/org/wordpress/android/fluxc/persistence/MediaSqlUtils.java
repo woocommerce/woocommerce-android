@@ -274,14 +274,6 @@ public class MediaSqlUtils {
     }
 
     @NonNull
-    public static List<MediaModel> getSiteMediaExcluding(
-            @NonNull SiteModel site,
-            @NonNull String column,
-            @NonNull Object value) {
-        return getSiteMediaExcludingQuery(site, column, value).getAsModel();
-    }
-
-    @NonNull
     public static List<MediaModel> matchSiteMedia(
             @NonNull SiteModel siteModel,
             @NonNull String column,
@@ -416,10 +408,6 @@ public class MediaSqlUtils {
                .endGroup().endWhere().execute();
     }
 
-    public static void deleteAllMedia() {
-        WellSql.delete(MediaModel.class).execute();
-    }
-
     public static void deleteUploadedSiteMediaNotInList(
             @NonNull SiteModel site,
             @NonNull List<MediaModel> mediaList,
@@ -449,18 +437,5 @@ public class MediaSqlUtils {
         }
 
         builder.endGroup().endWhere().execute();
-    }
-
-    @NonNull
-    private static SelectQuery<MediaModel> getSiteMediaExcludingQuery(
-            @NonNull SiteModel site,
-            @NonNull String column,
-            @NonNull Object value) {
-        return WellSql.select(MediaModel.class)
-                .where().beginGroup()
-                .not().equals(column, value)
-                .equals(MediaModelTable.LOCAL_SITE_ID, site.getId())
-                .endGroup().endWhere()
-                .orderBy(MediaModelTable.UPLOAD_DATE, SelectQuery.ORDER_DESCENDING);
     }
 }
