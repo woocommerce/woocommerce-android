@@ -5,18 +5,22 @@ steps:
   - label: "Download Release Translations"
     plugins: [$CI_TOOLKIT]
     command: |
-      echo '--- :robot_face: Use bot for git operations'
-      source use-bot-for-git
+      # echo '--- :robot_face: Use bot for git operations'
+      # source use-bot-for-git
 
-      .buildkite/commands/checkout-release-branch.sh "$RELEASE_VERSION"
+      git fetch origin iangmaia/test-mac-metal
+      git checkout iangmaia/test-mac-metal
+      git pull --rebase
 
-      echo '--- :ruby: Setup Ruby Tools'
-      install_gems
+      echo '--- :pencil: Updating pt-BR changelog'
+      echo "Atualização do changelog para pt-BR em $(date)" > ./fastlane/metadata/android/pt-BR/changelogs/default.txt
 
-      echo '--- :globe_with_meridians: Download Release Translations'
-      bundle exec fastlane download_release_translations skip_confirm:true include_wear_app:"${INCLUDE_WEAR_APP:-false}"
+      echo '--- :rocket: Committing and pushing changes'
+      git add ./fastlane/metadata/android/pt-BR/changelogs/default.txt
+      git commit -m "Update pt-BR changelog [ci skip]"
+      git push origin iangmaia/test-mac-metal
     agents:
-        queue: "tumblr-metal"
+        queue: mac-metal
     retry:
       manual:
         # If those jobs fail, one should always prefer re-triggering a new build from Releases V2 rather than retrying the individual job from Buildkite

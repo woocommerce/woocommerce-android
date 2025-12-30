@@ -482,7 +482,7 @@ platform :android do
   desc 'Downloads and commits the latest translations before finalizing a release'
   lane :download_release_translations do |skip_confirm: false, include_wear_app: false|
     ensure_git_status_clean
-    ensure_git_branch_is_release_branch!
+    # ensure_git_branch_is_release_branch!
 
     UI.important("Downloading latest translations for release: #{release_version_current}")
     UI.user_error!("Terminating as requested. Don't forget to run the remainder of this automation manually.") unless skip_confirm || UI.confirm('Do you want to continue?')
