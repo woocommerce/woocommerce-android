@@ -41,7 +41,7 @@
             android:name=".ui.login.auto.AutoLoginActivity"
             android:exported="true"
             android:theme="@style/Theme.Woo.Splash">
-            <intent-filter android:autoVerify="true">
+            <intent-filter tools:ignore="AppLinkWarning">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.BROWSABLE" />
