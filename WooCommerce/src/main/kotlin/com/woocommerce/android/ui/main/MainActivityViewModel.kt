@@ -249,7 +249,12 @@ class MainActivityViewModel @Inject constructor(
             !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
             selectedSite.get().connectionType == Jetpack
 
-        _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+        if (_isNotificationPermissionCardVisible.value != shouldShowNotificationsPermissionBar) {
+            _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+            if (shouldShowNotificationsPermissionBar) {
+                analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_SHOWN)
+            }
+        }
     }
 
     fun hideBottomNav() {

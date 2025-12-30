@@ -797,6 +797,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     SURVEY_SCREEN,
     FEATURE_FEEDBACK_BANNER,
 
+    // -- Notifications Rationale
+    NOTIFICATIONS_RATIONALE_SHOWN,
+
     // -- Errors
     JETPACK_TUNNEL_TIMEOUT,
 
