@@ -110,6 +110,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                     }
                 )
             )
+            whenever(pushNotificationsStore.hasPushToken()).thenReturn(false)
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -129,6 +130,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
+                whenever(pushNotificationsStore.hasPushToken()).thenReturn(false)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
