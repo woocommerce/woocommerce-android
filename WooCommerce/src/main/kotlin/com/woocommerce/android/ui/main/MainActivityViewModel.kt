@@ -266,6 +266,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onNotificationsPermissionBarDismissButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
         AppPrefs.setWasNotificationsPermissionBarDismissed(true)
         _isNotificationPermissionCardVisible.update { false }
     }

@@ -800,6 +800,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     // -- Notifications Rationale
     NOTIFICATIONS_RATIONALE_SHOWN,
     NOTIFICATIONS_RATIONALE_ALLOW_TAPPED,
+    NOTIFICATIONS_RATIONALE_DISMISS_TAPPED,
 
     // -- Errors
     JETPACK_TUNNEL_TIMEOUT,
