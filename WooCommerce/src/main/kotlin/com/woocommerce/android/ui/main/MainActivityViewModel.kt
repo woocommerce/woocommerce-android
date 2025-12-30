@@ -271,6 +271,7 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onNotificationsPermissionBarAllowButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
         triggerEvent(RequestNotificationsPermission)
     }
 
