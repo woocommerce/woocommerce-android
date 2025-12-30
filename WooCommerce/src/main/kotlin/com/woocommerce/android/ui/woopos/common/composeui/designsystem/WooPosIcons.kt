@@ -74,72 +74,72 @@ object WooPosIcons {
     val CardReaderScanning: ImageVector
         @Composable
         get() = if (isSystemInDarkTheme()) {
-            cardReaderWithWifiDark(
+            cardReaderWithNfcDark(
                 blobColor = Color(0xFFB280FF).copy(alpha = 0.5f),
                 readerBodyColor = Color(0xFFBEA0F2),
                 readerFaceColor = Color(0xFFDFD1FB),
-                wifiColor = Color(0xFF966CCF)
+                nfcColor = Color(0xFF966CCF)
             )
         } else {
-            cardReaderWithNFC(
+            cardReaderWithNfc(
                 blobColor = Color(0xFFAD86E9),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
-                wifiColor = Color(0xFF966CCF)
+                nfcColor = Color(0xFF966CCF)
             )
         }
 
     val CardReaderFound: ImageVector
         @Composable
         get() = if (isSystemInDarkTheme()) {
-            cardReaderWithWifiDark(
+            cardReaderWithNfcDark(
                 blobColor = Color(0xFF9252E0).copy(alpha = 0.5f),
                 readerBodyColor = Color(0xFFBEA0F2),
                 readerFaceColor = Color(0xFFDFD1FB),
-                wifiColor = Color(0xFF966CCF)
+                nfcColor = Color(0xFF966CCF)
             )
         } else {
-            cardReaderWithNFC(
+            cardReaderWithNfc(
                 blobColor = Color(0xFF7F54B3),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
-                wifiColor = Color(0xFF966CCF)
+                nfcColor = Color(0xFF966CCF)
             )
         }
 
     val CardReaderConnecting: ImageVector
         @Composable
         get() = if (isSystemInDarkTheme()) {
-            cardReaderWithWifiDark(
+            cardReaderWithNfcDark(
                 blobColor = Color(0xFFBE99FF).copy(alpha = 0.5f),
                 readerBodyColor = Color(0xFFBEA0F2),
                 readerFaceColor = Color(0xFFDFD1FB),
-                wifiColor = Color(0xFFCFB9F6)
+                nfcColor = Color(0xFFCFB9F6)
             )
         } else {
-            cardReaderWithNFC(
+            cardReaderWithNfc(
                 blobColor = Color(0xFFBEA0F2),
                 readerBodyColor = Color(0xFFDFD1FB),
                 readerFaceColor = Color(0xFFF2EDFF),
-                wifiColor = Color(0xFFCFB9F6)
+                nfcColor = Color(0xFFCFB9F6)
             )
         }
 
     val CardReaderSuccess: ImageVector
         @Composable
         get() = if (isSystemInDarkTheme()) {
-            cardReaderWithWifiDark(
+            cardReaderWithNfcDark(
                 blobColor = Color(0xFF66EA87).copy(alpha = 0.5f),
                 readerBodyColor = Color(0xFF9EFAAD),
                 readerFaceColor = Color(0xFFDBFFDB),
-                wifiColor = Color(0xFF18CD82)
+                nfcColor = Color(0xFF18CD82)
             )
         } else {
-            cardReaderWithNFC(
+            cardReaderWithNfc(
                 blobColor = Color(0xFF66EA87),
                 readerBodyColor = Color(0xFF9EFAAD),
                 readerFaceColor = Color(0xFFDBFFDB),
-                wifiColor = Color(0xFF18CD82)
+                nfcColor = Color(0xFF18CD82)
             )
         }
 
@@ -692,9 +692,9 @@ object WooPosIcons {
         }
     }
 
-    private fun ImageVector.Builder.addWifiSignal(wifiColor: Color) {
+    private fun ImageVector.Builder.addNfcSignal(nfcColor: Color) {
         path(
-            stroke = SolidColor(wifiColor),
+            stroke = SolidColor(nfcColor),
             strokeLineWidth = 4f,
             strokeLineCap = androidx.compose.ui.graphics.StrokeCap.Round
         ) {
@@ -768,11 +768,11 @@ object WooPosIcons {
         }
     }
 
-    private fun cardReaderWithNFC(
+    private fun cardReaderWithNfc(
         blobColor: Color,
         readerBodyColor: Color,
         readerFaceColor: Color,
-        wifiColor: Color
+        nfcColor: Color
     ): ImageVector {
         return ImageVector.Builder(
             name = "CardReaderWithNfc",
@@ -783,18 +783,18 @@ object WooPosIcons {
         ).apply {
             addCardReaderBlobs(blobColor)
             addCardReaderBody(readerBodyColor, readerFaceColor)
-            addWifiSignal(wifiColor)
+            addNfcSignal(nfcColor)
         }.build()
     }
 
-    private fun cardReaderWithWifiDark(
+    private fun cardReaderWithNfcDark(
         blobColor: Color,
         readerBodyColor: Color,
         readerFaceColor: Color,
-        wifiColor: Color
+        nfcColor: Color
     ): ImageVector {
         return ImageVector.Builder(
-            name = "CardReaderWithWifiDark",
+            name = "CardReaderWithNfcDark",
             defaultWidth = 202.dp,
             defaultHeight = 181.dp,
             viewportWidth = 202f,
@@ -802,7 +802,7 @@ object WooPosIcons {
         ).apply {
             addCardReaderBlobs(blobColor)
             addCardReaderBody(readerBodyColor, readerFaceColor)
-            addWifiSignal(wifiColor)
+            addNfcSignal(nfcColor)
         }.build()
     }
 
