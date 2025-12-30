@@ -1,2 +1,1 @@
-23.8:
-Esta atualização suaviza seu fluxo de trabalho com correções para navegação de fundo, travamentos na taxa de envio e layout da tela de pagamento. O ponto de venda também recebe melhorias, incluindo configurações mais rápidas do catálogo local, melhor manuseio de produtos excluídos e rolagem automática para seus pedidos mais recentes.
+Atualização do changelog para pt-BR em Tue Dec 30 21:12:28 GMT 2025
