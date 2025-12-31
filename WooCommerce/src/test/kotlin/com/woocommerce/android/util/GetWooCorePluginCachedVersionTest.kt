@@ -8,8 +8,8 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class GetWooCorePluginCachedVersionTest : BaseUnitTest() {
@@ -57,9 +57,7 @@ class GetWooCorePluginCachedVersionTest : BaseUnitTest() {
         val siteModel = mock<SiteModel>()
         val version = "1.0.0"
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
-        val sitePluginModel = mock<SitePluginModel> {
-            on { this.version }.thenReturn(version)
-        }
+        val sitePluginModel = createTestSitePlugin(version = version)
         whenever(
             wooCommerceStore.getActiveSitePlugin(
                 siteModel,

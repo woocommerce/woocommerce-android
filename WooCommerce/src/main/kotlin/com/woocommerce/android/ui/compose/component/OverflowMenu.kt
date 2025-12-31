@@ -3,8 +3,6 @@ package com.woocommerce.android.ui.compose.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -19,12 +17,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.R.dimen
-import com.woocommerce.android.R.string
+import com.woocommerce.android.R
 
 @Composable
 fun <T> WCOverflowMenu(
@@ -39,14 +39,14 @@ fun <T> WCOverflowMenu(
     Box(modifier = modifier) {
         IconButton(onClick = { showMenu = !showMenu }) {
             Icon(
-                imageVector = Outlined.MoreVert,
-                contentDescription = stringResource(string.more_menu),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
+                contentDescription = stringResource(R.string.more_menu),
                 tint = tint
             )
         }
         DropdownMenu(
             offset = DpOffset(
-                x = dimensionResource(id = dimen.major_100),
+                x = dimensionResource(id = R.dimen.major_100),
                 y = 0.dp
             ),
             expanded = showMenu,
@@ -67,9 +67,18 @@ fun <T> WCOverflowMenu(
                     }
                 )
                 if (index < items.size - 1) {
-                    Spacer(modifier = Modifier.height(dimensionResource(id = dimen.minor_100)))
+                    Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 }
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun WCOverflowMenuPreview() {
+    WCOverflowMenu(
+        items = listOf("Option 1", "Option 2", "Option 3"),
+        onSelected = {}
+    )
 }

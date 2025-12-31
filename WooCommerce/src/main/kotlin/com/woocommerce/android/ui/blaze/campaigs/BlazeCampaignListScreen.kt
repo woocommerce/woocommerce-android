@@ -22,8 +22,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,10 +32,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -51,6 +51,7 @@ import com.woocommerce.android.ui.blaze.campaigs.BlazeCampaignListViewModel.Clic
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCModalBottomSheet
+import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
 
 @Composable
@@ -146,7 +147,7 @@ private fun CampaignList(
                 .padding(bottom = dimensionResource(id = R.dimen.major_100))
         ) {
             Icon(
-                imageVector = Filled.Add,
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_add),
                 contentDescription = "Large floating action button",
             )
         }
@@ -211,30 +212,32 @@ private fun CampaignCelebrationSheet(onDismiss: () -> Unit, modifier: Modifier =
 @Preview(name = "large screen", device = Devices.NEXUS_10)
 @Composable
 fun BlazeCampaignListScreenPreview() {
-    BlazeCampaignListScreen(
-        state = BlazeCampaignListState(
-            campaigns = listOf(
-                ClickableCampaign(
-                    BlazeCampaignUi(
-                        product = BlazeProductUi(
-                            name = "Product name",
-                            imgUrl = "https://picsum.photos/200/300",
+    WooThemeWithBackground {
+        BlazeCampaignListScreen(
+            state = BlazeCampaignListState(
+                campaigns = listOf(
+                    ClickableCampaign(
+                        BlazeCampaignUi(
+                            product = BlazeProductUi(
+                                name = "Product name",
+                                imgUrl = "https://picsum.photos/200/300",
+                            ),
+                            status = Active,
+                            isEndlessCampaign = false,
+                            impressions = "6k",
+                            clicks = "10",
+                            formattedBudget = "$100",
+                            budgetLabel = R.string.blaze_campaign_status_budget_total
                         ),
-                        status = Active,
-                        isEndlessCampaign = false,
-                        impressions = "6k",
-                        clicks = "10",
-                        formattedBudget = "$100",
-                        budgetLabel = R.string.blaze_campaign_status_budget_total
-                    ),
-                    onCampaignClicked = {}
-                )
+                        onCampaignClicked = {}
+                    )
+                ),
+                onAddNewCampaignClicked = {},
+                isLoading = false,
+                isCampaignCelebrationShown = false
             ),
-            onAddNewCampaignClicked = {},
-            isLoading = false,
-            isCampaignCelebrationShown = false
-        ),
-        onEndOfTheListReached = {},
-        onCampaignCelebrationDismissed = {},
-    )
+            onEndOfTheListReached = {},
+            onCampaignCelebrationDismissed = {},
+        )
+    }
 }

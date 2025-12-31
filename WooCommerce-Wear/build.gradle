@@ -153,7 +153,6 @@ dependencies {
     implementation(libs.androidx.compose.animation.main)
     implementation(libs.androidx.compose.ui.tooling.main)
     implementation(libs.androidx.compose.runtime.livedata)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
 
     // Android Support

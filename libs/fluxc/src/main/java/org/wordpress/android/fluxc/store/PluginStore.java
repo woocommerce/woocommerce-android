@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.store;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.greenrobot.eventbus.Subscribe;
@@ -16,7 +17,8 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType;
 import org.wordpress.android.fluxc.network.rest.wpcom.plugin.PluginJetpackTunnelRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.plugin.PluginRestClient;
-import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper;
+import org.wordpress.android.fluxc.model.LocalOrRemoteId;
+import org.wordpress.android.fluxc.persistence.SitePluginDao;
 import org.wordpress.android.util.AppLog;
 
 import javax.inject.Inject;
@@ -377,19 +379,19 @@ public class PluginStore extends Store {
     private final PluginRestClient mPluginRestClient;
     private final PluginCoroutineStore mPluginCoroutineStore;
     private final PluginJetpackTunnelRestClient mPluginJetpackTunnelRestClient;
+    @NonNull
+    private final SitePluginDao mSitePluginDao;
 
-    private final PluginSqlUtilsWrapper mPluginSqlUtils;
-
-    @Inject public PluginStore(Dispatcher dispatcher,
-                               PluginRestClient pluginRestClient,
-                               PluginCoroutineStore pluginCoroutineStore,
-                               PluginJetpackTunnelRestClient pluginJetpackTunnelRestClient,
-                               PluginSqlUtilsWrapper pluginSqlUtils) {
+    @Inject PluginStore(Dispatcher dispatcher,
+                        PluginRestClient pluginRestClient,
+                        PluginCoroutineStore pluginCoroutineStore,
+                        PluginJetpackTunnelRestClient pluginJetpackTunnelRestClient,
+                        @NonNull SitePluginDao sitePluginDao) {
         super(dispatcher);
         mPluginRestClient = pluginRestClient;
         mPluginCoroutineStore = pluginCoroutineStore;
         mPluginJetpackTunnelRestClient = pluginJetpackTunnelRestClient;
-        mPluginSqlUtils = pluginSqlUtils;
+        mSitePluginDao = sitePluginDao;
     }
 
     @Override
@@ -487,7 +489,9 @@ public class PluginStore extends Store {
         if (payload.isError()) {
             event.error = payload.error;
         } else {
-            mPluginSqlUtils.insertOrUpdateSitePlugin(payload.site, payload.plugin);
+            if (payload.plugin != null) {
+                mSitePluginDao.upsertBlocking(payload.plugin);
+            }
         }
         emitChange(event);
     }
@@ -523,7 +527,9 @@ public class PluginStore extends Store {
         if (payload.isError()) {
             event.error = payload.error;
         } else {
-            mPluginSqlUtils.insertOrUpdateSitePlugin(payload.site, payload.plugin);
+            if (payload.plugin != null) {
+                mSitePluginDao.upsertBlocking(payload.plugin);
+            }
         }
         emitChange(event);
     }

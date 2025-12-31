@@ -9,18 +9,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosRecentSearchesChips(
@@ -29,7 +28,7 @@ fun WooPosRecentSearchesChips(
 ) {
     Column {
         SectionHeader(
-            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
             title = stringResource(R.string.woopos_search_recent_searches_title)
         )
 
@@ -42,17 +41,17 @@ fun WooPosRecentSearchesChips(
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value, Alignment.Start),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
 
             recentSearches.forEach { recentSearch ->
                 WooPosChip(
                     text = recentSearch,
                     onClick = { onRecentSearchClicked(recentSearch) },
-                    leadingIcon = Icons.Default.Search
+                    leadingIcon = ImageVector.vectorResource(R.drawable.ic_search_24dp)
                 )
             }
 
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
         }
     }
 }

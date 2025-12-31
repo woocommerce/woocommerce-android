@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -24,7 +24,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -48,25 +47,23 @@ fun WooPosExitConfirmationDialog(
         onDismissRequest = onDismissRequest,
     ) {
         Box(
-            modifier = modifier.padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = modifier.padding(WooPosSpacing.XLarge.value)
         ) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                @Suppress("WooPosDesignSystemSpacingUsageRule")
-                Spacer(modifier = modifier.height(48.dp.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
                 WooPosText(
                     text = title,
                     style = WooPosTypography.Heading,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                Spacer(modifier = modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.Medium.value))
                 WooPosText(
                     text = message,
                     style = WooPosTypography.BodyLarge,
                     color = MaterialTheme.colorScheme.onSurface,
                 )
-                @Suppress("WooPosDesignSystemSpacingUsageRule")
-                Spacer(modifier = modifier.height(56.dp.toAdaptivePadding()))
+                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
                 WooPosButton(
                     modifier = modifier
                         .fillMaxWidth(),
@@ -87,7 +84,7 @@ fun WooPosExitConfirmationDialog(
                     .align(Alignment.TopEnd)
             ) {
                 Icon(
-                    Icons.Default.Close,
+                    ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     contentDescription = stringResource(
                         id = R.string.woopos_exit_dialog_confirmation_close_content_description
                     ),

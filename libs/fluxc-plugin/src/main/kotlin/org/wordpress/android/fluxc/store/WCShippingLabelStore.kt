@@ -37,7 +37,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.Shipping
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelRestClient.GetPackageTypesResponse.FormSchema.PackageOption.PackageDefinition
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.ShippingLabelStatusApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.shippinglabels.UpdateSettingsApiRequest
-import org.wordpress.android.fluxc.persistence.WCShippingLabelSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ShippingLabelCreationEligibilityDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingLabelDao
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.Poller
@@ -48,11 +48,12 @@ import javax.inject.Singleton
 private const val PURCHASE_SHIPPING_LABELS_DELAY = 2000L
 
 @Singleton
-class WCShippingLabelStore @Inject constructor(
+class WCShippingLabelStore @Inject internal constructor(
     private val restClient: ShippingLabelRestClient,
     private val coroutineEngine: CoroutineEngine,
     private val mapper: WCShippingLabelMapper,
-    private val shippingLabelDao: ShippingLabelDao
+    private val shippingLabelDao: ShippingLabelDao,
+    private val shippingLabelCreationEligibilityDao: ShippingLabelCreationEligibilityDao
 ) {
     /**
      * returns a list of shipping labels for an order from the database
@@ -139,8 +140,12 @@ class WCShippingLabelStore @Inject constructor(
         canCreatePaymentMethod: Boolean,
         canCreateCustomsForm: Boolean
     ): WCShippingLabelCreationEligibility? {
-        val eligibility = WCShippingLabelSqlUtils.getSLCreationEligibilityForOrder(site.id, orderId)
-                ?: return null
+        val eligibility = runBlocking {
+            shippingLabelCreationEligibilityDao.getShippingLabelCreationEligibility(
+                site.localId(),
+                RemoteId(orderId)
+            )
+        } ?: return null
 
         return if (eligibility.canCreatePackage == canCreatePackage &&
                 eligibility.canCreatePaymentMethod == canCreatePaymentMethod &&
@@ -171,16 +176,16 @@ class WCShippingLabelStore @Inject constructor(
                     WooResult(response.error)
                 }
                 response.result != null -> {
-                    val eligibility = WCShippingLabelCreationEligibility().apply {
-                        this.localSiteId = site.id
-                        this.remoteOrderId = orderId
-                        this.canCreatePackage = canCreatePackage
-                        this.canCreatePaymentMethod = canCreatePaymentMethod
-                        this.canCreateCustomsForm = canCreateCustomsForm
-                        this.isEligible = response.result.isEligible
-                        this.reason = response.result.reason
-                    }
-                    WCShippingLabelSqlUtils.insertOrUpdateSLCreationEligibility(eligibility)
+                    val eligibility = WCShippingLabelCreationEligibility(
+                        siteId = site.localId(),
+                        orderId = RemoteId(orderId),
+                        canCreatePackage = canCreatePackage,
+                        canCreatePaymentMethod = canCreatePaymentMethod,
+                        canCreateCustomsForm = canCreateCustomsForm,
+                        isEligible = response.result.isEligible,
+                        reason = response.result.reason
+                    )
+                    shippingLabelCreationEligibilityDao.upsertShippingLabelCreationEligibility(eligibility)
 
                     WooResult(eligibility)
                 }

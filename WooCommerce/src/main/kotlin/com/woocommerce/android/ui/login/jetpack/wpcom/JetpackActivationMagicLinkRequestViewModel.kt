@@ -72,6 +72,7 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
                     jetpackStatus = navArgs.jetpackStatus
                 )
             )
+
             MagicLinkFallbackButton.UsernameAndPassword -> triggerEvent(ShowUsernameScreen(navArgs.jetpackStatus))
             MagicLinkFallbackButton.None -> error("No fallback button should be shown")
         }
@@ -139,7 +140,10 @@ class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
         val avatarSize = resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100)
         return AvatarUrl(
             Email(email),
-            AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = DefaultAvatarOption.Status404)
+            AvatarQueryOptions {
+                preferredSize = avatarSize
+                defaultAvatarOption = DefaultAvatarOption.Status404
+            }
         ).toString()
     }
 

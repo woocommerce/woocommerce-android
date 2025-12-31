@@ -1,7 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
+import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.ui.graphics.vector.ImageVector
 import com.woocommerce.android.R
 
 data class WooPosHomeFloatingToolbarState(
@@ -17,10 +17,9 @@ data class WooPosHomeFloatingToolbarState(
     sealed class Menu {
         data object Hidden : Menu()
         data class Visible(val items: List<MenuItem>) : Menu()
-
         data class MenuItem(
             @StringRes val title: Int,
-            val icon: ImageVector,
+            @DrawableRes val icon: Int,
         )
     }
 }

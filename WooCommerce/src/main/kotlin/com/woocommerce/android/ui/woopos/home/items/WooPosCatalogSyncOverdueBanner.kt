@@ -11,16 +11,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
@@ -42,13 +41,13 @@ fun WooPosCatalogSyncOverdueBanner(
 ) {
     AnimatedVisibility(
         visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
-        enter =
-        fadeIn(animationSpec = tween(durationMillis = 180)) + scaleIn(animationSpec = tween(durationMillis = 180))
+        enter = fadeIn(animationSpec = tween(durationMillis = 180)) +
+            scaleIn(animationSpec = tween(durationMillis = 180))
     ) {
         WooPosCard(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(horizontal = WooPosSpacing.Medium.value),
             shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
             backgroundColor = MaterialTheme.colorScheme.surfaceContainerLow,
             elevation = WooPosElevation.Medium,
@@ -92,7 +91,7 @@ fun WooPosCatalogSyncOverdueBanner(
                         .align(Alignment.Top)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Close,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )

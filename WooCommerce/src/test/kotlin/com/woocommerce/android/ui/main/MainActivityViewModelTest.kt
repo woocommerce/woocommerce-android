@@ -116,12 +116,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     private val testAnnouncement = FeatureAnnouncement(
-        appVersionName = "14.2",
-        announcementVersion = 1337,
         minimumAppVersion = "14.2",
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
-        detailsUrl = "https://woocommerce.com/",
         isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(
@@ -326,9 +323,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given existing announcement cache, when app is upgraded and announcement is valid, then show announcement`() =
+    fun `given announcement is available on remote, when app is upgraded and announcement is valid, then show announcement`() =
         testBlocking {
-            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn(
+                testAnnouncement
+            ).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
@@ -337,9 +336,11 @@ class MainActivityViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given existing announcement cache, when app is upgraded and announcement is valid, track event is tracked`() =
+    fun `given announcement is available on remote, when app is upgraded and announcement is valid, then track event is tracked`() =
         testBlocking {
-            doReturn(testAnnouncement).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(true)
+            doReturn(
+                testAnnouncement
+            ).whenever(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
             doReturn("14.0").whenever(prefs).getLastVersionWithAnnouncement()
             doReturn("14.2").whenever(buildConfigWrapper).versionName
 
@@ -353,6 +354,26 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 )
             )
         }
+
+    @Test
+    fun `when app version changes, then fetch fresh announcements from API`() = testBlocking {
+        doReturn("19.0").whenever(prefs).getLastVersionWithAnnouncement()
+        doReturn("20.0").whenever(buildConfigWrapper).versionName
+
+        viewModel.showFeatureAnnouncementIfNeeded()
+
+        verify(featureAnnouncementRepository).getLatestFeatureAnnouncement(fromCache = false)
+    }
+
+    @Test
+    fun `when app version unchanged, then do not fetch announcements`() = testBlocking {
+        doReturn("20.0").whenever(prefs).getLastVersionWithAnnouncement()
+        doReturn("20.0").whenever(buildConfigWrapper).versionName
+
+        viewModel.showFeatureAnnouncementIfNeeded()
+
+        verify(featureAnnouncementRepository, never()).getLatestFeatureAnnouncement(any())
+    }
 
     @Test
     fun `given zero unseen reviews and no new features, when listening badge state, then hidden returned`() =

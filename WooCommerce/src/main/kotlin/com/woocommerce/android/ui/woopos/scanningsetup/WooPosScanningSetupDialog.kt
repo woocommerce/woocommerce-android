@@ -30,8 +30,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,11 +46,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -83,7 +83,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.common.composeui.modifier.listenForBarcodes
 import com.woocommerce.android.ui.woopos.common.data.WOO_POS_BARCODE_DOC_URL
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupState.BarcodeReaderDevice
@@ -143,7 +142,7 @@ fun WooPosScanningSetupDialog(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(WooPosSpacing.XLarge.value)
                 .listenForBarcodes(
                     { barcodeResult ->
                         viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
@@ -157,7 +156,7 @@ fun WooPosScanningSetupDialog(
                     modifier = Modifier
                 ) {
                     Icon(
-                        Icons.Default.Close,
+                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = stringResource(
                             id = R.string.woopos_exit_dialog_confirmation_close_content_description
                         ),
@@ -168,7 +167,7 @@ fun WooPosScanningSetupDialog(
                 }
             }
 
-            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
 
             AnimatedContent(
                 targetState = state.currentStep,
@@ -296,7 +295,7 @@ private fun ScannerModeSetupContent(
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
         )
 
         WooPosText(
@@ -305,14 +304,14 @@ private fun ScannerModeSetupContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Medium.value),
             contentAlignment = Alignment.Center
         ) {
             Image(
@@ -323,8 +322,8 @@ private fun ScannerModeSetupContent(
             )
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         SetupButtonsRow(
             primaryButtonText = primaryButtonText,
@@ -354,14 +353,14 @@ private fun TestScannerContent(
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
         )
 
         WooPosText(
             text = message,
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.Large.value)
         )
 
         Box(
@@ -369,7 +368,7 @@ private fun TestScannerContent(
                 .size(300.dp, 150.dp)
                 .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
                 .background(Color.White)
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Medium.value),
             contentAlignment = Alignment.Center
         ) {
             BarcodeEAN13Code(
@@ -379,7 +378,7 @@ private fun TestScannerContent(
             )
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         WooPosOutlinedButton(
             onClick = onSecondaryClick,
@@ -405,10 +404,10 @@ private fun TestYourScannerScanFailedContent(
             imageVector = WooPosIcons.ErrorX,
             contentDescription = null,
             modifier = Modifier
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Medium.value),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         WooPosText(
             text = stringResource(step.titleRes),
@@ -417,7 +416,7 @@ private fun TestYourScannerScanFailedContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
         WooPosText(
             text = stringResource(step.messageRes),
@@ -425,8 +424,8 @@ private fun TestYourScannerScanFailedContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
 
         SetupButtonsRow(
             primaryButtonText = stringResource(step.primaryButtonTextRes),
@@ -454,10 +453,10 @@ private fun PairYourScannerContent(
             imageVector = WooPosIcons.BluetoothSettings,
             contentDescription = null,
             modifier = Modifier
-                .padding(WooPosSpacing.Medium.value.toAdaptivePadding()),
+                .padding(WooPosSpacing.Medium.value),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
         WooPosText(
             text = stringResource(step.titleRes),
@@ -466,7 +465,7 @@ private fun PairYourScannerContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
         WooPosText(
             text = step.messageRes.getText(),
@@ -474,7 +473,7 @@ private fun PairYourScannerContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
 
         WooPosText(
             text = stringResource(step.bluetoothSettingsButtonTextRes),
@@ -488,13 +487,13 @@ private fun PairYourScannerContent(
                     onClick = { onOpenBluetoothSettings() }
                 )
                 .padding(
-                    horizontal = WooPosSpacing.Medium.value.toAdaptivePadding(),
-                    vertical = WooPosSpacing.Small.value.toAdaptivePadding()
+                    horizontal = WooPosSpacing.Medium.value,
+                    vertical = WooPosSpacing.Small.value
                 )
         )
 
-        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value.toAdaptivePadding()))
-        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
+        Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
 
         SetupButtonsRow(
             primaryButtonText = stringResource(step.primaryButtonTextRes),
@@ -520,21 +519,21 @@ private fun DeviceSelectionContent(
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
         )
 
         WooPosText(
             text = stringResource(id = R.string.woopos_scanning_setup_device_selection_message),
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value)
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
             step.devices.forEach { device ->
                 DeviceSelectionItem(
@@ -563,7 +562,7 @@ private fun DeviceSelectionItem(
                 shape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
             )
             .clickable { onClick() }
-            .padding(WooPosSpacing.Large.value.toAdaptivePadding()),
+            .padding(WooPosSpacing.Large.value),
         contentAlignment = Alignment.Center
     ) {
         WooPosText(
@@ -584,7 +583,7 @@ private fun SetupButtonsRow(
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value.toAdaptivePadding())
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         WooPosOutlinedButton(
             onClick = onSecondaryClick,
@@ -614,7 +613,7 @@ private fun ScannerSetupSuccessContent(
     ) {
         ScannerSetupSuccessIcon()
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         WooPosText(
             text = stringResource(step.titleRes),
@@ -623,7 +622,7 @@ private fun ScannerSetupSuccessContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         WooPosText(
             text = stringResource(step.messageRes),
@@ -631,8 +630,8 @@ private fun ScannerSetupSuccessContent(
             textAlign = TextAlign.Center,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         WooPosOutlinedButton(
             onClick = onPrimaryClick,
@@ -680,7 +679,7 @@ private fun ScannerSetupBarcodesOnProductsContent(
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.Medium.value)
         )
 
         val visitDocumentationText = stringResource(id = R.string.woopos_scanning_setup_visit_documentation)
@@ -715,9 +714,9 @@ private fun ScannerSetupBarcodesOnProductsContent(
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(
-                bottom = WooPosSpacing.Large.value.toAdaptivePadding(),
-                start = WooPosSpacing.XLarge.value.toAdaptivePadding(),
-                end = WooPosSpacing.XLarge.value.toAdaptivePadding(),
+                bottom = WooPosSpacing.Large.value,
+                start = WooPosSpacing.XLarge.value,
+                end = WooPosSpacing.XLarge.value,
             )
         )
 
@@ -736,7 +735,7 @@ private fun ScannerSetupBarcodesOnProductsContent(
                 )
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
         SetupButtonsRow(
             primaryButtonText = stringResource(step.doneButtonTextRes),
@@ -764,7 +763,7 @@ private fun ScannerSetupInfoContent(
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+            modifier = Modifier.padding(bottom = WooPosSpacing.XLarge.value)
         )
 
         WooPosText(
@@ -772,15 +771,15 @@ private fun ScannerSetupInfoContent(
             style = WooPosTypography.BodyLarge,
             textAlign = TextAlign.Start,
             modifier = Modifier
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(bottom = WooPosSpacing.XLarge.value)
                 .fillMaxWidth()
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.Large.value.toAdaptivePadding()),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+                .padding(bottom = WooPosSpacing.Large.value),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
         ) {
             step.bulletPointsRes.forEach { bulletPointRes ->
                 BulletPointItem(text = stringResource(bulletPointRes))
@@ -793,7 +792,7 @@ private fun ScannerSetupInfoContent(
             textAlign = TextAlign.Start,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(bottom = WooPosSpacing.XLarge.value)
         )
 
         SetupButtonsRow(
@@ -869,9 +868,9 @@ private fun SoftwareKeyboardSetupContent(
             }
         )
 
-        val marginMedium = WooPosSpacing.Medium.value.toAdaptivePadding()
-        val marginLarge = WooPosSpacing.Large.value.toAdaptivePadding()
-        val marginSmall = WooPosSpacing.Small.value.toAdaptivePadding()
+        val marginMedium = WooPosSpacing.Medium.value
+        val marginLarge = WooPosSpacing.Large.value
+        val marginSmall = WooPosSpacing.Small.value
         WooPosText(
             text = stringResource(step.messageRes),
             style = WooPosTypography.BodyLarge,
@@ -919,7 +918,7 @@ private fun SoftwareKeyboardSetupContent(
                         end.linkTo(parent.end, margin = marginMedium)
                         width = Dimension.fillToConstraints
                     },
-                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value.toAdaptivePadding())
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
             ) {
                 WooPosText(
                     text = stringResource(step.messageTwoRes),

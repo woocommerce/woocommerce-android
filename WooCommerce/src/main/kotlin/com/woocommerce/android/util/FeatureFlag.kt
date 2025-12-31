@@ -11,7 +11,8 @@ enum class FeatureFlag {
     BETTER_CUSTOMER_SEARCH_M2,
     ORDER_CREATION_AUTO_TAX_RATE,
     BOOKINGS_MVP,
-    POS_REFUNDS;
+    POS_REFUNDS,
+    WOO_POS_LOCAL_CATALOG_FILE_APPROACH;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -24,6 +25,8 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             BOOKINGS_MVP,
             POS_REFUNDS -> PackageUtils.isDebugBuild()
+
+            WOO_POS_LOCAL_CATALOG_FILE_APPROACH -> false
         }
     }
 }

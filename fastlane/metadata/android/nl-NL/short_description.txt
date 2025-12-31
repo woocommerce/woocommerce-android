@@ -1,1 +1,1 @@
-Beheer bestellingen, ontvang verkoopmeldingen en bekijk de winkel-meetwaarden.
+Beheer orders, krijg meldingen, bekijk statistieken en accepteer betalingen.

@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -28,7 +26,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailsMenuItemInfo
 
 @Composable
@@ -159,6 +158,9 @@ private fun CellularDataSection(
     onToggleCellularData: (Boolean) -> Unit,
     isLoading: Boolean
 ) {
+    val marginMedium = WooPosSpacing.Medium.value
+    val marginSmall = WooPosSpacing.Small.value
+
     WooPosCard(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -168,7 +170,7 @@ private fun CellularDataSection(
                 .clickable(enabled = !isLoading) {
                     onToggleCellularData(!allowCellularDataUpdate)
                 }
-                .padding(WooPosSpacing.Medium.value)
+                .padding(marginMedium)
         ) {
             val (title, subtitle, switch) = createRefs()
 
@@ -180,7 +182,7 @@ private fun CellularDataSection(
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    end.linkTo(switch.start, margin = WooPosSpacing.Medium.value)
+                    end.linkTo(switch.start, margin = marginMedium)
                     width = Dimension.fillToConstraints
                 }
             )
@@ -190,9 +192,9 @@ private fun CellularDataSection(
                 style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(subtitle) {
-                    top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
+                    top.linkTo(title.bottom, margin = marginSmall)
                     start.linkTo(parent.start)
-                    end.linkTo(switch.start, margin = WooPosSpacing.Medium.value)
+                    end.linkTo(switch.start, margin = marginMedium)
                     width = Dimension.fillToConstraints
                 }
             )
@@ -220,13 +222,16 @@ private fun ManualUpdateSection(
     catalogStatus: WooPosSettingsLocalCatalogState.CatalogStatus,
     onRefreshCatalog: () -> Unit
 ) {
+    val marginMedium = WooPosSpacing.Medium.value
+    val marginSmall = WooPosSpacing.Small.value
+
     WooPosCard(
         modifier = Modifier.fillMaxWidth()
     ) {
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.Medium.value)
+                .padding(marginMedium)
         ) {
             val (title, subtitle, button) = createRefs()
 
@@ -238,7 +243,7 @@ private fun ManualUpdateSection(
                 modifier = Modifier.constrainAs(title) {
                     top.linkTo(parent.top)
                     start.linkTo(parent.start)
-                    end.linkTo(button.start, margin = WooPosSpacing.Medium.value)
+                    end.linkTo(button.start, margin = marginMedium)
                     width = Dimension.fillToConstraints
                 }
             )
@@ -248,9 +253,9 @@ private fun ManualUpdateSection(
                 style = WooPosTypography.BodyMedium,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(subtitle) {
-                    top.linkTo(title.bottom, margin = WooPosSpacing.Small.value)
+                    top.linkTo(title.bottom, margin = marginSmall)
                     start.linkTo(parent.start)
-                    end.linkTo(button.start, margin = WooPosSpacing.Medium.value)
+                    end.linkTo(button.start, margin = marginMedium)
                     width = Dimension.fillToConstraints
                 }
             )
@@ -310,7 +315,7 @@ fun WooPosSyncErrorDialog(
         Column(
             modifier = Modifier
                 .background(color = MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value.toAdaptivePadding())
+                .padding(WooPosSpacing.XLarge.value)
         ) {
             Row {
                 Spacer(modifier = Modifier.weight(1f))
@@ -319,7 +324,7 @@ fun WooPosSyncErrorDialog(
                     modifier = Modifier
                 ) {
                     Icon(
-                        Icons.Default.Close,
+                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = stringResource(
                             id = R.string.woopos_exit_dialog_confirmation_close_content_description
                         ),
@@ -329,7 +334,7 @@ fun WooPosSyncErrorDialog(
                 }
             }
 
-            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
 
             Column(
                 modifier = Modifier
@@ -341,10 +346,10 @@ fun WooPosSyncErrorDialog(
                     imageVector = WooPosIcons.ErrorX,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(WooPosSpacing.Medium.value.toAdaptivePadding())
+                        .padding(WooPosSpacing.Medium.value)
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
@@ -353,7 +358,7 @@ fun WooPosSyncErrorDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
                 WooPosText(
                     text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_message),
@@ -361,7 +366,7 @@ fun WooPosSyncErrorDialog(
                     color = MaterialTheme.colorScheme.onSurface
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
                 WooPosButton(
                     modifier = Modifier.fillMaxWidth(),
@@ -369,7 +374,7 @@ fun WooPosSyncErrorDialog(
                     text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_retry_button)
                 )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value.toAdaptivePadding()))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
                 WooPosOutlinedButton(
                     modifier = Modifier.fillMaxWidth(),

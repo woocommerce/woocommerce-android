@@ -21,10 +21,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,8 +30,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -54,7 +52,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosEle
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Coupon
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.util.WooPosTestTags
@@ -74,7 +71,7 @@ fun WooPosItemList(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(vertical = 2.dp),
+        contentPadding = PaddingValues(vertical = WooPosSpacing.XXSmall.value),
         state = listState,
     ) {
         items(
@@ -134,8 +131,7 @@ fun WooPosItemList(
         }
 
         item {
-            @Suppress("WooPosDesignSystemSpacingUsageRule")
-            Spacer(modifier = Modifier.height(104.dp))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Gigantic.value))
         }
     }
     InfiniteListHandler(listState, state, onEndOfProductsListReached)
@@ -251,7 +247,7 @@ fun WooPosProductCard(
                     modifier = Modifier
                         .padding(end = WooPosSpacing.XLarge.value)
                         .size(24.dp),
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(WooPosTheme.colors.onSurfaceVariantHighest),
                 )
@@ -296,7 +292,7 @@ private fun ProductImage(item: Product) {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 44.dp
     )
 }
@@ -348,7 +344,7 @@ private fun CouponInfo(name: String, summary: String, expiredState: Coupon.Expir
             .padding(
                 end = WooPosSpacing.Medium.value,
             )
-            .padding(vertical = WooPosSpacing.Medium.value.toAdaptivePadding()),
+            .padding(vertical = WooPosSpacing.Medium.value),
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
@@ -398,7 +394,7 @@ private fun CouponImage() {
             .width(112.dp)
             .fillMaxHeight()
             .heightIn(min = 112.dp),
-        placeholderIcon = Icons.Outlined.LocalOffer,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_sell_24dp),
         placeholderIconSize = 36.dp
     )
 }
@@ -439,7 +435,7 @@ fun WooPosItemsLoadingIndicator(
     WooPosLazyColumn(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        contentPadding = PaddingValues(2.dp),
+        contentPadding = PaddingValues(WooPosSpacing.XXSmall.value),
     ) {
         items(itemsCount) {
             ItemsLoadingItem()

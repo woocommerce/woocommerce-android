@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
-import com.woocommerce.android.ui.woopos.common.composeui.designsystem.toAdaptivePadding
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
@@ -107,7 +106,7 @@ private fun SyncingCatalog(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(bottom = WooPosSpacing.XLarge.value.toAdaptivePadding()),
+                .padding(bottom = WooPosSpacing.XLarge.value),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             TextButton(

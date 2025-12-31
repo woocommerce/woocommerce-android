@@ -17,12 +17,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Recycling
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -49,6 +43,7 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.unit.dp
@@ -459,7 +454,7 @@ private fun ButtonsPreview() {
                 text = "Button With icon",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Edit,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = colorResource(id = R.color.woo_white),
@@ -467,7 +462,7 @@ private fun ButtonsPreview() {
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
                         tint = colorResource(id = R.color.woo_white),
@@ -489,10 +484,18 @@ private fun ButtonsPreview() {
                 onClick = {},
                 text = "Outlined Button with icon",
                 leadingIcon = {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
                 },
                 trailingIcon = {
-                    Icon(imageVector = Icons.Default.Check, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
                 }
             )
             WCOutlinedButton(
@@ -512,7 +515,7 @@ private fun ButtonsPreview() {
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {},
                 text = "Text Button",
-                icon = Icons.Default.Add
+                icon = ImageVector.vectorResource(R.drawable.ic_add)
             )
 
             WCSelectableChip(
@@ -531,14 +534,14 @@ private fun ButtonsPreview() {
                 text = "Remove",
                 leadingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_delete_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
                 },
                 trailingIcon = {
                     Icon(
-                        imageVector = Icons.Default.Recycling,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_remove_bg),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp)
                     )
