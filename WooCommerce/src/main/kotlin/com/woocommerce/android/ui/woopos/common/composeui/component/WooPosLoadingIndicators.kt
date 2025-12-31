@@ -11,9 +11,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -29,7 +26,9 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
@@ -195,10 +194,12 @@ fun WooPosUpdateProgressIndicator(
         }
 
         Icon(
-            imageVector = if (isComplete) Icons.Filled.Check else Icons.Filled.ArrowUpward,
+            painter = painterResource(
+                id = if (isComplete) R.drawable.ic_check_24dp else R.drawable.ic_arrow_up_24dp
+            ),
             contentDescription = null,
             tint = iconColor,
-            modifier = Modifier.size(84.dp)
+            modifier = Modifier.fillMaxSize(0.7f)
         )
     }
 }
