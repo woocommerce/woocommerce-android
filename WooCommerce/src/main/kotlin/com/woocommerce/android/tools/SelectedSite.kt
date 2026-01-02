@@ -87,18 +87,18 @@ class SelectedSite @Inject constructor(
     @Suppress("DEPRECATION")
     @Synchronized
     fun set(siteModel: SiteModel) {
+        // Create a new site component tied to the lifecycle of the selected site
+        siteComponent = siteComponentProvider.get()
+            .setSite(siteModel)
+            .setCoroutineScope(createSiteCoroutineScope())
+            .build()
+
         wasReset = false
         state.value = siteModel
         PreferenceUtils.setInt(getPreferences(), SELECTED_SITE_LOCAL_ID, siteModel.id)
 
         // Notify listeners
         getEventBus().post(SelectedSiteChangedEvent(siteModel))
-
-        // Create a new site component tied to the lifecycle of the selected site
-        siteComponent = siteComponentProvider.get()
-            .setSite(get())
-            .setCoroutineScope(createSiteCoroutineScope())
-            .build()
     }
 
     @Synchronized
