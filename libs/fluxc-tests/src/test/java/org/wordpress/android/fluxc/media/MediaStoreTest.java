@@ -322,26 +322,6 @@ public class MediaStoreTest {
     }
 
     @Test
-    public void testGetUrlForVideoWithVideoPressGuid() {
-        // insert video
-        final int testSiteId = 13;
-        final long testMediaId = 42;
-        final String testVideoPath = "/test/test_video.mp4";
-        final MediaModel testVideo = generateMediaFromPath(testSiteId, testMediaId, testVideoPath);
-        final String testUrl = "http://notarealurl.testfluxc.org/not/a/real/resource/path.mp4";
-        final String testVideoPressGuid = "thisisonlyatest";
-        testVideo.setUrl(testUrl);
-        testVideo.setVideoPressGuid(testVideoPressGuid);
-        assertEquals(1, insertMediaIntoDatabase(testVideo));
-
-        // retrieve video and verify
-        final String storeUrl = mMediaStore
-                .getUrlForSiteVideoWithVideoPressGuid(getTestSiteWithLocalId(testSiteId), testVideoPressGuid);
-        assertNotNull(storeUrl);
-        assertEquals(testUrl, storeUrl);
-    }
-
-    @Test
     public void testGetThumbnailUrl() {
         // create and insert media with defined thumbnail URL
         final int testSiteId = 180;

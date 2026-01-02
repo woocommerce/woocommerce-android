@@ -632,14 +632,6 @@ public class MediaStore extends Store {
         return MediaSqlUtils.matchSiteMedia(siteModel, MediaModelTable.UPLOAD_STATE, expectedState);
     }
 
-    @Nullable
-    public String getUrlForSiteVideoWithVideoPressGuid(
-            @NonNull SiteModel siteModel,
-            @NonNull String videoPressGuid) {
-        List<MediaModel> media =
-                MediaSqlUtils.matchSiteMedia(siteModel, MediaModelTable.VIDEO_PRESS_GUID, videoPressGuid);
-        return media.size() > 0 ? media.get(0).getUrl() : null;
-    }
 
     @Nullable
     public String getThumbnailUrlForSiteMediaWithId(@NonNull SiteModel siteModel, long mediaId) {
