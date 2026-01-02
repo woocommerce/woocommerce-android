@@ -296,7 +296,10 @@ class MainActivity :
 
     private val launcher = this.registerForActivityResult(RequestPermission()) { isGranted: Boolean ->
         if (isGranted) {
+            viewModel.onNotificationOSAlertAllowed()
             viewModel.checkForNotificationsPermission(hasNotificationsPermission = true)
+        } else {
+            viewModel.onNotificationOSAlertDenied()
         }
     }
 
