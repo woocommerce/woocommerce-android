@@ -13,12 +13,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextButton
+import androidx.compose.material3.Card
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -85,7 +85,7 @@ fun Banner(bannerState: JitmState.Banner) {
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(
                         bottom = dimensionResource(id = R.dimen.minor_100)
@@ -93,7 +93,7 @@ fun Banner(bannerState: JitmState.Banner) {
                 )
                 Text(
                     text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.description),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(
                         bottom = dimensionResource(id = R.dimen.minor_100)
                     )
@@ -109,7 +109,7 @@ fun Banner(bannerState: JitmState.Banner) {
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
                         color = colorResource(id = R.color.color_primary),
-                        style = MaterialTheme.typography.subtitle1,
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
             }
@@ -158,7 +158,7 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
             Text(
                 text = UiHelpers.getTextOfUiString(LocalContext.current, icon.label),
                 color = colorResource(id = R.color.woo_purple_60),
-                style = MaterialTheme.typography.caption,
+                style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .drawBehind {
