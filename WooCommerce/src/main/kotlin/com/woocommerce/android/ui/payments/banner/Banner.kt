@@ -109,9 +109,8 @@ fun Banner(bannerState: JitmState.Banner) {
                 ) {
                     Text(
                         text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
-                        color = colorResource(id = R.color.color_secondary),
+                        color = colorResource(id = R.color.color_primary),
                         style = MaterialTheme.typography.subtitle1,
-                        fontWeight = FontWeight.Bold,
                     )
                 }
             }
