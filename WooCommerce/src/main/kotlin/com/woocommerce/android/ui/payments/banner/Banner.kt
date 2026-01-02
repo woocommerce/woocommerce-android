@@ -3,11 +3,7 @@ package com.woocommerce.android.ui.payments.banner
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,7 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
@@ -33,6 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
@@ -47,16 +44,17 @@ fun Banner(bannerState: JitmState.Banner) {
     Card(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                ),
-            horizontalArrangement = Arrangement.End
+        ConstraintLayout(
+            modifier = Modifier.fillMaxWidth()
         ) {
+            val (closeButton, badge, title, description, ctaButton, backgroundImage) = createRefs()
+
             IconButton(
-                onClick = bannerState.onDismissClicked
+                onClick = bannerState.onDismissClicked,
+                modifier = Modifier.constrainAs(closeButton) {
+                    top.linkTo(parent.top)
+                    end.linkTo(parent.end)
+                }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_close),
@@ -67,68 +65,86 @@ fun Banner(bannerState: JitmState.Banner) {
                     modifier = Modifier.size(24.dp)
                 )
             }
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = dimensionResource(id = R.dimen.major_100),
-                ),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                BadgeIcon(bannerState)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(
-                        bottom = dimensionResource(id = R.dimen.minor_100)
-                    )
+
+            if (bannerState.badgeIcon != null) {
+                BadgeIcon(
+                    bannerState = bannerState,
+                    modifier = Modifier.constrainAs(badge) {
+                        top.linkTo(parent.top, margin = 16.dp)
+                        start.linkTo(parent.start, margin = 16.dp)
+                    }
                 )
-                Text(
-                    text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.description),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.padding(
-                        bottom = dimensionResource(id = R.dimen.minor_100)
-                    )
-                )
-                TextButton(
-                    modifier = Modifier
-                        .padding(
-                            top = dimensionResource(id = R.dimen.minor_100),
-                        ),
-                    contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
-                    onClick = bannerState.onPrimaryActionClicked
-                ) {
-                    Text(
-                        text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
-                        color = colorResource(id = R.color.color_primary),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+            }
+
+            Text(
+                text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .constrainAs(title) {
+                        if (bannerState.badgeIcon != null) {
+                            top.linkTo(badge.bottom, margin = 8.dp)
+                        } else {
+                            top.linkTo(parent.top, margin = 16.dp)
+                        }
+                        start.linkTo(parent.start, margin = 16.dp)
+                        end.linkTo(backgroundImage.start, margin = 8.dp)
+                        width = Dimension.fillToConstraints
+                    }
+                    .padding(bottom = dimensionResource(id = R.dimen.minor_100))
+            )
+
+            Text(
+                text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.description),
+                style = MaterialTheme.typography.bodyLarge,
+                modifier = Modifier
+                    .constrainAs(description) {
+                        top.linkTo(title.bottom)
+                        start.linkTo(parent.start, margin = 16.dp)
+                        end.linkTo(backgroundImage.start, margin = 8.dp)
+                        width = Dimension.fillToConstraints
+                    }
+                    .padding(bottom = dimensionResource(id = R.dimen.minor_100))
+            )
+
+            TextButton(
+                onClick = bannerState.onPrimaryActionClicked,
+                contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
+                modifier = Modifier.constrainAs(ctaButton) {
+                    top.linkTo(description.bottom)
+                    start.linkTo(parent.start, margin = 16.dp)
                 }
+            ) {
+                Text(
+                    text = UiHelpers.getTextOfUiString(LocalContext.current, bannerState.primaryActionLabel),
+                    color = colorResource(id = R.color.color_primary),
+                    style = MaterialTheme.typography.titleMedium,
+                )
             }
-            Column {
-                BackgroundImage(bannerState)
-            }
+
+            BackgroundImage(
+                bannerState = bannerState,
+                modifier = Modifier.constrainAs(backgroundImage) {
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+            )
         }
     }
 }
 
 @Composable
-private fun BackgroundImage(bannerState: JitmState.Banner) {
+private fun BackgroundImage(
+    bannerState: JitmState.Banner,
+    modifier: Modifier = Modifier
+) {
     when (val icon = bannerState.backgroundImage) {
         is JitmState.Banner.LocalOrRemoteImage.Local -> {
             Image(
                 painter = painterResource(id = icon.drawableId),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
-                modifier = Modifier.width(154.dp)
+                modifier = modifier.width(154.dp)
             )
         }
         is JitmState.Banner.LocalOrRemoteImage.Remote -> {
@@ -144,14 +160,17 @@ private fun BackgroundImage(bannerState: JitmState.Banner) {
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
-                modifier = Modifier.width(154.dp)
+                modifier = modifier.width(154.dp)
             )
         }
     }
 }
 
 @Composable
-private fun BadgeIcon(bannerState: JitmState.Banner) {
+private fun BadgeIcon(
+    bannerState: JitmState.Banner,
+    modifier: Modifier = Modifier
+) {
     when (val icon = bannerState.badgeIcon) {
         is JitmState.Banner.LabelOrRemoteIcon.Label -> {
             val bcgColor = colorResource(id = R.color.woo_purple_0)
@@ -160,7 +179,7 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
                 color = colorResource(id = R.color.woo_purple_60),
                 style = MaterialTheme.typography.labelSmall,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier
+                modifier = modifier
                     .drawBehind {
                         drawRoundRect(
                             color = bcgColor,
@@ -186,7 +205,7 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
-                modifier = Modifier.height(26.dp)
+                modifier = modifier.height(26.dp)
             )
         }
         null -> Unit
