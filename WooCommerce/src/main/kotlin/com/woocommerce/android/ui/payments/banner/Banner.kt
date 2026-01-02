@@ -47,7 +47,12 @@ fun Banner(bannerState: JitmState.Banner) {
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val (closeButton, badge, title, description, ctaButton, backgroundImage) = createRefs()
+            val closeButton = createRef()
+            val badge = createRef()
+            val title = createRef()
+            val description = createRef()
+            val ctaButton = createRef()
+            val backgroundImage = createRef()
 
             IconButton(
                 onClick = bannerState.onDismissClicked,
