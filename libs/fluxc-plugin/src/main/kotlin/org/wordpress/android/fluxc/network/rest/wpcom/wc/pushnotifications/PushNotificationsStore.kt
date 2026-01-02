@@ -65,6 +65,8 @@ class PushNotificationsStore @Inject internal constructor(
         }
     }
 
+    fun hasPushToken(): Boolean = getPersistedPushTokenId() != null
+
     companion object {
         private const val ORIGIN = "com.woocommerce.android"
         private const val ORIGIN_DEV = "com.woocommerce.android:dev"
