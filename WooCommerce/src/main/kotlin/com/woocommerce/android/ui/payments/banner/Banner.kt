@@ -102,7 +102,6 @@ fun Banner(bannerState: JitmState.Banner) {
                     modifier = Modifier
                         .padding(
                             top = dimensionResource(id = R.dimen.minor_100),
-                            bottom = dimensionResource(id = R.dimen.minor_100),
                         ),
                     contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
                     onClick = bannerState.onPrimaryActionClicked
