@@ -52,7 +52,6 @@ fun Banner(bannerState: JitmState.Banner) {
                 .fillMaxWidth()
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.minor_100)
                 ),
             horizontalArrangement = Arrangement.End
         ) {
@@ -74,7 +73,6 @@ fun Banner(bannerState: JitmState.Banner) {
                 .fillMaxWidth()
                 .padding(
                     start = dimensionResource(id = R.dimen.major_100),
-                    top = dimensionResource(id = R.dimen.minor_100)
                 ),
             verticalAlignment = Alignment.Bottom,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -192,6 +190,7 @@ private fun BadgeIcon(bannerState: JitmState.Banner) {
                 modifier = Modifier.height(26.dp)
             )
         }
+        null -> Unit
     }
 }
 
@@ -215,6 +214,27 @@ fun PaymentScreenBannerPreview() {
                         R.string.card_reader_upsell_card_reader_banner_new
                     )
                 ),
+            )
+        )
+    }
+}
+
+@Preview(name = "No badge - Light mode")
+@Preview(name = "No badge - Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+fun PaymentScreenBannerNoBadgePreview() {
+    WooThemeWithBackground {
+        Banner(
+            JitmState.Banner(
+                onPrimaryActionClicked = {},
+                onDismissClicked = {},
+                title = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_title),
+                description = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_description),
+                primaryActionLabel = UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_cta),
+                backgroundImage = JitmState.Banner.LocalOrRemoteImage.Local(
+                    R.drawable.ic_banner_upsell_card_reader_illustration
+                ),
+                badgeIcon = null,
             )
         )
     }
