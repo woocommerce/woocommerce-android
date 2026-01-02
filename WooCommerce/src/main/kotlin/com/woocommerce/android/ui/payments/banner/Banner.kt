@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -63,7 +64,8 @@ fun Banner(bannerState: JitmState.Banner) {
                     contentDescription = stringResource(
                         id = R.string.card_reader_upsell_card_reader_banner_dismiss
                     ),
-                    tint = colorResource(id = R.color.color_on_surface)
+                    tint = colorResource(id = R.color.color_on_surface),
+                    modifier = Modifier.size(24.dp)
                 )
             }
         }
