@@ -245,12 +245,12 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     )
 
     private val defaultShippingRates = mapOf(
-        defaultCarrier to defaultShippableItems.map {
+        defaultCarrier to defaultShippableItems.mapIndexed { index, _ ->
             ShippingRateUI(
-                title = defaultCarrier.name,
-                formattedBasePrice = "10",
+                title = "${defaultCarrier.name} - Rate $index",
+                formattedBasePrice = "${10 + index}",
                 shippingRateIncludedOptions = emptyList(),
-                formattedEstimatedDays = "1 day",
+                formattedEstimatedDays = "${1 + index} day",
                 options = mapOf(ShippingRateOption.DEFAULT to defaultShippableItemUI),
                 selectedOption = ShippingRateOption.DEFAULT,
                 additionalSelectedOptions = emptyList()
@@ -960,7 +960,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     fun `when shipping rate selected, then track selected event`() = testBlocking {
         createViewModel()
 
-        val selectedRate = defaultShippingRates.values.first().first()
+        val selectedRate = defaultShippingRates.values.first().last()
 
         val ratesState = sut.viewState.runAndCaptureValues {
             sut.onPackageSelected(defaultPackageData)
@@ -973,7 +973,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
         advanceUntilIdle()
 
-        verify(analyticsTracker).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
+        verify(analyticsTracker, times(1)).track(AnalyticsEvent.WCS_RATE_SELECTION_STEP, mapOf(KEY_STATE to "selected"))
     }
 
     @Test

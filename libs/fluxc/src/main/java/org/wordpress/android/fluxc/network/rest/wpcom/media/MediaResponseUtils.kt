@@ -24,8 +24,8 @@ class MediaResponseUtils
     /**
      * Creates a [MediaModel] from a WP.com REST response to a fetch request.
      */
-    fun getMediaFromRestResponse(from: MediaWPComRestResponse, localSiteId: Int = 0) = MediaModel(
-        localSiteId,
+    fun getMediaFromRestResponse(from: MediaWPComRestResponse, siteId: Int) = MediaModel(
+        siteId,
         from.ID,
         from.post_ID,
         from.date,

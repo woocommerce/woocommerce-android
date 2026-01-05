@@ -227,7 +227,7 @@ class LoginSiteCredentialsViewModelTest : BaseUnitTest() {
             viewModel.onContinueClick()
         }.last()
 
-        assertThat(state.errorDialogMessage).isEqualTo(expectedError.errorMessage)
+        assertThat(state.authenticationError?.errorMessage).isEqualTo(expectedError.errorMessage)
         verify(analyticsTracker).track(
             stat = eq(AnalyticsEvent.LOGIN_SITE_CREDENTIALS_LOGIN_FAILED),
             properties = argThat {

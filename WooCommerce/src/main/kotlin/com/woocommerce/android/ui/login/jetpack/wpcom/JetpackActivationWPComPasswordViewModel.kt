@@ -166,7 +166,10 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         val avatarSize = resourceProvider.getDimensionPixelSize(R.dimen.image_minor_100)
         return AvatarUrl(
             Email(email),
-            AvatarQueryOptions(preferredSize = avatarSize, defaultAvatarOption = DefaultAvatarOption.Status404)
+            AvatarQueryOptions {
+                preferredSize = avatarSize
+                defaultAvatarOption = DefaultAvatarOption.Status404
+            }
         ).toString()
     }
 
