@@ -46,6 +46,8 @@ open class AppPrefsWrapper @Inject constructor() {
     open var orderSummaryMigrated by AppPrefs::orderSummaryMigrated
     open var gatewayMigrated by AppPrefs::gatewayMigrated
 
+    var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
+
     var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
 
     fun getAppInstallationDate() = AppPrefs.installationDate
