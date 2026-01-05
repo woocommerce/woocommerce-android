@@ -14,11 +14,11 @@ class WooPosCalculateRefundTax @Inject constructor() {
             .groupBy { it.orderItemId }
             .entries
             .sumOf { (orderItemId, items) ->
-                calculateTaxForItem(orderItemId, items.size, order)
+                calculateTotalTaxesForItem(orderItemId, items.size, order)
             }
     }
 
-    private fun calculateTaxForItem(
+    private fun calculateTotalTaxesForItem(
         orderItemId: Long,
         refundQuantity: Int,
         order: Order
