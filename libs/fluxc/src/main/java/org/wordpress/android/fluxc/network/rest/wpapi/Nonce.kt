@@ -22,6 +22,7 @@ sealed interface Nonce {
         CUSTOM_LOGIN_URL,
         CUSTOM_ADMIN_URL,
         INVALID_NONCE,
+        BASIC_AUTH_REQUIRED,
         GENERIC_ERROR,
         UNKNOWN
     }

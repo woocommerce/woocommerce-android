@@ -200,13 +200,10 @@ public class MediaSqlUtilsTest {
         }
     }
 
-    // Adds a media item with known fields, updates all fields, retrieves and verifies
     @Test
     public void testUpdateExistingMedia() {
         long testId = 1;
         long testPostId = 10;
-        long testAuthorId = 100;
-        String testGuid = "testGuid";
         int testLocalSiteId = 1000;
         String testUploadDate = "testUploadDate";
         String testTitle = "testTitle";
@@ -216,53 +213,27 @@ public class MediaSqlUtilsTest {
         String testThumbnailUrl = "testThumbnailUrl";
         String testPath = "testPath";
         String testFileName = "testFileName";
-        String testFileExt = "testFileExt";
         String testMimeType = "video/mp4";
         String testAlt = "testAlt";
-        int testWidth = 1024;
-        int testHeight = 768;
-        int testLength = 60;
-        String testVideoPressGuid = "testVideoPressGuid";
-        boolean testVideoPressProcessing = false;
         MediaUploadState testUploadState = MediaUploadState.UPLOADING;
-        int testHorizontalAlign = 500;
-        boolean testVerticalAlign = false;
-        boolean testFeatured = false;
-        boolean testFeaturedInPost = false;
         boolean testMarkedLocallyAsFeatured = false;
 
         MediaModel testModel = new MediaModel(
                 testLocalSiteId,
                 testId,
                 testPostId,
-                testAuthorId,
-                testGuid,
                 testUploadDate,
                 testUrl,
                 testThumbnailUrl,
                 testFileName,
-                testFileExt,
                 testMimeType,
                 testTitle,
                 testCaption,
                 testDescription,
                 testAlt,
-                testWidth,
-                testHeight,
-                testLength,
-                testVideoPressGuid,
-                testVideoPressProcessing,
-                testUploadState,
-                null,
-                null,
-                null,
-                false
+                testUploadState
         );
         testModel.setFilePath(testPath);
-        testModel.setHorizontalAlignment(testHorizontalAlign);
-        testModel.setVerticalAlignment(testVerticalAlign);
-        testModel.setFeatured(testFeatured);
-        testModel.setFeaturedInPost(testFeaturedInPost);
         testModel.setMarkedLocallyAsFeatured(testMarkedLocallyAsFeatured);
         assertThat(1).isEqualTo(MediaSqlUtils.insertOrUpdateMedia(testModel));
 
@@ -270,34 +241,18 @@ public class MediaSqlUtilsTest {
                 testLocalSiteId,
                 testId,
                 testPostId + 1,
-                testAuthorId + 1,
-                testGuid + 1,
                 testUploadDate + 1,
                 testUrl + 1,
                 testThumbnailUrl + 1,
                 testFileName + 1,
-                testFileExt + 1,
                 testMimeType + 1,
                 testTitle + 1,
                 testCaption + 1,
                 testDescription + 1,
                 testAlt + 1,
-                testWidth + 1,
-                testHeight + 1,
-                testLength + 1,
-                testVideoPressGuid + 1,
-                !testVideoPressProcessing,
-                MediaUploadState.UPLOADED,
-                null,
-                null,
-                null,
-                false
+                MediaUploadState.UPLOADED
         );
         testModelUpdated.setFilePath(testPath + 1);
-        testModelUpdated.setHorizontalAlignment(testHorizontalAlign + 1);
-        testModelUpdated.setVerticalAlignment(!testVerticalAlign);
-        testModelUpdated.setFeatured(!testFeatured);
-        testModelUpdated.setFeaturedInPost(!testFeaturedInPost);
         testModelUpdated.setMarkedLocallyAsFeatured(!testMarkedLocallyAsFeatured);
         assertThat(MediaSqlUtils.insertOrUpdateMedia(testModelUpdated)).isEqualTo(1);
 
@@ -306,8 +261,6 @@ public class MediaSqlUtilsTest {
         MediaModel testMedia = media.get(0);
         assertThat(testMedia.getMediaId()).isEqualTo(testId);
         assertThat(testMedia.getPostId()).isEqualTo(testPostId + 1);
-        assertThat(testMedia.getAuthorId()).isEqualTo(testAuthorId + 1);
-        assertThat(testMedia.getGuid()).isEqualTo(testGuid + 1);
         assertThat(testMedia.getUploadDate()).isEqualTo(testUploadDate + 1);
         assertThat(testMedia.getTitle()).isEqualTo(testTitle + 1);
         assertThat(testMedia.getDescription()).isEqualTo(testDescription + 1);
@@ -316,19 +269,9 @@ public class MediaSqlUtilsTest {
         assertThat(testMedia.getThumbnailUrl()).isEqualTo(testThumbnailUrl + 1);
         assertThat(testMedia.getFilePath()).isEqualTo(testPath + 1);
         assertThat(testMedia.getFileName()).isEqualTo(testFileName + 1);
-        assertThat(testMedia.getFileExtension()).isEqualTo(testFileExt + 1);
         assertThat(testMedia.getMimeType()).isEqualTo(testMimeType + 1);
         assertThat(testMedia.getAlt()).isEqualTo(testAlt + 1);
-        assertThat(testMedia.getWidth()).isEqualTo(testWidth + 1);
-        assertThat(testMedia.getHeight()).isEqualTo(testHeight + 1);
-        assertThat(testMedia.getLength()).isEqualTo(testLength + 1);
-        assertThat(testMedia.getVideoPressGuid()).isEqualTo(testVideoPressGuid + 1);
-        assertThat(testMedia.getVideoPressProcessingDone()).isEqualTo(!testVideoPressProcessing);
         assertThat(MediaUploadState.fromString(testMedia.getUploadState())).isEqualTo(MediaUploadState.UPLOADED);
-        assertThat(testMedia.getHorizontalAlignment()).isEqualTo(testHorizontalAlign + 1);
-        assertThat(testMedia.getVerticalAlignment()).isEqualTo(!testVerticalAlign);
-        assertThat(testMedia.getFeatured()).isEqualTo(!testFeatured);
-        assertThat(testMedia.getFeaturedInPost()).isEqualTo(!testFeaturedInPost);
         assertThat(testMedia.getMarkedLocallyAsFeatured()).isEqualTo(!testMarkedLocallyAsFeatured);
     }
 

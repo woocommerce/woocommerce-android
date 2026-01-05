@@ -14,6 +14,8 @@
 - [*][Internal] Migrated legacy Material Icons to Material Symbols [https://github.com/woocommerce/woocommerce-android/pull/15081]
 - [*] Fix widget sizing issues and improve refresh rate upon switching site or logging out [https://github.com/woocommerce/woocommerce-android/pull/15127]
 - [*] Unified transition animations across screens [https://github.com/woocommerce/woocommerce-android/pull/15128]
+- [*] Fixed a rare NullPointerException crash on the Dashboard screen [https://github.com/woocommerce/woocommerce-android/pull/15138]
+- [*][Internal] Remove the network call to the Woo Services plugin when it’s not supported [https://github.com/woocommerce/woocommerce-android/pull/15142]
 
 23.8
 -----

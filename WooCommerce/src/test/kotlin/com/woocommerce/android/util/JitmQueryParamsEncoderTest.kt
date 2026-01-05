@@ -26,6 +26,8 @@ class JitmQueryParamsEncoderTest {
         whenever(deviceInfo.name).thenReturn("Pixel 3")
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(true)
         whenever(deviceInfo.locale).thenReturn("en_US")
+        whenever(deviceInfo.screenWidthDp).thenReturn(411)
+        whenever(deviceInfo.screenHeightDp).thenReturn(731)
 
         // WHEN
         val encoderQueryParams = encoder.getEncodedQueryParams()
@@ -38,7 +40,9 @@ class JitmQueryParamsEncoderTest {
                     "&os_version=29" +
                     "&device=Pixel_3" +
                     "&nfc=true" +
-                    "&locale=en_US",
+                    "&locale=en_US" +
+                    "&screen_width=411" +
+                    "&screen_height=731",
                 Charsets.UTF_8.name()
             )
         )
@@ -52,6 +56,8 @@ class JitmQueryParamsEncoderTest {
         whenever(deviceInfo.name).thenReturn("Pixel 2")
         whenever(deviceFeatures.isNFCAvailable()).thenReturn(false)
         whenever(deviceInfo.locale).thenReturn("ru_RU")
+        whenever(deviceInfo.screenWidthDp).thenReturn(360)
+        whenever(deviceInfo.screenHeightDp).thenReturn(640)
 
         // WHEN
         val encoderQueryParams = encoder.getEncodedQueryParams()
@@ -64,7 +70,9 @@ class JitmQueryParamsEncoderTest {
                     "&os_version=27" +
                     "&device=Pixel_2" +
                     "&nfc=false" +
-                    "&locale=ru_RU",
+                    "&locale=ru_RU" +
+                    "&screen_width=360" +
+                    "&screen_height=640",
                 Charsets.UTF_8.name()
             )
         )
