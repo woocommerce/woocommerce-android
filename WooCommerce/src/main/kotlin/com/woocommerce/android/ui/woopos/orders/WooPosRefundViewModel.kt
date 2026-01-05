@@ -125,9 +125,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.DialogDismissed -> {
                 val currentState = _state.value
 
-
                 if (currentState is WooPosRefundState.Content &&
-                    currentState.step != WooPosRefundState.Content.RefundStep.Processing) {
+                    currentState.step != WooPosRefundState.Content.RefundStep.Processing
+                ) {
                     _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
                 }
             }
