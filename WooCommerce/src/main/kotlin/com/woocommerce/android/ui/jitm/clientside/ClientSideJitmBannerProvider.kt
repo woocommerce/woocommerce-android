@@ -7,22 +7,27 @@ import javax.inject.Singleton
 
 @Singleton
 class ClientSideJitmBannerProvider @Inject constructor(
-    private val banners: Set<@JvmSuppressWildcards ClientSideBanner>,
+    private val posBanner: ClientSidePosBanner,
 ) : JitmBannerMessageProvider {
 
     override suspend fun getMessagesForPath(messagePath: String): List<JITMApiResponse> {
-        return banners
-            .filter { it.messagePath == messagePath && it.shouldShow() }
-            .map { it.toJitmResponse() }
+        return if (posBanner.messagePath == messagePath && posBanner.shouldShow()) {
+            listOf(posBanner.toJitmResponse())
+        } else {
+            emptyList()
+        }
     }
 
     override suspend fun dismissMessage(messagePath: String, jitmId: String, featureClass: String): Boolean {
-        val banner = banners.find { it.bannerId == jitmId }
-        banner?.onDismiss()
+        if (posBanner.bannerId == jitmId) {
+            posBanner.onDismiss()
+        }
         return true
     }
 
     override fun onCtaClicked(messagePath: String, jitmId: String) {
-        banners.find { it.bannerId == jitmId }?.onCtaClick()
+        if (posBanner.bannerId == jitmId) {
+            posBanner.onCtaClick()
+        }
     }
 }

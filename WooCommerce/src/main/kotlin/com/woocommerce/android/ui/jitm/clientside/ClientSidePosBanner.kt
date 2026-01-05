@@ -23,13 +23,12 @@ class ClientSidePosBanner @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val dismissalStorage: ClientSideBannerDismissalStorage,
-) : ClientSideBanner {
-
-    override val messagePath: String = JitmMessagePathsProvider.MY_STORE
-    override val bannerId: String = BANNER_ID
+) {
+    val messagePath: String = JitmMessagePathsProvider.MY_STORE
+    val bannerId: String = BANNER_ID
 
     @Suppress("ReturnCount")
-    override fun shouldShow(): Boolean {
+    fun shouldShow(): Boolean {
         if (!FeatureFlag.CLIENT_SIDE_POS_BANNER.isEnabled()) return false
 
         val site = selectedSite.getIfExists() ?: return false
@@ -49,7 +48,7 @@ class ClientSidePosBanner @Inject constructor(
         return true
     }
 
-    override fun toJitmResponse(): JITMApiResponse {
+    fun toJitmResponse(): JITMApiResponse {
         return JITMApiResponse(
             template = "banner",
             content = JITMContent(
@@ -75,11 +74,11 @@ class ClientSidePosBanner @Inject constructor(
         )
     }
 
-    override fun onDismiss() {
+    fun onDismiss() {
         dismissalStorage.hideBanner(bannerId)
     }
 
-    override fun onCtaClick() {
+    fun onCtaClick() {
         dismissalStorage.hideBanner(bannerId)
     }
 
