@@ -26,7 +26,7 @@ class PushNotificationRepository @Inject constructor(
                 token = token,
                 deviceUuid = uuid // TODO review we need to add any extra info to the uuid
             )
-            //TODO ensure any WP.com token already registered is removed
+            // TODO ensure any WP.com token already registered is removed
         }
     }
 
