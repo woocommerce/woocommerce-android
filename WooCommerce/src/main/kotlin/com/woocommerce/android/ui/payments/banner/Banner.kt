@@ -7,11 +7,8 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +32,7 @@ import coil.decode.SvgDecoder
 import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.ui.compose.component.WCOverflowMenu
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.jitm.JitmState
 import com.woocommerce.android.util.UiHelpers
@@ -47,29 +45,22 @@ fun Banner(bannerState: JitmState.Banner) {
         ConstraintLayout(
             modifier = Modifier.fillMaxWidth()
         ) {
-            val closeButton = createRef()
+            val overflowMenu = createRef()
             val badge = createRef()
             val title = createRef()
             val description = createRef()
             val ctaButton = createRef()
             val backgroundImage = createRef()
 
-            IconButton(
-                onClick = bannerState.onDismissClicked,
-                modifier = Modifier.constrainAs(closeButton) {
+            WCOverflowMenu(
+                items = listOf(stringResource(R.string.card_reader_upsell_card_reader_banner_hide_content)),
+                onSelected = { bannerState.onDismissClicked() },
+                tint = colorResource(id = R.color.color_on_surface),
+                modifier = Modifier.constrainAs(overflowMenu) {
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 }
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_close),
-                    contentDescription = stringResource(
-                        id = R.string.card_reader_upsell_card_reader_banner_dismiss
-                    ),
-                    tint = colorResource(id = R.color.color_on_surface),
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+            )
 
             if (bannerState.badgeIcon != null) {
                 BadgeIcon(
