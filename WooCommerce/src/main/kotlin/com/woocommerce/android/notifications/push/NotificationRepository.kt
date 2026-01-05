@@ -5,6 +5,7 @@ import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.NotificationStore
 import javax.inject.Inject
 
+@Deprecated ("Use PushNotificationRepository.kt instead")
 class NotificationRepository @Inject constructor(
     private val notificationStore: NotificationStore,
 ) {

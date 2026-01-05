@@ -136,7 +136,8 @@ object AppPrefs {
         BLAZE_CAMPAIGN_OBJECTIVE_SWITCH_CHECKED,
         IS_SITE_WPCOM_SUSPENDED,
         JETPACK_APP_PASSWORDS_ENABLED,
-        WOO_POS_LOCAL_CATALOG_ENABLED
+        WOO_POS_LOCAL_CATALOG_ENABLED,
+        WOO_CORE_PUSH_DEVICE_UUID
     }
 
     /**
@@ -322,6 +323,10 @@ object AppPrefs {
     var isWooPosSurveyNotificationPotentialUserShown: Boolean
         get() = getBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, false)
         set(value) = setBoolean(UndeletablePrefKey.WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN, value)
+
+    var wooCorePushDeviceUUID: String
+        get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
+        set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

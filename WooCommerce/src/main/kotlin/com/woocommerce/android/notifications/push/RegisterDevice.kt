@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
@@ -14,6 +15,7 @@ class RegisterDevice @Inject constructor(
     private val accountStore: AccountStore,
     private val notificationRepository: NotificationRepository,
     private val getDeviceRegistrationStatus: GetDeviceRegistrationStatus,
+    private val pushNotificationRepository: PushNotificationRepository
 ) {
     suspend operator fun invoke(mode: Mode) {
         when (mode) {
@@ -33,8 +35,12 @@ class RegisterDevice @Inject constructor(
 
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
-        if (accountStore.hasAccessToken() && token.isNotEmpty()) {
-            notificationRepository.registerDevice(token)
+        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+            pushNotificationRepository.registerPushToken(token)
+        } else {
+            if (accountStore.hasAccessToken() && token.isNotEmpty()) {
+                notificationRepository.registerDevice(token)
+            }
         }
     }
 
