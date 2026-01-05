@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.jitm.clientside
 
 import android.content.Context
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -20,7 +19,6 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class ClientSidePosBannerTest : BaseUnitTest() {
 
     private val context: Context = mock()
-    private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooStore: WooCommerceStore = mock()
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
@@ -32,7 +30,6 @@ class ClientSidePosBannerTest : BaseUnitTest() {
     fun setup() {
         sut = ClientSidePosBanner(
             context = context,
-            appPrefsWrapper = appPrefsWrapper,
             selectedSite = selectedSite,
             wooStore = wooStore,
             wooPosIsScreenSizeAllowed = wooPosIsScreenSizeAllowed,
@@ -75,7 +72,6 @@ class ClientSidePosBannerTest : BaseUnitTest() {
         val site = setupValidSite()
         whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
         whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
-        whenever(appPrefsWrapper.getCardReaderPreferredPlugin(any(), any(), any())).thenReturn(null)
         whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
 
         val result = sut.shouldShow()

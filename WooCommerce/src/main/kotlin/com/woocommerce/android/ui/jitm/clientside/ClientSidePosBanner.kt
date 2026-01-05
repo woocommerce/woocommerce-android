@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.jitm.clientside
 
 import android.content.Context
-import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -18,7 +17,6 @@ import javax.inject.Singleton
 @Singleton
 class ClientSidePosBanner @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
     private val wooStore: WooCommerceStore,
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed,
@@ -37,8 +35,6 @@ class ClientSidePosBanner @Inject constructor(
 
         val countryCode = wooStore.getStoreCountryCode(site)
         if (countryCode !in ELIGIBLE_COUNTRIES) return false
-
-        if (hasUsedIPP(site)) return false
 
         if (dismissalStorage.isBannerHidden(bannerId)) return false
 
@@ -80,14 +76,6 @@ class ClientSidePosBanner @Inject constructor(
 
     fun onCtaClick() {
         dismissalStorage.hideBanner(bannerId)
-    }
-
-    private fun hasUsedIPP(site: org.wordpress.android.fluxc.model.SiteModel): Boolean {
-        return appPrefsWrapper.getCardReaderPreferredPlugin(
-            localSiteId = site.id,
-            remoteSiteId = site.siteId,
-            selfHostedSiteId = site.selfHostedSiteId
-        ) != null
     }
 
     companion object {
