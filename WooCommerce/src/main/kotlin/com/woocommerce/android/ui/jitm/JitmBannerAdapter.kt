@@ -18,7 +18,7 @@ class JitmBannerAdapter @Inject constructor(
         return result.model == true
     }
 
-    override fun onCtaClicked(messagePath: String) {
+    override fun onCtaClicked(messagePath: String, jitmId: String) {
         jitmStoreInMemoryCache.onCtaClicked(messagePath)
     }
 }

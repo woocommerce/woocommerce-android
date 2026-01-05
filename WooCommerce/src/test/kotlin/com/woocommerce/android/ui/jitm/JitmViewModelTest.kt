@@ -435,7 +435,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
-            verify(bannerMessageRepository).onCtaClicked("woomobile:my_store:admin_notices")
+            verify(bannerMessageRepository).onCtaClicked("woomobile:my_store:admin_notices", "")
         }
     }
 

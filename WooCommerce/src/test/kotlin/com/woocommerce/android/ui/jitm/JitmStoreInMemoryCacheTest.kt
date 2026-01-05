@@ -212,7 +212,7 @@ class JitmStoreInMemoryCacheTest : BaseUnitTest() {
         cache.init()
 
         // WHEN
-        cache.onCtaClicked(messagePath)
+        cache.onCtaClicked(messagePath, "jitm_id")
 
         // THEN
         assertThat(cache.getMessagesForPath(messagePath = messagePath)).isEmpty()

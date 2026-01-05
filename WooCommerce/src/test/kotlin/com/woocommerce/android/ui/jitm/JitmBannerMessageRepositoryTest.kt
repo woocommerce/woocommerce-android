@@ -109,10 +109,10 @@ class JitmBannerMessageRepositoryTest : BaseUnitTest() {
         val site = createSite(isJetpackConnected = true)
         whenever(selectedSite.getIfExists()).thenReturn(site)
 
-        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE)
+        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE, "jitm_id")
 
-        verify(jitmBannerAdapter).onCtaClicked(JitmMessagePathsProvider.MY_STORE)
-        verify(clientSideBannerProvider, never()).onCtaClicked(any())
+        verify(jitmBannerAdapter).onCtaClicked(JitmMessagePathsProvider.MY_STORE, "jitm_id")
+        verify(clientSideBannerProvider, never()).onCtaClicked(any(), any())
     }
 
     @Test
@@ -120,10 +120,10 @@ class JitmBannerMessageRepositoryTest : BaseUnitTest() {
         val site = createSite(isJetpackConnected = false)
         whenever(selectedSite.getIfExists()).thenReturn(site)
 
-        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE)
+        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE, "banner_id")
 
-        verify(clientSideBannerProvider).onCtaClicked(JitmMessagePathsProvider.MY_STORE)
-        verify(jitmBannerAdapter, never()).onCtaClicked(any())
+        verify(clientSideBannerProvider).onCtaClicked(JitmMessagePathsProvider.MY_STORE, "banner_id")
+        verify(jitmBannerAdapter, never()).onCtaClicked(any(), any())
     }
 
     private fun createSite(isJetpackConnected: Boolean): SiteModel {

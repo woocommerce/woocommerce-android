@@ -105,11 +105,10 @@ class ClientSideJitmBannerProviderTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when onCtaClicked called, then matching banners receive click`() {
-        whenever(banner1.messagePath).thenReturn(JitmMessagePathsProvider.MY_STORE)
-        whenever(banner2.messagePath).thenReturn("other_path")
+    fun `when onCtaClicked called, then matching banner receives click`() {
+        whenever(banner1.bannerId).thenReturn("banner1_id")
 
-        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE)
+        sut.onCtaClicked(JitmMessagePathsProvider.MY_STORE, "banner1_id")
 
         verify(banner1).onCtaClick()
         verify(banner2, never()).onCtaClick()

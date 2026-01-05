@@ -21,8 +21,8 @@ class JitmBannerMessageRepository @Inject constructor(
         return getProvider().dismissMessage(messagePath, jitmId, featureClass)
     }
 
-    override fun onCtaClicked(messagePath: String) {
-        getProvider().onCtaClicked(messagePath)
+    override fun onCtaClicked(messagePath: String, jitmId: String) {
+        getProvider().onCtaClicked(messagePath, jitmId)
     }
 
     private fun getProvider(): JitmBannerMessageProvider {

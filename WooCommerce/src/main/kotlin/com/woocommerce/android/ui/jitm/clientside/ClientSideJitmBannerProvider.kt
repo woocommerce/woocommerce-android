@@ -22,9 +22,7 @@ class ClientSideJitmBannerProvider @Inject constructor(
         return true
     }
 
-    override fun onCtaClicked(messagePath: String) {
-        banners
-            .filter { it.messagePath == messagePath }
-            .forEach { it.onCtaClick() }
+    override fun onCtaClicked(messagePath: String, jitmId: String) {
+        banners.find { it.bannerId == jitmId }?.onCtaClick()
     }
 }
