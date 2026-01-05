@@ -12,8 +12,8 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @ExperimentalCoroutinesApi
 class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
@@ -23,10 +23,9 @@ class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled = mock()
 
     private val defaultPluginsResult = listOf(
-        SitePluginModel().apply {
+        createTestSitePlugin(
             name = WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName
-            setIsActive(true)
-        }
+        )
     )
     private val defaultSite = SiteModel()
 
@@ -56,10 +55,10 @@ class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
     fun `when bundles plugin is NOT active then bundle card is not in active plugin cards`() = testBlocking {
         whenever(isGoogleForWooEnabled.invoke()).thenReturn(false)
         val pluginResult = listOf(
-            SitePluginModel().apply {
-                name = WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName
-                setIsActive(false)
-            }
+            createTestSitePlugin(
+                name = WooCommerceStore.WooPlugin.WOO_PRODUCT_BUNDLES.pluginName,
+                isActive = false
+            )
         )
         whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         whenever(wooCommerceStore.getSitePlugins(any(), any())).thenReturn(pluginResult)
@@ -80,10 +79,9 @@ class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
     @Test
     fun `when google ads plugin is active then google ads card in active plugin cards`() = testBlocking {
         val pluginResult = listOf(
-            SitePluginModel().apply {
+            createTestSitePlugin(
                 name = WooCommerceStore.WooPlugin.GOOGLE_ADS.pluginName
-                setIsActive(true)
-            }
+            )
         )
         whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         whenever(wooCommerceStore.getSitePlugins(any(), any())).thenReturn(pluginResult)
@@ -96,10 +94,9 @@ class GetAnalyticPluginsCardActiveTest : BaseUnitTest() {
     @Test
     fun `when google ads plugin is NOT active then google ads card is not in active plugin cards`() = testBlocking {
         val pluginResult = listOf(
-            SitePluginModel().apply {
+            createTestSitePlugin(
                 name = WooCommerceStore.WooPlugin.GOOGLE_ADS.pluginName
-                setIsActive(true)
-            }
+            )
         )
         whenever(selectedSite.getOrNull()).thenReturn(defaultSite)
         whenever(wooCommerceStore.getSitePlugins(any(), any())).thenReturn(pluginResult)

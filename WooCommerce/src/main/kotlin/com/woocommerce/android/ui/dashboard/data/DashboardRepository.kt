@@ -10,14 +10,19 @@ import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import com.woocommerce.android.ui.mystore.data.DashboardWidgetDataModel
 import dagger.hilt.EntryPoints
 import dagger.hilt.android.scopes.ActivityRetainedScoped
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @ActivityRetainedScoped
 @Suppress("LongParameterList")
+@OptIn(ExperimentalCoroutinesApi::class)
 class DashboardRepository @Inject constructor(
     selectedSite: SelectedSite,
     private val dashboardDataStore: DashboardDataStore,
@@ -27,45 +32,32 @@ class DashboardRepository @Inject constructor(
     observeStockWidgetStatus: ObserveStockWidgetStatus,
     observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus
 ) {
-    private val siteCoroutineScope = EntryPoints.get(
-        selectedSite.siteComponent!!,
-        SiteComponentEntryPoint::class.java
-    ).siteCoroutineScope()
+    private val siteCoroutineScopeFlow = selectedSite.observe().map {
+        selectedSite.siteComponent?.let { component ->
+            EntryPoints.get(component, SiteComponentEntryPoint::class.java).siteCoroutineScope()
+        }
+    }
 
-    private val siteOrdersState = observeSiteOrdersState()
-        .stateIn(
-            scope = siteCoroutineScope,
-            started = SharingStarted.Lazily,
-            initialValue = DashboardWidget.Status.Unavailable(R.string.my_store_widget_unavailable)
-        )
+    private fun widgetStatusFlow(
+        started: SharingStarted = SharingStarted.WhileSubscribed(),
+        initialValue: DashboardWidget.Status = DashboardWidget.Status.Hidden,
+        flowProvider: () -> Flow<DashboardWidget.Status>
+    ) = siteCoroutineScopeFlow.flatMapLatest { scope ->
+        scope?.let { flowProvider().stateIn(it, started, initialValue) } ?: flowOf(initialValue)
+    }
 
-    private val blazeWidgetStatus = observeBlazeWidgetStatus()
-        .stateIn(
-            scope = siteCoroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = DashboardWidget.Status.Hidden
-        )
+    private val siteOrdersState = widgetStatusFlow(
+        started = SharingStarted.Lazily,
+        initialValue = DashboardWidget.Status.Unavailable(R.string.my_store_widget_unavailable)
+    ) { observeSiteOrdersState() }
 
-    private val onboardingWidgetStatus = observeOnboardingWidgetStatus()
-        .stateIn(
-            scope = siteCoroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = DashboardWidget.Status.Hidden
-        )
+    private val blazeWidgetStatus = widgetStatusFlow { observeBlazeWidgetStatus() }
 
-    private val stockWidgetStatus = observeStockWidgetStatus()
-        .stateIn(
-            scope = siteCoroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = DashboardWidget.Status.Hidden
-        )
+    private val onboardingWidgetStatus = widgetStatusFlow { observeOnboardingWidgetStatus() }
 
-    private val googleAdsWidgetStatus = observeGoogleAdsWidgetStatus()
-        .stateIn(
-            scope = siteCoroutineScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = DashboardWidget.Status.Hidden
-        )
+    private val stockWidgetStatus = widgetStatusFlow { observeStockWidgetStatus() }
+
+    private val googleAdsWidgetStatus = widgetStatusFlow { observeGoogleAdsWidgetStatus() }
 
     val widgets = combine(
         dashboardDataStore.widgets,

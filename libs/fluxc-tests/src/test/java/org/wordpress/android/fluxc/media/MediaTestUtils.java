@@ -42,8 +42,8 @@ public class MediaTestUtils {
         );
         media.setFilePath(filePath);
         media.setFileName(MediaUtils.getFileName(filePath));
-        media.setFileExtension(MediaUtils.getExtension(filePath));
-        media.setMimeType(MediaUtils.getMimeTypeForExtension(media.getFileExtension()));
+        String extension = MediaUtils.getExtension(filePath);
+        media.setMimeType(MediaUtils.getMimeTypeForExtension(extension));
         media.setTitle(media.getFileName());
         return media;
     }

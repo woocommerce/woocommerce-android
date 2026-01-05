@@ -592,6 +592,27 @@ class MainActivityViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(ViewBlazeCampaignList)
     }
 
+    @Test
+    fun `when notifications permission bar allow tapped, then track allow tapped event`() {
+        viewModel.onNotificationsPermissionBarAllowButtonTapped()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
+    }
+
+    @Test
+    fun `when OS alert allowed, then track allowed event`() {
+        viewModel.onNotificationOSAlertAllowed()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_ALLOWED)
+    }
+
+    @Test
+    fun `when OS alert denied, then track denied event`() {
+        viewModel.onNotificationOSAlertDenied()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
+    }
+
     private fun createViewModel() {
         viewModel = spy(
             MainActivityViewModel(

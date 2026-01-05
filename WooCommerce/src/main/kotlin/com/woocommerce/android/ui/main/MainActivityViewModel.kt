@@ -244,12 +244,25 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onNotificationOSAlertAllowed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_ALLOWED)
+    }
+
+    fun onNotificationOSAlertDenied() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
+    }
+
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
         val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
             !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
             selectedSite.get().connectionType == Jetpack
 
-        _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+        if (_isNotificationPermissionCardVisible.value != shouldShowNotificationsPermissionBar) {
+            _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+            if (shouldShowNotificationsPermissionBar) {
+                analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_SHOWN)
+            }
+        }
     }
 
     fun hideBottomNav() {
@@ -261,11 +274,13 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onNotificationsPermissionBarDismissButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
         AppPrefs.setWasNotificationsPermissionBarDismissed(true)
         _isNotificationPermissionCardVisible.update { false }
     }
 
     fun onNotificationsPermissionBarAllowButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
         triggerEvent(RequestNotificationsPermission)
     }
 

@@ -5,6 +5,8 @@ import android.content.ComponentName
 import android.content.Context
 import androidx.work.BackoffPolicy
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.WorkRequest
@@ -33,6 +35,23 @@ class TodayStatsWidgetUpdater @Inject constructor() : WidgetUpdater {
 
         WorkManager.getInstance(context)
             .enqueueUniquePeriodicWork(uniqueName, ExistingPeriodicWorkPolicy.UPDATE, workRequest)
+
+        val immediateWorkRequest =
+            OneTimeWorkRequestBuilder<UpdateTodayStatsWorker>()
+                .setInputData(data)
+                .setBackoffCriteria(
+                    BackoffPolicy.EXPONENTIAL,
+                    WorkRequest.MIN_BACKOFF_MILLIS,
+                    TimeUnit.MILLISECONDS
+                )
+                .build()
+
+        WorkManager.getInstance(context)
+            .enqueueUniqueWork(
+                uniqueWorkName = "$uniqueName-immediate",
+                existingWorkPolicy = ExistingWorkPolicy.REPLACE,
+                request = immediateWorkRequest
+            )
     }
 
     override fun componentName(context: Context) = ComponentName(context, TodayStatsWidgetProvider::class.java)

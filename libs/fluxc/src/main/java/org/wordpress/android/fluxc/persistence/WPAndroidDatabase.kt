@@ -11,6 +11,7 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.wordpress.android.fluxc.model.ThemeModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
@@ -32,7 +33,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 32,
+        version = 33,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -44,6 +45,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             ThemeModel::class,
             WhatsNewAnnouncementEntity::class,
             WhatsNewAnnouncementFeatureEntity::class,
+            SitePluginModel::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -60,6 +62,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             AutoMigration(from = 29, to = 30, spec = AutoMigration29to30::class),
             AutoMigration(from = 30, to = 31),
             AutoMigration(from = 31, to = 32),
+            AutoMigration(from = 32, to = 33),
         ]
 )
 @TypeConverters(
@@ -84,6 +87,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     internal abstract fun themeDao(): ThemeDao
 
     internal abstract fun whatsNewDao(): WhatsNewDao
+
+    abstract fun sitePluginDao(): SitePluginDao
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {

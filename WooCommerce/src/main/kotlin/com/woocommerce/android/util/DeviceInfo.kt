@@ -38,4 +38,8 @@ class DeviceInfoWrapper @Inject constructor() {
         get() = DeviceInfo.name
     val locale: String?
         get() = DeviceInfo.locale
+    val screenWidthDp: Int
+        get() = Resources.getSystem().configuration.screenWidthDp
+    val screenHeightDp: Int
+        get() = Resources.getSystem().configuration.screenHeightDp
 }
