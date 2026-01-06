@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.jitm.clientside
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.tools.SelectedSite
+import dagger.Reusable
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@Reusable
 class ClientSideBannerDismissalStorage @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val selectedSite: SelectedSite,
