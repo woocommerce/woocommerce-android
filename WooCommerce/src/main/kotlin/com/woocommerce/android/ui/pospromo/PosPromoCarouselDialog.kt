@@ -159,7 +159,7 @@ private fun PosPromoCarouselContent(
                     text = stringResource(state.pages[page].descriptionRes),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = spacing),
