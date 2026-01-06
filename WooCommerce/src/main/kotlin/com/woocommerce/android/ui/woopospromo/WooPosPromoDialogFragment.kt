@@ -39,6 +39,7 @@ class WooPosPromoDialogFragment : DialogFragment() {
                     WooPosPromoCarouselModal(
                         state = state,
                         onDismiss = { dismiss() },
+                        onNextClick = viewModel::onNextClick,
                         onExploreClick = {
                             ChromeCustomTabUtils.launchUrl(requireContext(), WooPosPromoViewModel.WOO_POS_DOCS_URL)
                             dismiss()

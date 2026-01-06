@@ -23,7 +23,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +34,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,17 +44,14 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import kotlinx.coroutines.launch
 
 @Composable
 fun WooPosPromoCarouselModal(
     state: WooPosPromoState,
     onDismiss: () -> Unit,
+    onNextClick: () -> Unit,
     onExploreClick: () -> Unit,
 ) {
-    val pagerState = rememberPagerState(pageCount = { state.pages.size })
-    val coroutineScope = rememberCoroutineScope()
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -62,107 +60,124 @@ fun WooPosPromoCarouselModal(
             dismissOnClickOutside = true,
         ),
     ) {
-        Surface(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            shape = RoundedCornerShape(size = 8.dp)
-        ) {
-            Column {
-                Box {
-                    Image(
-                        painter = painterResource(id = state.imageRes),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                    )
+        WooPosPromoCarouselContent(
+            state = state,
+            onDismiss = onDismiss,
+            onNextClick = onNextClick,
+            onExploreClick = onExploreClick,
+        )
+    }
+}
 
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                            contentDescription = stringResource(R.string.close),
-                            tint = colorResource(R.color.color_on_primary),
-                        )
-                    }
-                }
+@Composable
+private fun WooPosPromoCarouselContent(
+    state: WooPosPromoState,
+    onDismiss: () -> Unit,
+    onNextClick: () -> Unit,
+    onExploreClick: () -> Unit,
+) {
+    val pagerState = rememberPagerState(
+        initialPage = state.currentPage,
+        pageCount = { state.pages.size }
+    )
+    val isLastPage = state.currentPage == state.pages.size - 1
 
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+    LaunchedEffect(state.currentPage) {
+        pagerState.animateScrollToPage(state.currentPage)
+    }
 
-                HorizontalPager(
-                    state = pagerState,
-                    modifier = Modifier.fillMaxWidth()
-                ) { page ->
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = stringResource(state.pages[page].titleRes),
-                            style = MaterialTheme.typography.h6,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                        )
-
-                        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-
-                        Text(
-                            text = stringResource(state.pages[page].descriptionRes),
-                            style = MaterialTheme.typography.body2,
-                            textAlign = TextAlign.Center,
-                            color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-                PageIndicator(
-                    pageCount = state.pages.size,
-                    currentPage = pagerState.currentPage,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(size = 8.dp)
+    ) {
+        Column {
+            Box {
+                Image(
+                    painter = painterResource(id = state.imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(209.dp)
                 )
 
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-                val isLastPage = pagerState.currentPage == state.pages.size - 1
-
-                if (isLastPage) {
-                    WCColoredButton(
-                        onClick = { onExploreClick() },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                    ) {
-                        Text(text = stringResource(R.string.woo_pos_promo_explore_button))
-                    }
-                } else {
-                    WCOutlinedButton(
-                        onClick = {
-                            coroutineScope.launch {
-                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                            }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                    ) {
-                        Text(text = stringResource(R.string.woo_pos_promo_next_button))
-                    }
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                        contentDescription = stringResource(R.string.close),
+                        tint = colorResource(R.color.color_on_primary),
+                    )
                 }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             }
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            Text(
+                text = stringResource(state.titleRes),
+                style = MaterialTheme.typography.h5,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+            )
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            HorizontalPager(
+                state = pagerState,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+            ) { page ->
+                Text(
+                    text = stringResource(state.pages[page].descriptionRes),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            PageIndicator(
+                pageCount = state.pages.size,
+                currentPage = pagerState.currentPage,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            if (isLastPage) {
+                WCColoredButton(
+                    onClick = onExploreClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(text = stringResource(R.string.woo_pos_promo_explore_button))
+                }
+            } else {
+                WCOutlinedButton(
+                    onClick = onNextClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                ) {
+                    Text(text = stringResource(R.string.woo_pos_promo_next_button))
+                }
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
 }
@@ -194,113 +209,17 @@ private fun PageIndicator(
     }
 }
 
-@Composable
-private fun WooPosPromoCarouselContentPreview(
-    pageIndex: Int,
-    state: WooPosPromoState = WooPosPromoState(),
-) {
-    val page = state.pages[pageIndex]
-    val isLastPage = pageIndex == state.pages.size - 1
-
-    Surface(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        shape = RoundedCornerShape(size = 8.dp)
-    ) {
-        Column {
-            Box {
-                Image(
-                    painter = painterResource(id = state.imageRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                )
-
-                IconButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(R.string.close),
-                        tint = colorResource(R.color.color_on_primary),
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = stringResource(page.titleRes),
-                    style = MaterialTheme.typography.h6,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                )
-
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
-
-                Text(
-                    text = stringResource(page.descriptionRes),
-                    style = MaterialTheme.typography.body1,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                )
-            }
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-            PageIndicator(
-                pageCount = state.pages.size,
-                currentPage = pageIndex,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-            if (isLastPage) {
-                WCColoredButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Text(text = stringResource(R.string.woo_pos_promo_explore_button))
-                }
-            } else {
-                WCOutlinedButton(
-                    onClick = {},
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
-                ) {
-                    Text(text = stringResource(R.string.woo_pos_promo_next_button))
-                }
-            }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-        }
-    }
-}
-
 @Preview(name = "Page 1 - Light")
 @Preview(name = "Page 1 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun WooPosPromoPage1Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContentPreview(pageIndex = 0)
+        WooPosPromoCarouselContent(
+            state = WooPosPromoState(currentPage = 0),
+            onDismiss = {},
+            onNextClick = {},
+            onExploreClick = {},
+        )
     }
 }
 
@@ -309,7 +228,12 @@ private fun WooPosPromoPage1Preview() {
 @Composable
 private fun WooPosPromoPage2Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContentPreview(pageIndex = 1)
+        WooPosPromoCarouselContent(
+            state = WooPosPromoState(currentPage = 1),
+            onDismiss = {},
+            onNextClick = {},
+            onExploreClick = {},
+        )
     }
 }
 
@@ -318,7 +242,12 @@ private fun WooPosPromoPage2Preview() {
 @Composable
 private fun WooPosPromoPage3Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContentPreview(pageIndex = 2)
+        WooPosPromoCarouselContent(
+            state = WooPosPromoState(currentPage = 2),
+            onDismiss = {},
+            onNextClick = {},
+            onExploreClick = {},
+        )
     }
 }
 
@@ -327,7 +256,12 @@ private fun WooPosPromoPage3Preview() {
 @Composable
 private fun WooPosPromoPage4Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContentPreview(pageIndex = 3)
+        WooPosPromoCarouselContent(
+            state = WooPosPromoState(currentPage = 3),
+            onDismiss = {},
+            onNextClick = {},
+            onExploreClick = {},
+        )
     }
 }
 
@@ -336,6 +270,11 @@ private fun WooPosPromoPage4Preview() {
 @Composable
 private fun WooPosPromoPage5Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContentPreview(pageIndex = 4)
+        WooPosPromoCarouselContent(
+            state = WooPosPromoState(currentPage = 4),
+            onDismiss = {},
+            onNextClick = {},
+            onExploreClick = {},
+        )
     }
 }

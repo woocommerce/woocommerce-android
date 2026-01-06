@@ -16,6 +16,14 @@ class WooPosPromoViewModel @Inject constructor(
     private val _state = MutableStateFlow(WooPosPromoState())
     val state: StateFlow<WooPosPromoState> = _state.asStateFlow()
 
+    fun onNextClick() {
+        val currentPage = _state.value.currentPage
+        val maxPage = _state.value.pages.size - 1
+        if (currentPage < maxPage) {
+            _state.value = _state.value.copy(currentPage = currentPage + 1)
+        }
+    }
+
     companion object {
         const val WOO_POS_DOCS_URL = "https://woocommerce.com/document/woo-mobile-app-point-of-sale-mode/"
     }
