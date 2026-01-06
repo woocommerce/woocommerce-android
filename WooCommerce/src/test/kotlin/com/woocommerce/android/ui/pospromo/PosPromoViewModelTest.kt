@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopospromo
+package com.woocommerce.android.ui.pospromo
 
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -7,12 +7,12 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosPromoViewModelTest : BaseUnitTest() {
+class PosPromoViewModelTest : BaseUnitTest() {
 
-    private lateinit var viewModel: WooPosPromoViewModel
+    private lateinit var viewModel: PosPromoViewModel
 
     private fun createViewModel() {
-        viewModel = WooPosPromoViewModel(savedStateHandle = mock())
+        viewModel = PosPromoViewModel(savedStateHandle = mock())
     }
 
     @Test

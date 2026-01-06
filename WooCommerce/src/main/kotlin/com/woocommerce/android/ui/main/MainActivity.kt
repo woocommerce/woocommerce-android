@@ -2,6 +2,7 @@
 
 package com.woocommerce.android.ui.main
 
+import NotificationsPermissionCard
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -103,13 +104,13 @@ import com.woocommerce.android.ui.orders.list.OrderListFragmentDirections
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam
 import com.woocommerce.android.ui.plans.di.TrialStatusBarFormatterFactory
 import com.woocommerce.android.ui.plans.trial.DetermineTrialStatusBarState.TrialStatusBarState
+import com.woocommerce.android.ui.pospromo.PosPromoDialogFragment
 import com.woocommerce.android.ui.prefs.AppSettingsActivity
 import com.woocommerce.android.ui.prefs.RequestedAnalyticsValue
 import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.woopos.tab.WooPosTabController
-import com.woocommerce.android.ui.woopospromo.WooPosPromoDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
@@ -1157,7 +1158,7 @@ class MainActivity :
 
     private fun showWooPosPromoCarousel() {
         intent.data = null
-        WooPosPromoDialogFragment.show(supportFragmentManager)
+        PosPromoDialogFragment.show(supportFragmentManager)
     }
 
     private fun showTapToPaySummary() {

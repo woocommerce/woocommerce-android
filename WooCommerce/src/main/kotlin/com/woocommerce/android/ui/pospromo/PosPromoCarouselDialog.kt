@@ -1,10 +1,6 @@
-@file:Suppress(
-    "WooPosDesignSystemTextUsageRule",
-    "WooPosDesignSystemCornerRadiusUsageRule",
-    "DestructuringDeclarationWithTooManyEntries"
-)
+@file:Suppress("DestructuringDeclarationWithTooManyEntries")
 
-package com.woocommerce.android.ui.woopospromo
+package com.woocommerce.android.ui.pospromo
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
@@ -50,8 +46,8 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WooPosPromoCarouselModal(
-    state: WooPosPromoState,
+fun PosPromoCarouselModal(
+    state: PosPromoState,
     onDismiss: () -> Unit,
     onNextClick: () -> Unit,
     onExploreClick: () -> Unit,
@@ -64,7 +60,7 @@ fun WooPosPromoCarouselModal(
             dismissOnClickOutside = true,
         ),
     ) {
-        WooPosPromoCarouselContent(
+        PosPromoCarouselContent(
             state = state,
             onDismiss = onDismiss,
             onNextClick = onNextClick,
@@ -74,8 +70,8 @@ fun WooPosPromoCarouselModal(
 }
 
 @Composable
-private fun WooPosPromoCarouselContent(
-    state: WooPosPromoState,
+private fun PosPromoCarouselContent(
+    state: PosPromoState,
     onDismiss: () -> Unit,
     onNextClick: () -> Unit,
     onExploreClick: () -> Unit,
@@ -242,10 +238,10 @@ private fun PageIndicator(
 @Preview(name = "Page 1 - Light")
 @Preview(name = "Page 1 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoPage1Preview() {
+private fun PosPromoPage1Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContent(
-            state = WooPosPromoState(currentPage = 0),
+        PosPromoCarouselContent(
+            state = PosPromoState(currentPage = 0),
             onDismiss = {},
             onNextClick = {},
             onExploreClick = {},
@@ -256,10 +252,10 @@ private fun WooPosPromoPage1Preview() {
 @Preview(name = "Page 2 - Light")
 @Preview(name = "Page 2 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoPage2Preview() {
+private fun PosPromoPage2Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContent(
-            state = WooPosPromoState(currentPage = 1),
+        PosPromoCarouselContent(
+            state = PosPromoState(currentPage = 1),
             onDismiss = {},
             onNextClick = {},
             onExploreClick = {},
@@ -270,10 +266,10 @@ private fun WooPosPromoPage2Preview() {
 @Preview(name = "Page 3 - Light")
 @Preview(name = "Page 3 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoPage3Preview() {
+private fun PosPromoPage3Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContent(
-            state = WooPosPromoState(currentPage = 2),
+        PosPromoCarouselContent(
+            state = PosPromoState(currentPage = 2),
             onDismiss = {},
             onNextClick = {},
             onExploreClick = {},
@@ -284,10 +280,10 @@ private fun WooPosPromoPage3Preview() {
 @Preview(name = "Page 4 - Light")
 @Preview(name = "Page 4 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoPage4Preview() {
+private fun PosPromoPage4Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContent(
-            state = WooPosPromoState(currentPage = 3),
+        PosPromoCarouselContent(
+            state = PosPromoState(currentPage = 3),
             onDismiss = {},
             onNextClick = {},
             onExploreClick = {},
@@ -298,10 +294,10 @@ private fun WooPosPromoPage4Preview() {
 @Preview(name = "Page 5 - Light")
 @Preview(name = "Page 5 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoPage5Preview() {
+private fun PosPromoPage5Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselContent(
-            state = WooPosPromoState(currentPage = 4),
+        PosPromoCarouselContent(
+            state = PosPromoState(currentPage = 4),
             onDismiss = {},
             onNextClick = {},
             onExploreClick = {},

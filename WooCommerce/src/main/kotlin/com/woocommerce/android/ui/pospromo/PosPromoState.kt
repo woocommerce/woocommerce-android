@@ -1,9 +1,9 @@
-package com.woocommerce.android.ui.woopospromo
+package com.woocommerce.android.ui.pospromo
 
 import androidx.annotation.StringRes
 import com.woocommerce.android.R
 
-data class WooPosPromoState(
+data class PosPromoState(
     val imageRes: Int = R.drawable.img_woo_pos_promo,
     val titleRes: Int = R.string.woo_pos_promo_title,
     val currentPage: Int = 0,

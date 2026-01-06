@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopospromo
+package com.woocommerce.android.ui.pospromo
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -17,9 +17,9 @@ import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class WooPosPromoDialogFragment : DialogFragment() {
+class PosPromoDialogFragment : DialogFragment() {
 
-    private val viewModel: WooPosPromoViewModel by viewModels()
+    private val viewModel: PosPromoViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,12 +36,12 @@ class WooPosPromoDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     val state by viewModel.state.collectAsState()
-                    WooPosPromoCarouselModal(
+                    PosPromoCarouselModal(
                         state = state,
                         onDismiss = { dismiss() },
                         onNextClick = viewModel::onNextClick,
                         onExploreClick = {
-                            ChromeCustomTabUtils.launchUrl(requireContext(), WooPosPromoViewModel.WOO_POS_DOCS_URL)
+                            ChromeCustomTabUtils.launchUrl(requireContext(), PosPromoViewModel.WOO_POS_DOCS_URL)
                             dismiss()
                         }
                     )
@@ -51,10 +51,10 @@ class WooPosPromoDialogFragment : DialogFragment() {
     }
 
     companion object {
-        private const val TAG = "WooPosPromoDialogFragment"
+        private const val TAG = "PosPromoDialogFragment"
 
         fun show(fragmentManager: FragmentManager) {
-            WooPosPromoDialogFragment().show(fragmentManager, TAG)
+            PosPromoDialogFragment().show(fragmentManager, TAG)
         }
     }
 }

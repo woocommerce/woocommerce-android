@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopospromo
+package com.woocommerce.android.ui.pospromo
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.viewmodel.ScopedViewModel
@@ -9,12 +9,12 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class WooPosPromoViewModel @Inject constructor(
+class PosPromoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
 ) : ScopedViewModel(savedStateHandle) {
 
-    private val _state = MutableStateFlow(WooPosPromoState())
-    val state: StateFlow<WooPosPromoState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(PosPromoState())
+    val state: StateFlow<PosPromoState> = _state.asStateFlow()
 
     fun onNextClick() {
         val currentPage = _state.value.currentPage
