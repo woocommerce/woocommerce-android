@@ -41,6 +41,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import kotlinx.coroutines.launch
 
@@ -136,31 +137,30 @@ fun WooPosPromoCarouselModal(
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
                 val isLastPage = pagerState.currentPage == state.pages.size - 1
-                WCColoredButton(
-                    onClick = {
-                        if (isLastPage) {
-                            onExploreClick()
-                        } else {
+
+                if (isLastPage) {
+                    WCColoredButton(
+                        onClick = { onExploreClick() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                    ) {
+                        Text(text = stringResource(R.string.woo_pos_promo_explore_button))
+                    }
+                } else {
+                    WCOutlinedButton(
+                        onClick = {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
-                        }
-                    },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-                ) {
-                    Text(
-                        text = stringResource(
-                            if (isLastPage) {
-                                R.string.woo_pos_promo_explore_button
-                            } else {
-                                R.string.woo_pos_promo_next_button
-                            }
-                        )
-                    )
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                    ) {
+                        Text(text = stringResource(R.string.woo_pos_promo_next_button))
+                    }
                 }
-
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             }
         }
@@ -194,15 +194,148 @@ private fun PageIndicator(
     }
 }
 
-@Preview(name = "Light mode")
-@Preview(name = "Dark mode", uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun WooPosPromoCarouselModalPreview() {
+private fun WooPosPromoCarouselContentPreview(
+    pageIndex: Int,
+    state: WooPosPromoState = WooPosPromoState(),
+) {
+    val page = state.pages[pageIndex]
+    val isLastPage = pageIndex == state.pages.size - 1
+
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(size = 8.dp)
+    ) {
+        Column {
+            Box {
+                Image(
+                    painter = painterResource(id = state.imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+
+                IconButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                        contentDescription = stringResource(R.string.close),
+                        tint = colorResource(R.color.color_on_primary),
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(page.titleRes),
+                    style = MaterialTheme.typography.h6,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                )
+
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+
+                Text(
+                    text = stringResource(page.descriptionRes),
+                    style = MaterialTheme.typography.body1,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                )
+            }
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            PageIndicator(
+                pageCount = state.pages.size,
+                currentPage = pageIndex,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+            if (isLastPage) {
+                WCColoredButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                ) {
+                    Text(text = stringResource(R.string.woo_pos_promo_explore_button))
+                }
+            } else {
+                WCOutlinedButton(
+                    onClick = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                ) {
+                    Text(text = stringResource(R.string.woo_pos_promo_next_button))
+                }
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        }
+    }
+}
+
+@Preview(name = "Page 1 - Light")
+@Preview(name = "Page 1 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun WooPosPromoPage1Preview() {
     WooThemeWithBackground {
-        WooPosPromoCarouselModal(
-            state = WooPosPromoState(),
-            onDismiss = {},
-            onExploreClick = {},
-        )
+        WooPosPromoCarouselContentPreview(pageIndex = 0)
+    }
+}
+
+@Preview(name = "Page 2 - Light")
+@Preview(name = "Page 2 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun WooPosPromoPage2Preview() {
+    WooThemeWithBackground {
+        WooPosPromoCarouselContentPreview(pageIndex = 1)
+    }
+}
+
+@Preview(name = "Page 3 - Light")
+@Preview(name = "Page 3 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun WooPosPromoPage3Preview() {
+    WooThemeWithBackground {
+        WooPosPromoCarouselContentPreview(pageIndex = 2)
+    }
+}
+
+@Preview(name = "Page 4 - Light")
+@Preview(name = "Page 4 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun WooPosPromoPage4Preview() {
+    WooThemeWithBackground {
+        WooPosPromoCarouselContentPreview(pageIndex = 3)
+    }
+}
+
+@Preview(name = "Page 5 - Light")
+@Preview(name = "Page 5 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun WooPosPromoPage5Preview() {
+    WooThemeWithBackground {
+        WooPosPromoCarouselContentPreview(pageIndex = 4)
     }
 }
