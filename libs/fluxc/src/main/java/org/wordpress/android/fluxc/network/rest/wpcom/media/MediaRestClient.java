@@ -113,9 +113,8 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
 
         add(WPComGsonRequest.buildPostRequest(url, getEditRequestParams(media), MediaWPComRestResponse.class,
                 (response, headers) -> {
-                    MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response);
+                    MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response, site.getId());
                     AppLog.v(T.MEDIA, "media changes pushed for " + responseMedia.getTitle());
-                    responseMedia.setLocalSiteId(site.getId());
                     notifyMediaPushed(site, responseMedia, null);
                 },
                 error -> {
@@ -332,8 +331,7 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
         String url = WPCOMREST.sites.site(site.getSiteId()).media.item(media.getMediaId()).getUrlV1_1();
         add(WPComGsonRequest.buildGetRequest(url, null, MediaWPComRestResponse.class,
                 (response, headers) -> {
-                    MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response);
-                    responseMedia.setLocalSiteId(site.getId());
+                    MediaModel responseMedia = mMediaResponseUtils.getMediaFromRestResponse(response, site.getId());
                     AppLog.v(T.MEDIA, "Fetched media with ID: " + media.getMediaId());
                     notifyMediaFetched(site, responseMedia, null);
                 },
@@ -361,7 +359,6 @@ public class MediaRestClient extends BaseWPComRestClient implements ProgressList
         String url = WPCOMREST.sites.site(site.getSiteId()).media.item(media.getMediaId()).delete.getUrlV1_1();
         add(WPComGsonRequest.buildPostRequest(url, null, MediaWPComRestResponse.class,
                 (response, headers) -> {
-                    mMediaResponseUtils.getMediaFromRestResponse(response);
                     AppLog.v(T.MEDIA, "deleted media: " + media.getTitle());
                     notifyMediaDeleted(site, media, null);
                 },
