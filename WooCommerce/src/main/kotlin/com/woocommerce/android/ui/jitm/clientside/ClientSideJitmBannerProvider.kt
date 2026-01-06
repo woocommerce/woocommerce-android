@@ -2,10 +2,10 @@ package com.woocommerce.android.ui.jitm.clientside
 
 import com.woocommerce.android.ui.jitm.JitmBannerMessageProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
+import dagger.Reusable
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@Reusable
 class ClientSideJitmBannerProvider @Inject constructor(
     private val posBanner: ClientSidePosBanner,
 ) : JitmBannerMessageProvider {
