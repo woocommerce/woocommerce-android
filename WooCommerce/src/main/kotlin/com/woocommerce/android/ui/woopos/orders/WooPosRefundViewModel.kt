@@ -151,11 +151,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun processRefund(contentState: WooPosRefundState.Content) {
-        if (contentState.step == WooPosRefundState.Content.RefundStep.Processing) {
-            return
-        }
-
         viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is WooPosRefundState.Content &&
+                currentState.step == WooPosRefundState.Content.RefundStep.Processing
+            ) {
+                return@launch
+            }
+
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             val order = currentOrder ?: run {
