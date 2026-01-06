@@ -337,14 +337,14 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val refundResult = retrieveOrderRefunds(updated).fold(
-            onSuccess = { refunds -> RefundFetchResult.Success(refunds) },
-            onFailure = { RefundFetchResult.Error }
+        val historicalRefundsResult = retrieveOrderRefunds(updated).fold(
+            onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
+            onFailure = { RefundsFetchResult.Error }
         )
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = mapOrderItem(updated, selectedId)
-        val newDetailsViewState = mapOrderDetails(updated, refundResult)
+        val newDetailsViewState = mapOrderDetails(updated, historicalRefundsResult)
         val newDetails = WooPosOrdersState.OrderDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
@@ -489,7 +489,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun replaceOrders(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val currentState = _state.value
@@ -531,7 +531,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun appendOrders(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val current = _state.value as WooPosOrdersState.Content
@@ -552,7 +552,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun buildItemsMap(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         selectedId: Long?
     ): Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
@@ -597,13 +597,13 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private suspend fun mapOrderDetails(
         order: Order,
-        refundResult: RefundFetchResult
+        historicalRefundsResult: RefundsFetchResult
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = mapOrderStatus(order)
         val lineItems = buildLineItems(order)
-        val refundInfo = buildRefundInfo(order, refundResult)
+        val refundInfo = buildRefundInfo(order, historicalRefundsResult)
         val breakdown = buildTotalsBreakdown(order, refundInfo)
-        val actions = getAvailableActions(order.id)
+        val actions = getAvailableActions(order, historicalRefundsResult)
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
@@ -660,15 +660,15 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private suspend fun buildRefundInfo(
         order: Order,
-        refundResult: RefundFetchResult
+        refundResult: RefundsFetchResult
     ): RefundInfo {
         return when (refundResult) {
-            is RefundFetchResult.Success -> {
+            is RefundsFetchResult.Success -> {
                 val amounts = refundResult.refunds.map { "-${formatPrice(it.amount)}" }
                 val total = refundResult.refunds.sumOf { it.amount }
                 RefundInfo(amounts, total)
             }
-            is RefundFetchResult.Error -> {
+            is RefundsFetchResult.Error -> {
                 val amounts =
                     if (order.refundTotal > BigDecimal.ZERO) {
                         listOf(resourceProvider.getString(R.string.woopos_orders_details_refund_error))

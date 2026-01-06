@@ -54,8 +54,8 @@ class WooPosOrdersViewModelTest {
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
-    private fun ordersMap(vararg orders: Order): Map<Order, RefundFetchResult> =
-        orders.associateWith { RefundFetchResult.Success(emptyList()) }
+    private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
+        orders.associateWith { RefundsFetchResult.Success(emptyList()) }
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -711,7 +711,7 @@ class WooPosOrdersViewModelTest {
                 emit(
                     LoadOrdersResult.SuccessRemote(
                         mapOf(
-                            testOrder to RefundFetchResult.Success(listOf(refund1, refund2))
+                            testOrder to RefundsFetchResult.Success(listOf(refund1, refund2))
                         )
                     )
                 )
