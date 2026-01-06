@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import com.yarolegovich.wellsql.core.Identifiable;
 import com.yarolegovich.wellsql.core.annotation.Column;
 import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.RawConstraints;
 import com.yarolegovich.wellsql.core.annotation.Table;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +23,6 @@ import java.lang.annotation.Retention;
 import static java.lang.annotation.RetentionPolicy.SOURCE;
 
 @Table
-@RawConstraints({"FOREIGN KEY(_id) REFERENCES MediaModel(_id) ON DELETE CASCADE"})
 public class MediaUploadModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {
     private static final long serialVersionUID = -2575578916186403789L;
 
