@@ -6,15 +6,15 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
 import com.woocommerce.android.util.FeatureFlag
+import dagger.Reusable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@Reusable
 class ClientSidePosBanner @Inject constructor(
     @ApplicationContext private val context: Context,
     private val selectedSite: SelectedSite,

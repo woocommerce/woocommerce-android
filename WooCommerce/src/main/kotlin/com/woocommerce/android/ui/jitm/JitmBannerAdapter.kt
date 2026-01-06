@@ -1,8 +1,8 @@
 package com.woocommerce.android.ui.jitm
 
+import dagger.Reusable
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
-import dagger.Reusable
 
 @Reusable
 class JitmBannerAdapter @Inject constructor(
