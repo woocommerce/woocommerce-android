@@ -5,9 +5,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -24,13 +22,11 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -40,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -92,32 +90,41 @@ private fun WooPosPromoCarouselContent(
             .wrapContentHeight(),
         shape = RoundedCornerShape(size = 8.dp)
     ) {
-        Column {
-            Box {
-                Image(
-                    painter = painterResource(id = state.imageRes),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(209.dp)
+        ConstraintLayout(
+            modifier = Modifier.fillMaxWidth()
+                .height(534.dp)
+        ) {
+            val (image, closeButton, title, pager, indicator, button) = createRefs()
+            val spacing = 16.dp
+
+            Image(
+                painter = painterResource(id = state.imageRes),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .constrainAs(image) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        width = Dimension.fillToConstraints
+                    }
+                    .height(209.dp)
+            )
+
+            IconButton(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .constrainAs(closeButton) {
+                        top.linkTo(parent.top, margin = 8.dp)
+                        end.linkTo(parent.end, margin = 8.dp)
+                    }
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                    contentDescription = stringResource(R.string.close),
+                    tint = colorResource(R.color.color_on_primary),
                 )
-
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(8.dp)
-                ) {
-                    Icon(
-                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(R.string.close),
-                        tint = colorResource(R.color.color_on_primary),
-                    )
-                }
             }
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
             Text(
                 text = stringResource(state.titleRes),
@@ -125,18 +132,25 @@ private fun WooPosPromoCarouselContent(
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                    .constrainAs(title) {
+                        top.linkTo(image.bottom, margin = spacing)
+                        start.linkTo(parent.start, margin = spacing)
+                        end.linkTo(parent.end, margin = spacing)
+                        width = Dimension.fillToConstraints
+                    }
             )
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
             HorizontalPager(
                 state = pagerState,
                 userScrollEnabled = false,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
+                    .constrainAs(pager) {
+                        top.linkTo(title.bottom, margin = spacing)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(indicator.top, margin = spacing)
+                        width = Dimension.fillToConstraints
+                    }
             ) { page ->
                 Text(
                     text = stringResource(state.pages[page].descriptionRes),
@@ -145,26 +159,31 @@ private fun WooPosPromoCarouselContent(
                     color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                        .padding(horizontal = spacing),
                 )
             }
-
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
             PageIndicator(
                 pageCount = state.pages.size,
                 currentPage = pagerState.currentPage,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier
+                    .constrainAs(indicator) {
+                        start.linkTo(parent.start)
+                        bottom.linkTo(button.top, margin = 32.dp)
+                        end.linkTo(parent.end)
+                    }
             )
-
-            Spacer(modifier = Modifier.height(32.dp))
 
             if (isLastPage) {
                 WCColoredButton(
                     onClick = onExploreClick,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+                        .constrainAs(button) {
+                            start.linkTo(parent.start, margin = spacing)
+                            end.linkTo(parent.end, margin = spacing)
+                            bottom.linkTo(parent.bottom, margin = spacing)
+                            width = Dimension.fillToConstraints
+                        }
                 ) {
                     Text(text = stringResource(R.string.woo_pos_promo_explore_button))
                 }
@@ -172,13 +191,16 @@ private fun WooPosPromoCarouselContent(
                 WCOutlinedButton(
                     onClick = onNextClick,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimensionResource(id = R.dimen.major_100)),
+                        .constrainAs(button) {
+                            start.linkTo(parent.start, margin = spacing)
+                            end.linkTo(parent.end, margin = spacing)
+                            bottom.linkTo(parent.bottom, margin = spacing)
+                            width = Dimension.fillToConstraints
+                        }
                 ) {
                     Text(text = stringResource(R.string.woo_pos_promo_next_button))
                 }
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
 }
