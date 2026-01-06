@@ -15,31 +15,33 @@ class WooPosGroupRefundItems @Inject constructor() {
         return refundableItems
             .groupBy { it.orderItemId }
             .map { (orderItemId, items) ->
-                val originalItem = order.items.find { it.itemId == orderItemId }
+                val originalItem = requireNotNull(order.items.find { it.itemId == orderItemId }) {
+                    "Order item with ID $orderItemId not found in order ${order.id}."
+                }
                 val refundQuantity = items.size
 
                 RefundRequestItem(
                     itemId = orderItemId,
                     quantity = refundQuantity,
-                    refundTotal = calculateRefundTotal(items, refundQuantity),
+                    refundTotal = calculateRefundTotal(originalItem, refundQuantity),
                     refundTax = calculateRefundTaxes(originalItem, refundQuantity)
                 )
             }
     }
 
     private fun calculateRefundTotal(
-        items: List<WooPosRefundableItem>,
+        originalItem: Order.Item,
         quantity: Int
     ): BigDecimal {
-        return items.first().unitPrice.multiply(quantity.toBigDecimal())
+        return originalItem.price.multiply(quantity.toBigDecimal())
     }
 
     private fun calculateRefundTaxes(
-        originalItem: Order.Item?,
+        originalItem: Order.Item,
         quantity: Int
     ): List<RefundRequestTax> {
-        if (originalItem == null || originalItem.quantity == 0f) {
-            return emptyList()
+        check(originalItem.quantity > 0f) {
+            "Order item ${originalItem.itemId} has invalid quantity ${originalItem.quantity}."
         }
 
         val refundQuantity = quantity.toBigDecimal()
