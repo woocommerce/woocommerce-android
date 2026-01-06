@@ -117,8 +117,8 @@ class WooNotificationBuilder @Inject constructor(
             // Also add a group summary notification, which is required for non-wearable devices
             // Do not need to play the sound again. We've already played it in the individual builder.
             if (!isGroupNotification) {
-                setGroupSummary(true)
                 setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                setGroupSummary(true)
                 showNotification(notification.getGroupPushId(), notification, this)
             }
         }
