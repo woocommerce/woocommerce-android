@@ -116,8 +116,8 @@ private fun WooPosPromoCarouselContent(
                 onClick = onDismiss,
                 modifier = Modifier
                     .constrainAs(closeButton) {
-                        top.linkTo(parent.top, margin = 8.dp)
-                        end.linkTo(parent.end, margin = 8.dp)
+                        top.linkTo(parent.top)
+                        end.linkTo(parent.end)
                     }
             ) {
                 Icon(
