@@ -133,6 +133,7 @@ private fun WooPosPromoCarouselContent(
 
             HorizontalPager(
                 state = pagerState,
+                userScrollEnabled = false,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
