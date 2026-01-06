@@ -15,11 +15,11 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -129,7 +129,7 @@ private fun WooPosPromoCarouselContent(
 
             Text(
                 text = stringResource(state.titleRes),
-                style = MaterialTheme.typography.h5,
+                style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
                 modifier = Modifier
@@ -155,9 +155,9 @@ private fun WooPosPromoCarouselContent(
             ) { page ->
                 Text(
                     text = stringResource(state.pages[page].descriptionRes),
-                    style = MaterialTheme.typography.body1,
+                    style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
-                    color = MaterialTheme.colors.onSurface.copy(alpha = 0.6f),
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = spacing),
@@ -223,9 +223,9 @@ private fun PageIndicator(
                     .clip(CircleShape)
                     .background(
                         if (index == currentPage) {
-                            MaterialTheme.colors.primary
+                            MaterialTheme.colorScheme.primary
                         } else {
-                            MaterialTheme.colors.onSurface.copy(alpha = 0.2f)
+                            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f)
                         }
                     )
             )
