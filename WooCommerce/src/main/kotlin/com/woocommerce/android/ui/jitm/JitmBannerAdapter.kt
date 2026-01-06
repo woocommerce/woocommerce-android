@@ -2,9 +2,9 @@ package com.woocommerce.android.ui.jitm
 
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import javax.inject.Inject
-import javax.inject.Singleton
+import dagger.Reusable
 
-@Singleton
+@Reusable
 class JitmBannerAdapter @Inject constructor(
     private val jitmStoreInMemoryCache: JitmStoreInMemoryCache,
 ) : JitmBannerMessageProvider {
