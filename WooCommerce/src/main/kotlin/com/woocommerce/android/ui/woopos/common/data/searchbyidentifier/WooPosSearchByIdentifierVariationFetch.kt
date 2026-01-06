@@ -20,7 +20,6 @@ class WooPosSearchByIdentifierVariationFetch @Inject constructor(
         data class Failure(val error: WooPosSearchByIdentifierResult.Error) : VariationFetchResult()
     }
 
-    @Suppress("ReturnCount")
     suspend operator fun invoke(variationId: Long, parentId: Long): VariationFetchResult {
         val variationResult = productStore.fetchSingleVariation(
             selectedSite.get(),

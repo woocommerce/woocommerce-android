@@ -16,7 +16,6 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
         class CatalogTooLarge(val error: String) : WooPosCheckCatalogSizeResult()
     }
 
-    @Suppress("ReturnCount")
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,

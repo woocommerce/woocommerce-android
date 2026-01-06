@@ -43,7 +43,6 @@ internal class ApplicationPasswordsManager @Inject constructor(
         get() = origin == SiteModel.ORIGIN_WPCOM_REST ||
             (!username.isNullOrEmpty() && !password.isNullOrEmpty())
 
-    @Suppress("ReturnCount")
     suspend fun getApplicationCredentials(
         site: SiteModel
     ): ApplicationPasswordCreationResult = mutexLock.withLock {
