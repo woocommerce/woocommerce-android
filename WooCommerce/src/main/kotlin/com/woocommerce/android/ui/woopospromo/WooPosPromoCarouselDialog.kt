@@ -1,3 +1,9 @@
+@file:Suppress(
+    "WooPosDesignSystemTextUsageRule",
+    "WooPosDesignSystemCornerRadiusUsageRule",
+    "DestructuringDeclarationWithTooManyEntries"
+)
+
 package com.woocommerce.android.ui.woopospromo
 
 import android.content.res.Configuration

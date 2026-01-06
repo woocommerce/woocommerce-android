@@ -2,7 +2,6 @@
 
 package com.woocommerce.android.ui.main
 
-import NotificationsPermissionCard
 import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Intent
@@ -97,7 +96,6 @@ import com.woocommerce.android.ui.main.MainActivityViewModel.ViewReviewList
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewTapToPay
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewUrlInWebView
 import com.woocommerce.android.ui.main.MainActivityViewModel.ViewWooPosPromo
-import com.woocommerce.android.ui.woopospromo.WooPosPromoDialogFragment
 import com.woocommerce.android.ui.moremenu.MoreMenuFragmentDirections
 import com.woocommerce.android.ui.orders.creation.OrderCreateEditViewModel
 import com.woocommerce.android.ui.orders.details.OrderDetailFragmentArgs
@@ -111,6 +109,7 @@ import com.woocommerce.android.ui.products.details.ProductDetailFragment
 import com.woocommerce.android.ui.products.list.ProductListFragmentDirections
 import com.woocommerce.android.ui.reviews.ReviewListFragmentDirections
 import com.woocommerce.android.ui.woopos.tab.WooPosTabController
+import com.woocommerce.android.ui.woopospromo.WooPosPromoDialogFragment
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.util.WooAnimUtils.Duration
