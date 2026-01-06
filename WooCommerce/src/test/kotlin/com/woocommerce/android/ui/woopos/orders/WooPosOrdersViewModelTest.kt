@@ -51,6 +51,7 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
+    private val getRefundableItems: WooPosGetRefundableItems = mock()
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -66,7 +67,8 @@ class WooPosOrdersViewModelTest {
             childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
-            ordersAnalyticsTracker = ordersAnalyticsTracker
+            ordersAnalyticsTracker = ordersAnalyticsTracker,
+            getRefundableItems = getRefundableItems
         )
     }
 
@@ -78,6 +80,7 @@ class WooPosOrdersViewModelTest {
             whenever(formatPrice.invoke(any())).thenReturn("$0.00")
             whenever(getProductById.invoke(any())).thenReturn(null)
             whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
         }
 
         whenever(dataSource.loadOrders()).thenReturn(
@@ -1190,5 +1193,64 @@ class WooPosOrdersViewModelTest {
         assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
         assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
         assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+    }
+
+    @Test
+    fun `given order with refundable items, when order details loaded, then Issue Refund action is available`() = runTest {
+        // GIVEN
+        val testOrder = order(1)
+        val refundableItem = WooPosRefundableItem(
+            orderItemId = 1L,
+            productId = 100L,
+            variationId = 0L,
+            name = "Test Product",
+            unitPrice = BigDecimal("10.00"),
+            unitTax = BigDecimal("1.00"),
+            formattedUnitPrice = "$10.00",
+            formattedUnitTax = "$1.00",
+            rowIndex = 0
+        )
+
+        runBlocking {
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
+        }
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given order with no refundable items, when order details loaded, then Issue Refund action is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(2)
+
+        runBlocking {
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
+        }
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        assertThat(details.actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
 }

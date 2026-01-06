@@ -44,7 +44,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
-    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker
+    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
+    private val getRefundableItems: WooPosGetRefundableItems
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -92,13 +93,24 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun getAvailableActions(orderId: Long): List<WooPosOrdersState.OrderAction> {
+    private fun getAvailableActions(
+        order: Order,
+        refundResult: RefundsFetchResult
+    ): List<WooPosOrdersState.OrderAction> {
         return buildList {
-            if (FeatureFlag.POS_REFUNDS.isEnabled()) {
-                add(WooPosOrdersState.OrderAction.IssueRefund(orderId))
+            if (FeatureFlag.POS_REFUNDS.isEnabled() && hasRefundableItems(order, refundResult)) {
+                add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
             }
-            add(WooPosOrdersState.OrderAction.EmailReceipt(orderId))
+            add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
         }
+    }
+
+    private fun hasRefundableItems(order: Order, refundResult: RefundsFetchResult): Boolean {
+        val refunds = when (refundResult) {
+            is RefundsFetchResult.Success -> refundResult.refunds
+            is RefundsFetchResult.Error -> emptyList()
+        }
+        return getRefundableItems(order, refunds).isNotEmpty()
     }
 
     fun onOrderSelected(orderId: Long) {
