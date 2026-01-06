@@ -4353,4 +4353,18 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+
+    <!-- Woo POS Promo Carousel -->
+    <string name="woo_pos_promo_page1_title">Run POS with the WooCommerce mobile app</string>
+    <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
+    <string name="woo_pos_promo_page2_title">Built right into the WooCommerce mobile app</string>
+    <string name="woo_pos_promo_page2_description">No extra plugins needed.</string>
+    <string name="woo_pos_promo_page3_title">Run WooCommerce POS on tablets</string>
+    <string name="woo_pos_promo_page3_description">Take in‑person payments with Woo POS. Set up on a tablet and start selling today.</string>
+    <string name="woo_pos_promo_page4_title">Use with WooPayments or Stripe</string>
+    <string name="woo_pos_promo_page4_description">Works with WooPayments or Stripe payment gateways.</string>
+    <string name="woo_pos_promo_page5_title">Get started with WooCommerce POS</string>
+    <string name="woo_pos_promo_page5_description">Learn more about setting up and using WooCommerce POS for your store.</string>
+    <string name="woo_pos_promo_next_button">Next</string>
+    <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
 </resources>
