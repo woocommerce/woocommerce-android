@@ -6,11 +6,14 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogState
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
+import java.io.File
 import javax.inject.Inject
 import kotlin.math.pow
 
 class WooPosFileBasedSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
+    private val catalogFileDownloader: WooPosCatalogFileDownloader,
+    private val catalogFileParser: WooPosCatalogFileParser,
     private val logger: WooPosLogWrapper,
 ) {
     companion object {
@@ -28,7 +31,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
     ): Result<FileBasedSyncResult> {
         logger.d("Starting file-based catalog generation for site ${site.id}")
 
-        var attemptCount = 0
         var failedConsecutiveAttempts = 0
 
         repeat(MAX_POLL_ATTEMPTS) { attemptCount ->
@@ -38,7 +40,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 delay(delayMs)
             }
 
-            val response = posLocalCatalogStore.generateCatalog(site)
+            val response = posLocalCatalogStore.generateCatalogOrGetStatus(site)
 
             if (response.isFailure) {
                 if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
@@ -55,7 +57,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 "Poll attempt $attemptCount"
             )
 
-            val processedResult = processPollingResult(result)
+            val processedResult = processPollingResult(result, site)
             if (processedResult != null) {
                 return processedResult
             }
@@ -67,36 +69,88 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
     data class FileBasedSyncResult(
         val fileUrl: String,
+        val downloadedFile: File,
         val totalProducts: Int?,
-        val completedAt: String?
+        val completedAt: String?,
+        val productsStored: Int,
+        val variationsStored: Int
     )
 
     @Suppress("ReturnCount")
-    private fun processPollingResult(result: WooPosGenerateCatalogResult): Result<FileBasedSyncResult>? {
+    private suspend fun processPollingResult(
+        result: WooPosGenerateCatalogResult,
+        site: SiteModel
+    ): Result<FileBasedSyncResult>? {
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
                 val url = result.url
                 if (url != null) {
-                    logger.d("Catalog available.")
-                    // TBD Download the file or scheduled bg download job
-                    Result.success(createFileBasedSyncResult(result, url))
+                    logger.d("Catalog available, starting download.")
+
+                    processDownloadAndStore(url, result, site)
                 } else {
                     logger.e("Catalog generation completed but URL is missing")
                     Result.failure(Exception("Catalog generation completed but URL is missing"))
                 }
             }
-            else -> null.also { logger.d("State: ${result.state}, Progress: ${result.progress}/${result.total}") }
+            else -> null.also {
+                logger.d("State: ${result.state}, Progress: ${result.progress}% out of ${result.total} items")
+            }
         }
+    }
+
+    private suspend fun processDownloadAndStore(
+        url: String,
+        catalogResult: WooPosGenerateCatalogResult,
+        site: SiteModel
+    ): Result<FileBasedSyncResult> {
+        val downloadedFile = catalogFileDownloader.downloadCatalogFile(url, site.localId())
+            .onFailureLog("Failed to download catalog file")
+            .getOrElse { return Result.failure(it) }
+
+        val parsedData = catalogFileParser.parseCatalogFile(downloadedFile, site.localId())
+            .onFailureLog("Failed to parse catalog file")
+            .getOrElse { return Result.failure(it) }
+
+        posLocalCatalogStore.storeCatalogData(
+            localSiteId = site.localId(),
+            products = parsedData.products,
+            variations = parsedData.variations
+        ).onFailureLog("Failed to store catalog data")
+            .getOrElse { return Result.failure(it) }
+
+        catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
+
+        return Result.success(
+            createFileBasedSyncResult(
+                result = catalogResult,
+                fileUrl = url,
+                downloadedFile = downloadedFile,
+                productsStored = parsedData.products.size,
+                variationsStored = parsedData.variations.size
+            )
+        )
+    }
+
+    private fun <T> Result<T>.onFailureLog(context: String): Result<T> {
+        onFailure { logger.e("$context: ${it.message}") }
+        return this
     }
 
     private fun createFileBasedSyncResult(
         result: WooPosGenerateCatalogResult,
-        fileUrl: String
+        fileUrl: String,
+        downloadedFile: File,
+        productsStored: Int,
+        variationsStored: Int
     ): FileBasedSyncResult {
         return FileBasedSyncResult(
             fileUrl = fileUrl,
+            downloadedFile = downloadedFile,
             totalProducts = result.total,
-            completedAt = result.completedAt
+            completedAt = result.completedAt,
+            productsStored = productsStored,
+            variationsStored = variationsStored
         )
     }
 
