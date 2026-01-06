@@ -3195,6 +3195,10 @@
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
 
+    <string name="pos_client_side_banner_title">Run WooCommerce POS on tablets</string>
+    <string name="pos_client_side_banner_description">Take in‑person payments with WooCommerce POS. Set up on a tablet and start selling today.</string>
+    <string name="pos_client_side_banner_cta">Learn more</string>
+
     <!--
     First product published congratulatory feature
     -->
