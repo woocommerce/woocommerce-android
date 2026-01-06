@@ -91,7 +91,8 @@ private fun WooPosPromoCarouselContent(
         shape = RoundedCornerShape(size = 8.dp)
     ) {
         ConstraintLayout(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .height(534.dp)
         ) {
             val (image, closeButton, title, pager, indicator, button) = createRefs()
@@ -146,8 +147,8 @@ private fun WooPosPromoCarouselContent(
                 modifier = Modifier
                     .constrainAs(pager) {
                         top.linkTo(title.bottom, margin = spacing)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
+                        start.linkTo(parent.start, margin = spacing)
+                        end.linkTo(parent.end, margin = spacing)
                         bottom.linkTo(indicator.top, margin = spacing)
                         width = Dimension.fillToConstraints
                     }
