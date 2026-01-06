@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -73,15 +72,13 @@ class WooPosOrdersViewModelTest {
     }
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        runBlocking {
-            whenever(formatPrice.invoke(any())).thenReturn("$0.00")
-            whenever(getProductById.invoke(any())).thenReturn(null)
-            whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
-        }
+        whenever(formatPrice.invoke(any())).thenReturn("$0.00")
+        whenever(getProductById.invoke(any())).thenReturn(null)
+        whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
@@ -664,9 +661,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
-        runBlocking {
-            whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
-        }
+        whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
 
         // WHEN
         viewModel = createViewModel()
@@ -704,11 +699,8 @@ class WooPosOrdersViewModelTest {
             feeLines = emptyList()
         )
 
-        runBlocking {
-            whenever(formatPrice.invoke(BigDecimal("10.00"))).thenReturn("$10.00")
-            whenever(formatPrice.invoke(BigDecimal("5.00"))).thenReturn("$5.00")
-        }
-
+        whenever(formatPrice.invoke(BigDecimal("10.00"))).thenReturn("$10.00")
+        whenever(formatPrice.invoke(BigDecimal("5.00"))).thenReturn("$5.00")
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
                 emit(
@@ -886,10 +878,8 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        runBlocking {
-            whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
-            whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
-        }
+        whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
+        whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
@@ -1211,10 +1201,7 @@ class WooPosOrdersViewModelTest {
             rowIndex = 0
         )
 
-        runBlocking {
-            whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
-        }
-
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
@@ -1235,10 +1222,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val testOrder = order(2)
 
-        runBlocking {
-            whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
-        }
-
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
