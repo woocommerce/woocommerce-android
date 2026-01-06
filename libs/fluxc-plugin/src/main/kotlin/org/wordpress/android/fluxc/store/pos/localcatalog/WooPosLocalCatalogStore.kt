@@ -270,8 +270,6 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
 
-
-
     suspend fun storeCatalogData(
         localSiteId: LocalOrRemoteId.LocalId,
         products: List<WooPosProductEntity>,
