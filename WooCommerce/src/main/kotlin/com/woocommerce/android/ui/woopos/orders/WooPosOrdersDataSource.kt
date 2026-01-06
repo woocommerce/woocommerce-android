@@ -21,19 +21,19 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 sealed class LoadOrdersResult {
-    data class SuccessCache(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
-    data class SuccessRemote(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
+    data class SuccessCache(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : LoadOrdersResult()
+    data class SuccessRemote(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : LoadOrdersResult()
     data class Error(val message: String) : LoadOrdersResult()
 }
 
 sealed class SearchOrdersResult {
-    data class Success(val ordersWithRefunds: Map<Order, RefundFetchResult>) : SearchOrdersResult()
+    data class Success(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : SearchOrdersResult()
     data class Error(val message: String) : SearchOrdersResult()
 }
 
-sealed class RefundFetchResult {
-    data class Success(val refunds: List<Refund>) : RefundFetchResult()
-    object Error : RefundFetchResult()
+sealed class RefundsFetchResult {
+    data class Success(val refunds: List<Refund>) : RefundsFetchResult()
+    object Error : RefundsFetchResult()
 }
 
 class WooPosOrdersDataSource @Inject constructor(
@@ -82,7 +82,7 @@ class WooPosOrdersDataSource @Inject constructor(
         )
     }
 
-    suspend fun loadMore(searchQuery: String? = null): Result<Map<Order, RefundFetchResult>> =
+    suspend fun loadMore(searchQuery: String? = null): Result<Map<Order, RefundsFetchResult>> =
         withContext(Dispatchers.IO) {
             loadNextPage(searchQuery).map { orders ->
                 fetchRefundsForOrders(orders)
@@ -167,13 +167,13 @@ class WooPosOrdersDataSource @Inject constructor(
     private fun WCOrderStore.OrderError.toThrowable(): Throwable =
         Throwable("[$type] $message")
 
-    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundFetchResult> =
+    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundsFetchResult> =
         coroutineScope {
             orders.map { order ->
                 async {
                     retrieveOrderRefunds(order).fold(
-                        onSuccess = { refunds -> order to RefundFetchResult.Success(refunds) },
-                        onFailure = { order to RefundFetchResult.Error }
+                        onSuccess = { refunds -> order to RefundsFetchResult.Success(refunds) },
+                        onFailure = { order to RefundsFetchResult.Error }
                     )
                 }
             }.awaitAll().toMap()
