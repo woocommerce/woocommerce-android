@@ -3,10 +3,10 @@ package com.woocommerce.android.ui.jitm
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.clientside.ClientSideJitmBannerProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
+import dagger.Reusable
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
+@Reusable
 class JitmBannerMessageRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val jitmBannerAdapter: JitmBannerAdapter,
