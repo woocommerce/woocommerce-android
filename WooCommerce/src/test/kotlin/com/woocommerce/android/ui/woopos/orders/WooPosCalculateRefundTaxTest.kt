@@ -101,19 +101,25 @@ class WooPosCalculateRefundTaxTest {
     }
 
     @Test
-    fun `given item not in order, when invoke called, then returns zero for that item`() {
+    fun `given item not in order, when invoke called, then throws exception`() {
         val order = createOrder(emptyList())
         val refundableItems = listOf(
             createRefundableItem(orderItemId = 999L)
         )
 
-        val result = sut(refundableItems, order)
+        val exception = try {
+            sut(refundableItems, order)
+            null
+        } catch (e: IllegalArgumentException) {
+            e
+        }
 
-        assertThat(result).isEqualTo(BigDecimal.ZERO)
+        assertThat(exception).isNotNull
+        assertThat(exception?.message).contains("Order item with ID 999 not found")
     }
 
     @Test
-    fun `given item with zero quantity in order, when invoke called, then returns zero`() {
+    fun `given item with zero quantity in order, when invoke called, then throws exception`() {
         val orderItem = createOrderItem(
             itemId = 1L,
             quantity = 0f,
@@ -124,9 +130,15 @@ class WooPosCalculateRefundTaxTest {
             createRefundableItem(orderItemId = 1L)
         )
 
-        val result = sut(refundableItems, order)
+        val exception = try {
+            sut(refundableItems, order)
+            null
+        } catch (e: IllegalStateException) {
+            e
+        }
 
-        assertThat(result).isEqualTo(BigDecimal.ZERO)
+        assertThat(exception).isNotNull
+        assertThat(exception?.message).contains("invalid quantity")
     }
 
     @Test

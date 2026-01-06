@@ -23,10 +23,12 @@ class WooPosCalculateRefundTax @Inject constructor() {
         refundQuantity: Int,
         order: Order
     ): BigDecimal {
-        val originalItem = order.items.find { it.itemId == orderItemId }
+        val originalItem = requireNotNull(order.items.find { it.itemId == orderItemId }) {
+            "Order item with ID $orderItemId not found in order ${order.id}."
+        }
 
-        if (originalItem == null || originalItem.quantity == 0f) {
-            return BigDecimal.ZERO
+        check(originalItem.quantity > 0f) {
+            "Order item $orderItemId has invalid quantity ${originalItem.quantity}."
         }
 
         return if (refundQuantity.toBigDecimal().compareTo(originalItem.quantity.toBigDecimal()) == 0) {
