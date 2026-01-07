@@ -1383,6 +1383,7 @@
         -->
 
     <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_hide_content">Hide this content</string>
     <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accept payments easily</string>
     <string name="card_reader_upsell_card_reader_banner_description">Start selling in person in under 20 minutes with our card reader.</string>
@@ -3194,6 +3195,10 @@
     <string name="local_notification_woo_pos_survey_potential_user_description">Take a quick 2-minute survey to help us shape features you\'ll love.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
+
+    <string name="pos_client_side_banner_title">Run WooCommerce POS on tablets</string>
+    <string name="pos_client_side_banner_description">Take in‑person payments with WooCommerce POS. Set up on a tablet and start selling today.</string>
+    <string name="pos_client_side_banner_cta">Learn more</string>
 
     <!--
     First product published congratulatory feature

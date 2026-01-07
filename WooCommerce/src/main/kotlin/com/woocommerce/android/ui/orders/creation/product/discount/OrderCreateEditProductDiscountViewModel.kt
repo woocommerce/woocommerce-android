@@ -97,7 +97,6 @@ class OrderCreateEditProductDiscountViewModel @Inject constructor(
         if (this > BigDecimal.ZERO) this else null
     }
 
-    @Suppress("ReturnCount")
     private fun checkDiscountValidationState(discount: BigDecimal?, type: DiscountType): DiscountAmountValidationState {
         if (discount == null) return DiscountAmountValidationState.Valid
 

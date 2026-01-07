@@ -100,7 +100,6 @@ class WooPosCartViewModel @Inject constructor(
         soundHelper.onCleanup()
     }
 
-    @Suppress("ReturnCount")
     fun onUIEvent(event: WooPosCartUIEvent) {
         when (event) {
             is WooPosCartUIEvent.CheckoutClicked -> {
