@@ -116,7 +116,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).isEmpty()
@@ -130,7 +130,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).isEmpty()
@@ -151,7 +151,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -179,7 +179,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3)
@@ -215,7 +215,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3) // 2 from item1, 1 from item2
@@ -237,7 +237,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).isEmpty()
@@ -255,7 +255,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3) // 5 - 2 = 3 remaining
@@ -334,7 +334,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(5) // (5-2) + (3-1) = 3 + 2 = 5
@@ -412,7 +412,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund1, refund2))
+        val result = sut.invoke(order, listOf(refund1, refund2), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(5) // 10 - (2 + 3) = 5
@@ -457,7 +457,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(5) // 2 + 3
@@ -511,7 +511,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3) // Quantity unchanged because refund targets different order item
@@ -565,7 +565,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(2) // 3 - 1 = 2
@@ -637,7 +637,7 @@ class WooPosGetRefundableItemsTest {
         )
 
         // WHEN
-        val result = sut.invoke(order, listOf(refund))
+        val result = sut.invoke(order, listOf(refund), numberOfDecimals = 2)
 
         // THEN
         // Item1: 3 - 2 = 1 remaining
@@ -672,7 +672,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(4)
@@ -703,7 +703,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).isEmpty() // quantity 0 means maxQuantity will be 0
@@ -731,7 +731,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(2) // 2.5 converted to int = 2
@@ -762,7 +762,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(5)
@@ -793,7 +793,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).isEmpty() // quantity 0 means maxQuantity will be 0
@@ -821,7 +821,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3) // 3.5 converted to int = 3
@@ -857,7 +857,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -889,7 +889,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -935,7 +935,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -964,7 +964,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3)
@@ -1011,7 +1011,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(3)
@@ -1058,7 +1058,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(2)
@@ -1090,7 +1090,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(2)
@@ -1121,7 +1121,7 @@ class WooPosGetRefundableItemsTest {
         val refunds = emptyList<Refund>()
 
         // WHEN
-        val result = sut.invoke(order, refunds)
+        val result = sut.invoke(order, refunds, numberOfDecimals = 2)
 
         // THEN
         assertThat(result).hasSize(5)

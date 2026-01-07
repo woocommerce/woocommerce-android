@@ -1,18 +1,46 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.settings.CurrencyPosition
+import org.wordpress.android.fluxc.model.settings.Settings
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import kotlin.test.Test
 
 class WooPosGroupRefundItemsTest {
+    private val selectedSite: SelectedSite = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private lateinit var sut: WooPosGroupRefundItems
+
+    private val testSite = SiteModel().apply { id = 1 }
 
     @Before
     fun setup() {
-        sut = WooPosGroupRefundItems()
+        whenever(selectedSite.get()).thenReturn(testSite)
+        whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(
+            Settings(
+                currencyCode = "USD",
+                currencyPosition = CurrencyPosition.LEFT,
+                currencyThousandSeparator = ",",
+                currencyDecimalSeparator = ".",
+                currencyDecimalNumber = 2,
+                countryCode = "US",
+                stateCode = "CA",
+                address = "",
+                address2 = "",
+                city = "",
+                postalCode = "",
+                couponsEnabled = true
+            )
+        )
+        sut = WooPosGroupRefundItems(selectedSite, wooCommerceStore)
     }
 
     private fun createRefundableItem(
