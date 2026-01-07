@@ -931,7 +931,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onUPSTermsAccepted() {
-        @Suppress("ReturnCount")
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,
