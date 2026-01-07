@@ -58,7 +58,7 @@ class WooPosCalculateRefundTaxTest {
     fun `given empty list, when invoke called, then returns zero`() {
         val order = createOrder(emptyList())
 
-        val result = sut(emptyList(), order)
+        val result = sut(emptyList(), order, numberOfDecimals = 2)
 
         assertThat(result).isEqualTo(BigDecimal.ZERO)
     }
@@ -77,7 +77,7 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(listOf(orderItem))
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2)
 
         assertThat(result).isEqualTo(BigDecimal("6.00"))
     }
@@ -95,7 +95,7 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(listOf(orderItem))
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2)
 
         assertThat(result).isEqualTo(BigDecimal("4.00"))
     }
@@ -108,7 +108,7 @@ class WooPosCalculateRefundTaxTest {
         )
 
         val exception = try {
-            sut(refundableItems, order)
+            sut(refundableItems, order, numberOfDecimals = 2)
             null
         } catch (e: IllegalArgumentException) {
             e
@@ -131,7 +131,7 @@ class WooPosCalculateRefundTaxTest {
         )
 
         val exception = try {
-            sut(refundableItems, order)
+            sut(refundableItems, order, numberOfDecimals = 2)
             null
         } catch (e: IllegalStateException) {
             e
@@ -158,7 +158,7 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(orderItems)
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2)
 
         assertThat(result).isEqualTo(BigDecimal("16.00"))
     }
@@ -175,7 +175,7 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(listOf(orderItem))
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2)
 
         assertThat(result).isEqualTo(BigDecimal("3.33"))
     }

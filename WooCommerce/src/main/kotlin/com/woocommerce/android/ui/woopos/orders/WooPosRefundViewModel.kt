@@ -87,17 +87,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
             _state.value = buildContentState(
                 order = order,
-                refundableItems = refundableItems
+                refundableItems = refundableItems,
+                numberOfDecimals = numberOfDecimals
             )
         }
     }
 
     private fun buildContentState(
         order: Order,
-        refundableItems: List<WooPosRefundableItem>
+        refundableItems: List<WooPosRefundableItem>,
+        numberOfDecimals: Int
     ): WooPosRefundState.Content {
         val subtotal = calculateRefundSubtotal(refundableItems)
-        val taxes = calculateRefundTax(refundableItems, order)
+        val taxes = calculateRefundTax(refundableItems, order, numberOfDecimals)
         val total = subtotal + taxes
 
         return WooPosRefundState.Content(
