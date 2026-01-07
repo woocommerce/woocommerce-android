@@ -55,6 +55,7 @@ class BookingServiceEventFilterViewModel @AssistedInject constructor(
                                 name = UiStringText(product.name)
                             )
                         },
+                    isLoading = false
                 )
             }
         }
