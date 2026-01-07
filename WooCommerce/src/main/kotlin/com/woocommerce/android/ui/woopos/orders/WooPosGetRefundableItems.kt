@@ -11,6 +11,9 @@ import javax.inject.Inject
 /**
  * Get a list of refundable items for an order, taking into account previous refunds.
  *
+ * @param order The order to get refundable items from
+ * @param refunds List of previous refunds for this order
+ * @param numberOfDecimals Number of decimal places to use for rounding (from store settings)
  * @returns A list of [WooPosRefundableItem] representing each refundable unit. In case line item has quantity > 1,
  * each unit will be represented as a separate [WooPosRefundableItem] with a unique rowIndex.
  */
@@ -19,7 +22,8 @@ class WooPosGetRefundableItems @Inject constructor(
 ) {
     operator fun invoke(
         order: Order,
-        refunds: List<Refund>
+        refunds: List<Refund>,
+        numberOfDecimals: Int,
     ): List<WooPosRefundableItem> {
         val productItems = order.items.filter { it.productId != 0L }
 
@@ -36,8 +40,8 @@ class WooPosGetRefundableItems @Inject constructor(
             if (maxQuantity <= 0) {
                 emptyList()
             } else {
-                val unitPrice = calculateUnitPrice(orderItem)
-                val unitTax = calculateUnitTax(orderItem)
+                val unitPrice = calculateUnitPrice(orderItem, numberOfDecimals)
+                val unitTax = calculateUnitTax(orderItem, numberOfDecimals)
                 val formattedUnitPrice = PriceUtils.formatCurrency(unitPrice, order.currency, currencyFormatter)
                 val formattedUnitTax = PriceUtils.formatCurrency(unitTax, order.currency, currencyFormatter)
 
@@ -75,19 +79,17 @@ class WooPosGetRefundableItems @Inject constructor(
             .filterValues { it > 0 }
     }
 
-    private fun calculateUnitPrice(item: Order.Item): BigDecimal {
-        return item.price
+    private fun calculateUnitPrice(item: Order.Item, numberOfDecimals: Int): BigDecimal {
+        return item.price.setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }
 
-    private fun calculateUnitTax(item: Order.Item): BigDecimal {
+    private fun calculateUnitTax(item: Order.Item, numberOfDecimals: Int): BigDecimal {
         // Calculate per-unit tax by dividing total tax by quantity.
         // This matches the approach used in store management refunds (RefundsExt.calculateTotalTaxes).
-        // Note: Hardcoded 2 decimal places - matches existing implementation, but could be improved
-        // by fetching decimal places from store settings (see WooPosCashPaymentRepository.getNumberOfDecimals).
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
-            item.totalTax.divide(item.quantity.toBigDecimal(), 2, RoundingMode.HALF_UP)
+            item.totalTax.divide(item.quantity.toBigDecimal(), numberOfDecimals, RoundingMode.HALF_UP)
         }
     }
 }

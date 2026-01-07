@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
@@ -33,7 +34,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val resourceProvider: ResourceProvider,
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
-    private val selectedSite: SelectedSite
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) : ViewModel() {
 
     @AssistedFactory
@@ -72,7 +74,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 emptyList()
             }
 
-            val refundableItems = getRefundableItems(order, refunds)
+            val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+            checkNotNull(numberOfDecimals) {
+                "Failed to get site settings in order to determine number of decimals for refund calculations."
+            }
+            val refundableItems = getRefundableItems(order, refunds, numberOfDecimals)
 
             if (refundableItems.isEmpty()) {
                 _state.value = WooPosRefundState.NoRefundableItems
