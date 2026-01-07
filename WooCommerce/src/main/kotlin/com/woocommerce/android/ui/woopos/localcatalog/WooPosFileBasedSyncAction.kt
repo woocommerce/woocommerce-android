@@ -6,7 +6,6 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogState
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
-import java.io.File
 import javax.inject.Inject
 import kotlin.math.pow
 
@@ -68,7 +67,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     data class FileBasedSyncResult(
-        val downloadedFile: File,
         val totalProducts: Int?,
         val completedAt: String?,
         val productsStored: Int,
@@ -124,7 +122,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         return Result.success(
             createFileBasedSyncResult(
                 result = catalogResult,
-                downloadedFile = downloadedFile,
                 productsStored = parsedData.products.size,
                 variationsStored = parsedData.variations.size
             )
@@ -138,12 +135,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
     private fun createFileBasedSyncResult(
         result: WooPosGenerateCatalogResult,
-        downloadedFile: File,
         productsStored: Int,
         variationsStored: Int
     ): FileBasedSyncResult {
         return FileBasedSyncResult(
-            downloadedFile = downloadedFile,
             totalProducts = result.total,
             completedAt = result.completedAt,
             productsStored = productsStored,
