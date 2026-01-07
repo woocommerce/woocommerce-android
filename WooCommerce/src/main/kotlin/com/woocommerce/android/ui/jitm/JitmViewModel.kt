@@ -132,16 +132,21 @@ class JitmViewModel @Inject constructor(
             )
         } ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
-    private fun Assets.getBadgeIcon() =
-        this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)?.let {
-            JitmState.Banner.LabelOrRemoteIcon.Remote(
-                urlLightMode = it,
-                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: it
+    private fun Assets.getBadgeIcon(): JitmState.Banner.LabelOrRemoteIcon? {
+        val badgeUrl = this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)
+        return when {
+            badgeUrl.isNullOrEmpty().not() -> JitmState.Banner.LabelOrRemoteIcon.Remote(
+                urlLightMode = badgeUrl,
+                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: badgeUrl
             )
-        }
-            ?: JitmState.Banner.LabelOrRemoteIcon.Label(
+
+            this?.containsKey(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY) == true -> null
+
+            else -> JitmState.Banner.LabelOrRemoteIcon.Label(
                 UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
             )
+        }
+    }
 
     data class CtaClick(val url: String) : MultiLiveEvent.Event()
 
