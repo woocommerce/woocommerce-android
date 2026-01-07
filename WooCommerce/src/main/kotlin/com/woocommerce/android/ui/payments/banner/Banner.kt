@@ -39,6 +39,9 @@ import com.woocommerce.android.util.UiHelpers
 
 @Composable
 fun Banner(bannerState: JitmState.Banner) {
+    val majorMargin = dimensionResource(id = R.dimen.major_100)
+    val minorMargin = dimensionResource(id = R.dimen.minor_100)
+
     Card(
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -66,8 +69,8 @@ fun Banner(bannerState: JitmState.Banner) {
                 BadgeIcon(
                     bannerState = bannerState,
                     modifier = Modifier.constrainAs(badge) {
-                        top.linkTo(parent.top, margin = 16.dp)
-                        start.linkTo(parent.start, margin = 16.dp)
+                        top.linkTo(parent.top, margin = majorMargin)
+                        start.linkTo(parent.start, margin = majorMargin)
                     }
                 )
             }
@@ -79,15 +82,15 @@ fun Banner(bannerState: JitmState.Banner) {
                 modifier = Modifier
                     .constrainAs(title) {
                         if (bannerState.badgeIcon != null) {
-                            top.linkTo(badge.bottom, margin = 8.dp)
+                            top.linkTo(badge.bottom, margin = minorMargin)
                         } else {
-                            top.linkTo(parent.top, margin = 16.dp)
+                            top.linkTo(parent.top, margin = majorMargin)
                         }
-                        start.linkTo(parent.start, margin = 16.dp)
-                        end.linkTo(backgroundImage.start, margin = 8.dp)
+                        start.linkTo(parent.start, margin = majorMargin)
+                        end.linkTo(backgroundImage.start, margin = minorMargin)
                         width = Dimension.fillToConstraints
                     }
-                    .padding(bottom = dimensionResource(id = R.dimen.minor_100))
+                    .padding(bottom = minorMargin)
             )
 
             Text(
@@ -96,11 +99,11 @@ fun Banner(bannerState: JitmState.Banner) {
                 modifier = Modifier
                     .constrainAs(description) {
                         top.linkTo(title.bottom)
-                        start.linkTo(parent.start, margin = 16.dp)
-                        end.linkTo(backgroundImage.start, margin = 8.dp)
+                        start.linkTo(parent.start, margin = majorMargin)
+                        end.linkTo(backgroundImage.start, margin = minorMargin)
                         width = Dimension.fillToConstraints
                     }
-                    .padding(bottom = dimensionResource(id = R.dimen.minor_100))
+                    .padding(bottom = minorMargin)
             )
 
             TextButton(
@@ -108,7 +111,7 @@ fun Banner(bannerState: JitmState.Banner) {
                 contentPadding = PaddingValues(start = dimensionResource(id = R.dimen.minor_00)),
                 modifier = Modifier.constrainAs(ctaButton) {
                     top.linkTo(description.bottom)
-                    start.linkTo(parent.start, margin = 16.dp)
+                    start.linkTo(parent.start, margin = majorMargin)
                 }
             ) {
                 Text(
@@ -134,13 +137,14 @@ private fun BackgroundImage(
     bannerState: JitmState.Banner,
     modifier: Modifier = Modifier
 ) {
+    val imageWidth = dimensionResource(id = R.dimen.image_major_150)
     when (val icon = bannerState.backgroundImage) {
         is JitmState.Banner.LocalOrRemoteImage.Local -> {
             Image(
                 painter = painterResource(id = icon.drawableId),
                 contentDescription = null,
                 contentScale = ContentScale.Inside,
-                modifier = modifier.width(154.dp)
+                modifier = modifier.width(imageWidth)
             )
         }
         is JitmState.Banner.LocalOrRemoteImage.Remote -> {
@@ -156,7 +160,7 @@ private fun BackgroundImage(
                     .decoderFactory(SvgDecoder.Factory())
                     .build(),
                 contentDescription = null,
-                modifier = modifier.width(154.dp)
+                modifier = modifier.width(imageWidth)
             )
         }
     }
