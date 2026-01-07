@@ -11,7 +11,6 @@ import org.wordpress.android.fluxc.network.utils.getLong
 import org.wordpress.android.fluxc.network.utils.getString
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
-import java.lang.IllegalStateException
 
 typealias VariationAttributes = List<ProductVariantOption>
 
@@ -86,7 +85,6 @@ data class WCProductVariationModel(
     /**
      * Parses the images json array into a list of product images
      */
-    @Suppress("ReturnCount")
     fun getImageModel(): WCProductImageModel? {
         if (image.isNotBlank()) {
             try {

@@ -249,7 +249,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
         if (!ordersDataSource.hasMorePages) return

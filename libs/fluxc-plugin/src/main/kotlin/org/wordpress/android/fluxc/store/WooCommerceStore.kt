@@ -106,7 +106,6 @@ open class WooCommerceStore @Inject internal constructor(
         return withContext(Dispatchers.IO) { WooResult(getWooCommerceSites()) }
     }
 
-    @Suppress("ReturnCount")
     suspend fun fetchWooCommerceSite(site: SiteModel): WooResult<SiteModel> {
         val fetchResult = siteStore.fetchSite(site)
 

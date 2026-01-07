@@ -969,7 +969,7 @@ class OrderCreateEditViewModel @Inject constructor(
         )
     }
 
-    @Suppress("LongMethod", "ReturnCount")
+    @Suppress("LongMethod")
     private fun addScannedProduct(
         product: ModelProduct,
         selectedItems: List<SelectedItem>,
