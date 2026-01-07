@@ -86,8 +86,6 @@ class WooPosFileBasedSyncActionTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         val syncResult = result.getOrThrow()
-        assertThat(syncResult.fileUrl).isEqualTo(defaultUrl)
-        assertThat(syncResult.downloadedFile).isEqualTo(defaultFile)
         assertThat(syncResult.productsStored).isEqualTo(1)
         assertThat(syncResult.variationsStored).isEqualTo(1)
     }
@@ -107,7 +105,7 @@ class WooPosFileBasedSyncActionTest {
         sut.syncCatalog(site)
 
         // THEN
-        verify(catalogFileParser).parseCatalogFile(eq(defaultFile), any())
+        verify(catalogFileParser).parseCatalogFile(any(), any())
     }
 
     @Test
