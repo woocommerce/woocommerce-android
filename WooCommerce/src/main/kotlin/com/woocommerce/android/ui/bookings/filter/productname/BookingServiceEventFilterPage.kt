@@ -6,19 +6,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.woocommerce.android.R
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
@@ -77,15 +82,21 @@ private fun BookingServiceEventFilterSkeletons() {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                    .padding(18.dp),
                 horizontalArrangement = Arrangement.spacedBy(dimensionResource(id = dimen.major_100))
             ) {
                 SkeletonView(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(64.dp)
+                        .width(200.dp)
+                        .height(18.dp)
                 )
             }
+            Divider(
+                modifier = Modifier
+                    .offset(x = dimensionResource(id = R.dimen.major_100)),
+                color = colorResource(id = R.color.divider_color),
+                thickness = dimensionResource(id = R.dimen.minor_10)
+            )
         }
     }
 }
