@@ -1,5 +1,3 @@
-@file:Suppress("DestructuringDeclarationWithTooManyEntries")
-
 package com.woocommerce.android.ui.pospromo
 
 import android.content.res.Configuration
@@ -7,16 +5,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +26,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -38,8 +41,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -86,107 +87,91 @@ private fun PosPromoCarouselContent(
         pagerState.animateScrollToPage(state.currentPage)
     }
 
+    val scrollState = rememberScrollState()
+    val spacing = 16.dp
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight(),
+            .heightIn(max = 534.dp),
         shape = RoundedCornerShape(size = 8.dp)
     ) {
-        ConstraintLayout(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(534.dp)
-        ) {
-            val (image, closeButton, title, pager, indicator, button) = createRefs()
-            val spacing = 16.dp
-
-            Image(
-                painter = painterResource(id = state.imageRes),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .constrainAs(image) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    }
-                    .height(209.dp)
-            )
-
-            IconButton(
-                onClick = onDismiss,
-                modifier = Modifier
-                    .constrainAs(closeButton) {
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                    }
-            ) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(R.string.close),
-                    tint = colorResource(R.color.color_on_primary),
-                )
-            }
-
-            Text(
-                text = stringResource(state.titleRes),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .constrainAs(title) {
-                        top.linkTo(image.bottom, margin = spacing)
-                        start.linkTo(parent.start, margin = spacing)
-                        end.linkTo(parent.end, margin = spacing)
-                        width = Dimension.fillToConstraints
-                    }
-            )
-
-            HorizontalPager(
-                state = pagerState,
-                userScrollEnabled = false,
-                modifier = Modifier
-                    .constrainAs(pager) {
-                        top.linkTo(title.bottom, margin = spacing)
-                        start.linkTo(parent.start, margin = spacing)
-                        end.linkTo(parent.end, margin = spacing)
-                        bottom.linkTo(indicator.top, margin = spacing)
-                        width = Dimension.fillToConstraints
-                    }
-            ) { page ->
-                Text(
-                    text = stringResource(state.pages[page].descriptionRes),
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center,
-                    color = MaterialTheme.colorScheme.onSurface,
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Box {
+                Image(
+                    painter = painterResource(id = state.imageRes),
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = spacing),
+                        .height(209.dp)
                 )
+
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                        contentDescription = stringResource(R.string.close),
+                        tint = colorResource(R.color.color_on_primary),
+                    )
+                }
             }
 
-            PageIndicator(
-                pageCount = state.pages.size,
-                currentPage = pagerState.currentPage,
+            Column(
                 modifier = Modifier
-                    .constrainAs(indicator) {
-                        start.linkTo(parent.start)
-                        bottom.linkTo(button.top, margin = 32.dp)
-                        end.linkTo(parent.end)
-                    }
-            )
+                    .weight(1f)
+                    .verticalScroll(scrollState)
+                    .padding(horizontal = spacing),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Spacer(modifier = Modifier.height(spacing))
+
+                Text(
+                    text = stringResource(state.titleRes),
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(spacing))
+
+                HorizontalPager(
+                    state = pagerState,
+                    userScrollEnabled = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp)
+                ) { page ->
+                    Text(
+                        text = stringResource(state.pages[page].descriptionRes),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(spacing))
+
+                PageIndicator(
+                    pageCount = state.pages.size,
+                    currentPage = pagerState.currentPage,
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+            }
 
             if (isLastPage) {
                 WCColoredButton(
                     onClick = onExploreClick,
                     modifier = Modifier
-                        .constrainAs(button) {
-                            start.linkTo(parent.start, margin = spacing)
-                            end.linkTo(parent.end, margin = spacing)
-                            bottom.linkTo(parent.bottom, margin = spacing)
-                            width = Dimension.fillToConstraints
-                        }
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing)
+                        .padding(bottom = spacing)
                 ) {
                     Text(text = stringResource(R.string.woo_pos_promo_explore_button))
                 }
@@ -194,12 +179,9 @@ private fun PosPromoCarouselContent(
                 WCOutlinedButton(
                     onClick = onNextClick,
                     modifier = Modifier
-                        .constrainAs(button) {
-                            start.linkTo(parent.start, margin = spacing)
-                            end.linkTo(parent.end, margin = spacing)
-                            bottom.linkTo(parent.bottom, margin = spacing)
-                            width = Dimension.fillToConstraints
-                        }
+                        .fillMaxWidth()
+                        .padding(horizontal = spacing)
+                        .padding(bottom = spacing)
                 ) {
                     Text(text = stringResource(R.string.woo_pos_promo_next_button))
                 }
@@ -237,6 +219,10 @@ private fun PageIndicator(
 
 @Preview(name = "Page 1 - Light")
 @Preview(name = "Page 1 - Dark", uiMode = Configuration.UI_MODE_NIGHT_YES)
+@Preview(
+    name = "Page 1 - lanscape",
+    device = "spec:width=674dp,height=800dp,dpi=420,isRound=false,chinSize=0dp,orientation=landscape",
+)
 @Composable
 private fun PosPromoPage1Preview() {
     WooThemeWithBackground {
