@@ -68,7 +68,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     data class FileBasedSyncResult(
-        val fileUrl: String,
         val downloadedFile: File,
         val totalProducts: Int?,
         val completedAt: String?,
@@ -125,7 +124,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         return Result.success(
             createFileBasedSyncResult(
                 result = catalogResult,
-                fileUrl = url,
                 downloadedFile = downloadedFile,
                 productsStored = parsedData.products.size,
                 variationsStored = parsedData.variations.size
@@ -140,13 +138,11 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
     private fun createFileBasedSyncResult(
         result: WooPosGenerateCatalogResult,
-        fileUrl: String,
         downloadedFile: File,
         productsStored: Int,
         variationsStored: Int
     ): FileBasedSyncResult {
         return FileBasedSyncResult(
-            fileUrl = fileUrl,
             downloadedFile = downloadedFile,
             totalProducts = result.total,
             completedAt = result.completedAt,
