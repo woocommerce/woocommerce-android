@@ -5,14 +5,19 @@ import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.dispatchAndAwait
+import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
+import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import java.util.UUID
 import javax.inject.Inject
 
 class PushNotificationRepository @Inject constructor(
     private val pushNotificationsStore: PushNotificationsStore,
     private val selectedSite: SelectedSite,
-    private val appPrefsWrapper: AppPrefsWrapper
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val dispatcher: Dispatcher
 ) {
     suspend fun registerPushToken(token: String) {
         WooLog.d(
@@ -21,12 +26,16 @@ class PushNotificationRepository @Inject constructor(
         )
         selectedSite.getIfExists()?.let {
             val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
-            pushNotificationsStore.registerPushToken(
+            val result = pushNotificationsStore.registerPushToken(
                 site = it,
                 token = token,
                 deviceUuid = uuid
             )
-            // TODO ensure any WP.com token already registered is removed
+            if (!result.isError) {
+                dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
+                    NotificationActionBuilder.newUnregisterDeviceAction()
+                )
+            }
         } ?: run { WooLog.w(WooLog.T.NOTIFS, "No selected site, skipping PN registration") }
     }
 
