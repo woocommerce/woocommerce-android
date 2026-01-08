@@ -511,11 +511,7 @@ private fun ReviewRefundContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    val editReasonText = if (state.refundReason.isBlank()) {
-                        stringResource(R.string.woopos_orders_refund_reason_add)
-                    } else {
-                        stringResource(R.string.woopos_orders_edit_reason)
-                    }
+                    val editReasonText = stringResource(R.string.woopos_orders_edit_reason)
                     WooPosText(
                         text = editReasonText,
                         style = WooPosTypography.BodyMedium,

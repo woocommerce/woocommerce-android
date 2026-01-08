@@ -3821,6 +3821,7 @@
     <string name="woopos_orders_refund_reason_placeholder">Reason for refunding order</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
     <string name="woopos_orders_refund_reason_add">Add</string>
+    <string name="woopos_orders_refund_reason_save">Save</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>

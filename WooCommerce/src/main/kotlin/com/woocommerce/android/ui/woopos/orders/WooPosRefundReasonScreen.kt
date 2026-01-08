@@ -82,7 +82,13 @@ fun WooPosRefundReasonScreen(
             Spacer(modifier = Modifier.weight(1f))
 
             WooPosButton(
-                text = stringResource(R.string.woopos_orders_refund_reason_add),
+                text = stringResource(
+                    if (refundReason.isBlank()) {
+                        R.string.woopos_orders_refund_reason_add
+                    } else {
+                        R.string.woopos_orders_refund_reason_save
+                    }
+                ),
                 onClick = onSave,
                 modifier = Modifier
                     .fillMaxWidth()
