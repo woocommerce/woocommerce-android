@@ -539,6 +539,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(originalReason))
             viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
 

@@ -47,6 +47,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
     private var currentOrder: Order? = null
+    private var originalRefundReason: String = ""
     private val numberOfDecimalPoints: Int
 
     init {
@@ -156,12 +157,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.BackToSelectItemsClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
-            WooPosRefundUIEvent.EditReasonClicked ->
+            WooPosRefundUIEvent.EditReasonClicked -> {
+                originalRefundReason = currentState.refundReason
                 _state.value = currentState.copy(isEditingReason = true)
+            }
             WooPosRefundUIEvent.SaveReasonClicked ->
                 _state.value = currentState.copy(isEditingReason = false)
             WooPosRefundUIEvent.CancelReasonEditClicked ->
-                _state.value = currentState.copy(isEditingReason = false)
+                _state.value = currentState.copy(
+                    isEditingReason = false,
+                    refundReason = originalRefundReason
+                )
             is WooPosRefundUIEvent.OnRefundReasonChanged ->
                 _state.value = currentState.copy(refundReason = event.reason)
             WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
