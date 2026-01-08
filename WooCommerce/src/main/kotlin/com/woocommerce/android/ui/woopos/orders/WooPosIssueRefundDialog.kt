@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -77,6 +78,11 @@ fun WooPosIssueRefundDialog(
             ),
             onDismissRequest = handleDismiss
         ) {
+            val stateSnapshot = state
+            BackHandler(enabled = stateSnapshot !is WooPosRefundState.Content || !stateSnapshot.isEditingReason) {
+                handleDismiss()
+            }
+
             when (val currentState = state) {
                 is WooPosRefundState.Loading -> {
                     LoadingContent()
