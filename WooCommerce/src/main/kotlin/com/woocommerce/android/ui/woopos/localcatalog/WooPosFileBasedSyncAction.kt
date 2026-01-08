@@ -43,8 +43,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
             if (response.isFailure) {
                 if (++failedConsecutiveAttempts >= MAX_CONSECUTIVE_FAILED_ATTEMPTS) {
                     val error = response.exceptionOrNull()
-                    logger.e("WooPosFileBasedSyncAction: File-based sync failed " +
-                        "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures")
+                    logger.e(
+                        "WooPosFileBasedSyncAction: File-based sync failed " +
+                            "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
+                    )
                     return PosLocalCatalogSyncResult.Failure.NetworkError(
                         error?.message ?: "API error during catalog sync"
                     )
@@ -89,9 +91,12 @@ class WooPosFileBasedSyncAction @Inject constructor(
                     )
                 }
             }
+
             else -> null.also {
-                logger.d("WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
-                    "out of ${result.total} items")
+                logger.d(
+                    "WooPosFileBasedSyncAction: State: ${result.state}, Progress: ${result.progress}% " +
+                        "out of ${result.total} items"
+                )
             }
         }
     }

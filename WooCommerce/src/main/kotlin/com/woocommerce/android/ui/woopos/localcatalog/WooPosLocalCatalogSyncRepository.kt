@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -21,6 +22,7 @@ import javax.inject.Singleton
 @Singleton
 class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncAction: WooPosSyncAction,
+    private val posFileBasedSyncAction: WooPosFileBasedSyncAction,
     private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val preferencesRepository: WooPosPreferencesRepository,
@@ -47,12 +49,16 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             )
         )
 
-        return@withContext performSync(
-            site = site,
-            pageSize = PAGE_SIZE,
-            maxPages = MAX_PAGES_PER_FULL_SYNC,
-            maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
-        ).also { result ->
+        return@withContext if (FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH.isEnabled()) {
+            performFileBasedSync(site)
+        } else {
+            performSync(
+                site = site,
+                pageSize = PAGE_SIZE,
+                maxPages = MAX_PAGES_PER_FULL_SYNC,
+                maxTotalItems = MAX_TOTAL_ITEMS_FULL_SYNC
+            )
+        }.also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
@@ -95,6 +101,10 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun performFileBasedSync(site: SiteModel): PosLocalCatalogSyncResult {
+        return posFileBasedSyncAction.syncCatalog(site)
     }
 
     private suspend fun trackSyncCompleted(
