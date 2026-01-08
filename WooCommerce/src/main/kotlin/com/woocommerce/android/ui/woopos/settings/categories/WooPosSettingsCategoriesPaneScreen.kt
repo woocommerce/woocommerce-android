@@ -49,7 +49,7 @@ fun WooPosSettingsCategoriesPaneScreen(
 }
 
 @Composable
-private fun WooPosSettingsCategoriesPaneScreenContent(
+internal fun WooPosSettingsCategoriesPaneScreenContent(
     modifier: Modifier = Modifier,
     scrollableCategories: List<WooPosSettingsCategory>,
     fixedCategories: List<WooPosSettingsCategory>,

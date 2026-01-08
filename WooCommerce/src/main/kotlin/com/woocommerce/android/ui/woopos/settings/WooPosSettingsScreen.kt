@@ -2,9 +2,13 @@ package com.woocommerce.android.ui.woopos.settings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -12,14 +16,18 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.compose.ui.text.font.FontWeight
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.scanningsetup.WooPosScanningSetupDialog
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreen
+import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategoriesPaneScreenContent
 import com.woocommerce.android.ui.woopos.settings.categories.WooPosSettingsCategory
 import com.woocommerce.android.ui.woopos.settings.details.WooPosSettingsDetailPaneScreen
 import com.woocommerce.android.ui.woopos.settings.details.localcatalog.WooPosSyncErrorDialog
@@ -121,9 +129,57 @@ private fun WooPosSettingsContent(
 @WooPosPreview
 @Composable
 fun WooPosSettingsScreenPreview() {
+    val state = WooPosSettingsState()
     WooPosTheme {
-        WooPosSettingsScreen(
-            onNavigationEvent = {}
-        )
+        Row(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Column(
+                modifier = Modifier
+                    .weight(0.3f)
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            ) {
+                WooPosToolbar(
+                    titleText = stringResource(R.string.woopos_settings_title),
+                    onBackClicked = {},
+                )
+
+                WooPosSettingsCategoriesPaneScreenContent(
+                    scrollableCategories = listOf(
+                        WooPosSettingsCategory.STORE,
+                        WooPosSettingsCategory.HARDWARE,
+                        WooPosSettingsCategory.LOCAL_CATALOG,
+                    ),
+                    fixedCategories = listOf(WooPosSettingsCategory.HELP),
+                    selectedCategory = state.selectedCategory,
+                    onCategorySelected = {},
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
+
+            Column(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .background(MaterialTheme.colorScheme.surface)
+                    .fillMaxSize()
+            ) {
+                WooPosToolbar(
+                    modifier = Modifier
+                        .padding(
+                            top = WooPosSpacing.None.value,
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                        ),
+                    titleText = stringResource(state.currentDestination.titleRes),
+                    onBackClicked = null,
+                    titleStyle = WooPosTypography.Heading,
+                    titleFontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.size(WooPosSpacing.Medium.value))
+
+                Box(modifier = Modifier.fillMaxSize())
+            }
+        }
     }
 }
