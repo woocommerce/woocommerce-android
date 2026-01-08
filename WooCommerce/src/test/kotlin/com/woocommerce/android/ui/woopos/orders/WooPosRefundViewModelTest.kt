@@ -526,6 +526,38 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given editing reason with changes, when refund edit action is canceled, then refundReason is restored to original value`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val originalReason = "Original reason"
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(originalReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Modified reason"))
+
+            val editingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(editingState.refundReason).isEqualTo("Modified reason")
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.refundReason).isEqualTo(originalReason)
+            assertThat(updatedState.isEditingReason).isFalse()
+        }
+
+    @Test
     fun `given content state at ReviewRefund step, when BackToSelectItemsClicked event, then step changes to SelectItems`() =
         runTest {
             // GIVEN
