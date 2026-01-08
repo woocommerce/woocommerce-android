@@ -104,7 +104,18 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     }
 
     private suspend fun performFileBasedSync(site: SiteModel): PosLocalCatalogSyncResult {
-        return posFileBasedSyncAction.syncCatalog(site)
+        return when (val result = posFileBasedSyncAction.syncCatalog(site)) {
+            is WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success -> result.result.also {
+                if (result.lastModifiedDate != null) {
+                    syncTimestampManager.parseTimestampFromApi(result.lastModifiedDate)?.let { timestamp ->
+                        syncTimestampManager.storeProductsLastSyncTimestamp(timestamp)
+                        syncTimestampManager.storeVariationsLastSyncTimestamp(timestamp)
+                    }
+                }
+            }
+
+            is WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure -> result.result
+        }
     }
 
     private suspend fun trackSyncCompleted(

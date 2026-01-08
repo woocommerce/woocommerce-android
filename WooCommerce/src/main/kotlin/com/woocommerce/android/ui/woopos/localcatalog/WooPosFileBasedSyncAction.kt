@@ -23,8 +23,18 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val MAX_POLL_INTERVAL_MS = 30_000L
         private const val BACKOFF_MULTIPLIER = 1.3
     }
+    sealed class WooPosFileBasedSyncResult {
+        data class Success(
+            val result: PosLocalCatalogSyncResult.Success,
+            val lastModifiedDate: String?
+        ) : WooPosFileBasedSyncResult()
 
-    suspend fun syncCatalog(site: SiteModel): PosLocalCatalogSyncResult {
+        data class Failure(
+            val result: PosLocalCatalogSyncResult.Failure
+        ) : WooPosFileBasedSyncResult()
+    }
+
+    suspend fun syncCatalog(site: SiteModel): WooPosFileBasedSyncResult {
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
@@ -46,8 +56,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
                         "WooPosFileBasedSyncAction: File-based sync failed " +
                             "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
                     )
-                    return PosLocalCatalogSyncResult.Failure.NetworkError(
-                        error?.message ?: "API error during catalog sync"
+                    return WooPosFileBasedSyncResult.Failure(
+                        PosLocalCatalogSyncResult.Failure.NetworkError(
+                            error?.message ?: "API error during catalog sync"
+                        )
                     )
                 } else {
                     logger.w("Poll attempt $attemptCount failed: ${response.exceptionOrNull()?.message}")
@@ -66,8 +78,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
         }
 
         logger.e("WooPosFileBasedSyncAction: Catalog generation timed out after $MAX_POLL_ATTEMPTS attempts")
-        return PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout(
-            "Catalog generation is taking longer than expected."
+        return WooPosFileBasedSyncResult.Failure(
+            PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout(
+                "Catalog generation is taking longer than expected."
+            )
         )
     }
 
@@ -75,17 +89,18 @@ class WooPosFileBasedSyncAction @Inject constructor(
         result: WooPosGenerateCatalogResult,
         site: SiteModel,
         startTime: Long
-    ): PosLocalCatalogSyncResult? {
+    ): WooPosFileBasedSyncResult? {
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
-                val url = result.url
-                if (url != null) {
+                if (result.url != null) {
                     logger.d("WooPosFileBasedSyncAction: Catalog available, starting download.")
-                    processDownloadAndStore(url, site, startTime)
+                    processDownloadAndStore(result, site, startTime)
                 } else {
                     logger.e("WooPosFileBasedSyncAction: Catalog generation completed but URL is missing")
-                    PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                        "Catalog generation completed but download URL is missing."
+                    WooPosFileBasedSyncResult.Failure(
+                        PosLocalCatalogSyncResult.Failure.InvalidResponse(
+                            "Catalog generation completed but download URL is missing."
+                        )
                     )
                 }
             }
@@ -100,23 +115,27 @@ class WooPosFileBasedSyncAction @Inject constructor(
     }
 
     private suspend fun processDownloadAndStore(
-        url: String,
+        result: WooPosGenerateCatalogResult,
         site: SiteModel,
         startTime: Long
-    ): PosLocalCatalogSyncResult {
-        val downloadedFile = catalogFileDownloader.downloadCatalogFile(url, site.localId())
+    ): WooPosFileBasedSyncResult {
+        val downloadedFile = catalogFileDownloader.downloadCatalogFile(result.url!!, site.localId())
             .onFailureLog("Failed to download catalog file")
             .getOrElse {
-                return PosLocalCatalogSyncResult.Failure.NetworkError(
-                    it.message ?: "Failed to download catalog file"
+                return WooPosFileBasedSyncResult.Failure(
+                    PosLocalCatalogSyncResult.Failure.NetworkError(
+                        it.message ?: "Failed to download catalog file"
+                    )
                 )
             }
 
         val parsedData = catalogFileParser.parseCatalogFile(downloadedFile, site.localId())
             .onFailureLog("Failed to parse catalog file")
             .getOrElse {
-                return PosLocalCatalogSyncResult.Failure.InvalidResponse(
-                    it.message ?: "Failed to parse catalog file"
+                return WooPosFileBasedSyncResult.Failure(
+                    PosLocalCatalogSyncResult.Failure.InvalidResponse(
+                        it.message ?: "Failed to parse catalog file"
+                    )
                 )
             }
 
@@ -126,8 +145,10 @@ class WooPosFileBasedSyncAction @Inject constructor(
             variations = parsedData.variations
         ).onFailureLog("Failed to store catalog data")
             .getOrElse {
-                return PosLocalCatalogSyncResult.Failure.DatabaseError(
-                    it.message ?: "Failed to store catalog data"
+                return WooPosFileBasedSyncResult.Failure(
+                    PosLocalCatalogSyncResult.Failure.DatabaseError(
+                        it.message ?: "Failed to store catalog data"
+                    )
                 )
             }
 
@@ -140,10 +161,14 @@ class WooPosFileBasedSyncAction @Inject constructor(
                 "Duration: ${syncDuration}ms."
         )
 
-        return PosLocalCatalogSyncResult.Success(
-            productsSynced = parsedData.products.size,
-            variationsSynced = parsedData.variations.size,
-            syncDurationMs = syncDuration
+        return WooPosFileBasedSyncResult.Success(
+            PosLocalCatalogSyncResult.Success(
+                productsSynced = parsedData.products.size,
+                variationsSynced = parsedData.variations.size,
+                syncDurationMs = syncDuration
+            ),
+            // Using scheduledAt (not completedAt) to not miss changes made during generation
+            lastModifiedDate = result.scheduledAt
         )
     }
 
