@@ -4251,8 +4251,8 @@
     <string name="bookings_filter_customer">Customer</string>
     <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
-    <string name="bookings_filter_title_service_event">Service / Event</string>
-    <string name="bookings_filter_search_service_event">Search service / event</string>
+    <string name="bookings_filter_title_service">Service</string>
+    <string name="bookings_filter_search_service">Search service</string>
     <string name="bookings_filter_default">Any</string>
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
@@ -4354,4 +4354,14 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+
+    <!-- Woo POS Promo Carousel -->
+    <string name="woo_pos_promo_title">Run POS with the\nWooCommerce mobile app</string>
+    <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
+    <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
+    <string name="woo_pos_promo_page3_description">Quick and simple to learn.</string>
+    <string name="woo_pos_promo_page4_description">Built right into the WooCommerce mobile app — no extra plugins needed.</string>
+    <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
+    <string name="woo_pos_promo_next_button">Next</string>
+    <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
 </resources>
