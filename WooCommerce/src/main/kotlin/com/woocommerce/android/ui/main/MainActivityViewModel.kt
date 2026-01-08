@@ -150,6 +150,10 @@ class MainActivityViewModel @Inject constructor(
                 triggerEvent(ViewTapToPay)
             }
 
+            ResolveAppLink.Action.ViewWooPosPromo -> {
+                triggerEvent(ViewWooPosPromo)
+            }
+
             is ResolveAppLink.Action.ViewUrlInWebView -> {
                 triggerEvent(ViewUrlInWebView(event.url))
             }
@@ -350,6 +354,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    object ViewWooPosPromo : Event()
     object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(
         val url: String,

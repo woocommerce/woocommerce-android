@@ -21,6 +21,7 @@ class ResolveAppLink @Inject constructor(
             uri endsWith "mobile/payments" -> preparePaymentsAction(uri!!)
             uri endsWith "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
             uri startsWith "/products/hardware" -> prepareUrlInWebViewAction(uri!!)
+            uri startsWith "/in-person-payments" -> prepareWooPosPromoAction(uri!!)
             else -> Action.DoNothing
         }
     }
@@ -33,6 +34,8 @@ class ResolveAppLink @Inject constructor(
         data,
         Action.ViewUrlInWebView(data.toString())
     )
+
+    private fun prepareWooPosPromoAction(data: Uri) = handleUriWithOptionalBlogId(data, Action.ViewWooPosPromo)
 
     private fun prepareOrderDetailsAction(data: Uri): Action {
         val (blogId, orderId) = try {
@@ -108,6 +111,7 @@ class ResolveAppLink @Inject constructor(
         object ViewStats : Action()
         object ViewPayments : Action()
         object ViewTapToPay : Action()
+        object ViewWooPosPromo : Action()
         data class ViewUrlInWebView(val url: String) : Action()
         object DoNothing : Action()
     }

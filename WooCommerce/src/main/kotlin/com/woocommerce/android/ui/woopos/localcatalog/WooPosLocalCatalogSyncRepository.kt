@@ -150,7 +150,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         )
     }
 
-    @Suppress("ReturnCount")
     private suspend fun performSync(
         site: SiteModel,
         pageSize: Int,

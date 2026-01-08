@@ -58,7 +58,6 @@ class AccountRepository @Inject constructor(
             (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
-    @Suppress("ReturnCount")
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {

@@ -24,7 +24,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val BACKOFF_MULTIPLIER = 1.3
     }
 
-    @Suppress("ReturnCount")
     suspend fun syncCatalog(site: SiteModel): PosLocalCatalogSyncResult {
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
@@ -72,7 +71,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         )
     }
 
-    @Suppress("ReturnCount")
     private suspend fun processPollingResult(
         result: WooPosGenerateCatalogResult,
         site: SiteModel,

@@ -549,7 +549,6 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
-    @Suppress("ReturnCount")
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
         val cachedVariations = getCachedVariations(productId)
         val cachedVariation = cachedVariations.find { it.remoteVariationId == variationId }
