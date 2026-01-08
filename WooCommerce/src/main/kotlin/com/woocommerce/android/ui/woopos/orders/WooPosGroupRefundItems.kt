@@ -1,22 +1,18 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.RefundRequestTax
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
 import javax.inject.Inject
 
-class WooPosGroupRefundItems @Inject constructor(
-    private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore,
-) {
+class WooPosGroupRefundItems @Inject constructor() {
     operator fun invoke(
         refundableItems: List<WooPosRefundableItem>,
-        order: Order
+        order: Order,
+        numberOfDecimals: Int,
     ): List<RefundRequestItem> {
         return refundableItems
             .groupBy { it.orderItemId }
@@ -29,32 +25,32 @@ class WooPosGroupRefundItems @Inject constructor(
                 RefundRequestItem(
                     itemId = orderItemId,
                     quantity = refundQuantity,
-                    refundTotal = calculateRefundTotal(originalItem, refundQuantity),
-                    refundTax = calculateRefundTaxes(originalItem, refundQuantity)
+                    refundTotal = calculateRefundTotal(originalItem, refundQuantity, numberOfDecimals),
+                    refundTax = calculateRefundTaxes(originalItem, refundQuantity, numberOfDecimals)
                 )
             }
     }
 
     private fun calculateRefundTotal(
         originalItem: Order.Item,
-        quantity: Int
+        quantity: Int,
+        numberOfDecimals: Int,
     ): BigDecimal {
-        return originalItem.price.multiply(quantity.toBigDecimal())
+        return originalItem.price
+            .multiply(quantity.toBigDecimal())
+            .setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }
 
     private fun calculateRefundTaxes(
         originalItem: Order.Item,
-        quantity: Int
+        quantity: Int,
+        numberOfDecimals: Int,
     ): List<RefundRequestTax> {
         check(originalItem.quantity > 0f) {
             "Order item ${originalItem.itemId} has invalid quantity ${originalItem.quantity}."
         }
 
         val refundQuantity = quantity.toBigDecimal()
-        val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-        checkNotNull(numberOfDecimals) {
-            "Failed to get site settings in order to determine number of decimals for refund tax calculations."
-        }
         return originalItem.taxes.map { tax: Order.LineTaxEntry ->
             // Calculate per-unit tax with high precision to preserve accuracy
             val perUnitTax = tax.taxAmount.divide(
@@ -63,13 +59,13 @@ class WooPosGroupRefundItems @Inject constructor(
             )
 
             // Apply rounding to the final refund (tax) total
-            val refundTotal = refundQuantity
+            val refundTaxTotal = refundQuantity
                 .multiply(perUnitTax)
                 .setScale(numberOfDecimals, RoundingMode.HALF_UP)
 
             RefundRequestTax(
                 taxRateId = tax.rateId,
-                refundTotal = refundTotal
+                refundTotal = refundTaxTotal
             )
         }
     }
