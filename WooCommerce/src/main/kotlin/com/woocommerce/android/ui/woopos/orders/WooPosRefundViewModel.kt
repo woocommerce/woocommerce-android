@@ -146,7 +146,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
         ) {
             _state.value = currentState.copy(
                 step = WooPosRefundState.Content.RefundStep.SelectItems,
-                isEditingReason = false
+                isEditingReason = false,
+                refundReason = if (currentState.isEditingReason) {
+                    originalRefundReason
+                } else {
+                    currentState.refundReason
+                }
             )
         }
     }

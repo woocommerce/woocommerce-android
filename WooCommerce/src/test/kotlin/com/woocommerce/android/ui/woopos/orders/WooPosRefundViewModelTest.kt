@@ -631,6 +631,41 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given editing reason with unsaved changes, when DialogDismissed event, then refundReason is reverted to original value`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val originalReason = "Original reason"
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(originalReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Unsaved changes"))
+
+            val editingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(editingState.refundReason).isEqualTo("Unsaved changes")
+            assertThat(editingState.isEditingReason).isTrue()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.refundReason).isEqualTo(originalReason)
+            assertThat(updatedState.isEditingReason).isFalse()
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+        }
+
+    @Test
     fun `given non-content state, when onUIEvent called, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(
