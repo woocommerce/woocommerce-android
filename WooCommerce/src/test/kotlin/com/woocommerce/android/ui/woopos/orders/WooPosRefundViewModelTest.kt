@@ -17,6 +17,8 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.argThat
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -209,9 +211,9 @@ class WooPosRefundViewModelTest {
             assertThat(contentState.currency).isEqualTo("USD")
             assertThat(contentState.refundableItems).hasSize(2)
             assertThat(contentState.itemsCount).isEqualTo(2)
-            assertThat(contentState.subtotal).isEqualTo(BigDecimal("40.00"))
-            assertThat(contentState.taxes).isEqualTo(BigDecimal("4.00"))
-            assertThat(contentState.total).isEqualTo(BigDecimal("44.00"))
+            assertThat(contentState.subtotal).isEqualByComparingTo(BigDecimal("40.00"))
+            assertThat(contentState.taxes).isEqualByComparingTo(BigDecimal("4.00"))
+            assertThat(contentState.total).isEqualByComparingTo(BigDecimal("44.00"))
         }
 
     @Test
@@ -394,9 +396,11 @@ class WooPosRefundViewModelTest {
 
             // THEN
             val state = viewModel.state.value as WooPosRefundState.Content
-            assertThat(state.subtotal).isEqualTo(BigDecimal("35.50")) // 10 + 10 + 15.50
-            assertThat(state.taxes).isEqualTo(BigDecimal("3.55")) // 1 + 1 + 1.55
-            assertThat(state.total).isEqualTo(BigDecimal("39.05")) // 35.50 + 3.55
+            assertThat(
+                state.subtotal
+            ).isEqualByComparingTo(BigDecimal("36")) // rounded: 10 + 10 + 15.50 -> 20 + 16 = 36
+            assertThat(state.taxes).isEqualByComparingTo(BigDecimal("3.55")) // 1 + 1 + 1.55
+            assertThat(state.total).isEqualByComparingTo(BigDecimal("39.55")) // 36 + 3.55
         }
 
     @Test
@@ -705,7 +709,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -751,7 +755,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -773,13 +777,13 @@ class WooPosRefundViewModelTest {
 
             // THEN
             verify(refundStore).createItemsRefund(
-                site = testSite,
-                orderId = testOrderId,
-                amount = BigDecimal("22.00"), // subtotal (20.00) + taxes (2.00)
-                reason = "",
-                restockItems = true,
-                autoRefund = false,
-                items = groupedItems
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
             )
         }
 
@@ -852,7 +856,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -903,7 +907,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -954,7 +958,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),

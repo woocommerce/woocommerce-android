@@ -40,7 +40,7 @@ class WooPosGetRefundableItems @Inject constructor(
             if (maxQuantity <= 0) {
                 emptyList()
             } else {
-                val unitPrice = calculateUnitPrice(orderItem, numberOfDecimals)
+                val unitPrice = orderItem.price
                 val unitTax = calculateUnitTax(orderItem, numberOfDecimals)
                 val formattedUnitPrice = PriceUtils.formatCurrency(unitPrice, order.currency, currencyFormatter)
                 val formattedUnitTax = PriceUtils.formatCurrency(unitTax, order.currency, currencyFormatter)
@@ -51,7 +51,7 @@ class WooPosGetRefundableItems @Inject constructor(
                         productId = orderItem.productId,
                         variationId = orderItem.variationId,
                         name = orderItem.name,
-                        unitPrice = unitPrice,
+                        unitPrice = orderItem.price,
                         unitTax = unitTax,
                         formattedUnitPrice = formattedUnitPrice,
                         formattedUnitTax = formattedUnitTax,
@@ -77,10 +77,6 @@ class WooPosGetRefundableItems @Inject constructor(
         return productItems
             .associate { it.itemId to (it.quantity - (refundedByItemId[it.itemId] ?: 0f)) }
             .filterValues { it > 0 }
-    }
-
-    private fun calculateUnitPrice(item: Order.Item, numberOfDecimals: Int): BigDecimal {
-        return item.price.setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }
 
     private fun calculateUnitTax(item: Order.Item, numberOfDecimals: Int): BigDecimal {

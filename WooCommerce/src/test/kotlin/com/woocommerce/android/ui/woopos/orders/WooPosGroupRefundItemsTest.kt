@@ -40,7 +40,7 @@ class WooPosGroupRefundItemsTest {
                 couponsEnabled = true
             )
         )
-        sut = WooPosGroupRefundItems(selectedSite, wooCommerceStore)
+        sut = WooPosGroupRefundItems()
     }
 
     private fun createRefundableItem(
@@ -95,7 +95,7 @@ class WooPosGroupRefundItemsTest {
         val order = createOrder(emptyList())
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).isEmpty()
@@ -119,7 +119,7 @@ class WooPosGroupRefundItemsTest {
         val order = createOrder(listOf(orderItem))
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -151,7 +151,7 @@ class WooPosGroupRefundItemsTest {
         val order = createOrder(listOf(orderItem))
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -180,7 +180,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(3)
@@ -209,7 +209,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(3)
@@ -240,7 +240,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -262,7 +262,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(1)
@@ -285,7 +285,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(2)
@@ -308,7 +308,7 @@ class WooPosGroupRefundItemsTest {
         )
 
         // WHEN
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, 2)
 
         // THEN
         assertThat(result).hasSize(1)
