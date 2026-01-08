@@ -135,7 +135,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         val syncDuration = System.currentTimeMillis() - startTime
         logger.d(
-            "File-based sync completed successfully. " +
+            "WooPosFileBasedSyncAction: File-based sync completed successfully. " +
                 "Products: ${parsedData.products.size}, Variations: ${parsedData.variations.size}. " +
                 "Duration: ${syncDuration}ms."
         )
