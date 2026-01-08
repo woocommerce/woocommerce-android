@@ -84,10 +84,10 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
-        val syncResult = result.getOrThrow()
-        assertThat(syncResult.productsStored).isEqualTo(1)
-        assertThat(syncResult.variationsStored).isEqualTo(1)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+        val syncResult = result as PosLocalCatalogSyncResult.Success
+        assertThat(syncResult.productsSynced).isEqualTo(1)
+        assertThat(syncResult.variationsSynced).isEqualTo(1)
     }
 
     @Test
@@ -139,7 +139,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
         verify(posLocalCatalogStore, times(3)).generateCatalogOrGetStatus(site)
     }
 
@@ -152,7 +152,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
         verify(posLocalCatalogStore, times(2)).generateCatalogOrGetStatus(site)
     }
 
@@ -165,7 +165,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 
     @Test
@@ -177,7 +177,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure::class.java)
     }
 
     @Test
@@ -189,8 +189,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()?.message).contains("timed out")
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout::class.java)
     }
 
     @Test
@@ -202,8 +201,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
-        assertThat(result.exceptionOrNull()?.message).contains("URL is missing")
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.InvalidResponse::class.java)
     }
 
     @Test
@@ -215,7 +213,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure::class.java)
     }
 
     @Test
@@ -239,7 +237,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure::class.java)
     }
 
     @Test
@@ -263,7 +261,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isFailure).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure::class.java)
     }
 
     @Test
@@ -276,23 +274,6 @@ class WooPosFileBasedSyncActionTest {
 
         // THEN
         verify(catalogFileDownloader, never()).cleanupOldCatalogFiles(any())
-    }
-
-    @Test
-    fun `given happy path, when syncCatalog, then includes total and completedAt in result`() = runTest {
-        // GIVEN
-        val total = 100
-        val completedAt = "2024-01-15T10:30:00Z"
-        givenCatalogGenerationCompletedWithDetails(total = total, completedAt = completedAt)
-
-        // WHEN
-        val result = sut.syncCatalog(site)
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-        val syncResult = result.getOrThrow()
-        assertThat(syncResult.totalProducts).isEqualTo(total)
-        assertThat(syncResult.completedAt).isEqualTo(completedAt)
     }
 
     @Test
@@ -309,10 +290,10 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
-        val syncResult = result.getOrThrow()
-        assertThat(syncResult.productsStored).isEqualTo(0)
-        assertThat(syncResult.variationsStored).isEqualTo(0)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+        val syncResult = result as PosLocalCatalogSyncResult.Success
+        assertThat(syncResult.productsSynced).isEqualTo(0)
+        assertThat(syncResult.variationsSynced).isEqualTo(0)
     }
 
     @Test
@@ -329,10 +310,10 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
-        val syncResult = result.getOrThrow()
-        assertThat(syncResult.productsStored).isEqualTo(1)
-        assertThat(syncResult.variationsStored).isEqualTo(0)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+        val syncResult = result as PosLocalCatalogSyncResult.Success
+        assertThat(syncResult.productsSynced).isEqualTo(1)
+        assertThat(syncResult.variationsSynced).isEqualTo(0)
     }
 
     @Test
@@ -349,10 +330,10 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
-        val syncResult = result.getOrThrow()
-        assertThat(syncResult.productsStored).isEqualTo(0)
-        assertThat(syncResult.variationsStored).isEqualTo(1)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+        val syncResult = result as PosLocalCatalogSyncResult.Success
+        assertThat(syncResult.productsSynced).isEqualTo(0)
+        assertThat(syncResult.variationsSynced).isEqualTo(1)
     }
 
     @Test
@@ -364,7 +345,7 @@ class WooPosFileBasedSyncActionTest {
         val result = sut.syncCatalog(site)
 
         // THEN
-        assertThat(result.isSuccess).isTrue()
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
     }
 
     private suspend fun givenCatalogGenerationCompleted() {
@@ -376,20 +357,6 @@ class WooPosFileBasedSyncActionTest {
                         url = defaultUrl,
                         total = 10,
                         completedAt = "2024-01-01T12:00:00Z"
-                    )
-                )
-            )
-    }
-
-    private suspend fun givenCatalogGenerationCompletedWithDetails(total: Int, completedAt: String) {
-        whenever(posLocalCatalogStore.generateCatalogOrGetStatus(site))
-            .thenReturn(
-                Result.success(
-                    WooPosGenerateCatalogResult(
-                        state = WooPosGenerateCatalogState.COMPLETED,
-                        url = defaultUrl,
-                        total = total,
-                        completedAt = completedAt
                     )
                 )
             )
