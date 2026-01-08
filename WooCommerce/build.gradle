@@ -39,6 +39,12 @@ fladle {
     maxTestShards = 50
     shardTime = 120
     smartFlankGcsPath = "gs://fladle/woocommerce-android/smart-flank/JUnitReport.xml"
+
+    environmentVariables = [
+            "API_URL"     : secretProperties.getProperty("e2eApiUrl", ""),
+            "API_EMAIL"   : secretProperties.getProperty("e2eApiEmail", ""),
+            "API_PASSWORD": secretProperties.getProperty("e2eApiPassword", "")
+    ]
 }
 
 sentry {
@@ -89,7 +95,10 @@ android {
         targetSdkVersion gradle.ext.targetSdkVersion
 
         testInstrumentationRunner 'com.woocommerce.android.WooCommerceTestRunner'
-        testInstrumentationRunnerArguments clearPackageData: 'true'
+        testInstrumentationRunnerArguments clearPackageData: 'true',
+                API_URL: secretProperties.getProperty("e2eApiUrl", ""),
+                API_EMAIL: secretProperties.getProperty("e2eApiEmail", ""),
+                API_PASSWORD: secretProperties.getProperty("e2eApiPassword", "")
         // TODO remove this once the hilt migration is complete
         javaCompileOptions.annotationProcessorOptions.arguments['dagger.hilt.disableModulesHaveInstallInCheck'] = 'true'
 
