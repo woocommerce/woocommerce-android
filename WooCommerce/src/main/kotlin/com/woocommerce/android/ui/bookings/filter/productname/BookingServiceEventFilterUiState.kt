@@ -40,6 +40,8 @@ data class BookingServiceEventFilterUiState(
     } else {
         selectedProducts.values.any { it.productId == product.id }
     }
+
+    val skeletonVisible: Boolean = isLoading && availableProducts.isEmpty()
 }
 
 data class BookableProduct(

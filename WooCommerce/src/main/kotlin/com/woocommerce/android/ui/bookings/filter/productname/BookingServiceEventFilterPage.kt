@@ -59,7 +59,7 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
             ),
         )
         HorizontalDivider(thickness = 0.5.dp)
-        if (state.isLoading) {
+        if (state.skeletonVisible) {
             BookingServiceEventFilterSkeletons()
         } else {
             BookingsFilterSelectionPage(items = state.items)
