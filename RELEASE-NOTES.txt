@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.0
+-----
+- [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
+
 23.9
 -----
 - [Internal] Updated JITM banner design and migrated to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15155]
