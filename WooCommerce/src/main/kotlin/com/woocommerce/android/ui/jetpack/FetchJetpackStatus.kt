@@ -38,7 +38,7 @@ class FetchJetpackStatus @Inject constructor(
         object ConnectionForbidden : JetpackStatusFetchResponse
     }
 
-    @Suppress("ReturnCount", "NestedBlockDepth")
+    @Suppress("NestedBlockDepth")
     suspend operator fun invoke(
         site: SiteModel,
         useApplicationPasswords: Boolean,

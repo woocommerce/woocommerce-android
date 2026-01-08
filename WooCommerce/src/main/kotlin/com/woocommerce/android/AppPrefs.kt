@@ -19,6 +19,7 @@ import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_PREFERRED_P
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_STATEMENT_DESCRIPTOR
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_FOREVER
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER
+import com.woocommerce.android.AppPrefs.DeletablePrefKey.CLIENT_SIDE_BANNER_HIDDEN
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.DATABASE_DOWNGRADED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.IMAGE_OPTIMIZE_ENABLED
 import com.woocommerce.android.AppPrefs.DeletablePrefKey.ORDER_FILTER_CUSTOM_DATE_RANGE_END
@@ -137,6 +138,7 @@ object AppPrefs {
         IS_SITE_WPCOM_SUSPENDED,
         JETPACK_APP_PASSWORDS_ENABLED,
         WOO_POS_LOCAL_CATALOG_ENABLED,
+        CLIENT_SIDE_BANNER_HIDDEN,
         WOO_CORE_PUSH_DEVICE_UUID
     }
 
@@ -463,6 +465,48 @@ object AppPrefs {
         selfHostedSiteId: Long
     ) = PrefKeyString(
         "$CARD_READER_UPSELL_BANNER_DIALOG_DISMISSED_REMIND_ME_LATER:$localSiteId:$remoteSiteId:$selfHostedSiteId"
+    )
+
+    fun setClientSideBannerHidden(
+        bannerId: String,
+        isHidden: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) {
+        setBoolean(
+            getClientSideBannerHiddenKey(
+                bannerId,
+                localSiteId,
+                remoteSiteId,
+                selfHostedSiteId
+            ),
+            isHidden
+        )
+    }
+
+    fun isClientSideBannerHidden(
+        bannerId: String,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = getBoolean(
+        getClientSideBannerHiddenKey(
+            bannerId,
+            localSiteId,
+            remoteSiteId,
+            selfHostedSiteId
+        ),
+        false
+    )
+
+    private fun getClientSideBannerHiddenKey(
+        bannerId: String,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = PrefKeyString(
+        "$CLIENT_SIDE_BANNER_HIDDEN:$bannerId:$localSiteId:$remoteSiteId:$selfHostedSiteId"
     )
 
     /**

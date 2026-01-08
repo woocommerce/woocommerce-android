@@ -1383,6 +1383,7 @@
         -->
 
     <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_hide_content">Hide this content</string>
     <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accept payments easily</string>
     <string name="card_reader_upsell_card_reader_banner_description">Start selling in person in under 20 minutes with our card reader.</string>
@@ -3195,6 +3196,10 @@
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
 
+    <string name="pos_client_side_banner_title">Run WooCommerce POS on tablets</string>
+    <string name="pos_client_side_banner_description">Take in‑person payments with WooCommerce POS. Set up on a tablet and start selling today.</string>
+    <string name="pos_client_side_banner_cta">Learn more</string>
+
     <!--
     First product published congratulatory feature
     -->
@@ -4349,4 +4354,14 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+
+    <!-- Woo POS Promo Carousel -->
+    <string name="woo_pos_promo_title">Run POS with the\nWooCommerce mobile app</string>
+    <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
+    <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
+    <string name="woo_pos_promo_page3_description">Quick and simple to learn.</string>
+    <string name="woo_pos_promo_page4_description">Built right into the WooCommerce mobile app — no extra plugins needed.</string>
+    <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
+    <string name="woo_pos_promo_next_button">Next</string>
+    <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
 </resources>

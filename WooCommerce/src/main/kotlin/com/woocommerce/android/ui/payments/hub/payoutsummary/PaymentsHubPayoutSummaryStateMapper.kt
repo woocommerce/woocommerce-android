@@ -72,7 +72,6 @@ class PaymentsHubPayoutSummaryStateMapper @Inject constructor(
             currencyCode = currency,
         )
 
-    @Suppress("ReturnCount")
     private fun WooPaymentsDepositsOverview.Account?.fundsAvailableIn(): PaymentsHubPayoutSummaryState.Info.Interval? {
         return when (this?.depositsSchedule?.interval?.lowercase()) {
             "daily" -> PaymentsHubPayoutSummaryState.Info.Interval.Daily
