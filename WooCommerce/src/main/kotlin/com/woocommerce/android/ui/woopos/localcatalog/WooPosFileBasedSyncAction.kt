@@ -99,7 +99,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private suspend fun processDownloadAndStore(
         url: String,
         site: SiteModel,
