@@ -136,7 +136,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 if (currentState is WooPosRefundState.Content &&
                     currentState.step != WooPosRefundState.Content.RefundStep.Processing
                 ) {
-                    _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+                    _state.value = currentState.copy(
+                        step = WooPosRefundState.Content.RefundStep.SelectItems,
+                        isEditingReason = false
+                    )
                 }
             }
             else -> {
@@ -147,6 +150,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
                         _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
                     WooPosRefundUIEvent.BackToSelectItemsClicked ->
                         _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+                    WooPosRefundUIEvent.EditReasonClicked ->
+                        _state.value = currentState.copy(isEditingReason = true)
+                    WooPosRefundUIEvent.SaveReasonClicked ->
+                        _state.value = currentState.copy(isEditingReason = false)
+                    WooPosRefundUIEvent.CancelReasonEditClicked ->
+                        _state.value = currentState.copy(isEditingReason = false)
+                    is WooPosRefundUIEvent.OnRefundReasonChanged ->
+                        _state.value = currentState.copy(refundReason = event.reason)
                     WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
                         _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
                     WooPosRefundUIEvent.BackToReviewClicked ->
@@ -186,7 +197,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 site = selectedSite.get(),
                 orderId = contentState.orderId,
                 amount = contentState.total,
-                reason = "",
+                reason = contentState.refundReason,
                 restockItems = true,
                 autoRefund = false,
                 items = refundItems

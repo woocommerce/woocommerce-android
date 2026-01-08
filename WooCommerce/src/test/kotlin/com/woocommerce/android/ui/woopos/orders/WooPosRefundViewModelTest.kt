@@ -423,6 +423,105 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given content state at ReviewRefund step, when EditReasonClicked event, then isEditingReason is true`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            val reviewState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewState.isEditingReason).isFalse()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.isEditingReason).isTrue()
+        }
+
+    @Test
+    fun `given editing reason, when OnRefundReasonChanged event, then refundReason is updated`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            val editingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(editingState.refundReason).isEmpty()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer bought wrong item"))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.refundReason).isEqualTo("Customer bought wrong item")
+        }
+
+    @Test
+    fun `given editing reason, when SaveReasonClicked event, then isEditingReason is false`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            val editingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(editingState.isEditingReason).isTrue()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.isEditingReason).isFalse()
+        }
+
+    @Test
+    fun `given editing reason, when CancelReasonEditClicked event, then isEditingReason is false`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+            val editingState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(editingState.isEditingReason).isTrue()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.isEditingReason).isFalse()
+        }
+
+    @Test
     fun `given content state at ReviewRefund step, when BackToSelectItemsClicked event, then step changes to SelectItems`() =
         runTest {
             // GIVEN
@@ -636,7 +735,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given valid refund request, when refund confirmed, then refund store called with correct parameters`() =
+    fun `given valid refund request without reason, when refund confirmed, then refund store called with empty reason`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -678,6 +777,57 @@ class WooPosRefundViewModelTest {
                 orderId = testOrderId,
                 amount = BigDecimal("22.00"), // subtotal (20.00) + taxes (2.00)
                 reason = "",
+                restockItems = true,
+                autoRefund = false,
+                items = groupedItems
+            )
+        }
+
+    @Test
+    fun `given valid refund request with reason, when refund confirmed, then refund store called with provided reason`() =
+        runTest {
+            // GIVEN
+            val testReason = "Customer bought wrong item"
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = testSite,
+                orderId = testOrderId,
+                amount = BigDecimal("22.00"),
+                reason = testReason,
                 restockItems = true,
                 autoRefund = false,
                 items = groupedItems

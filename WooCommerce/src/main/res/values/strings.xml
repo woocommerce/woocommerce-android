@@ -3818,6 +3818,8 @@
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
+    <string name="woopos_orders_enter_refund_reason">Enter refund reason</string>
+    <string name="woopos_orders_refund_reason_placeholder">Add a reason for this refund (optional)</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
