@@ -350,6 +350,21 @@ class NotificationStore @Inject constructor(
         }
     }
 
+    suspend fun unregisterWpComPushToken(): UnregisterDeviceResponsePayload {
+        val payload = coroutineEngine.withDefaultContext(T.API, this, "unregisterWpComDevice") {
+            val deviceId = preferences.getString(WPCOM_PUSH_DEVICE_SERVER_ID, null)
+            if (deviceId.isNullOrEmpty()) {
+                UnregisterDeviceResponsePayload(
+                    DeviceUnregistrationError(DeviceUnregistrationErrorType.GENERIC_ERROR, "Missing device id")
+                )
+            } else {
+                notificationRestClient.unregisterDevice(deviceId)
+            }
+        }
+
+        return handleUnregisteredDevicePayload(payload)
+    }
+
     @Deprecated("EventBus is deprecated.", ReplaceWith("registerDevice(token, appKey)"))
     private fun registerDevice(payload: RegisterDevicePayload) {
         val uuid = preferences.getString(WPCOM_PUSH_DEVICE_UUID, null) ?: generateAndStoreUUID()
@@ -401,6 +416,12 @@ class NotificationStore @Inject constructor(
     }
 
     private fun handleUnregisteredDevice(payload: UnregisterDeviceResponsePayload) {
+        handleUnregisteredDevicePayload(payload)
+    }
+
+    private fun handleUnregisteredDevicePayload(
+        payload: UnregisterDeviceResponsePayload
+    ): UnregisterDeviceResponsePayload {
         val onDeviceUnregistered = OnDeviceUnregistered()
 
         preferences.edit().apply {
@@ -419,6 +440,7 @@ class NotificationStore @Inject constructor(
         }
 
         emitChange(onDeviceUnregistered)
+        return payload
     }
 
     private fun generateAndStoreUUID(): String {
