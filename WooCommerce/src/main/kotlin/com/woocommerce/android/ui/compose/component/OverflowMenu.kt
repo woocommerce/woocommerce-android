@@ -22,8 +22,6 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
 @Composable
@@ -45,10 +43,6 @@ fun <T> WCOverflowMenu(
             )
         }
         DropdownMenu(
-            offset = DpOffset(
-                x = dimensionResource(id = R.dimen.major_100),
-                y = 0.dp
-            ),
             expanded = showMenu,
             onDismissRequest = { showMenu = false }
         ) {

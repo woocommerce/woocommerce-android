@@ -24,7 +24,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         private const val BACKOFF_MULTIPLIER = 1.3
     }
 
-    @Suppress("ReturnCount")
     suspend fun syncCatalog(
         site: SiteModel
     ): Result<FileBasedSyncResult> {
@@ -73,7 +72,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
         val variationsStored: Int
     )
 
-    @Suppress("ReturnCount")
     private suspend fun processPollingResult(
         result: WooPosGenerateCatalogResult,
         site: SiteModel

@@ -70,7 +70,7 @@ class JitmStoreInMemoryCache
     }
 
     suspend fun dismissJitmMessage(messagePath: String, jitmId: String, featureClass: String): WooResult<Boolean> {
-        if (!selectedSite.exists()) WooResult(false)
+        if (!selectedSite.exists()) return WooResult(false)
 
         evictFirstMessage(messagePath)
         return jitmStore.dismissJitmMessage(selectedSite.get(), jitmId, featureClass)
