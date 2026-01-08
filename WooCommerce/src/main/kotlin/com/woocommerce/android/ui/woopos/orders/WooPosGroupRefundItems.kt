@@ -53,7 +53,7 @@ class WooPosGroupRefundItems @Inject constructor(
         val refundQuantity = quantity.toBigDecimal()
         val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
         checkNotNull(numberOfDecimals) {
-            "Failed to get site settings in order to determine number of decimals for refund tex calculations."
+            "Failed to get site settings in order to determine number of decimals for refund tax calculations."
         }
         return originalItem.taxes.map { tax: Order.LineTaxEntry ->
             // Calculate per-unit tax with high precision to preserve accuracy
