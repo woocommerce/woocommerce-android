@@ -31,9 +31,9 @@ class WooPosCalculateRefundSubtotalTest {
 
     @Test
     fun `given empty list, when invoke called, then returns zero`() {
-        val result = sut(emptyList())
+        val result = sut(emptyList(), 2)
 
-        assertThat(result).isEqualTo(BigDecimal.ZERO)
+        assertThat(result).isEqualTo(BigDecimal("0.00"))
     }
 
     @Test
@@ -42,7 +42,7 @@ class WooPosCalculateRefundSubtotalTest {
             createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("20.00"))
         )
 
-        val result = sut(refundableItems)
+        val result = sut(refundableItems, 2)
 
         assertThat(result).isEqualTo(BigDecimal("20.00"))
     }
@@ -55,7 +55,7 @@ class WooPosCalculateRefundSubtotalTest {
             createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("20.00"), rowIndex = 2)
         )
 
-        val result = sut(refundableItems)
+        val result = sut(refundableItems, 2)
 
         assertThat(result).isEqualTo(BigDecimal("60.00"))
     }
@@ -68,7 +68,7 @@ class WooPosCalculateRefundSubtotalTest {
             createRefundableItem(orderItemId = 3L, unitPrice = BigDecimal("30.00"))
         )
 
-        val result = sut(refundableItems)
+        val result = sut(refundableItems, 2)
 
         assertThat(result).isEqualTo(BigDecimal("60.00"))
     }
@@ -84,7 +84,7 @@ class WooPosCalculateRefundSubtotalTest {
             createRefundableItem(orderItemId = 3L, unitPrice = BigDecimal("15.00"), rowIndex = 2)
         )
 
-        val result = sut(refundableItems)
+        val result = sut(refundableItems, 2)
 
         assertThat(result).isEqualTo(BigDecimal("85.00"))
     }
