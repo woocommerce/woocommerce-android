@@ -22,8 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -63,7 +61,7 @@ fun WooPosIssueRefundDialog(
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val state: WooPosRefundState by viewModel.state.collectAsStateWithLifecycle()
 
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
@@ -72,45 +70,32 @@ fun WooPosIssueRefundDialog(
         }
     }
 
-    WooPosDialogWrapper(
-        isVisible = true,
-        dialogBackgroundContentDescription = stringResource(
-            R.string.woopos_orders_issue_refund_content_description
-        ),
-        onDismissRequest = handleDismiss
-    ) {
-        when (val currentState = state) {
-            is WooPosRefundState.Loading -> {
-                LoadingContent()
-            }
+    Box(modifier = Modifier.fillMaxSize()) {
+        WooPosDialogWrapper(
+            isVisible = true,
+            dialogBackgroundContentDescription = stringResource(
+                R.string.woopos_orders_issue_refund_content_description
+            ),
+            onDismissRequest = handleDismiss
+        ) {
+            when (val currentState = state) {
+                is WooPosRefundState.Loading -> {
+                    LoadingContent()
+                }
 
-            is WooPosRefundState.Content -> {
-                when (currentState.step) {
-                    WooPosRefundState.Content.RefundStep.SelectItems -> {
-                        SelectItemsContent(
-                            state = currentState,
-                            onDismissRequest = handleDismiss,
-                            onContinue = {
-                                viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-                            }
-                        )
-                    }
-
-                    WooPosRefundState.Content.RefundStep.ReviewRefund -> {
-                        if (currentState.isEditingReason) {
-                            RefundReasonInputForm(
+                is WooPosRefundState.Content -> {
+                    when (currentState.step) {
+                        WooPosRefundState.Content.RefundStep.SelectItems -> {
+                            SelectItemsContent(
                                 state = currentState,
-                                onReasonChanged = { reason ->
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))
-                                },
-                                onSave = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
-                                },
-                                onCancel = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
+                                onDismissRequest = handleDismiss,
+                                onContinue = {
+                                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
                                 }
                             )
-                        } else {
+                        }
+
+                        WooPosRefundState.Content.RefundStep.ReviewRefund -> {
                             ReviewRefundContent(
                                 state = currentState,
                                 onDismissRequest = handleDismiss,
@@ -125,7 +110,6 @@ fun WooPosIssueRefundDialog(
                                 }
                             )
                         }
-                    }
 
                     WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
                         ConfirmRefundContent(
@@ -174,6 +158,23 @@ fun WooPosIssueRefundDialog(
                     onDismissRequest = handleDismiss
                 )
             }
+        }
+        }
+
+        val currentState = state
+        if (currentState is WooPosRefundState.Content && currentState.isEditingReason) {
+            WooPosRefundReasonScreen(
+                refundReason = currentState.refundReason,
+                onReasonChanged = { reason ->
+                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))
+                },
+                onSave = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
+                },
+                onCancel = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
+                }
+            )
         }
     }
 }
@@ -312,77 +313,6 @@ private fun SelectItemsContent(
         WooPosButton(
             text = stringResource(R.string.continue_button),
             onClick = onContinue,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.XLarge.value)
-        )
-    }
-}
-
-@Composable
-private fun RefundReasonInputForm(
-    state: WooPosRefundState.Content,
-    onReasonChanged: (String) -> Unit,
-    onSave: () -> Unit,
-    onCancel: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.XLarge.value),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            WooPosText(
-                text = stringResource(R.string.woopos_orders_enter_refund_reason),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            IconButton(
-                modifier = Modifier.size(48.dp),
-                onClick = onCancel,
-            ) {
-                Icon(
-                    modifier = Modifier.size(32.dp),
-                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(R.string.close),
-                    tint = MaterialTheme.colorScheme.onSurface
-                )
-            }
-        }
-
-        OutlinedTextField(
-            value = state.refundReason,
-            onValueChange = onReasonChanged,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(horizontal = WooPosSpacing.XLarge.value),
-            placeholder = {
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_refund_reason_placeholder),
-                    style = WooPosTypography.BodyLarge,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest
-                )
-            },
-            textStyle = WooPosTypography.BodyLarge.style,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = WooPosTheme.colors.outlineVariant,
-                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-            )
-        )
-
-        WooPosButton(
-            text = stringResource(R.string.save),
-            onClick = onSave,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(WooPosSpacing.XLarge.value)

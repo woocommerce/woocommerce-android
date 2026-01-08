@@ -805,7 +805,7 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(refundableItems, testOrder)).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -828,13 +828,13 @@ class WooPosRefundViewModelTest {
 
             // THEN
             verify(refundStore).createItemsRefund(
-                site = testSite,
-                orderId = testOrderId,
-                amount = BigDecimal("22.00"),
-                reason = testReason,
-                restockItems = true,
-                autoRefund = false,
-                items = groupedItems
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(testReason),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
             )
         }
 
