@@ -529,6 +529,8 @@ private fun ReviewRefundContent(
                         text = state.refundReason,
                         style = WooPosTypography.BodyMedium,
                         fontWeight = FontWeight.Normal,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
                         color = WooPosTheme.colors.onSurfaceVariantHighest
                     )
                 }
