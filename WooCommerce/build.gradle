@@ -19,9 +19,7 @@ fladle {
     variant = "vanillaDebug"
     serviceAccountCredentials = rootProject.file(".configure-files/firebase.secrets.json")
     testTargets = [
-            "notPackage com.woocommerce.android.e2e.tests.screenshot",
-            "notClass com.woocommerce.android.e2e.tests.ui.OrdersRealAPI",
-            "notClass com.woocommerce.android.e2e.tests.ui.ProductsRealAPI"
+            "notPackage com.woocommerce.android.e2e.tests.screenshot"
     ]
     devices = [
             ["model": "MediumPhone.arm", "version": "35"]
