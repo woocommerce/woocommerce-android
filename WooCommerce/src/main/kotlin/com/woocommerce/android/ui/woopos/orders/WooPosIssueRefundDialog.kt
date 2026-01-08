@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -111,54 +110,54 @@ fun WooPosIssueRefundDialog(
                             )
                         }
 
-                    WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
-                        ConfirmRefundContent(
-                            state = currentState,
-                            isProcessing = false,
-                            onDismissRequest = handleDismiss,
-                            onConfirm = {
-                                viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
-                            },
-                            onBack = {
-                                viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
-                            }
-                        )
-                    }
-                    WooPosRefundState.Content.RefundStep.Processing -> {
-                        ConfirmRefundContent(
-                            state = currentState,
-                            isProcessing = true,
-                            onDismissRequest = {},
-                            onConfirm = {},
-                            onBack = {}
-                        )
+                        WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
+                            ConfirmRefundContent(
+                                state = currentState,
+                                isProcessing = false,
+                                onDismissRequest = handleDismiss,
+                                onConfirm = {
+                                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+                                },
+                                onBack = {
+                                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+                                }
+                            )
+                        }
+                        WooPosRefundState.Content.RefundStep.Processing -> {
+                            ConfirmRefundContent(
+                                state = currentState,
+                                isProcessing = true,
+                                onDismissRequest = {},
+                                onConfirm = {},
+                                onBack = {}
+                            )
+                        }
                     }
                 }
-            }
 
-            is WooPosRefundState.Error -> {
-                ErrorContent(
-                    message = currentState.message,
-                    onDismissRequest = handleDismiss
-                )
-            }
+                is WooPosRefundState.Error -> {
+                    ErrorContent(
+                        message = currentState.message,
+                        onDismissRequest = handleDismiss
+                    )
+                }
 
-            is WooPosRefundState.NoRefundableItems -> {
-                NoItemsContent(onDismissRequest = handleDismiss)
+                is WooPosRefundState.NoRefundableItems -> {
+                    NoItemsContent(onDismissRequest = handleDismiss)
+                }
+                is WooPosRefundState.RefundSuccess -> {
+                    RefundSuccessContent(
+                        state = currentState,
+                        onDismissRequest = handleDismiss
+                    )
+                }
+                is WooPosRefundState.RefundError -> {
+                    ErrorContent(
+                        message = currentState.message,
+                        onDismissRequest = handleDismiss
+                    )
+                }
             }
-            is WooPosRefundState.RefundSuccess -> {
-                RefundSuccessContent(
-                    state = currentState,
-                    onDismissRequest = handleDismiss
-                )
-            }
-            is WooPosRefundState.RefundError -> {
-                ErrorContent(
-                    message = currentState.message,
-                    onDismissRequest = handleDismiss
-                )
-            }
-        }
         }
 
         val currentState = state
