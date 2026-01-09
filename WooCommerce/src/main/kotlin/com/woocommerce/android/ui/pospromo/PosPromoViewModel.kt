@@ -11,17 +11,33 @@ import javax.inject.Inject
 @HiltViewModel
 class PosPromoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val analyticsTracker: PosPromoAnalyticsTracker,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _state = MutableStateFlow(PosPromoState())
     val state: StateFlow<PosPromoState> = _state.asStateFlow()
 
+    init {
+        analyticsTracker.trackModalViewed()
+        analyticsTracker.trackSlideViewed(slideIndex = 0)
+    }
+
     fun onNextClick() {
         val currentPage = _state.value.currentPage
         val maxPage = _state.value.pages.size - 1
         if (currentPage < maxPage) {
-            _state.value = _state.value.copy(currentPage = currentPage + 1)
+            val newPage = currentPage + 1
+            _state.value = _state.value.copy(currentPage = newPage)
+            analyticsTracker.trackSlideViewed(slideIndex = newPage)
         }
+    }
+
+    fun onDismiss() {
+        analyticsTracker.trackModalDismissed()
+    }
+
+    fun onExploreClick() {
+        analyticsTracker.trackExploreClicked()
     }
 
     companion object {

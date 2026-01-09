@@ -38,9 +38,13 @@ class PosPromoDialogFragment : DialogFragment() {
                     val state by viewModel.state.collectAsState()
                     PosPromoCarouselDialog(
                         state = state,
-                        onDismiss = { dismiss() },
+                        onDismiss = {
+                            viewModel.onDismiss()
+                            dismiss()
+                        },
                         onNextClick = viewModel::onNextClick,
                         onExploreClick = {
+                            viewModel.onExploreClick()
                             ChromeCustomTabUtils.launchUrl(requireContext(), PosPromoViewModel.WOO_POS_DOCS_URL)
                             dismiss()
                         }
