@@ -61,7 +61,6 @@ fun WooPosIssueRefundDialog(
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
-    val state: WooPosRefundState by viewModel.state.collectAsStateWithLifecycle()
 
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
@@ -70,7 +69,12 @@ fun WooPosIssueRefundDialog(
         }
     }
 
+    BackHandler {
+        handleDismiss()
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
+        val state by viewModel.state.collectAsStateWithLifecycle()
         WooPosDialogWrapper(
             isVisible = true,
             dialogBackgroundContentDescription = stringResource(
@@ -78,11 +82,6 @@ fun WooPosIssueRefundDialog(
             ),
             onDismissRequest = handleDismiss
         ) {
-            val stateSnapshot = state
-            BackHandler(enabled = stateSnapshot !is WooPosRefundState.Content || !stateSnapshot.isEditingReason) {
-                handleDismiss()
-            }
-
             when (val currentState = state) {
                 is WooPosRefundState.Loading -> LoadingContent()
                 is WooPosRefundState.Content -> ContentStateHandler(currentState, viewModel, handleDismiss)
@@ -92,11 +91,10 @@ fun WooPosIssueRefundDialog(
                 is WooPosRefundState.RefundError -> ErrorContent(currentState.message, handleDismiss)
             }
         }
-
-        val currentState = state
-        if (currentState is WooPosRefundState.Content && currentState.isEditingReason) {
+        val stateSnapshot = state
+        if (stateSnapshot is WooPosRefundState.Content && stateSnapshot.isEditingReason) {
             WooPosRefundReasonScreen(
-                refundReason = currentState.refundReason,
+                refundReason = stateSnapshot.refundReason,
                 onReasonChanged = { reason ->
                     viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))
                 },
