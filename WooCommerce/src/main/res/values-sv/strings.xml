@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-18 18:54:07+0000
+Translation-Revision-Date: 2025-12-01 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: sv_SE
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">%1$s kan inte längre delta i ”%2$s” på %3$s kl. %4$s.</string>
+    <string name="booking_customer_note_label">Obs!</string>
+    <string name="booking_appointment_label_team_member">Teammedlem</string>
+    <string name="booking_details_section_header">BOKNINGSDETALJER</string>
+    <string name="booking_filter_date_time_swap_info">Ditt tidsval sorterades om för att skapa ett giltigt intervall</string>
+    <string name="bookings_filter_date_filter_value">Anpassat intervall</string>
+    <string name="bookings_filter_time_picker_title">Välj tid</string>
+    <string name="bookings_filter_date_to">TILL</string>
+    <string name="bookings_filter_date_from">FRÅN</string>
+    <string name="bookings_filter_time_label">Tid</string>
+    <string name="bookings_filter_date_label">Datum</string>
+    <string name="bookings_filter_search_service_event">Sök tjänst eller händelse</string>
+    <string name="bookings_filter_title_member">Teammedlem</string>
+    <string name="bookings_empty_state_description_upcoming_v2">Nya bokningar visas här när kunder väljer tidsinställda tjänster eller registrerar sig för evenemang.</string>
+    <string name="bookings_empty_state_description_today_v2">Alla bokningar med tidsinställning för idag visas här.</string>
+    <string name="bookings_empty_state_description_all">Bokningar visas här när kunder börjar tidsinställa dina tjänster eller registrera sig för evenemang.</string>
+    <string name="bookings_empty_state_title_all">Inga bokningar än</string>
+    <string name="bookings_resources_fetch_error">Fel vid hämtning av teammedlemmar</string>
+    <string name="product_type_bookable_service">Tjänst</string>
     <string name="booking_not_selected">Bokning har inte valts</string>
     <string name="bookings_filters_selected_option_content_description">Valt filteralternativ</string>
     <string name="bookings_filter_customer">Kund</string>
@@ -53,7 +72,7 @@ Language: sv_SE
     <string name="bookings_filters_enabled_title">Filter • %d</string>
     <string name="woopos_search_orders_error_description">Försök igen.</string>
     <string name="woopos_search_orders_error_title">Kan inte ladda beställningar</string>
-    <string name="woopos_search_orders_empty_description">Vi kunde inte hitta några matchande beställningar– prova att justera din sökterm.</string>
+    <string name="woopos_search_orders_empty_description">Vi kunde inte hitta några beställningar med det namnet. Prova justera din sökterm.</string>
     <string name="woopos_search_orders_empty_title">Inga beställningar hittades</string>
     <string name="woopos_search_orders">Sök beställningar</string>
     <string name="woopos_orders_details_totals_card_content_description">Genomgång av beställningsbelopp</string>
@@ -95,7 +114,7 @@ Language: sv_SE
     <string name="booking_cancel_dialog_confirm">Ja, annullera den</string>
     <string name="booking_cancel_dialog_keep">Nej, behåll den</string>
     <string name="booking_cancel_dialog_message">%1$s kommer inte längre att kunna närvara på ”%2$s” den %3$s kl. %4$s.</string>
-    <string name="booking_cancel_dialog_title">Annullera bokning</string>
+    <string name="booking_cancel_dialog_title_v2">Avbryt bokning?</string>
     <string name="booking_fetch_error">Fel vid hämtning av bokning</string>
     <string name="bookings_filter_default">Valfri</string>
     <string name="bookings_filter_title_service_event">Tjänst/evenemang</string>
@@ -104,7 +123,6 @@ Language: sv_SE
     <string name="bookings_filter_title_type">Bokningstyp</string>
     <string name="bookings_filter_title_payment_status">Betalningsstatus</string>
     <string name="bookings_filter_title_attendance_status">Närvarostatus</string>
-    <string name="bookings_filter_title_team_member">Tilldelad teammedlem</string>
     <string name="bookings_filters_show_bookings">Visa bokningar</string>
     <string name="bookings_filters_default_title">Filter</string>
     <string name="bookings_empty_state_clear_filters_button">Rensa filter</string>
@@ -112,9 +130,6 @@ Language: sv_SE
     <string name="bookings_empty_state_description_with_filters">Inga bokningar matchar dina filter. Prova att justera dem för att se fler resultat.</string>
     <string name="bookings_search_no_results_with_filters">Vi kunde inte hitta några bokningar med det namnet – prova att justera din sökterm eller dina filter för att se fler resultat.</string>
     <string name="bookings_search_no_results_without_filters">Vi kunde inte hitta några bokningar med det namnet — prova att justera din sökterm för att se fler resultat.</string>
-    <string name="bookings_empty_state_description_upcoming">Du har inga framtida möten eller händelser schemalagda än.</string>
-    <string name="bookings_empty_state_description_today">Du har inga möten eller händelser schemalagda för idag.</string>
-    <string name="bookings_empty_state_description_default">Inkommande bokningar visas här, där du kan visa och hantera dem.</string>
     <string name="bookings_empty_state_title_upcoming">Inga kommande bokningar</string>
     <string name="bookings_empty_state_title_today">Inga bokningar idag</string>
     <string name="bookings_empty_state_title_default">Inga bokningar hittades</string>
@@ -150,12 +165,11 @@ Language: sv_SE
     <string name="woopos_settings_local_catalog_size">Storlek</string>
     <string name="woopos_settings_local_catalog_status">Katalogstatus</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Hantera kataloginställningar</string>
-    <string name="woopos_settings_local_catalog_category">Katalog</string>
+    <string name="woopos_settings_local_catalog_category">Produktkatalog</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Dela din upplevelse i en snabb 2-minuters undersökning och hjälp oss att bli bättre.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">Hur fungerar POS för dig?</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">Gör en snabb 2-minuters undersökning för att hjälpa oss att utforma funktioner som du kommer att älska.</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">Funderar du på personlig försäljning?</string>
-    <string name="product_type_booking">Bokningsbar produkt</string>
     <string name="date_time_connector">kl.</string>
     <string name="booking_payment_view_order">Visa beställning</string>
     <string name="booking_payment_mark_as_paid">Markera som betald</string>
@@ -184,13 +198,10 @@ Language: sv_SE
     <string name="booking_payment_status_pending_confirmation">Väntar på bekräftelse</string>
     <string name="booking_payment_status_paid">Betald</string>
     <string name="booking_payment_status_unpaid">Obetald</string>
-    <string name="booking_appointment_label_price">Pris</string>
     <string name="booking_appointment_label_duration">Varaktighet</string>
     <string name="booking_appointment_label_location">Plats</string>
-    <string name="booking_appointment_label_staff">Tilldelad personal</string>
     <string name="booking_appointment_label_time">Tid</string>
     <string name="booking_appointment_label_date">Datum</string>
-    <string name="booking_appointment_details_header">MÖTESINFORMATION</string>
     <string name="booking_details_title">Bokning %s</string>
     <string name="bookings_tab_all">Alla</string>
     <string name="bookings_tab_upcoming">Kommande</string>
@@ -404,8 +415,8 @@ Language: sv_SE
     <string name="woopos_search_items_error_description">Försök igen.</string>
     <string name="woopos_search_coupons_error_title">Kan inte ladda rabattkoder</string>
     <string name="woopos_search_items_error_title">Kan inte ladda produkter</string>
-    <string name="woopos_search_empty_coupons_description">Vi kunde inte hitta några matchande rabattkoder – prova att justera din sökterm.</string>
-    <string name="woopos_search_empty_description">Vi kunde inte hitta några matchande produkter – prova att justera din sökterm.</string>
+    <string name="woopos_search_empty_coupons_description">Vi kunde inte hitta några matchande rabattkoder. Prova justera din sökterm.</string>
+    <string name="woopos_search_empty_description">Vi kunde inte hitta några matchande produkter. Prova justera din sökterm.</string>
     <string name="woopos_search_coupons_empty_title">Inga rabattkoder hittades</string>
     <string name="woopos_search_coupons">Sök rabattkoder</string>
     <string name="woopos_coupons_pagination_error_description">Kontrollera din internetanslutning och försök igen.</string>

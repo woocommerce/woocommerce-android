@@ -41,8 +41,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
         whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
         whenever(
             whatsNewStore.fetchRemoteAnnouncements(
-                versionName = "1.0.0",
-                appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+                versionName = "1.0.0"
             )
         ).thenReturn(response)
 
@@ -63,8 +62,7 @@ class WordPressConnectionCheckUseCaseTest : BaseUnitTest() {
         whenever(buildConfigWrapper.versionName).thenReturn("1.0.0")
         whenever(
             whatsNewStore.fetchRemoteAnnouncements(
-                versionName = "1.0.0",
-                appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+                versionName = "1.0.0"
             )
         ).thenReturn(response)
 

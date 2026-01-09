@@ -1,12 +1,14 @@
 package com.woocommerce.android.ui.bookings.list
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.AppConstants
 import com.woocommerce.android.R
 import com.woocommerce.android.model.GetLocations
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.filter.data.BookingFilterRepository
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
@@ -16,6 +18,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
@@ -53,10 +56,12 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val dateFormatter = mock<DateFormatter>()
+
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val getLocations = mock<GetLocations>()
     private val resourceProvider = mock<ResourceProvider>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
+    private val bookingMapper = BookingMapper(dateFormatter, currencyFormatter, getLocations, resourceProvider)
     private val bookingFiltersFlow = MutableStateFlow(BookingFilters())
     private val bookingFilterRepository: BookingFilterRepository = mock {
         on { bookingFiltersFlow } doReturn bookingFiltersFlow
@@ -72,6 +77,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     ) {
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(bookings))
         whenever(isWindowClassLargeThanCompact()).thenReturn(false)
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Dec 12, 2025, 11:00 AM")
         prepareMocks()
         savedStateHandle = SavedStateHandle()
         viewModel = BookingListViewModel(
@@ -299,6 +305,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         // WHEN
         val initialState = viewModel.state.getOrAwaitValue()
         initialState.searchState.onQueryChanged("test query")
+        advanceTimeBy(AppConstants.SEARCH_TYPING_DELAY_MS + 1)
         val stateWithQuery = viewModel.state.getOrAwaitValue()
         stateWithQuery.searchState.onQueryChanged(null)
         advanceUntilIdle()
@@ -406,6 +413,31 @@ class BookingListViewModelTest : BaseUnitTest() {
         val navigations = events.filterIsInstance<BookingListViewModel.NavigateToBookingDetails>()
         assertThat(navigations.last().bookingId).isEqualTo(1234L)
         assertThat(savedStateHandle.get<Long>(BookingListViewModel.KEY_BOOKING_SELECTED_ON_BIG_SCREEN)).isEqualTo(1234L)
+    }
+
+    @Test
+    fun `when search query is opened and closed without typing, then bookings are NOT refetched`() = testBlocking {
+        // GIVEN
+        setup()
+
+        // WHEN
+        val initialState = viewModel.state.getOrAwaitValue()
+        // Search opened -> query starts empty
+        initialState.searchState.onQueryChanged("")
+        advanceUntilIdle()
+
+        val stateWithEmptyQuery = viewModel.state.getOrAwaitValue()
+        // Search closed -> query becomes null
+        stateWithEmptyQuery.searchState.onQueryChanged(null)
+        advanceUntilIdle()
+
+        // THEN
+        // Should only be called once for the initial load
+        verify(bookingListHandler, times(1)).loadBookings(
+            searchQuery = anyOrNull(),
+            filters = any(),
+            sortBy = any()
+        )
     }
 
     private fun getSampleBooking(id: Int): Booking {

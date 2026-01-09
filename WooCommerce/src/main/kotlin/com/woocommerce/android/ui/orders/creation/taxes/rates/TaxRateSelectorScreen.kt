@@ -29,8 +29,6 @@ import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -132,8 +130,7 @@ fun EmptyTaxRateSelectorList(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimensionResource(id = R.dimen.major_100)),
-            trailingIcon =
-            {
+            trailingIcon = {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_external),
                     contentDescription = stringResource(id = R.string.tax_rate_selector_empty_list_button_alt),
@@ -150,7 +147,7 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
         navigationIcon = {
             IconButton(onClick = onDismiss) {
                 Icon(
-                    imageVector = Icons.Filled.Clear,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     contentDescription = stringResource(R.string.close),
                 )
             }
@@ -172,7 +169,9 @@ private fun Toolbar(onDismiss: () -> Unit, onInfoIconClicked: () -> Unit) {
 
 @Composable
 private fun BottomBar(onAutoRateSwitchStateToggled: () -> Unit, state: ViewState) = ConstraintLayout(
-    modifier = Modifier.fillMaxWidth().clickable { onAutoRateSwitchStateToggled() }
+    modifier = Modifier
+        .fillMaxWidth()
+        .clickable { onAutoRateSwitchStateToggled() }
 ) {
     val (label, subtitle, autoRateSwitch, divider) = createRefs()
     Divider(
@@ -253,6 +252,7 @@ private fun TaxRates(
                     EmptyTaxRateSelectorList(onEmptyScreenButtonClicked)
                 }
             }
+
             else -> {
                 item {
                     Text(

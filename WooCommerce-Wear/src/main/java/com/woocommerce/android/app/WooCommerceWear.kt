@@ -8,7 +8,6 @@ import dagger.hilt.android.HiltAndroidApp
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.persistence.WellSqlConfig
-import org.wordpress.android.fluxc.persistence.WellSqlConfig.Companion.ADDON_WOOCOMMERCE
 import org.wordpress.android.fluxc.utils.ErrorUtils.OnUnexpectedError
 import javax.inject.Inject
 
@@ -20,7 +19,7 @@ open class WooCommerceWear : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        WellSql.init(WellSqlConfig(applicationContext, ADDON_WOOCOMMERCE))
+        WellSql.init(WellSqlConfig(applicationContext))
         crashLogging.get().initialize()
     }
 

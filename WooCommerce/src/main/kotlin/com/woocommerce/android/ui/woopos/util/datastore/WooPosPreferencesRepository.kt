@@ -17,8 +17,10 @@ class WooPosPreferencesRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: DataStore<Preferences>
 ) {
-    private val recentProductSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
-    private val recentCouponSearchesSiteSpecificKey = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
+    private val recentProductSearchesSiteSpecificKey: Preferences.Key<String>
+        get() = buildSiteSpecificKey(RECENT_PRODUCT_SEARCHES_KEY)
+    private val recentCouponSearchesSiteSpecificKey: Preferences.Key<String>
+        get() = buildSiteSpecificKey(RECENT_COUPON_SEARCHES_KEY)
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
     private val lastUsedTimestampKey = longPreferencesKey(POS_LAST_USED_TIMESTAMP_KEY)
     private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)

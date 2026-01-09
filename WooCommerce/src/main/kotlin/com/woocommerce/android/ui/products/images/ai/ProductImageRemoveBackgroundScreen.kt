@@ -11,8 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -31,9 +29,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.graphics.createBitmap
 import androidx.core.net.toUri
@@ -61,7 +61,7 @@ fun ProductImageRemoveBackgroundScreen(
                 navigationIcon = {
                     IconButton(onClick = onBackPressed) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                             contentDescription = stringResource(R.string.back)
                         )
                     }
@@ -164,7 +164,9 @@ private fun BottomActionMenu(
     onSaveClicked: () -> Unit
 ) {
     Surface(
-        modifier = modifier.fillMaxWidth().padding(dimensionResource(R.dimen.major_100)),
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.major_100)),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = dimensionResource(R.dimen.appbar_elevation),
         shape = RoundedCornerShape(dimensionResource(R.dimen.minor_100))

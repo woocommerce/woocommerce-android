@@ -492,7 +492,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * Generates a new catalog on the server.
      *
      * @param [site] The site to generate catalog for
-     * @return [Result] containing PosGenerateCatalogResult with job ID or error
+     * @return [Result] containing PosGenerateCatalogResult with catalog generation details or error
      */
     suspend fun generateCatalog(
         site: SiteModel
@@ -511,53 +511,16 @@ class WooPosLocalCatalogStore @Inject constructor(
                     Result.failure(WooPosLocalCatalogError.EmptyResponse)
                 }
 
-                response.model.jobId == null -> {
-                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
-                }
-
-                else -> {
-                    val jobId = response.model.jobId.toString()
-                    Result.success(
-                        WooPosGenerateCatalogResult(jobId = jobId)
-                    )
-                }
-            }
-        }
-
-    /**
-     * Fetches the status of a catalog generation job.
-     *
-     * @param [site] The site to check catalog status for
-     * @param [jobId] The job ID from generateCatalog
-     * @return [Result] containing PosCatalogStatusResult with status and download URL or error
-     */
-    suspend fun fetchCatalogStatus(
-        site: SiteModel,
-        jobId: String
-    ): Result<WooPosCatalogStatusResult> =
-        coroutineEngine.withDefaultContext(API, this, "fetchCatalogStatus") {
-            val response = posProductRestClient.getCatalogStatus(site, jobId)
-
-            when {
-                response.isError -> {
-                    Result.failure(
-                        mapResponseError(response.error)
-                    )
-                }
-
-                response.model == null -> {
-                    Result.failure(WooPosLocalCatalogError.EmptyResponse)
-                }
-
-                response.model.status.isNullOrEmpty() -> {
-                    Result.failure(WooPosLocalCatalogError.InvalidResponse("Missing job ID in response"))
-                }
-
                 else -> {
                     Result.success(
-                        WooPosCatalogStatusResult(
-                            status = response.model.status,
-                            downloadUrl = response.model.downloadUrl
+                        WooPosGenerateCatalogResult(
+                            scheduledAt = response.model.scheduledAt,
+                            completedAt = response.model.completedAt,
+                            state = WooPosGenerateCatalogState.from(response.model.state),
+                            progress = response.model.progress,
+                            processed = response.model.processed,
+                            total = response.model.total,
+                            url = response.model.url,
                         )
                     )
                 }

@@ -24,9 +24,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -48,11 +45,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -66,7 +64,6 @@ import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.compose.component.InfiniteListHandler
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.component.WCPrimaryTabRow
 import com.woocommerce.android.ui.compose.component.WCPullToRefreshBox
 import com.woocommerce.android.ui.compose.component.WCSearchField
@@ -93,8 +90,7 @@ fun BookingListScreen(state: BookingListViewState) {
                 actions = {
                     SearchSection(
                         searchState = state.searchState,
-                        areFiltersActive = state.controlsState.areFiltersActive ||
-                            state.tabState.selectedTab != BookingListTab.All
+                        areFiltersActive = state.controlsState.areFiltersActive
                     )
                 }
             )
@@ -169,7 +165,7 @@ private fun SearchSection(
                 searchState.onQueryChanged("")
             }) {
                 Icon(
-                    imageVector = Icons.Default.Search,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_search_24dp),
                     contentDescription = stringResource(R.string.search)
                 )
             }
@@ -178,7 +174,7 @@ private fun SearchSection(
                 searchState.onQueryChanged(null)
             }) {
                 Icon(
-                    imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentDescription = stringResource(R.string.back),
                     tint = MaterialTheme.colorScheme.onSurface
                 )
@@ -360,13 +356,13 @@ private fun EmptyView(
         if (state.searchState.query?.isNotEmpty() == true) {
             EmptySearchResultsView(
                 areFiltersActive = state.controlsState.areFiltersActive,
+                onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
         } else {
             EmptyListView(
                 selectedTab = state.tabState.selectedTab,
                 areFiltersActive = state.controlsState.areFiltersActive,
-                onChangeFiltersClick = state.controlsState.onFilterClick,
                 onClearFiltersClick = state.controlsState.onClearFiltersClick,
                 modifier = innerEmptyViewModifier
             )
@@ -378,7 +374,6 @@ private fun EmptyView(
 private fun EmptyListView(
     selectedTab: BookingListTab,
     areFiltersActive: Boolean,
-    onChangeFiltersClick: () -> Unit,
     onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -388,9 +383,11 @@ private fun EmptyListView(
         modifier = modifier
     ) {
         Image(
-            painter = painterResource(R.drawable.img_calendar_grey),
+            painter = painterResource(
+                if (areFiltersActive) R.drawable.img_empty_search else R.drawable.img_calendar_grey
+            ),
             contentDescription = null,
-            modifier = Modifier.size(64.dp)
+            modifier = Modifier.size(80.dp)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -417,7 +414,7 @@ private fun EmptyListView(
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
                 else -> {
                     if (areFiltersActive) {
-                        stringResource(R.string.bookings_empty_state_description_with_filters)
+                        stringResource(R.string.bookings_filtered_empty_state_description)
                     } else {
                         stringResource(R.string.bookings_empty_state_description_all)
                     }
@@ -431,12 +428,6 @@ private fun EmptyListView(
         if (areFiltersActive) {
             Spacer(Modifier.height(24.dp))
             WCColoredButton(
-                text = stringResource(R.string.bookings_empty_state_change_filters_button),
-                onClick = onChangeFiltersClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-            Spacer(Modifier.height(8.dp))
-            WCOutlinedButton(
                 text = stringResource(R.string.bookings_empty_state_clear_filters_button),
                 onClick = onClearFiltersClick,
                 modifier = Modifier.fillMaxWidth()
@@ -448,6 +439,7 @@ private fun EmptyListView(
 @Composable
 private fun EmptySearchResultsView(
     areFiltersActive: Boolean,
+    onClearFiltersClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
@@ -463,6 +455,14 @@ private fun EmptySearchResultsView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
+            text = stringResource(R.string.bookings_empty_state_title_default),
+            style = MaterialTheme.typography.titleLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
             text = stringResource(
                 id = if (areFiltersActive) {
                     R.string.bookings_search_no_results_with_filters
@@ -470,10 +470,19 @@ private fun EmptySearchResultsView(
                     R.string.bookings_search_no_results_without_filters
                 }
             ),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Normal,
-            textAlign = TextAlign.Center
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        if (areFiltersActive) {
+            Spacer(Modifier.height(24.dp))
+            WCColoredButton(
+                text = stringResource(R.string.bookings_empty_state_clear_filters_button),
+                onClick = onClearFiltersClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

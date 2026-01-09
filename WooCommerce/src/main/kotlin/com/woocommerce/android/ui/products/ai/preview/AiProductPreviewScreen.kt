@@ -32,10 +32,6 @@ import androidx.compose.material.LocalContentColor
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.filled.ChevronRight
-import androidx.compose.material.icons.filled.Replay
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
@@ -44,11 +40,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -242,7 +240,7 @@ private fun ProductPreviewContent(
                 .then(sectionsBorder)
         )
 
-        if (state.shouldShowVariantSelector) {
+        if (!state.shouldShowVariantSelector) {
             Spacer(Modifier)
             ProductVariantSelector(
                 selectedVariant = state.selectedVariant,
@@ -342,7 +340,7 @@ private fun ProductTextField(
                 WCTextButton(
                     onClick = { onValueChange(null) },
                     text = stringResource(id = R.string.product_creation_ai_preview_undo_edits),
-                    icon = Icons.Default.Replay,
+                    icon = ImageVector.vectorResource(R.drawable.ic_replay_24dp),
                     allCaps = false
                 )
             }
@@ -379,7 +377,7 @@ private fun ProductVariantSelector(
                 .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
         ) {
             Icon(
-                imageVector = Icons.Default.ChevronLeft,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
                 contentDescription = stringResource(id = R.string.product_creation_ai_select_previous_option),
                 tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
                 modifier = Modifier
@@ -394,7 +392,7 @@ private fun ProductVariantSelector(
                 .border(ButtonDefaults.outlinedBorder, shape = RoundedCornerShape(8.dp))
         ) {
             Icon(
-                imageVector = Icons.Default.ChevronRight,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                 contentDescription = stringResource(id = R.string.product_creation_ai_select_next_option),
                 tint = MaterialTheme.colors.primary.copy(alpha = LocalContentAlpha.current),
                 modifier = Modifier

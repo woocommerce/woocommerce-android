@@ -1476,6 +1476,191 @@ class WooPosCartViewModelTest {
         verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ProductsRemoved>())
     }
 
+    @Test
+    fun `given variation in cart, when MissingVariationEvent, then unknown label present`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+            simulateVariationClicked(productId = 100L, variationId = 102L)
+            simulateProductClicked(23L)
+
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.MissingVariationEvent(variationId = 101L)
+            )
+
+            // THEN
+            val finalItems = getItemsInCart(states)
+            assertThat(finalItems).hasSize(3)
+
+            val variation101 = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .find { it.variationId == 101L }
+            assertThat(variation101?.productDoesNotExist).isTrue()
+
+            val variation102 = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .find { it.variationId == 102L }
+            assertThat(variation102?.productDoesNotExist).isFalse()
+
+            val simpleProduct = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Simple>()
+                .find { it.id == 23L }
+            assertThat(simpleProduct?.productDoesNotExist).isFalse()
+        }
+
+    @Test
+    fun `when RemoveProductsClicked with variationId, then removes variation`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateProductClicked(23L)
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+            simulateVariationClicked(productId = 100L, variationId = 102L)
+
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            assertThat(getItemsInCart(states)).hasSize(3)
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.RemoveProductsClicked(listOf(101L))
+            )
+
+            // THEN
+            val finalItems = getItemsInCart(states)
+            assertThat(finalItems).hasSize(2)
+
+            val remainingVariationIds = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .map { it.variationId }
+            assertThat(remainingVariationIds).containsExactly(102L)
+
+            val remainingProductIds = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Simple>()
+                .map { it.id }
+            assertThat(remainingProductIds).containsExactly(23L)
+
+            verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ProductsRemoved>())
+        }
+
+    @Test
+    fun `when RemoveProductsClicked with mixed types, then removes both types`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateProductClicked(23L)
+            simulateProductClicked(24L)
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+            simulateVariationClicked(productId = 100L, variationId = 102L)
+
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            assertThat(getItemsInCart(states)).hasSize(4)
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.RemoveProductsClicked(listOf(23L, 102L))
+            )
+
+            // THEN
+            val finalItems = getItemsInCart(states)
+            assertThat(finalItems).hasSize(2)
+
+            val remainingVariationIds = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .map { it.variationId }
+            assertThat(remainingVariationIds).containsExactly(101L)
+
+            val remainingProductIds = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Simple>()
+                .map { it.id }
+            assertThat(remainingProductIds).containsExactly(24L)
+
+            verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ProductsRemoved>())
+        }
+
+    @Test
+    fun `given cart with variations only, when RemoveAll, then clears and sends event`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+            simulateVariationClicked(productId = 100L, variationId = 102L)
+            simulateVariationClicked(productId = 200L, variationId = 201L)
+
+            sut.onUIEvent(WooPosCartUIEvent.CheckoutClicked)
+            assertThat(getItemsInCart(states)).hasSize(3)
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.RemoveProductsClicked(listOf(101L, 102L, 201L))
+            )
+
+            // THEN
+            val finalItems = getItemsInCart(states)
+            assertThat(finalItems).hasSize(0)
+
+            verify(childrenToParentEventSender).sendToParent(any<ChildToParentEvent.ProductsRemoved>())
+        }
+
+    @Test
+    fun `given multiple variations in cart, when MissingVariationEvent, then only target marked`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+            simulateVariationClicked(productId = 100L, variationId = 102L)
+            simulateVariationClicked(productId = 200L, variationId = 201L)
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.MissingVariationEvent(variationId = 102L)
+            )
+
+            // THEN
+            val finalItems = getItemsInCart(states)
+            assertThat(finalItems).hasSize(3)
+
+            val variation101 = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .find { it.variationId == 101L }
+            assertThat(variation101?.productDoesNotExist).isFalse()
+
+            val variation102 = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .find { it.variationId == 102L }
+            assertThat(variation102?.productDoesNotExist).isTrue()
+
+            val variation201 = finalItems.filterIsInstance<WooPosCartItemViewState.Product.Variation>()
+                .find { it.variationId == 201L }
+            assertThat(variation201?.productDoesNotExist).isFalse()
+        }
+
+    @Test
+    fun `given cart without target variation, when MissingVariationEvent, then no changes`() =
+        runTest {
+            // GIVEN
+            val sut = createSut()
+            val states = sut.state.captureValues()
+
+            simulateProductClicked(23L)
+            simulateVariationClicked(productId = 100L, variationId = 101L)
+
+            val stateBeforeEvent = states.last()
+
+            // WHEN
+            parentToChildrenMutableSharedFlow.emit(
+                ParentToChildrenEvent.MissingVariationEvent(variationId = 999L) // Non-existing variation
+            )
+
+            // THEN
+            val stateAfterEvent = states.last()
+            assertThat(stateAfterEvent).isEqualTo(stateBeforeEvent)
+        }
+
     private suspend fun createSutWithItemsInCart(): Pair<WooPosCartViewModel, List<WooPosCartState>> {
         val product = generateWooPosProduct(
             productId = 23L,

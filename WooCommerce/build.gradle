@@ -418,7 +418,6 @@ dependencies {
     implementation(libs.androidx.compose.animation.main)
     implementation(libs.androidx.compose.ui.tooling.main)
     implementation(libs.androidx.compose.runtime.livedata)
-    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.material3)
@@ -446,6 +445,7 @@ dependencies {
 
     implementation(libs.google.protobuf.kotlinlite)
 
+    testImplementation(testFixtures(project(":libs:fluxc")))
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
     testImplementation(testFixtures(project(":libs:commons")))
 
