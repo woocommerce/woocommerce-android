@@ -24,8 +24,9 @@ import org.wordpress.android.fluxc.generated.MediaActionBuilder
 import org.wordpress.android.fluxc.generated.UploadActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.model.withId
+import org.wordpress.android.fluxc.model.withUploadState
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
 import org.wordpress.android.fluxc.store.MediaStore.FetchMediaListResponsePayload
@@ -33,6 +34,7 @@ import org.wordpress.android.fluxc.store.MediaStore.MediaError
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.MediaStore.MediaPayload
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload
+import org.wordpress.android.fluxc.store.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.MimeType
 import org.wordpress.android.util.AppLog
@@ -103,8 +105,8 @@ abstract class BaseWPV2MediaRestClient(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun syncUploadMedia(site: SiteModel, media: MediaModel): Flow<ProgressPayload> {
         fun ProducerScope<ProgressPayload>.handleFailure(media: MediaModel, error: MediaError) {
-            media.setUploadState(FAILED)
-            val payload = ProgressPayload(media, 1f, false, error)
+            val failedMedia = media.withUploadState(FAILED.toString())
+            val payload = ProgressPayload(failedMedia, 1f, false, error)
             trySendBlocking(payload)
             close()
         }
@@ -137,8 +139,7 @@ abstract class BaseWPV2MediaRestClient(
                     if (response.isSuccessful) {
                         try {
                             val res = gson.fromJson(response.body!!.string(), MediaWPRESTResponse::class.java)
-                            val uploadedMedia = res.toMediaModel(site.id)
-                            uploadedMedia.id = media.id
+                            val uploadedMedia = res.toMediaModel(site.id).withId(media.id)
                             val payload = ProgressPayload(uploadedMedia, 1f, true, false)
                             trySendBlocking(payload)
                             close()

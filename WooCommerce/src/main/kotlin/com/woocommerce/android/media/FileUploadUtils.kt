@@ -79,13 +79,23 @@ object FileUploadUtils {
         }
 
         val media = MediaModel(
-            localSiteId,
-            DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),
-            filenameWithExtension,
-            path,
-            mimeType,
-            filenameWithExtension,
-            null
+            id = 0,
+            localSiteId = localSiteId,
+            localPostId = 0,
+            mediaId = 0L,
+            postId = 0L,
+            uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),
+            url = "",
+            thumbnailUrl = null,
+            fileName = filenameWithExtension,
+            filePath = path,
+            mimeType = mimeType,
+            title = filenameWithExtension,
+            caption = "",
+            description = "",
+            alt = "",
+            uploadState = null,
+            markedLocallyAsFeatured = false
         )
         val instantiatedMedia = mediaStore.instantiateMediaModel(media)
         return if (instantiatedMedia != null) {

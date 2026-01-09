@@ -13,14 +13,15 @@ import org.wordpress.android.fluxc.action.MediaAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.MediaModel;
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState;
+import org.wordpress.android.fluxc.model.MediaModelExtensionsKt;
 import org.wordpress.android.fluxc.model.SiteModel;
+
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
 import org.wordpress.android.fluxc.network.xmlrpc.media.MediaXMLRPCClient;
-import org.wordpress.android.fluxc.persistence.MediaSqlUtils;
+import org.wordpress.android.fluxc.persistence.dao.MediaDao;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType.Type;
@@ -39,7 +40,6 @@ import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
 @Singleton
 public class MediaStore extends Store {
     public static final List<String> NOT_DELETED_STATES = new ArrayList<>();
@@ -422,6 +422,7 @@ public class MediaStore extends Store {
     private final MediaXMLRPCClient mMediaXmlrpcClient;
     private final WPComV2MediaRestClient mWPComV2MediaRestClient;
     private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
+    private final MediaDao mMediaDao;
 
     private final ApplicationPasswordsConfiguration mApplicationPasswordsConfiguration;
 
@@ -435,12 +436,14 @@ public class MediaStore extends Store {
             MediaXMLRPCClient xmlrpcClient,
             WPComV2MediaRestClient wpv2MediaRestClient,
             ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
-            ApplicationPasswordsConfiguration applicationPasswordsConfiguration) {
+            ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
+            MediaDao mediaDao) {
         super(dispatcher);
         mMediaXmlrpcClient = xmlrpcClient;
         mWPComV2MediaRestClient = wpv2MediaRestClient;
         mApplicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient;
         mApplicationPasswordsConfiguration = applicationPasswordsConfiguration;
+        mMediaDao = mediaDao;
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -493,67 +496,61 @@ public class MediaStore extends Store {
 
     @Nullable
     public MediaModel instantiateMediaModel(@NonNull MediaModel media) {
-        MediaModel insertedMedia = MediaSqlUtils.insertMediaForResult(media);
-
-        if (insertedMedia.getId() == -1) {
-            return null;
-        }
-
-        return insertedMedia;
+        mMediaDao.insert(media);
+        return media;
     }
 
     @Nullable
     public MediaModel getSiteMediaWithId(@NonNull SiteModel siteModel, long mediaId) {
-        List<MediaModel> media = MediaSqlUtils.getSiteMediaWithId(siteModel, mediaId);
-        return media.size() > 0 ? media.get(0) : null;
+        return mMediaDao.getSiteMediaWithId(siteModel.getId(), mediaId);
     }
 
     @NonNull
     public List<MediaModel> getSiteImages(@NonNull SiteModel siteModel) {
-        return MediaSqlUtils.getSiteImages(siteModel);
+        return mMediaDao.getSiteImages(siteModel.getId());
     }
 
     @NonNull
     public List<MediaModel> getSiteVideos(@NonNull SiteModel siteModel) {
-        return MediaSqlUtils.getSiteVideos(siteModel);
+        return mMediaDao.getSiteVideos(siteModel.getId());
     }
 
     @NonNull
     public List<MediaModel> getSiteAudio(@NonNull SiteModel siteModel) {
-        return MediaSqlUtils.getSiteAudio(siteModel);
+        return mMediaDao.getSiteAudio(siteModel.getId());
     }
 
     @NonNull
     public List<MediaModel> getSiteDocuments(@NonNull SiteModel siteModel) {
-        return MediaSqlUtils.getSiteDocuments(siteModel);
+        return mMediaDao.getSiteDocuments(siteModel.getId());
     }
 
     @NonNull
     public List<MediaModel> searchSiteImages(
             @NonNull SiteModel siteModel,
             @NonNull String searchTerm) {
-        return MediaSqlUtils.searchSiteImages(siteModel, searchTerm);
+        return mMediaDao.searchSiteImages(siteModel.getId(), searchTerm);
     }
 
     @NonNull
     public List<MediaModel> searchSiteVideos(
             @NonNull SiteModel siteModel,
             @NonNull String searchTerm) {
-        return MediaSqlUtils.searchSiteVideos(siteModel, searchTerm);
+        return mMediaDao.searchSiteVideos(siteModel.getId(), searchTerm);
     }
 
     @NonNull
     public List<MediaModel> searchSiteAudio(
             @NonNull SiteModel siteModel,
             @NonNull String searchTerm) {
-        return MediaSqlUtils.searchSiteAudio(siteModel, searchTerm);
+        return mMediaDao.searchSiteAudio(siteModel.getId(), searchTerm);
     }
 
     @NonNull
     public List<MediaModel> searchSiteDocuments(
             @NonNull SiteModel siteModel,
             @NonNull String searchTerm) {
-        return MediaSqlUtils.searchSiteDocuments(siteModel, searchTerm);
+        return mMediaDao.searchSiteDocuments(siteModel.getId(), searchTerm);
     }
 
     //
@@ -565,10 +562,9 @@ public class MediaStore extends Store {
 
         if (media == null) {
             event.error = new MediaError(MediaErrorType.NULL_MEDIA_ARG);
-        } else if (MediaSqlUtils.insertOrUpdateMedia(media) > 0) {
-            event.mediaList.add(media);
         } else {
-            event.error = new MediaError(MediaErrorType.DB_QUERY_FAILURE);
+            mMediaDao.insert(media);
+            event.mediaList.add(media);
         }
 
         if (emit) {
@@ -606,31 +602,37 @@ public class MediaStore extends Store {
         if (argError.getType() != Type.NO_ERROR) {
             String message = "Media doesn't have required data: " + argError.getType().getErrorLogDescription();
             AppLog.e(AppLog.T.MEDIA, message);
-            payload.media.setUploadState(MediaUploadState.FAILED);
-            MediaSqlUtils.insertOrUpdateMedia(payload.media);
+            MediaModel failedMedia = MediaModelExtensionsKt.withUploadState(
+                    payload.media,
+                    MediaUploadState.FAILED.toString()
+            );
+            mMediaDao.insert(failedMedia);
             notifyMediaUploadError(
                     MediaErrorType.MALFORMED_MEDIA_ARG,
                     argError.getType().getErrorLogDescription(),
-                    payload.media,
+                    failedMedia,
                     message,
                     argError);
             return;
         }
 
-        payload.media.setUploadState(MediaUploadState.UPLOADING);
-        MediaSqlUtils.insertOrUpdateMedia(payload.media);
+        MediaModel uploadingMedia = MediaModelExtensionsKt.withUploadState(
+                payload.media,
+                MediaUploadState.UPLOADING.toString()
+        );
+        mMediaDao.insert(uploadingMedia);
 
         if (payload.stripLocation) {
-            MediaUtils.stripLocation(payload.media.getFilePath());
+            MediaUtils.stripLocation(uploadingMedia.getFilePath());
         }
 
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
-            mWPComV2MediaRestClient.uploadMedia(payload.site, payload.media);
+            mWPComV2MediaRestClient.uploadMedia(payload.site, uploadingMedia);
         } else if (payload.site.getOrigin() == SiteModel.ORIGIN_WPAPI
                    && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
-            mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, payload.media);
+            mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, uploadingMedia);
         } else {
-            mMediaXmlrpcClient.uploadMedia(payload.site, payload.media);
+            mMediaXmlrpcClient.uploadMedia(payload.site, uploadingMedia);
         }
     }
 
@@ -640,10 +642,18 @@ public class MediaStore extends Store {
             List<String> list = new ArrayList<>();
             list.add(MediaUploadState.UPLOADED.toString());
             if (payload.mimeType != null) {
-                offset = MediaSqlUtils.getMediaWithStatesAndMimeType(payload.site, list, payload.mimeType.getValue())
-                                      .size();
+                List<MediaModel> mediaList = mMediaDao.getMediaWithStatesAndMimeType(
+                        payload.site.getId(),
+                        payload.mimeType.getValue(),
+                        list
+                );
+                offset = mediaList.size();
             } else {
-                offset = MediaSqlUtils.getMediaWithStates(payload.site, list).size();
+                List<MediaModel> mediaList = mMediaDao.getMediaWithStates(
+                        payload.site.getId(),
+                        list
+                );
+                offset = mediaList.size();
             }
         }
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
@@ -659,10 +669,13 @@ public class MediaStore extends Store {
     private void performCancelUpload(@NonNull CancelMediaPayload payload) {
         MediaModel media = payload.media;
         if (payload.delete) {
-            MediaSqlUtils.deleteMedia(media);
+            mMediaDao.deleteMedia(media);
         } else {
-            media.setUploadState(MediaUploadState.FAILED);
-            MediaSqlUtils.insertOrUpdateMedia(media);
+            MediaModel failedMedia = MediaModelExtensionsKt.withUploadState(
+                    media,
+                    MediaUploadState.FAILED.toString()
+            );
+            mMediaDao.insert(failedMedia);
         }
 
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
@@ -717,9 +730,9 @@ public class MediaStore extends Store {
             MediaModel media = getSiteMediaWithId(payload.site, fetchedMedia.getMediaId());
             if (media != null) {
                 // retain the local ID, then update this media item
-                fetchedMedia.setId(media.getId());
-                existingMediaList.add(fetchedMedia);
-                updateMedia(fetchedMedia, false);
+                MediaModel updatedMedia = MediaModelExtensionsKt.withId(fetchedMedia, media.getId());
+                existingMediaList.add(updatedMedia);
+                updateMedia(updatedMedia, false);
             } else {
                 newMediaList.add(fetchedMedia);
             }
@@ -730,7 +743,11 @@ public class MediaStore extends Store {
         if (payload.mimeType != null) {
             mimeTypeValue = payload.mimeType.getValue();
         }
-        MediaSqlUtils.deleteUploadedSiteMediaNotInList(payload.site, existingMediaList, mimeTypeValue);
+        List<Long> existingMediaIds = new ArrayList<>();
+        for (MediaModel media : existingMediaList) {
+            existingMediaIds.add(media.getMediaId());
+        }
+        mMediaDao.deleteUploadedSiteMediaNotInList(payload.site.getId(), existingMediaIds);
 
         // add new media
         for (MediaModel media : newMediaList) {
@@ -754,7 +771,7 @@ public class MediaStore extends Store {
     private void handleMediaFetched(@NonNull MediaPayload payload) {
         OnMediaChanged onMediaChanged = new OnMediaChanged(MediaAction.FETCH_MEDIA, payload.error);
         if (payload.media != null) {
-            MediaSqlUtils.insertOrUpdateMedia(payload.media);
+            mMediaDao.insert(payload.media);
             onMediaChanged.mediaList = new ArrayList<>();
             onMediaChanged.mediaList.add(payload.media);
         }

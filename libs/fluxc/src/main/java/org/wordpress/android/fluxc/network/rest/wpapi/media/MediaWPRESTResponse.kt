@@ -5,9 +5,9 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 import com.google.gson.annotations.SerializedName
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrNull
 import org.wordpress.android.fluxc.network.rest.wpcom.media.MediaWPComRestResponse
+import org.wordpress.android.fluxc.store.MediaUploadState
 import org.wordpress.android.util.DateTimeUtils
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -44,23 +44,27 @@ data class MediaWPRESTResponse(
 }
 
 fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
-    localSiteId,
-    id,
-    post ?: 0L,
-    DateTimeUtils.iso8601FromDate(
+    id = 0,
+    localSiteId = localSiteId,
+    localPostId = 0,
+    mediaId = id,
+    postId = post ?: 0L,
+    uploadDate = DateTimeUtils.iso8601FromDate(
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT).parse(dateGmt)
     ),
-    sourceURL.orEmpty(),
-    mediaDetails?.sizes?.thumbnail?.sourceURL,
-    mediaDetails?.file,
-    mimeType,
-    StringEscapeUtils.unescapeHtml4(title.rendered),
-    StringEscapeUtils.unescapeHtml4(caption.rendered),
-    StringEscapeUtils.unescapeHtml4(description.rendered),
-    StringEscapeUtils.unescapeHtml4(altText),
-    if (MediaWPComRestResponse.DELETED_STATUS == status) {
-        MediaUploadState.DELETED
+    url = sourceURL.orEmpty(),
+    thumbnailUrl = mediaDetails?.sizes?.thumbnail?.sourceURL,
+    fileName = mediaDetails?.file,
+    filePath = null,
+    mimeType = mimeType,
+    title = StringEscapeUtils.unescapeHtml4(title.rendered),
+    caption = StringEscapeUtils.unescapeHtml4(caption.rendered),
+    description = StringEscapeUtils.unescapeHtml4(description.rendered),
+    alt = StringEscapeUtils.unescapeHtml4(altText),
+    uploadState = if (MediaWPComRestResponse.DELETED_STATUS == status) {
+        MediaUploadState.DELETED.toString()
     } else {
-        MediaUploadState.UPLOADED
-    }
+        MediaUploadState.UPLOADED.toString()
+    },
+    markedLocallyAsFeatured = false
 )

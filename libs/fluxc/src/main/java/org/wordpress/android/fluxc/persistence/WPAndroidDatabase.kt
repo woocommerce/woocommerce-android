@@ -10,7 +10,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import org.wordpress.android.fluxc.model.MediaEntity
+import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.ThemeModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
@@ -48,7 +48,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             WhatsNewAnnouncementEntity::class,
             WhatsNewAnnouncementFeatureEntity::class,
             SitePluginModel::class,
-            MediaEntity::class,
+            MediaModel::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),

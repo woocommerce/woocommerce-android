@@ -3,8 +3,8 @@ package org.wordpress.android.fluxc.network.rest.wpcom.media
 import android.text.TextUtils
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
 import org.wordpress.android.fluxc.network.rest.wpcom.media.MediaWPComRestResponse.MultipleMediaResponse
+import org.wordpress.android.fluxc.store.MediaUploadState
 import javax.inject.Inject
 
 class MediaResponseUtils
@@ -25,28 +25,32 @@ class MediaResponseUtils
      * Creates a [MediaModel] from a WP.com REST response to a fetch request.
      */
     fun getMediaFromRestResponse(from: MediaWPComRestResponse, siteId: Int) = MediaModel(
-        siteId,
-        from.ID,
-        from.post_ID,
-        from.date,
-        from.URL,
-        from.thumbnails?.let {
+        id = 0,
+        localSiteId = siteId,
+        localPostId = 0,
+        mediaId = from.ID,
+        postId = from.post_ID,
+        uploadDate = from.date,
+        url = from.URL,
+        thumbnailUrl = from.thumbnails?.let {
             if (!TextUtils.isEmpty(it.fmt_std)) {
                 it.fmt_std
             } else {
                 it.thumbnail
             }
         },
-        from.file,
-        from.mime_type,
-        StringEscapeUtils.unescapeHtml4(from.title),
-        StringEscapeUtils.unescapeHtml4(from.caption),
-        StringEscapeUtils.unescapeHtml4(from.description),
-        StringEscapeUtils.unescapeHtml4(from.alt),
-        if (MediaWPComRestResponse.DELETED_STATUS == from.status) {
-            MediaUploadState.DELETED
+        fileName = from.file,
+        filePath = null,
+        mimeType = from.mime_type,
+        title = StringEscapeUtils.unescapeHtml4(from.title),
+        caption = StringEscapeUtils.unescapeHtml4(from.caption),
+        description = StringEscapeUtils.unescapeHtml4(from.description),
+        alt = StringEscapeUtils.unescapeHtml4(from.alt),
+        uploadState = if (MediaWPComRestResponse.DELETED_STATUS == from.status) {
+            MediaUploadState.DELETED.toString()
         } else {
-            MediaUploadState.UPLOADED
-        }
+            MediaUploadState.UPLOADED.toString()
+        },
+        markedLocallyAsFeatured = false
     )
 }

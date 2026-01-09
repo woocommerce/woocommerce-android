@@ -10,6 +10,7 @@ import org.wordpress.android.fluxc.persistence.WPAndroidDatabase.Companion.build
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeObjectivesDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
+import org.wordpress.android.fluxc.persistence.dao.MediaDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import javax.inject.Singleton
@@ -55,6 +56,11 @@ class DatabaseModule {
     @Provides
     internal fun provideWhatsNewDao(wpAndroidDatabase: WPAndroidDatabase): WhatsNewDao {
         return wpAndroidDatabase.whatsNewDao()
+    }
+
+    @Provides
+    internal fun provideMediaDao(wpAndroidDatabase: WPAndroidDatabase): MediaDao {
+        return wpAndroidDatabase.mediaDao()
     }
 
     @Provides

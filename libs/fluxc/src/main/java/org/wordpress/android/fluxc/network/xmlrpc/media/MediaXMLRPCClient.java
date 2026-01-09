@@ -16,7 +16,8 @@ import org.wordpress.android.fluxc.generated.MediaActionBuilder;
 import org.wordpress.android.fluxc.generated.UploadActionBuilder;
 import org.wordpress.android.fluxc.generated.endpoint.XMLRPC;
 import org.wordpress.android.fluxc.model.MediaModel;
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState;
+import org.wordpress.android.fluxc.model.MediaModelExtensionsKt;
+import org.wordpress.android.fluxc.store.MediaUploadState;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.BaseRequest;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
@@ -175,20 +176,25 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
                         if (responseMap != null) {
                             AppLog.d(T.MEDIA, "media upload successful, local id=" + media.getId());
                             if (isDeprecatedUploadResponse(responseMap)) {
-                                media.setMediaId(MapUtils.getMapLong(responseMap, "id"));
+                                MediaModel updatedMedia = MediaModelExtensionsKt.withMediaId(
+                                        media,
+                                        MapUtils.getMapLong(responseMap, "id")
+                                );
                                 // Upload media response only has `type, id, file, url` fields whereas we need
                                 // `parent, title, caption, description, videopress_shortcode, thumbnail,
                                 // date_created_gmt, link, width, height` fields, so we need to make a fetch for them
                                 // This only applies to WordPress sites running versions older than WordPress 4.4
-                                fetchMedia(site, media, true);
+                                fetchMedia(site, updatedMedia, true);
                             } else {
-                                MediaModel responseMedia = getMediaFromXmlrpcResponse(responseMap);
+                                MediaModel responseMedia = getMediaFromXmlrpcResponse(responseMap, site.getId());
                                 if (responseMedia != null) {
                                     // Retain local IDs
-                                    responseMedia.setId(media.getId());
-                                    responseMedia.setLocalSiteId(site.getId());
-                                    responseMedia.setLocalPostId(media.getLocalPostId());
-                                    responseMedia.setMarkedLocallyAsFeatured(media.getMarkedLocallyAsFeatured());
+                                    responseMedia = MediaModelExtensionsKt.withLocalIds(
+                                            responseMedia,
+                                            media.getId(),
+                                            media.getLocalPostId(),
+                                            media.getMarkedLocallyAsFeatured()
+                                    );
 
                                     notifyMediaUploaded(responseMedia, null);
                                 } else {
@@ -302,15 +308,17 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         add(new XMLRPCRequest(site.getXmlRpcUrl(), XMLRPC.GET_MEDIA_ITEM, params,
                 (Listener<Object>) response -> {
                     AppLog.v(T.MEDIA, "Fetched media for site via XMLRPC.GET_MEDIA_ITEM");
-                    MediaModel responseMedia = getMediaFromXmlrpcResponse((HashMap) response);
+                    MediaModel responseMedia = getMediaFromXmlrpcResponse((HashMap) response, site.getId());
                     if (responseMedia != null) {
                         AppLog.v(T.MEDIA, "Fetched media with remoteId= " + media.getMediaId()
                                           + " localId=" + media.getId());
                         // Retain local IDs
-                        responseMedia.setId(media.getId());
-                        responseMedia.setLocalSiteId(site.getId());
-                        responseMedia.setLocalPostId(media.getLocalPostId());
-                        responseMedia.setMarkedLocallyAsFeatured(media.getMarkedLocallyAsFeatured());
+                        responseMedia = MediaModelExtensionsKt.withLocalIds(
+                                responseMedia,
+                                media.getId(),
+                                media.getLocalPostId(),
+                                media.getMarkedLocallyAsFeatured()
+                        );
 
                         if (isFreshUpload) {
                             notifyMediaUploaded(responseMedia, null);
@@ -382,12 +390,16 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
     }
 
     private void notifyMediaUploaded(@Nullable MediaModel media, @Nullable MediaError error) {
+        MediaModel finalMedia = media;
         if (media != null) {
-            media.setUploadState(error == null ? MediaUploadState.UPLOADED : MediaUploadState.FAILED);
+            finalMedia = MediaModelExtensionsKt.withUploadState(
+                    media,
+                    error == null ? MediaUploadState.UPLOADED.toString() : MediaUploadState.FAILED.toString()
+            );
             removeCallFromCurrentUploadsMap(media.getId());
         }
 
-        ProgressPayload payload = new ProgressPayload(media, 1.f, error == null, error);
+        ProgressPayload payload = new ProgressPayload(finalMedia, 1.f, error == null, error);
         mDispatcher.dispatch(UploadActionBuilder.newUploadedMediaAction(payload));
     }
 
@@ -436,9 +448,8 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
             if (!(mediaObject instanceof HashMap)) {
                 continue;
             }
-            MediaModel media = getMediaFromXmlrpcResponse((HashMap) mediaObject);
+            MediaModel media = getMediaFromXmlrpcResponse((HashMap) mediaObject, localSiteId);
             if (media != null) {
-                media.setLocalSiteId(localSiteId);
                 responseMedia.add(media);
             }
         }
@@ -447,7 +458,7 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
 
     @Nullable
     @SuppressWarnings("rawtypes")
-    private MediaModel getMediaFromXmlrpcResponse(@NonNull Map response) {
+    private MediaModel getMediaFromXmlrpcResponse(@NonNull Map response, int localSiteId) {
         if (response.isEmpty()) {
             return null;
         }
@@ -456,18 +467,22 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         String fileExtension = MediaUtils.getExtension(link);
         return new MediaModel(
                 0,
+                localSiteId,
+                0,
                 MapUtils.getMapLong(response, "attachment_id"),
                 MapUtils.getMapLong(response, "parent"),
                 DateTimeUtils.iso8601UTCFromDate(MapUtils.getMapDate(response, "date_created_gmt")),
                 link,
                 MapUtils.getMapStr(response, "thumbnail"),
                 MediaUtils.getFileName(link),
+                null,
                 MediaUtils.getMimeTypeForExtension(fileExtension),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "title")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "caption")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "description")),
                 "",
-                MediaUploadState.UPLOADED
+                MediaUploadState.UPLOADED.toString(),
+                false
         );
     }
 

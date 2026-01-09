@@ -200,8 +200,8 @@ class ProductImagesUploadWorker @Inject constructor(
 
             val doneUploads = uploadList.count { it.isDone }
             notificationHandler.update(doneUploads + 1, uploadList.size)
-            work.fetchedMedia.postId = work.productId
-            mediaFilesRepository.uploadMedia(work.fetchedMedia).collect {
+            val mediaWithPostId = work.fetchedMedia.copy(postId = work.productId)
+            mediaFilesRepository.uploadMedia(mediaWithPostId).collect {
                 when (it) {
                     is UploadFailure -> {
                         WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> upload failed for ${work.localUri}")
