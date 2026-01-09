@@ -36,7 +36,7 @@ class PosPromoDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     val state by viewModel.state.collectAsState()
-                    PosPromoCarouselModal(
+                    PosPromoCarouselDialog(
                         state = state,
                         onDismiss = { dismiss() },
                         onNextClick = viewModel::onNextClick,
