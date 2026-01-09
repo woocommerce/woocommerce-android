@@ -42,16 +42,6 @@ import javax.inject.Singleton;
 
 @Singleton
 public class MediaStore extends Store {
-    public static final List<String> NOT_DELETED_STATES = new ArrayList<>();
-
-    static {
-        NOT_DELETED_STATES.add(MediaUploadState.DELETING.toString());
-        NOT_DELETED_STATES.add(MediaUploadState.FAILED.toString());
-        NOT_DELETED_STATES.add(MediaUploadState.QUEUED.toString());
-        NOT_DELETED_STATES.add(MediaUploadState.UPLOADED.toString());
-        NOT_DELETED_STATES.add(MediaUploadState.UPLOADING.toString());
-    }
-
     public static class MediaPayload extends Payload<MediaError> {
         @NonNull public SiteModel site;
         @Nullable public MediaModel media;
