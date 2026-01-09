@@ -373,6 +373,10 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
     <string name="my_store_edit_screen_widgets">Customize</string>
 
+    <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
+    <string name="my_store_widget_push_notifications_menu_title">Unlock push notifications</string>
+    <string name="my_store_widget_push_notifications_description">Connect your store to a WordPress.com account to get alerts for new orders and reviews.</string>
+
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top performers</string>
