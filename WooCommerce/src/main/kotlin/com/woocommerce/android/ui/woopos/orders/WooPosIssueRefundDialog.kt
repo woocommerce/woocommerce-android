@@ -84,85 +84,12 @@ fun WooPosIssueRefundDialog(
             }
 
             when (val currentState = state) {
-                is WooPosRefundState.Loading -> {
-                    LoadingContent()
-                }
-
-                is WooPosRefundState.Content -> {
-                    when (currentState.step) {
-                        WooPosRefundState.Content.RefundStep.SelectItems -> {
-                            SelectItemsContent(
-                                state = currentState,
-                                onDismissRequest = handleDismiss,
-                                onContinue = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-                                }
-                            )
-                        }
-
-                        WooPosRefundState.Content.RefundStep.ReviewRefund -> {
-                            ReviewRefundContent(
-                                state = currentState,
-                                onDismissRequest = handleDismiss,
-                                onContinue = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
-                                },
-                                onEditRefund = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
-                                },
-                                onEditReason = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-                                }
-                            )
-                        }
-
-                        WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
-                            ConfirmRefundContent(
-                                state = currentState,
-                                isProcessing = false,
-                                onDismissRequest = handleDismiss,
-                                onConfirm = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
-                                },
-                                onBack = {
-                                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
-                                }
-                            )
-                        }
-                        WooPosRefundState.Content.RefundStep.Processing -> {
-                            ConfirmRefundContent(
-                                state = currentState,
-                                isProcessing = true,
-                                onDismissRequest = {},
-                                onConfirm = {},
-                                onBack = {}
-                            )
-                        }
-                    }
-                }
-
-                is WooPosRefundState.Error -> {
-                    ErrorContent(
-                        message = currentState.message,
-                        onDismissRequest = handleDismiss
-                    )
-                }
-
-                is WooPosRefundState.NoRefundableItems -> {
-                    NoItemsContent(onDismissRequest = handleDismiss)
-                }
-                is WooPosRefundState.RefundSuccess -> {
-                    RefundSuccessContent(
-                        state = currentState,
-                        onDismissRequest = handleDismiss
-                    )
-                }
-                is WooPosRefundState.RefundError -> {
-                    ErrorContent(
-                        message = currentState.message,
-                        onDismissRequest = handleDismiss
-                    )
-                }
+                is WooPosRefundState.Loading -> LoadingContent()
+                is WooPosRefundState.Content -> ContentStateHandler(currentState, viewModel, handleDismiss)
+                is WooPosRefundState.Error -> ErrorContent(currentState.message, handleDismiss)
+                is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
+                is WooPosRefundState.RefundSuccess -> RefundSuccessContent(currentState, handleDismiss)
+                is WooPosRefundState.RefundError -> ErrorContent(currentState.message, handleDismiss)
             }
         }
 
@@ -179,6 +106,64 @@ fun WooPosIssueRefundDialog(
                 onCancel = {
                     viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ContentStateHandler(
+    state: WooPosRefundState.Content,
+    viewModel: WooPosRefundViewModel,
+    onDismissRequest: () -> Unit
+) {
+    when (state.step) {
+        WooPosRefundState.Content.RefundStep.SelectItems -> {
+            SelectItemsContent(
+                state = state,
+                onDismissRequest = onDismissRequest,
+                onContinue = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+                }
+            )
+        }
+
+        WooPosRefundState.Content.RefundStep.ReviewRefund -> {
+            ReviewRefundContent(
+                state = state,
+                onDismissRequest = onDismissRequest,
+                onContinue = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+                },
+                onEditRefund = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+                },
+                onEditReason = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+                }
+            )
+        }
+
+        WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
+            ConfirmRefundContent(
+                state = state,
+                isProcessing = false,
+                onDismissRequest = onDismissRequest,
+                onConfirm = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+                },
+                onBack = {
+                    viewModel.onUIEvent(WooPosRefundUIEvent.BackToReviewClicked)
+                }
+            )
+        }
+        WooPosRefundState.Content.RefundStep.Processing -> {
+            ConfirmRefundContent(
+                state = state,
+                isProcessing = true,
+                onDismissRequest = {},
+                onConfirm = {},
+                onBack = {}
             )
         }
     }
