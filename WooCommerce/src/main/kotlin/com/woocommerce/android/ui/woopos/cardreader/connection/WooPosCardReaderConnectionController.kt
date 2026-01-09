@@ -64,8 +64,10 @@ class WooPosCardReaderConnectionController(
 
     private var selectedReader: CardReader? = null
     private var showUpdateCancelWarning = false
+    private var isRequiredUpdate = true
 
     fun startConnectionFlow() {
+        isRequiredUpdate = true
         _state.value = WooPosCardReaderConnectionState.Scanning
         scope.launch {
             val onboardingState = cardReaderOnboardingChecker.getOnboardingState()
@@ -94,6 +96,7 @@ class WooPosCardReaderConnectionController(
     }
 
     fun startUpdateFlow() {
+        isRequiredUpdate = false
         _state.value = WooPosCardReaderConnectionState.UpdateAvailable(
             progress = 0f,
             showCancelWarning = false,
@@ -413,7 +416,7 @@ class WooPosCardReaderConnectionController(
         when (status) {
             is SoftwareUpdateStatus.InstallationStarted -> {
                 logger.d("Software update started")
-                tracker.trackSoftwareUpdateStarted(requiredUpdate = true)
+                tracker.trackSoftwareUpdateStarted(requiredUpdate = isRequiredUpdate)
                 showUpdateCancelWarning = false
                 _state.value = WooPosCardReaderConnectionState.UpdateRequired(
                     progress = 0f,
@@ -433,7 +436,7 @@ class WooPosCardReaderConnectionController(
             }
             is SoftwareUpdateStatus.Success -> {
                 logger.d("Software update completed")
-                tracker.trackSoftwareUpdateSucceeded(requiredUpdate = true)
+                tracker.trackSoftwareUpdateSucceeded(requiredUpdate = isRequiredUpdate)
                 showUpdateCancelWarning = false
                 _state.value = WooPosCardReaderConnectionState.UpdateCompleted
             }
@@ -463,14 +466,14 @@ class WooPosCardReaderConnectionController(
     }
 
     private fun cancelUpdate() {
-        tracker.trackSoftwareUpdateCancelled(requiredUpdate = true)
+        tracker.trackSoftwareUpdateCancelled(requiredUpdate = isRequiredUpdate)
         cardReaderManager.cancelOngoingFirmwareUpdate()
         cancel()
     }
 
     private fun handleSoftwareUpdateFailed(status: SoftwareUpdateStatus.Failed) {
         logger.e("Software update failed - ${status.errorType}: ${status.message}")
-        tracker.trackSoftwareUpdateFailed(status, requiredUpdate = true)
+        tracker.trackSoftwareUpdateFailed(status, requiredUpdate = isRequiredUpdate)
         when (val errorType = status.errorType) {
             is SoftwareUpdateStatusErrorType.BatteryLow -> {
                 _state.value = WooPosCardReaderConnectionState.UpdateFailedBatteryLow(
