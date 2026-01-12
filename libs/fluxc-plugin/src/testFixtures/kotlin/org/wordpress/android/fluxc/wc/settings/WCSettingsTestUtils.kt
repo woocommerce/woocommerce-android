@@ -26,7 +26,8 @@ object WCSettingsTestUtils {
         address2 = "Apt 4",
         city = "San Francisco",
         postalCode = "94105",
-        couponsEnabled = false
+        couponsEnabled = false,
+        taxRoundAtSubtotal = false
     )
 
     fun generateSettings(siteId: LocalId) = generateSettingsModel(siteId).let {

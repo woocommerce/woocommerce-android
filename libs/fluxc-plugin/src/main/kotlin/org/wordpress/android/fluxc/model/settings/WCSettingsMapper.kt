@@ -28,6 +28,7 @@ class WCSettingsMapper
         val country = countryAndState?.firstOrNull()
         val state = countryAndState?.getOrNull(1)
         val couponsEnabled = getValueForSettingsField(response, "woocommerce_enable_coupons")
+        val taxRoundAtSubtotal = getValueForSettingsField(response, "woocommerce_tax_round_at_subtotal")
 
         return WCSettingsModel(
             localSiteId = site.localId(),
@@ -42,7 +43,8 @@ class WCSettingsMapper
             address2 = address2 ?: "",
             city = city ?: "",
             postalCode = postalCode ?: "",
-            couponsEnabled = couponsEnabled?.let { it == "yes" } ?: false
+            couponsEnabled = couponsEnabled?.let { it == "yes" } ?: false,
+            taxRoundAtSubtotal = taxRoundAtSubtotal?.let { it == "yes" } ?: false
         )
     }
 
@@ -89,7 +91,8 @@ class WCSettingsMapper
                 address2 = entity.address2,
                 city = entity.city,
                 postalCode = entity.postalCode,
-                couponsEnabled = entity.couponsEnabled
+                couponsEnabled = entity.couponsEnabled,
+                taxRoundAtSubtotal = entity.taxRoundAtSubtotal
             )
         }
     }
