@@ -4,7 +4,7 @@
 
 24.0
 -----
-
+- [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
 
 23.9
 -----
