@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
@@ -16,6 +17,9 @@ class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
+    private val posProductsOnly: Boolean
+        get() = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled()
+
     suspend fun syncCatalog(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
@@ -145,6 +149,7 @@ class WooPosSyncAction @Inject constructor(
                     pageSize = pageSize,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
+                    posProductsOnly = posProductsOnly,
                 )
             }
         )
@@ -167,6 +172,7 @@ class WooPosSyncAction @Inject constructor(
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     pageSize = pageSize,
+                    posProductsOnly = posProductsOnly,
                 )
             }
         )
@@ -190,7 +196,8 @@ class WooPosSyncAction @Inject constructor(
                     pageSize = pageSize,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
-                    includeStatus = listOf(CoreProductStatus.TRASH)
+                    includeStatus = listOf(CoreProductStatus.TRASH),
+                    posProductsOnly = posProductsOnly,
                 )
             }
         )

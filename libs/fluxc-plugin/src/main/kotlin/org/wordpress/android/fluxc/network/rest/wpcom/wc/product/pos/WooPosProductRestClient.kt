@@ -32,6 +32,7 @@ class WooPosProductRestClient @Inject constructor(
         page: Int,
         pageSize: Int,
         includeStatus: List<CoreProductStatus>? = null,
+        posProductsOnly: Boolean = false,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
@@ -39,7 +40,8 @@ class WooPosProductRestClient @Inject constructor(
             page = page,
             modifiedAfter = modifiedAfter,
             fields = PRODUCT_FIELDS,
-            includeStatus = includeStatus
+            includeStatus = includeStatus,
+            posProductsOnly = posProductsOnly
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -65,9 +67,16 @@ class WooPosProductRestClient @Inject constructor(
         modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean = false,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
-        val params = buildBaseParams(pageSize, page, VARIATIONS_FIELDS, modifiedAfter)
+        val params = buildBaseParams(
+            pageSize = pageSize,
+            page = page,
+            fields = VARIATIONS_FIELDS,
+            modifiedAfter = modifiedAfter,
+            posProductsOnly = posProductsOnly
+        )
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -120,18 +129,21 @@ class WooPosProductRestClient @Inject constructor(
         fields: String,
         modifiedAfter: String?,
         includeStatus: List<CoreProductStatus>? = null,
+        posProductsOnly: Boolean = false,
     ): MutableMap<String, String> {
         return mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
             "_fields" to fields,
-            "pos_products_only" to "true",
         ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
             includeStatus?.let { statuses ->
                 it["include_status"] = statusListToString(statuses)
+            }
+            if (posProductsOnly) {
+                it["pos_products_only"] = "true"
             }
         }
     }

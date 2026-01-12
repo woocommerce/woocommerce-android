@@ -162,7 +162,8 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     suspend fun fetchProductsCount(
         site: SiteModel,
-        modifiedAfterGmt: String? = null
+        modifiedAfterGmt: String? = null,
+        posProductsOnly: Boolean = false,
     ): Result<Int> =
         coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
             val response = posProductRestClient.fetchProducts(
@@ -170,7 +171,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 modifiedAfter = modifiedAfterGmt,
                 page = 1,
                 pageSize = 1,
-                includeStatus = null
+                includeStatus = null,
+                posProductsOnly = posProductsOnly
             )
 
             when {
@@ -206,6 +208,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         includeStatus: List<CoreProductStatus>? = null,
+        posProductsOnly: Boolean = false,
     ): Result<WooPosPaginatedFetchResult<WooPosProductEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedProducts") {
             val validPageSize = pageSize.coerceIn(1, MAX_PAGE_SIZE)
@@ -215,7 +218,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 modifiedAfter = modifiedAfterGmt,
                 page = page,
                 pageSize = validPageSize,
-                includeStatus = includeStatus
+                includeStatus = includeStatus,
+                posProductsOnly = posProductsOnly
             )
 
             val serverDate = headersParser.getServerDate(response)
@@ -392,13 +396,15 @@ class WooPosLocalCatalogStore @Inject constructor(
     suspend fun fetchVariationsCount(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
+        posProductsOnly: Boolean = false,
     ): Result<Int> =
         coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
             val response = posProductRestClient.fetchVariations(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = 1,
-                pageSize = 1
+                pageSize = 1,
+                posProductsOnly = posProductsOnly
             )
 
             when {
@@ -434,6 +440,7 @@ class WooPosLocalCatalogStore @Inject constructor(
         modifiedAfterGmt: String?,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
+        posProductsOnly: Boolean = false,
     ): Result<WooPosPaginatedFetchResult<WooPosVariationEntity>> =
         coroutineEngine.withDefaultContext(API, this, "fetchRecentlyModifiedVariations") {
             require(page > 0) { "Page number must be 1 or greater" }
@@ -443,7 +450,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = page,
-                pageSize = validPageSize
+                pageSize = validPageSize,
+                posProductsOnly = posProductsOnly
             )
 
             val serverDate = headersParser.getServerDate(response)
