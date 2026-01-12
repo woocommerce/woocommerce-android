@@ -844,7 +844,14 @@ class WooPosSyncActionTest {
 
     private fun givenProductFetchFails(page: Int, errorMessage: String?) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null), posProductsOnly = any())
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                anyOrNull(),
+                eq(page),
+                any(),
+                eq(null),
+                any()
+            )
         ).thenReturn(KotlinResult.failure(Exception(errorMessage ?: "Generic error")))
     }
 
