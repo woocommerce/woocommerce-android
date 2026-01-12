@@ -726,25 +726,28 @@ private fun sampleOrderDetails(
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
     lineItems = listOf(
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            101,
-            "Cup",
-            "1 x $8.50",
-            "$15.00",
-            null
+            id = 101,
+            name = "Cup",
+            attributesDescription = null,
+            qtyAndUnitPrice = "1 x $8.50",
+            lineTotal = "$15.00",
+            imageUrl = null
         ),
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            102,
-            "Coffee Container",
-            "1 x $10.00",
-            "$8.00",
-            null
+            id = 102,
+            name = "Coffee Container",
+            attributesDescription = "Blue, Large",
+            qtyAndUnitPrice = "1 x $10.00",
+            lineTotal = "$8.00",
+            imageUrl = null
         ),
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            103,
-            "Paper Filter",
-            "1 x $4.50",
-            "$8.00",
-            null
+            id = 103,
+            name = "Paper Filter",
+            attributesDescription = null,
+            qtyAndUnitPrice = "1 x $4.50",
+            lineTotal = "$8.00",
+            imageUrl = null
         )
     ),
     breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
