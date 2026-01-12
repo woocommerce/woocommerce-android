@@ -178,6 +178,7 @@ class OrderRestClient @Inject constructor(
         statusFilter: String?,
         createdVia: String? = null,
         searchQuery: String? = null,
+        decimalPoints: Int? = null,
     ): FetchOrdersResponsePayload {
         val url = WOOCOMMERCE.orders.pathV3
         val params = mutableMapOf(
@@ -190,6 +191,7 @@ class OrderRestClient @Inject constructor(
             "status" to statusFilter,
             "created_via" to createdVia,
             "search" to searchQuery,
+            "dp" to decimalPoints.toString(),
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -482,9 +484,10 @@ class OrderRestClient @Inject constructor(
      *
      * @param [orderId] Unique server id of the order to fetch
      */
-    suspend fun fetchSingleOrder(site: SiteModel, orderId: Long): RemoteOrderPayload.Fetching {
+    suspend fun fetchSingleOrder(site: SiteModel, orderId: Long, decimalPoints: Int? = null): RemoteOrderPayload.Fetching {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
-        val params = mapOf("_fields" to ORDER_FIELDS)
+        val params = mutableMapOf("_fields" to ORDER_FIELDS)
+            .putIfNotEmpty("dp" to decimalPoints.toString())
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,

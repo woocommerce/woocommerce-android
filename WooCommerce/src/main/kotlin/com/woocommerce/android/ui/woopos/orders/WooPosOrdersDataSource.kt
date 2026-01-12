@@ -100,7 +100,7 @@ class WooPosOrdersDataSource @Inject constructor(
 
     suspend fun refreshOrderById(orderId: Long): Result<Order> {
         val site = selectedSite.get()
-        val payload = restClient.fetchSingleOrder(site, orderId)
+        val payload = restClient.fetchSingleOrder(site, orderId, decimalPoints = 8)
         return if (payload.error == null) {
             val entity = payload.orderWithMeta.first
             val order = orderMapper.toAppModel(entity)
@@ -155,7 +155,8 @@ class WooPosOrdersDataSource @Inject constructor(
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
         statusFilter = null,
         createdVia = "pos-rest-api",
-        searchQuery = searchQuery
+        searchQuery = searchQuery,
+        decimalPoints = 8,
     )
 
     fun clearCache() = ordersCache.clear()
