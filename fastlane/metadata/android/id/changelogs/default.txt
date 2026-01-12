@@ -1,2 +1,0 @@
-23.8:
-Pembaruan ini akan mengurangi alur kerja Anda dengan perbaikan untuk navigasi kembali, crash tarif pengiriman, dan tata letak layar pembayaran. POS juga mendapatkan peningkatan, termasuk pengaturan Katalog Lokal yang lebih cepat, penanganan produk yang dihapus yang lebih baik, dan pengguliran otomatis ke pesanan terbaru Anda.
