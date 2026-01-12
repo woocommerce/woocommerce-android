@@ -1,7 +1,5 @@
 package org.wordpress.android.fluxc.utils;
 
-import android.text.TextUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.exifinterface.media.ExifInterface;
@@ -83,7 +81,7 @@ public class MediaUtils {
      */
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean canReadFile(@Nullable String filePath) {
-        if (filePath == null || TextUtils.isEmpty(filePath)) return false;
+        if (filePath == null || filePath.isEmpty()) return false;
         File file = new File(filePath);
         return file.canRead();
     }
@@ -93,7 +91,7 @@ public class MediaUtils {
      */
     @Nullable
     public static String getExtension(@Nullable String filePath) {
-        if (TextUtils.isEmpty(filePath) || !filePath.contains(".")) return null;
+        if (filePath == null || !filePath.contains(".")) return null;
         if (filePath.lastIndexOf(".") + 1 >= filePath.length()) return null;
         return filePath.substring(filePath.lastIndexOf(".") + 1);
     }
@@ -103,7 +101,7 @@ public class MediaUtils {
      */
     @Nullable
     public static String getFileName(@Nullable String filePath) {
-        if (TextUtils.isEmpty(filePath) || !filePath.contains("/")) return null;
+        if (filePath == null || !filePath.contains("/")) return null;
         if (filePath.lastIndexOf("/") + 1 >= filePath.length()) return null;
         return filePath.substring(filePath.lastIndexOf("/") + 1);
     }

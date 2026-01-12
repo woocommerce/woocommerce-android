@@ -5,9 +5,9 @@ import org.wordpress.android.fluxc.utils.MediaUtils
 
 object MediaTestUtils {
     fun generateMediaFromPath(
-        localSiteId: Int,
-        mediaId: Long,
-        filePath: String
+        localSiteId: Int = 0,
+        mediaId: Long = 0,
+        filePath: String = ""
     ): MediaModel {
         return MediaModel(
             id = 0,
