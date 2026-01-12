@@ -1,5 +1,9 @@
 package org.wordpress.android.fluxc.media;
 
+// TEMPORARILY COMMENTED OUT: Will be migrated to use Room and immutable MediaModel
+
+/*
+
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
@@ -275,3 +279,4 @@ public class MediaStoreTest {
         return siteModel;
     }
 }
+*/

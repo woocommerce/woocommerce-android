@@ -77,7 +77,7 @@ class WPComV2MediaRestClientTest {
             }
 
             countDownLatch = CountDownLatch(1)
-            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg"))
+            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath("./image.jpg"))
 
             countDownLatch.await()
 
@@ -123,7 +123,7 @@ class WPComV2MediaRestClientTest {
             }
 
             countDownLatch = CountDownLatch(1)
-            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath(0, 0L, "./image.jpg"))
+            restClient.uploadMedia(SiteModel(), MediaTestUtils.generateMediaFromPath("./image.jpg"))
 
             countDownLatch.await()
 
