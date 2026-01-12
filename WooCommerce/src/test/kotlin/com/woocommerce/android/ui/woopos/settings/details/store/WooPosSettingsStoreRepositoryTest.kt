@@ -40,7 +40,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "Suite 456",
             city = "New York",
             postalCode = "10001",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -83,7 +84,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "San Francisco",
             postalCode = "",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -112,7 +114,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "",
             postalCode = "",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -140,7 +143,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "",
             postalCode = "",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -182,7 +186,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "London",
             postalCode = "",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -210,7 +215,8 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "Postville",
             postalCode = "12345",
-            couponsEnabled = true
+            couponsEnabled = true,
+            taxRoundAtSubtotal = false
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 

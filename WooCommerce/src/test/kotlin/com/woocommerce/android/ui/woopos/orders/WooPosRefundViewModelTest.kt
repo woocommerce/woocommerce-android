@@ -124,7 +124,8 @@ class WooPosRefundViewModelTest {
                 address2 = "",
                 city = "",
                 postalCode = "",
-                couponsEnabled = true
+                couponsEnabled = true,
+                taxRoundAtSubtotal = false
             )
         )
     }
@@ -398,9 +399,9 @@ class WooPosRefundViewModelTest {
             val state = viewModel.state.value as WooPosRefundState.Content
             assertThat(
                 state.subtotal
-            ).isEqualByComparingTo(BigDecimal("36")) // rounded: 10 + 10 + 15.50 -> 20 + 16 = 36
+            ).isEqualByComparingTo(BigDecimal("35.50")) // 10 + 10 + 15.50 = 35.50
             assertThat(state.taxes).isEqualByComparingTo(BigDecimal("3.55")) // 1 + 1 + 1.55
-            assertThat(state.total).isEqualByComparingTo(BigDecimal("39.55")) // 36 + 3.55
+            assertThat(state.total).isEqualByComparingTo(BigDecimal("39.05")) // 35.50 + 3.55
         }
 
     @Test
