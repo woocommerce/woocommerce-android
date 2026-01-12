@@ -104,7 +104,8 @@ class WooPosOrdersViewModelTest {
                 address2 = "",
                 city = "",
                 postalCode = "",
-                couponsEnabled = true
+                couponsEnabled = true,
+                taxRoundAtSubtotal = false
             )
         )
 

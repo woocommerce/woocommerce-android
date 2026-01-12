@@ -41,7 +41,7 @@ class WooPosGetRefundableItems @Inject constructor(
                 emptyList()
             } else {
                 val unitPrice = orderItem.price
-                val unitTax = calculateUnitTax(orderItem, numberOfDecimals)
+                val unitTax = calculateUnitTax(orderItem)
                 val formattedUnitPrice = PriceUtils.formatCurrency(unitPrice, order.currency, currencyFormatter)
                 val formattedUnitTax = PriceUtils.formatCurrency(unitTax, order.currency, currencyFormatter)
 
@@ -79,9 +79,7 @@ class WooPosGetRefundableItems @Inject constructor(
             .filterValues { it > 0 }
     }
 
-    private fun calculateUnitTax(item: Order.Item, numberOfDecimals: Int): BigDecimal {
-        // Calculate per-unit tax by dividing total tax by quantity.
-        // This matches the approach used in store management refunds (RefundsExt.calculateTotalTaxes).
+    private fun calculateUnitTax(item: Order.Item): BigDecimal {
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
