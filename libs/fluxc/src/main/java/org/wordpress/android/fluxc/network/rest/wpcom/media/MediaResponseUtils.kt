@@ -27,7 +27,6 @@ class MediaResponseUtils
     fun getMediaFromRestResponse(from: MediaWPComRestResponse, siteId: Int) = MediaModel(
         id = 0,
         localSiteId = siteId,
-        localPostId = 0,
         mediaId = from.ID,
         postId = from.post_ID,
         uploadDate = from.date,

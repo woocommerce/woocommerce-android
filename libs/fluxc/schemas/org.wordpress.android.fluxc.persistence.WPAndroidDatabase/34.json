@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 34,
-    "identityHash": "01d92401c5c654266432a3a2bba1b9c8",
+    "identityHash": "f65035f0e388afe0691fc80d9f4523e4",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -511,7 +511,7 @@
       },
       {
         "tableName": "MediaEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `localSiteId` INTEGER NOT NULL, `localPostId` INTEGER NOT NULL, `mediaId` INTEGER NOT NULL, `postId` INTEGER NOT NULL, `uploadDate` TEXT, `url` TEXT NOT NULL, `thumbnailUrl` TEXT, `fileName` TEXT, `filePath` TEXT, `mimeType` TEXT, `title` TEXT, `caption` TEXT NOT NULL, `description` TEXT NOT NULL, `alt` TEXT NOT NULL, `uploadState` TEXT, `markedLocallyAsFeatured` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `localSiteId` INTEGER NOT NULL, `mediaId` INTEGER NOT NULL, `postId` INTEGER NOT NULL, `uploadDate` TEXT, `url` TEXT NOT NULL, `thumbnailUrl` TEXT, `fileName` TEXT, `filePath` TEXT, `mimeType` TEXT, `title` TEXT, `caption` TEXT NOT NULL, `description` TEXT NOT NULL, `alt` TEXT NOT NULL, `uploadState` TEXT, `markedLocallyAsFeatured` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -522,12 +522,6 @@
           {
             "fieldPath": "localSiteId",
             "columnName": "localSiteId",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "localPostId",
-            "columnName": "localPostId",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -619,7 +613,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '01d92401c5c654266432a3a2bba1b9c8')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'f65035f0e388afe0691fc80d9f4523e4')"
     ]
   }
 }

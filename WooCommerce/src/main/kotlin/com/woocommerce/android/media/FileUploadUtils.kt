@@ -81,7 +81,6 @@ object FileUploadUtils {
         val media = MediaModel(
             id = 0,
             localSiteId = localSiteId,
-            localPostId = 0,
             mediaId = 0L,
             postId = 0L,
             uploadDate = DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),

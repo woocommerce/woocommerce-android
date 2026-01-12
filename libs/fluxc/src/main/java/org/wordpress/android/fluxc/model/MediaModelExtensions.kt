@@ -8,10 +8,8 @@ fun MediaModel.withMediaId(mediaId: Long) = copy(mediaId = mediaId)
 
 fun MediaModel.withLocalIds(
     id: Int,
-    localPostId: Int,
     markedLocallyAsFeatured: Boolean
 ) = copy(
     id = id,
-    localPostId = localPostId,
     markedLocallyAsFeatured = markedLocallyAsFeatured
 )

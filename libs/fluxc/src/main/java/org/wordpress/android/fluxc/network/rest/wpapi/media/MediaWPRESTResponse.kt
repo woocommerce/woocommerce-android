@@ -46,7 +46,6 @@ data class MediaWPRESTResponse(
 fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
     id = 0,
     localSiteId = localSiteId,
-    localPostId = 0,
     mediaId = id,
     postId = post ?: 0L,
     uploadDate = DateTimeUtils.iso8601FromDate(

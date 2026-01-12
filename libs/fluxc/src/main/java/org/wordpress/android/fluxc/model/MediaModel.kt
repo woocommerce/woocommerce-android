@@ -11,7 +11,6 @@ data class MediaModel(
     @PrimaryKey(autoGenerate = true)
     val id: Int,
     val localSiteId: Int,
-    val localPostId: Int,
     val mediaId: Long,
     val postId: Long,
     val uploadDate: String?,

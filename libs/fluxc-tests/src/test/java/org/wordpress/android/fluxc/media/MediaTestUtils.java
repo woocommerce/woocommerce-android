@@ -13,7 +13,6 @@ public class MediaTestUtils {
         return new MediaModel(
                 0, // id
                 localSiteId,
-                0, // localPostId
                 mediaId,
                 0L, // postId
                 null, // uploadDate

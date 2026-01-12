@@ -192,7 +192,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
                                     responseMedia = MediaModelExtensionsKt.withLocalIds(
                                             responseMedia,
                                             media.getId(),
-                                            media.getLocalPostId(),
                                             media.getMarkedLocallyAsFeatured()
                                     );
 
@@ -316,7 +315,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
                         responseMedia = MediaModelExtensionsKt.withLocalIds(
                                 responseMedia,
                                 media.getId(),
-                                media.getLocalPostId(),
                                 media.getMarkedLocallyAsFeatured()
                         );
 
@@ -468,7 +466,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         return new MediaModel(
                 0,
                 localSiteId,
-                0,
                 MapUtils.getMapLong(response, "attachment_id"),
                 MapUtils.getMapLong(response, "parent"),
                 DateTimeUtils.iso8601UTCFromDate(MapUtils.getMapDate(response, "date_created_gmt")),

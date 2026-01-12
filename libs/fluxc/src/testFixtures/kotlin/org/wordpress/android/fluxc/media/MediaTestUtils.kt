@@ -12,7 +12,6 @@ object MediaTestUtils {
         return MediaModel(
             id = 0,
             localSiteId = localSiteId,
-            localPostId = 0,
             mediaId = mediaId,
             postId = 0L,
             uploadDate = null,
