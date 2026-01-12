@@ -125,7 +125,8 @@ class WooPosProductRestClient @Inject constructor(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
             "_fields" to fields,
-            ).also {
+            "pos_products_only" to "true",
+        ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
