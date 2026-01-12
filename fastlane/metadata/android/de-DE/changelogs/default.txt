@@ -1,2 +1,0 @@
-23.8:
-Dieses Update sorgt für einen reibungslosen Workflow dank Fehlerbehebungen beim Zurücknavigieren, bei Abstürzen der Versandkosten und beim Layout des Zahlungsbildschirms. POS wurde ebenfalls verbessert: Die Einstellungen für den lokalen Katalog werden schneller geladen, gelöschte Produkte lassen sich besser verwalten und du kannst automatisch zu deinen neuesten Bestellungen scrollen.
