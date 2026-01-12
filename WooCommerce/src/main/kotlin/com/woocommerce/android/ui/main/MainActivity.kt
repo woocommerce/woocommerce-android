@@ -28,7 +28,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -57,6 +56,7 @@ import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
@@ -554,45 +554,20 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
-        // Cancel any pending toolbar animations
         animatorHelper.cancelToolbarAnimation()
-
-        if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
-
-        binding.appBarLayout.visibility = View.VISIBLE
-
         if (animate) {
-            animatorHelper.animateToolbarHeight(show = true) {
-                binding.collapsingToolbar.updateLayoutParams {
-                    height = it
-                }
-            }
+            binding.collapsingToolbar.expand()
         } else {
-            binding.collapsingToolbar.updateLayoutParams {
-                height = animatorHelper.toolbarHeight
-            }
+            binding.collapsingToolbar.show()
         }
     }
 
     private fun hideToolbar(animate: Boolean) {
-        // Cancel any pending toolbar animations
         animatorHelper.cancelToolbarAnimation()
-
-        if (binding.collapsingToolbar.layoutParams.height == 0) return
         if (animate) {
-            animatorHelper.animateToolbarHeight(show = false) {
-                binding.collapsingToolbar.updateLayoutParams {
-                    height = it
-                }
-                if (it == 0) {
-                    binding.appBarLayout.visibility = View.GONE
-                }
-            }
+            binding.collapsingToolbar.collapse()
         } else {
-            binding.collapsingToolbar.updateLayoutParams {
-                height = 0
-            }
-            binding.appBarLayout.visibility = View.GONE
+            binding.collapsingToolbar.hide()
         }
     }
 
