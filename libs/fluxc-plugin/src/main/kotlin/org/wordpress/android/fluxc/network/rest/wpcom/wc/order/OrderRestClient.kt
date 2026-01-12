@@ -484,7 +484,11 @@ class OrderRestClient @Inject constructor(
      *
      * @param [orderId] Unique server id of the order to fetch
      */
-    suspend fun fetchSingleOrder(site: SiteModel, orderId: Long, decimalPoints: Int? = null): RemoteOrderPayload.Fetching {
+    suspend fun fetchSingleOrder(
+        site: SiteModel,
+        orderId: Long,
+        decimalPoints: Int? = null
+    ): RemoteOrderPayload.Fetching {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
         val params = mutableMapOf("_fields" to ORDER_FIELDS)
             .putIfNotEmpty("dp" to decimalPoints.toString())

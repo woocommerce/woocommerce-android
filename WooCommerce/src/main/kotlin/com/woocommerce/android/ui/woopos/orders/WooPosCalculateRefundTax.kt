@@ -9,13 +9,12 @@ class WooPosCalculateRefundTax @Inject constructor() {
     operator fun invoke(
         refundableItems: List<WooPosRefundableItem>,
         order: Order,
-        numberOfDecimals: Int,
     ): BigDecimal {
         return refundableItems
             .groupBy { it.orderItemId }
             .entries
             .sumOf { (orderItemId, items) ->
-                calculateTotalTaxesForItem(orderItemId, items.size, order, numberOfDecimals)
+                calculateTotalTaxesForItem(orderItemId, items.size, order)
             }
     }
 
@@ -23,7 +22,6 @@ class WooPosCalculateRefundTax @Inject constructor() {
         orderItemId: Long,
         refundQuantity: Int,
         order: Order,
-        numberOfDecimals: Int
     ): BigDecimal {
         val originalItem = requireNotNull(order.items.find { it.itemId == orderItemId }) {
             "Order item with ID $orderItemId not found in order ${order.id}."
