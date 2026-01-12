@@ -179,23 +179,24 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
     ) {
         val (image, nameText, attributesText, qtyText, totalText) = createRefs()
 
-        OrderLineItemImage(
-            imageUrl = row.imageUrl,
-            modifier = Modifier.constrainAs(image) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-            }
-        )
-
         WooPosText(
             text = row.name,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameText) {
-                top.linkTo(image.top)
+                top.linkTo(parent.top)
                 start.linkTo(image.end, margin = marginMedium)
                 end.linkTo(totalText.start, margin = marginSmall)
                 width = Dimension.fillToConstraints
+            }
+        )
+
+        OrderLineItemImage(
+            imageUrl = row.imageUrl,
+            modifier = Modifier.constrainAs(image) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
             }
         )
 
