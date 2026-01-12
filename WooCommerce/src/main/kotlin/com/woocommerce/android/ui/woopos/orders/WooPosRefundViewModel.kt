@@ -81,7 +81,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 emptyList()
             }
 
-            val refundableItems = getRefundableItems(order, refunds, numberOfDecimalPoints)
+            val refundableItems = getRefundableItems(order, refunds)
 
             if (refundableItems.isEmpty()) {
                 _state.value = WooPosRefundState.NoRefundableItems
@@ -100,7 +100,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         refundableItems: List<WooPosRefundableItem>,
     ): WooPosRefundState.Content {
         val subtotal = calculateRefundSubtotal(refundableItems, numberOfDecimalPoints)
-        val taxes = calculateRefundTax(refundableItems, order, numberOfDecimalPoints)
+        val taxes = calculateRefundTax(refundableItems, order)
         val total = (subtotal + taxes).setScale(numberOfDecimalPoints, RoundingMode.HALF_UP)
 
         return WooPosRefundState.Content(

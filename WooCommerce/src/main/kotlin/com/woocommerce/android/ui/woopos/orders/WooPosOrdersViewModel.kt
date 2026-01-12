@@ -114,11 +114,7 @@ class WooPosOrdersViewModel @Inject constructor(
             is RefundsFetchResult.Success -> refundResult.refunds
             is RefundsFetchResult.Error -> emptyList()
         }
-        val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-        checkNotNull(numberOfDecimals) {
-            "Failed to get site settings in order to determine number of decimals for refund calculations."
-        }
-        return getRefundableItems(order, refunds, numberOfDecimals).isNotEmpty()
+        return getRefundableItems(order, refunds).isNotEmpty()
     }
 
     fun onOrderSelected(orderId: Long) {
