@@ -412,7 +412,7 @@ public class MediaStore extends Store {
     private final MediaXMLRPCClient mMediaXmlrpcClient;
     private final WPComV2MediaRestClient mWPComV2MediaRestClient;
     private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
-    private final MediaDao mMediaDao;
+    @NonNull private final MediaDao mMediaDao;
 
     private final ApplicationPasswordsConfiguration mApplicationPasswordsConfiguration;
 
@@ -427,7 +427,7 @@ public class MediaStore extends Store {
             WPComV2MediaRestClient wpv2MediaRestClient,
             ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
             ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
-            MediaDao mediaDao) {
+            @NonNull MediaDao mediaDao) {
         super(dispatcher);
         mMediaXmlrpcClient = xmlrpcClient;
         mWPComV2MediaRestClient = wpv2MediaRestClient;
