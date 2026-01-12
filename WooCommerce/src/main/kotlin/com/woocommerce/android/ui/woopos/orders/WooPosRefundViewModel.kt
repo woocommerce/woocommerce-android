@@ -36,7 +36,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    wooCommerceStore: WooCommerceStore
 ) : ViewModel() {
 
     @AssistedFactory
@@ -52,13 +52,13 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val taxRoundAtSubtotal: Boolean
 
     init {
-        loadRefundableItems()
         val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
         checkNotNull(siteSettings) {
             "Failed to get site settings for refund calculations."
         }
         numberOfDecimalPoints = siteSettings.currencyDecimalNumber
         taxRoundAtSubtotal = siteSettings.taxRoundAtSubtotal
+        loadRefundableItems()
     }
 
     private fun loadRefundableItems() {
@@ -83,7 +83,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 emptyList()
             }
 
-            val refundableItems = getRefundableItems(order, refunds, numberOfDecimalPoints)
+            val refundableItems = getRefundableItems(order, refunds)
 
             if (refundableItems.isEmpty()) {
                 _state.value = WooPosRefundState.NoRefundableItems

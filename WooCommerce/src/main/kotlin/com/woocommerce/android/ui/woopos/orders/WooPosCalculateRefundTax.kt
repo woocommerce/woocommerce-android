@@ -14,7 +14,7 @@ class WooPosCalculateRefundTax @Inject constructor() {
         roundAtSubtotal: Boolean
     ): BigDecimal {
         if (refundableItems.isEmpty()) {
-            return BigDecimal.ZERO.setScale(numberOfDecimals)
+            return BigDecimal.ZERO
         }
 
         val totalTax = refundableItems

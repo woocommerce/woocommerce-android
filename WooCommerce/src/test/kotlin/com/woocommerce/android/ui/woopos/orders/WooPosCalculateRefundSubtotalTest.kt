@@ -32,8 +32,7 @@ class WooPosCalculateRefundSubtotalTest {
     @Test
     fun `given empty list, when invoke called, then returns zero`() {
         val result = sut(emptyList(), 2)
-
-        assertThat(result).isEqualTo(BigDecimal("0.00"))
+        assertThat(result).isEqualTo(BigDecimal("0"))
     }
 
     @Test

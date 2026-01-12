@@ -57,9 +57,6 @@ class WooPosOrdersViewModelTest {
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
     private val selectedSite: SelectedSite = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
-
-    private val testSite = SiteModel().apply { id = 1 }
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -77,8 +74,6 @@ class WooPosOrdersViewModelTest {
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             getRefundableItems = getRefundableItems,
-            selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore
         )
     }
 
@@ -89,25 +84,7 @@ class WooPosOrdersViewModelTest {
         whenever(formatPrice.invoke(any())).thenReturn("$0.00")
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
-        whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(emptyList())
-        whenever(selectedSite.get()).thenReturn(testSite)
-        whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(
-            Settings(
-                currencyCode = "USD",
-                currencyPosition = CurrencyPosition.LEFT,
-                currencyThousandSeparator = ",",
-                currencyDecimalSeparator = ".",
-                currencyDecimalNumber = 2,
-                countryCode = "US",
-                stateCode = "CA",
-                address = "",
-                address2 = "",
-                city = "",
-                postalCode = "",
-                couponsEnabled = true,
-                taxRoundAtSubtotal = false
-            )
-        )
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
@@ -1232,7 +1209,7 @@ class WooPosOrdersViewModelTest {
             rowIndex = 0
         )
 
-        whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(listOf(refundableItem))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
@@ -1253,7 +1230,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val testOrder = order(2)
 
-        whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(emptyList())
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )

@@ -23,7 +23,6 @@ class WooPosGetRefundableItems @Inject constructor(
     operator fun invoke(
         order: Order,
         refunds: List<Refund>,
-        numberOfDecimals: Int,
     ): List<WooPosRefundableItem> {
         val productItems = order.items.filter { it.productId != 0L }
 
