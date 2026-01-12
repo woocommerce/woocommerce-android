@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -31,10 +30,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.settings.CurrencyPosition
-import org.wordpress.android.fluxc.model.settings.Settings
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Date
 import java.util.Locale
@@ -56,10 +51,6 @@ class WooPosOrdersViewModelTest {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
-    private val selectedSite: SelectedSite = mock()
-    private val wooCommerceStore: WooCommerceStore = mock()
-
-    private val testSite = SiteModel().apply { id = 1 }
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -77,8 +68,6 @@ class WooPosOrdersViewModelTest {
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
             getRefundableItems = getRefundableItems,
-            selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore
         )
     }
 
@@ -90,23 +79,6 @@ class WooPosOrdersViewModelTest {
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
-        whenever(selectedSite.get()).thenReturn(testSite)
-        whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(
-            Settings(
-                currencyCode = "USD",
-                currencyPosition = CurrencyPosition.LEFT,
-                currencyThousandSeparator = ",",
-                currencyDecimalSeparator = ".",
-                currencyDecimalNumber = 2,
-                countryCode = "US",
-                stateCode = "CA",
-                address = "",
-                address2 = "",
-                city = "",
-                postalCode = "",
-                couponsEnabled = true
-            )
-        )
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow {

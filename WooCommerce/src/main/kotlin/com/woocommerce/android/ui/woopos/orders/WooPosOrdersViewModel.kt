@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
@@ -31,7 +30,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.math.BigDecimal
 import java.util.Locale
 import javax.inject.Inject
@@ -48,8 +46,6 @@ class WooPosOrdersViewModel @Inject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val getRefundableItems: WooPosGetRefundableItems,
-    private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
