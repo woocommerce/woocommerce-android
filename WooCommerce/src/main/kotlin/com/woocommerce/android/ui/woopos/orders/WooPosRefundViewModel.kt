@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.RoundingMode
 
 @Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
@@ -100,7 +101,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     ): WooPosRefundState.Content {
         val subtotal = calculateRefundSubtotal(refundableItems, numberOfDecimalPoints)
         val taxes = calculateRefundTax(refundableItems, order, numberOfDecimalPoints)
-        val total = subtotal + taxes
+        val total = (subtotal + taxes).setScale(numberOfDecimalPoints, RoundingMode.HALF_UP)
 
         return WooPosRefundState.Content(
             orderId = order.id,

@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.model.Order
 import java.math.BigDecimal
 import java.math.MathContext
-import java.math.RoundingMode
 import javax.inject.Inject
 
 class WooPosCalculateRefundTax @Inject constructor() {
@@ -43,10 +42,7 @@ class WooPosCalculateRefundTax @Inject constructor() {
                 MathContext.DECIMAL128
             )
 
-            // Apply rounding to the final tax total
-            refundQuantity.toBigDecimal()
-                .multiply(perUnitTax)
-                .setScale(numberOfDecimals, RoundingMode.HALF_UP)
+            refundQuantity.toBigDecimal().multiply(perUnitTax)
         }
     }
 }

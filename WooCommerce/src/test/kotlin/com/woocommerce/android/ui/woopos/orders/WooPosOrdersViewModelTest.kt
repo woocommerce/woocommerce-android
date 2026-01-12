@@ -114,6 +114,8 @@ class WooPosOrdersViewModelTest {
             }
         )
 
+        whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
+
         whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")

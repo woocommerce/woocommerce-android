@@ -5,7 +5,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.MathContext
 import javax.inject.Inject
 
 /**
@@ -85,7 +85,7 @@ class WooPosGetRefundableItems @Inject constructor(
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
-            item.totalTax.divide(item.quantity.toBigDecimal(), numberOfDecimals, RoundingMode.HALF_UP)
+            item.totalTax.divide(item.quantity.toBigDecimal(), MathContext.DECIMAL128)
         }
     }
 }
