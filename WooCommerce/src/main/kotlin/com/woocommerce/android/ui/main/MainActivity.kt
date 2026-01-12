@@ -558,6 +558,9 @@ class MainActivity :
         animatorHelper.cancelToolbarAnimation()
 
         if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
+
+        binding.appBarLayout.visibility = View.VISIBLE
+
         if (animate) {
             animatorHelper.animateToolbarHeight(show = true) {
                 binding.collapsingToolbar.updateLayoutParams {
@@ -581,11 +584,15 @@ class MainActivity :
                 binding.collapsingToolbar.updateLayoutParams {
                     height = it
                 }
+                if (it == 0) {
+                    binding.appBarLayout.visibility = View.GONE
+                }
             }
         } else {
             binding.collapsingToolbar.updateLayoutParams {
                 height = 0
             }
+            binding.appBarLayout.visibility = View.GONE
         }
     }
 
