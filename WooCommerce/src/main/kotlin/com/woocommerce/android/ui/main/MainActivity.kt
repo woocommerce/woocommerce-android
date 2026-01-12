@@ -122,6 +122,8 @@ import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
+import org.wordpress.android.mediapicker.util.fadeIn
+import org.wordpress.android.mediapicker.util.fadeOut
 import org.wordpress.android.util.NetworkUtils
 import java.lang.ref.WeakReference
 import java.math.BigDecimal
@@ -592,7 +594,7 @@ class MainActivity :
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.visibility == View.GONE) return
         if (binding.collapsingToolbar.layoutParams.height != 0) {
-            binding.toolbarSubtitle.collapse(duration = 200L)
+            binding.toolbarSubtitle.fadeOut(duration = 200L)
             animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
                 binding.collapsingToolbar.expandedTitleMarginBottom = it
             }
@@ -604,8 +606,8 @@ class MainActivity :
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
-        binding.toolbarSubtitle.expand(duration = 200L)
+        if (binding.toolbarSubtitle.isVisible) return
+        binding.toolbarSubtitle.fadeIn(duration = 200L)
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
         }
