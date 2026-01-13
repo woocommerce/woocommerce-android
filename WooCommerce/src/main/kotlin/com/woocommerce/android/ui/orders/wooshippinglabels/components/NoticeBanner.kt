@@ -14,20 +14,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircleOutline
-import androidx.compose.material.icons.outlined.Close
-import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 
@@ -43,11 +42,9 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
     ) {
         if (noticeBannerUiState == null) return@AnimatedVisibility
 
-        val icon = if (noticeBannerUiState.error) {
-            Icons.Outlined.Info
-        } else {
-            Icons.Outlined.CheckCircleOutline
-        }
+        val icon = ImageVector.vectorResource(
+            if (noticeBannerUiState.error) R.drawable.ic_tintable_info_outline_24dp else R.drawable.ic_check_circle_24dp
+        )
 
         val color = if (noticeBannerUiState.error) {
             R.color.woo_shipping_label_error
@@ -96,7 +93,7 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
             )
             if (!noticeBannerUiState.autoDismiss) {
                 Icon(
-                    imageVector = Icons.Outlined.Close,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                     tint = colorResource(color),
                     contentDescription = null,
                     modifier = Modifier.clickable { noticeBannerUiState.onDismissed?.invoke() }
@@ -104,4 +101,16 @@ fun NoticeBanner(noticeBannerUiState: NoticeBannerUiState?, modifier: Modifier =
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun NoticeBannerPreview() {
+    NoticeBanner(
+        noticeBannerUiState = NoticeBannerUiState(
+            message = R.string.woo_shipping_address_verified,
+            type = NoticeType.VERIFIED_DESTINATION_ADDRESS,
+            error = false
+        )
+    )
 }

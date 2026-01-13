@@ -21,6 +21,8 @@ class JitmQueryParamsEncoder @Inject constructor(
             .appendKeyValue("device", deviceInfo.name)
             .appendKeyValue("nfc", deviceFeatures.isNFCAvailable().toString())
             .appendKeyValue("locale", deviceInfo.locale ?: "unknown")
+            .appendKeyValue("screen_width", deviceInfo.screenWidthDp.toString())
+            .appendKeyValue("screen_height", deviceInfo.screenHeightDp.toString())
             .replace("\\s".toRegex(), "_")
             .removePrefix("&")
         return URLEncoder.encode(query, Charsets.UTF_8.name())

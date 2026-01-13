@@ -12,8 +12,6 @@ object PreferenceUtils {
 
     class PreferenceUtilsWrapper
     @Inject constructor(private val context: Context) {
-        fun getFluxCPreferences(): SharedPreferences {
-            return PreferenceUtils.getFluxCPreferences(context)
-        }
+        fun getFluxCPreferences(): SharedPreferences = getFluxCPreferences(context)
     }
 }

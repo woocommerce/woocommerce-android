@@ -127,6 +127,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.DatabaseError -> SyncErrorType.DATABASE_ERROR
             is PosLocalCatalogSyncResult.Failure.InvalidResponse -> SyncErrorType.INVALID_RESPONSE
             is PosLocalCatalogSyncResult.Failure.UnexpectedError -> SyncErrorType.UNEXPECTED_ERROR
+            is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
         }
 
         analyticsTracker.track(
@@ -139,7 +140,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         )
     }
 
-    @Suppress("ReturnCount")
     private suspend fun performSync(
         site: SiteModel,
         pageSize: Int,

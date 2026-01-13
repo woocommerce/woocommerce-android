@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpapi
 
+import com.android.volley.NetworkResponse
 import com.android.volley.NoConnectionError
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
@@ -97,9 +98,7 @@ class NonceRestClient @Inject constructor(
                         FailedRequest(
                             timeOfResponse = currentTimeProvider.currentDate().time,
                             username = username,
-                            type = if (networkResponse?.statusCode == NOT_FOUND_STATUS_CODE) {
-                                Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
-                            } else Nonce.CookieNonceErrorType.GENERIC_ERROR,
+                            type = getErrorType(networkResponse),
                             networkError = response.error,
                             errorMessage = response.error.message,
                         )
@@ -111,6 +110,22 @@ class NonceRestClient @Inject constructor(
             nonceMap[siteUrl] = it
         }
     }
+
+    private fun getErrorType(networkResponse: NetworkResponse?): Nonce.CookieNonceErrorType = when {
+        networkResponse?.statusCode == NOT_FOUND_STATUS_CODE -> {
+            Nonce.CookieNonceErrorType.CUSTOM_LOGIN_URL
+        }
+
+        isBasicAuthError(networkResponse) -> Nonce.CookieNonceErrorType.BASIC_AUTH_REQUIRED
+
+        else -> {
+            Nonce.CookieNonceErrorType.GENERIC_ERROR
+        }
+    }
+
+    private fun isBasicAuthError(networkResponse: NetworkResponse?): Boolean =
+        networkResponse?.headers?.keys?.any { it.equals(AUTH_HEADER_KEY, ignoreCase = true) } == true &&
+            networkResponse?.headers?.values?.any { it.contains(BASIC_AUTH_REALM, ignoreCase = true) } == true
 
     private suspend fun requestNonce(redirectUrl: String, username: String): Nonce {
         return when (
@@ -158,5 +173,7 @@ class NonceRestClient @Inject constructor(
 
     companion object {
         const val INVALID_CREDENTIAL_HTML_PATTERN = "document.querySelector('form').classList.add('shake')"
+        const val AUTH_HEADER_KEY = "WWW-Authenticate"
+        const val BASIC_AUTH_REALM = "Basic realm"
     }
 }

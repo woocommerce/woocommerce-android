@@ -18,20 +18,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.model.CreditCardType
@@ -60,11 +56,17 @@ private fun BlazeCampaignPaymentMethodsListScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_payment_list_screen_title),
                 onNavigationButtonClick = viewState.onDismiss,
-                navigationIcon = when (viewState) {
-                    is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList ->
-                        Icons.AutoMirrored.Filled.ArrowBack
-                    is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> Icons.Default.Clear
-                }
+                navigationIcon = ImageVector.vectorResource(
+                    when (viewState) {
+                        is BlazeCampaignPaymentMethodsListViewModel.ViewState.PaymentMethodsList -> {
+                            R.drawable.ic_back_24dp
+                        }
+
+                        is BlazeCampaignPaymentMethodsListViewModel.ViewState.AddPaymentMethodWebView -> {
+                            R.drawable.ic_close_24dp
+                        }
+                    }
+                )
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -121,7 +123,7 @@ private fun PaymentMethodsList(
 private fun PaymentMethodsHeader(modifier: Modifier = Modifier) {
     Row(modifier.padding(dimensionResource(id = R.dimen.major_100))) {
         Icon(
-            imageVector = Icons.Outlined.VerifiedUser,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_verified_user_24dp),
             tint = MaterialTheme.colors.primary,
             contentDescription = null
         )
@@ -170,7 +172,7 @@ private fun PaymentMethodsListView(
         item {
             WCTextButton(
                 onClick = onAddPaymentMethodClicked,
-                icon = Icons.Default.Add,
+                icon = ImageVector.vectorResource(R.drawable.ic_add),
                 text = stringResource(id = R.string.blaze_campaign_payment_list_add_new_payment_method_button)
             )
         }
@@ -208,7 +210,7 @@ private fun PaymentMethodItem(
 
         if (isSelected) {
             Icon(
-                imageVector = Icons.Default.Check,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_check),
                 tint = MaterialTheme.colors.primary,
                 contentDescription = null
             )

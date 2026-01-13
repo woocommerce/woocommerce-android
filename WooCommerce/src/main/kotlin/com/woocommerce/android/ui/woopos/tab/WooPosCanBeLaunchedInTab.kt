@@ -39,7 +39,6 @@ class WooPosCanBeLaunchedInTab @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private suspend fun checkLaunchability(forceRefresh: Boolean = false): WooPosLaunchability {
         val site = selectedSite.getOrNull()
             ?: return WooPosLaunchability.NotLaunchable(

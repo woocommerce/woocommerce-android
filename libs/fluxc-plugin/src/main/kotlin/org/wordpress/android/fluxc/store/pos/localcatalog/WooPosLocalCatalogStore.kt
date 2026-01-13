@@ -516,13 +516,11 @@ class WooPosLocalCatalogStore @Inject constructor(
                         WooPosGenerateCatalogResult(
                             scheduledAt = response.model.scheduledAt,
                             completedAt = response.model.completedAt,
-                            state = response.model.state,
+                            state = WooPosGenerateCatalogState.from(response.model.state),
                             progress = response.model.progress,
                             processed = response.model.processed,
                             total = response.model.total,
                             url = response.model.url,
-                            productFields = response.model.args?.productFields,
-                            variationFields = response.model.args?.variationFields,
                         )
                     )
                 }

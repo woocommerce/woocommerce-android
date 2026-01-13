@@ -52,8 +52,9 @@ class PluginsViewModel @Inject constructor(
                 _viewState.emit(
                     Loaded(
                         plugins = response.model!!
-                            .filter { it.version.isNotNullOrEmpty() && it.name.isNotNullOrEmpty() }
-                            .map {
+                            .filter { pluginDto: SystemPluginModel ->
+                                pluginDto.version.isNotNullOrEmpty() && pluginDto.name.isNotNullOrEmpty()
+                            }.map {
                                 Plugin(
                                     name = StringEscapeUtils.unescapeHtml4(it.name),
                                     authorName = StringEscapeUtils.unescapeHtml4(it.authorName),

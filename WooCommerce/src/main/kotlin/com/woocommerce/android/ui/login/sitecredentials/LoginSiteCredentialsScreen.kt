@@ -15,8 +15,6 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -72,7 +70,6 @@ fun LoginSiteCredentialsScreen(
                 title = stringResource(id = R.string.log_in),
                 onNavigationButtonClick = onBackClick,
                 onHelpButtonClick = onHelpButtonClick,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         }
     ) { paddingValues ->
@@ -129,10 +126,10 @@ fun LoginSiteCredentialsScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
 
-        if (viewState.errorDialogMessage != null) {
+        if (viewState.authenticationError != null) {
             AlertDialog(
                 text = {
-                    Text(text = viewState.errorDialogMessage.getText())
+                    Text(text = viewState.authenticationError.errorMessage.getText())
                 },
                 onDismissRequest = onErrorDialogDismissed,
                 buttons = {
@@ -158,10 +155,12 @@ fun LoginSiteCredentialsScreen(
                                 textAlign = TextAlign.End
                             )
                         }
-                        WCTextButton(
-                            onClick = onStartWebAuthorizationClick
-                        ) {
-                            Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                        if (viewState.authenticationError.showWpAdminFallbackOption) {
+                            WCTextButton(
+                                onClick = onStartWebAuthorizationClick
+                            ) {
+                                Text(text = stringResource(id = R.string.login_site_credentials_use_web_authorization))
+                            }
                         }
                     }
                 }
@@ -201,7 +200,10 @@ private fun LoginSiteCredentialsScreenWithErrorPreview() {
         LoginSiteCredentialsScreen(
             viewState = LoginSiteCredentialsViewModel.ViewState(
                 siteUrl = "https://wordpress.com",
-                errorDialogMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed)
+                authenticationError = LoginSiteCredentialsViewModel.AuthenticationError(
+                    errorMessage = UiString.UiStringRes(R.string.login_site_credentials_fetching_site_failed),
+                    showWpAdminFallbackOption = true
+                )
             ),
             onUsernameChanged = {},
             onPasswordChanged = {},

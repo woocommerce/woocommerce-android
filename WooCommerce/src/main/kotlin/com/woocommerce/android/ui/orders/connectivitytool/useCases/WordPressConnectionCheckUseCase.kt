@@ -17,8 +17,7 @@ class WordPressConnectionCheckUseCase @Inject constructor(
     operator fun invoke(): Flow<ConnectivityCheckStatus> = flow {
         emit(InProgress)
         whatsNewStore.fetchRemoteAnnouncements(
-            versionName = buildConfigWrapper.versionName,
-            appId = WhatsNewStore.WhatsNewAppId.WOO_ANDROID
+            versionName = buildConfigWrapper.versionName
         ).fetchError?.let {
             emit(Failure())
         } ?: emit(Success)

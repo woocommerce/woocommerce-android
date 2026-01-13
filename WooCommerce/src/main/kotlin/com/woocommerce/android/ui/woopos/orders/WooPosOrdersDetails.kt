@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -33,7 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -355,7 +354,7 @@ private fun OrderLineItemImage(
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 24.dp
     )
 }
@@ -379,6 +378,7 @@ private fun OrderActionButton(
                 onClick = { onClick(action) }
             )
         }
+
         is WooPosOrdersState.OrderAction.EmailReceipt -> {
             WooPosButtonSmall(
                 text = stringResource(R.string.woopos_orders_email_receipt),
@@ -398,7 +398,7 @@ private fun OrderDetailsOverflowMenu(
     Box {
         IconButton(onClick = { showMenu = true }) {
             Icon(
-                imageVector = Icons.Outlined.MoreVert,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
                 contentDescription = stringResource(R.string.more_menu),
                 tint = MaterialTheme.colorScheme.onSurface
             )
@@ -416,6 +416,7 @@ private fun OrderDetailsOverflowMenu(
                             is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(
                                 R.string.orderdetail_issue_refund_button
                             )
+
                             is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(
                                 R.string.woopos_orders_email_receipt
                             )

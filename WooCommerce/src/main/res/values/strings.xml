@@ -315,6 +315,7 @@
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
     <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_http_basic_auth_error">Basic Authentication is enabled on your site. Basic Authentication is unsupported in the WooCommerce mobile app. Please disable it, or contact support for troubleshooting.</string>
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
@@ -3193,6 +3194,10 @@
     <string name="local_notification_woo_pos_survey_potential_user_description">Take a quick 2-minute survey to help us shape features you\'ll love.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
+
+    <string name="pos_client_side_banner_title">Run WooCommerce POS on tablets</string>
+    <string name="pos_client_side_banner_description">Take in‑person payments with WooCommerce POS. Set up on a tablet and start selling today.</string>
+    <string name="pos_client_side_banner_cta">Learn more</string>
 
     <!--
     First product published congratulatory feature

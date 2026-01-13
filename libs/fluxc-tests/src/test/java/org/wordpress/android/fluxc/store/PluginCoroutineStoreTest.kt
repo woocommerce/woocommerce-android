@@ -16,12 +16,13 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.Dispatcher
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.HTTP_AUTH_ERROR
 import org.wordpress.android.fluxc.network.rest.wpapi.plugin.PluginWPAPIRestClient
-import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
+import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.store.PluginCoroutineStore.WPApiPluginsPayload
 import org.wordpress.android.fluxc.store.PluginStore.ConfigureSitePluginErrorType
 import org.wordpress.android.fluxc.store.PluginStore.InstallSitePluginErrorType
@@ -33,9 +34,10 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 class PluginCoroutineStoreTest {
     @Mock lateinit var dispatcher: Dispatcher
     @Mock lateinit var pluginWPAPIRestClient: PluginWPAPIRestClient
-    @Mock lateinit var pluginSqlUtils: PluginSqlUtilsWrapper
+    @Mock lateinit var sitePluginDao: SitePluginDao
     private lateinit var store: PluginCoroutineStore
     private val site: SiteModel = SiteModel().apply {
+        id = TEST_SITE_ID
         url = "site.com"
         username = "username"
     }
@@ -47,17 +49,28 @@ class PluginCoroutineStoreTest {
             initCoroutineEngine(),
             dispatcher,
             pluginWPAPIRestClient,
-            pluginSqlUtils
+            sitePluginDao
         )
         onConfiguredEventCaptor = argumentCaptor()
+    }
+
+    companion object {
+        private const val TEST_SITE_ID = 1
     }
 
     @Test
     fun `configures a plugin with success`() = test {
         val pluginName = "plugin_name"
         val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
+        val sitePluginModel = SitePluginModel(
+            siteId = LocalId(TEST_SITE_ID),
+            name = pluginName,
+            version = "1.0",
+            slug = slug,
+            authorName = "author",
+            isActive = false
+        )
+        whenever(sitePluginDao.getSitePluginBySlug(site.localId(), slug)).thenReturn(sitePluginModel)
         val active = true
         whenever(pluginWPAPIRestClient.updatePlugin(site, pluginName, active)).thenReturn(
             WPApiPluginsPayload(
@@ -71,16 +84,22 @@ class PluginCoroutineStoreTest {
         assertThat(result.isError).isFalse
         assertThat(result.pluginName).isEqualTo(pluginName)
         assertThat(result.slug).isEqualTo(slug)
-        verify(pluginSqlUtils).insertOrUpdateSitePlugin(site, sitePluginModel)
+        verify(sitePluginDao).upsert(sitePluginModel)
     }
 
     @Test
     fun `configures a plugin and emits an event`() = test {
         val pluginName = "plugin_name"
         val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        sitePluginModel.name = pluginName
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
+        val sitePluginModel = SitePluginModel(
+            siteId = LocalId(TEST_SITE_ID),
+            name = pluginName,
+            version = "1.0",
+            slug = slug,
+            authorName = "author",
+            isActive = false
+        )
+        whenever(sitePluginDao.getSitePluginBySlug(site.localId(), slug)).thenReturn(sitePluginModel)
         val active = true
         whenever(pluginWPAPIRestClient.updatePlugin(site, pluginName, active)).thenReturn(
             WPApiPluginsPayload(
@@ -95,15 +114,22 @@ class PluginCoroutineStoreTest {
         assertThat(onConfiguredEventCaptor.lastValue.isError).isFalse
         assertThat(onConfiguredEventCaptor.lastValue.pluginName).isEqualTo(pluginName)
         assertThat(onConfiguredEventCaptor.lastValue.slug).isEqualTo(slug)
-        verify(pluginSqlUtils).insertOrUpdateSitePlugin(site, sitePluginModel)
+        verify(sitePluginDao).upsert(sitePluginModel)
     }
 
     @Test
     fun `does not configure a plugin with a failure`() = test {
         val pluginName = "plugin_name"
         val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
-        whenever(pluginSqlUtils.getSitePluginBySlug(site, slug)).thenReturn(sitePluginModel)
+        val sitePluginModel = SitePluginModel(
+            siteId = LocalId(TEST_SITE_ID),
+            name = pluginName,
+            version = "1.0",
+            slug = slug,
+            authorName = "author",
+            isActive = false
+        )
+        whenever(sitePluginDao.getSitePluginBySlug(site.localId(), slug)).thenReturn(sitePluginModel)
         val active = true
         whenever(pluginWPAPIRestClient.updatePlugin(site, pluginName, active)).thenReturn(
             WPApiPluginsPayload(
@@ -115,22 +141,28 @@ class PluginCoroutineStoreTest {
 
         assertThat(result.isError).isTrue
         assertThat(result.error.type).isEqualTo(ConfigureSitePluginErrorType.UNAUTHORIZED)
-        verify(pluginSqlUtils, never()).insertOrUpdateSitePlugin(eq(site), any())
+        verify(sitePluginDao, never()).upsert(any())
     }
 
     @Test
     fun `installs and activates a plugin with success`() = test {
         val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
         val name = "plugin_name"
-        sitePluginModel.name = name
-        sitePluginModel.slug = slug
+        val sitePluginModel = SitePluginModel(
+            siteId = LocalId(TEST_SITE_ID),
+            name = name,
+            version = "1.0",
+            slug = slug,
+            authorName = "author",
+            isActive = false
+        )
         whenever(pluginWPAPIRestClient.installPlugin(site, slug)).thenReturn(
             WPApiPluginsPayload(
                 site,
                 sitePluginModel
             )
         )
+        whenever(sitePluginDao.getSitePluginBySlug(site.localId(), slug)).thenReturn(sitePluginModel)
         whenever(pluginWPAPIRestClient.updatePlugin(site, name, true)).thenReturn(
             WPApiPluginsPayload(
                 site,
@@ -142,7 +174,7 @@ class PluginCoroutineStoreTest {
 
         assertThat(result.isError).isFalse
         assertThat(result.slug).isEqualTo(slug)
-        verify(pluginSqlUtils, times(2)).insertOrUpdateSitePlugin(site, sitePluginModel)
+        verify(sitePluginDao, times(2)).upsert(sitePluginModel)
         verify(pluginWPAPIRestClient).updatePlugin(site, name, true)
         verify(dispatcher, times(2)).emitChange(any())
     }
@@ -150,10 +182,15 @@ class PluginCoroutineStoreTest {
     @Test
     fun `does not activate plugin on install failure`() = test {
         val slug = "plugin_slug"
-        val sitePluginModel = SitePluginModel()
         val name = "plugin_name"
-        sitePluginModel.name = name
-        sitePluginModel.slug = slug
+        val sitePluginModel = SitePluginModel(
+            siteId = LocalId(TEST_SITE_ID),
+            name = name,
+            version = "1.0",
+            slug = slug,
+            authorName = "author",
+            isActive = false
+        )
         whenever(
             pluginWPAPIRestClient.installPlugin(
                 site,
@@ -167,7 +204,7 @@ class PluginCoroutineStoreTest {
         assertThat(result.isError).isTrue
         assertThat(result.slug).isEqualTo(slug)
         assertThat(result.error.type).isEqualTo(InstallSitePluginErrorType.UNAUTHORIZED)
-        verifyNoInteractions(pluginSqlUtils)
+        verifyNoInteractions(sitePluginDao)
         verify(pluginWPAPIRestClient, never()).updatePlugin(eq(site), any(), any())
         verify(dispatcher, times(1)).emitChange(any())
     }

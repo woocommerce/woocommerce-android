@@ -116,12 +116,9 @@ class MainActivityViewModelTest : BaseUnitTest() {
     }
 
     private val testAnnouncement = FeatureAnnouncement(
-        appVersionName = "14.2",
-        announcementVersion = 1337,
         minimumAppVersion = "14.2",
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
-        detailsUrl = "https://woocommerce.com/",
         isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(
@@ -593,6 +590,27 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 eq(testBlazeNotification.remoteSiteId)
             )
         assertThat(event).isEqualTo(ViewBlazeCampaignList)
+    }
+
+    @Test
+    fun `when notifications permission bar allow tapped, then track allow tapped event`() {
+        viewModel.onNotificationsPermissionBarAllowButtonTapped()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
+    }
+
+    @Test
+    fun `when OS alert allowed, then track allowed event`() {
+        viewModel.onNotificationOSAlertAllowed()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_ALLOWED)
+    }
+
+    @Test
+    fun `when OS alert denied, then track denied event`() {
+        viewModel.onNotificationOSAlertDenied()
+
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
     }
 
     private fun createViewModel() {

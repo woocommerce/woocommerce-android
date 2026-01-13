@@ -43,7 +43,6 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private fun getShippingLabelSupport(): ShippingLabelSupport {
         orderDetailRepository.getWooShippingPluginInfo()
             .takeIf {
@@ -69,6 +68,7 @@ class ShippingLabelOnboardingRepository @Inject constructor(
         WCS_SUPPORTED;
 
         fun isSupported() = this == WCS_SUPPORTED || this == WC_SHIPPING_SUPPORTED
+        fun isWooTaxLegacySupported() = this == WCS_SUPPORTED
         fun isWooShippingSupported() = this == WC_SHIPPING_SUPPORTED
     }
 }
