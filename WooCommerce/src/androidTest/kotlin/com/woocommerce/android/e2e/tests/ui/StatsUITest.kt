@@ -4,7 +4,6 @@ package com.woocommerce.android.e2e.tests.ui
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
@@ -13,6 +12,9 @@ import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.mystore.DashboardScreen
+import com.woocommerce.android.e2e.tests.FAKE_PASSWORD
+import com.woocommerce.android.e2e.tests.FAKE_URL
+import com.woocommerce.android.e2e.tests.FAKE_USERNAME
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -43,9 +45,9 @@ class StatsUITest : TestBase() {
         WelcomeScreen
             .skipCarouselIfNeeded()
             .selectLogin()
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+            .proceedWith(FAKE_URL)
+            .proceedWith(FAKE_USERNAME)
+            .proceedWith(FAKE_PASSWORD)
 
         TabNavComponent()
             .gotoMyStoreScreen()
@@ -76,8 +78,8 @@ class StatsUITest : TestBase() {
     )
 
     @Ignore(
-        """    
-        This became flaky after the last dashboard changes. 
+        """
+        This became flaky after the last dashboard changes.
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )
@@ -93,8 +95,8 @@ class StatsUITest : TestBase() {
     }
 
     @Ignore(
-        """    
-        This became flaky after the last dashboard changes. 
+        """
+        This became flaky after the last dashboard changes.
         https://github.com/woocommerce/woocommerce-android/issues/12111
         """
     )

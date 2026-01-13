@@ -73,7 +73,8 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
                 loadMore = any(),
                 productFilterOptions = eq(mapOf(ProductFilterOption.TYPE to ProductType.BOOKABLE_SERVICE.value)),
                 excludedProductIds = any(),
-                sortType = anyOrNull()
+                sortType = anyOrNull(),
+                pageSize = any()
             )
             verify(bookingsRepository).fetchBookings(any(), any(), anyOrNull(), anyOrNull(), any())
             cancelAndIgnoreRemainingEvents()
