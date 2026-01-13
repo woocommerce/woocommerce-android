@@ -599,6 +599,9 @@ class MainActivity :
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
+            return
+        }
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
         binding.toolbarSubtitle.clearAnimation()
