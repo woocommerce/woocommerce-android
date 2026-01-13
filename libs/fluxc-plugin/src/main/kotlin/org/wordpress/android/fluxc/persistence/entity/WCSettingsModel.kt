@@ -1,6 +1,5 @@
 package org.wordpress.android.fluxc.persistence.entity
 
-import androidx.room.ColumnInfo
 import androidx.room.Entity
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
@@ -22,7 +21,5 @@ internal data class WCSettingsModel(
     val address2: String,
     val city: String,
     val postalCode: String,
-    val couponsEnabled: Boolean,
-    @ColumnInfo(defaultValue = "0")
-    val taxRoundAtSubtotal: Boolean
+    val couponsEnabled: Boolean
 )

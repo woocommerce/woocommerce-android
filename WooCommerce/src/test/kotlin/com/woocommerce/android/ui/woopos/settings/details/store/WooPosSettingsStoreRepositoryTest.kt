@@ -40,8 +40,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "Suite 456",
             city = "New York",
             postalCode = "10001",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -84,8 +83,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "San Francisco",
             postalCode = "",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -114,8 +112,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "",
             postalCode = "",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -143,8 +140,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "",
             postalCode = "",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -186,8 +182,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "London",
             postalCode = "",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 
@@ -215,8 +210,7 @@ class WooPosSettingsStoreRepositoryTest {
             address2 = "",
             city = "Postville",
             postalCode = "12345",
-            couponsEnabled = true,
-            taxRoundAtSubtotal = false
+            couponsEnabled = true
         )
         whenever(wooCommerceStore.getSiteSettings(siteModel)).thenReturn(settings)
 

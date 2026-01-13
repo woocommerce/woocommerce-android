@@ -37,8 +37,7 @@ class WooPosGroupRefundItemsTest {
                 address2 = "",
                 city = "",
                 postalCode = "",
-                couponsEnabled = true,
-                taxRoundAtSubtotal = false
+                couponsEnabled = true
             )
         )
         sut = WooPosGroupRefundItems()

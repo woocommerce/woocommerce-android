@@ -108,25 +108,31 @@ class WooPosRefundViewModelTest {
     )
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.error_generic)).thenReturn("An error occurred")
         whenever(selectedSite.get()).thenReturn(testSite)
-        whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(
-            Settings(
-                currencyCode = "USD",
-                currencyPosition = CurrencyPosition.LEFT,
-                currencyThousandSeparator = ",",
-                currencyDecimalSeparator = ".",
-                currencyDecimalNumber = 2,
-                countryCode = "US",
-                stateCode = "CA",
-                address = "",
-                address2 = "",
-                city = "",
-                postalCode = "",
-                couponsEnabled = true,
-                taxRoundAtSubtotal = false
-            )
+
+        val testSettings = Settings(
+            currencyCode = "USD",
+            currencyPosition = CurrencyPosition.LEFT,
+            currencyThousandSeparator = ",",
+            currencyDecimalSeparator = ".",
+            currencyDecimalNumber = 2,
+            countryCode = "US",
+            stateCode = "CA",
+            address = "",
+            address2 = "",
+            city = "",
+            postalCode = "",
+            couponsEnabled = true
+        )
+
+        whenever(wooCommerceStore.getSiteSettings(testSite)).thenReturn(testSettings)
+        whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(
+            WooResult(testSettings)
+        )
+        whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(
+            WooResult(false)
         )
     }
 

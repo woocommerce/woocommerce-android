@@ -12,6 +12,5 @@ data class Settings(
     val address2: String,
     val city: String,
     val postalCode: String,
-    val couponsEnabled: Boolean,
-    val taxRoundAtSubtotal: Boolean
+    val couponsEnabled: Boolean
 )

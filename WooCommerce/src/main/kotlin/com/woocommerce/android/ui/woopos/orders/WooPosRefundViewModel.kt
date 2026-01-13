@@ -36,7 +36,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore
 ) : ViewModel() {
 
     @AssistedFactory
@@ -48,22 +48,35 @@ class WooPosRefundViewModel @AssistedInject constructor(
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
     private var currentOrder: Order? = null
-    private val numberOfDecimalPoints: Int
-    private val taxRoundAtSubtotal: Boolean
 
     init {
-        val siteSettings = wooCommerceStore.getSiteSettings(selectedSite.get())
-        checkNotNull(siteSettings) {
-            "Failed to get site settings for refund calculations."
-        }
-        numberOfDecimalPoints = siteSettings.currencyDecimalNumber
-        taxRoundAtSubtotal = siteSettings.taxRoundAtSubtotal
         loadRefundableItems()
     }
 
     private fun loadRefundableItems() {
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
+
+            val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
+            if (siteSettingsResult.isError || siteSettingsResult.model == null) {
+                WooLog.d(WooLog.T.POS, "Failed to fetch site settings")
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+            val siteSettings = siteSettingsResult.model!!
+            val numberOfDecimalPoints = siteSettings.currencyDecimalNumber
+
+            val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
+            if (taxRoundAtSubtotalResult.isError) {
+                WooLog.d(WooLog.T.POS, "Failed to fetch tax round at subtotal setting")
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+            val taxRoundAtSubtotal = taxRoundAtSubtotalResult.model ?: false
 
             val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
@@ -93,6 +106,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = buildContentState(
                 order = order,
                 refundableItems = refundableItems,
+                numberOfDecimalPoints = numberOfDecimalPoints,
+                taxRoundAtSubtotal = taxRoundAtSubtotal,
             )
         }
     }
@@ -100,6 +115,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private fun buildContentState(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
+        numberOfDecimalPoints: Int,
+        taxRoundAtSubtotal: Boolean,
     ): WooPosRefundState.Content {
         val subtotal = calculateRefundSubtotal(refundableItems, numberOfDecimalPoints)
         val taxes = calculateRefundTax(refundableItems, order, numberOfDecimalPoints, taxRoundAtSubtotal)
@@ -183,6 +200,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
+            val numberOfDecimalPoints =
+                wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: run {
+                    WooLog.e(
+                        WooLog.T.POS,
+                        "WooPosRefund: failed to read site settings currencyDecimalNumber from DB"
+                    )
+                    _state.value = WooPosRefundState.RefundError(
+                        message = resourceProvider.getString(R.string.error_generic)
+                    )
+                    return@launch
+                }
             val refundItems = groupRefundItems(contentState.refundableItems, order, numberOfDecimalPoints)
 
             val result = refundStore.createItemsRefund(
