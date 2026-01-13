@@ -51,11 +51,10 @@ dependencies {
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.wordpress.utils)
     implementation(libs.apache.commons.text)
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
 
     ksp(libs.google.dagger.hilt.compiler)
-
-    api project(":libs:fluxc")
-    api project(":libs:fluxc-plugin")
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.assertj.core)
