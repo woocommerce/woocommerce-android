@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
@@ -592,7 +593,7 @@ class MainActivity :
 
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
-        if (binding.toolbarSubtitle.visibility == View.GONE) return
+        if (binding.toolbarSubtitle.isGone) return
         if (binding.collapsingToolbar.layoutParams.height != 0) {
             binding.toolbarSubtitle.fadeOut(duration = 200L)
             animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
