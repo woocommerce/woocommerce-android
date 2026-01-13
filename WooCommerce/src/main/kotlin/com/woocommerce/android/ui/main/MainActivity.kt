@@ -257,7 +257,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(animate = f is TopLevelFragment)
+                    showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -285,7 +285,7 @@ class MainActivity :
                 }
 
                 AppBarStatus.Hidden -> {
-                    hideToolbar(animate = f is TopLevelFragment)
+                    hideToolbar()
                     binding.appBarLayout.targetElevation = 0f
                 }
             }
@@ -555,21 +555,16 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar(animate: Boolean) {
+    private fun showToolbar() {
         if (binding.collapsingToolbar.isVisible &&
             binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight
         ) return
-
-        binding.collapsingToolbar.updateLayoutParams {
-            height = animatorHelper.toolbarHeight
-        }
-        binding.collapsingToolbar.visibility = View.VISIBLE
+        binding.collapsingToolbar.show()
     }
 
-    private fun hideToolbar(animate: Boolean) {
+    private fun hideToolbar() {
         if (binding.collapsingToolbar.isGone) return
-
-        binding.collapsingToolbar.visibility = View.GONE
+        binding.collapsingToolbar.hide()
     }
 
     override fun setTitle(title: CharSequence?) {
