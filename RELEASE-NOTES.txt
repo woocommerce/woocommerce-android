@@ -4,6 +4,7 @@
 
 24.0
 -----
+- [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
 - [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
 
 23.9
