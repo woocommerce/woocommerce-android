@@ -1,2 +1,0 @@
-23.8:
-Esta actualización hace que tu flujo de trabajo sea más fluido gracias a las correcciones en la navegación hacia atrás, en los errores en las tarifas de envío y en el diseño de la pantalla de pago. El punto de venta también obtiene mejoras, como una configuración más rápida del catálogo local, una mejor gestión de los productos eliminados y un desplazamiento automático a tus pedidos más recientes.

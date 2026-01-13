@@ -439,7 +439,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(response))
 
         // WHEN
-        val result = store.generateCatalog(testSite).getOrThrow()
+        val result = store.generateCatalogOrGetStatus(testSite).getOrThrow()
 
         // THEN
         assertThat(result.scheduledAt).isEqualTo("2025-12-10T11:21:48")
@@ -459,7 +459,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(null))
 
         // WHEN
-        val result = store.generateCatalog(testSite)
+        val result = store.generateCatalogOrGetStatus(testSite)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -478,7 +478,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(networkError))
 
         // WHEN
-        val result = store.generateCatalog(testSite)
+        val result = store.generateCatalogOrGetStatus(testSite)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -498,7 +498,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(WooResult(response))
 
         // WHEN
-        val result = store.generateCatalog(testSite).getOrThrow()
+        val result = store.generateCatalogOrGetStatus(testSite).getOrThrow()
 
         // THEN
         assertThat(result.scheduledAt).isEqualTo("2025-12-10T11:21:48")
