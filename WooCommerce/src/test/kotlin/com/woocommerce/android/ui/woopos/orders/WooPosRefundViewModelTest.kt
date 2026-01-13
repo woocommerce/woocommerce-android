@@ -407,7 +407,7 @@ class WooPosRefundViewModelTest {
                 state.subtotal
             ).isEqualByComparingTo(BigDecimal("35.50")) // 10 + 10 + 15.50
             assertThat(state.taxes).isEqualByComparingTo(BigDecimal("3.55")) // 1 + 1 + 1.55
-            assertThat(state.total).isEqualByComparingTo(BigDecimal("39.05")) // 35.50 + 3.55 without rounding
+            assertThat(state.total).isEqualByComparingTo(BigDecimal("39.05")) // 35.50 + 3.55
         }
 
     @Test
