@@ -69,14 +69,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
             val numberOfDecimalPoints = siteSettings.currencyDecimalNumber
 
             val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
-            if (taxRoundAtSubtotalResult.isError) {
+            if (taxRoundAtSubtotalResult.isError || taxRoundAtSubtotalResult.model == null) {
                 WooLog.d(WooLog.T.POS, "Failed to fetch tax round at subtotal setting")
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
                 )
                 return@launch
             }
-            val taxRoundAtSubtotal = taxRoundAtSubtotalResult.model ?: false
+            val taxRoundAtSubtotal = taxRoundAtSubtotalResult.model!!
 
             val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
