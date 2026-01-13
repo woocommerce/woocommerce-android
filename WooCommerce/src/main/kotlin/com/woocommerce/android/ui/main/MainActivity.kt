@@ -557,7 +557,7 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
-        animatorHelper.cancelToolbarAnimation()
+        binding.collapsingToolbar.clearAnimation()
         if (animate) {
             binding.collapsingToolbar.expand()
         } else {
@@ -566,7 +566,7 @@ class MainActivity :
     }
 
     private fun hideToolbar(animate: Boolean) {
-        animatorHelper.cancelToolbarAnimation()
+        binding.collapsingToolbar.clearAnimation()
         if (animate) {
             binding.collapsingToolbar.collapse()
         } else {
