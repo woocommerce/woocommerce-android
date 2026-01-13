@@ -165,35 +165,39 @@ class WooPosCalculateRefundTaxTest {
 
     @Test
     fun `given partial refund with per-line rounding, when invoke called, then rounds per line`() {
-        val orderItem = createOrderItem(
-            itemId = 1L,
-            quantity = 3f,
-            totalTax = BigDecimal("10.00")
+        val orderItems = listOf(
+            createOrderItem(itemId = 1L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 2L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 3L, quantity = 3f, totalTax = BigDecimal("10.00"))
         )
         val refundableItems = listOf(
-            createRefundableItem(orderItemId = 1L)
+            createRefundableItem(orderItemId = 1L),
+            createRefundableItem(orderItemId = 2L),
+            createRefundableItem(orderItemId = 3L)
         )
-        val order = createOrder(listOf(orderItem))
+        val order = createOrder(orderItems)
 
         val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
 
-        assertThat(result).isEqualTo(BigDecimal("3.33"))
+        assertThat(result).isEqualTo(BigDecimal("9.99"))
     }
 
     @Test
     fun `given partial refund with subtotal rounding, when invoke called, then rounds at subtotal level`() {
-        val orderItem = createOrderItem(
-            itemId = 1L,
-            quantity = 3f,
-            totalTax = BigDecimal("10.00")
+        val orderItems = listOf(
+            createOrderItem(itemId = 1L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 2L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 3L, quantity = 3f, totalTax = BigDecimal("10.00"))
         )
         val refundableItems = listOf(
-            createRefundableItem(orderItemId = 1L)
+            createRefundableItem(orderItemId = 1L),
+            createRefundableItem(orderItemId = 2L),
+            createRefundableItem(orderItemId = 3L)
         )
-        val order = createOrder(listOf(orderItem))
+        val order = createOrder(orderItems)
 
         val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = true)
 
-        assertThat(result).isEqualTo(BigDecimal("3.33"))
+        assertThat(result).isEqualTo(BigDecimal("10.00"))
     }
 }
