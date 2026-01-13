@@ -169,10 +169,10 @@ class WooPosSyncAction @Inject constructor(
             fetchPage = { page ->
                 posLocalCatalogStore.fetchRecentlyModifiedVariations(
                     site = site,
+                    posProductsOnly = posProductsOnly,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     pageSize = pageSize,
-                    posProductsOnly = posProductsOnly,
                 )
             }
         )
@@ -194,10 +194,10 @@ class WooPosSyncAction @Inject constructor(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     site = site,
                     pageSize = pageSize,
+                    posProductsOnly = posProductsOnly,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     includeStatus = listOf(CoreProductStatus.TRASH),
-                    posProductsOnly = posProductsOnly,
                 )
             }
         )

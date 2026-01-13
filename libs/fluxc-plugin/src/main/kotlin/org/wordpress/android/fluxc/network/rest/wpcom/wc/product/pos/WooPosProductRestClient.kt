@@ -28,11 +28,11 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchProducts(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
         includeStatus: List<CoreProductStatus>? = null,
-        posProductsOnly: Boolean = false,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
         val params = buildBaseParams(
@@ -64,10 +64,10 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchVariations(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
-        posProductsOnly: Boolean = false,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
         val params = buildBaseParams(

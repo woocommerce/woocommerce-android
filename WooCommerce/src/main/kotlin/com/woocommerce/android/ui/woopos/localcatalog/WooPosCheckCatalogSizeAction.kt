@@ -29,7 +29,7 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
         }
         logger.d("Checking catalog size before sync")
 
-        val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, modifiedAfterGmt, posProductsOnly)
+        val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, posProductsOnly, modifiedAfterGmt)
         if (productsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}. " +
@@ -38,7 +38,7 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
             return WooPosCheckCatalogSizeResult.SizeUnknown
         }
 
-        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, modifiedAfterGmt, posProductsOnly)
+        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, posProductsOnly, modifiedAfterGmt)
         if (variationsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}. " +

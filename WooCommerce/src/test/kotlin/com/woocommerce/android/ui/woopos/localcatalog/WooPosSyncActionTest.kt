@@ -72,6 +72,7 @@ class WooPosSyncActionTest {
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(100)
         verify(posLocalCatalogStore, times(3)).fetchRecentlyModifiedProducts(
             eq(site),
+            any(),
             anyOrNull(),
             any(),
             any(),
@@ -148,6 +149,7 @@ class WooPosSyncActionTest {
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(0)
         verify(posLocalCatalogStore, times(1)).fetchRecentlyModifiedProducts(
             eq(site),
+            any(),
             anyOrNull(),
             eq(1),
             any(),
@@ -181,7 +183,10 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).variationsSynced).isEqualTo(50)
-        verify(posLocalCatalogStore, times(3)).fetchRecentlyModifiedVariations(eq(site), anyOrNull(), any(), any())
+        verify(
+            posLocalCatalogStore,
+            times(3)
+        ).fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), any(), any())
     }
 
     @Test
@@ -248,7 +253,10 @@ class WooPosSyncActionTest {
 
         // THEN
         assertThat((result as WooPosSyncResult.Success).variationsSynced).isEqualTo(0)
-        verify(posLocalCatalogStore, times(1)).fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(1), any())
+        verify(
+            posLocalCatalogStore,
+            times(1)
+        ).fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), eq(1), any())
     }
 
     // === TRASH PRODUCTS SYNC TESTS ===
@@ -267,6 +275,7 @@ class WooPosSyncActionTest {
         // THEN
         verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(
             eq(site),
+            any(),
             eq(modifiedAfter),
             any(),
             any(),
@@ -289,6 +298,7 @@ class WooPosSyncActionTest {
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(13) // 10 + 3 trash
         verify(posLocalCatalogStore).fetchRecentlyModifiedProducts(
             eq(site),
+            any(),
             eq(modifiedAfter),
             any(),
             any(),
@@ -307,6 +317,7 @@ class WooPosSyncActionTest {
 
         // THEN
         verify(posLocalCatalogStore, never()).fetchRecentlyModifiedProducts(
+            any(),
             any(),
             anyOrNull(),
             any(),
@@ -329,6 +340,7 @@ class WooPosSyncActionTest {
         assertThat((result as WooPosSyncResult.Success).productsSynced).isEqualTo(18) // 10 + 5 + 3 trash
         verify(posLocalCatalogStore, times(2)).fetchRecentlyModifiedProducts(
             eq(site),
+            any(),
             anyOrNull(),
             any(),
             any(),
@@ -741,6 +753,7 @@ class WooPosSyncActionTest {
             whenever(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     eq(site),
+                    any(),
                     anyOrNull(),
                     eq(pageNumber),
                     any(),
@@ -765,7 +778,13 @@ class WooPosSyncActionTest {
         pages.forEachIndexed { index, count ->
             val pageNumber = index + 1
             whenever(
-                posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(pageNumber), any())
+                posLocalCatalogStore.fetchRecentlyModifiedVariations(
+                    eq(site),
+                    any(),
+                    anyOrNull(),
+                    eq(pageNumber),
+                    any()
+                )
             ).thenReturn(
                 KotlinResult.success(
                     WooPosPaginatedFetchResult(
@@ -785,6 +804,7 @@ class WooPosSyncActionTest {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 eq(site),
+                any(),
                 anyOrNull(),
                 any(),
                 any(),
@@ -810,6 +830,7 @@ class WooPosSyncActionTest {
             whenever(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     eq(site),
+                    any(),
                     anyOrNull(),
                     eq(pageNumber),
                     any(),
@@ -834,6 +855,7 @@ class WooPosSyncActionTest {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 eq(site),
+                any(),
                 anyOrNull(),
                 any(),
                 any(),
@@ -846,24 +868,24 @@ class WooPosSyncActionTest {
         whenever(
             posLocalCatalogStore.fetchRecentlyModifiedProducts(
                 eq(site),
+                any(),
                 anyOrNull(),
                 eq(page),
                 any(),
-                eq(null),
-                any()
+                eq(null)
             )
         ).thenReturn(KotlinResult.failure(Exception(errorMessage ?: "Generic error")))
     }
 
     private fun givenVariationFetchFails(page: Int, errorMessage: String?) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(page), any())
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), eq(page), any())
         ).thenReturn(KotlinResult.failure(Exception(errorMessage ?: "Generic error")))
     }
 
     private fun givenProductCatalogTooLarge(totalPages: Int) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(1), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(1), any(), eq(null))
         ).thenReturn(
             KotlinResult.success(
                 WooPosPaginatedFetchResult(
@@ -880,7 +902,7 @@ class WooPosSyncActionTest {
 
     private fun givenVariationCatalogTooLarge(totalPages: Int) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(1), any())
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), eq(1), any())
         ).thenReturn(
             KotlinResult.success(
                 WooPosPaginatedFetchResult(
@@ -897,7 +919,7 @@ class WooPosSyncActionTest {
 
     private fun givenProductPageWithZeroItemsButHasMore() = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(1), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(1), any(), eq(null))
         ).thenReturn(
             KotlinResult.success(
                 WooPosPaginatedFetchResult(
@@ -914,7 +936,7 @@ class WooPosSyncActionTest {
 
     private fun givenVariationPageWithZeroItemsButHasMore() = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(1), any())
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), eq(1), any())
         ).thenReturn(
             KotlinResult.success(
                 WooPosPaginatedFetchResult(
@@ -980,7 +1002,7 @@ class WooPosSyncActionTest {
 
     private fun givenProductFetchFailsWithNetworkError(page: Int, errorMessage: String) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(page), any(), eq(null))
         ).thenReturn(
             KotlinResult.failure(
                 WooPosLocalCatalogError.NetworkError(errorMessage = errorMessage)
@@ -990,7 +1012,7 @@ class WooPosSyncActionTest {
 
     private fun givenProductFetchFailsWithDatabaseError(page: Int, errorMessage: String) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(page), any(), eq(null))
         ).thenReturn(
             KotlinResult.failure(
                 WooPosLocalCatalogError.DatabaseError(errorMessage = errorMessage)
@@ -1000,7 +1022,7 @@ class WooPosSyncActionTest {
 
     private fun givenProductFetchFailsWithInvalidResponse(page: Int, errorMessage: String) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(page), any(), eq(null))
         ).thenReturn(
             KotlinResult.failure(
                 WooPosLocalCatalogError.InvalidResponse(errorMessage = errorMessage)
@@ -1010,7 +1032,7 @@ class WooPosSyncActionTest {
 
     private fun givenProductFetchFailsWithEmptyResponse(page: Int) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), anyOrNull(), eq(page), any(), eq(null))
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(eq(site), any(), anyOrNull(), eq(page), any(), eq(null))
         ).thenReturn(
             KotlinResult.failure(WooPosLocalCatalogError.EmptyResponse)
         )
@@ -1021,7 +1043,7 @@ class WooPosSyncActionTest {
         errorMessage: String
     ) = runBlocking {
         whenever(
-            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), anyOrNull(), eq(page), any())
+            posLocalCatalogStore.fetchRecentlyModifiedVariations(eq(site), any(), anyOrNull(), eq(page), any())
         ).thenReturn(
             KotlinResult.failure(
                 WooPosLocalCatalogError.NetworkError(errorMessage = errorMessage)
