@@ -1,2 +1,0 @@
-23.8:
-Bu güncelleme; arka navigasyon, gönderim ücreti çökmeleri ve ödeme ekranı düzenine yapılan düzeltmelerle iş akışınızı düzeltir. POS ayrıca daha hızlı Yerel Katalog ayarları, silinen ürünleri daha iyi işleme ve en yeni siparişlerinize otomatik kaydırma gibi iyileştirmeler de alır.

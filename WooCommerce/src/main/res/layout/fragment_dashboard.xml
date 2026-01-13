@@ -12,6 +12,7 @@
     tools:context="com.woocommerce.android.ui.dashboard.DashboardFragment">
 
     <androidx.fragment.app.FragmentContainerView
+        android:layout_marginVertical="@dimen/minor_50"
         android:id="@+id/jitmFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
