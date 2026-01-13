@@ -17,6 +17,7 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewGroup.LayoutParams
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -29,6 +30,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
+import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -54,7 +56,6 @@ import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.show
@@ -123,8 +124,6 @@ import com.woocommerce.android.widgets.DisabledAppBarLayoutBehavior
 import dagger.hilt.android.AndroidEntryPoint
 import org.wordpress.android.login.LoginAnalyticsListener
 import org.wordpress.android.login.LoginMode
-import org.wordpress.android.mediapicker.util.fadeIn
-import org.wordpress.android.mediapicker.util.fadeOut
 import org.wordpress.android.util.NetworkUtils
 import java.lang.ref.WeakReference
 import java.math.BigDecimal
@@ -557,21 +556,20 @@ class MainActivity :
     }
 
     private fun showToolbar(animate: Boolean) {
-        binding.collapsingToolbar.clearAnimation()
-        if (animate) {
-            binding.collapsingToolbar.expand()
-        } else {
-            binding.collapsingToolbar.show()
+        if (binding.collapsingToolbar.isVisible &&
+            binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight
+        ) return
+
+        binding.collapsingToolbar.updateLayoutParams {
+            height = animatorHelper.toolbarHeight
         }
+        binding.collapsingToolbar.visibility = View.VISIBLE
     }
 
     private fun hideToolbar(animate: Boolean) {
-        binding.collapsingToolbar.clearAnimation()
-        if (animate) {
-            binding.collapsingToolbar.collapse()
-        } else {
-            binding.collapsingToolbar.hide()
-        }
+        if (binding.collapsingToolbar.isGone) return
+
+        binding.collapsingToolbar.visibility = View.GONE
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -594,8 +592,9 @@ class MainActivity :
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
         if (binding.toolbarSubtitle.isGone) return
-        if (binding.collapsingToolbar.layoutParams.height != 0) {
-            binding.toolbarSubtitle.fadeOut(duration = 200L)
+        binding.toolbarSubtitle.clearAnimation()
+        if (binding.collapsingToolbar.isVisible) {
+            binding.toolbarSubtitle.collapse(duration = 200L)
             animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
                 binding.collapsingToolbar.expandedTitleMarginBottom = it
             }
@@ -607,8 +606,11 @@ class MainActivity :
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        if (binding.toolbarSubtitle.isVisible) return
-        binding.toolbarSubtitle.fadeIn(duration = 200L)
+        binding.toolbarSubtitle.clearAnimation()
+        binding.toolbarSubtitle.updateLayoutParams {
+            height = LayoutParams.WRAP_CONTENT
+        }
+        binding.toolbarSubtitle.show()
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
         }
