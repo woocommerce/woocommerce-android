@@ -43,7 +43,7 @@ class WooPosCalculateRefundTax @Inject constructor() {
         }
 
         val itemTax = if (refundQuantity.toBigDecimal().compareTo(originalItem.quantity.toBigDecimal()) == 0) {
-            originalItem.totalTax
+            originalItem.taxes.sumOf { it.taxAmount }
         } else {
             // Calculate per-unit tax with high precision to preserve accuracy
             val perUnitTax = originalItem.totalTax.divide(
