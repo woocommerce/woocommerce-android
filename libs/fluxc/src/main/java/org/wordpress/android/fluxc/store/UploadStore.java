@@ -10,15 +10,15 @@ import org.wordpress.android.fluxc.action.UploadAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.generated.MediaActionBuilder;
+import org.wordpress.android.fluxc.model.MediaId;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState;
-import org.wordpress.android.fluxc.model.MediaUploadModel;
-import org.wordpress.android.fluxc.persistence.UploadSqlUtils;
 import org.wordpress.android.fluxc.store.MediaStore.CancelMediaPayload;
 import org.wordpress.android.fluxc.store.MediaStore.MediaError;
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType;
 import org.wordpress.android.fluxc.store.MediaStore.MediaPayload;
 import org.wordpress.android.fluxc.store.MediaStore.ProgressPayload;
+import org.wordpress.android.fluxc.store.MediaUploadStateManager.UploadState;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType.Type;
 import org.wordpress.android.fluxc.utils.MediaUtils;
@@ -30,9 +30,11 @@ import javax.inject.Singleton;
 
 @Singleton
 public class UploadStore extends Store {
+    private final MediaUploadStateManager mUploadStateManager;
 
-    @Inject public UploadStore(Dispatcher dispatcher) {
+    @Inject public UploadStore(Dispatcher dispatcher, MediaUploadStateManager uploadStateManager) {
         super(dispatcher);
+        mUploadStateManager = uploadStateManager;
     }
 
     @Override
@@ -80,20 +82,19 @@ public class UploadStore extends Store {
         if (payload.media == null) {
             return;
         }
-        MediaUploadModel mediaUploadModel = new MediaUploadModel(payload.media.getId());
+        MediaId mediaId = new MediaId(payload.media.getId());
         MalformedMediaArgSubType argError = MediaUtils.getMediaValidationErrorType(payload.media);
 
         if (argError.getType() != Type.NO_ERROR) {
-            mediaUploadModel.setUploadState(MediaUploadModel.FAILED);
-            mediaUploadModel.setMediaError(
-                    new MediaError(
-                            MediaErrorType.MALFORMED_MEDIA_ARG,
-                            argError.getType().getErrorLogDescription(),
-                            argError
-                    )
+            MediaError error = new MediaError(
+                    MediaErrorType.MALFORMED_MEDIA_ARG,
+                    argError.getType().getErrorLogDescription(),
+                    argError
             );
+            mUploadStateManager.failUpload(mediaId, error);
+        } else {
+            mUploadStateManager.startUpload(mediaId);
         }
-        UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
     }
 
     private void handleMediaUploaded(@NonNull ProgressPayload payload) {
@@ -101,81 +102,73 @@ public class UploadStore extends Store {
             return;
         }
 
-        MediaUploadModel mediaUploadModel = UploadSqlUtils.getMediaUploadModelForLocalId(payload.media.getId());
-        if (mediaUploadModel == null) {
+        MediaId mediaId = new MediaId(payload.media.getId());
+        UploadState currentState = mUploadStateManager.getUploadState(mediaId);
+
+        if (currentState == null) {
             if (!payload.isError() && !payload.canceled && !payload.completed) {
                 // This is a progress event, and the upload seems to have already been cancelled
-                // We don't want to store a new MediaUploadModel in this case, just move on
+                // We don't want to store a new state in this case, just move on
                 return;
             }
-            mediaUploadModel = new MediaUploadModel(payload.media.getId());
         }
 
         if (payload.isError() || payload.canceled) {
-            mediaUploadModel.setUploadState(MediaUploadModel.FAILED);
-            if (payload.isError()) {
-                mediaUploadModel.setMediaError(payload.error);
-            }
-            UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
+            MediaError error = payload.isError() ? payload.error :
+                    new MediaError(MediaErrorType.GENERIC_ERROR, "Upload cancelled");
+            mUploadStateManager.failUpload(mediaId, error);
             return;
         }
 
         if (payload.completed) {
-            mediaUploadModel.setUploadState(MediaUploadModel.COMPLETED);
-            mediaUploadModel.setProgress(1F);
-            UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
+            mUploadStateManager.completeUpload(mediaId);
         } else {
-            if (mediaUploadModel.getProgress() < payload.progress) {
-                mediaUploadModel.setProgress(payload.progress);
-                // To avoid conflicts with another action handler updating the state of the MediaUploadModel,
-                // update the progress value only, since that's all the new information this event gives us
-                UploadSqlUtils.updateMediaProgressOnly(mediaUploadModel);
+            // Only update progress if it's higher than current
+            if (currentState instanceof UploadState.Uploading) {
+                float currentProgress = ((UploadState.Uploading) currentState).getProgress();
+                if (currentProgress < payload.progress) {
+                    mUploadStateManager.setProgress(mediaId, payload.progress);
+                }
+            } else {
+                // No current state, start upload with this progress
+                mUploadStateManager.startUpload(mediaId, payload.progress);
             }
         }
     }
 
     private void handleCancelMedia(@NonNull CancelMediaPayload payload) {
-        // If the cancel action has the delete flag, the corresponding MediaModel will be deleted once this action
-        // reaches the MediaStore, along with the MediaUploadModel (because of the FOREIGN KEY association)
-        // Otherwise, we should mark the MediaUploadModel as FAILED
-        if (!payload.delete) {
-            MediaUploadModel mediaUploadModel = UploadSqlUtils.getMediaUploadModelForLocalId(payload.media.getId());
-            if (mediaUploadModel == null) {
-                mediaUploadModel = new MediaUploadModel(payload.media.getId());
-            }
-
-            mediaUploadModel.setUploadState(MediaUploadModel.FAILED);
-            UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
+        // If the cancel action has the delete flag, we should remove the upload state
+        // Otherwise, mark it as FAILED
+        MediaId mediaId = new MediaId(payload.media.getId());
+        if (payload.delete) {
+            mUploadStateManager.remove(mediaId);
+        } else {
+            MediaError error = new MediaError(MediaErrorType.GENERIC_ERROR, "Upload cancelled");
+            mUploadStateManager.failUpload(mediaId, error);
         }
     }
 
     private void handleUpdateMedia(@NonNull MediaModel payload) {
-        MediaUploadModel mediaUploadModel = UploadSqlUtils.getMediaUploadModelForLocalId(payload.getId());
-        if (mediaUploadModel == null) {
+        MediaId mediaId = new MediaId(payload.getId());
+        UploadState currentState = mUploadStateManager.getUploadState(mediaId);
+        if (currentState == null) {
             return;
         }
 
-        // If the new MediaModel state is different from ours, update the MediaUploadModel to reflect it
+        // If the new MediaModel state is different from ours, update our state to reflect it
         MediaUploadState newUploadState = MediaUploadState.fromString(payload.getUploadState());
-        switch (mediaUploadModel.getUploadState()) {
-            case MediaUploadModel.UPLOADING:
-                if (newUploadState == MediaUploadState.FAILED) {
-                    mediaUploadModel.setUploadState(MediaUploadModel.FAILED);
-                    mediaUploadModel.setMediaError(new MediaError(MediaErrorType.GENERIC_ERROR));
-                    mediaUploadModel.setProgress(0);
-                    UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
-                }
-                break;
-            case MediaUploadModel.COMPLETED:
-                // We never care about changes to MediaModels that are already COMPLETED
-                break;
-            case MediaUploadModel.FAILED:
-                if (newUploadState == MediaUploadState.UPLOADING || newUploadState == MediaUploadState.QUEUED) {
-                    mediaUploadModel.setUploadState(MediaUploadModel.UPLOADING);
-                    mediaUploadModel.setMediaError(null); // clear any previous errors
-                    UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel);
-                }
-                break;
+
+        if (currentState instanceof UploadState.Uploading) {
+            if (newUploadState == MediaUploadState.FAILED) {
+                MediaError error = new MediaError(MediaErrorType.GENERIC_ERROR);
+                mUploadStateManager.failUpload(mediaId, error);
+            }
+        } else if (currentState instanceof UploadState.Completed) {
+            // We never care about changes to MediaModels that are already COMPLETED
+        } else if (currentState instanceof UploadState.Failed) {
+            if (newUploadState == MediaUploadState.UPLOADING || newUploadState == MediaUploadState.QUEUED) {
+                mUploadStateManager.startUpload(mediaId);
+            }
         }
     }
 }

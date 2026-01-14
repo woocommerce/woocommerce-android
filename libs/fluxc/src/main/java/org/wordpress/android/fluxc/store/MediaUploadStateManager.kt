@@ -16,6 +16,7 @@ class MediaUploadStateManager @Inject constructor() {
         data class Failed(val error: MediaError) : UploadState()
     }
 
+    @JvmOverloads
     fun startUpload(id: MediaId, progress: Float = 0f) {
         uploadStates[id] = UploadState.Uploading(progress)
     }
