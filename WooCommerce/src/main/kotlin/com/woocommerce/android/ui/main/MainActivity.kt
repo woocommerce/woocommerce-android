@@ -555,14 +555,10 @@ class MainActivity :
     }
 
     private fun showToolbar() {
-        if (binding.collapsingToolbar.isVisible &&
-            binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight
-        ) return
         binding.collapsingToolbar.show()
     }
 
     private fun hideToolbar() {
-        if (binding.collapsingToolbar.isGone) return
         binding.collapsingToolbar.hide()
     }
 
