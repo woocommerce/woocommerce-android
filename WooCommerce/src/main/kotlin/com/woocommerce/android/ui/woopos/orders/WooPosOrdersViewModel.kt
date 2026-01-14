@@ -227,6 +227,7 @@ class WooPosOrdersViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosOrdersState.Content.DialogState.Hidden
         )
+        refreshSelectedOrder()
     }
 
     fun onOrdersEmptyActionClicked() {
