@@ -34,7 +34,8 @@ class WooPosCalculateRefundTaxTest {
     private fun createOrderItem(
         itemId: Long,
         quantity: Float = 1f,
-        totalTax: BigDecimal = BigDecimal.ZERO
+        totalTax: BigDecimal = BigDecimal.ZERO,
+        taxes: List<Order.LineTaxEntry> = emptyList()
     ) = Order.Item(
         itemId = itemId,
         productId = 100L,
@@ -48,7 +49,7 @@ class WooPosCalculateRefundTaxTest {
         total = BigDecimal("20.00"),
         variationId = 0L,
         attributesList = emptyList(),
-        taxes = emptyList()
+        taxes = taxes
     )
 
     private fun createOrder(items: List<Order.Item>) =
@@ -58,17 +59,21 @@ class WooPosCalculateRefundTaxTest {
     fun `given empty list, when invoke called, then returns zero`() {
         val order = createOrder(emptyList())
 
-        val result = sut(emptyList(), order)
+        val result = sut(emptyList(), order, numberOfDecimals = 2, roundAtSubtotal = false)
 
         assertThat(result).isEqualTo(BigDecimal.ZERO)
     }
 
     @Test
-    fun `given single item with full quantity refund, when invoke called, then returns exact totalTax`() {
+    fun `given single item with full quantity refund, when invoke called, then returns sum of taxes`() {
         val orderItem = createOrderItem(
             itemId = 1L,
             quantity = 3f,
-            totalTax = BigDecimal("6.00")
+            totalTax = BigDecimal("6.00"),
+            taxes = listOf(
+                Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("3.00")),
+                Order.LineTaxEntry(rateId = 2L, taxAmount = BigDecimal("3.00"))
+            )
         )
         val refundableItems = listOf(
             createRefundableItem(orderItemId = 1L, rowIndex = 0),
@@ -77,9 +82,31 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(listOf(orderItem))
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
 
         assertThat(result).isEqualTo(BigDecimal("6.00"))
+    }
+
+    @Test
+    fun `given full quantity refund with totalTax different from sum of taxes, when invoke called, then returns sum of taxes`() {
+        val orderItem = createOrderItem(
+            itemId = 1L,
+            quantity = 2f,
+            totalTax = BigDecimal("5.50"),
+            taxes = listOf(
+                Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("2.75")),
+                Order.LineTaxEntry(rateId = 2L, taxAmount = BigDecimal("2.76"))
+            )
+        )
+        val refundableItems = listOf(
+            createRefundableItem(orderItemId = 1L, rowIndex = 0),
+            createRefundableItem(orderItemId = 1L, rowIndex = 1)
+        )
+        val order = createOrder(listOf(orderItem))
+
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
+
+        assertThat(result).isEqualTo(BigDecimal("5.51"))
     }
 
     @Test
@@ -95,9 +122,9 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(listOf(orderItem))
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
 
-        assertThat(result).isEqualByComparingTo(BigDecimal("4.00"))
+        assertThat(result).isEqualTo(BigDecimal("4.00"))
     }
 
     @Test
@@ -108,7 +135,7 @@ class WooPosCalculateRefundTaxTest {
         )
 
         val exception = try {
-            sut(refundableItems, order)
+            sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
             null
         } catch (e: IllegalArgumentException) {
             e
@@ -131,7 +158,7 @@ class WooPosCalculateRefundTaxTest {
         )
 
         val exception = try {
-            sut(refundableItems, order)
+            sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
             null
         } catch (e: IllegalStateException) {
             e
@@ -144,9 +171,24 @@ class WooPosCalculateRefundTaxTest {
     @Test
     fun `given multiple different items, when invoke called, then sums all taxes`() {
         val orderItems = listOf(
-            createOrderItem(itemId = 1L, quantity = 2f, totalTax = BigDecimal("4.00")),
-            createOrderItem(itemId = 2L, quantity = 1f, totalTax = BigDecimal("3.00")),
-            createOrderItem(itemId = 3L, quantity = 3f, totalTax = BigDecimal("9.00"))
+            createOrderItem(
+                itemId = 1L,
+                quantity = 2f,
+                totalTax = BigDecimal("4.00"),
+                taxes = listOf(Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("4.00")))
+            ),
+            createOrderItem(
+                itemId = 2L,
+                quantity = 1f,
+                totalTax = BigDecimal("3.00"),
+                taxes = listOf(Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("3.00")))
+            ),
+            createOrderItem(
+                itemId = 3L,
+                quantity = 3f,
+                totalTax = BigDecimal("9.00"),
+                taxes = listOf(Order.LineTaxEntry(rateId = 1L, taxAmount = BigDecimal("9.00")))
+            )
         )
         val refundableItems = listOf(
             createRefundableItem(orderItemId = 1L, rowIndex = 0),
@@ -158,8 +200,46 @@ class WooPosCalculateRefundTaxTest {
         )
         val order = createOrder(orderItems)
 
-        val result = sut(refundableItems, order)
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
 
         assertThat(result).isEqualTo(BigDecimal("16.00"))
+    }
+
+    @Test
+    fun `given partial refund with per-line rounding, when invoke called, then rounds per line`() {
+        val orderItems = listOf(
+            createOrderItem(itemId = 1L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 2L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 3L, quantity = 3f, totalTax = BigDecimal("10.00"))
+        )
+        val refundableItems = listOf(
+            createRefundableItem(orderItemId = 1L),
+            createRefundableItem(orderItemId = 2L),
+            createRefundableItem(orderItemId = 3L)
+        )
+        val order = createOrder(orderItems)
+
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = false)
+
+        assertThat(result).isEqualTo(BigDecimal("9.99"))
+    }
+
+    @Test
+    fun `given partial refund with subtotal rounding, when invoke called, then rounds at subtotal level`() {
+        val orderItems = listOf(
+            createOrderItem(itemId = 1L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 2L, quantity = 3f, totalTax = BigDecimal("10.00")),
+            createOrderItem(itemId = 3L, quantity = 3f, totalTax = BigDecimal("10.00"))
+        )
+        val refundableItems = listOf(
+            createRefundableItem(orderItemId = 1L),
+            createRefundableItem(orderItemId = 2L),
+            createRefundableItem(orderItemId = 3L)
+        )
+        val order = createOrder(orderItems)
+
+        val result = sut(refundableItems, order, numberOfDecimals = 2, roundAtSubtotal = true)
+
+        assertThat(result).isEqualTo(BigDecimal("10.00"))
     }
 }

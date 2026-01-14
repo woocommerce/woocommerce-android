@@ -87,4 +87,29 @@ class WooPosCalculateRefundSubtotalTest {
 
         assertThat(result).isEqualTo(BigDecimal("85.00"))
     }
+
+    @Test
+    fun `given unit price with more decimals, when invoke called, then rounds per line item`() {
+        val refundableItems = listOf(
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.333"), rowIndex = 0),
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.333"), rowIndex = 1),
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.333"), rowIndex = 2)
+        )
+
+        val result = sut(refundableItems, 2)
+
+        assertThat(result).isEqualTo(BigDecimal("31.00"))
+    }
+
+    @Test
+    fun `given unit price requiring rounding, when invoke called with 3 decimals, then rounds to 3 decimals`() {
+        val refundableItems = listOf(
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.33333"), rowIndex = 0),
+            createRefundableItem(orderItemId = 1L, unitPrice = BigDecimal("10.33333"), rowIndex = 1)
+        )
+
+        val result = sut(refundableItems, 3)
+
+        assertThat(result).isEqualTo(BigDecimal("20.667"))
+    }
 }
