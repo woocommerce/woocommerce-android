@@ -17,7 +17,6 @@ import android.text.method.LinkMovementMethod
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewGroup.LayoutParams
 import androidx.activity.addCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.activity.viewModels
@@ -30,7 +29,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -54,6 +52,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
 import com.woocommerce.android.extensions.hide
@@ -599,18 +598,23 @@ class MainActivity :
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        // Check to ensure expand anim is not triggered twice for same subtitle value
         if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
             return
         }
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        binding.toolbarSubtitle.clearAnimation()
-        binding.toolbarSubtitle.updateLayoutParams {
-            height = LayoutParams.WRAP_CONTENT
-        }
-        binding.toolbarSubtitle.show()
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
+            if (binding.collapsingToolbar.expandedTitleMarginBottom ==
+                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin_with_subtitle)
+            ) {
+                binding.toolbarSubtitle.show()
+                binding.toolbarSubtitle.animate()
+                    .scaleY(1f)
+                    .setDuration(EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS)
+                    .start()
+            }
         }
     }
 
