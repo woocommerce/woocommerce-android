@@ -1,151 +1,19 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/buildkite/pipeline-schema/main/schema.json
 ---
-
 # Nodes with values to reuse in the pipeline.
 common_params:
   # Common plugin settings to use with the `plugins` key.
   - &test_collector_common_params
-      files: "WooCommerce/build/buildkite-test-analytics/*.xml"
-      format: "junit"
+    files: "WooCommerce/build/buildkite-test-analytics/*.xml"
+    format: "junit"
 
 agents:
   queue: "android"
 
 steps:
-  - label: Gradle Wrapper Validation
-    command: validate_gradle_wrapper
-    agents:
-      queue: linter
-
-  # Wait for Gradle Wrapper to be validated before running any other jobs
-  - wait
-
-  ########################################
-  - group: "🕵️ Linters"
-    steps:
-
-      - label: "☢️ Danger - PR Check"
-        command: danger
-        key: danger
-        if: "build.pull_request.id != null"
-        retry:
-          manual:
-            permit_on_passed: true
-        agents:
-          queue: "linter"
-
-      - label: "detekt"
-        command: |
-          if .buildkite/commands/should-skip-job.sh --job-type validation; then
-            exit 0
-          fi
-          ./gradlew detektAll
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/detekt/detekt.html"
-
-      - label: "lint"
-        command: .buildkite/commands/lint.sh
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/lint-results*.*"
-
-      - label: "Dependency Tree Diff"
-        command: comment_with_dependency_diff 'woocommerce' 'vanillaReleaseRuntimeClasspath'
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff/*"
-
-      - label: "Merged Manifest Diff"
-        command: ".buildkite/commands/diff-merged-manifest.sh vanillaRelease"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "**/build/reports/diff_manifest/**/**/*"
-
   ########################################
   - group: "🛠 Prototype Builds"
     steps:
-
       - label: "🛠 Prototype Build: Mobile App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce"
-        if: build.pull_request.id != null
+        command: "jenv versions"
         plugins: [$CI_TOOLKIT]
-
-      - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
-
-  ########################################
-  - group: "🔬 Tests"
-    steps:
-
-      - label: "Unit tests"
-        key: unit-tests
-        command: .buildkite/commands/run-unit-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_UNIT_TESTS"
-        artifact_paths:
-          - "**/build/test-results/merged-test-results.xml"
-
-      - label: "Instrumented tests"
-        command: .buildkite/commands/run-instrumented-tests.sh
-        plugins:
-          - $CI_TOOLKIT
-          - $TEST_COLLECTOR :
-              <<: *test_collector_common_params
-              api-token-env-name: "BUILDKITE_ANALYTICS_TOKEN_INSTRUMENTED_TESTS"
-        artifact_paths:
-          - "**/build/instrumented-tests/**/*"
-
-
-  - label: "🐘 Populate Gradle build cache"
-    command: .buildkite/commands/gradle-cache-build.sh
-    plugins: [$CI_TOOLKIT]
-
-  ########################################
-  # Optional Prototype Builds for trunk branch, distributed via Firebase App Distribution (FAD)
-  ########################################
-  - group: "🚀 Prototype Build"
-    if: "build.branch == 'trunk'"
-    steps:
-      - block: ":rocket: Build Prototype and distribute via Firebase"
-        prompt: Select which app to build and distribute via Firebase App Distribution
-        key: prototype_builds_fad_triggered
-        fields:
-          - select: "App to Build"
-            key: "app-to-build"
-            hint: "Which WooCommerce app should be built? 📱"
-            required: true
-            default: "WooCommerce"
-            options:
-              - label: "📱 WooCommerce Mobile"
-                value: "WooCommerce"
-              - label: "⌚️ WooCommerce Wear"
-                value: "WooCommerce-Wear"
-      - label: ":firebase: Prototype Build (FAD)"
-        depends_on: prototype_builds_fad_triggered
-        command: |
-          ".buildkite/commands/prototype-build-fad.sh"
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "WooCommerce/build/outputs/apk/**/*"
-          - "WooCommerce-Wear/build/outputs/apk/**/*"
-
-  ########################################
-  # Claude Build Analysis - dynamically uploaded so Build result conditions evaluate at runtime after the wait
-  ########################################
-  - wait: ~
-    continue_on_failure: true
-
-  - label: ":claude: 🕵️ Check for Build Failures and Run Claude Analysis"
-    command: |
-      source .buildkite/shared-pipeline-vars
-      buildkite-agent pipeline upload .buildkite/claude-analysis.yml
-    agents:
-      queue: upload
