@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
+import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -16,15 +18,25 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.store.WCRefundStore
+import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.RoundingMode
 
+@Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
 class WooPosRefundViewModel @AssistedInject constructor(
     @Assisted private val orderId: Long,
     private val ordersDataSource: WooPosOrdersDataSource,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val getRefundableItems: WooPosGetRefundableItems,
+    private val groupRefundItems: WooPosGroupRefundItems,
+    private val calculateRefundSubtotal: WooPosCalculateRefundSubtotal,
+    private val calculateRefundTax: WooPosCalculateRefundTax,
     private val resourceProvider: ResourceProvider,
-    private val currencyFormatter: CurrencyFormatter
+    private val currencyFormatter: CurrencyFormatter,
+    private val refundStore: WCRefundStore,
+    private val selectedSite: SelectedSite,
+    private val wooCommerceStore: WooCommerceStore
 ) : ViewModel() {
 
     @AssistedFactory
@@ -35,15 +47,23 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val _state = MutableStateFlow<WooPosRefundState>(WooPosRefundState.Loading)
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
+    private var currentOrder: Order? = null
+    private val numberOfDecimalPoints: Int
+
     init {
         loadRefundableItems()
+        val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
+        checkNotNull(numberOfDecimals) {
+            "Failed to get site settings in order to determine number of decimals for refund calculations."
+        }
+        numberOfDecimalPoints = numberOfDecimals
     }
 
     private fun loadRefundableItems() {
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
-            val orderResult = ordersDataSource.getOrderById(orderId)
+            val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
@@ -52,6 +72,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             val order = orderResult.getOrThrow()
+            currentOrder = order
 
             val refundsResult = retrieveOrderRefunds(order)
             val refunds = if (refundsResult.isSuccess) {
@@ -69,18 +90,18 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
             _state.value = buildContentState(
                 order = order,
-                refundableItems = refundableItems
+                refundableItems = refundableItems,
             )
         }
     }
 
     private fun buildContentState(
         order: Order,
-        refundableItems: List<WooPosRefundableItem>
+        refundableItems: List<WooPosRefundableItem>,
     ): WooPosRefundState.Content {
-        val subtotal = refundableItems.sumOf { it.lineTotal }
-        val taxes = refundableItems.sumOf { it.lineTax }
-        val total = subtotal + taxes
+        val subtotal = calculateRefundSubtotal(refundableItems, numberOfDecimalPoints)
+        val taxes = calculateRefundTax(refundableItems, order)
+        val total = (subtotal + taxes).setScale(numberOfDecimalPoints, RoundingMode.HALF_UP)
 
         return WooPosRefundState.Content(
             orderId = order.id,
@@ -99,23 +120,90 @@ class WooPosRefundViewModel @AssistedInject constructor(
         )
     }
 
+    fun onDismissRequest(): Boolean {
+        val currentState = _state.value
+        val isProcessing = currentState is WooPosRefundState.Content &&
+            currentState.step == WooPosRefundState.Content.RefundStep.Processing
+
+        // Don't allow dismissal during processing to ensure user sees the result
+        return !isProcessing
+    }
+
     fun onUIEvent(event: WooPosRefundUIEvent) {
-        val currentState = _state.value as? WooPosRefundState.Content ?: return
+        when (event) {
+            WooPosRefundUIEvent.DialogDismissed -> {
+                val currentState = _state.value
 
-        val newStep = when (event) {
-            WooPosRefundUIEvent.ContinueToReviewClicked ->
-                WooPosRefundState.Content.RefundStep.ReviewRefund
-            WooPosRefundUIEvent.BackToSelectItemsClicked ->
-                WooPosRefundState.Content.RefundStep.SelectItems
-            WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
-                WooPosRefundState.Content.RefundStep.ConfirmRefund
-            WooPosRefundUIEvent.BackToReviewClicked ->
-                WooPosRefundState.Content.RefundStep.ReviewRefund
-            WooPosRefundUIEvent.DialogDismissed ->
-                WooPosRefundState.Content.RefundStep.SelectItems
-            WooPosRefundUIEvent.OnRefundConfirmed -> WooPosRefundState.Content.RefundStep.SelectItems
+                if (currentState is WooPosRefundState.Content &&
+                    currentState.step != WooPosRefundState.Content.RefundStep.Processing
+                ) {
+                    _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+                }
+            }
+            else -> {
+                val currentState = _state.value as? WooPosRefundState.Content ?: return
+
+                when (event) {
+                    WooPosRefundUIEvent.ContinueToReviewClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+                    WooPosRefundUIEvent.BackToSelectItemsClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+                    WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+                    WooPosRefundUIEvent.BackToReviewClicked ->
+                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+                    WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
+                    WooPosRefundUIEvent.DialogDismissed -> Unit
+                }
+            }
         }
+    }
 
-        _state.value = currentState.copy(step = newStep)
+    private fun processRefund(contentState: WooPosRefundState.Content) {
+        viewModelScope.launch {
+            val currentState = _state.value
+            if (currentState is WooPosRefundState.Content &&
+                currentState.step == WooPosRefundState.Content.RefundStep.Processing
+            ) {
+                return@launch
+            }
+
+            _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
+
+            val order = currentOrder ?: run {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "WooPosRefund: currentOrder is null during processRefund"
+                )
+                _state.value = WooPosRefundState.RefundError(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+
+            val refundItems = groupRefundItems(contentState.refundableItems, order, numberOfDecimalPoints)
+
+            val result = refundStore.createItemsRefund(
+                site = selectedSite.get(),
+                orderId = contentState.orderId,
+                amount = contentState.total,
+                reason = "",
+                restockItems = true,
+                autoRefund = false,
+                items = refundItems
+            )
+
+            if (result.isError) {
+                _state.value = WooPosRefundState.RefundError(
+                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic)
+                )
+            } else {
+                _state.value = WooPosRefundState.RefundSuccess(
+                    orderId = contentState.orderId,
+                    orderNumber = contentState.orderNumber,
+                    refundedAmount = contentState.formattedTotal
+                )
+            }
+        }
     }
 }
