@@ -19,8 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -91,6 +89,7 @@ fun BlazeCampaignPaymentSummaryScreen(
                 onCancelClick = onBackClick,
                 modifier = Modifier.padding(paddingValues)
             )
+
             else -> PaymentSummaryContent(
                 state = state,
                 onSubmitCampaign = onSubmitCampaign,
@@ -207,7 +206,7 @@ private fun CampaignCreationErrorUi(
             modifier = Modifier.weight(1f)
         ) {
             Icon(
-                imageVector = Icons.Default.ErrorOutline,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_error_24dp),
                 contentDescription = null,
                 tint = MaterialTheme.colors.error,
                 modifier = Modifier.size(dimensionResource(id = R.dimen.image_major_64))

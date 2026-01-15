@@ -500,9 +500,11 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     if (map.isEmpty()) {
                         ShippingRatesState.NoAvailable
                     } else {
+                        val sortedShippingRates = sortShippingRates(selectedRatesSortOrders[index], map)
+                        preselectShippingRateIfNoneSelected(selectedRates, index, sortedShippingRates)
                         ShippingRatesState.DataState(
                             selectedRatesSortOrder = selectedRatesSortOrders[index],
-                            shippingRates = sortShippingRates(selectedRatesSortOrders[index], map),
+                            shippingRates = sortedShippingRates,
                             selectedRate = selectedRates[index],
                             onSelectedShippingRateChanged = ::onSelectedShippingRateChanged,
                             onSelectedRateOptionChanged = ::onSelectedRateOptionChanged
@@ -512,6 +514,24 @@ class WooShippingLabelCreationViewModel @Inject constructor(
             }.collectLatest {
                 shippingRatesStatesFlow.value = it
             }
+    }
+
+    private fun preselectShippingRateIfNoneSelected(
+        selectedRates: List<ShippingRateUI?>,
+        index: Int,
+        sortedShippingRates: Map<CarrierUI, List<ShippingRateUI>>
+    ) {
+        if (selectedRates[index] == null) {
+            val defaultSelectedRate = sortedShippingRates[sortedShippingRates.keys.first()]?.first()
+            selectedRatesFlow.update {
+                it.toMutableList().apply {
+                    set(
+                        selectedShipmentIndex,
+                        defaultSelectedRate
+                    )
+                }
+            }
+        }
     }
 
     @OptIn(FlowPreview::class)
@@ -911,7 +931,6 @@ class WooShippingLabelCreationViewModel @Inject constructor(
     }
 
     fun onUPSTermsAccepted() {
-        @Suppress("ReturnCount")
         fun selectMatchingRate(
             newRates: Map<CarrierUI, List<ShippingRateUI>>,
             previouslySelectedRate: ShippingRateUI,

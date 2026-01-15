@@ -33,6 +33,7 @@ class WooPosHomeViewModel @Inject constructor(
     private val soundHelper: WooPosSoundHelper,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
+
     private val _state = savedStateHandle.getStateFlow(
         scope = viewModelScope,
         key = "home_state",
@@ -233,6 +234,10 @@ class WooPosHomeViewModel @Inject constructor(
                     is ChildToParentEvent.OrderCreated -> handleOrderCreated(event)
                     is ChildToParentEvent.CouponsValidationFailed -> {
                         sendEventToChildren(ParentToChildrenEvent.CouponsValidationFailed)
+                    }
+
+                    is ChildToParentEvent.MissingVariationEvent -> {
+                        sendEventToChildren(ParentToChildrenEvent.MissingVariationEvent(event.variationId))
                     }
 
                     is ChildToParentEvent.RemoveCouponsClicked -> {

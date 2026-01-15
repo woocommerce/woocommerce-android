@@ -29,17 +29,17 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,7 +73,7 @@ fun VariationSelectorScreen(viewModel: VariationSelectorViewModel) {
                 navigationIcon = {
                     IconButton(viewModel::onBackPress) {
                         Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
+                            ImageVector.vectorResource(R.drawable.ic_back_24dp),
                             contentDescription = stringResource(id = string.back)
                         )
                     }
@@ -107,6 +107,7 @@ fun VariationSelectorScreen(
             onVariationClick = onVariationClick,
             onLoadMore = onLoadMore
         )
+
         state.variations.isEmpty() && state.loadingState == LOADING -> VariationListSkeleton()
         else -> EmptyVariationList()
     }

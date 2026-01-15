@@ -20,7 +20,7 @@ import javax.inject.Inject
 class FirstProductCelebrationDialog : DialogFragment() {
     companion object {
         private const val TABLET_LANDSCAPE_WIDTH_RATIO = 0.35f
-        private const val TABLET_LANDSCAPE_HEIGHT_RATIO = 0.8f
+        private const val TABLET_PORTRAIT_WIDTH_RATIO = 0.7f
     }
 
     @Inject lateinit var navigator: ProductNavigator
@@ -59,14 +59,19 @@ class FirstProductCelebrationDialog : DialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (isTabletLandscape()) {
+        if (isTablet()) {
+            val widthRatio = if (DisplayUtils.isLandscape(context)) {
+                TABLET_LANDSCAPE_WIDTH_RATIO
+            } else {
+                TABLET_PORTRAIT_WIDTH_RATIO
+            }
+
             requireDialog().window!!.setLayout(
-                (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
-                (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
+                (DisplayUtils.getWindowPixelWidth(requireContext()) * widthRatio).toInt(),
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
     }
 
-    private fun isTabletLandscape() = (DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)) &&
-        DisplayUtils.isLandscape(context)
+    private fun isTablet() = DisplayUtils.isTablet(context) || DisplayUtils.isXLargeTablet(context)
 }

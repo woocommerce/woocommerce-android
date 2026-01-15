@@ -38,13 +38,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.Remove
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
@@ -260,9 +253,10 @@ fun ExpandableProductCard(
         ) {
             Icon(
                 modifier = Modifier.rotate(chevronRotation),
-                imageVector = Icons.Filled.KeyboardArrowDown,
-                contentDescription =
-                stringResource(R.string.order_creation_collapse_expand_product_card_content_description),
+                imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_down),
+                contentDescription = stringResource(
+                    R.string.order_creation_collapse_expand_product_card_content_description
+                ),
                 tint = MaterialTheme.colors.primary
             )
         }
@@ -414,7 +408,7 @@ fun ExtendedProductCardContent(
                 Spacer(Modifier.width(dimensionResource(id = R.dimen.minor_100)))
                 Icon(
                     modifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_40)),
-                    imageVector = Icons.Filled.Edit,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                     contentDescription = null
                 )
             }
@@ -491,7 +485,7 @@ fun ExtendedProductCardContent(
                 enabled = editableControlsEnabled
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Tune,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_tune_24dp),
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.size(4.dp))
@@ -592,15 +586,18 @@ private fun AmountPicker(
                 else -> MaterialTheme.colors.primary
             }
 
-            val decreaseIcon = if (isLastItem) Icons.Filled.DeleteOutline else Icons.Filled.Remove
+            val decreaseIcon = ImageVector.vectorResource(
+                if (isLastItem) R.drawable.ic_delete_24dp else R.drawable.ic_remove_24dp
+            )
             IconButton(
                 onClick = { onItemAmountChanged(ProductAmountEvent.Decrease) },
                 enabled = isPlusMinusEnabled
             ) {
                 Icon(
                     imageVector = decreaseIcon,
-                    contentDescription =
-                    stringResource(id = R.string.order_creation_decrease_item_amount_content_description),
+                    contentDescription = stringResource(
+                        R.string.order_creation_decrease_item_amount_content_description
+                    ),
                     tint = minusButtonTint
                 )
             }
@@ -646,9 +643,10 @@ private fun AmountPicker(
                 enabled = isPlusMinusEnabled
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription =
-                    stringResource(id = R.string.order_creation_increase_item_amount_content_description),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
+                    contentDescription = stringResource(
+                        R.string.order_creation_increase_item_amount_content_description
+                    ),
                     tint = plusButtonTint
                 )
             }

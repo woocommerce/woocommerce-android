@@ -66,11 +66,6 @@ class MainActivityViewModel @Inject constructor(
     unseenReviewsCountHandler: UnseenReviewsCountHandler,
     determineTrialStatusBarState: DetermineTrialStatusBarState,
 ) : ScopedViewModel(savedState) {
-    init {
-        launch {
-            featureAnnouncementRepository.getFeatureAnnouncements(fromCache = false)
-        }
-    }
 
     val startDestination = if (selectedSite.exists()) R.id.dashboard else R.id.nav_graph_site_picker
 
@@ -155,6 +150,10 @@ class MainActivityViewModel @Inject constructor(
                 triggerEvent(ViewTapToPay)
             }
 
+            ResolveAppLink.Action.ViewWooPosPromo -> {
+                triggerEvent(ViewWooPosPromo)
+            }
+
             is ResolveAppLink.Action.ViewUrlInWebView -> {
                 triggerEvent(ViewUrlInWebView(event.url))
             }
@@ -227,15 +226,14 @@ class MainActivityViewModel @Inject constructor(
 
     fun showFeatureAnnouncementIfNeeded() {
         launch {
-            val cachedAnnouncement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = true)
+            if (prefs.getLastVersionWithAnnouncement() == buildConfigWrapper.versionName) {
+                return@launch
+            }
 
-            // Feature Announcement dialog can be shown on app resume, if these criteria are filled:
-            // 1. Current version is different from the last version where announcement was shown
-            // 2. Announcement content is valid and can be displayed
-            cachedAnnouncement?.let {
-                if (prefs.getLastVersionWithAnnouncement() != buildConfigWrapper.versionName &&
-                    cachedAnnouncement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)
-                ) {
+            val announcement = featureAnnouncementRepository.getLatestFeatureAnnouncement(fromCache = false)
+
+            announcement?.let {
+                if (announcement.canBeDisplayedOnAppUpgrade(buildConfigWrapper.versionName)) {
                     WooLog.i(T.DEVICE, "Displaying Feature Announcement on main activity")
                     analyticsTrackerWrapper.track(
                         AnalyticsEvent.FEATURE_ANNOUNCEMENT_SHOWN,
@@ -250,12 +248,25 @@ class MainActivityViewModel @Inject constructor(
         }
     }
 
+    fun onNotificationOSAlertAllowed() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_ALLOWED)
+    }
+
+    fun onNotificationOSAlertDenied() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATION_OS_ALERT_DENIED)
+    }
+
     fun checkForNotificationsPermission(hasNotificationsPermission: Boolean) {
         val shouldShowNotificationsPermissionBar = VERSION.SDK_INT >= VERSION_CODES.TIRAMISU &&
             !hasNotificationsPermission && !AppPrefs.getWasNotificationsPermissionBarDismissed() &&
             selectedSite.get().connectionType == Jetpack
 
-        _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+        if (_isNotificationPermissionCardVisible.value != shouldShowNotificationsPermissionBar) {
+            _isNotificationPermissionCardVisible.update { shouldShowNotificationsPermissionBar }
+            if (shouldShowNotificationsPermissionBar) {
+                analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_SHOWN)
+            }
+        }
     }
 
     fun hideBottomNav() {
@@ -267,11 +278,13 @@ class MainActivityViewModel @Inject constructor(
     }
 
     fun onNotificationsPermissionBarDismissButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_DISMISS_TAPPED)
         AppPrefs.setWasNotificationsPermissionBarDismissed(true)
         _isNotificationPermissionCardVisible.update { false }
     }
 
     fun onNotificationsPermissionBarAllowButtonTapped() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.NOTIFICATIONS_RATIONALE_ALLOW_TAPPED)
         triggerEvent(RequestNotificationsPermission)
     }
 
@@ -341,6 +354,7 @@ class MainActivityViewModel @Inject constructor(
     object ViewMyStoreStats : Event()
     object ViewPayments : Event()
     object ViewTapToPay : Event()
+    object ViewWooPosPromo : Event()
     object RequestNotificationsPermission : Event()
     data class ViewUrlInWebView(
         val url: String,

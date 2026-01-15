@@ -315,6 +315,7 @@
     <string name="login_site_credentials_custom_admin_url">Unable to login because we cannot identify your store\'s admin URL</string>
     <string name="login_site_credentials_http_error">Login failed with status code %1$s</string>
     <string name="login_site_credentials_use_web_authorization">Try again with WP Admin page</string>
+    <string name="login_site_credentials_http_basic_auth_error">Basic Authentication is enabled on your site. Basic Authentication is unsupported in the WooCommerce mobile app. Please disable it, or contact support for troubleshooting.</string>
     <string name="login_site_credentials_fetching_site_failed">An error occurred while fetching your website</string>
     <string name="login_site_credentials_fetching_site">Fetching site…</string>
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
@@ -1382,6 +1383,7 @@
         -->
 
     <string name="card_reader_upsell_card_reader_banner_dismiss">Dismiss</string>
+    <string name="card_reader_upsell_card_reader_banner_hide_content">Hide this content</string>
     <string name="card_reader_upsell_card_reader_banner_new">NEW</string>
     <string name="card_reader_upsell_card_reader_banner_title">Accept payments easily</string>
     <string name="card_reader_upsell_card_reader_banner_description">Start selling in person in under 20 minutes with our card reader.</string>
@@ -3194,6 +3196,10 @@
     <string name="local_notification_woo_pos_survey_current_user_title">How\'s POS working for you?</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Share your experience in a quick 2-minute survey and help us improve.</string>
 
+    <string name="pos_client_side_banner_title">Run WooCommerce POS on tablets</string>
+    <string name="pos_client_side_banner_description">Take in‑person payments with WooCommerce POS. Set up on a tablet and start selling today.</string>
+    <string name="pos_client_side_banner_cta">Learn more</string>
+
     <!--
     First product published congratulatory feature
     -->
@@ -3789,6 +3795,7 @@
     <string name="woopos_orders_empty_list_message">Explore how you can increase your store sales.</string>
     <string name="woopos_orders_empty_action_label">Learn more</string>
     <string name="woopos_orders_empty_list_image_description">No orders</string>
+    <string name="woopos_orders_no_order_selected">No order selected.</string>
     <string name="woopos_orders_loading_error_title">Unable to load orders</string>
     <string name="woopos_orders_loading_error_message">Please check your connection try again.</string>
     <string name="woopos_orders_loading_error_retry_button">Retry</string>
@@ -3798,6 +3805,24 @@
 
     <string name="woopos_orders_email_receipt">Email receipt</string>
     <string name="woopos_orders_issue_refund_content_description">Issue a refund for this order</string>
+    <string name="woopos_orders_select_items_to_refund">Select items to refund</string>
+    <string name="woopos_orders_select_all_items">SELECT ALL ITEMS</string>
+    <string name="woopos_orders_items_selected_count">(%1$d SELECTED)</string>
+    <string name="woopos_orders_loading_refund_items">Loading refundable items</string>
+    <string name="woopos_orders_no_items_available_for_refund">No items available for refund</string>
+    <string name="woopos_orders_review_refund">Review refund</string>
+    <string name="woopos_orders_issue_refund">Issue Refund</string>
+    <plurals name="woopos_orders_items_subtotal_count_plural">
+        <item quantity="one">Items subtotal (%d item)</item>
+        <item quantity="other">Items subtotal (%d items)</item>
+    </plurals>
+    <string name="woopos_orders_refund_total">Refund total</string>
+    <string name="woopos_orders_refund_reason">Refund reason</string>
+    <string name="woopos_orders_edit_reason">Edit reason</string>
+    <string name="woopos_orders_edit_refund">Edit refund</string>
+    <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
+    <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
+    <string name="woopos_orders_yes_proceed">Yes, proceed</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
@@ -4210,9 +4235,9 @@
     <string name="bookings_empty_state_description_all">Bookings will appear here once customers start scheduling your services or registering for events.</string>
     <string name="bookings_empty_state_description_today_v2">Any bookings scheduled for today will appear here.</string>
     <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
-    <string name="bookings_search_no_results_without_filters">We couldn’t find any bookings with that name — try adjusting your search term to see more results.</string>
-    <string name="bookings_search_no_results_with_filters">We couldn’t find any bookings with that name — try adjusting your search term or your filters to see more results.</string>
-    <string name="bookings_empty_state_description_with_filters">No bookings match your filters. Try adjusting them to see more results.</string>
+    <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
+    <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
+    <string name="bookings_filtered_empty_state_description">Try adjusting or clearing your filters to see more results.</string>
     <string name="bookings_empty_state_change_filters_button">Change filters</string>
     <string name="bookings_empty_state_clear_filters_button">Clear filters</string>
     <string name="bookings_filters_default_title">Filters</string>
@@ -4226,8 +4251,8 @@
     <string name="bookings_filter_customer">Customer</string>
     <string name="bookings_filter_location">Location</string>
     <string name="bookings_filter_title_date">Date &amp; time</string>
-    <string name="bookings_filter_title_service_event">Service / Event</string>
-    <string name="bookings_filter_search_service_event">Search service / event</string>
+    <string name="bookings_filter_title_service">Service</string>
+    <string name="bookings_filter_search_service">Search service</string>
     <string name="bookings_filter_default">Any</string>
     <string name="bookings_filter_type_service">Service</string>
     <string name="bookings_filter_type_event">Event</string>
@@ -4329,4 +4354,14 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+
+    <!-- Woo POS Promo Carousel -->
+    <string name="woo_pos_promo_title">Run POS with the\nWooCommerce mobile app</string>
+    <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
+    <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
+    <string name="woo_pos_promo_page3_description">Quick and simple to learn.</string>
+    <string name="woo_pos_promo_page4_description">Built right into the WooCommerce mobile app — no extra plugins needed.</string>
+    <string name="woo_pos_promo_page5_description">Use with WooPayments or Stripe payment gateways.</string>
+    <string name="woo_pos_promo_next_button">Next</string>
+    <string name="woo_pos_promo_explore_button">Explore WooCommerce POS</string>
 </resources>

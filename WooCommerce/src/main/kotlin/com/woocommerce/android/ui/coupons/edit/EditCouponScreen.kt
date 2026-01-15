@@ -18,10 +18,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -31,11 +27,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
@@ -104,7 +102,7 @@ fun EditCouponScreen(
             Toolbar(
                 title = viewState.screenTitle,
                 onNavigationButtonClick = { onBackPressed() },
-                navigationIcon = Icons.Default.Clear
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         }
     ) { paddingValues ->
@@ -229,7 +227,7 @@ private fun ConditionsSection(
             leadingIcon = {
                 if (viewState.couponDraft.productIds.isNotEmpty()) {
                     Icon(
-                        imageVector = Icons.Filled.Edit,
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_edit_filled_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                     )
@@ -240,8 +238,7 @@ private fun ConditionsSection(
         )
         WCOutlinedButton(
             onClick = onSelectCategoriesButtonClick,
-            text =
-            if (viewState.couponDraft.categoryIds.isEmpty()) {
+            text = if (viewState.couponDraft.categoryIds.isEmpty()) {
                 stringResource(R.string.coupon_edit_select_categories_title)
             } else {
                 stringResource(
@@ -251,11 +248,13 @@ private fun ConditionsSection(
             },
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.couponDraft.categoryIds.isEmpty()) {
-                        Icons.Filled.Add
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.couponDraft.categoryIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -348,7 +347,9 @@ private fun DescriptionButton(description: String?, onButtonClicked: () -> Unit)
         ),
         leadingIcon = {
             Icon(
-                imageVector = if (description.isNullOrEmpty()) Icons.Filled.Add else Icons.Filled.Edit,
+                imageVector = ImageVector.vectorResource(
+                    if (description.isNullOrEmpty()) R.drawable.ic_add else R.drawable.ic_edit_filled_24dp
+                ),
                 contentDescription = null,
                 modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
             )

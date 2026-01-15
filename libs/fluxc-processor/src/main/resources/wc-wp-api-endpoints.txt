@@ -35,8 +35,7 @@
 
 /variations/
 
-/catalog/
-/catalog/status/<id>#String/
+/catalog/create
 
 /product-add-ons/
 
@@ -139,3 +138,6 @@
 /bookings/<id>/
 /resources/team-members/
 /resources/team-members/<id>/
+
+/push-tokens
+/push-tokens/<id>

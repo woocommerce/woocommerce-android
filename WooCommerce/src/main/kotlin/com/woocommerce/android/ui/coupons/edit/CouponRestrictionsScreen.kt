@@ -19,17 +19,15 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.intl.Locale
@@ -88,8 +86,7 @@ fun CouponRestrictionsScreen(
         topBar = {
             Toolbar(
                 title = stringResource(id = R.string.coupon_edit_usage_restrictions),
-                onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
+                onNavigationButtonClick = onBackPressed
             )
         }
     ) { paddingValues ->
@@ -299,11 +296,13 @@ private fun ExclusionsSection(
             text = "${stringResource(R.string.coupon_restrictions_exclude_products)}$productsButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedProductIds.isEmpty()) {
-                        Icons.Filled.Add
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.restrictions.excludedProductIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )
@@ -322,11 +321,13 @@ private fun ExclusionsSection(
             text = "${stringResource(R.string.coupon_restrictions_exclude_categories)}$categoriesButtonSuffix",
             leadingIcon = {
                 Icon(
-                    imageVector = if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
-                        Icons.Filled.Add
-                    } else {
-                        Icons.Filled.Edit
-                    },
+                    imageVector = ImageVector.vectorResource(
+                        if (viewState.restrictions.excludedCategoryIds.isEmpty()) {
+                            R.drawable.ic_add
+                        } else {
+                            R.drawable.ic_edit_filled_24dp
+                        }
+                    ),
                     contentDescription = null,
                     modifier = Modifier.size(dimensionResource(id = R.dimen.major_100))
                 )

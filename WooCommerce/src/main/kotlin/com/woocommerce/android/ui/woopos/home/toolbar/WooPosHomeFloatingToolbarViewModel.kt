@@ -1,9 +1,5 @@
 package com.woocommerce.android.ui.woopos.home.toolbar
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
@@ -97,6 +93,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     analyticsTracker.track(GoToOrdersTapped)
                 }
             }
+
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
@@ -152,15 +149,15 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 listOf(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
-                        icon = Icons.Default.Description,
+                        icon = R.drawable.ic_description_filled_24dp,
                     ),
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_settings_title,
-                        icon = Icons.Default.Settings,
+                        icon = R.drawable.ic_settings_filled_24dp,
                     ),
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_exit_confirmation_title,
-                        icon = Icons.AutoMirrored.Filled.ExitToApp,
+                        icon = R.drawable.ic_exit_to_app_24dp,
                     ),
                 )
             )

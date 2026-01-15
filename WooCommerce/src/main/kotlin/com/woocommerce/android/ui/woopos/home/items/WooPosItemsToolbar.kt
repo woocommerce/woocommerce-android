@@ -9,15 +9,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -100,7 +100,7 @@ fun WooPosItemsToolbar(
                     if (state is WooPosItemsToolbarViewState.CouponList) {
                         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                         WooPosCircularIconButton(
-                            icon = Icons.Default.Add,
+                            icon = ImageVector.vectorResource(R.drawable.ic_add),
                             contentDescription = stringResource(
                                 id = R.string.woopos_coupons_empty_list_create_coupon_label,
                             ),

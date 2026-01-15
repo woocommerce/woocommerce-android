@@ -33,7 +33,6 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.showDateRangePicker
 import com.woocommerce.android.extensions.startHelpActivity
 import com.woocommerce.android.extensions.verticalOffsetChanges
-import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -54,7 +53,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShareStore
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.ShowPrivacyBanner
-import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel
 import com.woocommerce.android.ui.google.webview.GoogleAdsWebViewFragment
 import com.woocommerce.android.ui.jitm.JitmFragment
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
@@ -152,6 +150,7 @@ class DashboardFragment :
 
         setupStateObservers()
         setupResultHandlers()
+        initJitm()
     }
 
     @Suppress("ComplexMethod", "MagicNumber", "LongMethod")
@@ -196,18 +195,6 @@ class DashboardFragment :
         }
         dashboardViewModel.jetpackBenefitsBannerState.observe(viewLifecycleOwner) { jetpackBenefitsBanner ->
             onVisitorStatsUnavailable(jetpackBenefitsBanner)
-        }
-        dashboardViewModel.dashboardCardsState.observe(viewLifecycleOwner) { state ->
-            // Show banners only if onboarding list is NOT displayed
-            if (
-                state.widgets.none {
-                    val configurableWidget = it as? DashboardWidgetUiModel.ConfigurableWidget
-                    configurableWidget?.widget?.type == DashboardWidget.Type.ONBOARDING &&
-                        configurableWidget.widget.isVisible
-                }
-            ) {
-                initJitm()
-            }
         }
         dashboardViewModel.hasNewWidgets.observe(viewLifecycleOwner) { hasNewWidgets ->
             editButtonBadge.isVisible = hasNewWidgets

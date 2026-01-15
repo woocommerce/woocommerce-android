@@ -18,8 +18,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons.Outlined
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -120,7 +118,7 @@ private fun ImageActionsMenu(
     Box(modifier = modifier) {
         IconButton(onClick = { showMenu = !showMenu }) {
             Icon(
-                imageVector = Outlined.MoreVert,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
                 contentDescription = stringResource(R.string.more_menu),
                 tint = colorResource(id = R.color.color_on_surface_medium)
             )

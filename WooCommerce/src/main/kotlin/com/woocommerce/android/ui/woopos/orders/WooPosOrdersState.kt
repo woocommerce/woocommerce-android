@@ -31,7 +31,7 @@ sealed class WooPosOrdersState {
         data class Lazy(
             override val orderId: Long,
             val order: Order,
-            val refundResult: RefundFetchResult
+            val refundResult: RefundsFetchResult
         ) : OrderDetailsViewState()
 
         @Immutable
@@ -95,7 +95,7 @@ sealed class WooPosOrdersState {
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
-        val selectedDetails: OrderDetailsViewState.Computed.Details,
+        val selectedDetails: OrderDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState = DialogState.Hidden
     ) : WooPosOrdersState() {

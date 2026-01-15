@@ -15,11 +15,15 @@ public class WCWPAPIEndpoint {
 
     private static final String WC_PREFIX_V1_ADDONS = "wc-product-add-ons/v1";
 
+    private static final String WC_PREFIX_POS_V1 = "wc/pos/v1";
+
     private static final String WC_PREFIX_TELEMETRY = "wc-telemetry";
 
     private static final String WC_PREFIX_ADMIN = "wc-admin";
 
     private static final String WC_PREFIX_V2_BOOKINGS = "wc-bookings/v2";
+
+    private static final String WC_PREFIX_PUSH_NOTIFICATIONS = "wc-push-notifications";
 
     private final String mEndpoint;
 
@@ -67,6 +71,10 @@ public class WCWPAPIEndpoint {
         return "/" + WC_PREFIX_V1_ADDONS + mEndpoint;
     }
 
+    public String getPathPosV1() {
+        return "/" + WC_PREFIX_POS_V1 + mEndpoint;
+    }
+
     public String getPathWcTelemetry() {
         return "/" + WC_PREFIX_TELEMETRY + mEndpoint;
     }
@@ -79,4 +87,7 @@ public class WCWPAPIEndpoint {
         return "/" + WC_PREFIX_V2_BOOKINGS + mEndpoint;
     }
 
+    public String getPathPushNotifications() {
+        return "/" + WC_PREFIX_PUSH_NOTIFICATIONS + mEndpoint;
+    }
 }

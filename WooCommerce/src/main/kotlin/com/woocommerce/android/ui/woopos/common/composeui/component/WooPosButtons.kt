@@ -19,9 +19,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -35,11 +32,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewFontScale
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -366,13 +365,13 @@ fun WooPosSmallButtonsPreview() {
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             WooPosCircularIconButton(
-                icon = Icons.Default.Search,
+                icon = ImageVector.vectorResource(R.drawable.ic_search_24dp),
                 onClick = {}
             )
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            WooPosIconButton(icon = Icons.Default.DeleteOutline) {}
+            WooPosIconButton(icon = ImageVector.vectorResource(R.drawable.ic_delete_24dp)) {}
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 

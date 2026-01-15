@@ -874,7 +874,7 @@ class OrderDetailViewModel @Inject constructor(
     }
 
     private fun fetchOrderShippingLabelsAsync() = async {
-        if (shippingLabelOnboardingRepository.shippingPluginSupport.isSupported()) {
+        if (shippingLabelOnboardingRepository.shippingPluginSupport.isWooTaxLegacySupported()) {
             orderDetailRepository.fetchOrderShippingLabels(navArgs.orderId, isRevampWooShippingEnabled)
         }
         orderDetailsTransactionLauncher.onShippingLabelFetchingCompleted()
@@ -919,7 +919,6 @@ class OrderDetailViewModel @Inject constructor(
         return ListInfo(isVisible = true, list = getWooShippingShipments(awaitOrder()))
     }
 
-    @Suppress("ReturnCount")
     private suspend fun loadOrderShippingLabels(): ListInfo<ShippingLabelModel> {
         if (isRevampWooShippingEnabled) return ListInfo(isVisible = false)
         orderDetailRepository.getOrderShippingLabels(navArgs.orderId)

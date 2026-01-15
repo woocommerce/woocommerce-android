@@ -76,6 +76,7 @@
                 <data android:path="/mobile/payments" />
                 <data android:path="/mobile/payments/tap-to-pay" />
                 <data android:pathPrefix="/products/hardware/" />
+                <data android:pathPrefix="/in-person-payments" />
             </intent-filter>
 
             <intent-filter>

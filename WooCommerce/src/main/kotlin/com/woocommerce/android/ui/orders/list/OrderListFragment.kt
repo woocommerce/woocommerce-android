@@ -30,7 +30,6 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.transition.TransitionManager
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.transition.MaterialFadeThrough
 import com.woocommerce.android.AppConstants
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.NavGraphMainDirections
@@ -199,12 +198,6 @@ class OrderListFragment :
                 }
             }
         )
-
-        val transitionDuration = resources.getInteger(R.integer.default_fragment_transition).toLong()
-        val fadeThroughTransition = MaterialFadeThrough().apply { duration = transitionDuration }
-        enterTransition = fadeThroughTransition
-        exitTransition = fadeThroughTransition
-        reenterTransition = fadeThroughTransition
     }
 
     private fun getSearchQueryHint(): String {

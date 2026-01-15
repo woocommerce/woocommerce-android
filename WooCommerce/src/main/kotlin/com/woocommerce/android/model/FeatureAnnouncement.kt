@@ -6,12 +6,9 @@ import org.wordpress.android.fluxc.utils.WhatsNewAppVersionUtils
 
 @Parcelize
 data class FeatureAnnouncement(
-    val appVersionName: String,
-    val announcementVersion: Int,
     val minimumAppVersion: String,
     val maximumAppVersion: String,
     val appVersionTargets: List<String>,
-    val detailsUrl: String?,
     val isLocalized: Boolean = false,
     val features: List<FeatureAnnouncementItem>
 ) : Parcelable {

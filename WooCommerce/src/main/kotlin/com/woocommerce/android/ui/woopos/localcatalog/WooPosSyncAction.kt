@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.CoreProductStatus
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
@@ -16,6 +18,9 @@ class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
+    private val posProductsOnlyFeatureFlag: Boolean
+        get() = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled()
+
     suspend fun syncCatalog(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
@@ -40,8 +45,14 @@ class WooPosSyncAction @Inject constructor(
         maxPages: Int,
         isFullSync: Boolean
     ): FetchResults = coroutineScope {
-        val regularProductsDeferred = async {
-            fetchAllProductPages(site, modifiedAfterGmt, pageSize, maxPages)
+        val posProductsDeferred = async {
+            fetchAllProductPages(
+                site,
+                modifiedAfterGmt,
+                pageSize,
+                maxPages,
+                this@WooPosSyncAction.posProductsOnlyFeatureFlag
+            )
         }
         val trashProductsDeferred = async {
             if (isFullSync) {
@@ -51,15 +62,54 @@ class WooPosSyncAction @Inject constructor(
                 fetchAllTrashProducts(site, modifiedAfterGmt, pageSize)
             }
         }
+
+        val allProductsDeferred = async {
+            if (!posProductsOnlyFeatureFlag || isFullSync) {
+                emptyList()
+            } else {
+                fetchAllProductPages(
+                    site,
+                    modifiedAfterGmt,
+                    pageSize,
+                    maxPages,
+                    posProductsOnly = false
+                ).first
+            }
+        }
         val variationsDeferred = async {
             fetchAllVariationPages(site, modifiedAfterGmt, pageSize, maxPages)
         }
 
-        val (products, productsServerDate) = regularProductsDeferred.await()
+        val (posProducts, productsServerDate) = posProductsDeferred.await()
         val trashProducts = trashProductsDeferred.await()
+        val allProducts = allProductsDeferred.await()
         val (variations, variationsServerDate) = variationsDeferred.await()
 
-        FetchResults(products, trashProducts, productsServerDate, variations, variationsServerDate)
+        /**
+         * Products hidden from POS don't appear in the pos_products_only=true response—they're simply omitted.
+         * To detect these, we compare against a second request without the flag: items present there but
+         * missing from the pos_products_only=true response have been hidden and should be removed from the local DB.
+         *
+         * This logic is skipped for full sync, since full sync always purges the whole database.
+         */
+        val productsRecentlyMarkedAsHiddenInPos =
+            if (!posProductsOnlyFeatureFlag || isFullSync) {
+                emptyList()
+            } else {
+                findProductsMarkedAsHiddenInPos(
+                    posProducts = posProducts,
+                    allProducts = allProducts
+                )
+            }
+
+        FetchResults(
+            products = posProducts,
+            trashProducts = trashProducts,
+            productsToRemove = productsRecentlyMarkedAsHiddenInPos,
+            productsServerDate = productsServerDate,
+            variations = variations,
+            variationsServerDate = variationsServerDate
+        )
     }
 
     private suspend fun updateDatabaseWithFetchedItems(
@@ -73,6 +123,13 @@ class WooPosSyncAction @Inject constructor(
             if (isFullSync) {
                 posLocalCatalogStore.deleteAllProducts(site.localId()).getOrThrow()
                 posLocalCatalogStore.deleteAllVariations(site.localId()).getOrThrow()
+            }
+
+            if (fetchResults.productsToRemove.isNotEmpty()) {
+                posLocalCatalogStore.deleteProducts(
+                    site.localId(),
+                    fetchResults.productsToRemove
+                ).getOrThrow()
             }
 
             posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
@@ -125,6 +182,7 @@ class WooPosSyncAction @Inject constructor(
     private data class FetchResults(
         val products: List<WooPosProductEntity>,
         val trashProducts: List<WooPosProductEntity>,
+        val productsToRemove: List<RemoteId>,
         val productsServerDate: String,
         val variations: List<WooPosVariationEntity>,
         val variationsServerDate: String
@@ -134,7 +192,8 @@ class WooPosSyncAction @Inject constructor(
         site: SiteModel,
         modifiedAfterGmt: String?,
         pageSize: Int,
-        maxPages: Int
+        maxPages: Int,
+        posProductsOnly: Boolean
     ): Pair<List<WooPosProductEntity>, ServerDate> {
         val helper = PaginatedSyncHelper(
             logger = logger,
@@ -145,6 +204,7 @@ class WooPosSyncAction @Inject constructor(
                     pageSize = pageSize,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
+                    posProductsOnly = posProductsOnly,
                 )
             }
         )
@@ -164,6 +224,7 @@ class WooPosSyncAction @Inject constructor(
             fetchPage = { page ->
                 posLocalCatalogStore.fetchRecentlyModifiedVariations(
                     site = site,
+                    posProductsOnly = posProductsOnlyFeatureFlag,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     pageSize = pageSize,
@@ -188,15 +249,26 @@ class WooPosSyncAction @Inject constructor(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     site = site,
                     pageSize = pageSize,
+                    posProductsOnly = posProductsOnlyFeatureFlag,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
-                    includeStatus = listOf(CoreProductStatus.TRASH)
+                    includeStatus = listOf(CoreProductStatus.TRASH),
                 )
             }
         )
 
         val (trashProducts, _) = helper.fetchAllPages(Int.MAX_VALUE)
         return trashProducts
+    }
+
+    private fun findProductsMarkedAsHiddenInPos(
+        posProducts: List<WooPosProductEntity>,
+        allProducts: List<WooPosProductEntity>
+    ): List<RemoteId> {
+        val posProductIds = posProducts.map { it.remoteId }.toSet()
+        return allProducts
+            .filter { it.remoteId !in posProductIds }
+            .map { it.remoteId }
     }
 
     private fun handleTransactionError(error: Throwable): WooPosSyncResult {

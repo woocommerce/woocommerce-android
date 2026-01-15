@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
@@ -13,6 +14,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_CO
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_PARAM
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_RESPONSE
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.INVALID_VARIATION_ID
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.NO_CONNECTION
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.RESOURCE_ALREADY_EXISTS
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.TIMEOUT
@@ -32,7 +34,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             globalUniqueIdSearchQuery = globalUniqueId,
             offset = 0,
             pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
-            filterOptions = emptyMap()
+            filterOptions = emptyMap(),
+            posProductsOnly = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled(),
         )
 
         return when {
@@ -68,7 +71,11 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
                 message?.ifEmpty { null } ?: "API error occurred"
             )
 
-            INVALID_ID, API_NOT_FOUND, EMPTY_RESPONSE -> WooPosSearchByIdentifierResult.Error.NotFound
+            INVALID_ID,
+            API_NOT_FOUND,
+            EMPTY_RESPONSE,
+            INVALID_VARIATION_ID -> WooPosSearchByIdentifierResult.Error.NotFound
+
             GENERIC_ERROR -> WooPosSearchByIdentifierResult.Error.UnknownError(
                 message?.ifEmpty { null } ?: "Generic error occurred"
             )

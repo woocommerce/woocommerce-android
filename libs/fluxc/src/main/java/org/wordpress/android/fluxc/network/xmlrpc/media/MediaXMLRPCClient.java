@@ -95,47 +95,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         }
     }
 
-    public void pushMedia(@NonNull final SiteModel site, @Nullable final MediaModel media) {
-        if (media == null) {
-            // caller may be expecting a notification
-            MediaError error = new MediaError(MediaErrorType.NULL_MEDIA_ARG);
-            error.logMessage = "Pushed media is null";
-            notifyMediaPushed(site, null, error);
-            return;
-        }
-
-        List<Object> params = getBasicParams(site, media);
-        params.add(getEditMediaFields(media));
-        add(new XMLRPCRequest(site.getXmlRpcUrl(), XMLRPC.EDIT_POST, params,
-                (Listener<Object>) response -> {
-                    // response should be a boolean indicating result of push request
-                    if (!(response instanceof Boolean) || !(Boolean) response) {
-                        String message = "could not parse XMLRPC.EDIT_MEDIA response: " + response;
-                        AppLog.w(T.MEDIA, message);
-                        MediaError error = new MediaError(MediaErrorType.PARSE_ERROR);
-                        error.logMessage = message;
-                        notifyMediaPushed(site, media, error);
-                        return;
-                    }
-
-                    // success!
-                    AppLog.i(T.MEDIA, "Media updated on remote: " + media.getTitle());
-                    notifyMediaPushed(site, media, null);
-                },
-                error -> {
-                    String errorMessage = "error response to XMLRPC.EDIT_MEDIA request: " + error;
-                    AppLog.e(T.MEDIA, errorMessage);
-                    if (is404Response(error)) {
-                        AppLog.e(T.MEDIA, "media does not exist, no need to report error");
-                        notifyMediaPushed(site, media, null);
-                    } else {
-                        MediaError mediaError = new MediaError(MediaErrorType.fromBaseNetworkError(error));
-                        mediaError.message = error.message;
-                        mediaError.logMessage = errorMessage;
-                        notifyMediaPushed(site, media, mediaError);
-                    }
-                }));
-    }
 
     /**
      * @see <a href="https://codex.wordpress.org/XML-RPC_WordPress_API/Media#wp.uploadFile">documentation</a>
@@ -387,40 +346,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
                 }));
     }
 
-    public void deleteMedia(@NonNull final SiteModel site, @Nullable final MediaModel media) {
-        if (media == null) {
-            // caller may be expecting a notification
-            MediaError error = new MediaError(MediaErrorType.NULL_MEDIA_ARG);
-            error.logMessage = "XMLRPC: empty media on delete";
-            notifyMediaDeleted(site, null, error);
-            return;
-        }
-
-        List<Object> params = getBasicParams(site, media);
-        add(new XMLRPCRequest(site.getXmlRpcUrl(), XMLRPC.DELETE_POST, params,
-                (Listener<Object>) response -> {
-                    // response should be a boolean indicating result of push request
-                    if (!(response instanceof Boolean) || !(Boolean) response) {
-                        String message = "could not parse XMLRPC.DELETE_MEDIA response: " + response;
-                        AppLog.w(T.MEDIA, message);
-                        MediaError error = new MediaError(MediaErrorType.PARSE_ERROR);
-                        error.logMessage = "XMLRPC: " + message;
-                        notifyMediaDeleted(site, media, error);
-                        return;
-                    }
-
-                    AppLog.v(T.MEDIA, "Successful response from XMLRPC.DELETE_MEDIA");
-                    notifyMediaDeleted(site, media, null);
-                },
-                error -> {
-                    String message = "Error response from XMLRPC.DELETE_MEDIA:" + error;
-                    AppLog.e(T.MEDIA, message);
-                    MediaError mediaError = new MediaError(MediaErrorType.fromBaseNetworkError(error));
-                    mediaError.logMessage = "XMLRPC: " + message;
-                    notifyMediaDeleted(site, media, mediaError);
-                }));
-    }
-
     public void cancelUpload(@Nullable final MediaModel media) {
         if (media == null) {
             MediaError error = new MediaError(MediaErrorType.NULL_MEDIA_ARG);
@@ -450,14 +375,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
     //
     // Helper methods to dispatch media actions
     //
-
-    private void notifyMediaPushed(
-            @NonNull SiteModel site,
-            @Nullable MediaModel media,
-            @Nullable MediaError error) {
-        MediaPayload payload = new MediaPayload(site, media, error);
-        mDispatcher.dispatch(MediaActionBuilder.newPushedMediaAction(payload));
-    }
 
     private void notifyMediaProgress(@NonNull MediaModel media, float progress) {
         ProgressPayload payload = new ProgressPayload(media, progress, false, null);
@@ -501,14 +418,6 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
         mDispatcher.dispatch(MediaActionBuilder.newFetchedMediaAction(payload));
     }
 
-    private void notifyMediaDeleted(
-            @NonNull SiteModel site,
-            @Nullable MediaModel media,
-            @Nullable MediaError error) {
-        MediaPayload payload = new MediaPayload(site, media, error);
-        mDispatcher.dispatch(MediaActionBuilder.newDeletedMediaAction(payload));
-    }
-
     private void notifyMediaUploadCanceled(@NonNull MediaModel media) {
         ProgressPayload payload = new ProgressPayload(media, 0.f, false, true);
         mDispatcher.dispatch(MediaActionBuilder.newCanceledMediaUploadAction(payload));
@@ -545,36 +454,20 @@ public class MediaXMLRPCClient extends BaseXMLRPCClient implements ProgressListe
 
         String link = MapUtils.getMapStr(response, "link");
         String fileExtension = MediaUtils.getExtension(link);
-        Map metadataMap = null;
-        if (response.get("metadata") instanceof Map) {
-            metadataMap = (Map) response.get("metadata");
-        }
         return new MediaModel(
                 0,
                 MapUtils.getMapLong(response, "attachment_id"),
                 MapUtils.getMapLong(response, "parent"),
-                0,
-                "",
                 DateTimeUtils.iso8601UTCFromDate(MapUtils.getMapDate(response, "date_created_gmt")),
                 link,
                 MapUtils.getMapStr(response, "thumbnail"),
                 MediaUtils.getFileName(link),
-                fileExtension,
                 MediaUtils.getMimeTypeForExtension(fileExtension),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "title")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "caption")),
                 StringEscapeUtils.unescapeHtml4(MapUtils.getMapStr(response, "description")),
                 "",
-                metadataMap != null ? MapUtils.getMapInt(metadataMap, "width") : 0,
-                metadataMap != null ? MapUtils.getMapInt(metadataMap, "height") : 0,
-                0,
-                MapUtils.getMapStr(response, "videopress_shortcode"),
-                false,
-                MediaUploadState.UPLOADED,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "medium") : null,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "medium_large") : null,
-                metadataMap != null ? getFileUrlForSize(link, metadataMap, "large") : null,
-                false
+                MediaUploadState.UPLOADED
         );
     }
 

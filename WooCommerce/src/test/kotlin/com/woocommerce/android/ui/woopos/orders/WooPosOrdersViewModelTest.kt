@@ -18,7 +18,6 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -51,11 +50,12 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
+    private val getRefundableItems: WooPosGetRefundableItems = mock()
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
-    private fun ordersMap(vararg orders: Order): Map<Order, RefundFetchResult> =
-        orders.associateWith { RefundFetchResult.Success(emptyList()) }
+    private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
+        orders.associateWith { RefundsFetchResult.Success(emptyList()) }
 
     private fun createViewModel(): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
@@ -66,25 +66,27 @@ class WooPosOrdersViewModelTest {
             childrenToParentEventSender = childrenToParentEventSender,
             formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
-            ordersAnalyticsTracker = ordersAnalyticsTracker
+            ordersAnalyticsTracker = ordersAnalyticsTracker,
+            getRefundableItems = getRefundableItems,
         )
     }
 
     @Before
-    fun setUp() {
+    fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        runBlocking {
-            whenever(formatPrice.invoke(any())).thenReturn("$0.00")
-            whenever(getProductById.invoke(any())).thenReturn(null)
-            whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
-        }
+        whenever(formatPrice.invoke(any())).thenReturn("$0.00")
+        whenever(getProductById.invoke(any())).thenReturn(null)
+        whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2))))
             }
         )
+
+        whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
 
         whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")
@@ -95,6 +97,10 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
         whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title))
+            .thenReturn("No orders found")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
+            .thenReturn("Try a different search term")
     }
 
     @Test
@@ -122,7 +128,7 @@ class WooPosOrdersViewModelTest {
         assertThat(content.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         assertThat(content.paginationState).isEqualTo(WooPosPaginationState.None)
         verify(dataSource).loadOrders()
-        assertThat(content.selectedDetails.id).isEqualTo(2L)
+        assertThat(content.selectedDetails?.id).isEqualTo(2L)
     }
 
     @Test
@@ -145,7 +151,7 @@ class WooPosOrdersViewModelTest {
         val content = state as WooPosOrdersState.Content
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L)
-        assertThat(content.selectedDetails.id).isEqualTo(10L)
+        assertThat(content.selectedDetails?.id).isEqualTo(10L)
     }
 
     @Test
@@ -237,7 +243,7 @@ class WooPosOrdersViewModelTest {
         assertThat(selectedFlags[1L]).isFalse()
         assertThat(selectedFlags[2L]).isFalse()
         assertThat(selectedFlags[3L]).isTrue()
-        assertThat(state.selectedDetails.id).isEqualTo(3L)
+        assertThat(state.selectedDetails?.id).isEqualTo(3L)
     }
 
     @Test
@@ -266,7 +272,7 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value as WooPosOrdersState.Content
         val loadedItems = state.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
-        assertThat(state.selectedDetails.id).isEqualTo(300L)
+        assertThat(state.selectedDetails?.id).isEqualTo(300L)
     }
 
     @Test
@@ -460,7 +466,7 @@ class WooPosOrdersViewModelTest {
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         val selectedFlags = loadedItems.items.keys.associate { it.id to it.isSelected }
         assertThat(selectedFlags[20L]).isTrue()
-        assertThat(content.selectedDetails.id).isEqualTo(20L)
+        assertThat(content.selectedDetails?.id).isEqualTo(20L)
     }
 
     @Test
@@ -578,9 +584,9 @@ class WooPosOrdersViewModelTest {
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         val selectedItemId = loadedItems.items.keys.single { it.isSelected }.id
         assertThat(selectedItemId).isEqualTo(2L)
-        assertThat(content.selectedDetails.id).isEqualTo(2L)
-        assertThat(content.selectedDetails.lineItems).isNotEmpty
-        assertThat(content.selectedDetails.total).isEqualTo("$0.00")
+        assertThat(content.selectedDetails?.id).isEqualTo(2L)
+        assertThat(content.selectedDetails?.lineItems).isNotEmpty
+        assertThat(content.selectedDetails?.total).isEqualTo("$0.00")
     }
 
     @Test
@@ -603,7 +609,7 @@ class WooPosOrdersViewModelTest {
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
-        val details = content.selectedDetails
+        val details = content.selectedDetails!!
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         assertThat(details.id).isEqualTo(20L)
         assertThat(details.totalPaid).isEqualTo("$0.00")
@@ -629,7 +635,7 @@ class WooPosOrdersViewModelTest {
         val content = viewModel.state.value as WooPosOrdersState.Content
         val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(300L, 400L)
-        assertThat(content.selectedDetails.id).isEqualTo(300L)
+        assertThat(content.selectedDetails?.id).isEqualTo(300L)
         verify(ordersAnalyticsTracker).trackOrdersListPullToRefreshTriggered()
     }
 
@@ -657,9 +663,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
-        runBlocking {
-            whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
-        }
+        whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
 
         // WHEN
         viewModel = createViewModel()
@@ -667,8 +671,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedDetails.breakdown.refunds).isEmpty()
-        assertThat(content.selectedDetails.breakdown.netPayment).isNull()
+        assertThat(content.selectedDetails?.breakdown?.refunds).isEmpty()
+        assertThat(content.selectedDetails?.breakdown?.netPayment).isNull()
     }
 
     @Test
@@ -697,17 +701,14 @@ class WooPosOrdersViewModelTest {
             feeLines = emptyList()
         )
 
-        runBlocking {
-            whenever(formatPrice.invoke(BigDecimal("10.00"))).thenReturn("$10.00")
-            whenever(formatPrice.invoke(BigDecimal("5.00"))).thenReturn("$5.00")
-        }
-
+        whenever(formatPrice.invoke(BigDecimal("10.00"))).thenReturn("$10.00")
+        whenever(formatPrice.invoke(BigDecimal("5.00"))).thenReturn("$5.00")
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
                 emit(
                     LoadOrdersResult.SuccessRemote(
                         mapOf(
-                            testOrder to RefundFetchResult.Success(listOf(refund1, refund2))
+                            testOrder to RefundsFetchResult.Success(listOf(refund1, refund2))
                         )
                     )
                 )
@@ -720,8 +721,8 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(content.selectedDetails.breakdown.refunds).containsExactly("-$10.00", "-$5.00")
-        assertThat(content.selectedDetails.breakdown.netPayment).isNotNull()
+        assertThat(content.selectedDetails?.breakdown?.refunds).containsExactly("-$10.00", "-$5.00")
+        assertThat(content.selectedDetails?.breakdown?.netPayment).isNotNull()
     }
 
     @Test
@@ -744,7 +745,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
-        assertThat(state.selectedDetails.id).isEqualTo(200L)
+        assertThat(state.selectedDetails?.id).isEqualTo(200L)
         verify(dataSource).refreshOrderById(200L)
     }
 
@@ -864,7 +865,7 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val breakdown = content.selectedDetails.breakdown
+        val breakdown = content.selectedDetails!!.breakdown
         assertThat(breakdown.discount).isNull()
         assertThat(breakdown.shipping).isNull()
     }
@@ -879,10 +880,8 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        runBlocking {
-            whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
-            whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
-        }
+        whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
+        whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
@@ -893,9 +892,171 @@ class WooPosOrdersViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosOrdersState.Content
-        val breakdown = content.selectedDetails.breakdown
+        val breakdown = content.selectedDetails!!.breakdown
         assertThat(breakdown.discount).isEqualTo("-$3.50")
         assertThat(breakdown.shipping).isEqualTo("$4.00")
+    }
+
+    @Test
+    fun `given search returns no results, when search performed, then selectedDetails is null`() = runTest {
+        // GIVEN
+        val query = "no results query"
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(emptyMap())
+        )
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails).isNull()
+        assertThat(content.items).isInstanceOf(WooPosOrdersState.Content.Items.NothingFound::class.java)
+    }
+
+    @Test
+    fun `given order selected and search returns results with selected order, when search performed, then selected order preserved`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val order1 = order(1)
+        val order2 = order(2)
+        val searchResults = listOf(order1, order2, order(3))
+
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(2L)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(2L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(2L)
+    }
+
+    @Test
+    fun `given order selected and search returns results without selected order, when search performed, then first order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val order1 = order(1)
+        val order2 = order(2)
+        val searchResults = listOf(order(3), order(4))
+
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(2L)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(3L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(3L)
+    }
+
+    @Test
+    fun `given no order selected and search returns results, when search performed, then first order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        val searchResults = listOf(order(5), order(6))
+
+        whenever(dataSource.searchOrders("empty")).thenReturn(
+            SearchOrdersResult.Success(emptyMap())
+        )
+        whenever(dataSource.searchOrders(query)).thenReturn(
+            SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
+        )
+
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search("empty", 5))
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isEqualTo(5L)
+
+        val loadedItems = content.items as WooPosOrdersState.Content.Items.Loaded
+        val selectedItem = loadedItems.items.keys.first { it.isSelected }
+        assertThat(selectedItem.id).isEqualTo(5L)
+    }
+
+    @Test
+    fun `given search fails, when search performed, then no order selected`() = runTest {
+        // GIVEN
+        val query = "test query"
+        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
+            .thenReturn("Unable to load orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Please try again.")
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
+        )
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onSearchEvent(WooPosSearchUIEvent.SearchIconClicked)
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onSearchEvent(WooPosSearchUIEvent.Search(query, query.length))
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        val content = state as WooPosOrdersState.Content
+        assertThat(content.selectedDetails?.id).isNull()
     }
 
     @Test
@@ -1024,5 +1185,58 @@ class WooPosOrdersViewModelTest {
         assertThat(currentState.pullToRefreshState).isEqualTo(initialPullToRefreshState)
         assertThat(currentState.paginationState).isEqualTo(initialPaginationState)
         assertThat(currentState.searchInputState).isEqualTo(initialSearchInputState)
+    }
+
+    @Test
+    fun `given order with refundable items, when order details loaded, then Issue Refund action is available`() = runTest {
+        // GIVEN
+        val testOrder = order(1)
+        val refundableItem = WooPosRefundableItem(
+            orderItemId = 1L,
+            productId = 100L,
+            variationId = 0L,
+            name = "Test Product",
+            unitPrice = BigDecimal("10.00"),
+            unitTax = BigDecimal("1.00"),
+            formattedUnitPrice = "$10.00",
+            formattedUnitTax = "$1.00",
+            rowIndex = 0
+        )
+
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given order with no refundable items, when order details loaded, then Issue Refund action is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(2)
+
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        assertThat(details.actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
 }

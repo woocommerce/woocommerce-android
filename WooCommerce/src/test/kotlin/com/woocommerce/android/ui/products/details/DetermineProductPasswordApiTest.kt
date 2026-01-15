@@ -9,8 +9,8 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class DetermineProductPasswordApiTest : BaseUnitTest() {
@@ -27,7 +27,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     @Test
     fun `when site has WooCommerce higher than 8_1, then use CORE API`() = testBlocking {
         whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = "8.1.0" })
+            .thenReturn(createTestSitePlugin(version = "8.1.0"))
 
         val result = sut()
 
@@ -38,7 +38,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     fun `given a Jetpack connection, when site has WooCommerce lower than 8_1, then use WPCOM API`() = testBlocking {
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.Jetpack)
         whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = "8.0.0" })
+            .thenReturn(createTestSitePlugin(version = "8.0.0"))
 
         val result = sut()
 
@@ -49,7 +49,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
     fun `given a JetpackCP connection, when site has WooCommerce lower than 8_1, then use WPCOM API`() = testBlocking {
         whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.JetpackConnectionPackage)
         whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-            .thenReturn(SitePluginModel().apply { version = "8.0.0" })
+            .thenReturn(createTestSitePlugin(version = "8.0.0"))
 
         val result = sut()
 
@@ -61,7 +61,7 @@ class DetermineProductPasswordApiTest : BaseUnitTest() {
         testBlocking {
             whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
             whenever(wooCommerceStore.getActiveSitePlugin(selectedSite.get(), WooCommerceStore.WooPlugin.WOO_CORE))
-                .thenReturn(SitePluginModel().apply { version = "8.0.0" })
+                .thenReturn(createTestSitePlugin(version = "8.0.0"))
 
             val result = sut()
 

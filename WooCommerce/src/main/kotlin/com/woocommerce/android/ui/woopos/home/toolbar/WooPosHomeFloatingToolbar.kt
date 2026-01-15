@@ -19,10 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ExitToApp
-import androidx.compose.material.icons.automirrored.filled.Help
-import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -38,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -212,7 +210,8 @@ private fun MenuButtonWithPopUpMenu(
         shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
     ) {
         TextButton(
-            modifier = Modifier.semantics { contentDescription = menuContentDescription }
+            modifier = Modifier
+                .semantics { contentDescription = menuContentDescription }
                 .size(80.dp),
             onClick = onClick,
             contentPadding = PaddingValues(WooPosSpacing.None.value),
@@ -268,7 +267,7 @@ private fun PopUpMenuItem(
     TextButton(onClick = { onClick(menuItem) }) {
         Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
         Icon(
-            imageVector = menuItem.icon,
+            imageVector = ImageVector.vectorResource(menuItem.icon),
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.size(24.dp)
@@ -404,6 +403,7 @@ private fun getToolbarAccessibilityLabels(
         WooPosCardReaderStatus.Connected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_connected_status_content_description
         )
+
         WooPosCardReaderStatus.NotConnected -> stringResource(
             id = R.string.woopos_floating_toolbar_card_reader_not_connected_status_content_description
         )
@@ -412,6 +412,7 @@ private fun getToolbarAccessibilityLabels(
         true -> {
             stringResource(id = R.string.woopos_floating_toolbar_overlay_menu_content_description)
         }
+
         false -> {
             ""
         }
@@ -423,6 +424,7 @@ private fun getToolbarAccessibilityLabels(
                 id = R.string.woopos_floating_toolbar_pop_up_menu_open_content_description
             )
         }
+
         false -> {
             stringResource(
                 id = R.string.woopos_floating_toolbar_pop_up_menu_content_description
@@ -436,6 +438,7 @@ private fun getToolbarAccessibilityLabels(
                 id = R.string.woopos_floating_toolbar_menu_disabled_content_description
             )
         }
+
         false -> {
             stringResource(
                 id = R.string.woopos_floating_toolbar_menu_enabled_content_description
@@ -476,16 +479,16 @@ fun PreviewWooPosFloatingToolbarStatusConnectedWithMenu() {
                 menu = Menu.Visible(
                     listOf(
                         Menu.MenuItem(
-                            title = R.string.woopos_documentation_title,
-                            icon = Icons.Default.Description
+                            title = R.string.woopos_orders_title,
+                            icon = R.drawable.ic_description_filled_24dp
+                        ),
+                        Menu.MenuItem(
+                            title = R.string.woopos_settings_title,
+                            icon = R.drawable.ic_settings_filled_24dp,
                         ),
                         Menu.MenuItem(
                             title = R.string.woopos_exit_confirmation_title,
-                            icon = Icons.AutoMirrored.Filled.ExitToApp,
-                        ),
-                        Menu.MenuItem(
-                            title = R.string.woopos_get_support_title,
-                            icon = Icons.AutoMirrored.Filled.Help,
+                            icon = R.drawable.ic_exit_to_app_24dp,
                         ),
                     )
                 ),

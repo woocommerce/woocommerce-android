@@ -1,11 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-Translation-Revision-Date: 2025-11-18 13:54:04+0000
+Translation-Revision-Date: 2025-12-01 16:54:03+0000
 Plural-Forms: nplurals=2; plural=n != 1;
 Generator: GlotPress/2.4.0-alpha
 Language: es
 -->
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="booking_cancel_dialog_message_v2">%1$s no podrá acudir a «%2$s» el %3$s a las %4$s.</string>
+    <string name="booking_customer_note_label">Nota</string>
+    <string name="booking_appointment_label_team_member">Miembro del equipo</string>
+    <string name="booking_details_section_header">DETALLES DE LA RESERVA</string>
+    <string name="booking_filter_date_time_swap_info">Se ha reordenado tu selección de horas para crear un rango válido</string>
+    <string name="bookings_filter_date_filter_value">Intervalo personalizado</string>
+    <string name="bookings_filter_time_picker_title">Seleccionar hora</string>
+    <string name="bookings_filter_date_to">HASTA</string>
+    <string name="bookings_filter_date_from">DESDE</string>
+    <string name="bookings_filter_time_label">Hora</string>
+    <string name="bookings_filter_date_label">Fecha</string>
+    <string name="bookings_filter_search_service_event">Buscar servicios o eventos</string>
+    <string name="bookings_filter_title_member">Miembro del equipo</string>
+    <string name="bookings_empty_state_description_upcoming_v2">Las nuevas reservas aparecerán aquí a medida que los clientes programen tus servicios o se registren en eventos.</string>
+    <string name="bookings_empty_state_description_today_v2">Las reservas programadas para hoy aparecerán aquí.</string>
+    <string name="bookings_empty_state_description_all">Las reservas aparecerán aquí cuando los clientes empiecen a programar tus servicios o a registrarse en eventos.</string>
+    <string name="bookings_empty_state_title_all">Aún no hay reservas</string>
+    <string name="bookings_resources_fetch_error">Error al obtener los miembros del equipo</string>
+    <string name="product_type_bookable_service">Servicio</string>
     <string name="booking_not_selected">Reserva no seleccionada</string>
     <string name="bookings_filters_selected_option_content_description">Opción de filtro elegida</string>
     <string name="bookings_filter_customer">Cliente</string>
@@ -53,7 +72,7 @@ Language: es
     <string name="bookings_filters_enabled_title">Filtros • %d</string>
     <string name="woopos_search_orders_error_description">Inténtalo de nuevo.</string>
     <string name="woopos_search_orders_error_title">No se puede cargar el pedido</string>
-    <string name="woopos_search_orders_empty_description">No hemos podido encontrar ningún pedido que coincida. Prueba a ajustar tu término de búsqueda.</string>
+    <string name="woopos_search_orders_empty_description">No hemos podido encontrar ningún pedido con ese nombre. Modifique el término de búsqueda.</string>
     <string name="woopos_search_orders_empty_title">No se han encontrado pedidos</string>
     <string name="woopos_search_orders">Buscar pedidos</string>
     <string name="woopos_orders_details_totals_card_content_description">Desglose del total de pedidos</string>
@@ -95,7 +114,7 @@ Language: es
     <string name="booking_cancel_dialog_confirm">Sí, quiero cancelarla</string>
     <string name="booking_cancel_dialog_keep">No, quiero mantenerla</string>
     <string name="booking_cancel_dialog_message">%1$s ya no podrá asistir a “%2$s” el día %3$s a las %4$s.</string>
-    <string name="booking_cancel_dialog_title">Cancelar reserva</string>
+    <string name="booking_cancel_dialog_title_v2">¿Cancelar reserva?</string>
     <string name="booking_fetch_error">Error al recuperar la reserva</string>
     <string name="bookings_filter_default">Cualquiera</string>
     <string name="bookings_filter_title_service_event">Servicio/Evento</string>
@@ -104,7 +123,6 @@ Language: es
     <string name="bookings_filter_title_type">Tipo de reserva</string>
     <string name="bookings_filter_title_payment_status">Estado del pago</string>
     <string name="bookings_filter_title_attendance_status">Estado de la asistencia</string>
-    <string name="bookings_filter_title_team_member">Miembro del equipo asignado</string>
     <string name="bookings_filters_show_bookings">Mostrar reservas</string>
     <string name="bookings_filters_default_title">Filtros</string>
     <string name="bookings_empty_state_clear_filters_button">Borrar filtros</string>
@@ -112,9 +130,6 @@ Language: es
     <string name="bookings_empty_state_description_with_filters">Ninguna reserva coincide con tus filtros. Prueba a ajustarlos para ver más resultados.</string>
     <string name="bookings_search_no_results_with_filters">No hemos podido encontrar ninguna reserva con ese nombre. Prueba a ajustar el término de búsqueda o los filtros para ver más resultados.</string>
     <string name="bookings_search_no_results_without_filters">No hemos podido encontrar ninguna reserva con ese nombre. Prueba a ajustar el término de búsqueda para ver más resultados.</string>
-    <string name="bookings_empty_state_description_upcoming">Todavía no tienes programadas ninguna cita o evento en el futuro.</string>
-    <string name="bookings_empty_state_description_today">No tienes ninguna cita o evento programado para hoy.</string>
-    <string name="bookings_empty_state_description_default">Las reservas entrantes aparecerán aquí, donde podrás verlas y gestionarlas.</string>
     <string name="bookings_empty_state_title_upcoming">No hay reservas próximamente</string>
     <string name="bookings_empty_state_title_today">No hay reservas hoy</string>
     <string name="bookings_empty_state_title_default">No se han encontrado reservas</string>
@@ -150,12 +165,11 @@ Language: es
     <string name="woopos_settings_local_catalog_size">Tamaño</string>
     <string name="woopos_settings_local_catalog_status">Estado del catálogo</string>
     <string name="woopos_settings_local_catalog_category_subtitle">Gestionar ajustes del catálogo</string>
-    <string name="woopos_settings_local_catalog_category">Catálogo</string>
+    <string name="woopos_settings_local_catalog_category">Catálogo de productos</string>
     <string name="local_notification_woo_pos_survey_current_user_description">Comparte tu experiencia en una rápida encuesta de 2 minutos y ayúdanos a mejorar.</string>
     <string name="local_notification_woo_pos_survey_current_user_title">¿Cómo te va con el TPV?</string>
     <string name="local_notification_woo_pos_survey_potential_user_description">Haz una breve encuesta de 2 minutos para ayudarnos a dar forma a funciones que te encantarán.</string>
     <string name="local_notification_woo_pos_survey_potential_user_title">¿Estás pensando en las ventas presenciales?</string>
-    <string name="product_type_booking">Producto reservable</string>
     <string name="date_time_connector">en</string>
     <string name="booking_payment_view_order">Ver pedido</string>
     <string name="booking_payment_mark_as_paid">Marcar como pagado</string>
@@ -184,13 +198,10 @@ Language: es
     <string name="booking_payment_status_pending_confirmation">Pendiente de confirmación</string>
     <string name="booking_payment_status_paid">Pagado</string>
     <string name="booking_payment_status_unpaid">Sin pagar</string>
-    <string name="booking_appointment_label_price">Precio</string>
     <string name="booking_appointment_label_duration">Duración</string>
     <string name="booking_appointment_label_location">Ubicación</string>
-    <string name="booking_appointment_label_staff">Personal asignado</string>
     <string name="booking_appointment_label_time">Hora</string>
     <string name="booking_appointment_label_date">Fecha</string>
-    <string name="booking_appointment_details_header">DETALLES DE LA CITA</string>
     <string name="booking_details_title">Reserva n.º %s</string>
     <string name="bookings_tab_all">Todas</string>
     <string name="bookings_tab_upcoming">Próximas</string>
@@ -404,8 +415,8 @@ Language: es
     <string name="woopos_search_items_error_description">Inténtalo de nuevo.</string>
     <string name="woopos_search_coupons_error_title">No se pueden cargar los cupones</string>
     <string name="woopos_search_items_error_title">No se pueden cargar los productos</string>
-    <string name="woopos_search_empty_coupons_description">No hemos podido encontrar ningún cupón que coincida. Prueba a ajustar el término de búsqueda.</string>
-    <string name="woopos_search_empty_description">No hemos podido encontrar ningún producto que coincida. Prueba a ajustar tu término de búsqueda.</string>
+    <string name="woopos_search_empty_coupons_description">No hemos podido encontrar ningún cupón que coincida. Modifique el término de búsqueda.</string>
+    <string name="woopos_search_empty_description">No hemos podido encontrar ningún producto que coincida. Modifique el término de búsqueda.</string>
     <string name="woopos_search_coupons_empty_title">No se han encontrado cupones</string>
     <string name="woopos_search_coupons">Buscar cupones</string>
     <string name="woopos_coupons_pagination_error_description">Revisa tu conexión a Internet e inténtalo de nuevo.</string>

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosProductsCache
 import com.woocommerce.android.ui.woopos.common.data.WooPosProductsTypesFilterConfig
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -80,6 +81,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
             searchFields = SEARCH_FIELDS,
+            posProductsOnly = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled(),
         ).let { result ->
             if (result.isError) {
                 WooLog.w(

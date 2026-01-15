@@ -44,7 +44,8 @@ class WooPosOrdersViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val formatPrice: WooPosFormatPrice,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
-    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker
+    private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
+    private val getRefundableItems: WooPosGetRefundableItems,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -92,13 +93,24 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun getAvailableActions(orderId: Long): List<WooPosOrdersState.OrderAction> {
+    private fun getAvailableActions(
+        order: Order,
+        refundResult: RefundsFetchResult
+    ): List<WooPosOrdersState.OrderAction> {
         return buildList {
-            if (FeatureFlag.POS_REFUNDS.isEnabled()) {
-                add(WooPosOrdersState.OrderAction.IssueRefund(orderId))
+            if (FeatureFlag.POS_REFUNDS.isEnabled() && hasRefundableItems(order, refundResult)) {
+                add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
             }
-            add(WooPosOrdersState.OrderAction.EmailReceipt(orderId))
+            add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
         }
+    }
+
+    private fun hasRefundableItems(order: Order, refundResult: RefundsFetchResult): Boolean {
+        val refunds = when (refundResult) {
+            is RefundsFetchResult.Success -> refundResult.refunds
+            is RefundsFetchResult.Error -> emptyList()
+        }
+        return getRefundableItems(order, refunds).isNotEmpty()
     }
 
     fun onOrderSelected(orderId: Long) {
@@ -237,7 +249,6 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     fun loadMoreIfPossible() {
         if (loadingJob?.isActive == true || loadingMoreOrdersJob?.isActive == true) return
         if (!ordersDataSource.hasMorePages) return
@@ -325,7 +336,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private fun refreshSelectedOrder() {
         val current = _state.value as? WooPosOrdersState.Content ?: return
-        val selectedOrderId = current.selectedDetails.id
+        val selectedOrderId = current.selectedDetails?.id ?: return
 
         viewModelScope.launch {
             ordersDataSource.refreshOrderById(selectedOrderId)
@@ -337,14 +348,14 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val refundResult = retrieveOrderRefunds(updated).fold(
-            onSuccess = { refunds -> RefundFetchResult.Success(refunds) },
-            onFailure = { RefundFetchResult.Error }
+        val historicalRefundsResult = retrieveOrderRefunds(updated).fold(
+            onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
+            onFailure = { RefundsFetchResult.Error }
         )
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = mapOrderItem(updated, selectedId)
-        val newDetailsViewState = mapOrderDetails(updated, refundResult)
+        val newDetailsViewState = mapOrderDetails(updated, historicalRefundsResult)
         val newDetails = WooPosOrdersState.OrderDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
@@ -372,7 +383,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private fun performSearch(query: String, isRefreshing: Boolean = false) {
         cancelJobs()
 
-        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails!!
+        val currentSelectedDetails = (_state.value as? WooPosOrdersState.Content)?.selectedDetails
         searchJob = viewModelScope.launch {
             delay(SEARCH_DEBOUNCE_DELAY_MS)
             if (!isRefreshing) {
@@ -398,7 +409,7 @@ class WooPosOrdersViewModel @Inject constructor(
                         ),
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
-                        selectedDetails = currentSelectedDetails,
+                        selectedDetails = null,
                         paginationState = WooPosPaginationState.None
                     )
                 }
@@ -412,7 +423,7 @@ class WooPosOrdersViewModel @Inject constructor(
                             ),
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
-                            selectedDetails = currentSelectedDetails,
+                            selectedDetails = null,
                             paginationState = WooPosPaginationState.None
                         )
                     } else {
@@ -489,7 +500,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun replaceOrders(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val currentState = _state.value
@@ -499,7 +510,15 @@ class WooPosOrdersViewModel @Inject constructor(
 
         val orders = ordersWithRefunds.keys.toList()
         val newFirstOrderId = orders.firstOrNull()?.id
-        val newSelectedId = requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+
+        val currentSelectedId = (currentState as? WooPosOrdersState.Content)?.selectedDetails?.id
+        val isSelectedOrderStillInList = currentSelectedId != null && orders.any { it.id == currentSelectedId }
+        val newSelectedId =
+            if (isSelectedOrderStillInList) {
+                currentSelectedId
+            } else {
+                requireNotNull(newFirstOrderId) { "Content requires at least one order" }
+            }
         val items = buildItemsMap(ordersWithRefunds, newSelectedId)
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
         val selectedDetails = when (val details = selectedEntry.value) {
@@ -523,7 +542,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun appendOrders(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         paginationState: WooPosPaginationState = WooPosPaginationState.None
     ) {
         val current = _state.value as WooPosOrdersState.Content
@@ -544,7 +563,7 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private suspend fun buildItemsMap(
-        ordersWithRefunds: Map<Order, RefundFetchResult>,
+        ordersWithRefunds: Map<Order, RefundsFetchResult>,
         selectedId: Long?
     ): Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
@@ -589,13 +608,13 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private suspend fun mapOrderDetails(
         order: Order,
-        refundResult: RefundFetchResult
+        historicalRefundsResult: RefundsFetchResult
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = mapOrderStatus(order)
         val lineItems = buildLineItems(order)
-        val refundInfo = buildRefundInfo(order, refundResult)
+        val refundInfo = buildRefundInfo(order, historicalRefundsResult)
         val breakdown = buildTotalsBreakdown(order, refundInfo)
-        val actions = getAvailableActions(order.id)
+        val actions = getAvailableActions(order, historicalRefundsResult)
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
@@ -652,15 +671,15 @@ class WooPosOrdersViewModel @Inject constructor(
 
     private suspend fun buildRefundInfo(
         order: Order,
-        refundResult: RefundFetchResult
+        refundResult: RefundsFetchResult
     ): RefundInfo {
         return when (refundResult) {
-            is RefundFetchResult.Success -> {
+            is RefundsFetchResult.Success -> {
                 val amounts = refundResult.refunds.map { "-${formatPrice(it.amount)}" }
                 val total = refundResult.refunds.sumOf { it.amount }
                 RefundInfo(amounts, total)
             }
-            is RefundFetchResult.Error -> {
+            is RefundsFetchResult.Error -> {
                 val amounts =
                     if (order.refundTotal > BigDecimal.ZERO) {
                         listOf(resourceProvider.getString(R.string.woopos_orders_details_refund_error))

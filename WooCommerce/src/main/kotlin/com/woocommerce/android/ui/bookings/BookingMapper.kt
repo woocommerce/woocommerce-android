@@ -16,6 +16,7 @@ import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.bookings.list.BookingListItem
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.normalizeDuration
 import com.woocommerce.android.util.toHumanReadableFormat
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -33,23 +34,17 @@ import java.time.format.FormatStyle
 import javax.inject.Inject
 
 class BookingMapper @Inject constructor(
+    private val dateFormatter: DateFormatter,
     private val currencyFormatter: CurrencyFormatter,
     private val getLocations: GetLocations,
     private val resourceProvider: ResourceProvider
 ) {
-    private val summaryDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(
-        FormatStyle.MEDIUM,
-        FormatStyle.SHORT
-    ).withZone(ZoneOffset.UTC)
-
     private val detailsDateFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-        .withZone(ZoneOffset.UTC)
-    private val timeRangeFormatter: DateTimeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
         .withZone(ZoneOffset.UTC)
 
     fun Booking.toBookingSummaryModel(attendanceUpdateStatus: AttendanceUpdateStatus): BookingSummaryModel {
         return BookingSummaryModel(
-            date = summaryDateFormatter.format(start),
+            date = dateFormatter.formatDateTime(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
             status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
@@ -74,7 +69,7 @@ class BookingMapper @Inject constructor(
             .toHumanReadableFormat(resourceProvider)
         return BookingAppointmentDetailsModel(
             date = detailsDateFormatter.format(start),
-            time = "${timeRangeFormatter.format(start)} - ${timeRangeFormatter.format(end)}",
+            time = "${dateFormatter.formatTime(start)} - ${dateFormatter.formatTime(end)}",
             staff = staffMemberStatus,
             // TODO replace mocked values when available from API
             location = "238 Willow Creek Drive, Montgomery AL 36109",
@@ -147,7 +142,7 @@ class BookingMapper @Inject constructor(
             ?: UiString.UiStringRes(R.string.customer_detail_guest_customer)
         val serviceName = booking.order.productInfo?.name ?: "-"
         val date = detailsDateFormatter.format(booking.start)
-        val time = timeRangeFormatter.format(booking.start)
+        val time = dateFormatter.formatTime(booking.start)
         return UiString.UiStringRes(
             R.string.booking_cancel_dialog_message_v2,
             listOf(

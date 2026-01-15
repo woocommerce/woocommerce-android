@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -44,10 +45,11 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     private val bookingFlow = MutableStateFlow(initialBooking)
     private val savedStateHandle = SavedStateHandle(mapOf("mode" to BookingDetailsFragment.Mode.ShowBooking(bookingId)))
 
+    private val dateFormatter = mock<DateFormatter>()
     private val currencyFormatter = mock<CurrencyFormatter>()
     private val resourceProvider = mock<ResourceProvider>()
     private val getLocations = mock<GetLocations>()
-    private val bookingMapper = BookingMapper(currencyFormatter, getLocations, resourceProvider)
+    private val bookingMapper = BookingMapper(dateFormatter, currencyFormatter, getLocations, resourceProvider)
     private val bookingsRepository = mock<BookingsRepository> {
         on { observeBooking(any()) } doReturn bookingFlow
         onBlocking { fetchBooking(any()) } doReturn Result.success(bookingFlow.value)
@@ -77,6 +79,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             val qty = it.getArgument<Int>(0)
             if (qty == 1) "$qty day" else "$qty days"
         }
+
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Dec 12, 2025, 11:00 AM")
+        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn("12:00")
     }
 
     @Test

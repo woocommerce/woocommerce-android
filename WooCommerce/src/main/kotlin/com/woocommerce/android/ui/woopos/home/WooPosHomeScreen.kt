@@ -162,13 +162,15 @@ private fun WooPosHomeScreen(
             )
         }
 
-        WooPosHomeScreenToolbar(
-            modifier = Modifier
-                .padding(WooPosSpacing.Large.value)
-                .align(Alignment.BottomStart),
-        )
+        if (!isPreviewMode()) {
+            WooPosHomeScreenToolbar(
+                modifier = Modifier
+                    .padding(WooPosSpacing.Large.value)
+                    .align(Alignment.BottomStart),
+            )
 
-        Dialogs(state.dialogState, onHomeUIEvent)
+            Dialogs(state.dialogState, onHomeUIEvent)
+        }
     }
 }
 

@@ -21,12 +21,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowOutward
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Repeat
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -38,6 +32,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
@@ -187,15 +182,20 @@ fun ConnectivityCheckCard(
                 is InProgress -> CircularProgressIndicator(
                     modifier = modifier.size(dimensionResource(id = R.dimen.major_150))
                 )
+
                 is Success -> ResultIcon(
-                    icon = Icons.Default.CheckCircle,
+                    icon = ImageVector.vectorResource(R.drawable.ic_check_circle_filled_24dp),
                     color = R.color.woo_green_50
                 )
+
                 is Failure -> ResultIcon(
-                    icon = Icons.Default.Error,
+                    icon = ImageVector.vectorResource(R.drawable.ic_error_filled_24dp),
                     color = R.color.woo_red_50
                 )
-                is NotStarted -> { /* Do nothing */ }
+
+                is NotStarted -> {
+                    /* Do nothing */
+                }
             }
         }
 
@@ -214,7 +214,7 @@ fun ConnectivityCheckCard(
 
                 WCTextButton(
                     allCaps = false,
-                    icon = Icons.Default.Repeat,
+                    icon = ImageVector.vectorResource(R.drawable.ic_repeat_24dp),
                     onClick = onRetryConnectionClicked,
                     modifier = modifier.align(Alignment.Start),
                     text = stringResource(id = R.string.orderlist_connectivity_tool_retry_action),
@@ -228,7 +228,7 @@ fun ConnectivityCheckCard(
                     WCTextButton(
                         allCaps = false,
                         onClick = onReadMoreClicked,
-                        icon = Icons.Default.ArrowOutward,
+                        icon = ImageVector.vectorResource(R.drawable.ic_arrow_outward_24dp),
                         modifier = modifier.align(Alignment.Start),
                         text = stringResource(id = R.string.orderlist_connectivity_tool_read_more_action),
                         contentPadding = PaddingValues(
@@ -275,7 +275,7 @@ fun ConnectivitySummary(
                     allCaps = false,
                     onClick = onReturnClick,
                     text = stringResource(id = R.string.orderlist_connectivity_tool_return_action),
-                    icon = Icons.AutoMirrored.Filled.ArrowBack,
+                    icon = ImageVector.vectorResource(R.drawable.ic_back_24dp),
                     contentPadding = PaddingValues(
                         vertical = dimensionResource(id = R.dimen.minor_100),
                         horizontal = dimensionResource(id = R.dimen.minor_00)

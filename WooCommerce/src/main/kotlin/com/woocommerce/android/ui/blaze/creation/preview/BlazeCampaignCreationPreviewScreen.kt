@@ -26,9 +26,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.runtime.Composable
@@ -37,12 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -97,7 +96,6 @@ private fun BlazeCampaignCreationPreviewScreen(
                 title = stringResource(id = R.string.blaze_campaign_screen_fragment_title),
                 onNavigationButtonClick = onBackPressed,
                 onHelpButtonClick = onHelpTapped,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
@@ -427,7 +425,7 @@ private fun DefaultBlazeButton(modifier: Modifier = Modifier) {
             .background(color = colorResource(id = R.color.blaze_ad_cta_background))
     ) {
         Icon(
-            imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
             contentDescription = null,
             tint = colorResource(id = R.color.color_on_primary_surface),
             modifier = Modifier
