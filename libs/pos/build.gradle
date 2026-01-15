@@ -22,6 +22,8 @@ android {
 
 dependencies {
     implementation(project(":libs:commons"))
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
     implementation(libs.google.dagger.hilt.android.main)
 
     testImplementation(libs.junit)
