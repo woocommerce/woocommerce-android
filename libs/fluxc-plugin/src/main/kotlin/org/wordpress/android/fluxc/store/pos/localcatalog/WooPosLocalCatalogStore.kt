@@ -306,10 +306,8 @@ class WooPosLocalCatalogStore @Inject constructor(
     ): Result<Unit> =
         runCatching {
             database.executeInTransaction {
-                productIds.forEach { remoteId ->
-                    posProductDao.deleteProduct(siteId, remoteId)
-                    posVariationsDao.deleteVariationsForProduct(siteId, remoteId)
-                }
+                posProductDao.deleteProducts(siteId, productIds)
+                posVariationsDao.deleteVariationsForProducts(siteId, productIds)
             }
         }
 
@@ -318,11 +316,8 @@ class WooPosLocalCatalogStore @Inject constructor(
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
     ): Result<Unit> =
         runCatching {
-            database.executeInTransaction {
-                variations.forEach { (productId, variationId) ->
-                    posVariationsDao.deleteVariation(siteId, productId, variationId)
-                }
-            }
+            val variationIds = variations.map { it.second }
+            posVariationsDao.deleteVariationsByIds(siteId, variationIds)
         }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
