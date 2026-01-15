@@ -41,7 +41,7 @@ class WooPosRetrieveOrderRefundsTest {
     }
 
     @Test
-    fun `given refunds exist locally, when invoke called, then returns mapped refunds`() = runTest {
+    fun `given refunds exist, when invoke called, then fetches and returns mapped refunds`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
@@ -67,7 +67,9 @@ class WooPosRetrieveOrderRefundsTest {
                 feeLineItems = emptyList()
             )
         )
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(fluxCRefunds)
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(model = fluxCRefunds)
+        )
 
         // WHEN
         val result = sut.invoke(order)
@@ -80,29 +82,16 @@ class WooPosRetrieveOrderRefundsTest {
         assertThat(refunds[0].amount).isEqualTo(BigDecimal.TEN)
         assertThat(refunds[1].id).isEqualTo(2L)
         assertThat(refunds[1].amount).isEqualTo(BigDecimal.valueOf(5))
+        verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
     @Test
-    fun `given no refunds exist locally, when invoke called, then fetches and returns mapped refunds`() = runTest {
+    fun `given empty refunds, when invoke called, then fetches and returns empty list`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
-
-        val remoteRefunds = listOf(
-            WCRefundModel(
-                id = 10L,
-                dateCreated = Date(),
-                amount = BigDecimal.ONE,
-                reason = "Remote refund",
-                automaticGatewayRefund = false,
-                items = emptyList(),
-                shippingLineItems = emptyList(),
-                feeLineItems = emptyList()
-            )
-        )
         whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
-            WooResult(model = remoteRefunds)
+            WooResult(model = emptyList())
         )
 
         // WHEN
@@ -111,10 +100,7 @@ class WooPosRetrieveOrderRefundsTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         val refunds = result.getOrThrow()
-        assertThat(refunds).hasSize(1)
-        assertThat(refunds[0].id).isEqualTo(10L)
-        assertThat(refunds[0].amount).isEqualTo(BigDecimal.ONE)
-        verify(refundStore).getAllRefunds(site, order.id)
+        assertThat(refunds).isEmpty()
         verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
@@ -136,8 +122,7 @@ class WooPosRetrieveOrderRefundsTest {
     fun `given order provided, when invoke called, then passes correct orderId to store`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 456L, refundTotal = BigDecimal.ONE)
-        whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
-        whenever(refundStore.fetchAllRefunds(any(), any(), any(), any())).thenReturn(
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
             WooResult(emptyList())
         )
 
@@ -145,14 +130,13 @@ class WooPosRetrieveOrderRefundsTest {
         sut.invoke(order)
 
         // THEN
-        verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
     @Test
     fun `given fetch refunds fails, when invoke called, then returns failure result`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 789L, refundTotal = BigDecimal.ONE)
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
         whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
             WooResult(WooError(GENERIC_ERROR, UNKNOWN))
         )
