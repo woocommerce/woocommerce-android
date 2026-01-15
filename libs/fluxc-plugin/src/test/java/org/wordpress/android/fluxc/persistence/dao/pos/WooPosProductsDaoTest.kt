@@ -181,6 +181,69 @@ class WooPosProductsDaoTest {
     }
 
     @Test
+    fun `given multiple products, when batch deleting products, then all specified products are removed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            generatePosProduct(remoteId = 100L),
+            generatePosProduct(remoteId = 101L),
+            generatePosProduct(remoteId = 102L),
+            generatePosProduct(remoteId = 103L)
+        )
+        sut.upsertProducts(products)
+
+        // WHEN
+        sut.deleteProducts(LocalId(1), listOf(RemoteId(100L), RemoteId(102L)))
+
+        // THEN
+        val remainingProducts = sut.observeAllProducts(LocalId(1)).first()
+        assertEquals(2, remainingProducts.size)
+        assertTrue(remainingProducts.any { it.remoteId.value == 101L })
+        assertTrue(remainingProducts.any { it.remoteId.value == 103L })
+        assertTrue(remainingProducts.none { it.remoteId.value == 100L })
+        assertTrue(remainingProducts.none { it.remoteId.value == 102L })
+    }
+
+    @Test
+    fun `when batch deleting with empty list, then no products are removed`() = runTest {
+        // GIVEN
+        val products = listOf(
+            generatePosProduct(remoteId = 100L),
+            generatePosProduct(remoteId = 101L)
+        )
+        sut.upsertProducts(products)
+
+        // WHEN
+        sut.deleteProducts(LocalId(1), emptyList())
+
+        // THEN
+        val remainingProducts = sut.observeAllProducts(LocalId(1)).first()
+        assertEquals(2, remainingProducts.size)
+    }
+
+    @Test
+    fun `given products from multiple sites, when batch deleting for one site, then only that site products are removed`() = runTest {
+        // GIVEN
+        val site1Products = listOf(
+            generatePosProduct(siteId = 1, remoteId = 100L),
+            generatePosProduct(siteId = 1, remoteId = 101L)
+        )
+        val site2Products = listOf(
+            generatePosProduct(siteId = 2, remoteId = 100L),
+            generatePosProduct(siteId = 2, remoteId = 101L)
+        )
+        sut.upsertProducts(site1Products + site2Products)
+
+        // WHEN
+        sut.deleteProducts(LocalId(1), listOf(RemoteId(100L), RemoteId(101L)))
+
+        // THEN
+        val site1Results = sut.observeAllProducts(LocalId(1)).first()
+        val site2Results = sut.observeAllProducts(LocalId(2)).first()
+        assertTrue(site1Results.isEmpty())
+        assertEquals(2, site2Results.size)
+    }
+
+    @Test
     fun `when observing products, then flow emits current products`() = runTest {
         // GIVEN
         val products = listOf(

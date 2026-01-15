@@ -295,6 +295,120 @@ class WooPosVariationsDaoTest {
     }
 
     @Test
+    fun `given multiple variations, when batch deleting by ids, then all specified variations are removed`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val variations = listOf(
+            generatePosVariation(productId = productId, variationId = 1001L),
+            generatePosVariation(productId = productId, variationId = 1002L),
+            generatePosVariation(productId = productId, variationId = 1003L),
+            generatePosVariation(productId = productId, variationId = 1004L)
+        )
+        sut.upsertVariations(variations)
+
+        // WHEN
+        sut.deleteVariationsByIds(LocalId(1), listOf(RemoteId(1001L), RemoteId(1003L)))
+
+        // THEN
+        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
+        assertEquals(2, remainingVariations.size)
+        assertTrue(remainingVariations.any { it.remoteVariationId.value == 1002L })
+        assertTrue(remainingVariations.any { it.remoteVariationId.value == 1004L })
+        assertTrue(remainingVariations.none { it.remoteVariationId.value == 1001L })
+        assertTrue(remainingVariations.none { it.remoteVariationId.value == 1003L })
+    }
+
+    @Test
+    fun `when batch deleting variations with empty list, then no variations are removed`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val variations = listOf(
+            generatePosVariation(productId = productId, variationId = 1001L),
+            generatePosVariation(productId = productId, variationId = 1002L)
+        )
+        sut.upsertVariations(variations)
+
+        // WHEN
+        sut.deleteVariationsByIds(LocalId(1), emptyList())
+
+        // THEN
+        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
+        assertEquals(2, remainingVariations.size)
+    }
+
+    @Test
+    fun `given variations from multiple sites, when batch deleting by ids for one site, then only that site variations are removed`() = runTest {
+        // GIVEN
+        val productId = 100L
+        val site1Variations = listOf(
+            generatePosVariation(siteId = 1, productId = productId, variationId = 1001L),
+            generatePosVariation(siteId = 1, productId = productId, variationId = 1002L)
+        )
+        val site2Variations = listOf(
+            generatePosVariation(siteId = 2, productId = productId, variationId = 1001L),
+            generatePosVariation(siteId = 2, productId = productId, variationId = 1002L)
+        )
+        sut.upsertVariations(site1Variations + site2Variations)
+
+        // WHEN
+        sut.deleteVariationsByIds(LocalId(1), listOf(RemoteId(1001L), RemoteId(1002L)))
+
+        // THEN
+        val site1Results = sut.observeVariationsForProduct(1, productId).first()
+        val site2Results = sut.observeVariationsForProduct(2, productId).first()
+        assertTrue(site1Results.isEmpty())
+        assertEquals(2, site2Results.size)
+    }
+
+    @Test
+    fun `given variations for multiple products, when batch deleting for products, then all variations for those products are removed`() = runTest {
+        // GIVEN
+        val product1Variations = listOf(
+            generatePosVariation(productId = 100L, variationId = 1001L),
+            generatePosVariation(productId = 100L, variationId = 1002L)
+        )
+        val product2Variations = listOf(
+            generatePosVariation(productId = 200L, variationId = 2001L),
+            generatePosVariation(productId = 200L, variationId = 2002L)
+        )
+        val product3Variations = listOf(
+            generatePosVariation(productId = 300L, variationId = 3001L),
+            generatePosVariation(productId = 300L, variationId = 3002L)
+        )
+        sut.upsertVariations(product1Variations + product2Variations + product3Variations)
+
+        // WHEN
+        sut.deleteVariationsForProducts(LocalId(1), listOf(RemoteId(100L), RemoteId(300L)))
+
+        // THEN
+        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
+        val product3Results = sut.observeVariationsForProduct(1, 300L).first()
+        assertTrue(product1Results.isEmpty())
+        assertEquals(2, product2Results.size)
+        assertTrue(product3Results.isEmpty())
+    }
+
+    @Test
+    fun `when batch deleting variations for products with empty list, then no variations are removed`() = runTest {
+        // GIVEN
+        val variations = listOf(
+            generatePosVariation(productId = 100L, variationId = 1001L),
+            generatePosVariation(productId = 200L, variationId = 2001L)
+        )
+        sut.upsertVariations(variations)
+
+        // WHEN
+        sut.deleteVariationsForProducts(LocalId(1), emptyList())
+
+        // THEN
+        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
+        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
+        assertEquals(1, product1Results.size)
+        assertEquals(1, product2Results.size)
+    }
+
+    @Test
     fun `when observing variations for product, then flow emits current variations`() = runTest {
         // GIVEN
         val productId = 100L
