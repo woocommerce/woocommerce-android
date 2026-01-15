@@ -656,6 +656,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
                     id = item.itemId,
                     name = item.name,
+                    attributesDescription = item.attributesDescription.takeIf { it.isNotEmpty() },
                     qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
                     lineTotal = formatPrice(item.total),
                     imageUrl = product?.firstImageUrl
