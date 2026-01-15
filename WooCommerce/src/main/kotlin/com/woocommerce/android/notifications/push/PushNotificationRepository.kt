@@ -27,7 +27,7 @@ class PushNotificationRepository @Inject constructor(
                 deviceUuid = uuid
             )
             // TODO ensure any WP.com token already registered is removed
-        }
+        } ?: run { WooLog.w(WooLog.T.NOTIFS, "No selected site, skipping PN registration") }
     }
 
     private fun generateAndStoreUUID(): String {
