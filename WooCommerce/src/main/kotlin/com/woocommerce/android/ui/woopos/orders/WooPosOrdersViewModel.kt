@@ -45,7 +45,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
-    private val getRefundableItems: WooPosGetRefundableItems
+    private val getRefundableItems: WooPosGetRefundableItems,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(

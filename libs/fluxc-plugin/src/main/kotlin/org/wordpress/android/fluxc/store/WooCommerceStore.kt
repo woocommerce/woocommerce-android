@@ -352,6 +352,29 @@ open class WooCommerceStore @Inject internal constructor(
         }
     }
 
+    suspend fun fetchSiteSettingsTaxRoundAtSubtotal(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteSettingsTaxRoundAtSubtotal") {
+            val response = wcCoreRestClient.fetchSiteSettingsTaxRoundTaxAtSubtotal(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(
+                        T.API,
+                        "Failed to fetch tax round at subtotal setting for site ${site.siteId}"
+                    )
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    WooResult(response.result)
+                }
+
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
     suspend fun fetchSiteProductSettings(site: SiteModel): WooResult<WCProductSettingsModel> {
         return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteProductSettings") {
             val response = wcCoreRestClient.fetchSiteSettingsProducts(site)

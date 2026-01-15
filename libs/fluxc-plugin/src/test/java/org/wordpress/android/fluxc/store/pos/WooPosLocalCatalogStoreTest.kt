@@ -10,6 +10,7 @@ import org.junit.runner.RunWith
 import org.mockito.Mockito.mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -145,11 +146,11 @@ class WooPosLocalCatalogStoreTest {
             createTestApiResponse(id = 1L, name = "Coffee Mug"),
             createTestApiResponse(id = 2L, name = "Laptop Stand")
         )
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.items.size).isEqualTo(remoteProducts.size)
@@ -164,11 +165,11 @@ class WooPosLocalCatalogStoreTest {
         val fullPageOfProducts = Array(100) { index ->
             createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
         }
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(fullPageOfProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isTrue()
@@ -179,11 +180,11 @@ class WooPosLocalCatalogStoreTest {
     @Test
     fun `given no remote products, when fetching, then completes`() = runTest {
         // GIVEN
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.syncedCount).isEqualTo(0)
@@ -199,11 +200,11 @@ class WooPosLocalCatalogStoreTest {
             original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NO_CONNECTION,
             message = "Connection failed"
         )
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(connectivityError))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -216,15 +217,15 @@ class WooPosLocalCatalogStoreTest {
     fun `given oversized page request, when syncing, then constrains to maximum page size`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 500)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 500)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(posProductRestClient).fetchProducts(testSite, validDateString, 0, 100)
+        verify(posProductRestClient).fetchProducts(testSite, 0, 100, false, validDateString, null)
     }
 
     @Test
@@ -233,11 +234,11 @@ class WooPosLocalCatalogStoreTest {
         val partialPageProducts = Array(50) { index ->
             createTestApiResponse(id = index.toLong() + 1, name = "Product ${index + 1}")
         }
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(partialPageProducts))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 1, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.hasMore).isFalse()
@@ -249,15 +250,15 @@ class WooPosLocalCatalogStoreTest {
     fun `given negative page size, when syncing, then constrains to minimum page size`() = runTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product 1"))
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 1))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(remoteProducts))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, -5)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, -5)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(posProductRestClient).fetchProducts(testSite, validDateString, 0, 1)
+        verify(posProductRestClient).fetchProducts(testSite, 0, 1, false, validDateString, null)
     }
 
     @Test
@@ -268,11 +269,11 @@ class WooPosLocalCatalogStoreTest {
             original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.TIMEOUT,
             message = "Request timeout"
         )
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(WooResult(timeoutError))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -342,11 +343,11 @@ class WooPosLocalCatalogStoreTest {
     @Test
     fun `given no remote variations, when syncing, then completes without saving`() = runTest {
         // GIVEN
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchVariations(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(emptyArray()))
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedVariations(testSite, false, validDateString, 1, 100).getOrThrow()
 
         // THEN
         verifyNoInteractions(posVariationsDao)
@@ -363,11 +364,11 @@ class WooPosLocalCatalogStoreTest {
             original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.NETWORK_ERROR,
             message = "Network error"
         )
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchVariations(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(networkError))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, false, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -380,11 +381,11 @@ class WooPosLocalCatalogStoreTest {
     fun `given full page of variations, when sync called, then pagination indicates more pages`() = runTest {
         // GIVEN
         val variations = Array(100) { createTestVariationApiResponse(id = it.toLong()) }
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchVariations(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(variations))
 
         // WHEN
-        val result = store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 100)
+        val result = store.fetchRecentlyModifiedVariations(testSite, false, validDateString, 1, 100)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -413,14 +414,14 @@ class WooPosLocalCatalogStoreTest {
     fun `given page size over limit for variations, when sync called, then max page size enforced`() = runTest {
         // GIVEN
         val variations = Array(100) { createTestVariationApiResponse() }
-        whenever(posProductRestClient.fetchVariations(testSite, validDateString, 1, 100))
+        whenever(posProductRestClient.fetchVariations(any(), any(), any(), any(), anyOrNull()))
             .thenReturn(WooResult(variations))
 
         // WHEN
-        store.fetchRecentlyModifiedVariations(testSite, validDateString, 1, 200)
+        store.fetchRecentlyModifiedVariations(testSite, false, validDateString, 1, 200)
 
         // THEN
-        verify(posProductRestClient).fetchVariations(testSite, validDateString, 1, 100)
+        verify(posProductRestClient).fetchVariations(testSite, 1, 100, false, validDateString)
     }
 
     @Test
@@ -514,13 +515,13 @@ class WooPosLocalCatalogStoreTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
         val response = WooResult(remoteProducts)
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
             .thenReturn(null)
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -538,13 +539,13 @@ class WooPosLocalCatalogStoreTest {
                 message = "API error"
             )
         )
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
             .thenReturn(null)
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -557,7 +558,7 @@ class WooPosLocalCatalogStoreTest {
         // GIVEN
         val remoteProducts = arrayOf(createTestApiResponse(id = 1L, name = "Product"))
         val response = WooResult(remoteProducts)
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
             .thenReturn("2024-01-01T00:00:00Z")
@@ -565,7 +566,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(null) // Missing total pages
 
         // WHEN
-        val result = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100)
+        val result = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100)
 
         // THEN
         assertThat(result.isFailure).isTrue()
@@ -581,7 +582,7 @@ class WooPosLocalCatalogStoreTest {
         val expectedServerDate = "2024-03-15T10:30:00Z"
         val expectedTotalPages = 3
 
-        whenever(posProductRestClient.fetchProducts(testSite, validDateString, 0, 100))
+        whenever(posProductRestClient.fetchProducts(any(), any(), any(), any(), anyOrNull(), anyOrNull()))
             .thenReturn(response)
         whenever(headersParser.getServerDate(response))
             .thenReturn(expectedServerDate)
@@ -589,7 +590,7 @@ class WooPosLocalCatalogStoreTest {
             .thenReturn(expectedTotalPages)
 
         // WHEN
-        val syncResult = store.fetchRecentlyModifiedProducts(testSite, validDateString, 0, 100).getOrThrow()
+        val syncResult = store.fetchRecentlyModifiedProducts(testSite, false, validDateString, 0, 100).getOrThrow()
 
         // THEN
         assertThat(syncResult.serverDate).isEqualTo(expectedServerDate)

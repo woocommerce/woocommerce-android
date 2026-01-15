@@ -28,9 +28,10 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchProducts(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
         includeStatus: List<CoreProductStatus>? = null,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
@@ -39,7 +40,8 @@ class WooPosProductRestClient @Inject constructor(
             page = page,
             modifiedAfter = modifiedAfter,
             fields = PRODUCT_FIELDS,
-            includeStatus = includeStatus
+            includeStatus = includeStatus,
+            posProductsOnly = posProductsOnly
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -62,12 +64,19 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchVariations(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
-        val params = buildBaseParams(pageSize, page, VARIATIONS_FIELDS, modifiedAfter)
+        val params = buildBaseParams(
+            pageSize = pageSize,
+            page = page,
+            fields = VARIATIONS_FIELDS,
+            modifiedAfter = modifiedAfter,
+            posProductsOnly = posProductsOnly
+        )
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -120,17 +129,21 @@ class WooPosProductRestClient @Inject constructor(
         fields: String,
         modifiedAfter: String?,
         includeStatus: List<CoreProductStatus>? = null,
+        posProductsOnly: Boolean = false,
     ): MutableMap<String, String> {
         return mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
             "_fields" to fields,
-            ).also {
+        ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
             includeStatus?.let { statuses ->
                 it["include_status"] = statusListToString(statuses)
+            }
+            if (posProductsOnly) {
+                it["pos_products_only"] = "true"
             }
         }
     }
