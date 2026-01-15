@@ -25,6 +25,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepo
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -438,6 +439,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             pageSize = pageSize,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
+            posProductsOnly = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled(),
         )
     }
 
@@ -560,6 +562,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             val remoteVariationsResult = productRestClient.fetchProductVariations(
                 site = selectedSite.get(),
                 productId = productId,
+                posProductsOnly = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled(),
             )
 
             if (!remoteVariationsResult.isError) {

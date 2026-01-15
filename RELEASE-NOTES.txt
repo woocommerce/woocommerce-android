@@ -4,6 +4,9 @@
 
 24.0
 -----
+- [Internal][Woo POS] Optimize SQL queries for batch deletion in local catalog store [https://github.com/woocommerce/woocommerce-android/pull/15199]
+- [Internal][Woo POS] Apply POS product visibility filtering to remote/non-local-catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15191]
+- [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
 - [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
 
 23.9
