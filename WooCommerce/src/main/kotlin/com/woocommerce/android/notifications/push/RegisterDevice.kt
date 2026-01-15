@@ -36,10 +36,12 @@ class RegisterDevice @Inject constructor(
 
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
-        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-            pushNotificationRepository.registerPushToken(token)
-        } else if (accountStore.hasAccessToken() && token.isNotEmpty()) {
-            notificationRepository.registerDevice(token)
+        if (token.isNotEmpty()) {
+            if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+                pushNotificationRepository.registerPushToken(token)
+            } else if (accountStore.hasAccessToken()) {
+                notificationRepository.registerDevice(token)
+            }
         }
     }
 
