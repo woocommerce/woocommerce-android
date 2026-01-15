@@ -1722,3 +1722,36 @@ def report_milestone_error(error_title:)
 
   buildkite_annotate(style: 'warning', context: 'error-with-milestone', message: error_message) if is_ci
 end
+
+# Adds an install link for prototype build via PR comment
+#
+def comment_on_pr_with_prototype_build_install_link(
+  project:,
+  metadata:
+)
+  pr_number = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+  return unless pr_number && pr_number != 'false'
+
+  comment_on_pr(
+    project: project,
+    pr_number: Integer(pr_number),
+    reuse_identifier: 'prototype-build-link',
+    body: prototype_build_details_comment(
+      metadata: metadata
+    )
+  )
+end
+
+# If running in Buildkite, annotates the current build with prototype build info
+#
+def annotate_ci_build_with_prototype_build_install_link
+  install_link = 'Firebase App Distribution'
+  install_url = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::FIREBASE_APP_DISTRO_RELEASE]&.dig(:testingUri)
+  install_link = "[#{install_link}](#{install_url})" unless install_url.nil?
+
+  buildkite_annotate(
+    style: 'success',
+    context: 'prototype-build',
+    message: "Prototype build uploaded to #{install_link}"
+  )
+end
