@@ -40,9 +40,6 @@ class ClientSidePosBanner @Inject constructor(
 
         if (dismissalStorage.isBannerHidden(bannerId)) return false
 
-        val siteId = site.siteId
-        if (siteId % PERCENTAGE_DIVISOR >= TARGETING_PERCENTAGE) return false
-
         return true
     }
 
@@ -81,8 +78,6 @@ class ClientSidePosBanner @Inject constructor(
     }
 
     companion object {
-        private const val PERCENTAGE_DIVISOR = 100
-        private const val TARGETING_PERCENTAGE = 100
         private const val BANNER_ID = "woo_pos_client_banner"
         private const val FEATURE_CLASS = "woo_pos_promotion"
         private const val BANNER_URL = "https://woocommerce.com/in-person-payments/"
