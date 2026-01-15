@@ -41,6 +41,8 @@ formatting:
 
 
 style:
+  ReturnCount:
+    max: 4
   UnnecessaryAbstractClass:
     active: true
     ignoreAnnotated: [ 'Module' ]

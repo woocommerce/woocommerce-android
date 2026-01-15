@@ -36,7 +36,6 @@ constructor(
         private const val DAYS_SINCE_LAST_USE_THRESHOLD = 30L
     }
 
-    @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
         if (isPosInactive()) {
             logger.d("POS has been inactive recently, skipping local catalog sync")
@@ -91,7 +90,6 @@ constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private suspend fun validateSyncStatus(): Result? {
         val syncRequirement = syncStatusChecker.checkSyncRequirement()
         return when (syncRequirement) {

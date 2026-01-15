@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.string
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.bookings.filter.BookingsFilterSelectionPage
+import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -44,7 +46,7 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
         WCSearchField(
             value = state.searchQuery,
             onValueChange = state.onSearchQueryChanged,
-            hint = stringResource(string.bookings_filter_search_service_event),
+            hint = stringResource(string.bookings_filter_search_service),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -57,7 +59,47 @@ fun BookingServiceEventFilterPage(state: BookingServiceEventFilterUiState) {
             ),
         )
         HorizontalDivider(thickness = 0.5.dp)
-        BookingsFilterSelectionPage(items = state.items)
+        if (state.skeletonVisible) {
+            BookingServiceEventFilterSkeletons()
+        } else {
+            BookingsFilterSelectionPage(items = state.items)
+        }
+    }
+}
+
+@Composable
+private fun BookingServiceEventFilterSkeletons() {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        SkeletonView(
+            modifier = Modifier
+                .size(62.dp, 64.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        )
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
+        SkeletonView(
+            modifier = Modifier
+                .size(175.dp, 64.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        )
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
+        SkeletonView(
+            modifier = Modifier
+                .size(130.dp, 64.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        )
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
+        SkeletonView(
+            modifier = Modifier
+                .size(167.dp, 64.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        )
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
+        SkeletonView(
+            modifier = Modifier
+                .size(166.dp, 64.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp)
+        )
+        HorizontalDivider(modifier = Modifier.padding(start = 16.dp), thickness = 0.5.dp)
     }
 }
 

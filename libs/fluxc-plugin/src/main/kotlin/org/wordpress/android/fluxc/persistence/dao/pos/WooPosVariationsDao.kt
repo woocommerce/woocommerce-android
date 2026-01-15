@@ -44,11 +44,11 @@ abstract class WooPosVariationsDao {
     @Upsert
     abstract suspend fun upsertVariation(variation: WooPosVariationEntity)
 
-    @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId AND remoteVariationId = :variationId")
-    abstract suspend fun deleteVariation(localSiteId: LocalId, productId: RemoteId, variationId: RemoteId)
+    @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteVariationId IN (:variationIds)")
+    abstract suspend fun deleteVariationsByIds(localSiteId: LocalId, variationIds: List<RemoteId>)
 
-    @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId = :productId")
-    abstract suspend fun deleteVariationsForProduct(localSiteId: LocalId, productId: RemoteId)
+    @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId AND remoteProductId IN (:productIds)")
+    abstract suspend fun deleteVariationsForProducts(localSiteId: LocalId, productIds: List<RemoteId>)
 
     @Query("DELETE FROM PosVariationEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun deleteAllVariationsForSite(localSiteId: LocalId)

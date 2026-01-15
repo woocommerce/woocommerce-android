@@ -18,7 +18,6 @@ open class JetpackActivationWPComPostLoginViewModel(
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    @Suppress("ReturnCount")
     protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
         analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
 

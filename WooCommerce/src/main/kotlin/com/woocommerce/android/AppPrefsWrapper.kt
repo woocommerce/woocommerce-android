@@ -382,4 +382,19 @@ open class AppPrefsWrapper @Inject constructor() {
     }
 
     fun getBlazeCampaignCreated() = AppPrefs.getBlazeCampaignCreated()
+
+    fun setClientSideBannerHidden(
+        bannerId: String,
+        isHidden: Boolean,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.setClientSideBannerHidden(bannerId, isHidden, localSiteId, remoteSiteId, selfHostedSiteId)
+
+    fun isClientSideBannerHidden(
+        bannerId: String,
+        localSiteId: Int,
+        remoteSiteId: Long,
+        selfHostedSiteId: Long
+    ) = AppPrefs.isClientSideBannerHidden(bannerId, localSiteId, remoteSiteId, selfHostedSiteId)
 }
