@@ -40,7 +40,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
 
     // Associated IDs
     @Column private int mLocalSiteId;
-    @Column private int mLocalPostId; // The local post the media was uploaded from, for lookup after media uploads
     @Column private long mMediaId; // The remote ID of the media
     @Column private long mPostId; // The remote post ID ('parent') of the media
 
@@ -99,7 +98,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
     public MediaModel() {
         this.mId = 0;
         this.mLocalSiteId = 0;
-        this.mLocalPostId = 0;
         this.mMediaId = 0;
         this.mPostId = 0;
         this.mUploadDate = null;
@@ -242,7 +240,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
 
         return getId() == otherMedia.getId()
                 && getLocalSiteId() == otherMedia.getLocalSiteId()
-                && getLocalPostId() == otherMedia.getLocalPostId()
                 && getMediaId() == otherMedia.getMediaId()
                 && getPostId() == otherMedia.getPostId()
                 && getMarkedLocallyAsFeatured() == otherMedia.getMarkedLocallyAsFeatured()
@@ -275,14 +272,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
 
     public int getLocalSiteId() {
         return mLocalSiteId;
-    }
-
-    public void setLocalPostId(int localPostId) {
-        mLocalPostId = localPostId;
-    }
-
-    public int getLocalPostId() {
-        return mLocalPostId;
     }
 
     public void setMediaId(long mediaId) {
