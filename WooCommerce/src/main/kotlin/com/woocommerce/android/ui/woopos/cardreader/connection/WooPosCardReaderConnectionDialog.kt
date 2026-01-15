@@ -23,8 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -37,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -236,7 +235,7 @@ fun WooPosCardReaderConnectionDialogContent(
                         modifier = Modifier.align(Alignment.TopEnd)
                     ) {
                         Icon(
-                            Icons.Default.Close,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                             contentDescription = stringResource(R.string.woopos_card_reader_close_content_description),
                             modifier = Modifier.size(40.dp),
                             tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
