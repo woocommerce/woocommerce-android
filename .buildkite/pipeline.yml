@@ -65,18 +65,29 @@ steps:
           - "**/build/reports/diff_manifest/**/**/*"
 
   ########################################
-  - group: "🛠 Prototype Builds"
+  - group: ":rocket: Prototype Build"
     steps:
-
-      - label: "🛠 Prototype Build: Mobile App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce"
-        if: build.pull_request.id != null
+      - input: Build Prototype?
+        prompt: Select which app to build and distribute via Firebase App Distribution
+        key: prototype_build_triggered
+        fields:
+          - select: "App to Build"
+            key: "app-to-build"
+            hint: "Which WooCommerce app should be built? 📱"
+            required: true
+            default: "WooCommerce"
+            options:
+              - label: "📱 WooCommerce Mobile"
+                value: "WooCommerce"
+              - label: "⌚️ WooCommerce Wear"
+                value: "WooCommerce-Wear"
+      - label: ":firebase: Prototype Build"
+        depends_on: prototype_build_triggered
+        command: .buildkite/commands/prototype-build.sh
         plugins: [$CI_TOOLKIT]
-
-      - label: "🛠 Prototype Build: Wear App"
-        command: ".buildkite/commands/prototype-build.sh WooCommerce-Wear"
-        if: build.pull_request.id != null
-        plugins: [$CI_TOOLKIT]
+        artifact_paths:
+          - "WooCommerce/build/outputs/apk/**/*"
+          - "WooCommerce-Wear/build/outputs/apk/**/*"
 
   ########################################
   - group: "🔬 Tests"
@@ -107,35 +118,6 @@ steps:
   - label: "🐘 Populate Gradle build cache"
     command: .buildkite/commands/gradle-cache-build.sh
     plugins: [$CI_TOOLKIT]
-
-  ########################################
-  # Optional Prototype Builds for trunk branch, distributed via Firebase App Distribution (FAD)
-  ########################################
-  - group: "🚀 Prototype Build"
-    if: "build.branch == 'trunk'"
-    steps:
-      - block: ":rocket: Build Prototype and distribute via Firebase"
-        prompt: Select which app to build and distribute via Firebase App Distribution
-        key: prototype_builds_fad_triggered
-        fields:
-          - select: "App to Build"
-            key: "app-to-build"
-            hint: "Which WooCommerce app should be built? 📱"
-            required: true
-            default: "WooCommerce"
-            options:
-              - label: "📱 WooCommerce Mobile"
-                value: "WooCommerce"
-              - label: "⌚️ WooCommerce Wear"
-                value: "WooCommerce-Wear"
-      - label: ":firebase: Prototype Build (FAD)"
-        depends_on: prototype_builds_fad_triggered
-        command: |
-          ".buildkite/commands/prototype-build-fad.sh"
-        plugins: [$CI_TOOLKIT]
-        artifact_paths:
-          - "WooCommerce/build/outputs/apk/**/*"
-          - "WooCommerce-Wear/build/outputs/apk/**/*"
 
   ########################################
   # Claude Build Analysis - dynamically uploaded so Build result conditions evaluate at runtime after the wait

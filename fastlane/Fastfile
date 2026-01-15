@@ -20,7 +20,6 @@ APP_DISPLAY_NAMES = {
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
-PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
 # add `PROJECT_ROOT_FOLDER` to the beginning of this path
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
@@ -1349,60 +1348,12 @@ platform :android do
   #####################################################################################
   # build_and_upload_prototype_build
   #
-  # This lane builds a prototype build and uploads it to S3
-  #
-  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
-  #
-  desc 'Builds a prototype build and uploads it to S3'
-  lane :build_and_upload_prototype_build do |options|
-    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
-
-    app = get_app_param!(options)
-    prototype_flavor = 'Jalapeno'
-    prototype_build_type = 'Debug'
-
-    gradle(
-      task: ":#{app}:assemble",
-      flavor: prototype_flavor,
-      build_type: prototype_build_type
-    )
-
-    upload_path = upload_to_s3(
-      bucket: 'a8c-apps-public-artifacts',
-      key: "#{app.downcase}-prototype-build-#{generate_prototype_build_number}.apk",
-      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
-      skip_if_exists: true
-    )
-
-    install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = APP_DISPLAY_NAMES.fetch(app, app)
-    comment_body = prototype_build_details_comment(
-      app_display_name: "#{app} Android",
-      download_url: install_url,
-      metadata: {
-        Platform: platform_name,
-        Flavor: prototype_flavor,
-        'Build Type': prototype_build_type
-      },
-      fold: app == WEAR_APP # Keep comment for Mobile app always expanded, but collapse comment for Wear app by default, as it's modified less often
-    )
-
-    unless ENV['BUILDKITE_PULL_REQUEST'].nil?
-      comment_on_pr(
-        project: GITHUB_REPO,
-        pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
-        reuse_identifier: "#{app}-prototype-build-link",
-        body: comment_body
-      )
-    end
-  end
-
   # This lane builds a prototype build and uploads it to Firebase App Distribution
   #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   #
   desc 'Builds a prototype build and uploads it to Firebase App Distribution'
-  lane :build_and_upload_prototype_build_fad do |app:|
+  lane :build_and_upload_prototype_build do |app:|
     UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
 
     validate_app_param!(app)
@@ -1575,23 +1526,6 @@ platform :android do
 
     uuid = line.split('=', 2).last.strip
     buildkite_annotate(style: 'info', context: "sentry-mapping-uuid-#{app}", message: "Sentry mapping UUID for #{app}: #{uuid}")
-  end
-
-  # This function is Buildkite-specific
-  def generate_prototype_build_number
-    if ENV['BUILDKITE']
-      commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
-      branch = ENV['BUILDKITE_BRANCH'].parameterize
-      pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
-
-      pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
-    else
-      repo = Git.open(PROJECT_ROOT_FOLDER)
-      commit = repo.current_branch.parameterize
-      branch = repo.revparse('HEAD')[0, 7]
-
-      "#{branch}-#{commit}"
-    end
   end
 
   # Remove old `changelogs/default.txt` files for every locale except en-US.
