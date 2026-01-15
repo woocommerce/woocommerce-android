@@ -21,11 +21,14 @@ import androidx.compose.ui.semantics.semantics
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 
+private const val DEFAULT_WIDTH_FRACTION = 0.75f
+
 @Composable
 fun WooPosDialogWrapper(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     dialogBackgroundContentDescription: String,
+    widthFraction: Float = DEFAULT_WIDTH_FRACTION,
     onDismissRequest: () -> Unit,
     content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
@@ -58,7 +61,7 @@ fun WooPosDialogWrapper(
                 shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
                 backgroundColor = MaterialTheme.colorScheme.surfaceBright,
                 elevation = WooPosElevation.Medium,
-                modifier = modifier.fillMaxWidth(0.75f),
+                modifier = modifier.fillMaxWidth(widthFraction),
             ) {
                 content()
             }
