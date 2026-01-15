@@ -745,6 +745,88 @@ class WooPosSyncActionTest {
         assertThat(databaseError.errorMessage).isEqualTo("Transaction rollback due to constraint violation")
     }
 
+    @Test
+    fun `when full sync, then deleteProducts is not called`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+
+        // WHEN
+        sut.syncCatalog(site, null, PAGE_SIZE, 10)
+
+        // THEN
+        verify(posLocalCatalogStore, never()).deleteProducts(any(), any())
+    }
+
+    @Test
+    fun `when incremental sync with no products to remove, then deleteProducts is not called`() = runTest {
+        // GIVEN
+        mockFetchProductsSuccess(pages = listOf(10), serverDate = "2024-01-01T12:00:00Z")
+        mockFetchVariationsSuccess(pages = listOf(5), serverDate = "2024-01-01T12:00:00Z")
+        givenTrashProducts(count = 0)
+        givenAllModifiedProductsMatchPosProducts(count = 10)
+
+        // WHEN
+        sut.syncCatalog(site, "2024-01-01T12:00:00Z", PAGE_SIZE, 10)
+
+        // THEN
+        verify(posLocalCatalogStore, never()).deleteProducts(any(), any())
+    }
+
+    @Test
+    fun `when incremental sync with products to remove, then deleteProducts is called`() = runTest {
+        // GIVEN
+        givenPosOnlyProductsFetch(
+            posProductIds = listOf(1L, 2L, 3L),
+            serverDate = "2024-01-01T12:00:00Z"
+        )
+        givenAllProductsFetch(
+            allProductIds = listOf(1L, 2L, 3L, 4L, 5L),
+            serverDate = "2024-01-01T12:00:00Z"
+        )
+        mockFetchVariationsSuccess(pages = listOf(0), serverDate = "2024-01-01T12:00:00Z")
+        givenTrashProducts(count = 0)
+
+        // WHEN
+        sut.syncCatalog(site, "2024-01-01T12:00:00Z", PAGE_SIZE, 10)
+
+        // THEN
+        verify(posLocalCatalogStore).deleteProducts(
+            eq(LocalOrRemoteId.LocalId(site.id)),
+            eq(listOf(LocalOrRemoteId.RemoteId(4L), LocalOrRemoteId.RemoteId(5L)))
+        )
+    }
+
+    @Test
+    fun `when incremental sync with all products now non-POS, then deleteProducts removes all`() = runTest {
+        // GIVEN
+        givenPosOnlyProductsFetch(
+            posProductIds = emptyList(),
+            serverDate = "2024-01-01T12:00:00Z"
+        )
+        givenAllProductsFetch(
+            allProductIds = listOf(1L, 2L, 3L),
+            serverDate = "2024-01-01T12:00:00Z"
+        )
+        mockFetchVariationsSuccess(pages = listOf(0), serverDate = "2024-01-01T12:00:00Z")
+        givenTrashProducts(count = 0)
+
+        // WHEN
+        sut.syncCatalog(site, "2024-01-01T12:00:00Z", PAGE_SIZE, 10)
+
+        // THEN
+        verify(posLocalCatalogStore).deleteProducts(
+            eq(LocalOrRemoteId.LocalId(site.id)),
+            eq(
+                listOf(
+                    LocalOrRemoteId.RemoteId(1L),
+                    LocalOrRemoteId.RemoteId(2L),
+                    LocalOrRemoteId.RemoteId(3L)
+                )
+            )
+        )
+    }
+
     // === HELPER METHODS ===
 
     private fun mockFetchProductsSuccess(pages: List<Int>, serverDate: String) = runBlocking {
@@ -961,6 +1043,7 @@ class WooPosSyncActionTest {
         }
         whenever(posLocalCatalogStore.deleteAllProducts(any())).thenReturn(KotlinResult.success(Unit))
         whenever(posLocalCatalogStore.deleteAllVariations(any())).thenReturn(KotlinResult.success(Unit))
+        whenever(posLocalCatalogStore.deleteProducts(any(), any())).thenReturn(KotlinResult.success(Unit))
         whenever(posLocalCatalogStore.upsertProducts(any())).thenReturn(KotlinResult.success(Unit))
         whenever(posLocalCatalogStore.upsertVariations(any())).thenReturn(KotlinResult.success(Unit))
     }
@@ -1057,6 +1140,90 @@ class WooPosSyncActionTest {
             posLocalCatalogStore.executeInTransaction(any<suspend () -> KotlinResult<Unit>>())
         ).thenReturn(
             KotlinResult.failure(WooPosLocalCatalogError.DatabaseError(errorMessage = errorMessage))
+        )
+    }
+
+    private fun givenAllModifiedProductsMatchPosProducts(count: Int) = runBlocking {
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                eq(false),
+                anyOrNull(),
+                eq(1),
+                any(),
+                eq(null)
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosPaginatedFetchResult(
+                    items = generateProducts(count),
+                    totalPages = 1,
+                    hasMore = false,
+                    nextPage = 1,
+                    syncedCount = count,
+                    serverDate = "2024-01-01T12:00:00Z"
+                )
+            )
+        )
+    }
+
+    private fun givenPosOnlyProductsFetch(posProductIds: List<Long>, serverDate: String) = runBlocking {
+        val products = posProductIds.map { id ->
+            WooPosProductEntity(
+                remoteId = LocalOrRemoteId.RemoteId(id),
+                name = "Product $id"
+            )
+        }
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                eq(true),
+                anyOrNull(),
+                eq(1),
+                any(),
+                eq(null)
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosPaginatedFetchResult(
+                    items = products,
+                    totalPages = 1,
+                    hasMore = false,
+                    nextPage = 1,
+                    syncedCount = products.size,
+                    serverDate = serverDate
+                )
+            )
+        )
+    }
+
+    private fun givenAllProductsFetch(allProductIds: List<Long>, serverDate: String) = runBlocking {
+        val products = allProductIds.map { id ->
+            WooPosProductEntity(
+                remoteId = LocalOrRemoteId.RemoteId(id),
+                name = "Product $id"
+            )
+        }
+        whenever(
+            posLocalCatalogStore.fetchRecentlyModifiedProducts(
+                eq(site),
+                eq(false),
+                anyOrNull(),
+                eq(1),
+                any(),
+                eq(null)
+            )
+        ).thenReturn(
+            KotlinResult.success(
+                WooPosPaginatedFetchResult(
+                    items = products,
+                    totalPages = 1,
+                    hasMore = false,
+                    nextPage = 1,
+                    syncedCount = products.size,
+                    serverDate = serverDate
+                )
+            )
         )
     }
 }
