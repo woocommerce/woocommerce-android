@@ -183,92 +183,6 @@ class WooPosVariationsDaoTest {
     }
 
     @Test
-    fun `given existing variation, when deleting variation, then variation is removed`() = runTest {
-        // GIVEN
-        val variation = generatePosVariation(productId = 100L, variationId = 1001L)
-        sut.upsertVariation(variation)
-
-        // WHEN
-        sut.deleteVariation(
-            variation.localSiteId,
-            variation.remoteProductId,
-            variation.remoteVariationId
-        )
-
-        // THEN
-        val result = sut.getVariation(
-            variation.localSiteId.value,
-            variation.remoteProductId.value,
-            variation.remoteVariationId.value
-        )
-        assertNull(result)
-    }
-
-    @Test
-    fun `given multiple variations for product, when deleting one variation, then only that variation is removed`() = runTest {
-        // GIVEN
-        val productId = 100L
-        val variations = listOf(
-            generatePosVariation(productId = productId, variationId = 1001L),
-            generatePosVariation(productId = productId, variationId = 1002L),
-            generatePosVariation(productId = productId, variationId = 1003L)
-        )
-        sut.upsertVariations(variations)
-
-        // WHEN
-        sut.deleteVariation(LocalId(1), RemoteId(productId), RemoteId(1002L))
-
-        // THEN
-        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
-        assertEquals(2, remainingVariations.size)
-        assertTrue(remainingVariations.any { it.remoteVariationId.value == 1001L })
-        assertTrue(remainingVariations.any { it.remoteVariationId.value == 1003L })
-        assertTrue(remainingVariations.none { it.remoteVariationId.value == 1002L })
-    }
-
-    @Test
-    fun `given variations for product, when deleting all product variations, then all are removed`() = runTest {
-        // GIVEN
-        val productId = 100L
-        val variations = listOf(
-            generatePosVariation(productId = productId, variationId = 1001L),
-            generatePosVariation(productId = productId, variationId = 1002L),
-            generatePosVariation(productId = productId, variationId = 1003L)
-        )
-        sut.upsertVariations(variations)
-
-        // WHEN
-        sut.deleteVariationsForProduct(LocalId(1), RemoteId(productId))
-
-        // THEN
-        val remainingVariations = sut.observeVariationsForProduct(1, productId).first()
-        assertTrue(remainingVariations.isEmpty())
-    }
-
-    @Test
-    fun `given variations for multiple products, when deleting one product variations, then only those are removed`() = runTest {
-        // GIVEN
-        val product1Variations = listOf(
-            generatePosVariation(productId = 100L, variationId = 1001L),
-            generatePosVariation(productId = 100L, variationId = 1002L)
-        )
-        val product2Variations = listOf(
-            generatePosVariation(productId = 200L, variationId = 2001L),
-            generatePosVariation(productId = 200L, variationId = 2002L)
-        )
-        sut.upsertVariations(product1Variations + product2Variations)
-
-        // WHEN
-        sut.deleteVariationsForProduct(LocalId(1), RemoteId(100L))
-
-        // THEN
-        val product1Results = sut.observeVariationsForProduct(1, 100L).first()
-        val product2Results = sut.observeVariationsForProduct(1, 200L).first()
-        assertTrue(product1Results.isEmpty())
-        assertEquals(2, product2Results.size)
-    }
-
-    @Test
     fun `given variations for site, when deleting all site variations, then all are removed`() = runTest {
         // GIVEN
         val variations = listOf(
@@ -286,12 +200,6 @@ class WooPosVariationsDaoTest {
         val product2Results = sut.observeVariationsForProduct(1, 200L).first()
         assertTrue(product1Results.isEmpty())
         assertTrue(product2Results.isEmpty())
-    }
-
-    @Test
-    fun `when deleting non-existent variation, then no error occurs`() = runTest {
-        // WHEN & THEN - Should not throw exception
-        sut.deleteVariation(LocalId(1), RemoteId(100L), RemoteId(999L))
     }
 
     @Test
