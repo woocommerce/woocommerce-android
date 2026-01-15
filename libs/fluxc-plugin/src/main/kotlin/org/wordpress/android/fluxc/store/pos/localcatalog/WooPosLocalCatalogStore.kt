@@ -316,8 +316,10 @@ class WooPosLocalCatalogStore @Inject constructor(
         variations: List<Pair<LocalOrRemoteId.RemoteId, LocalOrRemoteId.RemoteId>>
     ): Result<Unit> =
         runCatching {
-            val variationIds = variations.map { it.second }
-            posVariationsDao.deleteVariationsByIds(siteId, variationIds)
+            database.executeInTransaction {
+                val variationIds = variations.map { it.second }
+                posVariationsDao.deleteVariationsByIds(siteId, variationIds)
+            }
         }
 
     suspend fun upsertVariations(variations: List<WooPosVariationEntity>): Result<Unit> =
