@@ -65,7 +65,11 @@ class ClientSidePosBanner @Inject constructor(
             isDismissible = true,
             url = "",
             jitmStatsUrl = "",
-            assets = null
+            assets = mapOf(
+                "background_image_url" to
+                    "https://woocommerce.com/wp-content/uploads/2026/01/pos-on-phones-promotion@3x.png",
+                "badge_image_url" to ""
+            )
         )
     }
 
