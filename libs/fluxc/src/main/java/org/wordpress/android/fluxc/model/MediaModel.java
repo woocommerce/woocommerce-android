@@ -124,55 +124,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
         this.mUploadState = uploadState != null ? uploadState.toString() : null;
     }
 
-    /**
-     * Use when converting editor image metadata into a media.
-     */
-    public MediaModel(
-            @NonNull String url,
-            @Nullable String fileName,
-            @Nullable String title,
-            @NonNull String caption,
-            @NonNull String alt) {
-        this.mUrl = url;
-        this.mFileName = fileName;
-        this.mTitle = title;
-        this.mCaption = caption;
-        this.mDescription = "";
-        this.mAlt = alt;
-    }
-
-    /**
-     * Use when converting a media file into a media.
-     */
-    public MediaModel(
-            int id,
-            int localSiteId,
-            long mediaId,
-            @NonNull String url,
-            @Nullable String thumbnailUrl,
-            @Nullable String fileName,
-            @Nullable String filePath,
-            @Nullable String mimeType,
-            @Nullable String title,
-            @NonNull String caption,
-            @NonNull String description,
-            @NonNull String alt,
-            @NonNull MediaUploadState uploadState) {
-        this.mId = id;
-        this.mLocalSiteId = localSiteId;
-        this.mMediaId = mediaId;
-        this.mUrl = url;
-        this.mThumbnailUrl = thumbnailUrl;
-        this.mFileName = fileName;
-        this.mFilePath = filePath;
-        this.mMimeType = mimeType;
-        this.mTitle = title;
-        this.mCaption = caption;
-        this.mDescription = description;
-        this.mAlt = alt;
-        this.mUploadState = uploadState.toString();
-    }
-
     public MediaModel(
             int localSiteId,
             long mediaId,
