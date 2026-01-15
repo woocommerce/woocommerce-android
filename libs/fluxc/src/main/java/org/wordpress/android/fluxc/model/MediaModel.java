@@ -87,20 +87,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
     }
 
     /**
-     * Use when getting an existing media.
-     */
-    public MediaModel(
-            int localSiteId,
-            long mediaId) {
-        this.mLocalSiteId = localSiteId;
-        this.mMediaId = mediaId;
-        this.mUrl = "";
-        this.mCaption = "";
-        this.mDescription = "";
-        this.mAlt = "";
-    }
-
-    /**
      * Use when converting local uri into a media, and then, to upload a new or update an existing media.
      */
     public MediaModel(

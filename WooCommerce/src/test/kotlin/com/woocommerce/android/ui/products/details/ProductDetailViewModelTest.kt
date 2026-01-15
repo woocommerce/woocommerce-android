@@ -62,7 +62,7 @@ import org.mockito.kotlin.spy
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.MediaStore
 import org.wordpress.android.fluxc.store.WCProductStore
@@ -1090,7 +1090,7 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
             on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
             on { it.observeSuccessfulUploads(any()) } doReturn uris.map {
-                MediaModel(0, 0).apply {
+                MediaTestUtils.createTestMedia().apply {
                     url = it
                     uploadDate = "2022-09-27 18:00:00.000"
                 }
