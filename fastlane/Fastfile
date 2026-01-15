@@ -86,10 +86,10 @@ FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 # Environment
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
-GITHUB_REPO = 'woocommerce/woocommerce-android'
 DEFAULT_BRANCH = 'trunk'
 REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
+GITHUB_REPO = "#{GH_ORG_NAME}/#{REPOSITORY_NAME}".freeze
 
 UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
 
@@ -1389,7 +1389,7 @@ platform :android do
 
     unless ENV['BUILDKITE_PULL_REQUEST'].nil?
       comment_on_pr(
-        project: 'woocommerce/woocommerce-android',
+        project: GITHUB_REPO,
         pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
         reuse_identifier: "#{app}-prototype-build-link",
         body: comment_body
@@ -1432,6 +1432,25 @@ platform :android do
       release_notes: release_notes,
       groups: FIREBASE_TESTERS_GROUP
     )
+
+    next unless is_ci
+
+    comment_on_pr_with_prototype_build_install_link(
+      app_display_name: "#{app} Android",
+      project: GITHUB_REPO,
+      metadata: {
+        Platform: APP_DISPLAY_NAMES.fetch(app, app),
+        Flavor: prototype_flavor,
+        'Build Type': prototype_build_type
+      },
+      # Keep comment for Mobile app always expanded,
+      # but collapse comment for Wear app by default,
+      # as it's modified less often
+      fold: app == WEAR_APP,
+      reuse_identifier: "#{app.downcase}-prototype-build-link"
+    )
+
+    annotate_ci_build_with_prototype_build_install_link
   end
 
   #####################################################################################
@@ -1726,8 +1745,11 @@ end
 # Adds an install link for prototype build via PR comment
 #
 def comment_on_pr_with_prototype_build_install_link(
+  app_display_name:,
   project:,
-  metadata:
+  metadata:,
+  fold:,
+  reuse_identifier:
 )
   pr_number = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
   return unless pr_number && pr_number != 'false'
@@ -1735,9 +1757,11 @@ def comment_on_pr_with_prototype_build_install_link(
   comment_on_pr(
     project: project,
     pr_number: Integer(pr_number),
-    reuse_identifier: 'prototype-build-link',
+    reuse_identifier: reuse_identifier,
     body: prototype_build_details_comment(
-      metadata: metadata
+      app_display_name: app_display_name,
+      metadata: metadata,
+      fold: fold
     )
   )
 end
