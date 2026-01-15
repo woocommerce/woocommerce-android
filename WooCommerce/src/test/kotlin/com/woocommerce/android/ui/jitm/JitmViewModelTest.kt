@@ -119,11 +119,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
-            ).isEqualTo(
-                JitmState.Banner.LabelOrRemoteIcon.Label(
-                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-                )
-            )
+            ).isNull()
         }
     }
 
@@ -151,11 +147,7 @@ class JitmViewModelTest : BaseUnitTest() {
             )
             assertThat(
                 (sut.jitmState.value as JitmState.Banner).badgeIcon
-            ).isEqualTo(
-                JitmState.Banner.LabelOrRemoteIcon.Label(
-                    UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-                )
-            )
+            ).isNull()
         }
     }
 
