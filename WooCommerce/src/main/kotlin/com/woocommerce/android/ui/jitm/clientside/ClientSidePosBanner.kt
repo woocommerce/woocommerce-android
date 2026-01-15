@@ -5,7 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag
 import dagger.Reusable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
@@ -21,13 +22,14 @@ class ClientSidePosBanner @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val dismissalStorage: ClientSideBannerDismissalStorage,
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     val messagePath: String = JitmMessagePathsProvider.MY_STORE
     val bannerId: String = BANNER_ID
 
     @Suppress("ReturnCount")
-    fun shouldShow(): Boolean {
-        if (!FeatureFlag.CLIENT_SIDE_POS_BANNER.isEnabled()) return false
+    suspend fun shouldShow(): Boolean {
+        if (!isRemoteFeatureFlagEnabled(RemoteFeatureFlag.WOO_POS_TABLET_PROMO_BANNER)) return false
 
         val site = selectedSite.getIfExists() ?: return false
 
