@@ -6,6 +6,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
+import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
+import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -15,6 +19,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -30,6 +35,11 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
     private val resourceProvider: ResourceProvider = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val selectedSite: SelectedSite = mock()
+    private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
+    private val controller: WooPosCardReaderConnectionController = mock()
+    private val controllerFactory: WooPosCardReaderConnectionControllerFactory = mock {
+        on { create(any()) }.thenReturn(controller)
+    }
 
     private val readerStatusFlow = MutableStateFlow<CardReaderStatus>(
         CardReaderStatus.NotConnected()
@@ -80,7 +90,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
     }
 
     @Test
-    fun `when connect clicked, then calls facade connect`() = runTest {
+    fun `when connect clicked, then sends show card reader connection dialog event`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
@@ -88,13 +98,16 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // WHEN
         viewModel.onConnectClicked()
+        advanceUntilIdle()
 
         // THEN
-        verify(cardReaderFacade).connectToReader()
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.SettingsEvent.ShowCardReaderConnectionDialog
+        )
     }
 
     @Test
-    fun `when update clicked, then calls facade update reader`() = runTest {
+    fun `when update clicked, then sends show card reader update dialog event`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
@@ -102,9 +115,12 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
 
         // WHEN
         viewModel.onUpdateClick()
+        advanceUntilIdle()
 
         // THEN
-        verify(cardReaderFacade).updateReader()
+        verify(childrenToParentEventSender).sendToParent(
+            ChildToParentEvent.SettingsEvent.ShowCardReaderUpdateDialog
+        )
     }
 
     @Test
@@ -159,6 +175,8 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         cardReaderFacade = cardReaderFacade,
         resourceProvider = resourceProvider,
         appPrefsWrapper = appPrefsWrapper,
-        selectedSite = selectedSite
+        selectedSite = selectedSite,
+        childrenToParentEventSender = childrenToParentEventSender,
+        controllerFactory = controllerFactory
     )
 }
