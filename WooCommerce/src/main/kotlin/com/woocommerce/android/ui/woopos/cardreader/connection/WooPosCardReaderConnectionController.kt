@@ -57,6 +57,7 @@ class WooPosCardReaderConnectionController(
     private val _event = MutableSharedFlow<ControllerEvent>()
     val event: SharedFlow<ControllerEvent> = _event.asSharedFlow()
 
+    private var connectionFlowJob: Job? = null
     private var discoveryJob: Job? = null
     private var connectionStatusJob: Job? = null
     private var softwareUpdateJob: Job? = null
@@ -65,8 +66,12 @@ class WooPosCardReaderConnectionController(
     private var showUpdateCancelWarning = false
 
     fun startConnectionFlow() {
+        if (connectionFlowJob?.isActive == true) {
+            logger.d("Connection flow already in progress, ignoring")
+            return
+        }
         _state.value = WooPosCardReaderConnectionState.Scanning
-        scope.launch {
+        connectionFlowJob = scope.launch {
             val onboardingState = cardReaderOnboardingChecker.getOnboardingState()
             if (onboardingState !is CardReaderOnboardingState.OnboardingCompleted) {
                 logger.d("Onboarding not completed, state: $onboardingState")
@@ -79,8 +84,12 @@ class WooPosCardReaderConnectionController(
     }
 
     fun onOnboardingCompleted() {
+        if (connectionFlowJob?.isActive == true) {
+            logger.d("Connection flow already in progress, ignoring onOnboardingCompleted")
+            return
+        }
         _state.value = WooPosCardReaderConnectionState.Scanning
-        scope.launch {
+        connectionFlowJob = scope.launch {
             continueConnectionFlowAfterOnboarding()
         }
     }
@@ -175,6 +184,7 @@ class WooPosCardReaderConnectionController(
 
     fun cancel() {
         _state.value = WooPosCardReaderConnectionState.Scanning
+        connectionFlowJob?.cancel()
         discoveryJob?.cancel()
         connectionStatusJob?.cancel()
         softwareUpdateJob?.cancel()
