@@ -36,11 +36,15 @@ class PosPromoDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     val state by viewModel.state.collectAsState()
-                    PosPromoCarouselModal(
+                    PosPromoCarouselDialog(
                         state = state,
-                        onDismiss = { dismiss() },
+                        onDismiss = {
+                            viewModel.onDismiss()
+                            dismiss()
+                        },
                         onNextClick = viewModel::onNextClick,
                         onExploreClick = {
+                            viewModel.onExploreClick()
                             ChromeCustomTabUtils.launchUrl(requireContext(), PosPromoViewModel.WOO_POS_DOCS_URL)
                             dismiss()
                         }

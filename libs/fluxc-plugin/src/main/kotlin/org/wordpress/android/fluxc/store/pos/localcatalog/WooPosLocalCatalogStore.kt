@@ -162,7 +162,8 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     suspend fun fetchProductsCount(
         site: SiteModel,
-        modifiedAfterGmt: String? = null
+        posProductsOnly: Boolean,
+        modifiedAfterGmt: String? = null,
     ): Result<Int> =
         coroutineEngine.withDefaultContext(API, this, "fetchProductsCount") {
             val response = posProductRestClient.fetchProducts(
@@ -170,7 +171,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 modifiedAfter = modifiedAfterGmt,
                 page = 1,
                 pageSize = 1,
-                includeStatus = null
+                includeStatus = null,
+                posProductsOnly = posProductsOnly,
             )
 
             when {
@@ -202,7 +204,8 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     suspend fun fetchRecentlyModifiedProducts(
         site: SiteModel,
-        modifiedAfterGmt: String?,
+        posProductsOnly: Boolean,
+        modifiedAfterGmt: String? = null,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
         includeStatus: List<CoreProductStatus>? = null,
@@ -215,7 +218,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 modifiedAfter = modifiedAfterGmt,
                 page = page,
                 pageSize = validPageSize,
-                includeStatus = includeStatus
+                posProductsOnly = posProductsOnly,
+                includeStatus = includeStatus,
             )
 
             val serverDate = headersParser.getServerDate(response)
@@ -269,6 +273,27 @@ class WooPosLocalCatalogStore @Inject constructor(
 
     suspend fun upsertProducts(products: List<WooPosProductEntity>): Result<Unit> =
         runCatching { posProductDao.upsertProducts(products) }
+
+    suspend fun storeCatalogData(
+        localSiteId: LocalOrRemoteId.LocalId,
+        products: List<WooPosProductEntity>,
+        variations: List<WooPosVariationEntity>
+    ): Result<Unit> =
+        coroutineEngine.withDefaultContext(API, this, "storeCatalogData") {
+            database.executeInTransaction {
+                posProductDao.deleteAllProductsForSite(localSiteId)
+                posVariationsDao.deleteAllVariationsForSite(localSiteId)
+
+                if (products.isNotEmpty()) {
+                    posProductDao.upsertProducts(products)
+                }
+
+                if (variations.isNotEmpty()) {
+                    posVariationsDao.upsertVariations(variations)
+                }
+            }
+            Result.success(Unit)
+        }
 
     suspend fun deleteAllProducts(
         siteId: LocalOrRemoteId.LocalId
@@ -370,6 +395,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      */
     suspend fun fetchVariationsCount(
         site: SiteModel,
+        posProductsOnly: Boolean,
         modifiedAfterGmt: String? = null,
     ): Result<Int> =
         coroutineEngine.withDefaultContext(API, this, "fetchVariationsCount") {
@@ -377,7 +403,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = 1,
-                pageSize = 1
+                pageSize = 1,
+                posProductsOnly = posProductsOnly,
             )
 
             when {
@@ -410,7 +437,8 @@ class WooPosLocalCatalogStore @Inject constructor(
     @Suppress("LongMethod")
     suspend fun fetchRecentlyModifiedVariations(
         site: SiteModel,
-        modifiedAfterGmt: String?,
+        posProductsOnly: Boolean,
+        modifiedAfterGmt: String? = null,
         page: Int = 1,
         pageSize: Int = DEFAULT_PAGE_SIZE,
     ): Result<WooPosPaginatedFetchResult<WooPosVariationEntity>> =
@@ -422,7 +450,8 @@ class WooPosLocalCatalogStore @Inject constructor(
                 site = site,
                 modifiedAfter = modifiedAfterGmt,
                 page = page,
-                pageSize = validPageSize
+                pageSize = validPageSize,
+                posProductsOnly = posProductsOnly,
             )
 
             val serverDate = headersParser.getServerDate(response)
@@ -494,7 +523,7 @@ class WooPosLocalCatalogStore @Inject constructor(
      * @param [site] The site to generate catalog for
      * @return [Result] containing PosGenerateCatalogResult with catalog generation details or error
      */
-    suspend fun generateCatalog(
+    suspend fun generateCatalogOrGetStatus(
         site: SiteModel
     ): Result<WooPosGenerateCatalogResult> =
         coroutineEngine.withDefaultContext(API, this, "generateCatalog") {

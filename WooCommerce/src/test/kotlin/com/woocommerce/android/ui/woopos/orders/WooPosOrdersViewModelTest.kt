@@ -67,7 +67,7 @@ class WooPosOrdersViewModelTest {
             formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
-            getRefundableItems = getRefundableItems
+            getRefundableItems = getRefundableItems,
         )
     }
 
@@ -85,6 +85,8 @@ class WooPosOrdersViewModelTest {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2))))
             }
         )
+
+        whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
 
         whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")

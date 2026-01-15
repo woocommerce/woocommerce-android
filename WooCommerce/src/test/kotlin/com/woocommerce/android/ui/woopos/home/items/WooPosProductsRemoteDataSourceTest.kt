@@ -197,7 +197,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(listOf()))
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
@@ -224,7 +225,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(listOf<WCProductModel>()))
             whenever(productsIndex.getProductList()).thenReturn(sampleProducts)
@@ -249,7 +251,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(listOf()))
             whenever(productsIndex.getProductList()).thenReturn(emptyList())
@@ -278,7 +281,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(
                 WooResult(
@@ -334,6 +338,7 @@ class WooPosProductsRemoteDataSourceTest {
                     sortType = any(),
                     filterOptions = any<Map<WCProductStore.ProductFilterOption, String>>(),
                     includeTypes = eq(productsTypesFilterConfig.includeTypes),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(wooError))
             whenever(productsCache.getAll()).thenReturn(sampleProducts)
@@ -363,7 +368,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(
                 WooResult(
@@ -416,7 +422,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(
                 WooResult(
@@ -455,7 +462,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = any(),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(
                 WooResult(
@@ -493,6 +501,7 @@ class WooPosProductsRemoteDataSourceTest {
                     sortType = any(),
                     filterOptions = any(),
                     includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(emptyList()))
             val sut = createSUT()
@@ -533,7 +542,8 @@ class WooPosProductsRemoteDataSourceTest {
                 pageSize = any(),
                 sortType = any(),
                 filterOptions = any(),
-                includeTypes = any()
+                includeTypes = any(),
+                posProductsOnly = any()
             )
         ).thenReturn(WooResult(listOf()))
 
@@ -579,7 +589,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(firstPageProducts))
 
@@ -590,7 +601,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(secondPageProducts))
 
@@ -630,7 +642,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(firstPageProducts))
 
@@ -641,7 +654,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(wooError))
 
@@ -672,7 +686,8 @@ class WooPosProductsRemoteDataSourceTest {
                 pageSize = eq(100),
                 sortType = any(),
                 filterOptions = any(),
-                includeTypes = any()
+                includeTypes = any(),
+                posProductsOnly = any()
             )
         ).thenReturn(WooResult(wooError))
 
@@ -715,7 +730,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(firstPageProducts))
 
@@ -726,7 +742,8 @@ class WooPosProductsRemoteDataSourceTest {
                     pageSize = eq(100),
                     sortType = any(),
                     filterOptions = any(),
-                    includeTypes = any()
+                    includeTypes = any(),
+                    posProductsOnly = any()
                 )
             ).thenReturn(WooResult(secondPageProducts))
 
@@ -745,7 +762,8 @@ class WooPosProductsRemoteDataSourceTest {
                 pageSize = any(),
                 sortType = any(),
                 filterOptions = any(),
-                includeTypes = any()
+                includeTypes = any(),
+                posProductsOnly = any()
             )
         }
 
@@ -1143,7 +1161,7 @@ class WooPosProductsRemoteDataSourceTest {
             // THEN
             assertThat(result).isNotNull
             assertThat(result).isEqualTo(cachedVariation)
-            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any())
+            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any(), any())
         }
 
     @Test
@@ -1173,7 +1191,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
-            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+            whenever(productRestClient.fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any()))
                 .thenReturn(remotePayload)
             whenever(variationMapper.fromWCProductVariationModel(wcVariation)).thenReturn(expectedVariation)
             whenever(selectedSite.get()).thenReturn(siteModel)
@@ -1185,7 +1203,7 @@ class WooPosProductsRemoteDataSourceTest {
             // THEN
             assertThat(result).isNotNull
             assertThat(result?.remoteVariationId).isEqualTo(variationId)
-            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(productRestClient).fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any())
             verify(variationsCache).put(eq(productId), any())
         }
 
@@ -1204,7 +1222,7 @@ class WooPosProductsRemoteDataSourceTest {
 
             // THEN
             assertThat(result).isNull()
-            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any())
+            verify(productRestClient, never()).fetchProductVariations(any(), any(), any(), any(), any())
             verify(variationsCache, never()).put(any(), any())
         }
 
@@ -1221,7 +1239,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
-            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+            whenever(productRestClient.fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any()))
                 .thenReturn(errorPayload)
             whenever(selectedSite.get()).thenReturn(siteModel)
             val sut = createSUT()
@@ -1231,7 +1249,7 @@ class WooPosProductsRemoteDataSourceTest {
 
             // THEN
             assertThat(result).isNull()
-            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(productRestClient).fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any())
             verify(variationsCache, never()).put(any(), any())
         }
 
@@ -1262,7 +1280,7 @@ class WooPosProductsRemoteDataSourceTest {
             )
 
             whenever(variationsCache.get(productId)).thenReturn(variationsSampleProducts)
-            whenever(productRestClient.fetchProductVariations(siteModel, productId))
+            whenever(productRestClient.fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any()))
                 .thenReturn(remotePayload)
             whenever(variationMapper.fromWCProductVariationModel(wcVariation)).thenReturn(expectedVariation)
             whenever(selectedSite.get()).thenReturn(siteModel)
@@ -1274,7 +1292,7 @@ class WooPosProductsRemoteDataSourceTest {
             // THEN
             assertThat(result).isNotNull
             assertThat(result?.remoteVariationId).isEqualTo(variationId)
-            verify(productRestClient).fetchProductVariations(siteModel, productId)
+            verify(productRestClient).fetchProductVariations(eq(siteModel), eq(productId), any(), any(), any())
             verify(variationsCache).put(eq(productId), any())
         }
 
