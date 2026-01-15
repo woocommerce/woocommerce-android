@@ -65,34 +65,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
     @Nullable @Column private String mUploadState;
     @Column private boolean mMarkedLocallyAsFeatured;
 
-    /**
-     * Enum representing various media fields with their default field names.
-     * The default values can be changed by modifying the string parameter
-     * passed to the enum constructor.
-     */
-    public enum MediaFields {
-        PARENT_ID("parent_id"),
-        TITLE("title"),
-        DESCRIPTION("description"),
-        CAPTION("caption"),
-        ALT("alt");
-
-        @NonNull private final String mFieldName;
-
-        // Constructor
-        MediaFields(@NonNull String fieldName) {
-            this.mFieldName = fieldName;
-        }
-
-        // Getter
-        @NonNull
-        public String getFieldName() {
-            return this.mFieldName;
-        }
-    }
-
-    @NonNull private MediaFields[] mFieldsToUpdate = MediaFields.values();
-
     @Deprecated
     @SuppressWarnings("DeprecatedIsStillUsed")
     public MediaModel() {
@@ -391,16 +363,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
     @Nullable
     public String getUploadState() {
         return mUploadState;
-    }
-
-    @NonNull
-    public MediaFields[] getFieldsToUpdate() {
-        return mFieldsToUpdate;
-    }
-
-    @SuppressWarnings("unused")
-    public void setFieldsToUpdate(@NonNull MediaFields[] fieldsToUpdate) {
-        this.mFieldsToUpdate = fieldsToUpdate;
     }
 
     public boolean getMarkedLocallyAsFeatured() {
