@@ -327,7 +327,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new order notifications are received for different stores, display correctly`() {
+    fun `when two new order notifications are received for different stores, then display correctly`() {
         // First notification
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
@@ -372,7 +372,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when two new review notifications are received for different stores, display correctly`() {
+    fun `when two new review notifications are received for different stores, then display correctly`() {
         // First notification
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
@@ -417,7 +417,7 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when more than 5 notifications are received for same store, display correctly`() {
+    fun `when more than 5 notifications are received for same store, then display correctly`() {
         // Simulate 5 existing notifications
         val existingNotifications = (0 until 5).map { index ->
             ActiveNotificationData(
