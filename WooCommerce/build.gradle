@@ -266,6 +266,7 @@ dependencies {
 
     implementation(project(":libs:fluxc"))
     implementation(project(":libs:fluxc-plugin"))
+
     implementation(project(":libs:login"))
     implementation(project(":libs:pos"))
 

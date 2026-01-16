@@ -1239,4 +1239,32 @@ class WooPosOrdersViewModelTest {
         assertThat(details.actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
         assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
+
+    @Test
+    fun `when refund dialog is dismissed, then refreshes selected order`() = runTest {
+        // GIVEN
+        whenever(dataSource.loadOrders()).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
+        )
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onOrderSelected(200L)
+        advanceUntilIdle()
+
+        viewModel.onIssueRefundButtonClicked(200L)
+        advanceUntilIdle()
+
+        whenever(dataSource.refreshOrderById(200L)).thenReturn(Result.success(order(200)))
+
+        // WHEN
+        viewModel.onIssueRefundDialogDismissed()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        assertThat(state.dialogState).isEqualTo(WooPosOrdersState.Content.DialogState.Hidden)
+        assertThat(state.selectedDetails?.id).isEqualTo(200L)
+        verify(dataSource).refreshOrderById(200L)
+    }
 }

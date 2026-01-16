@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.common.data.searchbyidentifier
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosWCProductToWooPosProductModelMapper
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_ERROR
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.API_NOT_FOUND
@@ -33,7 +34,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             globalUniqueIdSearchQuery = globalUniqueId,
             offset = 0,
             pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
-            filterOptions = emptyMap()
+            filterOptions = emptyMap(),
+            posProductsOnly = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled(),
         )
 
         return when {

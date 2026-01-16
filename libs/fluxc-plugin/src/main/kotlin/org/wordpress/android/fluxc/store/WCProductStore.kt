@@ -1812,6 +1812,7 @@ class WCProductStore @Inject internal constructor(
         includeTypes: List<IncludeType> = emptyList(),
         orderCurrency: String? = null,
         globalUniqueIdSearchQuery: String? = null,
+        posProductsOnly: Boolean = false,
     ): WooResult<ProductSearchResult> {
         return coroutineEngine.withDefaultContext(API, this, "searchProducts") {
             val response = wcProductRestClient.fetchProductsWithSyncRequest(
@@ -1823,7 +1824,8 @@ class WCProductStore @Inject internal constructor(
                 globalUniqueIdSearchQuery = globalUniqueIdSearchQuery,
                 filterOptions = filterOptions,
                 includeTypes = includeTypes,
-                orderCurrency = orderCurrency
+                orderCurrency = orderCurrency,
+                posProductsOnly = posProductsOnly,
             )
             when {
                 response.isError -> WooResult(response.error)

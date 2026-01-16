@@ -5,6 +5,8 @@
 24.0
 -----
 - [*][Woo POS] Fixed order list and detail screens showing wrong currency for multi-currency orders [https://github.com/woocommerce/woocommerce-android/pull/15210]
+- [*][Woo POS] Display variation attributes on order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15187]
+- [Internal][Woo POS] Optimize SQL queries for batch deletion in local catalog store [https://github.com/woocommerce/woocommerce-android/pull/15199]
 - [Internal][Woo POS] Apply POS product visibility filtering to remote/non-local-catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15191]
 - [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
 - [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
@@ -34,6 +36,7 @@
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
 - [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
+- [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
 - [*] [WEAR] Resolved title clipping on round screens for Wear [https://github.com/woocommerce/woocommerce-android/pull/15108]
 
 23.7
