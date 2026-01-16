@@ -7,4 +7,5 @@ enum class RemoteFeatureFlag(val remoteKey: String) {
     WOO_POS("woo_pos"),
     APP_PASSWORDS_FOR_JETPACK_SITES("woo_app_passwords_for_jetpack_sites"),
     REMOTE_WOO_POS_LOCAL_CATALOG_M1("woo_pos_local_catalog_m1"),
+    WOO_POS_TABLET_PROMO_BANNER("woo_pos_tablet_promo_banner"),
 }
