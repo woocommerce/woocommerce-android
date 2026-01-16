@@ -10,43 +10,102 @@ object MediaTestUtils {
     private val mimeTypes = MimeTypes()
 
     @JvmStatic
-    @JvmOverloads
-    fun createTestMedia(
-        localSiteId: Int = 1,
-        mediaId: Long = 0L,
-        postId: Long = 0L,
-        uploadDate: String? = null,
-        url: String = "",
-        thumbnailUrl: String? = null,
-        fileName: String? = null,
-        filePath: String? = null,
-        mimeType: String? = null,
-        title: String? = null,
-        caption: String = "",
-        description: String = "",
-        alt: String = "",
-        uploadState: MediaUploadState = MediaUploadState.UPLOADED
-    ): MediaModel {
-        val media = MediaModel(
-            localSiteId,
-            mediaId,
-            postId,
-            uploadDate,
-            url,
-            thumbnailUrl,
-            fileName,
-            mimeType,
-            title,
-            caption,
-            description,
-            alt,
-            uploadState
-        )
-        media.id = nextId.getAndIncrement()
-        if (filePath != null) {
-            media.filePath = filePath
+    fun createLocalTestMedia(): LocalTestMediaBuilder {
+        return LocalTestMediaBuilder()
+    }
+
+    @JvmStatic
+    fun createRemoteTestMedia(): RemoteTestMediaBuilder {
+        return RemoteTestMediaBuilder()
+    }
+
+    class LocalTestMediaBuilder internal constructor() {
+        private var localSiteId: Int = 1
+        private var mediaId: Long = 0L
+        private var postId: Long = 0L
+        private var uploadDate: String? = "2024-01-01T00:00:00+00:00"
+        private var fileName: String? = "test-image.jpg"
+        private var filePath: String? = "/test/test-image.jpg"
+        private var mimeType: String? = "image/jpeg"
+        private var title: String? = "Test Image"
+        private var uploadState: MediaUploadState = MediaUploadState.UPLOADED
+
+        fun localSiteId(value: Int) = apply { this.localSiteId = value }
+        fun mediaId(value: Long) = apply { this.mediaId = value }
+        fun postId(value: Long) = apply { this.postId = value }
+        fun uploadDate(value: String?) = apply { this.uploadDate = value }
+        fun fileName(value: String?) = apply { this.fileName = value }
+        fun filePath(value: String?) = apply { this.filePath = value }
+        fun mimeType(value: String?) = apply { this.mimeType = value }
+        fun title(value: String?) = apply { this.title = value }
+        fun uploadState(value: MediaUploadState) = apply { this.uploadState = value }
+
+        fun build(): MediaModel {
+            val media = MediaModel(
+                this.localSiteId,
+                this.uploadDate,
+                this.fileName,
+                this.filePath,
+                this.mimeType,
+                this.title,
+                this.uploadState
+            ).apply {
+                setMediaId(this@LocalTestMediaBuilder.mediaId)
+                setPostId(this@LocalTestMediaBuilder.postId)
+            }
+            media.id = nextId.getAndIncrement()
+            return media
         }
-        return media
+    }
+
+    class RemoteTestMediaBuilder internal constructor() {
+        private var localSiteId: Int = 1
+        private var mediaId: Long = 1L
+        private var postId: Long = 0L
+        private var uploadDate: String? = "2024-01-01T00:00:00+00:00"
+        private var url: String = "https://example.com/test-image.jpg"
+        private var thumbnailUrl: String? = "https://example.com/test-image-thumb.jpg"
+        private var fileName: String? = "test-image.jpg"
+        private var mimeType: String? = "image/jpeg"
+        private var title: String? = "Test Image"
+        private var caption: String = ""
+        private var description: String = ""
+        private var alt: String = ""
+        private var uploadState: MediaUploadState = MediaUploadState.UPLOADED
+
+        fun localSiteId(value: Int) = apply { this.localSiteId = value }
+        fun mediaId(value: Long) = apply { this.mediaId = value }
+        fun postId(value: Long) = apply { this.postId = value }
+        fun uploadDate(value: String?) = apply { this.uploadDate = value }
+        fun url(value: String) = apply { this.url = value }
+        fun thumbnailUrl(value: String?) = apply { this.thumbnailUrl = value }
+        fun fileName(value: String?) = apply { this.fileName = value }
+        fun mimeType(value: String?) = apply { this.mimeType = value }
+        fun title(value: String?) = apply { this.title = value }
+        fun caption(value: String) = apply { this.caption = value }
+        fun description(value: String) = apply { this.description = value }
+        fun alt(value: String) = apply { this.alt = value }
+        fun uploadState(value: MediaUploadState) = apply { this.uploadState = value }
+
+        fun build(): MediaModel {
+            val media = MediaModel(
+                this.localSiteId,
+                this.mediaId,
+                this.postId,
+                this.uploadDate,
+                this.url,
+                this.thumbnailUrl,
+                this.fileName,
+                this.mimeType,
+                this.title,
+                this.caption,
+                this.description,
+                this.alt,
+                this.uploadState
+            )
+            media.id = nextId.getAndIncrement()
+            return media
+        }
     }
 
     @JvmStatic
@@ -63,15 +122,25 @@ object MediaTestUtils {
         val extension = fileName.substringAfterLast('.', "")
         val mimeType = mimeTypes.getMimeTypeForExtension(extension)
 
-        return createTestMedia(
-            localSiteId = localSiteId,
-            mediaId = mediaId,
-            fileName = fileName,
-            filePath = filePath,
-            mimeType = mimeType,
-            title = title ?: fileName,
-            description = description ?: "",
-            caption = caption ?: ""
-        )
+        return if (description.isNullOrEmpty() && caption.isNullOrEmpty()) {
+            createLocalTestMedia()
+                .localSiteId(localSiteId)
+                .mediaId(mediaId)
+                .fileName(fileName)
+                .filePath(filePath)
+                .mimeType(mimeType)
+                .title(title ?: fileName)
+                .build()
+        } else {
+            createRemoteTestMedia()
+                .localSiteId(localSiteId)
+                .mediaId(mediaId)
+                .fileName(fileName)
+                .mimeType(mimeType)
+                .title(title ?: fileName)
+                .description(description ?: "")
+                .caption(caption ?: "")
+                .build()
+        }
     }
 }

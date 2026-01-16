@@ -1090,10 +1090,10 @@ class ProductDetailViewModelTest : BaseUnitTest() {
             on { it.observeCurrentUploadErrors(any()) } doReturn emptyFlow()
             on { it.observeCurrentUploads(any()) } doReturn flowOf(emptyList())
             on { it.observeSuccessfulUploads(any()) } doReturn uris.map {
-                MediaTestUtils.createTestMedia().apply {
-                    url = it
-                    uploadDate = "2022-09-27 18:00:00.000"
-                }
+                MediaTestUtils.createRemoteTestMedia()
+                    .url(it)
+                    .uploadDate("2022-09-27 18:00:00.000")
+                    .build()
             }.asFlow()
         }
 

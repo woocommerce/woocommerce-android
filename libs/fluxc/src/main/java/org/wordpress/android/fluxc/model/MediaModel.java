@@ -10,8 +10,6 @@ import org.wordpress.android.util.StringUtils;
 import java.io.Serializable;
 
 public class MediaModel extends Payload<BaseNetworkError> implements Serializable {
-    private static final long serialVersionUID = -1396457338496002846L;
-
     public enum MediaUploadState {
         QUEUED, UPLOADING, DELETING, DELETED, FAILED, UPLOADED;
 
@@ -36,22 +34,22 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
     private long mPostId; // The remote post ID ('parent') of the media
 
     // Upload date, ISO 8601-formatted date in UTC
-    @Nullable private String mUploadDate;
+    @Nullable private final String mUploadDate;
 
     // Remote Url's
-    @NonNull private String mUrl;
+    @NonNull private final String mUrl;
     @Nullable private String mThumbnailUrl;
 
     // File descriptors
-    @Nullable private String mFileName;
+    @Nullable private final String mFileName;
     @Nullable private String mFilePath;
-    @Nullable private String mMimeType;
+    @Nullable private final String mMimeType;
 
     // Descriptive strings
-    @Nullable private String mTitle;
-    @NonNull private String mCaption;
-    @NonNull private String mDescription;
-    @NonNull private String mAlt;
+    @Nullable private final String mTitle;
+    @NonNull private final String mCaption;
+    @NonNull private final String mDescription;
+    @NonNull private final String mAlt;
 
     // Local only
     @Nullable private String mUploadState;
@@ -168,17 +166,9 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mPostId;
     }
 
-    public void setUploadDate(@Nullable String uploadDate) {
-        mUploadDate = uploadDate;
-    }
-
     @Nullable
     public String getUploadDate() {
         return mUploadDate;
-    }
-
-    public void setUrl(@NonNull String url) {
-        mUrl = url;
     }
 
     @NonNull
@@ -186,17 +176,9 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mUrl;
     }
 
-    public void setThumbnailUrl(@Nullable String thumbnailUrl) {
-        mThumbnailUrl = thumbnailUrl;
-    }
-
     @Nullable
     public String getThumbnailUrl() {
         return mThumbnailUrl;
-    }
-
-    public void setFileName(@Nullable String fileName) {
-        mFileName = fileName;
     }
 
     @Nullable
@@ -204,17 +186,9 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mFileName;
     }
 
-    public void setFilePath(@Nullable String filePath) {
-        mFilePath = filePath;
-    }
-
     @Nullable
     public String getFilePath() {
         return mFilePath;
-    }
-
-    public void setMimeType(@Nullable String mimeType) {
-        mMimeType = mimeType;
     }
 
     @Nullable
@@ -222,17 +196,9 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mMimeType;
     }
 
-    public void setTitle(@Nullable String title) {
-        mTitle = title;
-    }
-
     @Nullable
     public String getTitle() {
         return mTitle;
-    }
-
-    public void setCaption(@NonNull String caption) {
-        mCaption = caption;
     }
 
     @NonNull
@@ -240,26 +206,14 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mCaption;
     }
 
-    public void setDescription(@NonNull String description) {
-        mDescription = description;
-    }
-
     @NonNull
     public String getDescription() {
         return mDescription;
     }
 
-    public void setAlt(@NonNull String alt) {
-        mAlt = alt;
-    }
-
     @NonNull
     public String getAlt() {
         return mAlt;
-    }
-
-    public void setUploadState(@Nullable String uploadState) {
-        mUploadState = uploadState;
     }
 
     public void setUploadState(@NonNull MediaUploadState uploadState) {
