@@ -83,7 +83,7 @@ class ClientSidePosBanner @Inject constructor(
         private const val TARGETING_PERCENTAGE = 100
         private const val BANNER_ID = "woo_pos_client_banner"
         private const val FEATURE_CLASS = "woo_pos_promotion"
-        private const val BANNER_URL = "https://woocommerce.com/in-person-payments/"
+        private const val BANNER_URL = "https://woocommerce.com/mobile/pos/learn-more"
         private val ELIGIBLE_COUNTRIES = listOf("US", "GB")
     }
 }
