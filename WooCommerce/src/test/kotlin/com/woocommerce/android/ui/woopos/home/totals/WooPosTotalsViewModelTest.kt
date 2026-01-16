@@ -777,13 +777,13 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
 
             // WHEN
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
             advanceUntilIdle()
 
             // THEN
@@ -810,7 +810,7 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -844,7 +844,7 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -863,7 +863,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given order draft created and reader connected, when payment is processed, should show processing state`() =
+    fun `given order draft created and reader connected, when payment is processed, then should show checkout with ready for payment`() =
         runTest {
             // GIVEN
             givenCardReaderConnectedAndNetworkAvailable()
@@ -872,22 +872,20 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
             // WHEN
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             advanceUntilIdle()
 
             // THEN
-            val processingState = vm.state.value as WooPosTotalsViewState.PaymentInProgress
-            assertThat(processingState).isInstanceOf(WooPosTotalsViewState.PaymentInProgress::class.java)
-            with(processingState) {
-                assertThat(title).isEqualTo("Processing payment")
-                assertThat(subtitle).isEqualTo("Please wait…")
-            }
+            val checkoutState = vm.state.value as WooPosTotalsViewState.Checkout
+            assertThat(checkoutState.readerStatus).isInstanceOf(
+                WooPosTotalsViewState.ReaderStatus.ReadyForPayment::class.java
+            )
         }
 
     @Test
@@ -917,11 +915,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             val failedPaymentRetryAction: () -> Unit = mock()
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, failedPaymentRetryAction
@@ -958,11 +956,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
                 errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
             )
@@ -1000,11 +998,11 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.Cancelable(
             errorType = PaymentFlowError.NoNetwork, onRetry = null, onCancel = {}, amountWithCurrencyLabel = ""
         )
@@ -1039,11 +1037,11 @@ class WooPosTotalsViewModelTest {
             whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
             val paymentState =
                 MutableStateFlow<CardReaderPaymentOrRefundState>(
-                    CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                    CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
                 )
             whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
             val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+            paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
                 errorType = PaymentFlowError.NoNetwork, {}
             )
@@ -1262,7 +1260,7 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
-    fun `given payment processing state, when OnBackClicked, then should ignore OnBackClicked`() = runTest {
+    fun `given payment in progress state with capturing payment, when OnBackClicked, then should ignore OnBackClicked`() = runTest {
         // GIVEN
         givenCardReaderConnectedAndNetworkAvailable()
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
@@ -1270,13 +1268,13 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
         // WHEN
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.PaymentCapturing.ExternalReaderPaymentCapturing("")
         advanceUntilIdle()
 
         vm.onUIEvent(OnBackClicked)
@@ -1296,7 +1294,7 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -1314,7 +1312,7 @@ class WooPosTotalsViewModelTest {
     }
 
     @Test
-    fun `given payment collecting state, when OnBackClicked, then should not ignore OnBackClicked`() = runTest {
+    fun `given payment processing state, when OnBackClicked, then should not ignore OnBackClicked`() = runTest {
         // GIVEN
         givenCardReaderConnectedAndNetworkAvailable()
         val mockCardReaderPaymentController: CardReaderPaymentController = mock()
@@ -1322,7 +1320,7 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
@@ -1347,13 +1345,13 @@ class WooPosTotalsViewModelTest {
         whenever(factory.create(any(), any(), any())).thenReturn(mockCardReaderPaymentController)
         val paymentState =
             MutableStateFlow<CardReaderPaymentOrRefundState>(
-                CardReaderPaymentState.CollectingPayment.ExternalReaderCollectPaymentState("") {}
+                CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
             )
         whenever(mockCardReaderPaymentController.paymentState).thenReturn(paymentState)
 
         // WHEN
         val vm = createViewModelAndSetupForSuccessfulOrderCreation(controllerFactory = factory)
-        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("") {}
+        paymentState.value = CardReaderPaymentState.ProcessingPayment.ExternalReaderProcessingPayment("", {})
         paymentState.value = CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment.NonCancelable(
             errorType = PaymentFlowError.NoNetwork, {}
         )

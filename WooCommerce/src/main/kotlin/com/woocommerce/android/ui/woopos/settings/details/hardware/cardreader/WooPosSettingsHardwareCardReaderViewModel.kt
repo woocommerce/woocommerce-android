@@ -129,6 +129,11 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                         currentSoftwareUpdateAvailable = false
                         WooPosSettingsHardwareCardReaderUiState.Disconnected
                     }
+
+                    CardReaderStatus.Reconnecting -> {
+                        // Keep current state while SDK attempts to reconnect
+                        _uiState.value
+                    }
                 }
             }
         }

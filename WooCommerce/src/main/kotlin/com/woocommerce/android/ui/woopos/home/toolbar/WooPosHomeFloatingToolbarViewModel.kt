@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
@@ -135,12 +136,17 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     }
                 }
             }
+
+            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting -> {
+                cardReaderFacade.cancelReconnection()
+            }
         }
     }
 
     private fun mapCardReaderStatusToUiState(status: CardReaderStatus) = when (status) {
         is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
         is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
+        Reconnecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
     }
 
     private val toolbarMenuItems by lazy {

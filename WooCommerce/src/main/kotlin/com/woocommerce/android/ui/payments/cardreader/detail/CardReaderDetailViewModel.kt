@@ -13,6 +13,7 @@ import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
 import com.woocommerce.android.cardreader.connection.ReaderType
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus.StatusChanged
@@ -86,6 +87,9 @@ class CardReaderDetailViewModel @Inject constructor(
                         )
                         handleNotConnectedState()
                     }
+                    Reconnecting -> {
+                        handleReconnectingState()
+                    }
                 }
             }
         }
@@ -132,6 +136,16 @@ class CardReaderDetailViewModel @Inject constructor(
         cancelConnectedScopeJobs()
         viewState.value =
             NotConnectedState(onPrimaryActionClicked = ::onConnectBtnClicked, onLearnMoreClicked = ::onLearnMoreClicked)
+    }
+
+    private fun handleReconnectingState() {
+        viewState.value = ViewState.ReconnectingState(
+            onCancelClicked = ::onCancelReconnectionClicked
+        )
+    }
+
+    private fun onCancelReconnectionClicked() {
+        cardReaderManager.cancelReconnection()
     }
 
     private fun cancelConnectedScopeJobs() {
@@ -307,6 +321,16 @@ class CardReaderDetailViewModel @Inject constructor(
         }
 
         object Loading : ViewState()
+
+        data class ReconnectingState(
+            val onCancelClicked: (() -> Unit),
+        ) : ViewState() {
+            val headerLabel = UiStringRes(R.string.card_reader_detail_reconnecting_header)
+
+            @DrawableRes
+            val illustration = R.drawable.img_card_reader_not_connected
+            val cancelBtnLabel = UiStringRes(R.string.card_reader_detail_reconnecting_cancel)
+        }
     }
 }
 

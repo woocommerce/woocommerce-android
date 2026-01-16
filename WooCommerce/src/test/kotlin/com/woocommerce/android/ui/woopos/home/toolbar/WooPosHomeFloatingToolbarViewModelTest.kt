@@ -260,6 +260,31 @@ class WooPosHomeFloatingToolbarViewModelTest {
         assertThat(viewModel.state.value.menu).isEqualTo(WooPosHomeFloatingToolbarState.Menu.Hidden)
     }
 
+    @Test
+    fun `given card reader status is Reconnecting, when initialized, then state should be Reconnecting`() = runTest {
+        // GIVEN
+        whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Reconnecting))
+        val viewModel = createViewModel()
+
+        // THEN
+        assertThat(viewModel.state.value.cardReaderStatus)
+            .isEqualTo(WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting)
+    }
+
+    @Test
+    fun `given card reader status is Reconnecting, when OnCardReaderStatusClicked, then cancelReconnection should be called`() =
+        runTest {
+            // GIVEN
+            whenever(cardReaderFacade.readerStatus).thenReturn(MutableStateFlow(CardReaderStatus.Reconnecting))
+            val viewModel = createViewModel()
+
+            // WHEN
+            viewModel.onUiEvent(WooPosHomeFloatingToolbarUIEvent.OnCardReaderStatusClicked)
+
+            // THEN
+            verify(cardReaderFacade).cancelReconnection()
+        }
+
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
         cardReaderFacade,
         childrenToParentEventSender,

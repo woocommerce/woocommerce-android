@@ -1,8 +1,7 @@
 package com.woocommerce.android.cardreader.internal.payments
 
 import com.woocommerce.android.cardreader.internal.CardReaderBaseUnitTest
-import com.woocommerce.android.cardreader.internal.payments.actions.CollectInteracRefundAction
-import com.woocommerce.android.cardreader.internal.payments.actions.ProcessInteracRefundAction
+import com.woocommerce.android.cardreader.internal.payments.actions.ProcessRefundAction
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.DeclinedByBackendError
 import com.woocommerce.android.cardreader.payments.CardInteracRefundStatus.RefundStatusErrorType.Generic
@@ -11,7 +10,6 @@ import com.woocommerce.android.cardreader.payments.RefundConfig
 import com.woocommerce.android.cardreader.payments.RefundParams
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.take
@@ -24,10 +22,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.never
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import kotlin.reflect.KClass
@@ -37,27 +32,25 @@ private const val USD_CURRENCY = "USD"
 private const val DUMMY_CHARGE_ID = "ch_abcdefgh"
 private const val TIMEOUT = 1000L
 
+@Suppress("DoNotMockDataClass")
 @ExperimentalCoroutinesApi
 @RunWith(MockitoJUnitRunner::class)
 class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     private lateinit var manager: InteracRefundManager
 
-    private val collectInteracRefundAction: CollectInteracRefundAction = mock()
-    private val processInteracRefundAction: ProcessInteracRefundAction = mock()
+    private val processRefundAction: ProcessRefundAction = mock()
     private val refundErrorMapper: RefundErrorMapper = mock()
     private val paymentsUtils: PaymentUtils = mock()
 
     private val expectedInteracRefundSequence = listOf(
         CardInteracRefundStatus.CollectingInteracRefund::class,
-        CardInteracRefundStatus.ProcessingInteracRefund::class,
         CardInteracRefundStatus.InteracRefundSuccess::class
     )
 
     @Before
     fun setUp() = testBlocking {
         manager = InteracRefundManager(
-            collectInteracRefundAction,
-            processInteracRefundAction,
+            processRefundAction,
             refundErrorMapper,
             paymentsUtils,
         )
@@ -72,34 +65,21 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
     }
 
     @Test
-    fun `given collect interac refund success, when refund starts, then ProcessingInteracRefund is emitted`() =
+    fun `given process refund success, when refund starts, then InteracRefundSuccess is emitted`() =
         testBlocking {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Success) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Success(mock()))
             val result = manager.refundInteracPayment(createRefundParams(), refundConfig)
-                .takeUntil(CardInteracRefundStatus.ProcessingInteracRefund::class).toList()
+                .takeUntil(CardInteracRefundStatus.InteracRefundSuccess::class).toList()
 
-            assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.ProcessingInteracRefund::class.java)
+            assertThat(result.last()).isInstanceOf(CardInteracRefundStatus.InteracRefundSuccess::class.java)
         }
 
     @Test
-    fun `given collect interac refund failure, when refund starts, then ProcessingInteracRefund is NOT emitted`() =
+    fun `given process refund failure, when refund starts, then failure is emitted`() =
         testBlocking {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
-            whenever(refundErrorMapper.mapTerminalError(any(), any()))
-                .thenReturn(CardInteracRefundStatus.InteracRefundFailure(Generic, "", mock()))
-            val result = manager.refundInteracPayment(createRefundParams(), refundConfig).toList()
-
-            assertThat(result.last()).isNotInstanceOf(CardInteracRefundStatus.ProcessingInteracRefund::class.java)
-            verify(processInteracRefundAction, never()).processRefund()
-        }
-
-    @Test
-    fun `given collect interac refund failure, when refund starts, then failure is emitted`() =
-        testBlocking {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(Generic, "", mock())
@@ -110,11 +90,11 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given collect interac refund failure, when refund starts, then failure message is captured`() =
+    fun `given process refund failure, when refund starts, then failure message is captured`() =
         testBlocking {
             val expectedErrorMessage = "Generic Error"
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(Generic, expectedErrorMessage, mock())
@@ -128,11 +108,11 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given collect interac refund failure, when refund starts, then failure type is captured`() =
+    fun `given process refund failure, when refund starts, then failure type is captured`() =
         testBlocking {
             val expectedErrorType = DeclinedByBackendError.Unknown
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(expectedErrorType, "Declined", mock())
@@ -146,11 +126,11 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given collect interac refund failure, when refund starts, then refund params is captured`() =
+    fun `given process refund failure, when refund starts, then refund params is captured`() =
         testBlocking {
             val expectedRefundParams = createRefundParams()
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             whenever(refundErrorMapper.mapTerminalError(any(), any()))
                 .thenReturn(
                     CardInteracRefundStatus.InteracRefundFailure(
@@ -168,21 +148,19 @@ class InteracRefundManagerTest : CardReaderBaseUnitTest() {
         }
 
     @Test
-    fun `given collect interac refund failure, when refund starts, then flow terminates`() =
+    fun `given process refund failure, when refund starts, then flow terminates`() =
         testBlocking {
-            whenever(collectInteracRefundAction.collectRefund(anyOrNull(), any()))
-                .thenReturn(flow { emit(CollectInteracRefundAction.CollectInteracRefundStatus.Failure(mock())) })
+            whenever(processRefundAction.processRefund(any(), any()))
+                .thenReturn(ProcessRefundAction.ProcessRefundStatus.Failure(mock()))
             val result = withTimeoutOrNull(TIMEOUT) {
                 manager.refundInteracPayment(createRefundParams(), refundConfig).toList()
             }
 
-            assertThat(result).isNotNull // verify the flow did not timeout
+            assertThat(result).isNotNull
         }
 
     private fun <T> Flow<T>.takeUntil(untilStatus: KClass<*>): Flow<T> =
         this.take(expectedInteracRefundSequence.indexOf(untilStatus) + 1)
-            // the below lines are here just as a safeguard to verify that the
-            // expectedInteracRefundSequence is defined correctly
             .withIndex()
             .onEach {
                 if (expectedInteracRefundSequence[it.index] != it.value!!::class) {
