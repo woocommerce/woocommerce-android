@@ -1,6 +1,4 @@
-package org.wordpress.android.fluxc.wp.site
-
-import org.wordpress.android.fluxc.logging.FluxCCrashLogger
+package org.wordpress.android.fluxc.logging
 
 object FakeCrashLogging : FluxCCrashLogger {
     override fun recordEvent(message: String, category: String?) = println("FakeCrashLogging: [$category] $message")

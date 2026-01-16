@@ -25,7 +25,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRes
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.utils.MediaUtils;
-import org.wordpress.android.fluxc.wp.site.FakeCrashLogging;
+import org.wordpress.android.fluxc.logging.FakeCrashLogging;
 
 import java.util.List;
 
