@@ -10,7 +10,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.RemoteException
-import android.service.notification.StatusBarNotification
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -42,9 +41,19 @@ class WooNotificationBuilder @Inject constructor(
 
     fun cancelAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
-    fun getActiveNotifications(): List<StatusBarNotification> {
+    fun getActiveNotifications(): List<ActiveNotificationData> {
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        return notificationManager.activeNotifications.toList()
+        return notificationManager.activeNotifications.map { sbn ->
+            ActiveNotificationData(
+                id = sbn.id,
+                remoteNoteId = sbn.notification.extras.getLong(EXTRA_REMOTE_NOTE_ID),
+                remoteSiteId = sbn.notification.extras.getLong(EXTRA_REMOTE_SITE_ID),
+                channelType = sbn.notification.extras.getString(EXTRA_CHANNEL_TYPE),
+                noteMessage = sbn.notification.extras.getString(EXTRA_NOTE_MESSAGE),
+                noteTypeTrackingValue = sbn.notification.extras.getString(EXTRA_NOTE_TYPE),
+                isGroupSummary = (sbn.notification.flags and FLAG_GROUP_SUMMARY) != 0
+            )
+        }
     }
 
     private fun getNotificationBuilder(
@@ -250,21 +259,6 @@ class WooNotificationBuilder @Inject constructor(
         }
     }
 
-    val StatusBarNotification.remoteNoteId: Long
-        get() = notification.extras.getLong(EXTRA_REMOTE_NOTE_ID)
-
-    val StatusBarNotification.remoteSiteId: Long
-        get() = notification.extras.getLong(EXTRA_REMOTE_SITE_ID)
-
-    val StatusBarNotification.channelType: String?
-        get() = notification.extras.getString(EXTRA_CHANNEL_TYPE)
-
-    val StatusBarNotification.noteMessage: String?
-        get() = notification.extras.getString(EXTRA_NOTE_MESSAGE)
-
-    val StatusBarNotification.noteTypeTrackingValue: String?
-        get() = notification.extras.getString(EXTRA_NOTE_TYPE)
-
     companion object {
         private const val EXTRA_REMOTE_NOTE_ID = "remote_note_id"
         private const val EXTRA_REMOTE_SITE_ID = "remote_site_id"
@@ -273,3 +267,13 @@ class WooNotificationBuilder @Inject constructor(
         private const val EXTRA_NOTE_TYPE = "note_type"
     }
 }
+
+data class ActiveNotificationData(
+    val id: Int,
+    val remoteNoteId: Long,
+    val remoteSiteId: Long,
+    val channelType: String?,
+    val noteMessage: String?,
+    val noteTypeTrackingValue: String?,
+    val isGroupSummary: Boolean = false
+)

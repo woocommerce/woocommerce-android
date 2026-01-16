@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import android.app.Notification.FLAG_GROUP_SUMMARY
 import androidx.annotation.VisibleForTesting
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.LOCAL_NOTIFICATION_DISMISSED
@@ -209,19 +208,17 @@ class NotificationMessageHandler @Inject constructor(
      * Loop over all active notifications and send the [PUSH_NOTIFICATION_TAPPED] track event for each one.
      */
     fun markNotificationsOfTypeTapped(type: NotificationChannelType) {
-        with(notificationBuilder) {
-            getActiveNotifications()
-                .filter { it.channelType == type.name && (it.notification.flags and FLAG_GROUP_SUMMARY) == 0 }
-                .forEach {
-                    analyticsTracker.trackNotificationAnalytics(
-                        stat = PUSH_NOTIFICATION_TAPPED,
-                        remoteNoteId = it.remoteNoteId,
-                        remoteSiteId = it.remoteSiteId,
-                        noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
-                    )
-                    analyticsTracker.flush()
-                }
-        }
+        notificationBuilder.getActiveNotifications()
+            .filter { it.channelType == type.name && !it.isGroupSummary }
+            .forEach {
+                analyticsTracker.trackNotificationAnalytics(
+                    stat = PUSH_NOTIFICATION_TAPPED,
+                    remoteNoteId = it.remoteNoteId,
+                    remoteSiteId = it.remoteSiteId,
+                    noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
+                )
+                analyticsTracker.flush()
+            }
     }
 
     fun removeAllNotificationsFromSystemsBar() {
