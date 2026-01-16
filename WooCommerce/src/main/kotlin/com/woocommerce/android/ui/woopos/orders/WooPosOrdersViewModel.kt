@@ -594,7 +594,7 @@ class WooPosOrdersViewModel @Inject constructor(
             date = order.dateCreated.formatToMMMddYYYYAtHHmm(
                 atWord = resourceProvider.getString(R.string.date_time_connector)
             ),
-            total = formatPrice.invoke(order.total, order.currency),
+            total = formatPrice(order.total, order.currency),
             customerEmail = order.customer?.email ?: order.billingAddress.email,
             isSelected = order.id == selectedId,
             status = PosOrderStatus(
@@ -626,8 +626,8 @@ class WooPosOrdersViewModel @Inject constructor(
             status = status,
             lineItems = lineItems,
             breakdown = breakdown,
-            total = formatPrice.invoke(order.total, order.currency),
-            totalPaid = formatPrice.invoke(order.total, order.currency),
+            total = formatPrice(order.total, order.currency),
+            totalPaid = formatPrice(order.total, order.currency),
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
             actions = actions
         )
@@ -656,8 +656,8 @@ class WooPosOrdersViewModel @Inject constructor(
                 WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
                     id = item.itemId,
                     name = item.name,
-                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice.invoke(unitPrice, order.currency)}",
-                    lineTotal = formatPrice.invoke(item.total, order.currency),
+                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice, order.currency)}",
+                    lineTotal = formatPrice(item.total, order.currency),
                     imageUrl = product?.firstImageUrl
                 )
             }
@@ -675,7 +675,7 @@ class WooPosOrdersViewModel @Inject constructor(
     ): RefundInfo {
         return when (refundResult) {
             is RefundsFetchResult.Success -> {
-                val amounts = refundResult.refunds.map { "-${formatPrice.invoke(it.amount, order.currency)}" }
+                val amounts = refundResult.refunds.map { "-${formatPrice(it.amount, order.currency)}" }
                 val total = refundResult.refunds.sumOf { it.amount }
                 RefundInfo(amounts, total)
             }
@@ -696,7 +696,7 @@ class WooPosOrdersViewModel @Inject constructor(
         refundInfo: RefundInfo
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown {
         val netPayment = if (refundInfo.totalRefunded > BigDecimal.ZERO) {
-            formatPrice.invoke(order.total - refundInfo.totalRefunded, order.currency)
+            formatPrice(order.total - refundInfo.totalRefunded, order.currency)
         } else {
             null
         }
@@ -704,12 +704,12 @@ class WooPosOrdersViewModel @Inject constructor(
         val discountCode = order.couponLines.firstOrNull()?.code
 
         return WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
-            products = formatPrice.invoke(order.productsTotal, order.currency),
+            products = formatPrice(order.productsTotal, order.currency),
             discount = order.discountTotal.takeIf { !it.isZero() }
-                ?.let { "-${formatPrice.invoke(it, order.currency)}" },
+                ?.let { "-${formatPrice(it, order.currency)}" },
             discountCode = discountCode,
-            taxes = formatPrice.invoke(order.totalTax, order.currency),
-            shipping = order.shippingTotal.takeIf { !it.isZero() }?.let { formatPrice.invoke(it, order.currency) },
+            taxes = formatPrice(order.totalTax, order.currency),
+            shipping = order.shippingTotal.takeIf { !it.isZero() }?.let { formatPrice(it, order.currency) },
             refunds = refundInfo.refundAmounts,
             netPayment = netPayment
         )

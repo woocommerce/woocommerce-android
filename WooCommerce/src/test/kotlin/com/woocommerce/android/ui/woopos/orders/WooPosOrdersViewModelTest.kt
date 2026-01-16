@@ -75,7 +75,7 @@ class WooPosOrdersViewModelTest {
     fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        whenever(formatPrice.invoke(any(), any())).thenReturn("$0.00")
+        whenever(formatPrice(any(), any())).thenReturn("$0.00")
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
@@ -701,8 +701,8 @@ class WooPosOrdersViewModelTest {
             feeLines = emptyList()
         )
 
-        whenever(formatPrice.invoke(eq(BigDecimal("10.00")), any())).thenReturn("$10.00")
-        whenever(formatPrice.invoke(eq(BigDecimal("5.00")), any())).thenReturn("$5.00")
+        whenever(formatPrice(eq(BigDecimal("10.00")), any())).thenReturn("$10.00")
+        whenever(formatPrice(eq(BigDecimal("5.00")), any())).thenReturn("$5.00")
         whenever(dataSource.loadOrders()).thenReturn(
             flow {
                 emit(
@@ -880,8 +880,8 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        whenever(formatPrice.invoke(eq(BigDecimal("3.50")), any())).thenReturn("$3.50")
-        whenever(formatPrice.invoke(eq(BigDecimal("4.00")), any())).thenReturn("$4.00")
+        whenever(formatPrice(eq(BigDecimal("3.50")), any())).thenReturn("$3.50")
+        whenever(formatPrice(eq(BigDecimal("4.00")), any())).thenReturn("$4.00")
 
         whenever(dataSource.loadOrders()).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
