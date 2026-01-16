@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType
 import com.woocommerce.android.ui.payments.tracking.CardReaderTrackingInfoKeeper
 import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.prefs.developer.DeveloperOptionsRepository
+import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionState.Connected
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.util.CoroutineDispatchers
 import com.woocommerce.android.util.LocationUtils
@@ -368,7 +369,7 @@ class WooPosCardReaderConnectionController(
                 cardReaderTrackingInfoKeeper.setCardReaderBatteryLevel(status.cardReader.currentBatteryLevel)
                 tracker.trackConnectionSucceeded()
                 status.cardReader.id?.let { appPrefsWrapper.setLastConnectedCardReaderId(it) }
-                _state.value = WooPosCardReaderConnectionState.Connected(
+                _state.value = Connected(
                     readerName = status.cardReader.id ?: "Card Reader"
                 )
             }
@@ -381,6 +382,9 @@ class WooPosCardReaderConnectionController(
                     handleConnectionFailed(status.errorCode, status.errorMessage)
                 }
             }
+
+            // We display this status in the floating toolbar
+            CardReaderStatus.Reconnecting -> Unit
         }
     }
 
