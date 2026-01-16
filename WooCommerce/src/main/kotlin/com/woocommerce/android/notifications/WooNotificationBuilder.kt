@@ -119,6 +119,9 @@ class WooNotificationBuilder @Inject constructor(
             if (!isGroupNotification) {
                 setGroupSummary(true)
                 setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+                setDefaults(0)
+                setSound(null)
+                setVibrate(null)
                 showNotification(notification.getGroupPushId(), notification, this)
             }
         }
