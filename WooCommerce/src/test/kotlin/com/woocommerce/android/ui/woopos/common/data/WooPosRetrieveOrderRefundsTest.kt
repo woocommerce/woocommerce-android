@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
@@ -19,7 +22,12 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.Date
 
+@ExperimentalCoroutinesApi
 class WooPosRetrieveOrderRefundsTest {
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private lateinit var refundStore: WCRefundStore
     private lateinit var selectedSite: SelectedSite
     private lateinit var sut: WooPosRetrieveOrderRefunds

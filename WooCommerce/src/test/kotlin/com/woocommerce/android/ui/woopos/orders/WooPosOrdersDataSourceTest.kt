@@ -53,10 +53,8 @@ class WooPosOrdersDataSourceTest {
     )
 
     @Before
-    fun setUp() {
-        runBlocking {
-            whenever(retrieveOrderRefunds.invoke(any<Order>())).thenReturn(Result.success(emptyList()))
-        }
+    fun setUp() = runTest {
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
     }
 
     @Test
