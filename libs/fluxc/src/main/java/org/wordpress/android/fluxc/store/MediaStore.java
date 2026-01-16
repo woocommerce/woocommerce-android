@@ -12,6 +12,7 @@ import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.action.MediaAction;
 import org.wordpress.android.fluxc.annotations.action.Action;
 import org.wordpress.android.fluxc.annotations.action.IAction;
+import org.wordpress.android.fluxc.logging.FluxCCrashLogger;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState;
 import org.wordpress.android.fluxc.model.SiteModel;
@@ -19,7 +20,6 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.ApplicationPasswordsConfiguration;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
-import org.wordpress.android.fluxc.network.xmlrpc.media.MediaXMLRPCClient;
 import org.wordpress.android.fluxc.persistence.MediaSqlUtils;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType;
 import org.wordpress.android.fluxc.store.media.MediaErrorSubType.MalformedMediaArgSubType;
@@ -33,6 +33,7 @@ import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
@@ -352,8 +353,6 @@ public class MediaStore extends Store {
         SERVER_ERROR, // this is also returned when PHP max_execution_time or memory_limit is reached
         TIMEOUT,
         BAD_REQUEST,
-        XMLRPC_OPERATION_NOT_ALLOWED,
-        XMLRPC_UPLOAD_ERROR,
 
         // logic constraints errors
         INVALID_ID,
@@ -419,11 +418,12 @@ public class MediaStore extends Store {
         }
     }
 
-    private final MediaXMLRPCClient mMediaXmlrpcClient;
     private final WPComV2MediaRestClient mWPComV2MediaRestClient;
     private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
 
     private final ApplicationPasswordsConfiguration mApplicationPasswordsConfiguration;
+
+    @NonNull private final FluxCCrashLogger mCrashLogger;
 
     // Ensures that the UploadStore is initialized whenever the MediaStore is,
     // to ensure actions are shadowed and repeated by the UploadStore
@@ -432,15 +432,15 @@ public class MediaStore extends Store {
 
     @Inject public MediaStore(
             Dispatcher dispatcher,
-            MediaXMLRPCClient xmlrpcClient,
             WPComV2MediaRestClient wpv2MediaRestClient,
             ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
-            ApplicationPasswordsConfiguration applicationPasswordsConfiguration) {
+            ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
+            @NonNull FluxCCrashLogger crashLogger) {
         super(dispatcher);
-        mMediaXmlrpcClient = xmlrpcClient;
         mWPComV2MediaRestClient = wpv2MediaRestClient;
         mApplicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient;
         mApplicationPasswordsConfiguration = applicationPasswordsConfiguration;
+        mCrashLogger = crashLogger;
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -630,7 +630,7 @@ public class MediaStore extends Store {
                    && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.uploadMedia(payload.site, payload.media);
         } else {
-            mMediaXmlrpcClient.uploadMedia(payload.site, payload.media);
+            reportXmlrpcTry();
         }
     }
 
@@ -652,7 +652,7 @@ public class MediaStore extends Store {
                    && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
         } else {
-            mMediaXmlrpcClient.fetchMediaList(payload.site, payload.number, offset, payload.mimeType);
+            reportXmlrpcTry();
         }
     }
 
@@ -671,7 +671,7 @@ public class MediaStore extends Store {
                    && mApplicationPasswordsConfiguration.isEnabledForDirectAccess()) {
             mApplicationPasswordsMediaRestClient.cancelUpload(media);
         } else {
-            mMediaXmlrpcClient.cancelUpload(media);
+            reportXmlrpcTry();
         }
     }
 
@@ -770,5 +770,9 @@ public class MediaStore extends Store {
         OnMediaChanged mediaChange = new OnMediaChanged(cause, mediaList);
         mediaChange.error = new MediaError(errorType, null);
         emitChange(mediaChange);
+    }
+
+    private void reportXmlrpcTry() {
+        mCrashLogger.sendReport(null, Collections.emptyMap(), "Requested MediaStore XMLRPC connection. This shouldn't happen.");
     }
 }
