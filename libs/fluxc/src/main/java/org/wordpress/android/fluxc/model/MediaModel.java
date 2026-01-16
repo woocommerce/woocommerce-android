@@ -3,20 +3,13 @@ package org.wordpress.android.fluxc.model;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.yarolegovich.wellsql.core.Identifiable;
-import com.yarolegovich.wellsql.core.annotation.Column;
-import com.yarolegovich.wellsql.core.annotation.PrimaryKey;
-import com.yarolegovich.wellsql.core.annotation.Table;
-
 import org.wordpress.android.fluxc.Payload;
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.util.StringUtils;
 
 import java.io.Serializable;
 
-// WARN: This class is used within WordPress-MediaPicker-Android, do not remove!
-@Table
-public class MediaModel extends Payload<BaseNetworkError> implements Identifiable, Serializable {
+public class MediaModel extends Payload<BaseNetworkError> implements Serializable {
     private static final long serialVersionUID = -1396457338496002846L;
 
     public enum MediaUploadState {
@@ -35,56 +28,34 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
         }
     }
 
-    @PrimaryKey
-    @Column private int mId;
+    private int mId;
 
     // Associated IDs
-    @Column private int mLocalSiteId;
-    @Column private long mMediaId; // The remote ID of the media
-    @Column private long mPostId; // The remote post ID ('parent') of the media
+    private int mLocalSiteId;
+    private long mMediaId; // The remote ID of the media
+    private long mPostId; // The remote post ID ('parent') of the media
 
     // Upload date, ISO 8601-formatted date in UTC
-    @Nullable @Column private String mUploadDate;
+    @Nullable private String mUploadDate;
 
     // Remote Url's
-    @NonNull @Column private String mUrl;
-    @Nullable @Column private String mThumbnailUrl;
+    @NonNull private String mUrl;
+    @Nullable private String mThumbnailUrl;
 
     // File descriptors
-    @Nullable @Column private String mFileName;
-    @Nullable @Column private String mFilePath;
-    @Nullable @Column private String mMimeType;
+    @Nullable private String mFileName;
+    @Nullable private String mFilePath;
+    @Nullable private String mMimeType;
 
     // Descriptive strings
-    @Nullable @Column private String mTitle;
-    @NonNull @Column private String mCaption;
-    @NonNull @Column private String mDescription;
-    @NonNull @Column private String mAlt;
+    @Nullable private String mTitle;
+    @NonNull private String mCaption;
+    @NonNull private String mDescription;
+    @NonNull private String mAlt;
 
     // Local only
-    @Nullable @Column private String mUploadState;
-    @Column private boolean mMarkedLocallyAsFeatured;
-
-    @Deprecated
-    @SuppressWarnings("DeprecatedIsStillUsed")
-    public MediaModel() {
-        this.mId = 0;
-        this.mLocalSiteId = 0;
-        this.mMediaId = 0;
-        this.mPostId = 0;
-        this.mUploadDate = null;
-        this.mUrl = "";
-        this.mThumbnailUrl = null;
-        this.mFileName = null;
-        this.mFilePath = null;
-        this.mMimeType = null;
-        this.mTitle = null;
-        this.mCaption = "";
-        this.mDescription = "";
-        this.mAlt = "";
-        this.mUploadState = null;
-        this.mMarkedLocallyAsFeatured = false;
-    }
+    @Nullable private String mUploadState;
+    private boolean mMarkedLocallyAsFeatured;
 
     /**
      * Use when converting local uri into a media, and then, to upload a new or update an existing media.
@@ -165,12 +136,10 @@ public class MediaModel extends Payload<BaseNetworkError> implements Identifiabl
                 && StringUtils.equals(getUploadState(), otherMedia.getUploadState());
     }
 
-    @Override
     public void setId(int id) {
         mId = id;
     }
 
-    @Override
     public int getId() {
         return mId;
     }

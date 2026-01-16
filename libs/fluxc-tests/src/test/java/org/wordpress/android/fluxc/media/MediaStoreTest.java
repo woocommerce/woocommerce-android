@@ -6,25 +6,17 @@ import static junit.framework.Assert.assertTrue;
 import static org.wordpress.android.fluxc.media.MediaTestUtils.generateMediaFromPath;
 import static org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId;
 
-import android.content.Context;
-
-import com.yarolegovich.wellsql.WellSql;
-
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests;
 import org.wordpress.android.fluxc.logging.FakeCrashLogging;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
-import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.store.MediaCacheOperations;
 import org.wordpress.android.fluxc.store.MediaIdGenerator;
 import org.wordpress.android.fluxc.store.MediaLibraryCache;
@@ -57,14 +49,6 @@ public class MediaStoreTest {
             mMediaCacheOperations,
             new FakeMediaIdGenerator()
     );
-
-    @Before
-    public void setUp() {
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        WellSqlConfig config = new SingleStoreWellSqlConfigForTests(context, MediaModel.class);
-        WellSql.init(config);
-        config.reset();
-    }
 
     @Test
     public void testGetSiteImages() {
