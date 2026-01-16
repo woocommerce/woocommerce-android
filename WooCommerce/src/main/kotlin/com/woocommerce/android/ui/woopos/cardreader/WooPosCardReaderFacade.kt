@@ -14,4 +14,8 @@ class WooPosCardReaderFacade @Inject constructor(
 ) {
     val readerStatus: StateFlow<CardReaderStatus> = cardReaderManager.readerStatus
     val softwareUpdateAvailability: Flow<SoftwareUpdateAvailability> = cardReaderManager.softwareUpdateAvailability
+
+    fun cancelReconnection() {
+        cardReaderManager.cancelReconnection()
+    }
 }
