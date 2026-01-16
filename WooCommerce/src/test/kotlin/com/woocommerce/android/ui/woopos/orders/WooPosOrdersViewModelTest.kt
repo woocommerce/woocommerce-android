@@ -664,7 +664,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
-        whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
 
         // WHEN
         viewModel = createViewModel()

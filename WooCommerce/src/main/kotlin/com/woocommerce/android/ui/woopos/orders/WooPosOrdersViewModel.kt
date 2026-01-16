@@ -64,6 +64,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
+    private var sideLoadActionsJob: Job? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -145,10 +146,16 @@ class WooPosOrdersViewModel @Inject constructor(
         viewModelScope.launch {
             val orderDetailsViewState = loadedItems.items.values.firstOrNull { it.orderId == orderId }
 
-            val details = if (orderDetailsViewState is WooPosOrdersState.OrderDetailsViewState.Lazy) {
-                getOrComputeDetailsWithoutActions(orderId)
-            } else {
-                getOrComputeDetails(orderId)
+            val details = when (orderDetailsViewState) {
+                is WooPosOrdersState.OrderDetailsViewState.Lazy -> {
+                    getOrComputeDetailsWithoutActions(orderId)
+                }
+                is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                    orderDetailsViewState.details
+                }
+                else -> {
+                    getOrComputeDetails(orderId)
+                }
             }
 
             val updatedItems = loadedItems.items.mapKeys { (item, _) ->
@@ -187,7 +194,8 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     private fun sideLoadActions(orderId: Long, order: Order) {
-        viewModelScope.launch {
+        sideLoadActionsJob?.cancel()
+        sideLoadActionsJob = viewModelScope.launch {
             val refundsResult = retrieveOrderRefunds(order = order, forceRefresh = true).fold(
                 onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
                 onFailure = { RefundsFetchResult.Error }
@@ -584,7 +592,9 @@ class WooPosOrdersViewModel @Inject constructor(
 
         return when (orderDetails) {
             is WooPosOrdersState.OrderDetailsViewState.Lazy -> mapOrderDetailsWithoutActions(orderDetails.order)
-            is WooPosOrdersState.OrderDetailsViewState.Computed -> orderDetails.details
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                orderDetails.details
+            }
         }
     }
 
