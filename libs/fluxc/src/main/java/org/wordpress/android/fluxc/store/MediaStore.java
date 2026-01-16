@@ -773,6 +773,6 @@ public class MediaStore extends Store {
     }
 
     private void reportXmlrpcTry() {
-        mCrashLogger.sendReport(null, Collections.emptyMap(), "Requested MediaStore XMLRPC connection. This shouldn't happen.");
+        mCrashLogger.sendReport(null, Collections.emptyMap(), "Requested MediaStore XMLRPC connection. This should not happen.");
     }
 }
