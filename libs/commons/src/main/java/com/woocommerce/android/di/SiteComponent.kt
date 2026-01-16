@@ -1,11 +1,7 @@
 package com.woocommerce.android.di
 
-import androidx.datastore.core.DataStore
-import com.woocommerce.android.ui.mystore.data.DashboardDataModel
 import dagger.BindsInstance
 import dagger.hilt.DefineComponent
-import dagger.hilt.EntryPoint
-import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineScope
 import org.wordpress.android.fluxc.model.SiteModel
@@ -27,15 +23,6 @@ interface SiteComponent {
         fun setCoroutineScope(@BindsInstance @SiteCoroutineScope scope: CoroutineScope): Builder
         fun build(): SiteComponent
     }
-}
-
-@InstallIn(SiteComponent::class)
-@EntryPoint
-interface SiteComponentEntryPoint {
-    fun dashboardDataStore(): DataStore<DashboardDataModel>
-
-    @SiteCoroutineScope
-    fun siteCoroutineScope(): CoroutineScope
 }
 
 @Qualifier
