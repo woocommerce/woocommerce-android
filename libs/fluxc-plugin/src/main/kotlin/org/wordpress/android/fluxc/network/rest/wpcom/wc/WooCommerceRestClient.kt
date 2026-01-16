@@ -16,6 +16,7 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
         const val COUPONS_SETTING_ID = "woocommerce_enable_coupons"
         const val TAX_SETTING_GROUP = "tax"
         const val TAX_SETTING_ID = "woocommerce_tax_based_on"
+        const val ROUND_TAX_AT_SUBTOTAL_SETTING_ID = "woocommerce_tax_round_at_subtotal"
 
         private const val ROOT_ENDPOINT_TIMEOUT_MS = 15000
     }
@@ -91,5 +92,15 @@ class WooCommerceRestClient @Inject constructor(private val wooNetwork: WooNetwo
             clazz = SiteSettingOptionResponse::class.java
         )
         return response.toWooPayload { it }
+    }
+
+    suspend fun fetchSiteSettingsTaxRoundTaxAtSubtotal(site: SiteModel): WooPayload<Boolean> {
+        val url = WOOCOMMERCE.settings.group(TAX_SETTING_GROUP).id(ROUND_TAX_AT_SUBTOTAL_SETTING_ID).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = SiteSettingOptionResponse::class.java,
+        )
+        return response.toWooPayload { it.value == "yes" }
     }
 }

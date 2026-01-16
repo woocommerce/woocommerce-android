@@ -18,10 +18,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMContent
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMCta
@@ -31,7 +27,7 @@ class JitmViewModelTest : BaseUnitTest() {
     private val savedState: SavedStateHandle = mock {
         on { get<String>(JITM_MESSAGE_PATH_KEY) }.thenReturn("woomobile:my_store:admin_notices")
     }
-    private val jitmStoreInMemoryCache: JitmStoreInMemoryCache = mock()
+    private val bannerMessageRepository: JitmBannerMessageRepository = mock()
     private val jitmTracker: JitmTracker = mock()
     private val utmProvider: JitmUtmProvider = mock()
     private val selectedSite: SelectedSite = mock()
@@ -42,7 +38,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success response, when viewmodel init, then proper banner state event is triggered`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
@@ -59,7 +55,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm empty response, when viewmodel init, then banner state hide event is triggered`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 emptyList()
             )
@@ -76,7 +72,7 @@ class JitmViewModelTest : BaseUnitTest() {
             val testJitmMessage = "Test jitm message"
 
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -101,7 +97,7 @@ class JitmViewModelTest : BaseUnitTest() {
             val imageUrl = "https://test.com/image.png"
             val imageDarkUrl = "https://test.com/image_dark.png"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -136,7 +132,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val imageUrl = "https://test.com/image.png"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -169,7 +165,7 @@ class JitmViewModelTest : BaseUnitTest() {
             val imageUrl = "https://test.com/image.png"
             val imageDarkUrl = "https://test.com/image_dark.png"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -202,7 +198,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val imageUrl = "https://test.com/image.png"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -232,7 +228,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val testJitmDescription = "Test jitm description"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -255,7 +251,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success response with modal, when viewmodel init, then proper jitm is used in UI`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -290,7 +286,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val imageUrl = "https://test.com/image.png"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -321,7 +317,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success response with not modal or banner, when viewmodel init, then banner jitm is used in UI`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -339,7 +335,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success response with banner, when viewmodel init, then banner jitm is used in UI`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -358,7 +354,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val testJitmCtaLabel = "Test jitm Cta label"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -383,7 +379,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val jitmCtaLink = "https://woocommerce.com/products/hardware/US"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -416,7 +412,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             val jitmCtaLink = "https://woocommerce.com/products/hardware/US"
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -439,7 +435,7 @@ class JitmViewModelTest : BaseUnitTest() {
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onPrimaryActionClicked.invoke()
 
-            verify(jitmStoreInMemoryCache).onCtaClicked("woomobile:my_store:admin_notices")
+            verify(bannerMessageRepository).onCtaClicked("woomobile:my_store:admin_notices", "")
         }
     }
 
@@ -450,7 +446,7 @@ class JitmViewModelTest : BaseUnitTest() {
         whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -489,7 +485,7 @@ class JitmViewModelTest : BaseUnitTest() {
             sut.fetchJitms()
 
             // called twice, on view model init and on pull to refresh
-            verify(jitmStoreInMemoryCache, times(2)).getMessagesForPath(any())
+            verify(bannerMessageRepository, times(2)).getMessagesForPath(any())
         }
     }
 
@@ -500,7 +496,7 @@ class JitmViewModelTest : BaseUnitTest() {
             val captor = argumentCaptor<String>()
 
             whenViewModelIsCreated()
-            verify(jitmStoreInMemoryCache).getMessagesForPath(captor.capture())
+            verify(bannerMessageRepository).getMessagesForPath(captor.capture())
 
             assertThat(captor.firstValue).isEqualTo(expectedMessagePath)
         }
@@ -510,7 +506,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm displayed, when jitm dismiss tapped, then banner state is updated to not display`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
@@ -528,7 +524,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success response, when viewmodel init, then jitm displayed is tracked`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
@@ -549,7 +545,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm success, when viewmodel init, then jitm displayed is tracked with correct properties`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -574,7 +570,7 @@ class JitmViewModelTest : BaseUnitTest() {
         whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
@@ -606,7 +602,7 @@ class JitmViewModelTest : BaseUnitTest() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(SiteModel())
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -640,7 +636,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
@@ -662,7 +658,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm displayed, when dismiss tapped, then dismiss tapped event is tracked with correct properties`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -687,17 +683,15 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm dismissed, when dismiss success, then dismiss success event is tracked`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
                 )
             )
             whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(true)
-            )
+                bannerMessageRepository.dismissMessage(any(), any(), any())
+            ).thenReturn(true)
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -714,7 +708,7 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm dismissed, when dismiss success, then dismiss success event is tracked with correct properties`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -724,10 +718,8 @@ class JitmViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(true)
-            )
+                bannerMessageRepository.dismissMessage(any(), any(), any())
+            ).thenReturn(true)
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -744,17 +736,15 @@ class JitmViewModelTest : BaseUnitTest() {
     fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse()
                 )
             )
             whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(false)
-            )
+                bannerMessageRepository.dismissMessage(any(), any(), any())
+            ).thenReturn(false)
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -770,82 +760,10 @@ class JitmViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given jitm dismissed, when dismiss error, then dismiss failure event is tracked`() {
-        testBlocking {
-            whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
-            ).thenReturn(
-                listOf(
-                    provideJitmApiResponse()
-                )
-            )
-            whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(
-                    WooError(
-                        type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.NETWORK_ERROR
-                    )
-                )
-            )
-
-            whenViewModelIsCreated()
-            (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
-
-            verify(jitmTracker).trackJitmDismissFailure(
-                anyString(),
-                anyString(),
-                anyString(),
-                any(),
-                eq(null)
-            )
-        }
-    }
-
-    @Test
-    fun `given jitm dismissed, when dismiss error, then dismiss failure event is tracked with correct properties`() {
-        testBlocking {
-            whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
-            ).thenReturn(
-                listOf(
-                    provideJitmApiResponse(
-                        id = "12345",
-                        featureClass = "woomobile_ipp"
-                    )
-                )
-            )
-            whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), any(), any())
-            ).thenReturn(
-                WooResult(
-                    WooError(
-                        type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.NETWORK_ERROR,
-                        message = "Generic error"
-                    )
-                )
-            )
-
-            whenViewModelIsCreated()
-            (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
-
-            verify(jitmTracker).trackJitmDismissFailure(
-                UTM_SOURCE,
-                "12345",
-                "woomobile_ipp",
-                WooErrorType.GENERIC_ERROR,
-                "Generic error"
-            )
-        }
-    }
-
-    @Test
     fun `given jitm dismissed, when dismiss failure, then dismiss failure event is tracked with correct properties`() {
         testBlocking {
             whenever(
-                jitmStoreInMemoryCache.getMessagesForPath(any())
+                bannerMessageRepository.getMessagesForPath(any())
             ).thenReturn(
                 listOf(
                     provideJitmApiResponse(
@@ -855,10 +773,8 @@ class JitmViewModelTest : BaseUnitTest() {
                 )
             )
             whenever(
-                jitmStoreInMemoryCache.dismissJitmMessage(any(), eq("12345"), eq("woomobile_ipp"))
-            ).thenReturn(
-                WooResult(false)
-            )
+                bannerMessageRepository.dismissMessage(any(), eq("12345"), eq("woomobile_ipp"))
+            ).thenReturn(false)
 
             whenViewModelIsCreated()
             (sut.jitmState.value as JitmState.Banner).onDismissClicked.invoke()
@@ -876,7 +792,7 @@ class JitmViewModelTest : BaseUnitTest() {
     private fun whenViewModelIsCreated() {
         sut = JitmViewModel(
             savedState,
-            jitmStoreInMemoryCache,
+            bannerMessageRepository,
             jitmTracker,
             utmProvider,
             selectedSite,
@@ -934,7 +850,6 @@ class JitmViewModelTest : BaseUnitTest() {
     )
 
     private companion object {
-        val WOO_GENERIC_ERROR = WooError(WooErrorType.GENERIC_ERROR, BaseRequest.GenericErrorType.UNKNOWN)
         const val UTM_SOURCE = "my_store"
     }
 }

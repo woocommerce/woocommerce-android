@@ -282,6 +282,49 @@ class ResolveAppLinkTest {
         return uri
     }
 
+    @Test
+    fun `given woo pos promo link without blog id, when resolve app link, then ViewWooPosPromo returned`() {
+        mockSiteSelected()
+        val uri = mockWooPosPromoUri(blogId = null)
+
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewWooPosPromo)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    @Test
+    fun `given woo pos promo link with blog id same as selected, when resolve app link, then ViewWooPosPromo returned`() {
+        mockSiteSelected()
+        val uri = mockWooPosPromoUri(blogId = TEST_BLOG_ID.toString())
+
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ViewWooPosPromo)
+        verify(tracker).track(AnalyticsEvent.UNIVERSAL_LINK_OPENED, mapOf(KEY_PATH to uri.path))
+    }
+
+    @Test
+    fun `given woo pos promo link with blog id not same as selected, when resolve app link, then ChangeSiteAndRestart returned`() {
+        mockSiteSelected(mockedSiteId = 987)
+        val uri = mockWooPosPromoUri(blogId = TEST_BLOG_ID.toString())
+
+        val result = sut(uri)
+
+        assertThat(result).isEqualTo(ResolveAppLink.Action.ChangeSiteAndRestart(TEST_BLOG_ID, uri))
+        verifyNoInteractions(tracker)
+    }
+
+    private fun mockWooPosPromoUri(
+        blogId: String? = TEST_BLOG_ID.toString()
+    ): Uri {
+        val uri = mock<Uri> {
+            on { path } doReturn "/in-person-payments"
+            on { getQueryParameter("blog_id") } doReturn blogId
+        }
+        return uri
+    }
+
     private companion object {
         const val TEST_ORDER_ID = 123L
         const val TEST_BLOG_ID = 345L

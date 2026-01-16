@@ -39,6 +39,7 @@ class WooPosPopularProductsProvider @Inject constructor(
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
             sortType = ProductSorting.POPULARITY_DESC,
+            posProductsOnly = true,
         )
 
         return if (result.isError) {

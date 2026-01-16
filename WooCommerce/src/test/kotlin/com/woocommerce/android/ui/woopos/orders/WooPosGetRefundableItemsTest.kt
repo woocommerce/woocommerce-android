@@ -161,10 +161,10 @@ class WooPosGetRefundableItemsTest {
         assertThat(item.variationId).isEqualTo(0)
         assertThat(item.name).isEqualTo("Test Product")
         assertThat(item.unitPrice).isEqualTo(BigDecimal("20.00"))
-        assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+        assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         assertThat(item.rowIndex).isEqualTo(0)
         assertThat(item.formattedUnitPrice).isEqualTo("USD20.00")
-        assertThat(item.formattedUnitTax).isEqualTo("USD2.00")
+        assertThat(item.formattedUnitTax).isEqualTo("USD2.0")
     }
 
     @Test
@@ -191,7 +191,7 @@ class WooPosGetRefundableItemsTest {
             assertThat(item.productId).isEqualTo(50L)
             assertThat(item.name).isEqualTo("Test Product")
             assertThat(item.unitPrice).isEqualTo(BigDecimal("20.00"))
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -767,7 +767,7 @@ class WooPosGetRefundableItemsTest {
         // THEN
         assertThat(result).hasSize(5)
         result.forEach { item ->
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -826,7 +826,7 @@ class WooPosGetRefundableItemsTest {
         // THEN
         assertThat(result).hasSize(3) // 3.5 converted to int = 3
         result.forEach { item ->
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -893,7 +893,7 @@ class WooPosGetRefundableItemsTest {
 
         // THEN
         assertThat(result).hasSize(1)
-        assertThat(result[0].formattedUnitTax).isEqualTo("GBP2.50")
+        assertThat(result[0].formattedUnitTax).isEqualTo("GBP2.5")
     }
 
     // Edge Cases

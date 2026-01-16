@@ -21,19 +21,19 @@ import java.util.concurrent.atomic.AtomicInteger
 import javax.inject.Inject
 
 sealed class LoadOrdersResult {
-    data class SuccessCache(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
-    data class SuccessRemote(val ordersWithRefunds: Map<Order, RefundFetchResult>) : LoadOrdersResult()
+    data class SuccessCache(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : LoadOrdersResult()
+    data class SuccessRemote(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : LoadOrdersResult()
     data class Error(val message: String) : LoadOrdersResult()
 }
 
 sealed class SearchOrdersResult {
-    data class Success(val ordersWithRefunds: Map<Order, RefundFetchResult>) : SearchOrdersResult()
+    data class Success(val ordersWithRefunds: Map<Order, RefundsFetchResult>) : SearchOrdersResult()
     data class Error(val message: String) : SearchOrdersResult()
 }
 
-sealed class RefundFetchResult {
-    data class Success(val refunds: List<Refund>) : RefundFetchResult()
-    object Error : RefundFetchResult()
+sealed class RefundsFetchResult {
+    data class Success(val refunds: List<Refund>) : RefundsFetchResult()
+    object Error : RefundsFetchResult()
 }
 
 class WooPosOrdersDataSource @Inject constructor(
@@ -82,7 +82,7 @@ class WooPosOrdersDataSource @Inject constructor(
         )
     }
 
-    suspend fun loadMore(searchQuery: String? = null): Result<Map<Order, RefundFetchResult>> =
+    suspend fun loadMore(searchQuery: String? = null): Result<Map<Order, RefundsFetchResult>> =
         withContext(Dispatchers.IO) {
             loadNextPage(searchQuery).map { orders ->
                 fetchRefundsForOrders(orders)
@@ -100,7 +100,7 @@ class WooPosOrdersDataSource @Inject constructor(
 
     suspend fun refreshOrderById(orderId: Long): Result<Order> {
         val site = selectedSite.get()
-        val payload = restClient.fetchSingleOrder(site, orderId)
+        val payload = restClient.fetchSingleOrder(site, orderId, decimalPoints = 8)
         return if (payload.error == null) {
             val entity = payload.orderWithMeta.first
             val order = orderMapper.toAppModel(entity)
@@ -155,7 +155,8 @@ class WooPosOrdersDataSource @Inject constructor(
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
         statusFilter = null,
         createdVia = "pos-rest-api",
-        searchQuery = searchQuery
+        searchQuery = searchQuery,
+        decimalPoints = 8,
     )
 
     fun clearCache() = ordersCache.clear()
@@ -167,13 +168,13 @@ class WooPosOrdersDataSource @Inject constructor(
     private fun WCOrderStore.OrderError.toThrowable(): Throwable =
         Throwable("[$type] $message")
 
-    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundFetchResult> =
+    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundsFetchResult> =
         coroutineScope {
             orders.map { order ->
                 async {
                     retrieveOrderRefunds(order).fold(
-                        onSuccess = { refunds -> order to RefundFetchResult.Success(refunds) },
-                        onFailure = { order to RefundFetchResult.Error }
+                        onSuccess = { refunds -> order to RefundsFetchResult.Success(refunds) },
+                        onFailure = { order to RefundsFetchResult.Error }
                     )
                 }
             }.awaitAll().toMap()

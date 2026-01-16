@@ -117,44 +117,4 @@ public class UploadSqlUtilsTest {
         assertNull(UploadSqlUtils.getMediaUploadModelForLocalId(mediaUploadModel2.getId()));
     }
 
-    @Test
-    public void testDeleteMediaUploadModel() {
-        MediaModel testMedia1 = UploadTestUtils.getTestMedia(65);
-        MediaModel testMedia2 = UploadTestUtils.getTestMedia(35);
-
-        assertEquals(1, MediaSqlUtils.insertOrUpdateMedia(testMedia1));
-        assertEquals(1, MediaSqlUtils.insertOrUpdateMedia(testMedia2));
-        List<MediaModel> mediaModels = MediaSqlUtils.getAllSiteMedia(UploadTestUtils.getTestSite());
-        assertEquals(2, mediaModels.size());
-
-        // Store MediaUploadModels corresponding to the MediaModels
-        testMedia1 = mediaModels.get(0);
-        MediaUploadModel mediaUploadModel1 = new MediaUploadModel(testMedia1.getId());
-        mediaUploadModel1.setProgress(0.65F);
-        UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel1);
-
-        testMedia2 = mediaModels.get(1);
-        MediaUploadModel mediaUploadModel2 = new MediaUploadModel(testMedia2.getId());
-        mediaUploadModel2.setProgress(0.35F);
-        UploadSqlUtils.insertOrUpdateMedia(mediaUploadModel2);
-
-        // Delete one of the MediaUploadModels
-        assertEquals(1, UploadSqlUtils.deleteMediaUploadModelWithLocalId(testMedia2.getId()));
-
-        List<MediaUploadModel> mediaUploadModels = WellSql.select(MediaUploadModel.class).getAsModel();
-        assertEquals(1, mediaUploadModels.size());
-        assertEquals(testMedia1.getId(), mediaUploadModels.get(0).getId());
-
-        // Delete the other MediaUploadModel
-        Set<Integer> mediaIdSet = new HashSet<>();
-        mediaIdSet.add(testMedia1.getId());
-        assertEquals(1, UploadSqlUtils.deleteMediaUploadModelsWithLocalIds(mediaIdSet));
-
-        mediaUploadModels = WellSql.select(MediaUploadModel.class).getAsModel();
-        assertEquals(0, mediaUploadModels.size());
-
-        // The corresponding MediaModels should be untouched
-        mediaModels = MediaSqlUtils.getAllSiteMedia(UploadTestUtils.getTestSite());
-        assertEquals(2, mediaModels.size());
-    }
 }

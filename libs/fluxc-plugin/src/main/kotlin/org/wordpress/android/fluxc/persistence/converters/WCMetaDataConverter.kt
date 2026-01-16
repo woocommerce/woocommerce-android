@@ -8,7 +8,6 @@ import org.wordpress.android.fluxc.model.metadata.WCMetaData
 
 internal class WCMetaDataConverter {
     @TypeConverter
-    @Suppress("ReturnCount")
     fun metaDataListToString(value: List<WCMetaData>?): String? {
         if (value == null) {
             return null
@@ -25,7 +24,6 @@ internal class WCMetaDataConverter {
     }
 
     @TypeConverter
-    @Suppress("ReturnCount")
     fun stringToMetaDataList(value: String?): List<WCMetaData>? {
         if (value == null) {
             return null
