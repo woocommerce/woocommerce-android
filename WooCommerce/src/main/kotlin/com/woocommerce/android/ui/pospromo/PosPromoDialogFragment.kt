@@ -11,9 +11,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.Navigation
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,7 +46,11 @@ class PosPromoDialogFragment : DialogFragment() {
                         onNextClick = viewModel::onNextClick,
                         onExploreClick = {
                             viewModel.onExploreClick()
-                            ChromeCustomTabUtils.launchUrl(requireContext(), PosPromoViewModel.WOO_POS_DOCS_URL)
+                            Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_main).navigate(
+                                NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                                    urlToLoad = PosPromoViewModel.WOO_POS_DOCS_URL
+                                )
+                            )
                             dismiss()
                         }
                     )
