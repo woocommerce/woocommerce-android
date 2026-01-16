@@ -29,9 +29,13 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab.Products
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsUIEvent.SearchChanged
 import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreen
+import com.woocommerce.android.ui.woopos.home.items.coupons.WooPosCouponsScreenContentPreview
+import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchContentPreview
 import com.woocommerce.android.ui.woopos.home.items.coupons.search.WooPosCouponsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosItemsScreenPreview
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsScreen
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreen
+import com.woocommerce.android.ui.woopos.home.items.search.WooPosItemsSearchScreenPreview
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsScreen
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -62,6 +66,10 @@ private fun WooPosItemsScreen(
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
+    productsContent: (@Composable () -> Unit)? = null,
+    couponsContent: (@Composable () -> Unit)? = null,
+    productsSearchContent: (@Composable () -> Unit)? = null,
+    couponsSearchContent: (@Composable () -> Unit)? = null,
 ) {
     val state = itemsStateFlow.collectAsState()
     val catalogSyncOverdueBannerState = catalogSyncOverdueBannerStateFlow.collectAsState()
@@ -92,6 +100,20 @@ private fun WooPosItemsScreen(
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
         onSyncWarningBannerDismissed = { onUIEvent(WooPosItemsUIEvent.SyncOverdueBannerDismissed) },
+        productsContent = productsContent ?: {
+            WooPosProductsScreen(
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                listState = productsViewState
+            )
+        },
+        couponsContent = couponsContent ?: {
+            WooPosCouponsScreen(
+                modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+                listState = couponsListState,
+            )
+        },
+        productsSearchContent = productsSearchContent ?: { WooPosItemsSearchScreen() },
+        couponsSearchContent = couponsSearchContent ?: { WooPosCouponsSearchScreen() },
     )
 }
 
@@ -108,6 +130,20 @@ private fun MainItemsList(
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
     onSyncWarningBannerDismissed: () -> Unit,
+    productsContent: @Composable () -> Unit = {
+        WooPosProductsScreen(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            listState = productsViewState
+        )
+    },
+    couponsContent: @Composable () -> Unit = {
+        WooPosCouponsScreen(
+            modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
+            listState = couponsListState,
+        )
+    },
+    productsSearchContent: @Composable () -> Unit = { WooPosItemsSearchScreen() },
+    couponsSearchContent: @Composable () -> Unit = { WooPosCouponsSearchScreen() },
 ) {
     Box(modifier = modifier.fillMaxSize()) {
         Column(modifier.fillMaxHeight()) {
@@ -148,21 +184,9 @@ private fun MainItemsList(
                 ),
             ) { screenState ->
                 when (screenState) {
-                    ScreenState.Products -> WooPosProductsScreen(
-                        modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value,
-                        ),
-                        listState = productsViewState
-                    )
-
-                    ScreenState.ProductsSearch -> WooPosItemsSearchScreen()
-                    ScreenState.Coupons -> WooPosCouponsScreen(
-                        modifier = Modifier.padding(
-                            horizontal = WooPosSpacing.Medium.value,
-                        ),
-                        listState = couponsListState,
-                    )
-
+                    ScreenState.Products -> productsContent()
+                    ScreenState.ProductsSearch -> productsSearchContent()
+                    ScreenState.Coupons -> couponsContent()
                     is ScreenState.Variations -> {
                         WooPosVariationsScreen(
                             modifier = Modifier.padding(
@@ -172,7 +196,7 @@ private fun MainItemsList(
                             onBackClicked = { onBackClicked() },
                         )
                     }
-                    is ScreenState.CouponsSearch -> WooPosCouponsSearchScreen()
+                    ScreenState.CouponsSearch -> couponsSearchContent()
                 }
             }
         }
@@ -225,10 +249,7 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsToolbarViewState.ProductList(
             search = WooPosItemsToolbarViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query("", 0),
-                    isLoading = false,
-                )
+                state = WooPosSearchInputState.Closed
             ),
             tabs = tabs()
         )
@@ -242,6 +263,10 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             onUIEvent = {},
+            productsContent = { WooPosItemsScreenPreview() },
+            couponsContent = { WooPosCouponsScreenContentPreview() },
+            productsSearchContent = { WooPosItemsSearchScreenPreview() },
+            couponsSearchContent = { WooPosCouponsSearchContentPreview() },
         )
     }
 }
@@ -252,12 +277,7 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
 fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
     val productState = MutableStateFlow(
         WooPosItemsToolbarViewState.ProductList(
-            search = WooPosItemsToolbarViewState.SearchState.Visible(
-                state = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query("", 0),
-                    isLoading = false,
-                )
-            ),
+            search = WooPosItemsToolbarViewState.SearchState.Hidden,
             tabs = tabs()
         )
     )
@@ -270,6 +290,10 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             onUIEvent = {},
+            productsContent = { WooPosItemsScreenPreview() },
+            couponsContent = { WooPosCouponsScreenContentPreview() },
+            productsSearchContent = { WooPosItemsSearchScreenPreview() },
+            couponsSearchContent = { WooPosCouponsSearchContentPreview() },
         )
     }
 }

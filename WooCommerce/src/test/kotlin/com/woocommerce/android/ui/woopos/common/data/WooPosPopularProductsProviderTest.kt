@@ -68,7 +68,8 @@ class WooPosPopularProductsProviderTest {
                 pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
-                sortType = ProductSorting.POPULARITY_DESC
+                sortType = ProductSorting.POPULARITY_DESC,
+                posProductsOnly = true
             )
         ).thenReturn(successResult)
 
@@ -93,7 +94,8 @@ class WooPosPopularProductsProviderTest {
                 pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
-                sortType = ProductSorting.POPULARITY_DESC
+                sortType = ProductSorting.POPULARITY_DESC,
+                posProductsOnly = true
             )
         ).thenReturn(successResult)
 
@@ -124,7 +126,8 @@ class WooPosPopularProductsProviderTest {
                 pageSize = 10,
                 filterOptions = emptyMap(),
                 includeTypes = emptyList(),
-                sortType = ProductSorting.POPULARITY_DESC
+                sortType = ProductSorting.POPULARITY_DESC,
+                posProductsOnly = true
             )
         ).thenReturn(errorResult)
 
@@ -151,7 +154,8 @@ class WooPosPopularProductsProviderTest {
                     pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
-                    sortType = ProductSorting.POPULARITY_DESC
+                    sortType = ProductSorting.POPULARITY_DESC,
+                    posProductsOnly = true
                 )
             ).thenReturn(successResult)
 
@@ -177,7 +181,8 @@ class WooPosPopularProductsProviderTest {
                     pageSize = 10,
                     filterOptions = emptyMap(),
                     includeTypes = emptyList(),
-                    sortType = ProductSorting.POPULARITY_DESC
+                    sortType = ProductSorting.POPULARITY_DESC,
+                    posProductsOnly = true
                 )
             ).thenReturn(emptyResult)
 

@@ -2,8 +2,17 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.0
+-----
+- [*][Woo POS] Display variation attributes on order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15187]
+- [Internal][Woo POS] Optimize SQL queries for batch deletion in local catalog store [https://github.com/woocommerce/woocommerce-android/pull/15199]
+- [Internal][Woo POS] Apply POS product visibility filtering to remote/non-local-catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15191]
+- [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
+- [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
+
 23.9
 -----
+- [Internal] Updated JITM banner design and migrated to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15155]
 - [*] Fixed First Product Created celebration dialog layout on tablets to eliminate excessive white space [https://github.com/woocommerce/woocommerce-android/pull/15116]
 - [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 - [*][Woo POS] Fixed loading indicator colors to match the design [https://github.com/woocommerce/woocommerce-android/pull/15043]
@@ -26,6 +35,7 @@
 - [*][Woo POS] Automatically scroll to newly created orders when returning to the Orders screen [https://github.com/woocommerce/woocommerce-android/pull/14990]
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
 - [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
+- [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
 - [*] [WEAR] Resolved title clipping on round screens for Wear [https://github.com/woocommerce/woocommerce-android/pull/15108]
 
 23.7

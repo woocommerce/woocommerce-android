@@ -30,7 +30,6 @@ class WooPosSearchByIdentifierLocal @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private suspend fun searchInLocalCatalog(
         identifier: String,
         siteId: LocalOrRemoteId.LocalId

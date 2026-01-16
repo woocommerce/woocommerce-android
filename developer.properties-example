@@ -1,5 +1,5 @@
 # Build settings
-use_remote_build_cache_locally=false
+use_remote_build_cache_locally=true
 
 # Changing values below  will affect performance of remote build cache on local builds.
 # Consider using the default values for local builds, if it's not necessary to change them.

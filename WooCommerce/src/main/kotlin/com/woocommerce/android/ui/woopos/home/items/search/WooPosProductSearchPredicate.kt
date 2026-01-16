@@ -50,7 +50,6 @@ class WooPosProductSearchPredicate @Inject constructor(
         }
     }
 
-    @Suppress("ReturnCount")
     private fun isWooCoreSupportsNameOrSkuSearch(): Boolean {
         cachedSupportsNameOrSkuSearch?.let { return it }
         val wooCoreVersion = getWooCoreVersion() ?: return false
