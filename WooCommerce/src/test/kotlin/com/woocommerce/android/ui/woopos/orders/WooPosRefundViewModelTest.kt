@@ -10,7 +10,6 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -391,7 +390,9 @@ class WooPosRefundViewModelTest {
             )
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithMultipleItems))
-            whenever(retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())).thenReturn(Result.success(emptyList()))
+            whenever(
+                retrieveOrderRefunds.invoke(eq(orderWithMultipleItems), any())
+            ).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             // WHEN

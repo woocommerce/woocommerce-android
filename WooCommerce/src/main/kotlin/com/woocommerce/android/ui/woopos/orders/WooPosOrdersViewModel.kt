@@ -119,7 +119,8 @@ class WooPosOrdersViewModel @Inject constructor(
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
         if (current.selectedDetails?.id == orderId &&
-            current.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded) {
+            current.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded
+        ) {
             return
         }
 
@@ -209,7 +210,8 @@ class WooPosOrdersViewModel @Inject constructor(
             val updatedSelectedDetails = updatedState.selectedDetails
 
             if (updatedSelectedDetails?.id == orderId &&
-                updatedSelectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loading) {
+                updatedSelectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loading
+            ) {
                 val loadedItems = updatedState.items as? WooPosOrdersState.Content.Items.Loaded
                 val updatedItems = loadedItems?.items?.mapValues { (item, details) ->
                     if (item.id == orderId && details is WooPosOrdersState.OrderDetailsViewState.Computed) {
