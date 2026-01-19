@@ -57,7 +57,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
-        onBlocking { fetchMedia(TEST_URI) } doReturn FETCHED_MEDIA
+        onBlocking { getLocalMedia(TEST_URI) } doReturn FETCHED_MEDIA
         onBlocking { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
     }
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -110,7 +110,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         }
         worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
-        verify(mediaFilesRepository).fetchMedia(TEST_URI)
+        verify(mediaFilesRepository).getLocalMedia(TEST_URI)
         assertThat(eventsList[0]).isEqualTo(FetchSucceeded(REMOTE_PRODUCT_ID, TEST_URI, FETCHED_MEDIA))
         job.cancel()
     }
