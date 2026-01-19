@@ -64,7 +64,6 @@ object MediaTestUtils {
         private var postId: Long = 0L
         private var uploadDate: String? = "2024-01-01T00:00:00+00:00"
         private var url: String = "https://example.com/test-image.jpg"
-        private var thumbnailUrl: String? = "https://example.com/test-image-thumb.jpg"
         private var fileName: String? = "test-image.jpg"
         private var mimeType: String? = "image/jpeg"
         private var title: String? = "Test Image"
@@ -78,7 +77,6 @@ object MediaTestUtils {
         fun postId(value: Long) = apply { this.postId = value }
         fun uploadDate(value: String?) = apply { this.uploadDate = value }
         fun url(value: String) = apply { this.url = value }
-        fun thumbnailUrl(value: String?) = apply { this.thumbnailUrl = value }
         fun fileName(value: String?) = apply { this.fileName = value }
         fun mimeType(value: String?) = apply { this.mimeType = value }
         fun title(value: String?) = apply { this.title = value }
@@ -94,13 +92,11 @@ object MediaTestUtils {
                 this.postId,
                 this.uploadDate,
                 this.url,
-                this.thumbnailUrl,
                 this.fileName,
                 this.mimeType,
                 this.title,
                 this.caption,
                 this.description,
-                this.alt,
                 this.uploadState
             )
             media.id = nextId.getAndIncrement()

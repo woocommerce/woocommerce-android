@@ -144,13 +144,11 @@ class MediaLibraryCacheTest {
             0L, // postId
             null, // uploadDate
             "https://example.com/$fileName", // url
-            null, // thumbnailUrl
             fileName, // fileName
             "image/jpeg", // mimeType
             fileName, // title
             "", // caption
             "", // description
-            "", // alt
             MediaModel.MediaUploadState.UPLOADED // uploadState
         )
     }

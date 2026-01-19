@@ -7,7 +7,6 @@ import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrNull
-import org.wordpress.android.fluxc.network.rest.wpcom.media.MediaWPComRestResponse
 import org.wordpress.android.util.DateTimeUtils
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -20,7 +19,6 @@ data class MediaWPRESTResponse(
     val post: Long? = null,
     val description: Attribute,
     val caption: Attribute,
-    @SerializedName("alt_text") val altText: String,
     @SerializedName("mime_type") val mimeType: String,
     @SerializedName("media_details") val mediaDetails: MediaDetails?,
     @SerializedName("source_url") val sourceURL: String?
@@ -51,14 +49,12 @@ fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
         SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.ROOT).parse(dateGmt)
     ),
     sourceURL.orEmpty(),
-    mediaDetails?.sizes?.thumbnail?.sourceURL,
     mediaDetails?.file,
     mimeType,
     StringEscapeUtils.unescapeHtml4(title.rendered),
     StringEscapeUtils.unescapeHtml4(caption.rendered),
     StringEscapeUtils.unescapeHtml4(description.rendered),
-    StringEscapeUtils.unescapeHtml4(altText),
-    if (MediaWPComRestResponse.DELETED_STATUS == status) {
+    if (status == "deleted") {
         MediaUploadState.DELETED
     } else {
         MediaUploadState.UPLOADED

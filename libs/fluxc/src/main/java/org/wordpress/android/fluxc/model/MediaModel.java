@@ -38,7 +38,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
 
     // Remote Url's
     @NonNull private final String mUrl;
-    @Nullable private String mThumbnailUrl;
 
     // File descriptors
     @Nullable private final String mFileName;
@@ -49,11 +48,9 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
     @Nullable private final String mTitle;
     @NonNull private final String mCaption;
     @NonNull private final String mDescription;
-    @NonNull private final String mAlt;
 
     // Local only
     @Nullable private String mUploadState;
-    private boolean mMarkedLocallyAsFeatured;
 
     /**
      * Use when converting local uri into a media, and then, to upload a new or update an existing media.
@@ -75,36 +72,34 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         this.mTitle = title;
         this.mCaption = "";
         this.mDescription = "";
-        this.mAlt = "";
         this.mUploadState = uploadState != null ? uploadState.toString() : null;
     }
 
+    /**
+     * Used for receiving media from the remote
+     */
     public MediaModel(
             int localSiteId,
             long mediaId,
             long postId,
             @Nullable String uploadDate,
             @NonNull String url,
-            @Nullable String thumbnailUrl,
             @Nullable String fileName,
             @Nullable String mimeType,
             @Nullable String title,
             @NonNull String caption,
             @NonNull String description,
-            @NonNull String alt,
             @NonNull MediaUploadState uploadState) {
         this.mLocalSiteId = localSiteId;
         this.mMediaId = mediaId;
         this.mPostId = postId;
         this.mUploadDate = uploadDate;
         this.mUrl = url;
-        this.mThumbnailUrl = thumbnailUrl;
         this.mFileName = fileName;
         this.mMimeType = mimeType;
         this.mTitle = title;
         this.mCaption = caption;
         this.mDescription = description;
-        this.mAlt = alt;
         this.mUploadState = uploadState.toString();
     }
 
@@ -120,17 +115,14 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
                 && getLocalSiteId() == otherMedia.getLocalSiteId()
                 && getMediaId() == otherMedia.getMediaId()
                 && getPostId() == otherMedia.getPostId()
-                && getMarkedLocallyAsFeatured() == otherMedia.getMarkedLocallyAsFeatured()
                 && StringUtils.equals(getUploadDate(), otherMedia.getUploadDate())
                 && StringUtils.equals(getUrl(), otherMedia.getUrl())
-                && StringUtils.equals(getThumbnailUrl(), otherMedia.getThumbnailUrl())
                 && StringUtils.equals(getFileName(), otherMedia.getFileName())
                 && StringUtils.equals(getFilePath(), otherMedia.getFilePath())
                 && StringUtils.equals(getMimeType(), otherMedia.getMimeType())
                 && StringUtils.equals(getTitle(), otherMedia.getTitle())
                 && StringUtils.equals(getDescription(), otherMedia.getDescription())
                 && StringUtils.equals(getCaption(), otherMedia.getCaption())
-                && StringUtils.equals(getAlt(), otherMedia.getAlt())
                 && StringUtils.equals(getUploadState(), otherMedia.getUploadState());
     }
 
@@ -177,11 +169,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
     }
 
     @Nullable
-    public String getThumbnailUrl() {
-        return mThumbnailUrl;
-    }
-
-    @Nullable
     public String getFileName() {
         return mFileName;
     }
@@ -211,11 +198,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mDescription;
     }
 
-    @NonNull
-    public String getAlt() {
-        return mAlt;
-    }
-
     public void setUploadState(@NonNull MediaUploadState uploadState) {
         mUploadState = uploadState.toString();
     }
@@ -225,11 +207,4 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         return mUploadState;
     }
 
-    public boolean getMarkedLocallyAsFeatured() {
-        return mMarkedLocallyAsFeatured;
-    }
-
-    public void setMarkedLocallyAsFeatured(boolean markedLocallyAsFeatured) {
-        mMarkedLocallyAsFeatured = markedLocallyAsFeatured;
-    }
 }
