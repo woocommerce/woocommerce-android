@@ -34,7 +34,7 @@ class NotificationAnalyticsTracker @Inject constructor(
         properties["notification_note_id"] = remoteNoteId
         properties["notification_type"] = noteTypeTrackingValue
         properties["push_notification_token"] = appPrefsWrapper.getFCMToken()
-        properties["is_from_selected_site"] = isFromSelectedSite == true
+        properties["is_from_selected_site"] = isFromSelectedSite
         analyticsTrackerWrapper.track(stat, properties)
     }
 
