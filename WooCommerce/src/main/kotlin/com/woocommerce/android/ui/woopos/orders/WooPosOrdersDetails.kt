@@ -106,7 +106,7 @@ private fun OrderActions(
             WooPosShimmerBox(
                 modifier = Modifier
                     .height(40.dp)
-                    .width(120.dp)
+                    .width(160.dp)
                     .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             )
         }
