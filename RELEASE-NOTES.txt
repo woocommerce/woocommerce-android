@@ -4,11 +4,13 @@
 
 24.0
 -----
+- [*][Woo POS] Fixed order list and detail screens showing wrong currency for multi-currency orders [https://github.com/woocommerce/woocommerce-android/pull/15210]
 - [*][Woo POS] Display variation attributes on order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15187]
 - [Internal][Woo POS] Optimize SQL queries for batch deletion in local catalog store [https://github.com/woocommerce/woocommerce-android/pull/15199]
 - [Internal][Woo POS] Apply POS product visibility filtering to remote/non-local-catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15191]
 - [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
 - [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
+- [Internal] Fix push notification double "cha-ching" issue [https://github.com/woocommerce/woocommerce-android/pull/15208]
 
 23.9
 -----

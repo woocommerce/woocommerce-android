@@ -75,7 +75,7 @@ class WooPosOrdersViewModelTest {
     fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
-        whenever(formatPrice.invoke(any())).thenReturn("$0.00")
+        whenever(formatPrice(any(), any())).thenReturn("$0.00")
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
@@ -85,6 +85,11 @@ class WooPosOrdersViewModelTest {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2))))
             }
         )
+
+        whenever(dataSource.getOrderById(any())).thenAnswer { invocation ->
+            val orderId = invocation.arguments[0] as Long
+            Result.success(order(orderId))
+        }
 
         whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
 
@@ -881,8 +886,8 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        whenever(formatPrice.invoke(BigDecimal("3.50"))).thenReturn("$3.50")
-        whenever(formatPrice.invoke(BigDecimal("4.00"))).thenReturn("$4.00")
+        whenever(formatPrice(eq(BigDecimal("3.50")), any())).thenReturn("$3.50")
+        whenever(formatPrice(eq(BigDecimal("4.00")), any())).thenReturn("$4.00")
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }

@@ -5,7 +5,8 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
-import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.util.RemoteFeatureFlag
 import dagger.Reusable
 import dagger.hilt.android.qualifiers.ApplicationContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.jitm.JITMApiResponse
@@ -21,13 +22,14 @@ class ClientSidePosBanner @Inject constructor(
     private val wooStore: WooCommerceStore,
     private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed,
     private val dismissalStorage: ClientSideBannerDismissalStorage,
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
 ) {
     val messagePath: String = JitmMessagePathsProvider.MY_STORE
     val bannerId: String = BANNER_ID
 
     @Suppress("ReturnCount")
-    fun shouldShow(): Boolean {
-        if (!FeatureFlag.CLIENT_SIDE_POS_BANNER.isEnabled()) return false
+    suspend fun shouldShow(): Boolean {
+        if (!isRemoteFeatureFlagEnabled(RemoteFeatureFlag.WOO_POS_TABLET_PROMO_BANNER)) return false
 
         val site = selectedSite.getIfExists() ?: return false
 
@@ -37,9 +39,6 @@ class ClientSidePosBanner @Inject constructor(
         if (countryCode !in ELIGIBLE_COUNTRIES) return false
 
         if (dismissalStorage.isBannerHidden(bannerId)) return false
-
-        val siteId = site.siteId
-        if (siteId % PERCENTAGE_DIVISOR >= TARGETING_PERCENTAGE) return false
 
         return true
     }
@@ -66,7 +65,11 @@ class ClientSidePosBanner @Inject constructor(
             isDismissible = true,
             url = "",
             jitmStatsUrl = "",
-            assets = null
+            assets = mapOf(
+                "background_image_url" to
+                    "https://woocommerce.com/wp-content/uploads/2026/01/pos-on-phones-promotion@3x.png",
+                "badge_image_url" to ""
+            )
         )
     }
 
@@ -79,8 +82,6 @@ class ClientSidePosBanner @Inject constructor(
     }
 
     companion object {
-        private const val PERCENTAGE_DIVISOR = 100
-        private const val TARGETING_PERCENTAGE = 100
         private const val BANNER_ID = "woo_pos_client_banner"
         private const val FEATURE_CLASS = "woo_pos_promotion"
         private const val BANNER_URL = "https://woocommerce.com/in-person-payments/"
