@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
@@ -12,11 +13,17 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -39,6 +46,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosItemsSearchAnalyticsTracker,
+    private val resourceProvider: ResourceProvider,
+    private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(
@@ -95,6 +104,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     handleItemClicked(event.item, WooPosAnalyticsEventConstant.ItemsListSourceType.POPULAR_PRODUCTS)
                 }
             }
+
+            WooPosItemsSearchUiEvent.OnPullToRefreshTriggered -> handlePullToRefresh()
         }
     }
 
@@ -105,7 +116,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
         performSearch(currentState.searchQuery)
     }
 
-    private fun performSearch(query: String) {
+    @Suppress("CyclomaticComplexMethod")
+    private fun performSearch(
+        query: String,
+        showLoadingState: Boolean = true,
+        skipDebounce: Boolean = false,
+    ) {
         searchJob?.cancel()
 
         currentQuery.set(query)
@@ -114,8 +130,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
             setEmptySearchQueryState()
         } else {
             searchJob = viewModelScope.launch {
-                _viewState.value = WooPosItemsSearchViewState.Loading
-                delay(SEARCH_DEBOUNCING_TIME)
+                if (showLoadingState) {
+                    _viewState.value = WooPosItemsSearchViewState.Loading
+                }
+                if (!skipDebounce) {
+                    delay(SEARCH_DEBOUNCING_TIME)
+                }
 
                 if (query != currentQuery.get()) return@launch
 
@@ -131,9 +151,9 @@ class WooPosItemsSearchViewModel @Inject constructor(
                         is SearchProductsResult.Local -> {
                             analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
 
-                            if (searchResult.products.isEmpty()) {
+                            if (searchResult.products.isEmpty() && showLoadingState) {
                                 _viewState.value = WooPosItemsSearchViewState.Loading
-                            } else {
+                            } else if (searchResult.products.isNotEmpty()) {
                                 _viewState.value = searchResult.products.toContentState(
                                     searchQuery = query,
                                 )
@@ -286,11 +306,79 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private suspend fun List<WooPosProductModel>.toContentState(
         searchQuery: String,
         paginationState: WooPosPaginationState = WooPosPaginationState.None,
+        pullToRefreshState: WooPosPullToRefreshState = determinePullToRefreshState(),
     ) = WooPosItemsSearchViewState.Content(
         items = map { it.toViewModelProduct() },
         searchQuery = searchQuery,
         paginationState = paginationState,
+        pullToRefreshState = pullToRefreshState,
     )
+
+    private fun determinePullToRefreshState(): WooPosPullToRefreshState {
+        return when (dataSource.getCurrentSyncStrategy()) {
+            SyncStrategy.LOCAL_CATALOG -> WooPosPullToRefreshState.Enabled
+            SyncStrategy.REMOTE -> WooPosPullToRefreshState.Disabled
+        }
+    }
+
+    private fun handlePullToRefresh() {
+        val currentState = _viewState.value
+        if (currentState !is WooPosItemsSearchViewState.Content) return
+
+        _viewState.value = currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+
+        viewModelScope.launch {
+            wooPosAnalyticsTracker.track(
+                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                    WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+                )
+            )
+
+            val result = dataSource.refreshProducts()
+            result.onSuccess { syncResult ->
+                when (syncResult) {
+                    is PosLocalCatalogProductSyncResult -> {
+                        when (syncResult.value) {
+                            is PosLocalCatalogSyncResult.Success -> {
+                                performSearch(
+                                    query = currentState.searchQuery,
+                                    showLoadingState = false,
+                                    skipDebounce = true,
+                                )
+                            }
+                            is PosLocalCatalogSyncResult.Failure -> {
+                                handlePTRError()
+                            }
+                        }
+                    }
+                    else -> {
+                        performSearch(
+                            query = currentState.searchQuery,
+                            showLoadingState = false,
+                            skipDebounce = true,
+                        )
+                    }
+                }
+            }.onFailure {
+                handlePTRError()
+            }
+        }
+    }
+
+    private fun handlePTRError() {
+        viewModelScope.launch {
+            childToParentEventSender.sendToParent(
+                ChildToParentEvent.ToastMessageDisplayed(
+                    message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                )
+            )
+        }
+        val currentState = _viewState.value
+        if (currentState is WooPosItemsSearchViewState.Content) {
+            _viewState.value = currentState.copy(pullToRefreshState = determinePullToRefreshState())
+        }
+    }
 
     private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
         if (type == WooPosProductModel.WooPosProductType.VARIABLE) {

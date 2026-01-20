@@ -8,4 +8,5 @@ sealed class WooPosItemsSearchUiEvent {
     data object LoadingErrorRetryButtonClicked : WooPosItemsSearchUiEvent()
     data class OnRecentSearchClicked(val recentSearch: String) : WooPosItemsSearchUiEvent()
     data class OnPopularItemClicked(val item: WooPosItemSelectionViewState) : WooPosItemsSearchUiEvent()
+    data object OnPullToRefreshTriggered : WooPosItemsSearchUiEvent()
 }
