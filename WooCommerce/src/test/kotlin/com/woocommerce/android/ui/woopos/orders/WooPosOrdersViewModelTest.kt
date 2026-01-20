@@ -51,6 +51,7 @@ class WooPosOrdersViewModelTest {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
+    private lateinit var mapper: WooPosOrdersMapper
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -61,19 +62,35 @@ class WooPosOrdersViewModelTest {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
-            locale = providedLocale,
-            getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
-            formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
-            getRefundableItems = getRefundableItems,
+            mapper = mapper,
         )
     }
 
     @Before
     fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
+        whenever(resourceProvider.getString(R.string.woopos_orders_details_refund_error))
+            .thenReturn("Refund error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders))
+            .thenReturn("Search orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
+            .thenReturn("Search error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Search error description")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title))
+            .thenReturn("No results")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
+            .thenReturn("No results description")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On Hold")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
 
         whenever(formatPrice(any<BigDecimal>(), any())).thenAnswer { invocation ->
             val amount = invocation.arguments[0] as? BigDecimal
@@ -86,6 +103,14 @@ class WooPosOrdersViewModelTest {
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
+
+        mapper = WooPosOrdersMapper(
+            resourceProvider = resourceProvider,
+            locale = providedLocale,
+            getProductById = getProductById,
+            formatPrice = formatPrice,
+            getRefundableItems = getRefundableItems
+        )
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
