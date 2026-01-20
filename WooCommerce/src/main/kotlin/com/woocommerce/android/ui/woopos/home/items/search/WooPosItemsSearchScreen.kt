@@ -51,6 +51,7 @@ fun WooPosItemsSearchScreen(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WooPosItemsSearchScreen(
     modifier: Modifier = Modifier,
@@ -58,8 +59,25 @@ private fun WooPosItemsSearchScreen(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
+
+    val ptrState = when (state) {
+        is WooPosItemsSearchViewState.Content -> state.pullToRefreshState
+        is WooPosItemsSearchViewState.Empty -> state.pullToRefreshState
+        else -> null
+    }
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = ptrState == WooPosPullToRefreshState.Refreshing,
+        onRefresh = { onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered) },
+    )
+
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pullRefresh(
+                state = pullRefreshState,
+                enabled = ptrState == WooPosPullToRefreshState.Enabled,
+            ),
     ) {
         val stateClass by remember(state) {
             derivedStateOf {
@@ -90,7 +108,7 @@ private fun WooPosItemsSearchScreen(
 
                 WooPosItemsSearchViewState.Content::class.java -> {
                     if (state is WooPosItemsSearchViewState.Content) {
-                        WooPosItemsSearchContentWithPullToRefresh(
+                        WooPosItemsSearchContent(
                             modifier = Modifier.padding(
                                 horizontal = WooPosSpacing.Medium.value,
                             ),
@@ -149,39 +167,11 @@ private fun WooPosItemsSearchScreen(
                 else -> error("Unsupported state: $currentStateClass")
             }
         }
-    }
-}
 
-@OptIn(ExperimentalMaterialApi::class)
-@Composable
-private fun WooPosItemsSearchContentWithPullToRefresh(
-    modifier: Modifier = Modifier,
-    listState: LazyListState,
-    state: WooPosItemsSearchViewState.Content,
-    onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
-) {
-    val pullToRefreshState = rememberPullRefreshState(
-        refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-        onRefresh = { onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered) },
-    )
-
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .pullRefresh(
-                state = pullToRefreshState,
-                enabled = state.pullToRefreshState == WooPosPullToRefreshState.Enabled,
-            )
-    ) {
-        WooPosItemsSearchContent(
-            listState = listState,
-            state = state,
-            onUIEvent = onUIEvent
-        )
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            state = pullToRefreshState
+            refreshing = ptrState == WooPosPullToRefreshState.Refreshing,
+            state = pullRefreshState
         )
     }
 }
@@ -297,7 +287,7 @@ fun WooPosItemsSearchEmptyPreview() {
                 .padding(WooPosSpacing.Medium.value)
         ) {
             WooPosItemsSearchScreen(
-                state = WooPosItemsSearchViewState.Empty,
+                state = WooPosItemsSearchViewState.Empty(),
                 onUIEvent = {}
             )
         }

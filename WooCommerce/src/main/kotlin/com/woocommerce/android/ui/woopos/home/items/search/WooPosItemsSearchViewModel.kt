@@ -151,9 +151,15 @@ class WooPosItemsSearchViewModel @Inject constructor(
                         is SearchProductsResult.Local -> {
                             analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
 
-                            if (searchResult.products.isEmpty() && showLoadingState) {
-                                _viewState.value = WooPosItemsSearchViewState.Loading
-                            } else if (searchResult.products.isNotEmpty()) {
+                            if (searchResult.products.isEmpty()) {
+                                if (showLoadingState) {
+                                    _viewState.value = WooPosItemsSearchViewState.Loading
+                                } else {
+                                    _viewState.value = WooPosItemsSearchViewState.Empty(
+                                        pullToRefreshState = determinePullToRefreshState()
+                                    )
+                                }
+                            } else {
                                 _viewState.value = searchResult.products.toContentState(
                                     searchQuery = query,
                                 )
@@ -164,7 +170,9 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             if (searchResult.productsResult.isSuccess) {
                                 val products = searchResult.productsResult.getOrThrow()
                                 if (products.isEmpty()) {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty
+                                    _viewState.value = WooPosItemsSearchViewState.Empty(
+                                        pullToRefreshState = determinePullToRefreshState()
+                                    )
                                 } else {
                                     _viewState.value = products.toContentState(searchQuery = query)
                                 }
@@ -180,7 +188,9 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 if (query == currentQuery.get()) {
                     childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
                     if (_viewState.value is WooPosItemsSearchViewState.Loading) {
-                        _viewState.value = WooPosItemsSearchViewState.Empty
+                        _viewState.value = WooPosItemsSearchViewState.Empty(
+                            pullToRefreshState = determinePullToRefreshState()
+                        )
                     }
                 }
             }
@@ -323,9 +333,13 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
     private fun handlePullToRefresh() {
         val currentState = _viewState.value
-        if (currentState !is WooPosItemsSearchViewState.Content) return
-
-        _viewState.value = currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+        _viewState.value = when (currentState) {
+            is WooPosItemsSearchViewState.Content ->
+                currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            is WooPosItemsSearchViewState.Empty ->
+                currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            else -> return
+        }
 
         viewModelScope.launch {
             wooPosAnalyticsTracker.track(
@@ -342,7 +356,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 when (syncResult.value) {
                     is PosLocalCatalogSyncResult.Success -> {
                         performSearch(
-                            query = currentState.searchQuery,
+                            query = currentQuery.get(),
                             showLoadingState = false,
                             skipDebounce = true,
                         )
@@ -367,8 +381,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
             )
         }
         val currentState = _viewState.value
-        if (currentState is WooPosItemsSearchViewState.Content) {
-            _viewState.value = currentState.copy(pullToRefreshState = determinePullToRefreshState())
+        _viewState.value = when (currentState) {
+            is WooPosItemsSearchViewState.Content ->
+                currentState.copy(pullToRefreshState = determinePullToRefreshState())
+            is WooPosItemsSearchViewState.Empty ->
+                currentState.copy(pullToRefreshState = determinePullToRefreshState())
+            else -> currentState
         }
     }
 

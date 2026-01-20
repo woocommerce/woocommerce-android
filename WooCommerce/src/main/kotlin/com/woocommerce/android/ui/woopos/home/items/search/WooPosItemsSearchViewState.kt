@@ -18,7 +18,9 @@ sealed class WooPosItemsSearchViewState {
         override val paginationState: WooPosPaginationState = WooPosPaginationState.None,
     ) : WooPosItemsSearchViewState(), WooPosContentViewState
 
-    data object Empty : WooPosItemsSearchViewState()
+    data class Empty(
+        val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+    ) : WooPosItemsSearchViewState()
     data class Error(val searchQuery: String) : WooPosItemsSearchViewState()
     data object Loading : WooPosItemsSearchViewState()
 }
