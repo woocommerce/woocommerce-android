@@ -84,13 +84,6 @@ class WooPosOrdersViewModelTest {
             .thenReturn("No results")
         whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
             .thenReturn("No results description")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On Hold")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
 
         whenever(formatPrice(any<BigDecimal>(), any())).thenAnswer { invocation ->
             val amount = invocation.arguments[0] as? BigDecimal
