@@ -22,6 +22,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
@@ -55,9 +56,10 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given selected site and stored uuid, when registering push token succeeds, then unregisters wpcom token`() =
+    fun `given selected site and stored uuid, when registering push token succeeds, then disables wpcom notifications for site`() =
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+            whenever(siteModel.siteId).thenReturn(SITE_ID)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(pushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
                 .thenReturn(WooResult(RETURNED_TOKEN))
@@ -65,12 +67,20 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             sut.registerPushToken("token")
 
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
-            verify(notificationStore).unregisterWpComPushToken()
+            verify(notificationStore).updateNotificationSettingsFor(
+                listOf(
+                    SiteNotificationSetting(
+                        siteId = SITE_ID,
+                        newCommentEnabled = false,
+                        storeOrderEnabled = false
+                    )
+                )
+            )
             verify(appPrefsWrapper, never()).wooCorePushDeviceUUID = any()
         }
 
     @Test
-    fun `given selected site and stored uuid, when registering push token fails, then wpcom PN token is not unregistered`() {
+    fun `given selected site and stored uuid, when registering push token fails, then wpcom notifications are not updated`() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
@@ -80,7 +90,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             sut.registerPushToken("token")
 
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
-            verify(notificationStore, never()).unregisterWpComPushToken()
+            verify(notificationStore, never()).updateNotificationSettingsFor(any())
         }
     }
 
@@ -112,6 +122,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
     private companion object {
         const val RETURNED_TOKEN = "returned-token-123"
+        const val SITE_ID = 123L
 
         val PN_REGISTRATION_ERROR = WooResult<String>(
             WooError(

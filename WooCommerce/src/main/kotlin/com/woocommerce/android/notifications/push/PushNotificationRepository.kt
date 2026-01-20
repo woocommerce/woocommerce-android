@@ -15,6 +15,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
 import java.util.UUID
 import javax.inject.Inject
 
@@ -42,9 +43,19 @@ class PushNotificationRepository @Inject constructor(
                 result.model?.let { pushToken ->
                     savePushTokenForSite(site.siteId, pushToken)
                 }
-                notificationStore.unregisterWpComPushToken()
+                disableWpComNotificationsForSite(site.siteId)
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFS, "No selected site, skipping PN registration") }
+    }
+
+    private suspend fun disableWpComNotificationsForSite(siteId: Long) {
+        val setting = SiteNotificationSetting(
+            siteId = siteId,
+            newCommentEnabled = false,
+            storeOrderEnabled = false
+        )
+        notificationStore.updateNotificationSettingsFor(listOf(setting))
+        WooLog.d(WooLog.T.NOTIFS, "WPCom notifications disabled for site $siteId")
     }
 
     private suspend fun savePushTokenForSite(siteId: Long, token: String) {
