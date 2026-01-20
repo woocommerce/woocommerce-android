@@ -1,5 +1,7 @@
 package com.woocommerce.android.notifications.push
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,6 +30,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val notificationStore: NotificationStore = mock()
     private val siteModel: SiteModel = mock()
+    private val pushNotificationsDataStore: DataStore<Preferences> = mock()
 
     private lateinit var sut: PushNotificationRepository
 
@@ -37,7 +40,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             pushNotificationsStore,
             selectedSite,
             appPrefsWrapper,
-            notificationStore
+            notificationStore,
+            pushNotificationsDataStore
         )
     }
 
@@ -56,7 +60,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(pushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
-                .thenReturn(WooResult(Unit))
+                .thenReturn(WooResult(RETURNED_TOKEN))
 
             sut.registerPushToken("token")
 
@@ -100,7 +104,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     private companion object {
-        val PN_REGISTRATION_ERROR = WooResult<Unit>(
+        const val RETURNED_TOKEN = "returned-token-123"
+
+        val PN_REGISTRATION_ERROR = WooResult<String>(
             WooError(
                 WooErrorType.GENERIC_ERROR,
                 BaseRequest.GenericErrorType.UNKNOWN,
