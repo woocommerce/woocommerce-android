@@ -11,6 +11,8 @@ import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import java.util.UUID
@@ -55,9 +57,15 @@ class PushNotificationRepository @Inject constructor(
         return stringPreferencesKey("push_token_$siteId")
     }
 
-    suspend fun unregisterDevice() {
-        notificationStore.unregisterWpComPushToken()
-        pushNotificationsDataStore.edit { it.clear() }
+    suspend fun unregisterDevice() = coroutineScope {
+        val unregisterWpComToken = async { notificationStore.unregisterWpComPushToken() }
+        val clearDataStore = async { pushNotificationsDataStore.edit { it.clear() } }
+
+        unregisterWpComToken.await()
+        WooLog.d(WooLog.T.NOTIFS, "WPCom push token unregistered")
+
+        clearDataStore.await()
+        WooLog.d(WooLog.T.NOTIFS, "Woo Core push notification tokens cleared from DataStore")
     }
 
     private fun generateAndStoreUUID(): String {
