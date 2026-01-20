@@ -335,29 +335,21 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 )
             )
 
-            val result = dataSource.refreshProducts()
-            result.onSuccess { syncResult ->
-                when (syncResult) {
-                    is PosLocalCatalogProductSyncResult -> {
-                        when (syncResult.value) {
-                            is PosLocalCatalogSyncResult.Success -> {
-                                performSearch(
-                                    query = currentState.searchQuery,
-                                    showLoadingState = false,
-                                    skipDebounce = true,
-                                )
-                            }
-                            is PosLocalCatalogSyncResult.Failure -> {
-                                handlePTRError()
-                            }
-                        }
-                    }
-                    else -> {
+            dataSource.refreshProducts().onSuccess { syncResult ->
+                check(syncResult is PosLocalCatalogProductSyncResult) {
+                    "PTR should be enabled/available only for Local Catalog: $syncResult"
+                }
+                when (syncResult.value) {
+                    is PosLocalCatalogSyncResult.Success -> {
                         performSearch(
                             query = currentState.searchQuery,
                             showLoadingState = false,
                             skipDebounce = true,
                         )
+                    }
+
+                    is PosLocalCatalogSyncResult.Failure -> {
+                        handlePTRError()
                     }
                 }
             }.onFailure {
