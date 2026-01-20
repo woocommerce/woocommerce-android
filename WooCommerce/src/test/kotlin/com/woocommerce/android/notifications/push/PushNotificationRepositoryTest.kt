@@ -105,7 +105,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when unregisterDevice is called, then unregisters wpcom token`() = testBlocking {
-        sut.unregisterDevice()
+        sut.unregisterDeviceFromAllPushes()
 
         verify(notificationStore).unregisterWpComPushToken()
     }

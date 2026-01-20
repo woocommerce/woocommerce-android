@@ -57,7 +57,7 @@ class PushNotificationRepository @Inject constructor(
         return stringPreferencesKey("push_token_$siteId")
     }
 
-    suspend fun unregisterDevice() = coroutineScope {
+    suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
         val unregisterWpComToken = async { notificationStore.unregisterWpComPushToken() }
         val clearDataStore = async { pushNotificationsDataStore.edit { it.clear() } }
 

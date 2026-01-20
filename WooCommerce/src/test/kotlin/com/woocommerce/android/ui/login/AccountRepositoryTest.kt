@@ -59,7 +59,7 @@ class AccountRepositoryTest : BaseUnitTest() {
 
         repository.logout()
 
-        verify(pushNotificationRepository).unregisterDevice()
+        verify(pushNotificationRepository).unregisterDeviceFromAllPushes()
     }
 
     @Test
