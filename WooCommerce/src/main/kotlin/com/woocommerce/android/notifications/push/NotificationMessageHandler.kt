@@ -15,6 +15,7 @@ import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFS
@@ -23,6 +24,7 @@ import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import javax.inject.Inject
@@ -34,6 +36,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
+    private val pushNotificationsStore: PushNotificationsStore,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
@@ -82,7 +85,9 @@ class NotificationMessageHandler @Inject constructor(
 
         val pushUserId = messageData[PUSH_ARG_USER]
         // pushUserId is always set server side, but better to double check it here.
-        if (accountStore.account.userId.toString() != pushUserId) {
+        if (!FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled() &&
+            accountStore.account.userId.toString() != pushUserId
+        ) {
             wooLog.e(NOTIFS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
@@ -94,10 +99,20 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
-        if (notification.remoteNoteId == 0L) {
-            // At this point 'note_id' is always available in the notification bundle.
-            wooLog.e(NOTIFS, "Push notification received without a valid note_id in the payload!")
-            return
+
+        // We need to filter out duplicate notifications from the WPCOM system
+        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+            val isFromWPcom = notification.remoteNoteId > 0L
+            if (isFromWPcom && pushNotificationsStore.hasPushToken()) {
+                wooLog.d(NOTIFS, "Skipping WPCOM notification, already registered with Woo Core")
+                return
+            }
+        } else {
+            if (notification.remoteNoteId == 0L) {
+                // At this point 'note_id' is always available in the notification bundle.
+                wooLog.e(NOTIFS, "Push notification received without a valid note_id in the payload!")
+                return
+            }
         }
 
         dispatchBackgroundEvents(notificationModel)
@@ -174,7 +189,7 @@ class NotificationMessageHandler @Inject constructor(
             // We always generate new id for NewOrder.
             activeNotifications
                 .firstOrNull {
-                    it.remoteNoteId == noteId &&
+                    noteId != 0L && it.remoteNoteId == noteId &&
                         it.noteTypeTrackingValue != WooNotificationType.NewOrder.trackingValue
                 }
                 ?.let { return it.id }
