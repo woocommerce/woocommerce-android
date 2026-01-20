@@ -44,16 +44,23 @@ class PosPromoDialogFragment : DialogFragment() {
                             dismiss()
                         },
                         onNextClick = viewModel::onNextClick,
-                        onExploreClick = {
-                            viewModel.onExploreClick()
-                            requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
-                                NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
-                                    urlToLoad = PosPromoViewModel.WOO_POS_DOCS_URL
-                                )
-                            )
-                            dismiss()
-                        }
+                        onExploreClick = viewModel::onExploreClick
                     )
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is PosPromoViewModel.NavigateToExplore -> {
+                    requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                            urlToLoad = event.url
+                        )
+                    )
+                    dismiss()
                 }
             }
         }

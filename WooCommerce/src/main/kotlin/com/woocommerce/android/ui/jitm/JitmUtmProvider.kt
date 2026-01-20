@@ -17,9 +17,9 @@ class JitmUtmProvider @Inject constructor() {
         url: String
     ): String {
         return UtmProvider(
-            campaign = featureClass,
+            campaign = if (featureClass.isNotEmpty()) "jitm_group_$featureClass" else featureClass,
             source = source,
-            content = id,
+            content = if (id.isNotEmpty()) "jitm_$id" else id,
             siteId = siteId
         ).getUrlWithUtmParams(url)
     }
