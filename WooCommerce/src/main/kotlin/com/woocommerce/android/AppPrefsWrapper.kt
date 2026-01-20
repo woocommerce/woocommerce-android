@@ -48,6 +48,8 @@ open class AppPrefsWrapper @Inject constructor() {
 
     var jetpackAppPasswordsEnabled by AppPrefs::jetpackAppPasswordsEnabled
 
+    var wooCorePushDeviceUUID by AppPrefs::wooCorePushDeviceUUID
+
     fun getAppInstallationDate() = AppPrefs.installationDate
 
     fun getReceiptUrl(localSiteId: Int, remoteSiteId: Long, selfHostedSiteId: Long, orderId: Long) =

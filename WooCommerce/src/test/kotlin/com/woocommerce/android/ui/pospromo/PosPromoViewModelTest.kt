@@ -5,14 +5,19 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PosPromoViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: PosPromoViewModel
+    private val analyticsTracker: PosPromoAnalyticsTracker = mock()
 
     private fun createViewModel() {
-        viewModel = PosPromoViewModel(savedStateHandle = mock())
+        viewModel = PosPromoViewModel(
+            savedStateHandle = mock(),
+            analyticsTracker = analyticsTracker
+        )
     }
 
     @Test
@@ -41,5 +46,46 @@ class PosPromoViewModelTest : BaseUnitTest() {
         }
 
         assertThat(viewModel.state.value.currentPage).isEqualTo(maxPage)
+    }
+
+    @Test
+    fun `when viewModel created, then modal viewed is tracked`() = testBlocking {
+        createViewModel()
+
+        verify(analyticsTracker).trackModalViewed()
+    }
+
+    @Test
+    fun `when viewModel created, then first slide viewed is tracked`() = testBlocking {
+        createViewModel()
+
+        verify(analyticsTracker).trackSlideViewed(slideIndex = 0)
+    }
+
+    @Test
+    fun `when onNextClick called, then next slide viewed is tracked`() = testBlocking {
+        createViewModel()
+
+        viewModel.onNextClick()
+
+        verify(analyticsTracker).trackSlideViewed(slideIndex = 1)
+    }
+
+    @Test
+    fun `when onDismiss called, then modal dismissed is tracked`() = testBlocking {
+        createViewModel()
+
+        viewModel.onDismiss()
+
+        verify(analyticsTracker).trackModalDismissed()
+    }
+
+    @Test
+    fun `when onExploreClick called, then explore clicked is tracked`() = testBlocking {
+        createViewModel()
+
+        viewModel.onExploreClick()
+
+        verify(analyticsTracker).trackExploreClicked()
     }
 }

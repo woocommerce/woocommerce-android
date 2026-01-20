@@ -11,6 +11,7 @@ data class BookingServiceEventFilterUiState(
     val availableProducts: List<BookableProduct> = emptyList(),
     val selectedProducts: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
     val searchQuery: String = "",
+    val isLoading: Boolean = false,
     val onProductSelected: (BookableProduct) -> Unit = {},
     val onSearchQueryChanged: (String) -> Unit = {},
 ) {
@@ -39,6 +40,8 @@ data class BookingServiceEventFilterUiState(
     } else {
         selectedProducts.values.any { it.productId == product.id }
     }
+
+    val skeletonVisible: Boolean = isLoading && availableProducts.isEmpty()
 }
 
 data class BookableProduct(

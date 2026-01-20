@@ -21,13 +21,6 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 import org.wordpress.android.fluxc.generated.AccountActionBuilder;
@@ -48,6 +41,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import dagger.android.support.AndroidSupportInjection;
 
 public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> implements TextWatcher,
@@ -275,7 +274,7 @@ public class LoginEmailFragment extends LoginBaseFormFragment<LoginListener> imp
     @NonNull
     private Spanned formatTosText(int stringResId) {
         final int primaryColorResId = ContextExtensionsKt.getColorResIdFromAttribute(getContext(),
-                com.google.android.material.R.attr.colorPrimary);
+                androidx.appcompat.R.attr.colorPrimary);
         final String primaryColorHtml = HtmlUtils.colorResToHtmlColor(getContext(), primaryColorResId);
         return Html.fromHtml(getString(stringResId, "<font color='" + primaryColorHtml + "'>", "</font>"));
     }

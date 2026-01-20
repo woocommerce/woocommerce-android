@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import java.math.RoundingMode
 
 @Suppress("LongParameterList")
 @HiltViewModel(assistedFactory = WooPosRefundViewModel.Factory::class)
@@ -48,20 +49,35 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private var currentOrder: Order? = null
     private var originalRefundReason: String = ""
-    private val numberOfDecimalPoints: Int
 
     init {
         loadRefundableItems()
-        val numberOfDecimals = wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber
-        checkNotNull(numberOfDecimals) {
-            "Failed to get site settings in order to determine number of decimals for refund calculations."
-        }
-        numberOfDecimalPoints = numberOfDecimals
     }
 
     private fun loadRefundableItems() {
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
+
+            val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
+            if (siteSettingsResult.isError || siteSettingsResult.model == null) {
+                WooLog.d(WooLog.T.POS, "Failed to fetch site settings")
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+            val siteSettings = siteSettingsResult.model!!
+            val numberOfDecimalPoints = siteSettings.currencyDecimalNumber
+
+            val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
+            if (taxRoundAtSubtotalResult.isError || taxRoundAtSubtotalResult.model == null) {
+                WooLog.d(WooLog.T.POS, "Failed to fetch tax round at subtotal setting")
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+            val taxRoundAtSubtotal = taxRoundAtSubtotalResult.model!!
 
             val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
@@ -81,7 +97,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 emptyList()
             }
 
-            val refundableItems = getRefundableItems(order, refunds, numberOfDecimalPoints)
+            val refundableItems = getRefundableItems(order, refunds)
 
             if (refundableItems.isEmpty()) {
                 _state.value = WooPosRefundState.NoRefundableItems
@@ -91,6 +107,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = buildContentState(
                 order = order,
                 refundableItems = refundableItems,
+                numberOfDecimalPoints = numberOfDecimalPoints,
+                taxRoundAtSubtotal = taxRoundAtSubtotal,
             )
         }
     }
@@ -98,10 +116,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private fun buildContentState(
         order: Order,
         refundableItems: List<WooPosRefundableItem>,
+        numberOfDecimalPoints: Int,
+        taxRoundAtSubtotal: Boolean,
     ): WooPosRefundState.Content {
         val subtotal = calculateRefundSubtotal(refundableItems, numberOfDecimalPoints)
-        val taxes = calculateRefundTax(refundableItems, order, numberOfDecimalPoints)
-        val total = subtotal + taxes
+        val taxes = calculateRefundTax(refundableItems, order, numberOfDecimalPoints, taxRoundAtSubtotal)
+        val total = (subtotal + taxes).setScale(numberOfDecimalPoints, RoundingMode.HALF_UP)
 
         return WooPosRefundState.Content(
             orderId = order.id,
@@ -206,6 +226,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
+            val numberOfDecimalPoints =
+                wooCommerceStore.getSiteSettings(selectedSite.get())?.currencyDecimalNumber ?: run {
+                    WooLog.e(
+                        WooLog.T.POS,
+                        "WooPosRefund: failed to read site settings currencyDecimalNumber from DB"
+                    )
+                    _state.value = WooPosRefundState.RefundError(
+                        message = resourceProvider.getString(R.string.error_generic)
+                    )
+                    return@launch
+                }
             val refundItems = groupRefundItems(contentState.refundableItems, order, numberOfDecimalPoints)
 
             val result = refundStore.createItemsRefund(

@@ -5,7 +5,7 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.MathContext
 import javax.inject.Inject
 
 /**
@@ -23,7 +23,6 @@ class WooPosGetRefundableItems @Inject constructor(
     operator fun invoke(
         order: Order,
         refunds: List<Refund>,
-        numberOfDecimals: Int,
     ): List<WooPosRefundableItem> {
         val productItems = order.items.filter { it.productId != 0L }
 
@@ -41,7 +40,7 @@ class WooPosGetRefundableItems @Inject constructor(
                 emptyList()
             } else {
                 val unitPrice = orderItem.price
-                val unitTax = calculateUnitTax(orderItem, numberOfDecimals)
+                val unitTax = calculateUnitTax(orderItem)
                 val formattedUnitPrice = PriceUtils.formatCurrency(unitPrice, order.currency, currencyFormatter)
                 val formattedUnitTax = PriceUtils.formatCurrency(unitTax, order.currency, currencyFormatter)
 
@@ -79,13 +78,11 @@ class WooPosGetRefundableItems @Inject constructor(
             .filterValues { it > 0 }
     }
 
-    private fun calculateUnitTax(item: Order.Item, numberOfDecimals: Int): BigDecimal {
-        // Calculate per-unit tax by dividing total tax by quantity.
-        // This matches the approach used in store management refunds (RefundsExt.calculateTotalTaxes).
+    private fun calculateUnitTax(item: Order.Item): BigDecimal {
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
-            item.totalTax.divide(item.quantity.toBigDecimal(), numberOfDecimals, RoundingMode.HALF_UP)
+            item.totalTax.divide(item.quantity.toBigDecimal(), MathContext.DECIMAL128)
         }
     }
 }

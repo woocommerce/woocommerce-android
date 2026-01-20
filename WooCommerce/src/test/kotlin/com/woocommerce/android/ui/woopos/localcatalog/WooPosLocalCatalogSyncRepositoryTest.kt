@@ -29,6 +29,7 @@ import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStor
 class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var sut: WooPosLocalCatalogSyncRepository
     private var posSyncAction: WooPosSyncAction = mock()
+    private var posFileBasedSyncAction: WooPosFileBasedSyncAction = mock()
     private var posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private var syncTimestampManager: WooPosSyncTimestampManager = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
@@ -50,6 +51,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
 
         sut = WooPosLocalCatalogSyncRepository(
             posSyncAction = posSyncAction,
+            posFileBasedSyncAction = posFileBasedSyncAction,
             posCheckCatalogSizeAction = posCheckCatalogSizeAction,
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,

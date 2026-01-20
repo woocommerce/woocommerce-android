@@ -11,8 +11,7 @@ class WooPosCalculateRefundSubtotal @Inject constructor() {
             .entries
             .sumOf { (_, items) ->
                 val quantity = items.size.toBigDecimal()
-                quantity.multiply(items.first().unitPrice)
+                quantity.multiply(items.first().unitPrice).setScale(numberOfDecimals, RoundingMode.HALF_UP)
             }
-            .setScale(numberOfDecimals, RoundingMode.HALF_UP)
     }
 }

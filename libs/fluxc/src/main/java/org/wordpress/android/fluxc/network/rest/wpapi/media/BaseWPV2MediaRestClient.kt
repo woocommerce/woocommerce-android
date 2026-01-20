@@ -9,6 +9,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import okhttp3.Call
@@ -21,7 +22,6 @@ import org.json.JSONObject
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
-import org.wordpress.android.fluxc.generated.UploadActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.MediaModel
 import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
@@ -70,7 +70,7 @@ abstract class BaseWPV2MediaRestClient(
                     currentUploads.remove(media.id)
                 }
                 .collect { payload ->
-                    dispatcher.dispatch(UploadActionBuilder.newUploadedMediaAction(payload))
+                    dispatcher.dispatch(MediaActionBuilder.newUploadedMediaAction(payload))
                 }
         }
     }

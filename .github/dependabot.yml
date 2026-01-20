@@ -38,3 +38,4 @@ updates:
       - dependency-name: "commons-fileupload:commons-fileupload"
       - dependency-name: "org.wordpress:wellsql"
       - dependency-name: "org.wordpress.wellsql:wellsql-processor"
+      - dependency-name: "com.github.PhilJay:MPAndroidChart"

@@ -31,11 +31,16 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val getDeviceRegistrationStatus: GetDeviceRegistrationStatus = mock {
         on { invoke() } doReturn UNREGISTERED
     }
+    private val pushNotificationRepository: PushNotificationRepository = mock()
 
     @Before
     fun setUp() {
         sut = RegisterDevice(
-            appPrefs, accountStore, notificationRepository, getDeviceRegistrationStatus
+            appPrefs,
+            accountStore,
+            notificationRepository,
+            getDeviceRegistrationStatus,
+            pushNotificationRepository
         )
     }
 
