@@ -47,11 +47,19 @@ fun NavGraphBuilder.ordersScreen(
             .getStateFlow(EMAIL_RECEIPT_SENT, false)
             .collectAsState()
 
+        val refundReasonResult = backStackEntry.savedStateHandle
+            .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
+            .collectAsState()
+
         backStackEntry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
+        if (refundReasonResult.value != null) {
+            backStackEntry.savedStateHandle.remove<String>(REFUND_REASON_RESULT_KEY)
+        }
 
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
-            navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value
+            navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value,
+            refundReasonResult = refundReasonResult.value
         )
     }
 }

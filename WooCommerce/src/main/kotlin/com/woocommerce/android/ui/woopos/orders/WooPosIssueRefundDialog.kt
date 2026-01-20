@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,17 +51,26 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import java.math.BigDecimal
 
 @Composable
 fun WooPosIssueRefundDialog(
     orderId: Long,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String? = null
 ) {
     val viewModel: WooPosRefundViewModel =
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
+
+    refundReasonUpdate?.let { reason ->
+        LaunchedEffect(reason) {
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))
+        }
+    }
 
     val handleDismiss = {
         if (viewModel.onDismissRequest()) {
@@ -73,38 +83,27 @@ fun WooPosIssueRefundDialog(
         handleDismiss()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        val state by viewModel.state.collectAsStateWithLifecycle()
-        WooPosDialogWrapper(
-            isVisible = true,
-            dialogBackgroundContentDescription = stringResource(
-                R.string.woopos_orders_issue_refund_content_description
-            ),
-            onDismissRequest = handleDismiss
-        ) {
-            when (val currentState = state) {
-                is WooPosRefundState.Loading -> LoadingContent()
-                is WooPosRefundState.Content -> ContentStateHandler(currentState, viewModel, handleDismiss)
-                is WooPosRefundState.Error -> ErrorContent(currentState.message, handleDismiss)
-                is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
-                is WooPosRefundState.RefundSuccess -> RefundSuccessContent(currentState, handleDismiss)
-                is WooPosRefundState.RefundError -> ErrorContent(currentState.message, handleDismiss)
-            }
-        }
-        val stateSnapshot = state
-        if (stateSnapshot is WooPosRefundState.Content && stateSnapshot.isEditingReason) {
-            WooPosRefundReasonScreen(
-                refundReason = stateSnapshot.refundReason,
-                onReasonChanged = { reason ->
-                    viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))
-                },
-                onSave = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
-                },
-                onCancel = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
-                }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    WooPosDialogWrapper(
+        isVisible = true,
+        dialogBackgroundContentDescription = stringResource(
+            R.string.woopos_orders_issue_refund_content_description
+        ),
+        onDismissRequest = handleDismiss
+    ) {
+        when (val currentState = state) {
+            is WooPosRefundState.Loading -> LoadingContent()
+            is WooPosRefundState.Content -> ContentStateHandler(
+                state = currentState,
+                orderId = orderId,
+                viewModel = viewModel,
+                onDismissRequest = handleDismiss,
+                onNavigationEvent = onNavigationEvent
             )
+            is WooPosRefundState.Error -> ErrorContent(currentState.message, handleDismiss)
+            is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
+            is WooPosRefundState.RefundSuccess -> RefundSuccessContent(currentState, handleDismiss)
+            is WooPosRefundState.RefundError -> ErrorContent(currentState.message, handleDismiss)
         }
     }
 }
@@ -112,8 +111,10 @@ fun WooPosIssueRefundDialog(
 @Composable
 private fun ContentStateHandler(
     state: WooPosRefundState.Content,
+    orderId: Long,
     viewModel: WooPosRefundViewModel,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
     when (state.step) {
         WooPosRefundState.Content.RefundStep.SelectItems -> {
@@ -137,7 +138,12 @@ private fun ContentStateHandler(
                     viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
                 },
                 onEditReason = {
-                    viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
+                    onNavigationEvent(
+                        WooPosNavigationEvent.OpenRefundReason(
+                            orderId = orderId,
+                            initialReason = state.refundReason
+                        )
+                    )
                 }
             )
         }
@@ -486,8 +492,16 @@ private fun ReviewRefundContent(
 
             Divider()
 
+            val editReasonText = stringResource(R.string.woopos_orders_edit_reason)
             Column(
-                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)
+                verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .clickable(onClick = onEditReason)
+                    .semantics {
+                        contentDescription = editReasonText
+                    }
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -500,17 +514,11 @@ private fun ReviewRefundContent(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface
                     )
-                    val editReasonText = stringResource(R.string.woopos_orders_edit_reason)
                     WooPosText(
                         text = editReasonText,
                         style = WooPosTypography.BodyMedium,
                         fontWeight = FontWeight.Normal,
-                        color = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier
-                            .clickable(onClick = onEditReason)
-                            .semantics {
-                                contentDescription = editReasonText
-                            }
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 if (state.refundReason.isNotBlank()) {

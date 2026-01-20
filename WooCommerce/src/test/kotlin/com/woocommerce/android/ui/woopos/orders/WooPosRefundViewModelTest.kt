@@ -434,45 +434,20 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ReviewRefund step, when EditReasonClicked event, then isEditingReason is true`() =
+    fun `given content state, when OnRefundReasonChanged event, then refundReason is updated`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
             advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            val reviewState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(reviewState.isEditingReason).isFalse()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.isEditingReason).isTrue()
-        }
-
-    @Test
-    fun `given editing reason, when OnRefundReasonChanged event, then refundReason is updated`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            val editingState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(editingState.refundReason).isEmpty()
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.refundReason).isEmpty()
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer bought wrong item"))
@@ -480,89 +455,6 @@ class WooPosRefundViewModelTest {
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
             assertThat(updatedState.refundReason).isEqualTo("Customer bought wrong item")
-        }
-
-    @Test
-    fun `given editing reason, when SaveReasonClicked event, then isEditingReason is false`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            val editingState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(editingState.isEditingReason).isTrue()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.isEditingReason).isFalse()
-        }
-
-    @Test
-    fun `given editing reason, when CancelReasonEditClicked event, then isEditingReason is false`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            val editingState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(editingState.isEditingReason).isTrue()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.isEditingReason).isFalse()
-        }
-
-    @Test
-    fun `given editing reason with changes, when refund edit action is canceled, then refundReason is restored to original value`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            val originalReason = "Original reason"
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(originalReason))
-            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Modified reason"))
-
-            val editingState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(editingState.refundReason).isEqualTo("Modified reason")
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.CancelReasonEditClicked)
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.refundReason).isEqualTo(originalReason)
-            assertThat(updatedState.isEditingReason).isFalse()
         }
 
     @Test
@@ -634,41 +526,6 @@ class WooPosRefundViewModelTest {
 
             // THEN
             val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
-        }
-
-    @Test
-    fun `given editing reason with unsaved changes, when DialogDismissed event, then refundReason is reverted to original value`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            val originalReason = "Original reason"
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(originalReason))
-            viewModel.onUIEvent(WooPosRefundUIEvent.SaveReasonClicked)
-
-            viewModel.onUIEvent(WooPosRefundUIEvent.EditReasonClicked)
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Unsaved changes"))
-
-            val editingState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(editingState.refundReason).isEqualTo("Unsaved changes")
-            assertThat(editingState.isEditingReason).isTrue()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
-
-            // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.refundReason).isEqualTo(originalReason)
-            assertThat(updatedState.isEditingReason).isFalse()
             assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
         }
 
@@ -879,7 +736,7 @@ class WooPosRefundViewModelTest {
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
             whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any(), any())).thenReturn(refundableItems)
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(

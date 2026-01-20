@@ -48,7 +48,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
     private var currentOrder: Order? = null
-    private var originalRefundReason: String = ""
 
     init {
         loadRefundableItems()
@@ -165,13 +164,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             currentState.step != WooPosRefundState.Content.RefundStep.Processing
         ) {
             _state.value = currentState.copy(
-                step = WooPosRefundState.Content.RefundStep.SelectItems,
-                isEditingReason = false,
-                refundReason = if (currentState.isEditingReason) {
-                    originalRefundReason
-                } else {
-                    currentState.refundReason
-                }
+                step = WooPosRefundState.Content.RefundStep.SelectItems
             )
         }
     }
@@ -182,17 +175,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.BackToSelectItemsClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
-            WooPosRefundUIEvent.EditReasonClicked -> {
-                originalRefundReason = currentState.refundReason
-                _state.value = currentState.copy(isEditingReason = true)
-            }
-            WooPosRefundUIEvent.SaveReasonClicked ->
-                _state.value = currentState.copy(isEditingReason = false)
-            WooPosRefundUIEvent.CancelReasonEditClicked ->
-                _state.value = currentState.copy(
-                    isEditingReason = false,
-                    refundReason = originalRefundReason
-                )
             is WooPosRefundUIEvent.OnRefundReasonChanged ->
                 _state.value = currentState.copy(refundReason = event.reason)
             WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->

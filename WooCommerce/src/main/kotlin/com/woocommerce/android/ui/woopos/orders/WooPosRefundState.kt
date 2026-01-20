@@ -23,7 +23,6 @@ sealed class WooPosRefundState {
         val formattedTotal: String,
         val paymentMethod: String,
         val refundReason: String = "",
-        val isEditingReason: Boolean = false,
         val step: RefundStep
     ) : WooPosRefundState() {
         @Immutable
