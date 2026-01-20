@@ -425,11 +425,6 @@ public class MediaStore extends Store {
 
     @NonNull private final FluxCCrashLogger mCrashLogger;
 
-    // Ensures that the UploadStore is initialized whenever the MediaStore is,
-    // to ensure actions are shadowed and repeated by the UploadStore
-    @SuppressWarnings("unused")
-    @Inject UploadStore mUploadStore;
-
     @Inject public MediaStore(
             Dispatcher dispatcher,
             WPComV2MediaRestClient wpv2MediaRestClient,
