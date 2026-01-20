@@ -319,7 +319,7 @@ class ResolveAppLinkTest {
         blogId: String? = TEST_BLOG_ID.toString()
     ): Uri {
         val uri = mock<Uri> {
-            on { path } doReturn "/in-person-payments"
+            on { path } doReturn "/mobile/pos/learn-more"
             on { getQueryParameter("blog_id") } doReturn blogId
         }
         return uri
