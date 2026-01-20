@@ -457,7 +457,7 @@ class MainActivity :
         setIntent(intent)
         initFragment(null)
 
-        viewModel.handleIncomingAppLink(intent?.data)
+        viewModel.handleIncomingAppLink(intent.data)
         handleIncomingImages()
     }
 
