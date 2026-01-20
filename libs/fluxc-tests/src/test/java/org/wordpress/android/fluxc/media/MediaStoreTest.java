@@ -22,10 +22,10 @@ import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
-import org.wordpress.android.fluxc.network.xmlrpc.media.MediaXMLRPCClient;
 import org.wordpress.android.fluxc.persistence.WellSqlConfig;
 import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.utils.MediaUtils;
+import org.wordpress.android.fluxc.logging.FakeCrashLogging;
 
 import java.util.List;
 
@@ -33,11 +33,11 @@ import java.util.List;
 public class MediaStoreTest {
     @SuppressWarnings("KotlinInternalInJava")
     private final MediaStore mMediaStore = new MediaStore(new Dispatcher(),
-            Mockito.mock(MediaXMLRPCClient.class),
             Mockito.mock(WPComV2MediaRestClient.class),
             Mockito.mock(ApplicationPasswordsMediaRestClient.class),
             Mockito.mock(org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
-                    .ApplicationPasswordsConfiguration.class)
+                    .ApplicationPasswordsConfiguration.class),
+            FakeCrashLogging.INSTANCE
     );
 
     @Before
