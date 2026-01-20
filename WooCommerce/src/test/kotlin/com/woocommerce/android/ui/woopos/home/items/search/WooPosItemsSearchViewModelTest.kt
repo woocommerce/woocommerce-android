@@ -9,13 +9,18 @@ import com.woocommerce.android.ui.woopos.home.WooPosParentToChildrenEventReceive
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState.Product
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.woopos.util.generateWooPosProduct
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.emptyFlow
@@ -50,6 +55,8 @@ class WooPosItemsSearchViewModelTest {
     private val mockParentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver = mock()
     private val mockSearchHelper: com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper = mock()
     private val mockAnalyticsTracker: WooPosItemsSearchAnalyticsTracker = mock()
+    private val mockResourceProvider: ResourceProvider = mock()
+    private val mockWooPosAnalyticsTracker: WooPosAnalyticsTracker = mock()
 
     private val defaultQuery = "test query"
     private val defaultProduct = generateWooPosProduct(
@@ -66,6 +73,9 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(emptyFlow())
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockPriceFormat(BigDecimal("20.0"))).thenReturn("$20.0")
+        whenever(
+            mockDataSource.getCurrentSyncStrategy()
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
     }
 
     @Test
@@ -809,6 +819,133 @@ class WooPosItemsSearchViewModelTest {
             )
         }
 
+    @Test
+    fun `given local catalog sync strategy, when PTR triggered, then refresh products and rerun search`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(
+            mockDataSource.getCurrentSyncStrategy()
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(mockDataSource.refreshProducts()).thenReturn(
+            Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
+        )
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+        advanceUntilIdle()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
+            assertThat((state as WooPosItemsSearchViewState.Content).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+    }
+
+    @Test
+    fun `given remote sync strategy, when content state loaded, then PTR state is Disabled`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(mockDataSource.getCurrentSyncStrategy()).thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
+            assertThat((state as WooPosItemsSearchViewState.Content).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Disabled)
+        }
+    }
+
+    @Test
+    fun `given PTR triggered and sync fails, when error occurs, then toast shown and PTR state reset`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(
+            mockDataSource.getCurrentSyncStrategy()
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(mockDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(
+                    PosLocalCatalogSyncResult.Failure.NetworkError("Network error")
+                )
+            )
+        )
+        whenever(mockResourceProvider.getString(any())).thenReturn("Something went wrong")
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
+            assertThat((state as WooPosItemsSearchViewState.Content).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+    }
+
+    @Test
+    fun `given PTR triggered, when event fired, then analytics event tracked`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(
+            mockDataSource.getCurrentSyncStrategy()
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(mockDataSource.refreshProducts()).thenReturn(
+            Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
+        )
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockWooPosAnalyticsTracker).track(
+            WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+            )
+        )
+    }
+
+    @Test
+    fun `given local catalog sync strategy, when content state loaded, then PTR state is Enabled`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(
+            mockDataSource.getCurrentSyncStrategy()
+        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
+            assertThat((state as WooPosItemsSearchViewState.Content).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+    }
+
     private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
             flowOf(
@@ -872,5 +1009,7 @@ class WooPosItemsSearchViewModelTest {
         parentToChildrenEventReceiver = mockParentToChildrenEventReceiver,
         searchHelper = mockSearchHelper,
         analyticsTracker = mockAnalyticsTracker,
+        resourceProvider = mockResourceProvider,
+        wooPosAnalyticsTracker = mockWooPosAnalyticsTracker,
     )
 }
