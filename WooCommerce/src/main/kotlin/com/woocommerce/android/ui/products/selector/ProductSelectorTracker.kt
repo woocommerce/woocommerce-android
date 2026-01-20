@@ -93,7 +93,9 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
             val flowValue = when (flow) {
                 ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
                 ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
-                else -> AnalyticsTracker.VALUE_OTHER
+                ProductSelectorFlow.CouponEdition,
+                ProductSelectorFlow.OrderListFilter,
+                ProductSelectorFlow.Undefined -> AnalyticsTracker.VALUE_OTHER
             }
             tracker.track(
                 AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
@@ -110,7 +112,9 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
             val flowValue = when (flow) {
                 ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
                 ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
-                else -> AnalyticsTracker.VALUE_OTHER
+                ProductSelectorFlow.CouponEdition,
+                ProductSelectorFlow.OrderListFilter,
+                ProductSelectorFlow.Undefined -> AnalyticsTracker.VALUE_OTHER
             }
             tracker.track(
                 AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
