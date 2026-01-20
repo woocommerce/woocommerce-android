@@ -987,7 +987,9 @@ class OrderListViewModel @Inject constructor(
 
                                 is BulkUpdateOrderResult.AllFailed,
                                 is BulkUpdateOrderResult.NoOrdersUpdated,
-                                is BulkUpdateOrderResult.Error -> resourceProvider.getString(R.string.orderlist_bulk_update_status_updated)
+                                is BulkUpdateOrderResult.Error -> resourceProvider.getString(
+                                    R.string.orderlist_bulk_update_status_updated
+                                )
                             }
                             triggerEvent(OrderListEvent.ShowSnackbarString(message))
                             observable.removeObserver(this)
