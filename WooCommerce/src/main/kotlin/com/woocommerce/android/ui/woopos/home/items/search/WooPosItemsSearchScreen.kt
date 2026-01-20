@@ -9,12 +9,17 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -85,7 +90,7 @@ private fun WooPosItemsSearchScreen(
 
                 WooPosItemsSearchViewState.Content::class.java -> {
                     if (state is WooPosItemsSearchViewState.Content) {
-                        WooPosItemsSearchContent(
+                        WooPosItemsSearchContentWithPullToRefresh(
                             modifier = Modifier.padding(
                                 horizontal = WooPosSpacing.Medium.value,
                             ),
@@ -144,6 +149,40 @@ private fun WooPosItemsSearchScreen(
                 else -> error("Unsupported state: $currentStateClass")
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+private fun WooPosItemsSearchContentWithPullToRefresh(
+    modifier: Modifier = Modifier,
+    listState: LazyListState,
+    state: WooPosItemsSearchViewState.Content,
+    onUIEvent: (WooPosItemsSearchUiEvent) -> Unit
+) {
+    val pullToRefreshState = rememberPullRefreshState(
+        refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+        onRefresh = { onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered) },
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .pullRefresh(
+                state = pullToRefreshState,
+                enabled = state.pullToRefreshState == WooPosPullToRefreshState.Enabled,
+            )
+    ) {
+        WooPosItemsSearchContent(
+            listState = listState,
+            state = state,
+            onUIEvent = onUIEvent
+        )
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            state = pullToRefreshState
+        )
     }
 }
 
