@@ -148,8 +148,8 @@ class MediaLibraryCacheTest {
             "image/jpeg", // mimeType
             fileName, // title
             "", // caption
-            "", // description
-            MediaModel.MediaUploadState.UPLOADED // uploadState
+            "" // description
+            // uploadState
         )
     }
 }

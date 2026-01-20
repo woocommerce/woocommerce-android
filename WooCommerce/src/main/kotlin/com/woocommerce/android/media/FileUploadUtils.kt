@@ -85,7 +85,6 @@ object FileUploadUtils {
             path,
             mimeType,
             filenameWithExtension,
-            null
         )
         val instantiatedMedia = mediaStore.instantiateMediaModel(media)
         return if (instantiatedMedia != null) {

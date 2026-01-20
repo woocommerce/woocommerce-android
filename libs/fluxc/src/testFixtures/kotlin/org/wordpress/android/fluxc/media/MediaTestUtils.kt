@@ -1,7 +1,6 @@
 package org.wordpress.android.fluxc.media
 
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
 import org.wordpress.android.fluxc.utils.MimeTypes
 import java.util.concurrent.atomic.AtomicInteger
 
@@ -28,7 +27,6 @@ object MediaTestUtils {
         private var filePath: String? = "/test/test-image.jpg"
         private var mimeType: String? = "image/jpeg"
         private var title: String? = "Test Image"
-        private var uploadState: MediaUploadState = MediaUploadState.UPLOADED
 
         fun localSiteId(value: Int) = apply { this.localSiteId = value }
         fun mediaId(value: Long) = apply { this.mediaId = value }
@@ -38,7 +36,6 @@ object MediaTestUtils {
         fun filePath(value: String?) = apply { this.filePath = value }
         fun mimeType(value: String?) = apply { this.mimeType = value }
         fun title(value: String?) = apply { this.title = value }
-        fun uploadState(value: MediaUploadState) = apply { this.uploadState = value }
 
         fun build(): MediaModel {
             val media = MediaModel(
@@ -47,8 +44,7 @@ object MediaTestUtils {
                 this.fileName,
                 this.filePath,
                 this.mimeType,
-                this.title,
-                this.uploadState
+                this.title
             ).apply {
                 setMediaId(this@LocalTestMediaBuilder.mediaId)
                 setPostId(this@LocalTestMediaBuilder.postId)
@@ -70,7 +66,6 @@ object MediaTestUtils {
         private var caption: String = ""
         private var description: String = ""
         private var alt: String = ""
-        private var uploadState: MediaUploadState = MediaUploadState.UPLOADED
 
         fun localSiteId(value: Int) = apply { this.localSiteId = value }
         fun mediaId(value: Long) = apply { this.mediaId = value }
@@ -83,7 +78,6 @@ object MediaTestUtils {
         fun caption(value: String) = apply { this.caption = value }
         fun description(value: String) = apply { this.description = value }
         fun alt(value: String) = apply { this.alt = value }
-        fun uploadState(value: MediaUploadState) = apply { this.uploadState = value }
 
         fun build(): MediaModel {
             val media = MediaModel(
@@ -97,7 +91,6 @@ object MediaTestUtils {
                 this.title,
                 this.caption,
                 this.description,
-                this.uploadState
             )
             media.id = nextId.getAndIncrement()
             return media

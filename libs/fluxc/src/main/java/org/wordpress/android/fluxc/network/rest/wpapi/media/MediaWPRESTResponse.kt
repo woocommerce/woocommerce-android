@@ -5,7 +5,6 @@ package org.wordpress.android.fluxc.network.rest.wpapi.media
 import com.google.gson.annotations.SerializedName
 import org.apache.commons.text.StringEscapeUtils
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState
 import org.wordpress.android.fluxc.network.rest.JsonObjectOrNull
 import org.wordpress.android.util.DateTimeUtils
 import java.text.SimpleDateFormat
@@ -53,10 +52,5 @@ fun MediaWPRESTResponse.toMediaModel(localSiteId: Int) = MediaModel(
     mimeType,
     StringEscapeUtils.unescapeHtml4(title.rendered),
     StringEscapeUtils.unescapeHtml4(caption.rendered),
-    StringEscapeUtils.unescapeHtml4(description.rendered),
-    if (status == "deleted") {
-        MediaUploadState.DELETED
-    } else {
-        MediaUploadState.UPLOADED
-    }
+    StringEscapeUtils.unescapeHtml4(description.rendered)
 )

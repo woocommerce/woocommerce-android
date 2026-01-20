@@ -49,9 +49,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
     @NonNull private final String mCaption;
     @NonNull private final String mDescription;
 
-    // Local only
-    @Nullable private String mUploadState;
-
     /**
      * Use when converting local uri into a media, and then, to upload a new or update an existing media.
      */
@@ -61,8 +58,7 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
             @Nullable String fileName,
             @Nullable String filePath,
             @Nullable String mimeType,
-            @Nullable String title,
-            @Nullable MediaUploadState uploadState) {
+            @Nullable String title) {
         this.mLocalSiteId = localSiteId;
         this.mUploadDate = uploadDate;
         this.mUrl = "";
@@ -72,7 +68,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         this.mTitle = title;
         this.mCaption = "";
         this.mDescription = "";
-        this.mUploadState = uploadState != null ? uploadState.toString() : null;
     }
 
     /**
@@ -88,8 +83,7 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
             @Nullable String mimeType,
             @Nullable String title,
             @NonNull String caption,
-            @NonNull String description,
-            @NonNull MediaUploadState uploadState) {
+            @NonNull String description) {
         this.mLocalSiteId = localSiteId;
         this.mMediaId = mediaId;
         this.mPostId = postId;
@@ -100,7 +94,6 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
         this.mTitle = title;
         this.mCaption = caption;
         this.mDescription = description;
-        this.mUploadState = uploadState.toString();
     }
 
     @Override
@@ -122,8 +115,7 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
                 && StringUtils.equals(getMimeType(), otherMedia.getMimeType())
                 && StringUtils.equals(getTitle(), otherMedia.getTitle())
                 && StringUtils.equals(getDescription(), otherMedia.getDescription())
-                && StringUtils.equals(getCaption(), otherMedia.getCaption())
-                && StringUtils.equals(getUploadState(), otherMedia.getUploadState());
+                && StringUtils.equals(getCaption(), otherMedia.getCaption());
     }
 
     public void setId(int id) {
@@ -197,14 +189,4 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
     public String getDescription() {
         return mDescription;
     }
-
-    public void setUploadState(@NonNull MediaUploadState uploadState) {
-        mUploadState = uploadState.toString();
-    }
-
-    @Nullable
-    public String getUploadState() {
-        return mUploadState;
-    }
-
 }

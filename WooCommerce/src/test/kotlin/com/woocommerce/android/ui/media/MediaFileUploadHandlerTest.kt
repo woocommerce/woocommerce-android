@@ -30,8 +30,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.media.MediaTestUtils
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.UPLOADED
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.NULL_MEDIA_ARG
 import org.wordpress.android.util.DateTimeUtils
@@ -125,13 +123,11 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
         launch {
-            val successfulUpload = mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).first()
-            assertThat(successfulUpload.uploadState).isEqualTo(UPLOADED.toString())
+            mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).first()
         }
 
         val mediaModel = MediaTestUtils.createRemoteTestMedia()
             .postId(REMOTE_PRODUCT_ID)
-            .uploadState(UPLOADED)
             .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadSucceeded(
@@ -150,7 +146,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             .fileName("test")
             .url("url")
             .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
-            .uploadState(UPLOADED)
             .postId(REMOTE_PRODUCT_ID)
             .build()
         eventsFlow.tryEmit(
@@ -174,7 +169,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
                 .fileName("test")
                 .url("url")
                 .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
-                .uploadState(UPLOADED)
                 .postId(REMOTE_PRODUCT_ID)
                 .build()
             eventsFlow.tryEmit(
@@ -205,7 +199,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
         val mediaModel = MediaTestUtils.createRemoteTestMedia()
             .postId(REMOTE_PRODUCT_ID)
-            .uploadState(FAILED)
             .build()
 
         eventsFlow.tryEmit(
@@ -231,7 +224,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
         val mediaModel = MediaTestUtils.createRemoteTestMedia()
             .postId(REMOTE_PRODUCT_ID)
-            .uploadState(FAILED)
             .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadFailed(
@@ -265,7 +257,6 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             .fileName("test")
             .url("url")
             .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
-            .uploadState(UPLOADED)
             .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadSucceeded(
