@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.login
 
 import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.FakeDispatcher
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
@@ -12,11 +13,10 @@ import org.assertj.core.api.Assertions.assertThat
 import org.mockito.kotlin.any
 import org.mockito.kotlin.given
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.wordpress.android.fluxc.action.AccountAction
-import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.SiteStore.OnApplicationPasswordDeleted
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
@@ -31,12 +31,10 @@ class AccountRepositoryTest : BaseUnitTest() {
     private val zendeskSettings: ZendeskSettings = mock()
     private val appPrefs: AppPrefs = mock()
     private val visibleWooSitesDataStore: VisibleWooSitesDataStore = mock()
+    private val pushNotificationRepository: PushNotificationRepository = mock()
     private val dispatcher = FakeDispatcher().apply {
         registerActionHandler(AccountAction.SIGN_OUT) {
             emitChange(AccountStore.OnAccountChanged())
-        }
-        registerActionHandler(NotificationAction.UNREGISTER_DEVICE) {
-            emitChange(NotificationStore.OnDeviceUnregistered())
         }
     }
     private val appCoroutineScope = TestScope(coroutinesTestRule.testDispatcher)
@@ -51,21 +49,17 @@ class AccountRepositoryTest : BaseUnitTest() {
         prefs = appPrefs,
         appCoroutineScope = appCoroutineScope,
         siteVisibilityDataStore = visibleWooSitesDataStore,
-        dispatchers = coroutinesTestRule.testDispatchers
+        dispatchers = coroutinesTestRule.testDispatchers,
+        pushNotificationRepository = pushNotificationRepository
     )
 
     @Test
     fun `given signed in using wordpress_com, when logout is called, then unregister device`() = testBlocking {
         given(accountStore.hasAccessToken()).willReturn(true)
-        var deviceUnregistered = false
-        dispatcher.registerActionHandler(NotificationAction.UNREGISTER_DEVICE) {
-            deviceUnregistered = true
-            emitChange(NotificationStore.OnDeviceUnregistered())
-        }
 
         repository.logout()
 
-        assertThat(deviceUnregistered).isTrue()
+        verify(pushNotificationRepository).unregisterDevice()
     }
 
     @Test

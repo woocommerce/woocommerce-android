@@ -55,6 +55,11 @@ class PushNotificationRepository @Inject constructor(
         return stringPreferencesKey("push_token_$siteId")
     }
 
+    suspend fun unregisterDevice() {
+        notificationStore.unregisterWpComPushToken()
+        pushNotificationsDataStore.edit { it.clear() }
+    }
+
     private fun generateAndStoreUUID(): String {
         return UUID.randomUUID().toString().also {
             appPrefsWrapper.wooCorePushDeviceUUID = it

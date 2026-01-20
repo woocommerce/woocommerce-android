@@ -103,6 +103,13 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             )
         }
 
+    @Test
+    fun `when unregisterDevice is called, then unregisters wpcom token`() = testBlocking {
+        sut.unregisterDevice()
+
+        verify(notificationStore).unregisterWpComPushToken()
+    }
+
     private companion object {
         const val RETURNED_TOKEN = "returned-token-123"
 
