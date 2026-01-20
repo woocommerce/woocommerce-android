@@ -310,7 +310,7 @@ private val Colors.toggleBackgroundColor: Color
 private val DpSize.Companion.Saver by lazy {
     listSaver(
         save = { listOf(it.width.value, it.height.value) },
-        restore = { DpSize((it[0] as Float).dp, (it[1] as Float).dp) }
+        restore = { DpSize(it[0].dp, it[1].dp) }
     )
 }
 
