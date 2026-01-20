@@ -116,7 +116,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
         performSearch(currentState.searchQuery)
     }
 
-    @Suppress("CyclomaticComplexMethod")
+    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun performSearch(
         query: String,
         showLoadingState: Boolean = true,

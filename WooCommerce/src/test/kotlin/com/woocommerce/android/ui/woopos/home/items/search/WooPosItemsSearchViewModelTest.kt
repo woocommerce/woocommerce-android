@@ -265,7 +265,8 @@ class WooPosItemsSearchViewModelTest {
 
         // THEN
         viewModel.viewState.test {
-            assertThat(awaitItem()).isEqualTo(WooPosItemsSearchViewState.Empty)
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
         }
     }
 
@@ -948,6 +949,136 @@ class WooPosItemsSearchViewModelTest {
                 .isEqualTo(WooPosPullToRefreshState.Enabled)
         }
     }
+
+    @Test
+    fun `given empty search results with local catalog sync, when PTR triggered, then refresh products and rerun search`() =
+        runTest {
+            // GIVEN
+            mockSuccessfulSearch(defaultQuery, emptyList())
+            whenever(
+                mockDataSource.getCurrentSyncStrategy()
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            whenever(mockDataSource.refreshProducts()).thenReturn(
+                Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
+            )
+
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // Verify we're in Empty state
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+            }
+
+            // WHEN
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockDataSource).refreshProducts()
+            verify(mockDataSource, times(2)).searchProducts(defaultQuery)
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+                assertThat((state as WooPosItemsSearchViewState.Empty).pullToRefreshState)
+                    .isEqualTo(WooPosPullToRefreshState.Enabled)
+            }
+        }
+
+    @Test
+    fun `given empty search results, when PTR triggered and sync finishes, then PTR indicator disappears`() =
+        runTest {
+            // GIVEN
+            mockSuccessfulSearch(defaultQuery, emptyList())
+            whenever(
+                mockDataSource.getCurrentSyncStrategy()
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            whenever(mockDataSource.refreshProducts()).thenReturn(
+                Result.success(PosLocalCatalogProductSyncResult(PosLocalCatalogSyncResult.Success(1, 0, 100L)))
+            )
+
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+                assertThat((state as WooPosItemsSearchViewState.Empty).pullToRefreshState)
+                    .isEqualTo(WooPosPullToRefreshState.Enabled)
+            }
+
+            // WHEN
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+            advanceUntilIdle()
+
+            // THEN
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+                assertThat((state as WooPosItemsSearchViewState.Empty).pullToRefreshState)
+                    .isNotEqualTo(WooPosPullToRefreshState.Refreshing)
+                assertThat(state.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
+            }
+        }
+
+    @Test
+    fun `given remote sync strategy, when empty search result shown, then PTR state is Disabled`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, emptyList())
+        whenever(mockDataSource.getCurrentSyncStrategy()).thenReturn(WooPosProductsDataSource.SyncStrategy.REMOTE)
+
+        // WHEN
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        viewModel.viewState.test {
+            val state = awaitItem()
+            assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+            assertThat((state as WooPosItemsSearchViewState.Empty).pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Disabled)
+        }
+    }
+
+    @Test
+    fun `given empty search results and PTR fails, when error occurs, then toast shown and PTR state reset`() =
+        runTest {
+            // GIVEN
+            mockSuccessfulSearch(defaultQuery, emptyList())
+            whenever(
+                mockDataSource.getCurrentSyncStrategy()
+            ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+            whenever(mockDataSource.refreshProducts()).thenReturn(
+                Result.success(
+                    PosLocalCatalogProductSyncResult(
+                        PosLocalCatalogSyncResult.Failure.NetworkError("Network error")
+                    )
+                )
+            )
+            whenever(mockResourceProvider.getString(any())).thenReturn("Something went wrong")
+
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+            }
+
+            // WHEN
+            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+            advanceUntilIdle()
+
+            // THEN
+            verify(mockChildToParentEventSender).sendToParent(any<ChildToParentEvent.ToastMessageDisplayed>())
+            viewModel.viewState.test {
+                val state = awaitItem()
+                assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Empty::class.java)
+                assertThat((state as WooPosItemsSearchViewState.Empty).pullToRefreshState)
+                    .isEqualTo(WooPosPullToRefreshState.Enabled)
+            }
+        }
 
     private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
