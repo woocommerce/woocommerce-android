@@ -38,6 +38,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
@@ -838,6 +839,8 @@ class WooPosItemsSearchViewModelTest {
         advanceUntilIdle()
 
         // THEN
+        verify(mockDataSource).refreshProducts()
+        verify(mockDataSource, times(2)).searchProducts(defaultQuery)
         viewModel.viewState.test {
             val state = awaitItem()
             assertThat(state).isInstanceOf(WooPosItemsSearchViewState.Content::class.java)
