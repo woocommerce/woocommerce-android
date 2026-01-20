@@ -41,6 +41,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 
@@ -52,6 +53,7 @@ class NotificationMessageHandlerTest {
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
     }
+    private val pushNotificationsStore: PushNotificationsStore = mock()
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLog: WooLog = mock()
@@ -91,13 +93,14 @@ class NotificationMessageHandlerTest {
     @Before
     fun setUp() {
         notificationMessageHandler = NotificationMessageHandler(
-            accountStore = accountStore,
-            wooLog = wooLog,
-            dispatcher = dispatcher,
-            resourceProvider = resourceProvider,
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             notificationsParser = notificationsParser,
+            accountStore = accountStore,
+            pushNotificationsStore = pushNotificationsStore,
+            wooLog = wooLog,
+            dispatcher = dispatcher,
+            resourceProvider = resourceProvider,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
         )
