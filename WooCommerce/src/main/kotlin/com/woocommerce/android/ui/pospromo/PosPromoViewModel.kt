@@ -41,6 +41,6 @@ class PosPromoViewModel @Inject constructor(
     }
 
     companion object {
-        const val WOO_POS_DOCS_URL = "https://woocommerce.com/document/woo-mobile-app-point-of-sale-mode/"
+        const val WOO_POS_DOCS_URL = "https://woocommerce.com/mobile/pos/learn-more"
     }
 }
