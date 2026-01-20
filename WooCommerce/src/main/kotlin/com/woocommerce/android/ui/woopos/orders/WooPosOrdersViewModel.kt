@@ -35,6 +35,7 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
 
+@Suppress("LargeClass")
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
@@ -114,6 +115,7 @@ class WooPosOrdersViewModel @Inject constructor(
         return getRefundableItems(order, refunds).isNotEmpty()
     }
 
+    @Suppress("LongMethod", "CyclomaticComplexMethod")
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
