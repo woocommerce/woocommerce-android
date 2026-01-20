@@ -213,17 +213,18 @@ class WooPosOrdersViewModel @Inject constructor(
             ) {
                 val loadedItems = updatedState.items as? WooPosOrdersState.Content.Items.Loaded
                 val updatedItems = loadedItems?.items?.map { (item, details) ->
-                    val updatedDetails = if (item.id == orderId && details is WooPosOrdersState.OrderDetailsViewState.Computed) {
-                        WooPosOrdersState.OrderDetailsViewState.Computed(
-                            orderId = orderId,
-                            details = details.details.copy(
-                                actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
-                                breakdown = updatedBreakdown
+                    val updatedDetails =
+                        if (item.id == orderId && details is WooPosOrdersState.OrderDetailsViewState.Computed) {
+                            WooPosOrdersState.OrderDetailsViewState.Computed(
+                                orderId = orderId,
+                                details = details.details.copy(
+                                    actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
+                                    breakdown = updatedBreakdown
+                                )
                             )
-                        )
-                    } else {
-                        details
-                    }
+                        } else {
+                            details
+                        }
                     item to updatedDetails
                 }?.toMap()
 
