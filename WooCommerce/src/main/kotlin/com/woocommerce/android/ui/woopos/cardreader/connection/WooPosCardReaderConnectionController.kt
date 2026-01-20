@@ -460,7 +460,6 @@ class WooPosCardReaderConnectionController(
             }
             is SoftwareUpdateStatus.Unknown -> {
                 showUpdateCancelWarning = false
-                tracker.trackSoftwareUpdateUnknownStatus()
                 logger.d("Software update status unknown")
             }
         }
