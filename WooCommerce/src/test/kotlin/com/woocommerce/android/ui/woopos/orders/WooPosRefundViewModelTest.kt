@@ -458,6 +458,41 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given content state with refund reason, when navigating between steps, then refundReason is preserved`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer changed mind"))
+
+            val reviewState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewState.refundReason).isEqualTo("Customer changed mind")
+
+            // WHEN - Navigate back to SelectItems
+            viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+
+            // THEN - Reason is preserved
+            val selectItemsState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(selectItemsState.refundReason).isEqualTo("Customer changed mind")
+            assertThat(selectItemsState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+
+            // WHEN - Navigate forward to ReviewRefund again
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+
+            // THEN - Reason is still preserved
+            val reviewStateAgain = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewStateAgain.refundReason).isEqualTo("Customer changed mind")
+            assertThat(reviewStateAgain.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+        }
+
+    @Test
     fun `given content state at ReviewRefund step, when BackToSelectItemsClicked event, then step changes to SelectItems`() =
         runTest {
             // GIVEN
