@@ -6,12 +6,14 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
+import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -30,6 +32,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
 import java.util.Date
+import java.util.Locale
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosOrdersViewModelTest {
@@ -41,10 +44,13 @@ class WooPosOrdersViewModelTest {
     private lateinit var viewModel: WooPosOrdersViewModel
 
     private val resourceProvider: ResourceProvider = mock()
+    private val getProductById: WooPosGetProductById = mock()
+    private val formatPrice: WooPosFormatPrice = mock()
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds = mock()
+    private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
-    private val mapper: WooPosOrdersMapper = mock()
+    private val getRefundableItems: WooPosGetRefundableItems = mock()
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -55,10 +61,13 @@ class WooPosOrdersViewModelTest {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
+            locale = providedLocale,
+            getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
+            formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
-            mapper = mapper,
+            getRefundableItems = getRefundableItems,
         )
     }
 
@@ -66,7 +75,17 @@ class WooPosOrdersViewModelTest {
     fun setUp() = runTest {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
 
+        whenever(formatPrice(any<BigDecimal>(), any())).thenAnswer { invocation ->
+            val amount = invocation.arguments[0] as? BigDecimal
+            amount?.let { "$${it.abs()}" } ?: "$0.00"
+        }
+        whenever(formatPrice(any<BigDecimal>())).thenAnswer { invocation ->
+            val amount = invocation.arguments[0] as? BigDecimal
+            amount?.let { "$${it.abs()}" } ?: "$0.00"
+        }
+        whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
@@ -94,95 +113,6 @@ class WooPosOrdersViewModelTest {
             .thenReturn("No orders found")
         whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
             .thenReturn("Try a different search term")
-
-        whenever(mapper.mapOrderItem(any(), any())).thenAnswer { invocation ->
-            val order = invocation.arguments[0] as Order
-            val selectedId = invocation.arguments[1] as Long?
-            WooPosOrdersState.OrderItemViewState(
-                id = order.id,
-                title = "#${order.number}",
-                date = "Jan 01, 2024 at 12:00",
-                total = "$0.00",
-                customerEmail = "",
-                isSelected = order.id == selectedId,
-                status = PosOrderStatus("Processing", OrderStatusColorKey.PROCESSING),
-                statusSlug = "processing",
-                createdAtMillis = order.dateCreated.time
-            )
-        }
-
-        whenever(mapper.mapOrderDetails(any(), any())).thenAnswer { invocation ->
-            val order = invocation.arguments[0] as Order
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details(
-                id = order.id,
-                number = "#${order.number}",
-                dateTime = "Jan 01, 2024 at 12:00",
-                customerEmail = "",
-                status = PosOrderStatus("Processing", OrderStatusColorKey.PROCESSING),
-                lineItems = emptyList(),
-                breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
-                    products = "$0.00",
-                    discount = null,
-                    discountCode = null,
-                    taxes = "$0.00",
-                    shipping = null,
-                    refunds = emptyList(),
-                    netPayment = null
-                ),
-                total = "$0.00",
-                totalPaid = "$0.00",
-                paymentMethodTitle = null,
-                actionsState = WooPosOrdersState.OrderActionsState.Loaded(
-                    listOf(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
-                )
-            )
-        }
-
-        whenever(mapper.mapOrderDetailsWithoutActions(any())).thenAnswer { invocation ->
-            val order = invocation.arguments[0] as Order
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details(
-                id = order.id,
-                number = "#${order.number}",
-                dateTime = "Jan 01, 2024 at 12:00",
-                customerEmail = "",
-                status = PosOrderStatus("Processing", OrderStatusColorKey.PROCESSING),
-                lineItems = emptyList(),
-                breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
-                    products = "$0.00",
-                    discount = null,
-                    discountCode = null,
-                    taxes = "$0.00",
-                    shipping = null,
-                    refunds = emptyList(),
-                    netPayment = null
-                ),
-                total = "$0.00",
-                totalPaid = "$0.00",
-                paymentMethodTitle = null,
-                actionsState = WooPosOrdersState.OrderActionsState.Loading
-            )
-        }
-
-        whenever(mapper.getAvailableActions(any(), any())).thenAnswer { invocation ->
-            val order = invocation.arguments[0] as Order
-            listOf(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
-        }
-
-        whenever(mapper.buildRefundInfo(any(), any())).thenReturn(
-            RefundInfo(emptyList(), java.math.BigDecimal.ZERO)
-        )
-
-        whenever(mapper.buildTotalsBreakdown(any(), any())).thenReturn(
-            WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
-                products = "$0.00",
-                discount = null,
-                discountCode = null,
-                taxes = "$0.00",
-                shipping = null,
-                refunds = emptyList(),
-                netPayment = null
-            )
-        )
     }
 
     @Test
@@ -669,7 +599,7 @@ class WooPosOrdersViewModelTest {
         assertThat(selectedItemId).isEqualTo(2L)
         assertThat(content.selectedDetails?.id).isEqualTo(2L)
         assertThat(content.selectedDetails?.lineItems).isNotEmpty
-        assertThat(content.selectedDetails?.total).isEqualTo("$0.00")
+        assertThat(content.selectedDetails?.total).isEqualTo("$106.00")
     }
 
     @Test
@@ -695,7 +625,7 @@ class WooPosOrdersViewModelTest {
         val details = content.selectedDetails!!
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         assertThat(details.id).isEqualTo(20L)
-        assertThat(details.totalPaid).isEqualTo("$0.00")
+        assertThat(details.totalPaid).isEqualTo("$106.00")
     }
 
     @Test
@@ -1284,6 +1214,7 @@ class WooPosOrdersViewModelTest {
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
 
         // WHEN
         viewModel = createViewModel()

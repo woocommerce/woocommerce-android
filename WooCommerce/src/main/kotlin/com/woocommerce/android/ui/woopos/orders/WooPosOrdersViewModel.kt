@@ -29,6 +29,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
 
+@Suppress("LargeClass")
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
