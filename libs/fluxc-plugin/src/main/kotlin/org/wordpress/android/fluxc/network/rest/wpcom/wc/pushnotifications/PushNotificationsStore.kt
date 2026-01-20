@@ -25,7 +25,7 @@ class PushNotificationsStore @Inject internal constructor(
         site: SiteModel,
         token: String,
         deviceUuid: String
-    ): WooResult<Unit> = coroutineEngine.withDefaultContext(T.API, this, "registerPushToken") {
+    ): WooResult<String> = coroutineEngine.withDefaultContext(T.API, this, "registerPushToken") {
         val origin = if (BuildConfig.DEBUG) ORIGIN_DEV else ORIGIN
         val payload = pushNotificationsRestClient.registerPushToken(site, token, origin, deviceUuid)
 
@@ -33,7 +33,7 @@ class PushNotificationsStore @Inject internal constructor(
             WooResult(payload.error)
         } else {
             persistPushTokenId(payload.result.id)
-            WooResult(Unit)
+            WooResult(payload.result.id)
         }
     }
 
