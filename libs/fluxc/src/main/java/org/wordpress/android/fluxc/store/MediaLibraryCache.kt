@@ -18,20 +18,22 @@ class MediaLibraryCache @Inject constructor() {
     }
 
     fun addOrUpdate(localSiteId: Int, media: MediaModel) {
-        val currentList = cache[localSiteId] ?: emptyList()
-        val mutableList = currentList.toMutableList()
-        val existingIndex = mutableList.indexOfFirst { it.mediaId == media.mediaId }
-        if (existingIndex != -1) {
-            mutableList[existingIndex] = media
-        } else {
-            mutableList.add(media)
+        cache.compute(localSiteId) { _, currentList ->
+            val mutableList = (currentList ?: emptyList()).toMutableList()
+            val existingIndex = mutableList.indexOfFirst { it.mediaId == media.mediaId }
+            if (existingIndex != -1) {
+                mutableList[existingIndex] = media
+            } else {
+                mutableList.add(media)
+            }
+            mutableList
         }
-        cache[localSiteId] = mutableList
     }
 
     fun remove(localSiteId: Int, mediaId: Long) {
-        val currentList = cache[localSiteId] ?: return
-        cache[localSiteId] = currentList.filter { it.mediaId != mediaId }
+        cache.computeIfPresent(localSiteId) { _, currentList ->
+            currentList.filter { it.mediaId != mediaId }
+        }
     }
 
     fun clear() {
