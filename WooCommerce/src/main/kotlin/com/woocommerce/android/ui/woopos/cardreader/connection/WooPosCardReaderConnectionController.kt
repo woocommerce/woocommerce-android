@@ -120,9 +120,19 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            checkRequirementsAndStartDiscovery()
+    fun onBluetoothPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        when {
+            granted -> checkRequirementsAndStartDiscovery()
+            !shouldShowRationale -> emitEvent(ControllerEvent.OpenAppSettings)
+            else -> checkRequirementsAndStartDiscovery()
+        }
+    }
+
+    fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        when {
+            granted -> checkRequirementsAndStartDiscovery()
+            !shouldShowRationale -> emitEvent(ControllerEvent.OpenAppSettings)
+            else -> checkRequirementsAndStartDiscovery()
         }
     }
 
@@ -183,6 +193,7 @@ class WooPosCardReaderConnectionController(
         data object RequestEnableBluetooth : ControllerEvent
         data object RequestLocationPermission : ControllerEvent
         data object RequestEnableLocation : ControllerEvent
+        data object OpenAppSettings : ControllerEvent
         data object Cancelled : ControllerEvent
         data class OnboardingRequired(val onboardingState: CardReaderOnboardingState) : ControllerEvent
     }
