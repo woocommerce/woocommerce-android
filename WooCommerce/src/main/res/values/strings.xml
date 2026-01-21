@@ -4358,7 +4358,7 @@
     <string name="about_automattic_app_icon_description">App icon</string>
 
     <!-- Woo POS Promo Carousel -->
-    <string name="woo_pos_promo_title">Run POS with the\nWooCommerce mobile app</string>
+    <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>
     <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
     <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
     <string name="woo_pos_promo_page3_description">Quick and simple to learn.</string>
