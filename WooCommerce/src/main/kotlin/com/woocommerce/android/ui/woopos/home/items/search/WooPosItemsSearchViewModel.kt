@@ -372,20 +372,20 @@ class WooPosItemsSearchViewModel @Inject constructor(
         }
     }
 
-    private fun handlePTRError() {
-        viewModelScope.launch {
-            childToParentEventSender.sendToParent(
-                ChildToParentEvent.ToastMessageDisplayed(
-                    message = resourceProvider.getString(R.string.something_went_wrong_try_again)
-                )
+    private suspend fun handlePTRError() {
+        childToParentEventSender.sendToParent(
+            ChildToParentEvent.ToastMessageDisplayed(
+                message = resourceProvider.getString(R.string.something_went_wrong_try_again)
             )
-        }
+        )
         val currentState = _viewState.value
         _viewState.value = when (currentState) {
             is WooPosItemsSearchViewState.Content ->
                 currentState.copy(pullToRefreshState = determinePullToRefreshState())
+
             is WooPosItemsSearchViewState.Empty ->
                 currentState.copy(pullToRefreshState = determinePullToRefreshState())
+
             else -> currentState
         }
     }
