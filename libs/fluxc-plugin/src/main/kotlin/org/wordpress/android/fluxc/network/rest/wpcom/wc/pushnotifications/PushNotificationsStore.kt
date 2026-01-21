@@ -32,7 +32,7 @@ class PushNotificationsStore @Inject internal constructor(
         if (payload.isError || payload.result == null) {
             WooResult(payload.error)
         } else {
-            persistPushTokenId(payload.result.id)
+            persistPushTokenId(site, payload.result.id)
             WooResult(Unit)
         }
     }
@@ -40,36 +40,59 @@ class PushNotificationsStore @Inject internal constructor(
     suspend fun deletePushToken(
         site: SiteModel
     ): WooResult<Unit> = coroutineEngine.withDefaultContext(T.API, this, "deletePushToken") {
-        getPersistedPushTokenId()?.let { pushTokenId ->
+        getPersistedPushTokenId(site)?.let { pushTokenId ->
             val result = pushNotificationsRestClient.deletePushToken(site, pushTokenId).asWooResult()
             if (!result.isError) {
-                preferences.edit { remove(PUSH_TOKEN_ID) }
+                clearPersistedPushTokenId(site)
             }
             result
         } ?: WooResult(
             WooError(
                 WooErrorType.GENERIC_ERROR,
                 BaseRequest.GenericErrorType.NOT_FOUND,
-                "No persisted push token id found"
+                "No persisted push token found for site ${site.id}"
             )
         )
     }
 
     @Synchronized
-    private fun getPersistedPushTokenId(): String? = preferences.getString(PUSH_TOKEN_ID, null)
+    private fun getPersistedPushTokenId(site: SiteModel): String? = getPersistedTokenIdSet()
+        .firstOrNull { it.startsWith(getSiteTokenIdPrefix(site)) }
+        ?.substringAfter(getSiteTokenIdPrefix(site))
 
     @Synchronized
-    private fun persistPushTokenId(tokenId: String) {
-        if (getPersistedPushTokenId() != tokenId) {
-            preferences.edit { putString(PUSH_TOKEN_ID, tokenId) }
+    private fun persistPushTokenId(site: SiteModel, tokenId: String) {
+        val persistedPushTokenIds = getPersistedTokenIdSet()
+
+        val updatedPushTokenIds =
+            persistedPushTokenIds.filterNot { it.startsWith(getSiteTokenIdPrefix(site)) }.toMutableSet()
+        updatedPushTokenIds.add(getSiteTokenIdPrefix(site) + tokenId)
+
+        if (persistedPushTokenIds != updatedPushTokenIds) {
+            preferences.edit { putStringSet(PUSH_TOKEN_IDS, updatedPushTokenIds) }
         }
     }
 
-    fun hasPushToken(): Boolean = getPersistedPushTokenId() != null
+    @Synchronized
+    private fun clearPersistedPushTokenId(site: SiteModel) {
+        val persistedPushTokens = getPersistedTokenIdSet()
+
+        val updatedPushTokens = persistedPushTokens.filterNot { it.startsWith(getSiteTokenIdPrefix(site)) }.toSet()
+
+        if (persistedPushTokens != updatedPushTokens) {
+            preferences.edit { putStringSet(PUSH_TOKEN_IDS, updatedPushTokens) }
+        }
+    }
+
+    private fun getPersistedTokenIdSet() = preferences.getStringSet(PUSH_TOKEN_IDS, null) ?: setOf()
+
+    private fun getSiteTokenIdPrefix(site: SiteModel) = "${site.id}:"
+
+    fun hasPushToken(site: SiteModel): Boolean = getPersistedPushTokenId(site) != null
 
     companion object {
         private const val ORIGIN = "com.woocommerce.android"
         private const val ORIGIN_DEV = "com.woocommerce.android:dev"
-        private const val PUSH_TOKEN_ID = "push_token_id"
+        private const val PUSH_TOKEN_IDS = "push_token_ids"
     }
 }
