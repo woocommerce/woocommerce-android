@@ -55,8 +55,13 @@ class PushNotificationRepository @Inject constructor(
             if (!result.isError) {
                 result.model?.let { pushToken ->
                     savePushTokenForSite(site.siteId, pushToken)
+                    disableWpComNotificationsForSite(site.siteId)
+                } ?: run {
+                    WooLog.w(
+                        WooLog.T.NOTIFS,
+                        "Push token registration in Woo Core succeeded but API returned null token;"
+                    )
                 }
-                disableWpComNotificationsForSite(site.siteId)
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFS, "No selected site, skipping PN registration") }
     }
@@ -67,8 +72,13 @@ class PushNotificationRepository @Inject constructor(
             newCommentEnabled = false,
             storeOrderEnabled = false
         )
-        notificationStore.updateNotificationSettingsFor(listOf(setting))
-        WooLog.d(WooLog.T.NOTIFS, "WPCom notifications disabled for site $siteId")
+        val result = notificationStore.updateNotificationSettingsFor(listOf(setting))
+        if (result.isFailure) {
+            // TODO we may want to add tracking to check how often this happens and if a fallback strategy is needed
+            WooLog.w(WooLog.T.NOTIFS, "Failed to disable WPCom notifications for site $siteId")
+        } else {
+            WooLog.d(WooLog.T.NOTIFS, "WPCom notifications disabled for site $siteId")
+        }
     }
 
     private suspend fun savePushTokenForSite(siteId: Long, token: String) {
