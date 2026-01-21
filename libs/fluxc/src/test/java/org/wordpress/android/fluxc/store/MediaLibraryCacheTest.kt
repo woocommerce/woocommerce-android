@@ -120,7 +120,7 @@ class MediaLibraryCacheTest {
     }
 
     @Test
-    fun `when removing media by local id, then it filters out media`() {
+    fun `when removing media by remote id, then it filters out media`() {
         val mediaToRemove = testMedia1
         cache.cacheMediaList(1, listOf(mediaToRemove, testMedia2))
 
