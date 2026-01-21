@@ -481,7 +481,7 @@ public class MediaStore extends Store {
     // Getters
     //
 
-    @Nullable
+    @NonNull
     public MediaModel instantiateMediaModel(@NonNull MediaModel media) {
         media.setId(mMediaIdGenerator.generate(media.getFilePath()).getValue());
         return media;
