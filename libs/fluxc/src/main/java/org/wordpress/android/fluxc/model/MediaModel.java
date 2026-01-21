@@ -8,6 +8,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError;
 import org.wordpress.android.util.StringUtils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class MediaModel extends Payload<BaseNetworkError> implements Serializable {
 
@@ -101,6 +102,11 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
                 && StringUtils.equals(getTitle(), otherMedia.getTitle())
                 && StringUtils.equals(getDescription(), otherMedia.getDescription())
                 && StringUtils.equals(getCaption(), otherMedia.getCaption());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(mId, mLocalSiteId, mMediaId, mPostId, mUploadDate, mUrl, mFileName, mFilePath, mMimeType, mTitle, mCaption, mDescription);
     }
 
     public void setId(int id) {
