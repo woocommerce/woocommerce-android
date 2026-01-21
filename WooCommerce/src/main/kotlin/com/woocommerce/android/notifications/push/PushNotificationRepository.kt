@@ -102,8 +102,6 @@ class PushNotificationRepository @Inject constructor(
         val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
         unregisterWpComToken.await()
-        WooLog.d(WooLog.T.NOTIFS, "WPCom push token unregistered")
-
         unregisterWooCoreTokens.await()
     }
 
