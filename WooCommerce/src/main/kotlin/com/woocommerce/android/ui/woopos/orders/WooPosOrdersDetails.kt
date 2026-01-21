@@ -107,7 +107,7 @@ private fun OrderActions(
                 modifier = Modifier
                     .height(40.dp)
                     .width(160.dp)
-                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
             )
         }
 
