@@ -10,21 +10,6 @@ import org.wordpress.android.util.StringUtils;
 import java.io.Serializable;
 
 public class MediaModel extends Payload<BaseNetworkError> implements Serializable {
-    public enum MediaUploadState {
-        QUEUED, UPLOADING, DELETING, DELETED, FAILED, UPLOADED;
-
-        @NonNull
-        public static MediaUploadState fromString(@Nullable String stringState) {
-            if (stringState != null) {
-                for (MediaUploadState state : MediaUploadState.values()) {
-                    if (stringState.equalsIgnoreCase(state.toString())) {
-                        return state;
-                    }
-                }
-            }
-            return UPLOADED;
-        }
-    }
 
     private int mId;
 
