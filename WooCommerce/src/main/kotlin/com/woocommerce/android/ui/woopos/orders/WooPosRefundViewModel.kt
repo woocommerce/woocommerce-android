@@ -232,7 +232,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
         ).copy(step = currentState.step)
     }
 
-
     private fun processRefund(contentState: WooPosRefundState.Content) {
         viewModelScope.launch {
             val currentState = _state.value
