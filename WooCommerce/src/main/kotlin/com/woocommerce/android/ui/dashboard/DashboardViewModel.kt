@@ -291,12 +291,13 @@ class DashboardViewModel @Inject constructor(
         }
 
         val dismissTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        val site = selectedSite.getIfExists() ?: return flowOf(null)
 
         return dismissTrigger.onStart { emit(Unit) }
             .map {
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner = !pushNotificationsStore.hasPushToken() &&
+                val showBanner = !pushNotificationsStore.hasPushToken(site) &&
                     durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
