@@ -1096,10 +1096,10 @@ class WooPosItemsSearchViewModelTest {
             )
         )
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         // WHEN
         viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
-        advanceUntilIdle()
 
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
@@ -1119,10 +1119,10 @@ class WooPosItemsSearchViewModelTest {
             )
         )
         val viewModel = createViewModel()
+        advanceUntilIdle()
 
         // WHEN
         viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
-        advanceUntilIdle()
 
         // THEN
         verify(mockChildToParentEventSender).sendToParent(
