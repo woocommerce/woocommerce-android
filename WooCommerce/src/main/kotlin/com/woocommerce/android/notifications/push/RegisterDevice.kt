@@ -31,7 +31,8 @@ class RegisterDevice @Inject constructor(
             WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
         }
         WooLog.d(
-            WooLog.T.NOTIFICATIONS, "Push notifications registration status: " +
+            WooLog.T.NOTIFICATIONS,
+            "Push notifications registration status: " +
                 "${pushNotificationRegistrationStatus()}"
         )
     }
