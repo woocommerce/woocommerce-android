@@ -6,6 +6,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_ERROR
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.sitepicker.SitePickerRepository
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -28,6 +29,7 @@ class WooSitesVisibilityViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val visibleSitesDataStore: VisibleWooSitesDataStore,
     private val notificationsStore: NotificationStore,
+    private val pushNotificationRepository: PushNotificationRepository,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
@@ -68,50 +70,57 @@ class WooSitesVisibilityViewModel @Inject constructor(
         )
         _wooStoresState.value = _wooStoresState.value.copy(isLoading = true)
         launch {
-            notificationsStore.updateNotificationSettingsFor(
-                _wooStoresState.value.wooStores.map {
+            val sitesToUpdate = _wooStoresState.value.wooStores
+                // Exclude sites using Woo Push Notifications System
+                .filterNot { pushNotificationRepository.isWooPushTokenRegisteredForSite(it.siteId) }
+                .map {
                     SiteNotificationSetting(
                         siteId = it.siteId,
                         newCommentEnabled = it.isSelected,
                         storeOrderEnabled = it.isSelected
                     )
                 }
-            ).fold(
-                onSuccess = {
-                    trackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_LIST_SAVING_SUCCESS)
-                    visibleSitesDataStore.updateSiteVisibilityStatus(
-                        _wooStoresState.value.wooStores
-                            .associate { it.siteId to it.isSelected }
-                    )
-                    triggerEvent(ExitWithResult(data = true))
-                },
-                onFailure = {
-                    if (it is NotificationSettingsUpdateError) {
-                        trackerWrapper.track(
-                            stat = AnalyticsEvent.SITE_PICKER_LIST_SAVING_FAILURE,
-                            properties = mapOf(KEY_ERROR to it.type.toString())
+
+            if (sitesToUpdate.isEmpty()) {
+                onSaveSuccess()
+            } else {
+                notificationsStore.updateNotificationSettingsFor(sitesToUpdate).fold(
+                    onSuccess = { onSaveSuccess() },
+                    onFailure = {
+                        if (it is NotificationSettingsUpdateError) {
+                            trackerWrapper.track(
+                                stat = AnalyticsEvent.SITE_PICKER_LIST_SAVING_FAILURE,
+                                properties = mapOf(KEY_ERROR to it.type.toString())
+                            )
+                        }
+                        triggerEvent(
+                            Event.ShowDialog(
+                                titleId = R.string.site_picker_edit_store_list_error_title,
+                                positiveButtonId = R.string.retry,
+                                positiveBtnAction = { dialog, _ ->
+                                    dialog.dismiss()
+                                    onSaveTapped()
+                                },
+                                negativeButtonId = R.string.cancel,
+                                negativeBtnAction = { dialog, _ ->
+                                    dialog.dismiss()
+                                    triggerEvent(Exit)
+                                }
+                            )
                         )
                     }
-                    triggerEvent(
-                        Event.ShowDialog(
-                            titleId = R.string.site_picker_edit_store_list_error_title,
-                            positiveButtonId = R.string.retry,
-                            positiveBtnAction = { dialog, _ ->
-                                dialog.dismiss()
-                                onSaveTapped()
-                            },
-                            negativeButtonId = R.string.cancel,
-                            negativeBtnAction = { dialog, _ ->
-                                dialog.dismiss()
-                                triggerEvent(Exit)
-                            }
-                        )
-                    )
-                }
-            ).also {
-                _wooStoresState.value = _wooStoresState.value.copy(isLoading = false)
+                )
             }
+            _wooStoresState.value = _wooStoresState.value.copy(isLoading = false)
         }
+    }
+
+    private suspend fun onSaveSuccess() {
+        trackerWrapper.track(stat = AnalyticsEvent.SITE_PICKER_LIST_SAVING_SUCCESS)
+        visibleSitesDataStore.updateSiteVisibilityStatus(
+            _wooStoresState.value.wooStores.associate { it.siteId to it.isSelected }
+        )
+        triggerEvent(ExitWithResult(data = true))
     }
 
     fun onSiteTapped(wooStoreUi: WooStoreUi) {
