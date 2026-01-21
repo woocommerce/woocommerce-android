@@ -14,7 +14,8 @@ enum class FeatureFlag {
     POS_REFUNDS,
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
     WOO_PUSH_NOTIFICATIONS_SYSTEM,
-    WOO_POS_PRODUCT_VISIBILITY_FILTERING;
+    WOO_POS_PRODUCT_VISIBILITY_FILTERING,
+    WOO_POS_CLIENT_SIDE_BANNER;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -31,6 +32,8 @@ enum class FeatureFlag {
 
             WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
+
+            WOO_POS_CLIENT_SIDE_BANNER -> true
         }
     }
 }
