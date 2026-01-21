@@ -198,7 +198,15 @@ class WooPosRetrieveOrderRefundsTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         verify(refundStore).getAllRefunds(site, order.id)
-        verify(refundStore, org.mockito.kotlin.never()).fetchAllRefunds(org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any())
+        verify(
+            refundStore,
+            org.mockito.kotlin.never()
+        ).fetchAllRefunds(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
     }
 
     @Test
