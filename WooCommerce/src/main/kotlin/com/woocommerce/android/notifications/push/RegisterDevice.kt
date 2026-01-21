@@ -2,7 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
-import com.woocommerce.android.notifications.push.IsDeviceRegisteredForPushNotifications.Status
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.util.FeatureFlag
@@ -14,11 +14,11 @@ class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountStore: AccountStore,
     private val notificationRepository: NotificationRepository,
-    private val isDeviceRegisteredForPushNotifications: IsDeviceRegisteredForPushNotifications,
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val pushNotificationRepository: PushNotificationRepository
 ) {
     suspend operator fun invoke(mode: Mode) {
-        val pushRegistrationStatus = isDeviceRegisteredForPushNotifications()
+        val pushRegistrationStatus = pushNotificationRegistrationStatus()
         when (mode) {
             IF_NEEDED -> {
                 if (pushRegistrationStatus == Status.UNREGISTERED) {

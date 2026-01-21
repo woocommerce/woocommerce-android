@@ -24,8 +24,8 @@ class RegisterDeviceTest : BaseUnitTest() {
         on { hasAccessToken() } doReturn true
     }
     private val notificationRepository: NotificationRepository = mock()
-    private val isDeviceRegisteredForPushNotifications: IsDeviceRegisteredForPushNotifications = mock {
-        on { invoke() } doReturn IsDeviceRegisteredForPushNotifications.Status.UNREGISTERED
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
+        onBlocking { invoke() } doReturn PushNotificationRegistrationStatus.Status.UNREGISTERED
     }
     private val pushNotificationRepository: PushNotificationRepository = mock()
 
@@ -35,7 +35,7 @@ class RegisterDeviceTest : BaseUnitTest() {
             appPrefs,
             accountStore,
             notificationRepository,
-            isDeviceRegisteredForPushNotifications,
+            pushNotificationRegistrationStatus,
             pushNotificationRepository
         )
     }

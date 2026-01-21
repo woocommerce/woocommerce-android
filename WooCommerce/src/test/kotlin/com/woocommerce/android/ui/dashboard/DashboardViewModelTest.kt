@@ -7,8 +7,8 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
-import com.woocommerce.android.notifications.push.IsDeviceRegisteredForPushNotifications
-import com.woocommerce.android.notifications.push.IsDeviceRegisteredForPushNotifications.Status
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
@@ -56,8 +56,8 @@ class DashboardViewModelTest : BaseUnitTest() {
         on { hasNewWidgets } doReturn flowOf(false)
     }
 
-    private val isDeviceRegisteredForPushNotifications: IsDeviceRegisteredForPushNotifications = mock {
-        on { invoke() } doReturn Status.REGISTERED
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
+        onBlocking { invoke() } doReturn Status.REGISTERED
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
@@ -78,7 +78,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             selectedSite = selectedSite,
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
-            isDeviceRegisteredForPushNotifications = isDeviceRegisteredForPushNotifications,
+            pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
             feedbackPrefs = feedbackPrefs,
         )
     }
@@ -113,7 +113,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                     }
                 )
             )
-            whenever(isDeviceRegisteredForPushNotifications()).thenReturn(Status.UNREGISTERED)
+            whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.UNREGISTERED)
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -133,7 +133,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(isDeviceRegisteredForPushNotifications()).thenReturn(Status.UNREGISTERED)
+                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.UNREGISTERED)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -349,7 +349,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(isDeviceRegisteredForPushNotifications()).thenReturn(Status.REGISTERED)
+                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.REGISTERED)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
