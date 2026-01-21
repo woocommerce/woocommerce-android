@@ -31,7 +31,16 @@ class WooPosRetrieveOrderRefunds @Inject constructor(
                 }
                 fetchResult.model ?: emptyList()
             } else {
-                refundStore.getAllRefunds(site, order.id)
+                val cachedRefunds = refundStore.getAllRefunds(site, order.id)
+                cachedRefunds.ifEmpty {
+                    val fetchResult = refundStore.fetchAllRefunds(site, order.id)
+                    if (fetchResult.isError) {
+                        return@withContext Result.failure(
+                            Exception("Failed to fetch refunds: ${fetchResult.error.message}")
+                        )
+                    }
+                    fetchResult.model ?: emptyList()
+                }
             }
 
             Result.success(refundModels.map { it.toAppModel() })

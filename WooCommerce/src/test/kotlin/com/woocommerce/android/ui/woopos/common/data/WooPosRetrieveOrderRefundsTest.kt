@@ -124,11 +124,14 @@ class WooPosRetrieveOrderRefundsTest {
     }
 
     @Test
-    fun `given empty refunds in cache, when invoke called, then returns empty list`() = runTest {
+    fun `given empty refunds in cache, when invoke called, then falls back to network fetch`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
         whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(emptyList())
+        )
 
         // WHEN
         val result = sut.invoke(order)
@@ -138,6 +141,26 @@ class WooPosRetrieveOrderRefundsTest {
         val refunds = result.getOrThrow()
         assertThat(refunds).isEmpty()
         verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
+    }
+
+    @Test
+    fun `given empty cache and network fetch fails, when invoke called, then returns failure`() = runTest {
+        // GIVEN
+        val order = OrderTestUtils.generateTestOrder(orderId = 123L)
+
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        )
+
+        // WHEN
+        val result = sut.invoke(order)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+        verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
     @Test
@@ -154,16 +177,28 @@ class WooPosRetrieveOrderRefundsTest {
     }
 
     @Test
-    fun `given order provided, when invoke called with forceRefresh false, then passes correct orderId to cache`() = runTest {
+    fun `given order provided, when invoke called with forceRefresh false and cache has data, then only uses cache`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 456L, refundTotal = BigDecimal.ONE)
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        val cachedRefund = WCRefundModel(
+            id = 1L,
+            dateCreated = Date(),
+            amount = BigDecimal.TEN,
+            reason = "Cached",
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLineItems = emptyList(),
+            feeLineItems = emptyList()
+        )
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(listOf(cachedRefund))
 
         // WHEN
-        sut.invoke(order, forceRefresh = false)
+        val result = sut.invoke(order, forceRefresh = false)
 
         // THEN
+        assertThat(result.isSuccess).isTrue()
         verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore, org.mockito.kotlin.never()).fetchAllRefunds(org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any(), org.mockito.kotlin.any())
     }
 
     @Test
