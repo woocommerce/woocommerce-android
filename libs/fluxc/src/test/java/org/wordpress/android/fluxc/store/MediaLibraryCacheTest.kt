@@ -3,6 +3,7 @@ package org.wordpress.android.fluxc.store
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.MediaModel
 
 class MediaLibraryCacheTest {
@@ -137,19 +138,6 @@ class MediaLibraryCacheTest {
         assertThat(result).isNull()
     }
 
-    private fun createTestMedia(id: Int, fileName: String): MediaModel {
-        return MediaModel(
-            1, // localSiteId
-            id.toLong(), // mediaId
-            0L, // postId
-            null, // uploadDate
-            "https://example.com/$fileName", // url
-            fileName, // fileName
-            "image/jpeg", // mimeType
-            fileName, // title
-            "", // caption
-            "" // description
-            // uploadState
-        )
-    }
+    private fun createTestMedia(id: Int, fileName: String) =
+        MediaTestUtils.createRemoteTestMedia().mediaId(id.toLong()).fileName(fileName).build()
 }
