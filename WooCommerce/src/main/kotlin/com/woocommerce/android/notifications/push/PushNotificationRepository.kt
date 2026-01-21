@@ -120,14 +120,13 @@ class PushNotificationRepository @Inject constructor(
                         "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
                     )
                 } else {
+                    pushNotificationsDataStore.edit { it.remove(tokenKey) }
                     WooLog.d(WooLog.T.NOTIFS, "Woo Core push token deleted for site ${site.siteId}")
                 }
             }
         }
 
         deleteJobs.awaitAll()
-        pushNotificationsDataStore.edit { it.clear() }
-        WooLog.d(WooLog.T.NOTIFS, "Woo Core push notification tokens cleared from DataStore")
     }
 
     private fun generateAndStoreUUID(): String {
