@@ -577,6 +577,7 @@ class ProductRestClient @Inject constructor(
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
         searchFields: List<String>? = null,
+        posProductsOnly: Boolean = false,
     ): WooPayload<List<ProductWithMetaData>> {
         val params = buildProductParametersMap(
             pageSize = pageSize,
@@ -591,7 +592,8 @@ class ProductRestClient @Inject constructor(
             filterOptions = filterOptions,
             includeTypes = includeTypes,
             orderCurrency = orderCurrency,
-            searchFields = searchFields
+            searchFields = searchFields,
+            posProductsOnly = posProductsOnly,
         )
 
         val url = WOOCOMMERCE.products.pathV3
@@ -638,6 +640,7 @@ class ProductRestClient @Inject constructor(
         includeTypes: List<WCProductStore.IncludeType> = emptyList(),
         orderCurrency: String? = null,
         searchFields: List<String>? = null,
+        posProductsOnly: Boolean = false,
     ): MutableMap<String, String> {
         val params = buildBaseParams(pageSize, sortType, offset, includeTypes, orderCurrency)
 
@@ -650,6 +653,9 @@ class ProductRestClient @Inject constructor(
         params.putIfNotEmpty("search_name_or_sku" to searchNameOrSkuQuery)
         if (searchFields != null) {
             params.putIfNotEmpty("search_fields" to searchFields.joinToString(","))
+        }
+        if (posProductsOnly) {
+            params["pos_products_only"] = "true"
         }
 
         return params
@@ -919,7 +925,8 @@ class ProductRestClient @Inject constructor(
         site: SiteModel,
         productId: Long,
         pageSize: Int = DEFAULT_PRODUCT_VARIATIONS_PAGE_SIZE,
-        offset: Int = 0
+        offset: Int = 0,
+        posProductsOnly: Boolean = false,
     ): RemoteProductVariationsPayload {
         val url = WOOCOMMERCE.products.id(productId).variations.pathV3
         val params = mutableMapOf(
@@ -928,6 +935,9 @@ class ProductRestClient @Inject constructor(
             "order" to "asc",
             "orderby" to "menu_order"
         )
+        if (posProductsOnly) {
+            params["pos_products_only"] = "true"
+        }
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -985,6 +995,7 @@ class ProductRestClient @Inject constructor(
         excludedVariationIds: List<Long> = emptyList(),
         filterOptions: Map<WCProductStore.VariationFilterOption, String>? = null,
         orderCurrency: String? = null,
+        posProductsOnly: Boolean = false,
     ): WooPayload<List<WCProductVariationModel>> {
         val params = mutableMapOf(
             "per_page" to pageSize.toString(),
@@ -998,6 +1009,9 @@ class ProductRestClient @Inject constructor(
 
         filterOptions?.let { options ->
             params.putAll(options.map { it.key.toString() to it.value })
+        }
+        if (posProductsOnly) {
+            params["pos_products_only"] = "true"
         }
 
         val url = WOOCOMMERCE.products.id(productId).variations.pathV3

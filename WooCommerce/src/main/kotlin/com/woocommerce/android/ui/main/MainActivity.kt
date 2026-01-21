@@ -27,8 +27,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.core.view.isGone
 import androidx.core.view.isVisible
-import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -52,11 +52,12 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTracker.Companion.KEY_HORIZONTAL_SIZE_CLASS
 import com.woocommerce.android.analytics.deviceTypeToAnalyticsString
 import com.woocommerce.android.databinding.ActivityMainBinding
+import com.woocommerce.android.extensions.EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS
 import com.woocommerce.android.extensions.active
 import com.woocommerce.android.extensions.collapse
-import com.woocommerce.android.extensions.expand
 import com.woocommerce.android.extensions.hide
 import com.woocommerce.android.extensions.navigateSafely
+import com.woocommerce.android.extensions.show
 import com.woocommerce.android.model.Notification
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.appwidgets.WidgetUpdater
@@ -255,7 +256,7 @@ class MainActivity :
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
-                    showToolbar(animate = f is TopLevelFragment)
+                    showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
                     if (f is TopLevelFragment) {
@@ -283,7 +284,7 @@ class MainActivity :
                 }
 
                 AppBarStatus.Hidden -> {
-                    hideToolbar(animate = f is TopLevelFragment)
+                    hideToolbar()
                     binding.appBarLayout.targetElevation = 0f
                 }
             }
@@ -553,40 +554,12 @@ class MainActivity :
         return null
     }
 
-    private fun showToolbar(animate: Boolean) {
-        // Cancel any pending toolbar animations
-        animatorHelper.cancelToolbarAnimation()
-
-        if (binding.collapsingToolbar.layoutParams.height == animatorHelper.toolbarHeight) return
-        if (animate) {
-            animatorHelper.animateToolbarHeight(show = true) {
-                binding.collapsingToolbar.updateLayoutParams {
-                    height = it
-                }
-            }
-        } else {
-            binding.collapsingToolbar.updateLayoutParams {
-                height = animatorHelper.toolbarHeight
-            }
-        }
+    private fun showToolbar() {
+        binding.collapsingToolbar.show()
     }
 
-    private fun hideToolbar(animate: Boolean) {
-        // Cancel any pending toolbar animations
-        animatorHelper.cancelToolbarAnimation()
-
-        if (binding.collapsingToolbar.layoutParams.height == 0) return
-        if (animate) {
-            animatorHelper.animateToolbarHeight(show = false) {
-                binding.collapsingToolbar.updateLayoutParams {
-                    height = it
-                }
-            }
-        } else {
-            binding.collapsingToolbar.updateLayoutParams {
-                height = 0
-            }
-        }
+    private fun hideToolbar() {
+        binding.collapsingToolbar.hide()
     }
 
     override fun setTitle(title: CharSequence?) {
@@ -608,8 +581,9 @@ class MainActivity :
 
     private fun removeSubtitle() {
         binding.appBarLayout.removeOnOffsetChangedListener(appBarOffsetListener)
-        if (binding.toolbarSubtitle.visibility == View.GONE) return
-        if (binding.collapsingToolbar.layoutParams.height != 0) {
+        if (binding.toolbarSubtitle.isGone) return
+        binding.toolbarSubtitle.clearAnimation()
+        if (binding.collapsingToolbar.isVisible) {
             binding.toolbarSubtitle.collapse(duration = 200L)
             animatorHelper.animateCollapsingToolbarMarginBottom(show = false) {
                 binding.collapsingToolbar.expandedTitleMarginBottom = it
@@ -620,12 +594,23 @@ class MainActivity :
     }
 
     private fun setFadingSubtitleOnCollapsingToolbar(subtitle: CharSequence) {
+        // Check to ensure expand anim is not triggered twice for same subtitle value
+        if (binding.toolbarSubtitle.text == subtitle && binding.toolbarSubtitle.isVisible) {
+            return
+        }
         binding.appBarLayout.addOnOffsetChangedListener(appBarOffsetListener)
         binding.toolbarSubtitle.text = subtitle
-        if (binding.toolbarSubtitle.visibility == View.VISIBLE) return
-        binding.toolbarSubtitle.expand(duration = 200L)
         animatorHelper.animateCollapsingToolbarMarginBottom(show = true) {
             binding.collapsingToolbar.expandedTitleMarginBottom = it
+            if (binding.collapsingToolbar.expandedTitleMarginBottom ==
+                resources.getDimensionPixelSize(R.dimen.expanded_toolbar_bottom_margin_with_subtitle)
+            ) {
+                binding.toolbarSubtitle.show()
+                binding.toolbarSubtitle.animate()
+                    .scaleY(1f)
+                    .setDuration(EXPAND_COLLAPSE_ANIMATION_DURATION_MILLIS)
+                    .start()
+            }
         }
     }
 

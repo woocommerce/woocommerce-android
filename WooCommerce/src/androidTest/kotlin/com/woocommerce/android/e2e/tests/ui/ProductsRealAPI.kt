@@ -4,9 +4,9 @@ package com.woocommerce.android.e2e.tests.ui
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.test.rule.ActivityTestRule
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
+import com.woocommerce.android.e2e.helpers.TestSecrets
 import com.woocommerce.android.e2e.helpers.useMockedAPI
 import com.woocommerce.android.e2e.rules.Retry
 import com.woocommerce.android.e2e.rules.RetryTestRule
@@ -59,9 +59,9 @@ class ProductsRealAPI : TestBase() {
         WelcomeScreen
             .skipCarouselIfNeeded()
             .selectLogin()
-            .proceedWith(BuildConfig.E2E_REAL_API_URL)
-            .proceedWith(BuildConfig.E2E_REAL_API_EMAIL)
-            .proceedWith(BuildConfig.E2E_REAL_API_PASSWORD)
+            .proceedWith(TestSecrets.apiUrl)
+            .proceedWith(TestSecrets.apiEmail)
+            .proceedWith(TestSecrets.apiPassword)
 
         TabNavComponent()
             .gotoProductsScreen()

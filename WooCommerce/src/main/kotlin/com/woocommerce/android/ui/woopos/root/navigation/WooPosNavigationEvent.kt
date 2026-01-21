@@ -9,6 +9,7 @@ sealed class WooPosNavigationEvent {
     data object OpenHomeFromSplash : WooPosNavigationEvent()
     data class OpenCashPayment(val orderId: Long) : WooPosNavigationEvent()
     data class OpenEmailReceipt(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenRefundReason(val orderId: Long, val initialReason: String = "") : WooPosNavigationEvent()
     data object GoBack : WooPosNavigationEvent()
     data class GoBackWithResult(val key: String, val value: Any) : WooPosNavigationEvent()
     data object OpenHomeFromCashPaymentAfterSuccessfulPayment : WooPosNavigationEvent()

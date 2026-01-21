@@ -13,4 +13,8 @@ class WooPosFormatPrice @Inject constructor(
     suspend operator fun invoke(price: BigDecimal?): String {
         return PriceUtils.formatCurrency(price, getCachedStoreCurrency(), currencyFormatter)
     }
+
+    operator fun invoke(price: BigDecimal?, currencyCode: String?): String {
+        return PriceUtils.formatCurrency(price, currencyCode, currencyFormatter)
+    }
 }

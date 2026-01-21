@@ -11,9 +11,10 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -36,15 +37,30 @@ class PosPromoDialogFragment : DialogFragment() {
             setContent {
                 WooThemeWithBackground {
                     val state by viewModel.state.collectAsState()
-                    PosPromoCarouselModal(
+                    PosPromoCarouselDialog(
                         state = state,
-                        onDismiss = { dismiss() },
-                        onNextClick = viewModel::onNextClick,
-                        onExploreClick = {
-                            ChromeCustomTabUtils.launchUrl(requireContext(), PosPromoViewModel.WOO_POS_DOCS_URL)
+                        onDismiss = {
+                            viewModel.onDismiss()
                             dismiss()
-                        }
+                        },
+                        onNextClick = viewModel::onNextClick,
+                        onExploreClick = viewModel::onExploreClick
                     )
+                }
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is PosPromoViewModel.NavigateToExplore -> {
+                    requireActivity().findNavController(R.id.nav_host_fragment_main).navigate(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                            urlToLoad = event.url
+                        )
+                    )
+                    dismiss()
                 }
             }
         }

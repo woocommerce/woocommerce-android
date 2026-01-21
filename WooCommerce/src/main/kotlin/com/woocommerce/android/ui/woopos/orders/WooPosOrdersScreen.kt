@@ -80,6 +80,7 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     navigatedFromEmailReceiptSent: Boolean,
+    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
@@ -109,7 +110,9 @@ fun WooPosOrdersScreen(
         onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
         onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
-        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed
+        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
+        onNavigationEvent = onNavigationEvent,
+        refundReasonUpdate = refundReasonResult
     )
 }
 
@@ -129,6 +132,8 @@ private fun WooPosOrdersScreen(
     onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -177,7 +182,9 @@ private fun WooPosOrdersScreen(
                 is WooPosOrdersState.Content.DialogState.IssueRefund -> {
                     WooPosIssueRefundDialog(
                         orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onNavigationEvent = onNavigationEvent,
+                        refundReasonUpdate = refundReasonUpdate
                     )
                 }
                 WooPosOrdersState.Content.DialogState.Hidden -> Unit
@@ -614,7 +621,8 @@ fun WooPosOrdersScreenPreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {}
+            onIssueRefundDialogDismissed = {},
+            onNavigationEvent = {}
         )
     }
 }
@@ -649,7 +657,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {}
+            onIssueRefundDialogDismissed = {},
+            onNavigationEvent = {}
         )
     }
 }
@@ -684,7 +693,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
             onOrdersEmptyActionClicked = {},
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {}
+            onIssueRefundDialogDismissed = {},
+            onNavigationEvent = {}
         )
     }
 }
@@ -710,6 +720,7 @@ fun WooPosOrdersEmptyStatePreview() {
             onOrdersLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
+            onNavigationEvent = {},
         )
     }
 }
@@ -726,25 +737,28 @@ private fun sampleOrderDetails(
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
     lineItems = listOf(
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            101,
-            "Cup",
-            "1 x $8.50",
-            "$15.00",
-            null
+            id = 101,
+            name = "Cup",
+            attributesDescription = null,
+            qtyAndUnitPrice = "1 x $8.50",
+            lineTotal = "$15.00",
+            imageUrl = null
         ),
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            102,
-            "Coffee Container",
-            "1 x $10.00",
-            "$8.00",
-            null
+            id = 102,
+            name = "Coffee Container",
+            attributesDescription = "Blue, Large",
+            qtyAndUnitPrice = "1 x $10.00",
+            lineTotal = "$8.00",
+            imageUrl = null
         ),
         WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-            103,
-            "Paper Filter",
-            "1 x $4.50",
-            "$8.00",
-            null
+            id = 103,
+            name = "Paper Filter",
+            attributesDescription = null,
+            qtyAndUnitPrice = "1 x $4.50",
+            lineTotal = "$8.00",
+            imageUrl = null
         )
     ),
     breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
