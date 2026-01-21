@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.home.items.search
 
 import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -74,9 +75,12 @@ class WooPosItemsSearchViewModelTest {
         whenever(mockParentToChildrenEventReceiver.events).thenReturn(emptyFlow())
         whenever(mockPriceFormat(BigDecimal("10.0"))).thenReturn("$10.0")
         whenever(mockPriceFormat(BigDecimal("20.0"))).thenReturn("$20.0")
-        whenever(
-            mockDataSource.getCurrentSyncStrategy()
-        ).thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(mockDataSource.getCurrentSyncStrategy())
+            .thenReturn(WooPosProductsDataSource.SyncStrategy.LOCAL_CATALOG)
+        whenever(mockResourceProvider.getString(R.string.something_went_wrong_try_again))
+            .thenReturn("Something went wrong")
+        whenever(mockResourceProvider.getString(R.string.woo_pos_ptr_offline_error))
+            .thenReturn("No internet connection")
     }
 
     @Test
@@ -1079,6 +1083,52 @@ class WooPosItemsSearchViewModelTest {
                     .isEqualTo(WooPosPullToRefreshState.Enabled)
             }
         }
+
+    @Test
+    fun `given network error on PTR, when pull to refresh triggered, then show offline error message`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(mockDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(
+                    PosLocalCatalogSyncResult.Failure.NetworkError("Network unavailable")
+                )
+            )
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.ToastMessageDisplayed(message = "No internet connection"))
+        )
+    }
+
+    @Test
+    fun `given database error on PTR, when pull to refresh triggered, then show generic error message`() = runTest {
+        // GIVEN
+        mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
+        whenever(mockDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(
+                    PosLocalCatalogSyncResult.Failure.DatabaseError("Database error")
+                )
+            )
+        )
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered)
+        advanceUntilIdle()
+
+        // THEN
+        verify(mockChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.ToastMessageDisplayed(message = "Something went wrong"))
+        )
+    }
 
     private fun mockSuccessfulSearch(query: String, products: List<WooPosProductModel>) {
         whenever(mockDataSource.searchProducts(query)).thenReturn(
