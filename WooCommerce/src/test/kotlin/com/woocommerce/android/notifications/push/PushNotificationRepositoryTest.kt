@@ -2,13 +2,16 @@ package com.woocommerce.android.notifications.push
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -23,6 +26,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
@@ -30,8 +34,12 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val notificationStore: NotificationStore = mock()
+    private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
-    private val pushNotificationsDataStore: DataStore<Preferences> = mock()
+    private val preferences: Preferences = mock()
+    private val pushNotificationsDataStore: DataStore<Preferences> = mock {
+        on { data } doReturn flowOf(preferences)
+    }
 
     private lateinit var sut: PushNotificationRepository
 
@@ -42,6 +50,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             selectedSite,
             appPrefsWrapper,
             notificationStore,
+            wooCommerceStore,
             pushNotificationsDataStore
         )
     }
@@ -115,10 +124,52 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
     @Test
     fun `when unregisterDevice is called, then unregisters wpcom token`() = testBlocking {
+        whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf())
+
         sut.unregisterDeviceFromAllPushes()
 
         verify(notificationStore).unregisterWpComPushToken()
     }
+
+    @Test
+    fun `given sites with stored tokens, when unregisterDevice called, then deletes tokens from server`() =
+        testBlocking {
+            val site1 = mock<SiteModel> { on { siteId } doReturn 123L }
+            val site2 = mock<SiteModel> { on { siteId } doReturn 456L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site1, site2))
+
+            val tokenKey1 = stringPreferencesKey("push_token_123")
+            val tokenKey2 = stringPreferencesKey("push_token_456")
+            whenever(preferences[tokenKey1]).thenReturn("token-id-1")
+            whenever(preferences[tokenKey2]).thenReturn("token-id-2")
+
+            whenever(pushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+
+            sut.unregisterDeviceFromAllPushes()
+
+            verify(pushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(pushNotificationsStore).deletePushToken(site2, "token-id-2")
+        }
+
+    @Test
+    fun `given site without stored token, when unregisterDevice called, then does not call delete for that site`() =
+        testBlocking {
+            val site1 = mock<SiteModel> { on { siteId } doReturn 123L }
+            val site2 = mock<SiteModel> { on { siteId } doReturn 456L }
+            whenever(wooCommerceStore.getWooCommerceSites()).thenReturn(mutableListOf(site1, site2))
+
+            val tokenKey1 = stringPreferencesKey("push_token_123")
+            val tokenKey2 = stringPreferencesKey("push_token_456")
+            whenever(preferences[tokenKey1]).thenReturn("token-id-1")
+            whenever(preferences[tokenKey2]).thenReturn(null)
+
+            whenever(pushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+
+            sut.unregisterDeviceFromAllPushes()
+
+            verify(pushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(pushNotificationsStore, never()).deletePushToken(eq(site2), any())
+        }
 
     private companion object {
         const val RETURNED_TOKEN = "returned-token-123"

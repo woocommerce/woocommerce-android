@@ -12,10 +12,13 @@ import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.UUID
 import javax.inject.Inject
 
@@ -24,6 +27,7 @@ class PushNotificationRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val notificationStore: NotificationStore,
+    private val wooCommerceStore: WooCommerceStore,
     @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>
 ) {
@@ -70,12 +74,36 @@ class PushNotificationRepository @Inject constructor(
 
     suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
         val unregisterWpComToken = async { notificationStore.unregisterWpComPushToken() }
-        val clearDataStore = async { pushNotificationsDataStore.edit { it.clear() } }
+        val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
         unregisterWpComToken.await()
         WooLog.d(WooLog.T.NOTIFS, "WPCom push token unregistered")
 
-        clearDataStore.await()
+        unregisterWooCoreTokens.await()
+    }
+
+    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+        val preferences = pushNotificationsDataStore.data.first()
+        val sites = wooCommerceStore.getWooCommerceSites()
+
+        val deleteJobs = sites.mapNotNull { site ->
+            val tokenKey = getPushTokenKeyForSite(site.siteId)
+            val pushTokenId = preferences[tokenKey] ?: return@mapNotNull null
+            async {
+                val result = pushNotificationsStore.deletePushToken(site, pushTokenId)
+                if (result.isError) {
+                    WooLog.w(
+                        WooLog.T.NOTIFS,
+                        "Failed to delete push token for site ${site.siteId}: ${result.error?.message}"
+                    )
+                } else {
+                    WooLog.d(WooLog.T.NOTIFS, "Woo Core push token deleted for site ${site.siteId}")
+                }
+            }
+        }
+
+        deleteJobs.awaitAll()
+        pushNotificationsDataStore.edit { it.clear() }
         WooLog.d(WooLog.T.NOTIFS, "Woo Core push notification tokens cleared from DataStore")
     }
 
