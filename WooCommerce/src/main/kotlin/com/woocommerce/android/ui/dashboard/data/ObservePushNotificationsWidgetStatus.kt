@@ -9,7 +9,7 @@ import javax.inject.Inject
 class ObservePushNotificationsWidgetStatus @Inject constructor() {
     operator fun invoke(): Flow<DashboardWidget.Status> = flowOf(
         // TODO Add logic to check token registration status
-        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.isEnabled()) {
             DashboardWidget.Status.Available
         } else {
             DashboardWidget.Status.Hidden
