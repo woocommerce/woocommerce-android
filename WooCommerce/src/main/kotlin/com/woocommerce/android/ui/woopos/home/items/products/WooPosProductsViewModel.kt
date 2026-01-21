@@ -325,7 +325,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 _viewState.value = hidePTRIndicator()
                             }
                             is PosLocalCatalogSyncResult.Failure -> {
-                                handlePTRError()
+                                handlePTRError(syncResult.value)
                             }
                         }
                     }
@@ -339,22 +339,25 @@ class WooPosProductsViewModel @Inject constructor(
                                 WooPosProductsViewState.Empty()
                             }
                         } else {
-                            handlePTRError()
+                            handlePTRError(failure = null)
                         }
                     }
                 }
             }.onFailure { _ ->
-                handlePTRError()
+                handlePTRError(failure = null)
             }
         }
     }
 
-    private fun handlePTRError() {
+    private fun handlePTRError(failure: PosLocalCatalogSyncResult.Failure?) {
+        val messageResId = if (failure is PosLocalCatalogSyncResult.Failure.NetworkError) {
+            R.string.woo_pos_ptr_offline_error
+        } else {
+            R.string.something_went_wrong_try_again
+        }
         sendEventToParent(
             ChildToParentEvent.ToastMessageDisplayed(
-                message = resourceProvider.getString(
-                    R.string.something_went_wrong_try_again
-                )
+                message = resourceProvider.getString(messageResId)
             )
         )
         _viewState.value = hidePTRIndicator()

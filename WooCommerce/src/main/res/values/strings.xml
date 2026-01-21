@@ -55,6 +55,7 @@
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
+    <string name="woo_pos_ptr_offline_error">No internet connection. Please check your network and try again.</string>
     <string name="product">Product</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>

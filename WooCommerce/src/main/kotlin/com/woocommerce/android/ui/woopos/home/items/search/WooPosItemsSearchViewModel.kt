@@ -363,19 +363,24 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     }
 
                     is PosLocalCatalogSyncResult.Failure -> {
-                        handlePTRError()
+                        handlePTRError(syncResult.value)
                     }
                 }
             }.onFailure {
-                handlePTRError()
+                handlePTRError(failure = null)
             }
         }
     }
 
-    private suspend fun handlePTRError() {
+    private suspend fun handlePTRError(failure: PosLocalCatalogSyncResult.Failure?) {
+        val messageResId = if (failure is PosLocalCatalogSyncResult.Failure.NetworkError) {
+            R.string.woo_pos_ptr_offline_error
+        } else {
+            R.string.something_went_wrong_try_again
+        }
         childToParentEventSender.sendToParent(
             ChildToParentEvent.ToastMessageDisplayed(
-                message = resourceProvider.getString(R.string.something_went_wrong_try_again)
+                message = resourceProvider.getString(messageResId)
             )
         )
         val currentState = _viewState.value
