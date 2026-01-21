@@ -191,7 +191,6 @@ class NotificationStore @Inject constructor(
         when (actionType) {
             // remote actions
             NotificationAction.REGISTER_DEVICE -> registerDevice(action.payload as RegisterDevicePayload)
-            NotificationAction.UNREGISTER_DEVICE -> unregisterDevice()
             NotificationAction.FETCH_NOTIFICATIONS -> synchronizeNotifications()
             NotificationAction.FETCH_NOTIFICATION -> fetchNotification(action.payload as FetchNotificationPayload)
             NotificationAction.MARK_NOTIFICATIONS_SEEN ->
@@ -199,9 +198,6 @@ class NotificationStore @Inject constructor(
             // remote responses
             NotificationAction.REGISTERED_DEVICE ->
                 handleRegisteredDevice(action.payload as RegisterDeviceResponsePayload)
-
-            NotificationAction.UNREGISTERED_DEVICE ->
-                handleUnregisteredDevice(action.payload as UnregisterDeviceResponsePayload)
 
             NotificationAction.FETCHED_NOTIFICATIONS ->
                 handleFetchNotificationsCompleted(action.payload as FetchNotificationsResponsePayload)
@@ -374,13 +370,6 @@ class NotificationStore @Inject constructor(
         }
     }
 
-    private fun unregisterDevice() {
-        val deviceId = requireNotNull(preferences.getString(WPCOM_PUSH_DEVICE_SERVER_ID, ""), {
-            "Because we are giving it a default value, preferences.getString shouldn't return null"
-        })
-        notificationRestClient.unregisterDeviceForPushNotifications(deviceId)
-    }
-
     private fun handleRegisteredDevice(payload: RegisterDeviceResponsePayload) {
         val onDeviceRegistered = OnDeviceRegistered(payload.deviceId)
 
@@ -413,10 +402,6 @@ class NotificationStore @Inject constructor(
         }
 
         emitChange(onDeviceRegistered)
-    }
-
-    private fun handleUnregisteredDevice(payload: UnregisterDeviceResponsePayload) {
-        handleUnregisteredDevicePayload(payload)
     }
 
     private fun handleUnregisteredDevicePayload(

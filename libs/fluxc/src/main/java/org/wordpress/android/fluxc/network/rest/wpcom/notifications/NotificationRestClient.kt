@@ -162,25 +162,6 @@ class NotificationRestClient @Inject constructor(
         add(request)
     }
 
-    fun unregisterDeviceForPushNotifications(deviceId: String) {
-        val url = WPCOMREST.devices.deviceId(deviceId).delete.urlV1
-        val request = WPComGsonRequest.buildPostRequest(
-            url, null, Any::class.java,
-            { _, _ ->
-                val payload = UnregisterDeviceResponsePayload()
-                dispatcher.dispatch(NotificationActionBuilder.newUnregisteredDeviceAction(payload))
-            },
-            { wpComError ->
-                val payload = UnregisterDeviceResponsePayload(
-                    DeviceUnregistrationError(
-                        DeviceUnregistrationErrorType.GENERIC_ERROR, wpComError.message
-                    )
-                )
-                dispatcher.dispatch(NotificationActionBuilder.newUnregisteredDeviceAction(payload))
-            })
-        add(request)
-    }
-
     suspend fun unregisterDevice(deviceId: String): UnregisterDeviceResponsePayload {
         val request = wpComGsonRequestBuilder.syncPostRequest(
             this,
