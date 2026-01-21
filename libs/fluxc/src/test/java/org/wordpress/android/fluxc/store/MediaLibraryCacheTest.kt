@@ -5,6 +5,7 @@ import org.junit.Before
 import org.junit.Test
 import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.MediaModel
+import java.util.concurrent.CountDownLatch
 
 class MediaLibraryCacheTest {
     private lateinit var cache: MediaLibraryCache
@@ -136,6 +137,32 @@ class MediaLibraryCacheTest {
 
         val result = cache.getMediaList(1)
         assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when multiple threads add media concurrently, then all updates are preserved`() {
+        val siteId = 1
+        val threadCount = 10
+        val latch = CountDownLatch(threadCount)
+        val startLatch = CountDownLatch(1)
+
+        val mediaItems = (1..threadCount).map { createTestMedia(it, "image$it.jpg") }
+
+        // Launch threads that all try to add media at the same time
+        mediaItems.map { media ->
+            Thread {
+                startLatch.await()
+                cache.addOrUpdate(siteId, media)
+                latch.countDown()
+            }.apply { start() }
+        }
+
+        startLatch.countDown()
+        latch.await()
+
+        assertThat(cache.getMediaList(siteId))
+            .hasSize(threadCount)
+            .containsExactlyInAnyOrderElementsOf(mediaItems)
     }
 
     private fun createTestMedia(id: Int, fileName: String) =
