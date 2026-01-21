@@ -37,7 +37,10 @@ class WooPosOrdersViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
-    private val mapper: WooPosOrdersMapper,
+    private val orderItemMapper: WooPosOrderItemMapper,
+    private val orderDetailsMapper: WooPosOrderDetailsMapper,
+    private val refundInfoBuilder: WooPosRefundInfoBuilder,
+    private val orderActionsProvider: WooPosOrderActionsProvider,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -201,9 +204,9 @@ class WooPosOrdersViewModel @Inject constructor(
                 onFailure = { RefundsFetchResult.Error }
             )
 
-            val actions = mapper.getAvailableActions(order, refundsResult)
-            val refundInfo = mapper.buildRefundInfo(order, refundsResult)
-            val updatedBreakdown = mapper.buildTotalsBreakdown(order, refundInfo)
+            val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
+            val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
+            val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 
             val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
             val updatedSelectedDetails = updatedState.selectedDetails
@@ -439,8 +442,8 @@ class WooPosOrdersViewModel @Inject constructor(
         )
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
-        val newItem = mapper.mapOrderItem(updated, selectedId)
-        val newDetailsViewState = mapper.mapOrderDetails(updated, historicalRefundsResult)
+        val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
+        val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
         val newDetails = WooPosOrdersState.OrderDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
@@ -575,7 +578,7 @@ class WooPosOrdersViewModel @Inject constructor(
         val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
             ?: error("Order $orderId not found in state")
 
-        return mapper.mapOrderDetails(
+        return orderDetailsMapper.mapOrderDetails(
             when (orderDetails) {
                 is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.order
                 is WooPosOrdersState.OrderDetailsViewState.Computed -> {
@@ -601,7 +604,8 @@ class WooPosOrdersViewModel @Inject constructor(
             ?: error("Order $orderId not found in state")
 
         return when (orderDetails) {
-            is WooPosOrdersState.OrderDetailsViewState.Lazy -> mapper.mapOrderDetailsWithoutActions(orderDetails.order)
+            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
+                orderDetailsMapper.mapOrderDetailsWithoutActions(orderDetails.order)
             is WooPosOrdersState.OrderDetailsViewState.Computed -> {
                 orderDetails.details
             }
@@ -677,9 +681,9 @@ class WooPosOrdersViewModel @Inject constructor(
     ): Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
             async {
-                val item = mapper.mapOrderItem(order, selectedId)
+                val item = orderItemMapper.mapOrderItem(order, selectedId)
                 val details: WooPosOrdersState.OrderDetailsViewState = if (order.id == selectedId) {
-                    val fullDetails = mapper.mapOrderDetails(order, refundResult)
+                    val fullDetails = orderDetailsMapper.mapOrderDetails(order, refundResult)
                     WooPosOrdersState.OrderDetailsViewState.Computed(orderId = order.id, details = fullDetails)
                 } else {
                     WooPosOrdersState.OrderDetailsViewState.Lazy(
