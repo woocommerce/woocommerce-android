@@ -13,7 +13,6 @@ import javax.inject.Inject
 class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountStore: AccountStore,
-    private val notificationRepository: NotificationRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val pushNotificationRepository: PushNotificationRepository
 ) {
@@ -39,9 +38,9 @@ class RegisterDevice @Inject constructor(
         val token = appPrefsWrapper.getFCMToken()
         if (token.isNotEmpty()) {
             if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-                pushNotificationRepository.registerPushToken(token)
+                pushNotificationRepository.registerPushTokenInWooCoreSystem(token)
             } else if (accountStore.hasAccessToken()) {
-                notificationRepository.registerDevice(token)
+                pushNotificationRepository.registerPushTokenInWpComSystem(token)
             }
         }
     }

@@ -31,7 +31,16 @@ class PushNotificationRepository @Inject constructor(
     @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>
 ) {
-    suspend fun registerPushToken(token: String) {
+
+    suspend fun registerPushTokenInWpComSystem(token: String) {
+        WooLog.d(
+            tag = WooLog.T.NOTIFS,
+            message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
+        )
+        notificationStore.registerDevice(token, NotificationStore.NotificationAppKey.WOOCOMMERCE)
+    }
+
+    suspend fun registerPushTokenInWooCoreSystem(token: String) {
         WooLog.d(
             tag = WooLog.T.NOTIFS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"

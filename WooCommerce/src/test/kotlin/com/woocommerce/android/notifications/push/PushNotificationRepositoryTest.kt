@@ -60,7 +60,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     fun `given no selected site, when registering push token called, then nothing happens`() = testBlocking {
         whenever(selectedSite.getIfExists()).thenReturn(null)
 
-        sut.registerPushToken("token")
+        sut.registerPushTokenInWooCoreSystem("token")
 
         verifyNoInteractions(pushNotificationsStore, notificationStore)
     }
@@ -74,7 +74,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(pushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
                 .thenReturn(WooResult(RETURNED_TOKEN))
 
-            sut.registerPushToken("token")
+            sut.registerPushTokenInWooCoreSystem("token")
 
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             verify(notificationStore).updateNotificationSettingsFor(
@@ -97,7 +97,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(pushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
-            sut.registerPushToken("token")
+            sut.registerPushTokenInWooCoreSystem("token")
 
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             verify(notificationStore, never()).updateNotificationSettingsFor(any())
@@ -112,7 +112,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(pushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
-            sut.registerPushToken("token")
+            sut.registerPushTokenInWooCoreSystem("token")
 
             val uuidCaptor = argumentCaptor<String>()
             verify(appPrefsWrapper).wooCorePushDeviceUUID = uuidCaptor.capture()

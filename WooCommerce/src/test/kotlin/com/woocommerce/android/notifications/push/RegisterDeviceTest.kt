@@ -23,7 +23,6 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val accountStore: AccountStore = mock {
         on { hasAccessToken() } doReturn true
     }
-    private val notificationRepository: NotificationRepository = mock()
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
         onBlocking { invoke() } doReturn PushNotificationRegistrationStatus.Status.UNREGISTERED
     }
@@ -34,7 +33,6 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut = RegisterDevice(
             appPrefs,
             accountStore,
-            notificationRepository,
             pushNotificationRegistrationStatus,
             pushNotificationRepository
         )
@@ -49,7 +47,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository, never()).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     @Test
@@ -61,7 +59,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository, never()).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     @Test
@@ -70,7 +68,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     companion object {
