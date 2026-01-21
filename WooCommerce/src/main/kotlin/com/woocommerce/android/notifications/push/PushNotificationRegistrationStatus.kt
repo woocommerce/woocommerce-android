@@ -1,24 +1,27 @@
 package com.woocommerce.android.notifications.push
 
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import javax.inject.Inject
 
-class IsDeviceRegisteredForPushNotifications @Inject constructor(
+class PushNotificationRegistrationStatus @Inject constructor(
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
-    private val pushNotificationsStore: PushNotificationsStore
+    private val pushNotificationRepository: PushNotificationRepository,
+    private val selectedSite: SelectedSite
 ) {
-    operator fun invoke(): Status =
+    suspend operator fun invoke(): Status =
         if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-            when (pushNotificationsStore.hasPushToken()) {
-                true -> Status.REGISTERED
-                false -> Status.UNREGISTERED
+            val siteId = selectedSite.getIfExists()?.siteId
+            if (siteId != null && pushNotificationRepository.isWooPushTokenRegisteredForSite(siteId)) {
+                Status.REGISTERED
+            } else {
+                Status.UNREGISTERED
             }
         } else {
             val deviceId = prefsWrapper.getFluxCPreferences()
-                .getString(NotificationStore.Companion.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+                .getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
             when (deviceId.isNullOrEmpty()) {
                 true -> Status.UNREGISTERED
                 false -> Status.REGISTERED

@@ -1,35 +1,40 @@
 package com.woocommerce.android.notifications.push
 
 import android.content.SharedPreferences
-import com.woocommerce.android.notifications.push.IsDeviceRegisteredForPushNotifications.Status
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.NotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 
-class IsDeviceRegisteredForPushNotificationsTest {
+@ExperimentalCoroutinesApi
+class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
-    private val pushNotificationsStore: PushNotificationsStore = mock()
+    private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val selectedSite: SelectedSite = mock()
     private val sharedPreferences: SharedPreferences = mock()
 
-    private lateinit var sut: IsDeviceRegisteredForPushNotifications
+    private lateinit var sut: PushNotificationRegistrationStatus
 
     @Before
     fun setUp() {
         whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
 
-        sut = IsDeviceRegisteredForPushNotifications(
+        sut = PushNotificationRegistrationStatus(
             prefsWrapper,
-            pushNotificationsStore
+            pushNotificationRepository,
+            selectedSite
         )
     }
 
     @Test
-    fun `given device id exists, when invoked, then returns REGISTERED`() {
+    fun `given device id exists, when invoked, then returns REGISTERED`() = testBlocking {
         whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn("device-id-123")
 
@@ -39,7 +44,7 @@ class IsDeviceRegisteredForPushNotificationsTest {
     }
 
     @Test
-    fun `given device id is null, when invoked, then returns UNREGISTERED`() {
+    fun `given device id is null, when invoked, then returns UNREGISTERED`() = testBlocking {
         whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn(null)
 
@@ -49,7 +54,7 @@ class IsDeviceRegisteredForPushNotificationsTest {
     }
 
     @Test
-    fun `given device id is empty, when invoked, then returns UNREGISTERED`() {
+    fun `given device id is empty, when invoked, then returns UNREGISTERED`() = testBlocking {
         whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn("")
 
