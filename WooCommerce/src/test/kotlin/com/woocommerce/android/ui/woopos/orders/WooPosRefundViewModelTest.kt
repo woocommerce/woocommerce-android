@@ -980,4 +980,425 @@ class WooPosRefundViewModelTest {
             // THEN
             assertThat(canDismiss).isTrue()
         }
+
+    @Test
+    fun `given all items selected initially, when item deselected, then selectedItemIds updated and totals recalculated`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
+            assertThat(initialState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
+            assertThat(initialState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
+            assertThat(initialState.total).isEqualByComparingTo(BigDecimal("33.00"))
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).containsExactly(item2.uniqueId)
+            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
+            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("2.00"))
+            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("22.00"))
+        }
+
+    @Test
+    fun `given item not selected, when item selected, then selectedItemIds updated and totals recalculated`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
+
+            val stateBeforeSelect = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeSelect.selectedItemIds).containsExactly(item2.uniqueId)
+            assertThat(stateBeforeSelect.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
+            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
+            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
+            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("33.00"))
+        }
+
+    @Test
+    fun `given all items selected, when select all toggled, then all items deselected and totals become zero`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.selectedItemIds).hasSize(2)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).isEmpty()
+            assertThat(updatedState.itemsCount).isEqualTo(0)
+            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("0.00"))
+            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("0.00"))
+            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("0.00"))
+        }
+
+    @Test
+    fun `given no items selected, when select all toggled, then all items selected and totals recalculated`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            val stateBeforeToggle = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeToggle.selectedItemIds).isEmpty()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
+            assertThat(updatedState.itemsCount).isEqualTo(2)
+            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
+            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("3.00"))
+            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("33.00"))
+        }
+
+    @Test
+    fun `given some items selected, when select all toggled, then all items selected`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val item3 = createRefundableItem(
+                orderItemId = 3L,
+                unitPrice = BigDecimal("15.00"),
+                unitTax = BigDecimal("1.50"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2, item3)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
+
+            val stateBeforeToggle = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeToggle.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item3.uniqueId)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(
+                item1.uniqueId,
+                item2.uniqueId,
+                item3.uniqueId
+            )
+        }
+
+    @Test
+    fun `given at ReviewRefund step, when item selection toggled, then step is preserved`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+
+            val stateBeforeToggle = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeToggle.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+            assertThat(updatedState.selectedItemIds).containsExactly(item2.uniqueId)
+        }
+
+    @Test
+    fun `given at ConfirmRefund step, when select all toggled, then step is preserved`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(
+                createRefundableItem(
+                    orderItemId = 1L,
+                    unitPrice = BigDecimal("10.00"),
+                    unitTax = BigDecimal("1.00"),
+                    rowIndex = 0
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
+
+            val stateBeforeToggle = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeToggle.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.ConfirmRefund)
+        }
+
+    @Test
+    fun `given multiple items with same orderItemId but different rowIndex, when one deselected, then only that unit deselected`() =
+        runTest {
+            // GIVEN
+            val item1Unit1 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item1Unit2 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 1
+            )
+            val item1Unit3 = createRefundableItem(
+                orderItemId = 1L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 2
+            )
+            val refundableItems = listOf(item1Unit1, item1Unit2, item1Unit3)
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.selectedItemIds).hasSize(3)
+            assertThat(initialState.subtotal).isEqualByComparingTo(BigDecimal("30.00"))
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1Unit2.uniqueId))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.selectedItemIds).containsExactlyInAnyOrder(
+                item1Unit1.uniqueId,
+                item1Unit3.uniqueId
+            )
+            assertThat(updatedState.itemsCount).isEqualTo(2)
+            assertThat(updatedState.subtotal).isEqualByComparingTo(BigDecimal("20.00"))
+            assertThat(updatedState.taxes).isEqualByComparingTo(BigDecimal("2.00"))
+            assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("22.00"))
+        }
+
+    @Test
+    fun `given partial selection of items, when refund confirmed, then only selected items are refunded`() =
+        runTest {
+            // GIVEN
+            val item1 = createRefundableItem(
+                orderItemId = 1L,
+                productId = 10L,
+                unitPrice = BigDecimal("10.00"),
+                unitTax = BigDecimal("1.00"),
+                rowIndex = 0
+            )
+            val item2 = createRefundableItem(
+                orderItemId = 2L,
+                productId = 20L,
+                unitPrice = BigDecimal("20.00"),
+                unitTax = BigDecimal("2.00"),
+                rowIndex = 0
+            )
+            val item3 = createRefundableItem(
+                orderItemId = 3L,
+                productId = 30L,
+                unitPrice = BigDecimal("15.00"),
+                unitTax = BigDecimal("1.50"),
+                rowIndex = 0
+            )
+            val refundableItems = listOf(item1, item2, item3)
+            val selectedItems = listOf(item1, item3)
+
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("10.00"),
+                    refundTax = emptyList()
+                ),
+                RefundRequestItem(
+                    itemId = 3L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("15.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(selectedItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
+
+            val stateBeforeConfirm = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeConfirm.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item3.uniqueId)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(groupRefundItems).invoke(eq(selectedItems), eq(testOrder), any())
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("27.50")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
+            )
+        }
 }
