@@ -60,14 +60,8 @@ private fun WooPosItemsSearchScreen(
 ) {
     val listState = rememberLazyListState()
 
-    val ptrState = when (state) {
-        is WooPosItemsSearchViewState.Content -> state.pullToRefreshState
-        is WooPosItemsSearchViewState.Empty -> state.pullToRefreshState
-        else -> null
-    }
-
     val pullRefreshState = rememberPullRefreshState(
-        refreshing = ptrState == WooPosPullToRefreshState.Refreshing,
+        refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
         onRefresh = { onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered) },
     )
 
@@ -76,7 +70,7 @@ private fun WooPosItemsSearchScreen(
             .fillMaxSize()
             .pullRefresh(
                 state = pullRefreshState,
-                enabled = ptrState == WooPosPullToRefreshState.Enabled,
+                enabled = state.pullToRefreshState == WooPosPullToRefreshState.Enabled,
             ),
     ) {
         val stateClass by remember(state) {
@@ -170,7 +164,7 @@ private fun WooPosItemsSearchScreen(
 
         PullRefreshIndicator(
             modifier = Modifier.align(Alignment.TopCenter),
-            refreshing = ptrState == WooPosPullToRefreshState.Refreshing,
+            refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
             state = pullRefreshState
         )
     }
