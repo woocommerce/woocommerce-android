@@ -103,7 +103,7 @@ class NotificationMessageHandler @Inject constructor(
         // We need to filter out duplicate notifications from the WPCOM system
         if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
             val isFromWPcom = notification.remoteNoteId > 0L
-            if (isFromWPcom && pushNotificationsStore.hasPushToken()) {
+            if (isFromWPcom && pushNotificationsStore.hasPushToken(selectedSite.get())) {
                 wooLog.d(NOTIFS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
