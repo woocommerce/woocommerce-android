@@ -17,11 +17,9 @@ class RegisterDevice @Inject constructor(
     private val pushNotificationRepository: PushNotificationRepository
 ) {
     suspend operator fun invoke(mode: Mode) {
-        val pushRegistrationStatus = pushNotificationRegistrationStatus()
-        WooLog.d(WooLog.T.NOTIFICATIONS, "Push notifications registration status: $pushRegistrationStatus")
         when (mode) {
             IF_NEEDED -> {
-                if (pushRegistrationStatus == Status.UNREGISTERED) {
+                if (pushNotificationRegistrationStatus() == Status.UNREGISTERED) {
                     sendToken()
                 }
             }
@@ -32,6 +30,10 @@ class RegisterDevice @Inject constructor(
         if (BuildConfig.DEBUG) {
             WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
         }
+        WooLog.d(
+            WooLog.T.NOTIFICATIONS, "Push notifications registration status: " +
+                "${pushNotificationRegistrationStatus()}"
+        )
     }
 
     private suspend fun sendToken() {
