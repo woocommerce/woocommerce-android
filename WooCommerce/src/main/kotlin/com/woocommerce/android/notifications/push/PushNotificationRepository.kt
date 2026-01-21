@@ -72,6 +72,12 @@ class PushNotificationRepository @Inject constructor(
         return stringPreferencesKey("push_token_$siteId")
     }
 
+    suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean {
+        val preferences = pushNotificationsDataStore.data.first()
+        val tokenKey = getPushTokenKeyForSite(siteId)
+        return preferences[tokenKey] != null
+    }
+
     suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
         val unregisterWpComToken = async { notificationStore.unregisterWpComPushToken() }
         val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }

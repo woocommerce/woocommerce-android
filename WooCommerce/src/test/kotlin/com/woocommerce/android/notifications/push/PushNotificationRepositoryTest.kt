@@ -7,6 +7,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -169,6 +170,28 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             verify(pushNotificationsStore).deletePushToken(site1, "token-id-1")
             verify(pushNotificationsStore, never()).deletePushToken(eq(site2), any())
+        }
+
+    @Test
+    fun `given token exists for site, when isWooPushTokenRegisteredForSite called, then returns true`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+
+            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given no token exists for site, when isWooPushTokenRegisteredForSite called, then returns false`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn(null)
+
+            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+
+            assertThat(result).isFalse()
         }
 
     private companion object {
