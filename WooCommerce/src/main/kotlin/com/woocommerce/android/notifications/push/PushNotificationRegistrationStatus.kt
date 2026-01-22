@@ -3,7 +3,7 @@ package com.woocommerce.android.notifications.push
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
-import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ class PushNotificationRegistrationStatus @Inject constructor(
             }
         } else {
             val deviceId = prefsWrapper.getFluxCPreferences()
-                .getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+                .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
             if (deviceId.isNotNullOrEmpty()) {
                 Status.REGISTERED
             } else {

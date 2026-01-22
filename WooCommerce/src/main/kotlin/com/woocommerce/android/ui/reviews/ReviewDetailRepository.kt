@@ -19,15 +19,15 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadPayload
-import org.wordpress.android.fluxc.store.NotificationStore.OnNotificationChanged
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.OnNotificationChanged
 import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class ReviewDetailRepository @Inject constructor(
     private val productStore: WCProductStore,
-    private val notificationStore: NotificationStore,
+    private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -55,7 +55,7 @@ class ReviewDetailRepository @Inject constructor(
 
     suspend fun getCachedNotificationForReview(remoteReviewId: Long): NotificationModel? {
         return withContext(Dispatchers.IO) {
-            notificationStore.getNotificationsForSite(
+            wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             ).firstOrNull { it.getCommentId() == remoteReviewId }
@@ -66,7 +66,7 @@ class ReviewDetailRepository @Inject constructor(
         if (!notification.read) {
             val updatedNotification = notification.copy(read = true)
             trackMarkNotificationAsReadStarted(updatedNotification, remoteReviewId)
-            val result = notificationStore.markNotificationsRead(
+            val result = wpComPushNotificationStore.markNotificationsRead(
                 payload = MarkNotificationsReadPayload(listOf(updatedNotification))
             )
             trackMarkNotificationReadResult(result)

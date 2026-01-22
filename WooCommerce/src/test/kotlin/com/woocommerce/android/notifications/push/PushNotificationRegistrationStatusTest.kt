@@ -10,7 +10,7 @@ import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 
 @ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
     @Test
     fun `given device id exists, when invoked, then returns REGISTERED`() = testBlocking {
-        whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
+        whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn("device-id-123")
 
         val result = sut()
@@ -45,7 +45,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
     @Test
     fun `given device id is null, when invoked, then returns UNREGISTERED`() = testBlocking {
-        whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
+        whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn(null)
 
         val result = sut()
@@ -55,7 +55,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
     @Test
     fun `given device id is empty, when invoked, then returns UNREGISTERED`() = testBlocking {
-        whenever(sharedPreferences.getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
+        whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn("")
 
         val result = sut()

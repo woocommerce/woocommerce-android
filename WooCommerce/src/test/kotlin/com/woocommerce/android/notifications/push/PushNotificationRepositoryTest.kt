@@ -26,8 +26,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.store.WooCommerceStore
 
 @ExperimentalCoroutinesApi
@@ -35,7 +35,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val pushNotificationsStore: PushNotificationsStore = mock()
     private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val notificationStore: NotificationStore = mock()
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
     private val preferences: Preferences = mock()
@@ -51,7 +51,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             pushNotificationsStore,
             selectedSite,
             appPrefsWrapper,
-            notificationStore,
+            wpComPushNotificationStore,
             wooCommerceStore,
             pushNotificationsDataStore
         )
@@ -63,7 +63,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
         sut.registerPushTokenInWooCoreSystem("token")
 
-        verifyNoInteractions(pushNotificationsStore, notificationStore)
+        verifyNoInteractions(pushNotificationsStore, wpComPushNotificationStore)
     }
 
     @Test
@@ -88,7 +88,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             val expectedTokenKey = stringPreferencesKey("push_token_$SITE_ID")
             verify(mutablePreferences)[expectedTokenKey] = RETURNED_TOKEN
-            verify(notificationStore).updateNotificationSettingsFor(
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
                 listOf(
                     SiteNotificationSetting(
                         siteId = SITE_ID,
@@ -111,7 +111,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             sut.registerPushTokenInWooCoreSystem("token")
 
             verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
-            verify(notificationStore, never()).updateNotificationSettingsFor(any())
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
         }
     }
 
@@ -140,7 +140,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
         sut.unregisterDeviceFromAllPushes()
 
-        verify(notificationStore).unregisterWpComPushToken()
+        verify(wpComPushNotificationStore).unregisterWpComPushToken()
     }
 
     @Test

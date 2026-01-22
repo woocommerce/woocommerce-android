@@ -4,15 +4,15 @@ import org.wordpress.android.fluxc.annotations.Action;
 import org.wordpress.android.fluxc.annotations.ActionEnum;
 import org.wordpress.android.fluxc.annotations.action.IAction;
 import org.wordpress.android.fluxc.model.notification.NotificationModel;
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationHashesResponsePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload;
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationResponsePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsPayload;
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsResponsePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationSeenResponsePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsSeenPayload;
-import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.RegisterDeviceResponsePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationHashesResponsePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationResponsePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsPayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsResponsePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationSeenResponsePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsSeenPayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDevicePayload;
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDeviceResponsePayload;
 
 @ActionEnum
 public enum NotificationAction implements IAction {

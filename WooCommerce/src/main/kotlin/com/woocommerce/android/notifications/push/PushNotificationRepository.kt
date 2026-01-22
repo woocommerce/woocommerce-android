@@ -16,8 +16,8 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import java.util.UUID
 import javax.inject.Inject
@@ -26,7 +26,7 @@ class PushNotificationRepository @Inject constructor(
     private val pushNotificationsStore: PushNotificationsStore,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
-    private val notificationStore: NotificationStore,
+    private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
     @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>
@@ -37,7 +37,7 @@ class PushNotificationRepository @Inject constructor(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in WPCOM instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        notificationStore.registerDevice(token, NotificationStore.NotificationAppKey.WOOCOMMERCE)
+        wpComPushNotificationStore.registerDevice(token, WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE)
     }
 
     suspend fun registerPushTokenInWooCoreSystem(token: String) {
@@ -72,7 +72,7 @@ class PushNotificationRepository @Inject constructor(
             newCommentEnabled = false,
             storeOrderEnabled = false
         )
-        val result = notificationStore.updateNotificationSettingsFor(listOf(setting))
+        val result = wpComPushNotificationStore.updateNotificationSettingsFor(listOf(setting))
         if (result.isFailure) {
             WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to disable WPCom notifications for site $siteId")
         } else {
@@ -97,7 +97,7 @@ class PushNotificationRepository @Inject constructor(
     }
 
     suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
-        val unregisterWpComToken = async { notificationStore.unregisterWpComPushToken() }
+        val unregisterWpComToken = async { wpComPushNotificationStore.unregisterWpComPushToken() }
         val unregisterWooCoreTokens = async { unregisterWooCoreTokensFromServer() }
 
         unregisterWpComToken.await()

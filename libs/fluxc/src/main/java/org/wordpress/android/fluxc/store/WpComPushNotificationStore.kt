@@ -20,7 +20,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.notifications.Notification
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient.DevicesDto
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient.SiteNotificationSettingDto
 import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationSettingErrorType.UnregisteredDevice
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import org.wordpress.android.util.AppLog
@@ -33,7 +33,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class NotificationStore @Inject constructor(
+class WpComPushNotificationStore @Inject constructor(
     dispatcher: Dispatcher,
     private val context: Context,
     private val notificationRestClient: NotificationRestClient,
@@ -216,7 +216,7 @@ class NotificationStore @Inject constructor(
     }
 
     override fun onRegister() {
-        AppLog.d(T.API, NotificationStore::class.java.simpleName + " onRegister")
+        AppLog.d(T.API, WpComPushNotificationStore::class.java.simpleName + " onRegister")
     }
 
     /**
