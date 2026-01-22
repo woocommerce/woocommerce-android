@@ -2,7 +2,6 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
-import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
@@ -13,9 +12,6 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus
-import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus.Status.REGISTERED
-import org.wordpress.android.fluxc.store.GetDeviceRegistrationStatus.Status.UNREGISTERED
 
 @ExperimentalCoroutinesApi
 class RegisterDeviceTest : BaseUnitTest() {
@@ -27,9 +23,8 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val accountStore: AccountStore = mock {
         on { hasAccessToken() } doReturn true
     }
-    private val notificationRepository: NotificationRepository = mock()
-    private val getDeviceRegistrationStatus: GetDeviceRegistrationStatus = mock {
-        on { invoke() } doReturn UNREGISTERED
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
+        onBlocking { invoke() } doReturn PushNotificationRegistrationStatus.Status.UNREGISTERED
     }
     private val pushNotificationRepository: PushNotificationRepository = mock()
 
@@ -38,8 +33,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut = RegisterDevice(
             appPrefs,
             accountStore,
-            notificationRepository,
-            getDeviceRegistrationStatus,
+            pushNotificationRegistrationStatus,
             pushNotificationRepository
         )
     }
@@ -53,7 +47,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository, never()).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     @Test
@@ -65,7 +59,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository, never()).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     @Test
@@ -74,31 +68,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut.invoke(FORCEFULLY)
 
         // then
-        verify(notificationRepository).registerDevice(TEST_TOKEN)
-    }
-
-    @Test
-    fun `do not register device for if-needed request and device is already registered`() = testBlocking {
-        // given
-        whenever(getDeviceRegistrationStatus()).doReturn(REGISTERED)
-
-        // when
-        sut.invoke(IF_NEEDED)
-
-        // then
-        verify(notificationRepository, never()).registerDevice(TEST_TOKEN)
-    }
-
-    @Test
-    fun `register device for if-needed request and device is not registered`() = testBlocking {
-        // given
-        whenever(getDeviceRegistrationStatus()).doReturn(UNREGISTERED)
-
-        // when
-        sut.invoke(IF_NEEDED)
-
-        // then
-        verify(notificationRepository).registerDevice(TEST_TOKEN)
+        verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
     }
 
     companion object {
