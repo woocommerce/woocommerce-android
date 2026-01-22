@@ -28,7 +28,7 @@ class RegisterDevice @Inject constructor(
         }
 
         if (BuildConfig.DEBUG) {
-            WooLog.d(WooLog.T.UTILS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
         }
         WooLog.d(
             WooLog.T.NOTIFICATIONS,
