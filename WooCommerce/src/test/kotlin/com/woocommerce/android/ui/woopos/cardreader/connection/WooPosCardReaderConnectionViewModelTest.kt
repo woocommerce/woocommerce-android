@@ -111,7 +111,7 @@ class WooPosCardReaderConnectionViewModelTest {
             // GIVEN
             setupControllerMocks()
             val viewModel = createViewModel()
-            val onboardingState = mock<CardReaderOnboardingState>()
+            val onboardingState = CardReaderOnboardingState.GenericError
 
             // WHEN
             viewModel.event.test {
