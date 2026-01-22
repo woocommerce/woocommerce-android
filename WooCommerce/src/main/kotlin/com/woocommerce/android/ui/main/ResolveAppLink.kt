@@ -21,7 +21,7 @@ class ResolveAppLink @Inject constructor(
             uri endsWith "mobile/payments" -> preparePaymentsAction(uri!!)
             uri endsWith "mobile/payments/tap-to-pay" -> prepareTapToPayAction(uri!!)
             uri startsWith "/products/hardware" -> prepareUrlInWebViewAction(uri!!)
-            uri startsWith "/in-person-payments" -> prepareWooPosPromoAction(uri!!)
+            uri startsWith "/mobile/pos/learn-more" -> prepareWooPosPromoAction(uri!!)
             else -> Action.DoNothing
         }
     }

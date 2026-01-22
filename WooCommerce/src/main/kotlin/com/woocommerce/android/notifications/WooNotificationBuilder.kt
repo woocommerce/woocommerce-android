@@ -2,10 +2,13 @@ package com.woocommerce.android.notifications
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Notification.FLAG_GROUP_SUMMARY
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.os.Bundle
 import android.os.RemoteException
 import androidx.annotation.RequiresPermission
 import androidx.core.app.NotificationCompat
@@ -38,6 +41,21 @@ class WooNotificationBuilder @Inject constructor(
 
     fun cancelAllNotifications() = NotificationManagerCompat.from(context).cancelAll()
 
+    fun getActiveNotifications(): List<ActiveNotificationData> {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        return notificationManager.activeNotifications.map { sbn ->
+            ActiveNotificationData(
+                id = sbn.id,
+                remoteNoteId = sbn.notification.extras.getLong(EXTRA_REMOTE_NOTE_ID),
+                remoteSiteId = sbn.notification.extras.getLong(EXTRA_REMOTE_SITE_ID),
+                channelType = sbn.notification.extras.getString(EXTRA_CHANNEL_TYPE),
+                noteMessage = sbn.notification.extras.getString(EXTRA_NOTE_MESSAGE),
+                noteTypeTrackingValue = sbn.notification.extras.getString(EXTRA_NOTE_TYPE),
+                isGroupSummary = (sbn.notification.flags and FLAG_GROUP_SUMMARY) != 0
+            )
+        }
+    }
+
     private fun getNotificationBuilder(
         notification: Notification
     ): NotificationCompat.Builder {
@@ -47,7 +65,6 @@ class WooNotificationBuilder @Inject constructor(
             .setSmallIcon(R.drawable.ic_woo_w_notification)
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
             .setOnlyAlertOnce(true)
-            .setAutoCancel(true)
             .setCategory(NotificationCompat.CATEGORY_SOCIAL)
             .setGroup(notification.getGroup())
             .setContentTitle(notification.noteTitle)
@@ -130,15 +147,10 @@ class WooNotificationBuilder @Inject constructor(
     fun buildAndDisplayWooGroupNotification(
         inboxMessage: String,
         subject: String,
-        summaryText: String?,
         notification: Notification
     ) {
         val inboxStyle = NotificationCompat.InboxStyle().addLine(inboxMessage)
         val channelId = with(notificationChannelsHandler) { notification.channelType.getChannelId() }
-
-        summaryText?.let {
-            inboxStyle.setSummaryText(summaryText)
-        }
 
         NotificationCompat.Builder(context, channelId)
             .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
@@ -146,7 +158,6 @@ class WooNotificationBuilder @Inject constructor(
             .setColor(ContextCompat.getColor(context, R.color.color_primary))
             .setGroup(notification.getGroup())
             .setGroupSummary(true)
-            .setAutoCancel(true)
             .setTicker(notification.noteMessage)
             .setContentTitle(notification.noteTitle)
             .setContentText(subject)
@@ -168,7 +179,16 @@ class WooNotificationBuilder @Inject constructor(
         builder: NotificationCompat.Builder
     ) {
         try {
-            // Call processing service when notification is dismissed
+            builder.addExtras(
+                Bundle().apply {
+                    putLong(EXTRA_REMOTE_NOTE_ID, notification.remoteNoteId)
+                    putLong(EXTRA_REMOTE_SITE_ID, notification.remoteSiteId)
+                    putString(EXTRA_CHANNEL_TYPE, notification.channelType.name)
+                    putString(EXTRA_NOTE_MESSAGE, notification.noteMessage)
+                    putString(EXTRA_NOTE_TYPE, notification.noteType.trackingValue)
+                }
+            )
+
             val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForPushNotificationDismiss(
                 context,
                 pushId
@@ -193,7 +213,7 @@ class WooNotificationBuilder @Inject constructor(
             }
         } catch (e: RemoteException) {
             // see https://github.com/woocommerce/woocommerce-android/issues/920
-            WooLog.e(WooLog.T.NOTIFS, e)
+            WooLog.e(WooLog.T.NOTIFICATIONS, e)
         }
     }
 
@@ -230,15 +250,33 @@ class WooNotificationBuilder @Inject constructor(
 
                 largeIconBitmap
             } catch (e: UnsupportedEncodingException) {
-                WooLog.e(WooLog.T.NOTIFS, e)
+                WooLog.e(WooLog.T.NOTIFICATIONS, e)
                 null
             } catch (e: ExecutionException) {
                 // ExecutionException happens when the image fails to load.
                 // handling the exception here to gracefully display notification, without icon
                 // instead of crashing the app
-                WooLog.e(WooLog.T.NOTIFS, "Failed to load image with url $iconUrl")
+                WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to load image with url $iconUrl")
                 null
             }
         }
     }
+
+    companion object {
+        private const val EXTRA_REMOTE_NOTE_ID = "remote_note_id"
+        private const val EXTRA_REMOTE_SITE_ID = "remote_site_id"
+        private const val EXTRA_CHANNEL_TYPE = "channel_type"
+        private const val EXTRA_NOTE_MESSAGE = "note_message"
+        private const val EXTRA_NOTE_TYPE = "note_type"
+    }
 }
+
+data class ActiveNotificationData(
+    val id: Int,
+    val remoteNoteId: Long,
+    val remoteSiteId: Long,
+    val channelType: String?,
+    val noteMessage: String?,
+    val noteTypeTrackingValue: String?,
+    val isGroupSummary: Boolean = false
+)

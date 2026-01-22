@@ -36,7 +36,7 @@ class FCMMessageService : FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-        WooLog.v(T.NOTIFS, "Received message from Firebase")
+        WooLog.v(T.NOTIFICATIONS, "Received message from Firebase")
         notificationMessageHandler.onNewMessageReceived(message.data)
     }
 
