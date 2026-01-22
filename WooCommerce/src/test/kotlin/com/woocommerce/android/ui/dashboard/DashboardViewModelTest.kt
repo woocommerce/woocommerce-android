@@ -57,7 +57,7 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
-        onBlocking { invoke() } doReturn Status.REGISTERED
+        onBlocking { invoke() } doReturn Status.WPCOM_REGISTERED
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
@@ -349,7 +349,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.REGISTERED)
+                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.WPCOM_REGISTERED)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
