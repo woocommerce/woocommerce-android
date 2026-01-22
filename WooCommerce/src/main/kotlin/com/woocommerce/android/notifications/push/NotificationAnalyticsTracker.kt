@@ -17,13 +17,10 @@ class NotificationAnalyticsTracker @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
-    fun trackNotificationAnalytics(stat: AnalyticsEvent, notification: Notification) {
-        trackNotificationAnalytics(
-            stat = stat,
-            remoteNoteId = notification.remoteNoteId,
-            remoteSiteId = notification.remoteSiteId,
-            noteTypeTrackingValue = notification.noteType.trackingValue
-        )
+    fun track(stat: AnalyticsEvent, siteId: Long) {
+        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val properties = mutableMapOf<String, Any>().addCommonSiteProperties(site)
+        analyticsTrackerWrapper.track(stat, properties)
     }
 
     fun trackNotificationAnalytics(

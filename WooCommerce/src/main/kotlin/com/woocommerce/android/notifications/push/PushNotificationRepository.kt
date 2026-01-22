@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -29,7 +30,8 @@ class PushNotificationRepository @Inject constructor(
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
     @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
-    private val pushNotificationsDataStore: DataStore<Preferences>
+    private val pushNotificationsDataStore: DataStore<Preferences>,
+    private val notificationAnalyticsTracker: NotificationAnalyticsTracker
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -54,6 +56,10 @@ class PushNotificationRepository @Inject constructor(
             )
             if (!result.isError) {
                 result.model?.let { pushToken ->
+                    notificationAnalyticsTracker.track(
+                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
+                        siteId = site.siteId
+                    )
                     savePushTokenForSite(site.siteId, pushToken)
                     disableWpComNotificationsForSite(site.siteId)
                 } ?: run {
