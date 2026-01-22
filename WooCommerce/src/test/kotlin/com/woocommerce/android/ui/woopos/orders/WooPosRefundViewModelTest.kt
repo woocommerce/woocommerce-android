@@ -178,6 +178,32 @@ class WooPosRefundViewModelTest {
         rowIndex = rowIndex
     )
 
+    /**
+     * Helper to create Order.Item with proper tax configuration
+     */
+    private fun createOrderItem(
+        itemId: Long,
+        productId: Long = 10L,
+        name: String = "Product $itemId",
+        price: BigDecimal,
+        quantity: Float = 1f,
+        tax: BigDecimal
+    ) = Order.Item(
+        itemId = itemId,
+        productId = productId,
+        name = name,
+        price = price,
+        sku = "SKU-$itemId",
+        quantity = quantity,
+        subtotal = price * quantity.toBigDecimal(),
+        subtotalTax = tax * quantity.toBigDecimal(),
+        totalTax = tax * quantity.toBigDecimal(),
+        total = price * quantity.toBigDecimal(),
+        variationId = 0,
+        attributesList = emptyList(),
+        taxes = listOf(Order.LineTaxEntry(rateId = 1L, taxAmount = tax * quantity.toBigDecimal()))
+    )
+
     @Test
     fun `given viewmodel created, when order fetch fails, then state transitions from Loading to Error`() = runTest {
         // GIVEN
@@ -985,22 +1011,31 @@ class WooPosRefundViewModelTest {
     fun `given all items selected initially, when item deselected, then selectedItemIds updated and totals recalculated`() =
         runTest {
             // GIVEN
+            val orderWithTwoItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1027,22 +1062,31 @@ class WooPosRefundViewModelTest {
     fun `given item not selected, when item selected, then selectedItemIds updated and totals recalculated`() =
         runTest {
             // GIVEN
+            val orderWithTwoItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1069,22 +1113,31 @@ class WooPosRefundViewModelTest {
     fun `given all items selected, when select all toggled, then all items deselected and totals become zero`() =
         runTest {
             // GIVEN
+            val orderWithTwoItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1109,22 +1162,31 @@ class WooPosRefundViewModelTest {
     fun `given no items selected, when select all toggled, then all items selected and totals recalculated`() =
         runTest {
             // GIVEN
+            val orderWithTwoItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1151,28 +1213,39 @@ class WooPosRefundViewModelTest {
     fun `given some items selected, when select all toggled, then all items selected`() =
         runTest {
             // GIVEN
+            val orderWithThreeItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00")),
+                    createOrderItem(itemId = 3L, productId = 30L, price = BigDecimal("15.00"), tax = BigDecimal("1.50"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val item3 = createRefundableItem(
                 orderItemId = 3L,
+                productId = 30L,
                 unitPrice = BigDecimal("15.00"),
                 unitTax = BigDecimal("1.50"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2, item3)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithThreeItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1199,22 +1272,31 @@ class WooPosRefundViewModelTest {
     fun `given at ReviewRefund step, when item selection toggled, then step is preserved`() =
         runTest {
             // GIVEN
+            val orderWithTwoItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item2 = createRefundableItem(
                 orderItemId = 2L,
+                productId = 20L,
                 unitPrice = BigDecimal("20.00"),
                 unitTax = BigDecimal("2.00"),
                 rowIndex = 0
             )
             val refundableItems = listOf(item1, item2)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1272,28 +1354,37 @@ class WooPosRefundViewModelTest {
     fun `given multiple items with same orderItemId but different rowIndex, when one deselected, then only that unit deselected`() =
         runTest {
             // GIVEN
+            val orderWithThreeUnits = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), quantity = 3f, tax = BigDecimal("1.00"))
+                )
+            )
+
             val item1Unit1 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 0
             )
             val item1Unit2 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 1
             )
             val item1Unit3 = createRefundableItem(
                 orderItemId = 1L,
+                productId = 10L,
                 unitPrice = BigDecimal("10.00"),
                 unitTax = BigDecimal("1.00"),
                 rowIndex = 2
             )
             val refundableItems = listOf(item1Unit1, item1Unit2, item1Unit3)
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeUnits))
+            whenever(retrieveOrderRefunds.invoke(orderWithThreeUnits)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1322,6 +1413,14 @@ class WooPosRefundViewModelTest {
     fun `given partial selection of items, when refund confirmed, then only selected items are refunded`() =
         runTest {
             // GIVEN
+            val orderWithThreeItems = testOrder.copy(
+                items = listOf(
+                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00")),
+                    createOrderItem(itemId = 3L, productId = 30L, price = BigDecimal("15.00"), tax = BigDecimal("1.50"))
+                )
+            )
+
             val item1 = createRefundableItem(
                 orderItemId = 1L,
                 productId = 10L,
@@ -1361,10 +1460,10 @@ class WooPosRefundViewModelTest {
                 )
             )
 
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
+            whenever(retrieveOrderRefunds.invoke(orderWithThreeItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(eq(selectedItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -1390,7 +1489,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(groupRefundItems).invoke(eq(selectedItems), eq(testOrder), any())
+            verify(groupRefundItems).invoke(eq(selectedItems), eq(orderWithThreeItems), any())
             verify(refundStore).createItemsRefund(
                 site = eq(testSite),
                 orderId = eq(testOrderId),
