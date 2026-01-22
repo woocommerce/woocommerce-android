@@ -177,10 +177,6 @@ class WooPosRefundViewModelTest {
         formattedUnitTax = "$$unitTax",
         rowIndex = rowIndex
     )
-
-    /**
-     * Helper to create Order.Item with proper tax configuration
-     */
     private fun createOrderItem(
         itemId: Long,
         productId: Long = 10L,
@@ -1013,7 +1009,12 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
                     createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
                 )
             )
@@ -1064,7 +1065,12 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
                     createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
                 )
             )
@@ -1115,7 +1121,12 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
                     createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
                 )
             )
@@ -1164,7 +1175,12 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
                     createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
                 )
             )
@@ -1215,8 +1231,18 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithThreeItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
-                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
+                    createOrderItem(
+                        itemId = 2L,
+                        productId = 20L,
+                        price = BigDecimal("20.00"),
+                        tax = BigDecimal("2.00")
+                    ),
                     createOrderItem(itemId = 3L, productId = 30L, price = BigDecimal("15.00"), tax = BigDecimal("1.50"))
                 )
             )
@@ -1274,7 +1300,12 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithTwoItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
                     createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00"))
                 )
             )
@@ -1356,7 +1387,13 @@ class WooPosRefundViewModelTest {
             // GIVEN
             val orderWithThreeUnits = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), quantity = 3f, tax = BigDecimal("1.00"))
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        quantity = 3f,
+                        tax = BigDecimal("1.00")
+                    )
                 )
             )
 
@@ -1409,14 +1446,25 @@ class WooPosRefundViewModelTest {
             assertThat(updatedState.total).isEqualByComparingTo(BigDecimal("22.00"))
         }
 
+    @Suppress("LongMethod")
     @Test
     fun `given partial selection of items, when refund confirmed, then only selected items are refunded`() =
         runTest {
             // GIVEN
             val orderWithThreeItems = testOrder.copy(
                 items = listOf(
-                    createOrderItem(itemId = 1L, productId = 10L, price = BigDecimal("10.00"), tax = BigDecimal("1.00")),
-                    createOrderItem(itemId = 2L, productId = 20L, price = BigDecimal("20.00"), tax = BigDecimal("2.00")),
+                    createOrderItem(
+                        itemId = 1L,
+                        productId = 10L,
+                        price = BigDecimal("10.00"),
+                        tax = BigDecimal("1.00")
+                    ),
+                    createOrderItem(
+                        itemId = 2L,
+                        productId = 20L,
+                        price = BigDecimal("20.00"),
+                        tax = BigDecimal("2.00")
+                    ),
                     createOrderItem(itemId = 3L, productId = 30L, price = BigDecimal("15.00"), tax = BigDecimal("1.50"))
                 )
             )
@@ -1463,7 +1511,9 @@ class WooPosRefundViewModelTest {
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
             whenever(retrieveOrderRefunds.invoke(orderWithThreeItems)).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())).thenReturn(groupedItems)
+            whenever(
+                groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())
+            ).thenReturn(groupedItems)
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
