@@ -17,28 +17,31 @@ class RegisterDevice @Inject constructor(
     private val pushNotificationRepository: PushNotificationRepository
 ) {
     suspend operator fun invoke(mode: Mode) {
+        val pushRegistrationStatus = pushNotificationRegistrationStatus()
+        WooLog.d(WooLog.T.NOTIFICATIONS, "Current PN registration status: $pushRegistrationStatus")
         when (mode) {
             IF_NEEDED -> {
-                if (pushNotificationRegistrationStatus() == Status.UNREGISTERED) {
-                    sendToken()
+                when (pushRegistrationStatus) {
+                    Status.UNREGISTERED -> sendToken()
+                    Status.WPCOM_REGISTERED -> if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+                        sendToken()
+                    }
+
+                    Status.WOO_REGISTERED,
+                    Status.REGISTERED_IN_BOTH -> {
+                    }
                 }
             }
 
             FORCEFULLY -> sendToken()
         }
-
-        if (BuildConfig.DEBUG) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Current FCM token: ${appPrefsWrapper.getFCMToken()}")
-        }
-        WooLog.d(
-            WooLog.T.NOTIFICATIONS,
-            "Push notifications registration status: " +
-                "${pushNotificationRegistrationStatus()}"
-        )
     }
 
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
+        if (BuildConfig.DEBUG) {
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Current FCM token: $token")
+        }
         if (token.isNotEmpty()) {
             if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
                 pushNotificationRepository.registerPushTokenInWooCoreSystem(token)
@@ -46,6 +49,10 @@ class RegisterDevice @Inject constructor(
                 pushNotificationRepository.registerPushTokenInWpComSystem(token)
             }
         }
+        WooLog.d(
+            WooLog.T.NOTIFICATIONS,
+            "Updated push notification registration status: " + "${pushNotificationRegistrationStatus()}"
+        )
     }
 
     enum class Mode {
