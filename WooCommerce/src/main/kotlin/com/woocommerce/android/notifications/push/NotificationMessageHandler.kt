@@ -18,7 +18,6 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
-import com.woocommerce.android.util.WooLog.T.NOTIFS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
@@ -26,7 +25,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -36,7 +35,6 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
-    private val pushNotificationRepository: PushNotificationRepository,
     private val registrationStatus: PushNotificationRegistrationStatus,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
@@ -105,7 +103,7 @@ class NotificationMessageHandler @Inject constructor(
         // We need to filter out duplicate notifications from the WPCOM system
         if (isRegisteredForWooPush) {
             if (notification.remoteNoteId > 0L) {
-                wooLog.d(NOTIFS, "Skipping WPCOM notification, already registered with Woo Core")
+                wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
         } else if (notification.remoteNoteId == 0L) {
