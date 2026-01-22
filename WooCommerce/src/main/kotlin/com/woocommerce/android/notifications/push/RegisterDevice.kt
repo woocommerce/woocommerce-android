@@ -1,7 +1,6 @@
 package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
@@ -39,9 +38,6 @@ class RegisterDevice @Inject constructor(
 
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
-        if (BuildConfig.DEBUG) {
-            WooLog.d(WooLog.T.NOTIFICATIONS, "Current FCM token: $token")
-        }
         if (token.isNotEmpty()) {
             if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
                 pushNotificationRepository.registerPushTokenInWooCoreSystem(token)

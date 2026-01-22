@@ -7,7 +7,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.datastore.DataStoreQualifier
-import com.woocommerce.android.datastore.DataStoreType
+import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -28,7 +28,7 @@ class PushNotificationRepository @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
-    @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
+    @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>
 ) {
 
@@ -65,7 +65,7 @@ class PushNotificationRepository @Inject constructor(
             } else {
                 WooLog.w(
                     WooLog.T.NOTIFICATIONS,
-                    "Woo Core push token registration failed, falling back to WPCom: ${result.error?.message}"
+                    "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
                 )
                 registerPushTokenInWpComSystem(token)
             }
