@@ -25,17 +25,17 @@ import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
-    private val pushNotificationsStore: PushNotificationsStore = mock()
+    private val wooPushNotificationsStore: WooPushNotificationsStore = mock()
     private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
-    private val notificationStore: NotificationStore = mock()
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
     private val preferences: Preferences = mock()
@@ -48,10 +48,10 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Before
     fun setUp() {
         sut = PushNotificationRepository(
-            pushNotificationsStore,
+            wooPushNotificationsStore,
             selectedSite,
             appPrefsWrapper,
-            notificationStore,
+            wpComPushNotificationStore,
             wooCommerceStore,
             pushNotificationsDataStore
         )
@@ -63,7 +63,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
         sut.registerPushTokenInWooCoreSystem("token")
 
-        verifyNoInteractions(pushNotificationsStore, notificationStore)
+        verifyNoInteractions(wooPushNotificationsStore, wpComPushNotificationStore)
     }
 
     @Test
@@ -72,7 +72,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(siteModel.siteId).thenReturn(SITE_ID)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
-            whenever(pushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
+            whenever(wooPushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
                 .thenReturn(WooResult(RETURNED_TOKEN))
 
             val mutablePreferences: MutablePreferences = mock()
@@ -85,10 +85,10 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             sut.registerPushTokenInWooCoreSystem("token")
 
-            verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
+            verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             val expectedTokenKey = stringPreferencesKey("push_token_$SITE_ID")
             verify(mutablePreferences)[expectedTokenKey] = RETURNED_TOKEN
-            verify(notificationStore).updateNotificationSettingsFor(
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
                 listOf(
                     SiteNotificationSetting(
                         siteId = SITE_ID,
@@ -105,13 +105,13 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
-            whenever(pushNotificationsStore.registerPushToken(any(), any(), any()))
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
             sut.registerPushTokenInWooCoreSystem("token")
 
-            verify(pushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
-            verify(notificationStore, never()).updateNotificationSettingsFor(any())
+            verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
+            verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
         }
     }
 
@@ -120,14 +120,14 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("")
-            whenever(pushNotificationsStore.registerPushToken(any(), any(), any()))
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
             sut.registerPushTokenInWooCoreSystem("token")
 
             val uuidCaptor = argumentCaptor<String>()
             verify(appPrefsWrapper).wooCorePushDeviceUUID = uuidCaptor.capture()
-            verify(pushNotificationsStore).registerPushToken(
+            verify(wooPushNotificationsStore).registerPushToken(
                 eq(siteModel),
                 eq("token"),
                 eq(uuidCaptor.firstValue)
@@ -140,7 +140,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
         sut.unregisterDeviceFromAllPushes()
 
-        verify(notificationStore).unregisterWpComPushToken()
+        verify(wpComPushNotificationStore).unregisterWpComPushToken()
     }
 
     @Test
@@ -155,12 +155,12 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[tokenKey1]).thenReturn("token-id-1")
             whenever(preferences[tokenKey2]).thenReturn("token-id-2")
 
-            whenever(pushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
 
             sut.unregisterDeviceFromAllPushes()
 
-            verify(pushNotificationsStore).deletePushToken(site1, "token-id-1")
-            verify(pushNotificationsStore).deletePushToken(site2, "token-id-2")
+            verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(wooPushNotificationsStore).deletePushToken(site2, "token-id-2")
         }
 
     @Test
@@ -175,12 +175,12 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[tokenKey1]).thenReturn("token-id-1")
             whenever(preferences[tokenKey2]).thenReturn(null)
 
-            whenever(pushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
+            whenever(wooPushNotificationsStore.deletePushToken(any(), any())).thenReturn(WooResult(Unit))
 
             sut.unregisterDeviceFromAllPushes()
 
-            verify(pushNotificationsStore).deletePushToken(site1, "token-id-1")
-            verify(pushNotificationsStore, never()).deletePushToken(eq(site2), any())
+            verify(wooPushNotificationsStore).deletePushToken(site1, "token-id-1")
+            verify(wooPushNotificationsStore, never()).deletePushToken(eq(site2), any())
         }
 
     @Test

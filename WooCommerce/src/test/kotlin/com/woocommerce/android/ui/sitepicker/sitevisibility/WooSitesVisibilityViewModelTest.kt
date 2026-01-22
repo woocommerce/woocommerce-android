@@ -20,10 +20,10 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationSettingErrorType
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationSettingsUpdateError
-import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingErrorType
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingsUpdateError
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -69,7 +69,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     }
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
 
-    private val notificationStore: NotificationStore = mock()
+    private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
 
     private lateinit var viewModel: WooSitesVisibilityViewModel
 
@@ -79,7 +79,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
             sitePickerRepository = sitePickerRepository,
             selectedSite = selectedSite,
             visibleSitesDataStore = visibleWooSitesDataStore,
-            notificationsStore = notificationStore,
+            notificationsStore = wpComPushNotificationStore,
             trackerWrapper = trackerWrapper,
             savedStateHandle = mock()
         )
@@ -109,7 +109,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     @Test
     fun `given update notification settings succeeds, when tapping save, then save site's visibility locally`() =
         testBlocking {
-            whenever(notificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any())).thenReturn(Result.success(Unit))
 
             val hiddenSite = A_WOO_SITE_UI_MODEL
             viewModel.onSiteTapped(hiddenSite)
@@ -134,7 +134,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     @Test
     fun `given updating notification settings fails, when tapping save, then error dialog is shown`() =
         testBlocking {
-            whenever(notificationStore.updateNotificationSettingsFor(any()))
+            whenever(wpComPushNotificationStore.updateNotificationSettingsFor(any()))
                 .thenReturn(
                     Result.failure(
                         NotificationSettingsUpdateError(
@@ -155,7 +155,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
         testBlocking {
             viewModel.onSaveTapped()
 
-            verify(notificationStore).updateNotificationSettingsFor(
+            verify(wpComPushNotificationStore).updateNotificationSettingsFor(
                 AVAILABLE_WOO_SITES_TO_HIDE.map {
                     SiteNotificationSetting(
                         siteId = it.siteId,
