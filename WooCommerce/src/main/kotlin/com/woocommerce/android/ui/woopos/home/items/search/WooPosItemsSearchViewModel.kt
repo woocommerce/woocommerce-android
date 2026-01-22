@@ -116,7 +116,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
         performSearch(currentState.searchQuery)
     }
 
-    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun performSearch(
         query: String,
         showLoadingState: Boolean = true,
@@ -149,38 +148,11 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
                     when (searchResult) {
                         is SearchProductsResult.Local -> {
-                            analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
-
-                            if (searchResult.products.isEmpty()) {
-                                if (showLoadingState) {
-                                    _viewState.value = WooPosItemsSearchViewState.Loading
-                                } else {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty(
-                                        pullToRefreshState = determinePullToRefreshState()
-                                    )
-                                }
-                            } else {
-                                _viewState.value = searchResult.products.toContentState(
-                                    searchQuery = query,
-                                )
-                            }
+                            handleLocalSearchResult(searchResult, query, showLoadingState)
                         }
 
                         is SearchProductsResult.Remote -> {
-                            if (searchResult.productsResult.isSuccess) {
-                                val products = searchResult.productsResult.getOrThrow()
-                                if (products.isEmpty()) {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty(
-                                        pullToRefreshState = determinePullToRefreshState()
-                                    )
-                                } else {
-                                    _viewState.value = products.toContentState(searchQuery = query)
-                                }
-
-                                analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
-                            } else {
-                                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
-                            }
+                            handleRemoteSearchResult(searchResult, query)
                         }
                     }
                 }
@@ -194,6 +166,41 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun handleLocalSearchResult(
+        searchResult: SearchProductsResult.Local,
+        query: String,
+        showLoadingState: Boolean
+    ) {
+        analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+
+        if (searchResult.products.isEmpty()) {
+            _viewState.value = if (showLoadingState) {
+                WooPosItemsSearchViewState.Loading
+            } else {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            }
+        } else {
+            _viewState.value = searchResult.products.toContentState(searchQuery = query)
+        }
+    }
+
+    private suspend fun handleRemoteSearchResult(
+        searchResult: SearchProductsResult.Remote,
+        query: String
+    ) {
+        if (searchResult.productsResult.isSuccess) {
+            val products = searchResult.productsResult.getOrThrow()
+            _viewState.value = if (products.isEmpty()) {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            } else {
+                products.toContentState(searchQuery = query)
+            }
+            analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
+        } else {
+            _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
         }
     }
 
