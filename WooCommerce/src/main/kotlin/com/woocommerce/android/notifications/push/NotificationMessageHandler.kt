@@ -25,7 +25,6 @@ import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
 import javax.inject.Inject
@@ -37,7 +36,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
-    private val pushNotificationsStore: PushNotificationsStore,
+    private val pushNotificationRepository: PushNotificationRepository,
     private val registrationStatus: PushNotificationRegistrationStatus,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
