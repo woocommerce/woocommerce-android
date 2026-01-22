@@ -126,6 +126,10 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
         controller.onOnboardingCompleted()
     }
 
+    fun onResume() {
+        controller.recheckPermissions()
+    }
+
     sealed interface Event {
         data object RequestBluetoothPermission : Event
         data object RequestEnableBluetooth : Event
