@@ -213,7 +213,7 @@ class WooNotificationBuilder @Inject constructor(
             }
         } catch (e: RemoteException) {
             // see https://github.com/woocommerce/woocommerce-android/issues/920
-            WooLog.e(WooLog.T.NOTIFS, e)
+            WooLog.e(WooLog.T.NOTIFICATIONS, e)
         }
     }
 
@@ -250,13 +250,13 @@ class WooNotificationBuilder @Inject constructor(
 
                 largeIconBitmap
             } catch (e: UnsupportedEncodingException) {
-                WooLog.e(WooLog.T.NOTIFS, e)
+                WooLog.e(WooLog.T.NOTIFICATIONS, e)
                 null
             } catch (e: ExecutionException) {
                 // ExecutionException happens when the image fails to load.
                 // handling the exception here to gracefully display notification, without icon
                 // instead of crashing the app
-                WooLog.e(WooLog.T.NOTIFS, "Failed to load image with url $iconUrl")
+                WooLog.e(WooLog.T.NOTIFICATIONS, "Failed to load image with url $iconUrl")
                 null
             }
         }

@@ -13,7 +13,6 @@ import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Co
 import com.woocommerce.android.notifications.local.LocalNotificationScheduler.Companion.LOCAL_NOTIFICATION_TYPE
 import com.woocommerce.android.ui.dashboard.data.ObserveBlazeWidgetStatus
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.util.WooPermissionUtils
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -87,7 +86,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         get() = VERSION.SDK_INT < VERSION_CODES.TIRAMISU || WooPermissionUtils.hasNotificationsPermission(appContext)
 
     private fun cancelWork(message: String): Result {
-        wooLog.i(NOTIFICATIONS, message)
+        wooLog.i(NOTIFS, message)
         WorkManager.getInstance(appContext).cancelWorkById(id)
         return Result.failure()
     }
