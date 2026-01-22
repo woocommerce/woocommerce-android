@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.push
 
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.store.NotificationStore
@@ -22,9 +23,10 @@ class PushNotificationRegistrationStatus @Inject constructor(
         } else {
             val deviceId = prefsWrapper.getFluxCPreferences()
                 .getString(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
-            when (deviceId.isNullOrEmpty()) {
-                true -> Status.UNREGISTERED
-                false -> Status.REGISTERED
+            if (deviceId.isNotNullOrEmpty()) {
+                Status.REGISTERED
+            } else {
+                Status.UNREGISTERED
             }
         }
 
