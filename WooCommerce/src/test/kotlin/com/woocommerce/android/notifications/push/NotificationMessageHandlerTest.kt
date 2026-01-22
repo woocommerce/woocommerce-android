@@ -164,6 +164,20 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
+    fun `given woo push registered, when wpcom notification received, then skip notification`() = runTest {
+        whenever(registrationStatus.invoke()).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
+
+        // WPCOM notifications have remoteNoteId > 0
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(wooLog).d(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Skipping WPCOM notification, already registered with Woo Core")
+        )
+        verifyNoInteractions(dispatcher)
+    }
+
+    @Test
     fun `when an incoming notification is received, then we should update that notification to local cache`() {
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
