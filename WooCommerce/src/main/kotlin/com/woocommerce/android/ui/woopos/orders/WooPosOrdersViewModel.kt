@@ -115,78 +115,103 @@ class WooPosOrdersViewModel @Inject constructor(
         return getRefundableItems(order, refunds).isNotEmpty()
     }
 
-    @Suppress("LongMethod", "CyclomaticComplexMethod")
-    fun onOrderSelected(orderId: Long) {
-        val current = _state.value as? WooPosOrdersState.Content ?: return
-        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
+    fun onOrderSelected(orderId: Long) = viewModelScope.launch {
+        val currentState: WooPosOrdersState.Content = _state.value as? WooPosOrdersState.Content ?: return@launch
+        val loadedItems = currentState.items as? WooPosOrdersState.Content.Items.Loaded ?: return@launch
 
-        if (current.selectedDetails?.id == orderId &&
-            current.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded
-        ) {
-            return
+        trackOrderSelection(orderId, loadedItems)
+
+        val isAlreadyLoadedWithActions = currentState.selectedDetails?.id == orderId &&
+            currentState.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded
+
+        if (isAlreadyLoadedWithActions) {
+            return@launch
+        } else {
+            loadAndUpdateOrderDetails(orderId, currentState, loadedItems)
         }
+    }
 
+    private fun trackOrderSelection(
+        orderId: Long,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
         val keys = loadedItems.items.keys.toList()
         val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
-        val selectedItem = keys.firstOrNull { it.id == orderId }
+        val selectedItem = keys.firstOrNull { it.id == orderId } ?: return
 
-        selectedItem?.let {
-            viewModelScope.launch {
-                ordersAnalyticsTracker.trackOrdersListRowTapped(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    listPosition = position,
-                    createdAtMillis = it.createdAtMillis
-                )
-                ordersAnalyticsTracker.trackOrderDetailsLoaded(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    createdAtMillis = it.createdAtMillis
-                )
+        viewModelScope.launch {
+            ordersAnalyticsTracker.trackOrdersListRowTapped(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                listPosition = position,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
+            ordersAnalyticsTracker.trackOrderDetailsLoaded(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
+        }
+    }
+
+    private suspend fun loadAndUpdateOrderDetails(
+        orderId: Long,
+        current: WooPosOrdersState.Content,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
+        val orderDetailsViewState = loadedItems.items.values.firstOrNull { it.orderId == orderId }
+
+        val details = if (orderDetailsViewState is WooPosOrdersState.OrderDetailsViewState.Lazy) {
+            getOrComputeDetailsWithoutActions(orderId)
+        } else {
+            getOrComputeDetails(orderId)
+        }
+
+        updateStateWithSelectedOrder(orderId, current, loadedItems, details)
+
+        if (details.actionsState is WooPosOrdersState.OrderActionsState.Loading) {
+            val order = extractOrder(orderId, orderDetailsViewState, loadedItems)
+            if (order != null) {
+                sideLoadActions(orderId, order)
+            }
+        }
+    }
+
+    private fun updateStateWithSelectedOrder(
+        orderId: Long,
+        current: WooPosOrdersState.Content,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded,
+        details: WooPosOrdersState.OrderDetailsViewState.Computed.Details
+    ) {
+        val updatedItems = loadedItems.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == orderId)
+        }.mapValues { (item, orderDetails) ->
+            if (item.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Lazy) {
+                WooPosOrdersState.OrderDetailsViewState.Computed(orderId = orderId, details = details)
+            } else {
+                orderDetails
             }
         }
 
-        viewModelScope.launch {
-            val orderDetailsViewState = loadedItems.items.values.firstOrNull { it.orderId == orderId }
+        _state.value = current.copy(
+            items = WooPosOrdersState.Content.Items.Loaded(items = updatedItems),
+            selectedDetails = details
+        )
+    }
 
-            val details = if (orderDetailsViewState is WooPosOrdersState.OrderDetailsViewState.Lazy) {
-                getOrComputeDetailsWithoutActions(orderId)
-            } else {
-                getOrComputeDetails(orderId)
-            }
-
-            val updatedItems = loadedItems.items.mapKeys { (item, _) ->
-                item.copy(isSelected = item.id == orderId)
-            }.mapValues { (item, orderDetails) ->
-                if (item.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Lazy) {
-                    WooPosOrdersState.OrderDetailsViewState.Computed(orderId = orderId, details = details)
-                } else {
-                    orderDetails
+    private suspend fun extractOrder(
+        orderId: Long,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ): Order? {
+        return when (orderDetailsViewState) {
+            is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetailsViewState.order
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                loadedItems.items.keys.firstOrNull { it.id == orderId }?.let { item ->
+                    ordersDataSource.getOrderById(item.id).getOrNull()
                 }
             }
-
-            _state.value = current.copy(
-                items = WooPosOrdersState.Content.Items.Loaded(
-                    items = updatedItems
-                ),
-                selectedDetails = details
-            )
-
-            if (details.actionsState is WooPosOrdersState.OrderActionsState.Loading) {
-                val order = when (orderDetailsViewState) {
-                    is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetailsViewState.order
-                    is WooPosOrdersState.OrderDetailsViewState.Computed -> {
-                        loadedItems.items.keys.firstOrNull { it.id == orderId }?.let { item ->
-                            ordersDataSource.getOrderById(item.id).getOrNull()
-                        }
-                    }
-                    else -> null
-                }
-
-                if (order != null) {
-                    sideLoadActions(orderId, order)
-                }
-            }
+            else -> null
         }
     }
 
