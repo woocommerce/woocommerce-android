@@ -654,10 +654,10 @@ class WpComPushNotificationStore @Inject constructor(
 
     data class NotificationSettingsUpdateError(
         val type: NotificationSettingErrorType
-    ) : Exception()
+    ) : Exception(type.message)
 
-    sealed interface NotificationSettingErrorType {
-        object UnregisteredDevice : NotificationSettingErrorType
-        data class ApiError(val message: String) : NotificationSettingErrorType
+    sealed class NotificationSettingErrorType(val message: String) {
+        object UnregisteredDevice : NotificationSettingErrorType("Device not registered.")
+        data class ApiError(val apiErrorMessage: String) : NotificationSettingErrorType(apiErrorMessage)
     }
 }

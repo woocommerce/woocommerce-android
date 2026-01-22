@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
@@ -92,7 +93,14 @@ class PushNotificationRepository @Inject constructor(
         )
         val result = wpComPushNotificationStore.updateNotificationSettingsFor(listOf(setting))
         if (result.isFailure) {
+            val error = result.exceptionOrNull() as? WpComPushNotificationStore.NotificationSettingsUpdateError
             WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to disable WPCom notifications for site $siteId")
+            notificationAnalyticsTracker.trackError(
+                stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR,
+                siteId = siteId,
+                errorDescription = error?.message,
+                errorType = error?.type?.let { it::class.simpleName }
+            )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
             notificationAnalyticsTracker.track(

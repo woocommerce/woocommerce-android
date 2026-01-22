@@ -767,6 +767,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     WOO_PUSH_TOKEN_REGISTER_SUCCESS,
     WOO_PUSH_TOKEN_REGISTER_ERROR,
     WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_SUCCESS,
+    WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR,
 
     // -- Notifications List
     NOTIFICATION_OPEN,
