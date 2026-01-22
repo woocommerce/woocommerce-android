@@ -62,6 +62,12 @@ class PushNotificationRepository @Inject constructor(
                         "Push token registration in Woo Core succeeded but API returned null token;"
                     )
                 }
+            } else {
+                WooLog.w(
+                    WooLog.T.NOTIFICATIONS,
+                    "Woo Core push token registration failed, falling back to WPCom: ${result.error?.message}"
+                )
+                registerPushTokenInWpComSystem(token)
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
     }
