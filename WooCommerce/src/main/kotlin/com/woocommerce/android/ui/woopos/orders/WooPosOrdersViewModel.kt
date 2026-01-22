@@ -621,7 +621,7 @@ class WooPosOrdersViewModel @Inject constructor(
             ?: error("Order $orderId not found in state")
 
         return when (orderDetails) {
-            is WooPosOrdersState.OrderDetailsViewState.Lazy -> mapOrderDetailsWithoutActions(orderDetails.order)
+            is WooPosOrdersState.OrderDetailsViewState.Lazy -> mapOrderDetailsInitial(orderDetails.order)
             is WooPosOrdersState.OrderDetailsViewState.Computed -> {
                 orderDetails.details
             }
@@ -762,13 +762,21 @@ class WooPosOrdersViewModel @Inject constructor(
         )
     }
 
-    private suspend fun mapOrderDetailsWithoutActions(
+    private suspend fun mapOrderDetailsInitial(
         order: Order
     ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
         val status = mapOrderStatus(order)
         val lineItems = buildLineItems(order)
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
         val breakdown = buildTotalsBreakdown(order, refundInfo)
+
+        val actionsState = if (order.status == Order.Status.Refunded) {
+            WooPosOrdersState.OrderActionsState.Loaded(
+                listOf(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
+            )
+        } else {
+            WooPosOrdersState.OrderActionsState.Loading
+        }
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,
@@ -783,7 +791,7 @@ class WooPosOrdersViewModel @Inject constructor(
             total = formatPrice(order.total),
             totalPaid = formatPrice(order.total),
             paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actionsState = WooPosOrdersState.OrderActionsState.Loading
+            actionsState = actionsState
         )
     }
 
