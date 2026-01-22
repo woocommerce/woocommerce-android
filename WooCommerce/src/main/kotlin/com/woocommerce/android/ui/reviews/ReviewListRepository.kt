@@ -8,7 +8,9 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.RequestResult.*
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
@@ -35,6 +37,9 @@ import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.OnNotificationChanged
 import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(

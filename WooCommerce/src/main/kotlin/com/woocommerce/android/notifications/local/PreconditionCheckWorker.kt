@@ -86,7 +86,7 @@ class PreconditionCheckWorker @AssistedInject constructor(
         get() = VERSION.SDK_INT < VERSION_CODES.TIRAMISU || WooPermissionUtils.hasNotificationsPermission(appContext)
 
     private fun cancelWork(message: String): Result {
-        wooLog.i(NOTIFS, message)
+        wooLog.i(WooLog.T.NOTIFICATIONS, message)
         WorkManager.getInstance(appContext).cancelWorkById(id)
         return Result.failure()
     }
