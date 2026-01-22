@@ -13,7 +13,6 @@ import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationSeenR
 import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsSeenPayload;
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDevicePayload;
 import org.wordpress.android.fluxc.store.NotificationStore.RegisterDeviceResponsePayload;
-import org.wordpress.android.fluxc.store.NotificationStore.UnregisterDeviceResponsePayload;
 
 @ActionEnum
 public enum NotificationAction implements IAction {
@@ -21,8 +20,6 @@ public enum NotificationAction implements IAction {
     @Action(payloadType = RegisterDevicePayload.class)
     @Deprecated
     REGISTER_DEVICE, // Register device for push notifications with WordPress.com
-    @Action
-    UNREGISTER_DEVICE, // Unregister device for push notifications with WordPress.com
     @Action(payloadType = FetchNotificationsPayload.class)
     FETCH_NOTIFICATIONS, // Fetch notifications
     @Action(payloadType = FetchNotificationPayload.class)
@@ -34,8 +31,6 @@ public enum NotificationAction implements IAction {
     @Action(payloadType = RegisterDeviceResponsePayload.class)
     @Deprecated
     REGISTERED_DEVICE, // Response to device registration received
-    @Action(payloadType = UnregisterDeviceResponsePayload.class)
-    UNREGISTERED_DEVICE, // Response to device unregistration
     @Action(payloadType = FetchNotificationHashesResponsePayload.class)
     FETCHED_NOTIFICATION_HASHES, // Response to an internal request to fetch notification hashes for synchronization
     @Action(payloadType = FetchNotificationsResponsePayload.class)
