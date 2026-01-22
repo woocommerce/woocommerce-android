@@ -9,7 +9,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class PushNotificationsStore @Inject internal constructor(
+class WooPushNotificationsStore @Inject internal constructor(
     private val pushNotificationsRestClient: PushNotificationsRestClient,
     private val coroutineEngine: CoroutineEngine,
 ) {

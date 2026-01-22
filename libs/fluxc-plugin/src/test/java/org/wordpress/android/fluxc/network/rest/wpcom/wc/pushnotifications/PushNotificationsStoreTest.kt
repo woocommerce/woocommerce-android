@@ -16,11 +16,11 @@ import org.wordpress.android.fluxc.utils.initCoroutineEngine
 class PushNotificationsStoreTest {
     private val restClient: PushNotificationsRestClient = mock()
 
-    private lateinit var sut: PushNotificationsStore
+    private lateinit var sut: WooPushNotificationsStore
 
     @Before
     fun setUp() {
-        sut = PushNotificationsStore(
+        sut = WooPushNotificationsStore(
             pushNotificationsRestClient = restClient,
             coroutineEngine = initCoroutineEngine()
         )

@@ -15,7 +15,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.PushNotificationsStore
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -23,7 +23,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class PushNotificationRepository @Inject constructor(
-    private val pushNotificationsStore: PushNotificationsStore,
+    private val wooPushNotificationsStore: WooPushNotificationsStore,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
@@ -47,7 +47,7 @@ class PushNotificationRepository @Inject constructor(
         )
         selectedSite.getIfExists()?.let { site ->
             val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
-            val result = pushNotificationsStore.registerPushToken(
+            val result = wooPushNotificationsStore.registerPushToken(
                 site = site,
                 token = token,
                 deviceUuid = uuid
@@ -112,7 +112,7 @@ class PushNotificationRepository @Inject constructor(
             val tokenKey = getPushTokenKeyForSite(site.siteId)
             val pushTokenId = preferences[tokenKey] ?: return@mapNotNull null
             async {
-                val result = pushNotificationsStore.deletePushToken(site, pushTokenId)
+                val result = wooPushNotificationsStore.deletePushToken(site, pushTokenId)
                 if (result.isError) {
                     WooLog.w(
                         WooLog.T.NOTIFICATIONS,
