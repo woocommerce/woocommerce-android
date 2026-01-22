@@ -8,7 +8,9 @@ import com.woocommerce.android.extensions.getCommentId
 import com.woocommerce.android.model.ProductReview
 import com.woocommerce.android.model.ProductReviewProduct
 import com.woocommerce.android.model.RequestResult
-import com.woocommerce.android.model.RequestResult.*
+import com.woocommerce.android.model.RequestResult.ERROR
+import com.woocommerce.android.model.RequestResult.NO_ACTION_NEEDED
+import com.woocommerce.android.model.RequestResult.SUCCESS
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.ContinuationWrapper
@@ -31,17 +33,19 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.*
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.OnNotificationChanged
 import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(
     private val dispatcher: Dispatcher,
     private val productStore: WCProductStore,
-    private val notificationStore: NotificationStore,
+    private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val selectedSite: SelectedSite
 ) {
     companion object {
@@ -157,12 +161,14 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun markAllProductReviewsAsRead(): RequestResult {
         return if (getHasUnreadCachedProductReviews()) {
-            val unreadProductReviews = notificationStore.getNotificationsForSite(
+            val unreadProductReviews = wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             )
             trackMarkAllProductReviewsAsReadStarted()
-            val result = notificationStore.markNotificationsRead(MarkNotificationsReadPayload(unreadProductReviews))
+            val result = wpComPushNotificationStore.markNotificationsRead(
+                MarkNotificationsReadPayload(unreadProductReviews)
+            )
             trackMarkAllProductReviewsAsReadResult(result)
             if (result.isError) ERROR else SUCCESS
         } else {
@@ -230,7 +236,7 @@ class ReviewListRepository @Inject constructor(
      */
     suspend fun getHasUnreadCachedProductReviews(): Boolean {
         return coroutineScope {
-            notificationStore.hasUnreadNotificationsForSite(
+            wpComPushNotificationStore.hasUnreadNotificationsForSite(
                 site = selectedSite.get(),
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             )
@@ -244,7 +250,7 @@ class ReviewListRepository @Inject constructor(
      * If [productId] is provided, then only unread notifications for that product will be fetched.
      */
     suspend fun fetchOnlyUnreadProductReviews(loadMore: Boolean, productId: Long? = null): RequestResult {
-        unreadProductReviewIds = notificationStore.getNotificationsForSite(
+        unreadProductReviewIds = wpComPushNotificationStore.getNotificationsForSite(
             site = selectedSite.get(),
             filterBySubtype = listOf(STORE_REVIEW.toString())
         )
@@ -415,7 +421,7 @@ class ReviewListRepository @Inject constructor(
      */
     private suspend fun getReviewNotifReadValueByRemoteIdMap(): Map<Long, Boolean> {
         return withContext(Dispatchers.IO) {
-            notificationStore.getNotificationsForSite(
+            wpComPushNotificationStore.getNotificationsForSite(
                 site = selectedSite.get(),
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             ).associate { it.getCommentId() to it.read }

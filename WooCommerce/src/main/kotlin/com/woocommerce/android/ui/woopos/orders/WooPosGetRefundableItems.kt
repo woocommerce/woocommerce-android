@@ -24,16 +24,14 @@ class WooPosGetRefundableItems @Inject constructor(
         order: Order,
         refunds: List<Refund>,
     ): List<WooPosRefundableItem> {
-        val productItems = order.items.filter { it.productId != 0L }
-
-        if (productItems.isEmpty()) {
+        if (order.items.isEmpty()) {
             return emptyList()
         }
 
-        val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, productItems)
+        val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, order.items)
 
         // Expand grouped items (items with quantity > 1) into individual rows
-        return productItems.flatMap { orderItem ->
+        return order.items.flatMap { orderItem ->
             val maxQuantity = maxQuantities[orderItem.itemId]?.toInt() ?: 0
 
             if (maxQuantity <= 0) {

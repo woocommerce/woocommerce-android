@@ -55,6 +55,7 @@
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
+    <string name="woo_pos_ptr_offline_error">No internet connection. Please check your network and try again.</string>
     <string name="product">Product</string>
     <string name="today">Today</string>
     <string name="this_week">This Week</string>
@@ -4358,7 +4359,7 @@
     <string name="about_automattic_app_icon_description">App icon</string>
 
     <!-- Woo POS Promo Carousel -->
-    <string name="woo_pos_promo_title">Run POS with the\nWooCommerce mobile app</string>
+    <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>
     <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
     <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
     <string name="woo_pos_promo_page3_description">Quick and simple to learn.</string>
