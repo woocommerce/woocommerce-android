@@ -62,9 +62,7 @@ sealed interface WooPosCardReaderConnectionState {
         override val showCloseButton: Boolean = true
     }
 
-    data object Connecting : WooPosCardReaderConnectionState {
-        override val showCloseButton: Boolean = false
-    }
+    data object Connecting : WooPosCardReaderConnectionState
 
     data class ConnectingFailed(
         val errorMessage: String,
