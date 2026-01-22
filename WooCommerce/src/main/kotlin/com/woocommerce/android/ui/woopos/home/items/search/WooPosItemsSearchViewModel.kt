@@ -122,7 +122,6 @@ class WooPosItemsSearchViewModel @Inject constructor(
         skipDebounce: Boolean = false,
     ) {
         searchJob?.cancel()
-
         currentQuery.set(query)
 
         if (query.isEmpty()) {
@@ -135,36 +134,42 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 if (!skipDebounce) {
                     delay(SEARCH_DEBOUNCING_TIME)
                 }
-
                 if (query != currentQuery.get()) return@launch
 
-                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+                executeSearch(query, showLoadingState)
+            }
+        }
+    }
 
-                dataSource.searchProducts(query).collectLatest { searchResult ->
-                    if (query != currentQuery.get()) {
-                        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                        return@collectLatest
-                    }
+    private suspend fun executeSearch(
+        query: String,
+        showLoadingState: Boolean,
+    ) {
+        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-                    when (searchResult) {
-                        is SearchProductsResult.Local -> {
-                            handleLocalSearchResult(searchResult, query, showLoadingState)
-                        }
+        dataSource.searchProducts(query).collectLatest { searchResult ->
+            if (query != currentQuery.get()) {
+                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                return@collectLatest
+            }
 
-                        is SearchProductsResult.Remote -> {
-                            handleRemoteSearchResult(searchResult, query)
-                        }
-                    }
+            when (searchResult) {
+                is SearchProductsResult.Local -> {
+                    handleLocalSearchResult(searchResult, query, showLoadingState)
                 }
 
-                if (query == currentQuery.get()) {
-                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                    if (_viewState.value is WooPosItemsSearchViewState.Loading) {
-                        _viewState.value = WooPosItemsSearchViewState.Empty(
-                            pullToRefreshState = determinePullToRefreshState()
-                        )
-                    }
+                is SearchProductsResult.Remote -> {
+                    handleRemoteSearchResult(searchResult, query)
                 }
+            }
+        }
+
+        if (query == currentQuery.get()) {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+            if (_viewState.value is WooPosItemsSearchViewState.Loading) {
+                _viewState.value = WooPosItemsSearchViewState.Empty(
+                    pullToRefreshState = determinePullToRefreshState()
+                )
             }
         }
     }
