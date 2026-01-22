@@ -417,11 +417,11 @@ class NotificationStore @Inject constructor(
 
         if (payload.isError) {
             with(payload.error) {
-                AppLog.e(T.NOTIFS, "Unregister device action failed: $type - $message")
+                AppLog.e(T.NOTIFS, "Unregister device from WP.com pushes failed: $type - $message")
             }
             onDeviceUnregistered.error = payload.error
         } else {
-            AppLog.i(T.NOTIFS, "Unregister device action succeeded")
+            AppLog.i(T.NOTIFS, "Unregister device from WP.com pushes succeeded")
         }
 
         emitChange(onDeviceUnregistered)
