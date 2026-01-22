@@ -31,11 +31,10 @@ import org.wordpress.android.fluxc.generated.WCProductActionBuilder
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.*
 import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WCProductStore.FetchProductsPayload
 import org.wordpress.android.fluxc.store.WCProductStore.OnProductChanged
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import javax.inject.Inject
 
 class ReviewListRepository @Inject constructor(
@@ -162,7 +161,9 @@ class ReviewListRepository @Inject constructor(
                 filterBySubtype = listOf(STORE_REVIEW.toString())
             )
             trackMarkAllProductReviewsAsReadStarted()
-            val result = wpComPushNotificationStore.markNotificationsRead(MarkNotificationsReadPayload(unreadProductReviews))
+            val result = wpComPushNotificationStore.markNotificationsRead(
+                MarkNotificationsReadPayload(unreadProductReviews)
+            )
             trackMarkAllProductReviewsAsReadResult(result)
             if (result.isError) ERROR else SUCCESS
         } else {

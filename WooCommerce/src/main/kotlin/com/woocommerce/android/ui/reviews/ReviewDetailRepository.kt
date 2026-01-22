@@ -19,10 +19,10 @@ import org.wordpress.android.fluxc.model.WCProductModel
 import org.wordpress.android.fluxc.model.WCProductReviewModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
+import org.wordpress.android.fluxc.store.WCProductStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadPayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.OnNotificationChanged
-import org.wordpress.android.fluxc.store.WCProductStore
 import javax.inject.Inject
 
 class ReviewDetailRepository @Inject constructor(
