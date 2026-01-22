@@ -765,6 +765,7 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     NEW_ORDER_PUSH_NOTIFICATION_FIX_TAPPED,
     NEW_ORDER_PUSH_NOTIFICATION_FIX_DISMISSED,
     WOO_PUSH_TOKEN_REGISTER_SUCCESS,
+    WOO_PUSH_TOKEN_REGISTER_ERROR,
 
     // -- Notifications List
     NOTIFICATION_OPEN,

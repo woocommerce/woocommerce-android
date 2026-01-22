@@ -63,11 +63,23 @@ class PushNotificationRepository @Inject constructor(
                     savePushTokenForSite(site.siteId, pushToken)
                     disableWpComNotificationsForSite(site.siteId)
                 } ?: run {
-                    WooLog.w(
-                        WooLog.T.NOTIFICATIONS,
-                        "Push token registration in Woo Core succeeded but API returned null token;"
+                    val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
+                    WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
+                    notificationAnalyticsTracker.trackError(
+                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                        siteId = site.siteId,
+                        errorDescription = errorMsg,
+                        errorType = WooErrorType.EMPTY_RESPONSE.name
                     )
                 }
+            } else {
+                notificationAnalyticsTracker.trackError(
+                    stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                    siteId = site.siteId,
+                    errorDescription = result.error?.message,
+                    errorType = result.error?.type?.name,
+                    errorCode = result.error?.apiErrorCode
+                )
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
     }

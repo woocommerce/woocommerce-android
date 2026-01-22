@@ -2,6 +2,7 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
@@ -37,6 +38,22 @@ class NotificationAnalyticsTracker @Inject constructor(
             "push_notification_token" to appPrefsWrapper.getFCMToken(),
             "is_from_selected_site" to isFromSelectedSite
         ).addCommonSiteProperties(site)
+        analyticsTrackerWrapper.track(stat, properties)
+    }
+
+    fun trackError(
+        stat: AnalyticsEvent,
+        siteId: Long,
+        errorDescription: String?,
+        errorType: String?,
+        errorCode: String? = null
+    ) {
+        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val properties = mutableMapOf<String, Any>().apply {
+            errorDescription?.let { this[AnalyticsTracker.KEY_ERROR_DESC] = it }
+            errorType?.let { this[AnalyticsTracker.KEY_ERROR_TYPE] = it }
+            errorCode?.let { this[AnalyticsTracker.KEY_ERROR_CODE] = it }
+        }.addCommonSiteProperties(site)
         analyticsTrackerWrapper.track(stat, properties)
     }
 
