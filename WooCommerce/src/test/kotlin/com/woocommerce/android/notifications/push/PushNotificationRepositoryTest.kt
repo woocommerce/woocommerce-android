@@ -101,7 +101,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given selected site and stored uuid, when registering push token fails, then wpcom notifications are not updated`() {
+    fun `given selected site and stored uuid, when registering push token fails, then falls back to wpcom registration`() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
@@ -112,6 +112,24 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
+            verify(wpComPushNotificationStore).registerDevice(
+                "token",
+                WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
+            )
+        }
+    }
+
+    @Test
+    fun `given selected site, when registering push token fails and falls back to wpcom, then does not save token to datastore`() {
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
+                .thenReturn(PN_REGISTRATION_ERROR)
+
+            sut.registerPushTokenInWooCoreSystem("token")
+
+            verify(pushNotificationsDataStore, never()).updateData(any())
         }
     }
 
