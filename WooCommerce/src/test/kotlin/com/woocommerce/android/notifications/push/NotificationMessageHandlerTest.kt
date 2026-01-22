@@ -52,7 +52,7 @@ class NotificationMessageHandlerTest {
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
     }
-    private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val registrationStatus: PushNotificationRegistrationStatus = mock()
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLog: WooLog = mock()
@@ -95,8 +95,8 @@ class NotificationMessageHandlerTest {
             notificationBuilder = notificationBuilder,
             analyticsTracker = notificationAnalyticsTracker,
             notificationsParser = notificationsParser,
+            registrationStatus = registrationStatus,
             accountStore = accountStore,
-            pushNotificationRepository = pushNotificationRepository,
             wooLog = wooLog,
             dispatcher = dispatcher,
             resourceProvider = resourceProvider,
@@ -140,7 +140,9 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when the user id does not match, then do not process the notification`() {
+    fun `when the user id does not match, then do not process the notification`() = runTest {
+        whenever(registrationStatus.invoke()).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
+
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
