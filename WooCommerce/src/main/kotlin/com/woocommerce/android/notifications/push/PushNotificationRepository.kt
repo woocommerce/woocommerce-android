@@ -95,6 +95,10 @@ class PushNotificationRepository @Inject constructor(
             WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to disable WPCom notifications for site $siteId")
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
+            notificationAnalyticsTracker.track(
+                stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_SUCCESS,
+                siteId = siteId
+            )
         }
     }
 
