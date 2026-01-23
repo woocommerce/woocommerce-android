@@ -35,8 +35,4 @@ internal class MediaLibraryCache @Inject constructor() {
             currentList.filter { it.mediaId != mediaId }
         }
     }
-
-    fun clear() {
-        cache.clear()
-    }
 }

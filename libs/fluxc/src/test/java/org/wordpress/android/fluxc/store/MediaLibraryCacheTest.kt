@@ -48,17 +48,6 @@ class MediaLibraryCacheTest {
     }
 
     @Test
-    fun `when clearing, then it removes all entries`() {
-        cache.cacheMediaList(1, listOf(testMedia1))
-        cache.cacheMediaList(2, listOf(testMedia2))
-
-        cache.clear()
-
-        assertThat(cache.getMediaList(1)).isNull()
-        assertThat(cache.getMediaList(2)).isNull()
-    }
-
-    @Test
     fun `when caching media list, then it overwrites previous value for same site`() {
         val list1 = listOf(testMedia1)
         val list2 = listOf(testMedia2)
