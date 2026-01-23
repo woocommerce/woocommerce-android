@@ -454,6 +454,33 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given no items selected, when ContinueToReviewClicked event, then step remains at SelectItems`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
+
+            val stateBeforeContinue = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateBeforeContinue.selectedItemIds).isEmpty()
+            assertThat(stateBeforeContinue.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+
+            // THEN
+            val stateAfterContinue = viewModel.state.value as WooPosRefundState.Content
+            assertThat(stateAfterContinue.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(stateAfterContinue.selectedItemIds).isEmpty()
+        }
+
+    @Test
     fun `given content state, when OnRefundReasonChanged event, then refundReason is updated`() =
         runTest {
             // GIVEN
@@ -1269,7 +1296,9 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2, item3)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
-            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())).thenReturn(Result.success(emptyList()))
+            whenever(
+                retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())
+            ).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1419,7 +1448,9 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1Unit1, item1Unit2, item1Unit3)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeUnits))
-            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeUnits), any())).thenReturn(Result.success(emptyList()))
+            whenever(
+                retrieveOrderRefunds.invoke(eq(orderWithThreeUnits), any())
+            ).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1507,7 +1538,9 @@ class WooPosRefundViewModelTest {
             )
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
-            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())).thenReturn(Result.success(emptyList()))
+            whenever(
+                retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())
+            ).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(
                 groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())

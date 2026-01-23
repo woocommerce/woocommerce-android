@@ -15,6 +15,7 @@ sealed class WooPosRefundState {
         val currency: String,
         val refundableItems: List<WooPosRefundableItem>,
         val selectedItemIds: Set<String>,
+        val allItemsSelected: Boolean,
         val itemsCount: Int,
         val subtotal: BigDecimal,
         val taxes: BigDecimal,

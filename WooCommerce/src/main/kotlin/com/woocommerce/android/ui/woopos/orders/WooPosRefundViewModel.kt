@@ -122,6 +122,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         selectedItemIds: Set<String> = refundableItems.map { it.uniqueId }.toSet()
     ): WooPosRefundState.Content {
         val selectedItems = refundableItems.filter { it.uniqueId in selectedItemIds }
+        val allItemIds = refundableItems.map { it.uniqueId }.toSet()
         val subtotal = calculateRefundSubtotal(selectedItems, numberOfDecimalPoints)
         val taxes = calculateRefundTax(selectedItems, order, numberOfDecimalPoints, taxRoundAtSubtotal)
         val total = (subtotal + taxes).setScale(numberOfDecimalPoints, RoundingMode.HALF_UP)
@@ -132,6 +133,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             currency = order.currency,
             refundableItems = refundableItems,
             selectedItemIds = selectedItemIds,
+            allItemsSelected = selectedItemIds.containsAll(allItemIds),
             itemsCount = selectedItems.size,
             subtotal = subtotal,
             taxes = taxes,
@@ -178,8 +180,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
         when (event) {
             is WooPosRefundUIEvent.ItemSelectionToggled -> handleItemSelection(currentState, event.uniqueId)
             WooPosRefundUIEvent.SelectAllToggled -> handleSelectAllToggled(currentState)
-            WooPosRefundUIEvent.ContinueToReviewClicked ->
-                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+            WooPosRefundUIEvent.ContinueToReviewClicked -> {
+                if (currentState.selectedItemIds.isNotEmpty()) {
+                    _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+                }
+            }
             WooPosRefundUIEvent.BackToSelectItemsClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
             is WooPosRefundUIEvent.OnRefundReasonChanged ->
@@ -204,7 +209,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun handleSelectAllToggled(currentState: WooPosRefundState.Content) {
         val allItemIds = currentState.refundableItems.map { it.uniqueId }.toSet()
-        val newSelectedIds = if (currentState.selectedItemIds.size == allItemIds.size) {
+        val newSelectedIds = if (currentState.selectedItemIds.containsAll(allItemIds)) {
             emptySet()
         } else {
             allItemIds

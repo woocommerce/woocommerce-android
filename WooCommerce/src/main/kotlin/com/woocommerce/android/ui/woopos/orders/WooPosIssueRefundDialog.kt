@@ -294,7 +294,7 @@ private fun SelectItemsContent(
         RefundDialogHeader(onDismissRequest = onDismissRequest)
 
         ItemsHeaderRow(
-            allItemsSelected = state.selectedItemIds.size == state.refundableItems.size,
+            allItemsSelected = state.allItemsSelected,
             selectedCount = state.selectedItemIds.size,
             onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) }
         )
@@ -824,6 +824,7 @@ fun SelectItemsContentPreview() {
         currency = "USD",
         refundableItems = sampleItems,
         selectedItemIds = sampleItems.map { it.uniqueId }.toSet(),
+        allItemsSelected = true,
         itemsCount = 3,
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
@@ -890,6 +891,7 @@ fun ReviewRefundContentPreview() {
         currency = "USD",
         refundableItems = sampleItems,
         selectedItemIds = sampleItems.map { it.uniqueId }.toSet(),
+        allItemsSelected = true,
         itemsCount = 3,
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
@@ -957,6 +959,7 @@ fun ConfirmRefundContentPreview() {
         currency = "USD",
         refundableItems = sampleItems,
         selectedItemIds = sampleItems.map { it.uniqueId }.toSet(),
+        allItemsSelected = true,
         itemsCount = 3,
         subtotal = BigDecimal("57.00"),
         taxes = BigDecimal("5.65"),
