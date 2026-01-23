@@ -106,7 +106,20 @@ public class MediaModel extends Payload<BaseNetworkError> implements Serializabl
 
     @Override
     public int hashCode() {
-        return Objects.hash(mId, mLocalSiteId, mMediaId, mPostId, mUploadDate, mUrl, mFileName, mFilePath, mMimeType, mTitle, mCaption, mDescription);
+        return Objects.hash(
+                mId,
+                mLocalSiteId,
+                mMediaId,
+                mPostId,
+                mUploadDate,
+                mUrl,
+                mFileName,
+                mFilePath,
+                mMimeType,
+                mTitle,
+                mCaption,
+                mDescription
+        );
     }
 
     public void setId(int id) {
