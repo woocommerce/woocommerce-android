@@ -517,6 +517,20 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
             textAlign = TextAlign.Center,
         )
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+
+        readers.forEachIndexed { index, reader ->
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = reader.name,
+                maxLines = 1,
+                onClick = reader.onConnectClicked,
+            )
+            if (index < readers.lastIndex) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            }
+        }
+
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         Row(
@@ -532,20 +546,6 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
                 style = WooPosTypography.BodyLarge,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             )
-        }
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-
-        readers.forEachIndexed { index, reader ->
-            WooPosOutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = reader.name,
-                maxLines = 1,
-                onClick = reader.onConnectClicked,
-            )
-            if (index < readers.lastIndex) {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-            }
         }
     }
 }
@@ -910,19 +910,25 @@ fun WooPosCardReaderConnectionDialogReaderFoundPreview() {
 @Composable
 fun WooPosCardReaderConnectionDialogMultipleReadersPreview() {
     WooPosTheme {
-        MultipleReadersFoundContent(
-            readers = listOf(
-                WooPosCardReaderConnectionState.FoundReader(
-                    id = "STRM261380012691",
-                    name = "STRM261380012691",
-                    onConnectClicked = {}
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MultipleReadersFound(
+                readers = listOf(
+                    WooPosCardReaderConnectionState.FoundReader(
+                        id = "STRM261380012691",
+                        name = "STRM261380012691",
+                        onConnectClicked = {}
+                    ),
+                    WooPosCardReaderConnectionState.FoundReader(
+                        id = "STRM261380012692",
+                        name = "STRM261380012692",
+                        onConnectClicked = {}
+                    )
                 ),
-                WooPosCardReaderConnectionState.FoundReader(
-                    id = "STRM261380012692",
-                    name = "STRM261380012692",
-                    onConnectClicked = {}
-                )
+                onCancelClicked = {},
             ),
+            onBackPressed = {},
+            onDismiss = {},
         )
     }
 }
