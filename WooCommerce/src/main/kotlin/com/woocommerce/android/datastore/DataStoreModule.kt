@@ -19,6 +19,7 @@ import com.woocommerce.android.datastore.DataStoreType.SHIPPING_LABELS_DATA
 import com.woocommerce.android.datastore.DataStoreType.SITE_PICKER_WOO_VISIBLE_SITES
 import com.woocommerce.android.datastore.DataStoreType.TOP_PERFORMER_PRODUCTS
 import com.woocommerce.android.datastore.DataStoreType.TRACKER
+import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.ui.dashboard.data.CustomDateRangeSerializer
 import com.woocommerce.android.ui.mystore.data.CustomDateRange
@@ -210,6 +211,24 @@ class DataStoreModule {
         corruptionHandler = ReplaceFileCorruptionHandler {
             crashLogging.recordEvent(
                 "Corrupted data store. DataStore Type: ${BOOKINGS_FILTERS.name}"
+            )
+            emptyPreferences()
+        },
+        scope = CoroutineScope(appCoroutineScope.coroutineContext + Dispatchers.IO)
+    )
+
+    @Provides
+    @Singleton
+    @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
+    fun providePushNotificationsDataStore(
+        appContext: Context,
+        crashLogging: CrashLogging,
+        @AppCoroutineScope appCoroutineScope: CoroutineScope
+    ): DataStore<Preferences> = PreferenceDataStoreFactory.create(
+        produceFile = { appContext.preferencesDataStoreFile("push_notifications") },
+        corruptionHandler = ReplaceFileCorruptionHandler {
+            crashLogging.recordEvent(
+                "Corrupted data store. DataStore Type: ${WOO_CORE_PUSH_NOTIFICATIONS_TOKENS.name}"
             )
             emptyPreferences()
         },

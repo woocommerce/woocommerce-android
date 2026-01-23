@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.pospromo
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,6 +13,7 @@ import javax.inject.Inject
 class PosPromoViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val analyticsTracker: PosPromoAnalyticsTracker,
+    private val utmProvider: PosPromoUtmProvider,
 ) : ScopedViewModel(savedStateHandle) {
 
     private val _state = MutableStateFlow(PosPromoState())
@@ -38,9 +40,13 @@ class PosPromoViewModel @Inject constructor(
 
     fun onExploreClick() {
         analyticsTracker.trackExploreClicked()
+        val url = utmProvider.getUrlWithUtmParams(WOO_POS_DOCS_URL)
+        triggerEvent(NavigateToExplore(url))
     }
 
+    data class NavigateToExplore(val url: String) : MultiLiveEvent.Event()
+
     companion object {
-        const val WOO_POS_DOCS_URL = "https://woocommerce.com/mobile/pos/learn-more"
+        private const val WOO_POS_DOCS_URL = "https://woocommerce.com/mobile/pos/learn-more"
     }
 }

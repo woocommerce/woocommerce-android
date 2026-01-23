@@ -150,31 +150,39 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     fun onUIEvent(event: WooPosRefundUIEvent) {
         when (event) {
-            WooPosRefundUIEvent.DialogDismissed -> {
-                val currentState = _state.value
-
-                if (currentState is WooPosRefundState.Content &&
-                    currentState.step != WooPosRefundState.Content.RefundStep.Processing
-                ) {
-                    _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
-                }
-            }
+            WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
-
-                when (event) {
-                    WooPosRefundUIEvent.ContinueToReviewClicked ->
-                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
-                    WooPosRefundUIEvent.BackToSelectItemsClicked ->
-                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
-                    WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
-                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
-                    WooPosRefundUIEvent.BackToReviewClicked ->
-                        _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
-                    WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
-                    WooPosRefundUIEvent.DialogDismissed -> Unit
-                }
+                handleContentStateEvent(event, currentState)
             }
+        }
+    }
+
+    private fun handleDialogDismissed() {
+        val currentState = _state.value
+        if (currentState is WooPosRefundState.Content &&
+            currentState.step != WooPosRefundState.Content.RefundStep.Processing
+        ) {
+            _state.value = currentState.copy(
+                step = WooPosRefundState.Content.RefundStep.SelectItems
+            )
+        }
+    }
+
+    private fun handleContentStateEvent(event: WooPosRefundUIEvent, currentState: WooPosRefundState.Content) {
+        when (event) {
+            WooPosRefundUIEvent.ContinueToReviewClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+            WooPosRefundUIEvent.BackToSelectItemsClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.SelectItems)
+            is WooPosRefundUIEvent.OnRefundReasonChanged ->
+                _state.value = currentState.copy(refundReason = event.reason)
+            WooPosRefundUIEvent.ContinueToConfirmRefundClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
+            WooPosRefundUIEvent.BackToReviewClicked ->
+                _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
+            WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
+            WooPosRefundUIEvent.DialogDismissed -> Unit
         }
     }
 
@@ -217,7 +225,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 site = selectedSite.get(),
                 orderId = contentState.orderId,
                 amount = contentState.total,
-                reason = "",
+                reason = contentState.refundReason,
                 restockItems = true,
                 autoRefund = false,
                 items = refundItems

@@ -18,20 +18,20 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Error
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
-import org.wordpress.android.fluxc.store.NotificationStore.DeviceRegistrationError
-import org.wordpress.android.fluxc.store.NotificationStore.DeviceRegistrationErrorType
-import org.wordpress.android.fluxc.store.NotificationStore.DeviceUnregistrationError
-import org.wordpress.android.fluxc.store.NotificationStore.DeviceUnregistrationErrorType
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationHashesResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationsResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationSeenResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.MarkNotificationsReadResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationAppKey
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationError
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationErrorType
-import org.wordpress.android.fluxc.store.NotificationStore.RegisterDeviceResponsePayload
-import org.wordpress.android.fluxc.store.NotificationStore.UnregisterDeviceResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceRegistrationError
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceRegistrationErrorType
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceUnregistrationError
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceUnregistrationErrorType
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationHashesResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationSeenResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationAppKey
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationError
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationErrorType
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDeviceResponsePayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.UnregisterDeviceResponsePayload
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.DeviceUtils
@@ -162,23 +162,20 @@ class NotificationRestClient @Inject constructor(
         add(request)
     }
 
-    fun unregisterDeviceForPushNotifications(deviceId: String) {
-        val url = WPCOMREST.devices.deviceId(deviceId).delete.urlV1
-        val request = WPComGsonRequest.buildPostRequest(
-            url, null, Any::class.java,
-            { _, _ ->
-                val payload = UnregisterDeviceResponsePayload()
-                dispatcher.dispatch(NotificationActionBuilder.newUnregisteredDeviceAction(payload))
-            },
-            { wpComError ->
-                val payload = UnregisterDeviceResponsePayload(
-                    DeviceUnregistrationError(
-                        DeviceUnregistrationErrorType.GENERIC_ERROR, wpComError.message
-                    )
-                )
-                dispatcher.dispatch(NotificationActionBuilder.newUnregisteredDeviceAction(payload))
-            })
-        add(request)
+    suspend fun unregisterDevice(deviceId: String): UnregisterDeviceResponsePayload {
+        val request = wpComGsonRequestBuilder.syncPostRequest(
+            this,
+            WPCOMREST.devices.deviceId(deviceId).delete.urlV1,
+            emptyMap(),
+            body = null,
+            Any::class.java
+        )
+        return when (request) {
+            is Success -> UnregisterDeviceResponsePayload()
+            is Error -> UnregisterDeviceResponsePayload(
+                DeviceUnregistrationError(DeviceUnregistrationErrorType.GENERIC_ERROR, request.error.message)
+            )
+        }
     }
     // endregion
 
@@ -196,7 +193,8 @@ class NotificationRestClient @Inject constructor(
             "fields" to NOTIFICATION_SYNC_FIELDS
         )
         val request =
-            WPComGsonRequest.buildGetRequest(url, params, NotificationHashesApiResponse::class.java,
+            WPComGsonRequest.buildGetRequest(
+                url, params, NotificationHashesApiResponse::class.java,
                 { response: NotificationHashesApiResponse?, _ ->
                     // Create a map of remote id to note_hash
                     val hashesMap: Map<Long, Long> =
@@ -242,7 +240,8 @@ class NotificationRestClient @Inject constructor(
         remoteNoteIds?.let { if (it.isNotEmpty()) params["ids"] = it.joinToString() }
 
         val request =
-            WPComGsonRequest.buildGetRequest(url, params, NotificationsApiResponse::class.java,
+            WPComGsonRequest.buildGetRequest(
+                url, params, NotificationsApiResponse::class.java,
                 { response: NotificationsApiResponse?, _ ->
                     val lastSeenTime = response?.last_seen_time?.let {
                         Date(it)
@@ -284,7 +283,8 @@ class NotificationRestClient @Inject constructor(
             "fields" to NOTIFICATION_DEFAULT_FIELDS
         )
         val request =
-            WPComGsonRequest.buildGetRequest(url, params, NotificationsApiResponse::class.java,
+            WPComGsonRequest.buildGetRequest(
+                url, params, NotificationsApiResponse::class.java,
                 { response, _ ->
                     val notification = response?.notes?.firstOrNull()?.let {
                         NotificationApiResponse.notificationResponseToNotificationModel(it)
@@ -322,7 +322,8 @@ class NotificationRestClient @Inject constructor(
         val url = WPCOMREST.notifications.seen.urlV1_1
         val params = mapOf("time" to timestamp.toString())
         val request =
-            WPComGsonRequest.buildPostRequest(url, params, NotificationSeenApiResponse::class.java,
+            WPComGsonRequest.buildPostRequest(
+                url, params, NotificationSeenApiResponse::class.java,
                 { response, _ ->
                     val payload = MarkNotificationSeenResponsePayload(
                         response.success,

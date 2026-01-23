@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.SearchEvent.RecentSearchSelected
@@ -12,11 +13,17 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsSearchHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel.ItemClickedData
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
+import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.home.items.products.SearchProductsResult
 import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource
+import com.woocommerce.android.ui.woopos.home.items.products.WooPosProductsDataSource.SyncStrategy
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -39,6 +46,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private val parentToChildrenEventReceiver: WooPosParentToChildrenEventReceiver,
     private val searchHelper: WooPosItemsSearchHelper,
     private val analyticsTracker: WooPosItemsSearchAnalyticsTracker,
+    private val resourceProvider: ResourceProvider,
+    private val wooPosAnalyticsTracker: WooPosAnalyticsTracker,
 ) : ViewModel() {
     private val _viewState =
         MutableStateFlow<WooPosItemsSearchViewState>(
@@ -95,6 +104,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     handleItemClicked(event.item, WooPosAnalyticsEventConstant.ItemsListSourceType.POPULAR_PRODUCTS)
                 }
             }
+
+            WooPosItemsSearchUiEvent.OnPullToRefreshTriggered -> handlePullToRefresh()
         }
     }
 
@@ -105,65 +116,96 @@ class WooPosItemsSearchViewModel @Inject constructor(
         performSearch(currentState.searchQuery)
     }
 
-    private fun performSearch(query: String) {
+    private fun performSearch(
+        query: String,
+        showLoadingState: Boolean = true,
+        skipDebounce: Boolean = false,
+    ) {
         searchJob?.cancel()
-
         currentQuery.set(query)
 
         if (query.isEmpty()) {
             setEmptySearchQueryState()
         } else {
             searchJob = viewModelScope.launch {
-                _viewState.value = WooPosItemsSearchViewState.Loading
-                delay(SEARCH_DEBOUNCING_TIME)
-
+                if (showLoadingState) {
+                    _viewState.value = WooPosItemsSearchViewState.Loading
+                }
+                if (!skipDebounce) {
+                    delay(SEARCH_DEBOUNCING_TIME)
+                }
                 if (query != currentQuery.get()) return@launch
 
-                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+                executeSearch(query, showLoadingState)
+            }
+        }
+    }
 
-                dataSource.searchProducts(query).collectLatest { searchResult ->
-                    if (query != currentQuery.get()) {
-                        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                        return@collectLatest
-                    }
+    private suspend fun executeSearch(
+        query: String,
+        showLoadingState: Boolean,
+    ) {
+        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-                    when (searchResult) {
-                        is SearchProductsResult.Local -> {
-                            analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+        dataSource.searchProducts(query).collectLatest { searchResult ->
+            if (query != currentQuery.get()) {
+                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                return@collectLatest
+            }
 
-                            if (searchResult.products.isEmpty()) {
-                                _viewState.value = WooPosItemsSearchViewState.Loading
-                            } else {
-                                _viewState.value = searchResult.products.toContentState(
-                                    searchQuery = query,
-                                )
-                            }
-                        }
-
-                        is SearchProductsResult.Remote -> {
-                            if (searchResult.productsResult.isSuccess) {
-                                val products = searchResult.productsResult.getOrThrow()
-                                if (products.isEmpty()) {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty
-                                } else {
-                                    _viewState.value = products.toContentState(searchQuery = query)
-                                }
-
-                                analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
-                            } else {
-                                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
-                            }
-                        }
-                    }
+            when (searchResult) {
+                is SearchProductsResult.Local -> {
+                    handleLocalSearchResult(searchResult, query, showLoadingState)
                 }
 
-                if (query == currentQuery.get()) {
-                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                    if (_viewState.value is WooPosItemsSearchViewState.Loading) {
-                        _viewState.value = WooPosItemsSearchViewState.Empty
-                    }
+                is SearchProductsResult.Remote -> {
+                    handleRemoteSearchResult(searchResult, query)
                 }
             }
+        }
+
+        if (query == currentQuery.get()) {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+            if (_viewState.value is WooPosItemsSearchViewState.Loading) {
+                _viewState.value = WooPosItemsSearchViewState.Empty(
+                    pullToRefreshState = determinePullToRefreshState()
+                )
+            }
+        }
+    }
+
+    private suspend fun handleLocalSearchResult(
+        searchResult: SearchProductsResult.Local,
+        query: String,
+        showLoadingState: Boolean
+    ) {
+        analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+
+        if (searchResult.products.isEmpty()) {
+            _viewState.value = if (showLoadingState) {
+                WooPosItemsSearchViewState.Loading
+            } else {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            }
+        } else {
+            _viewState.value = searchResult.products.toContentState(searchQuery = query)
+        }
+    }
+
+    private suspend fun handleRemoteSearchResult(
+        searchResult: SearchProductsResult.Remote,
+        query: String
+    ) {
+        if (searchResult.productsResult.isSuccess) {
+            val products = searchResult.productsResult.getOrThrow()
+            _viewState.value = if (products.isEmpty()) {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            } else {
+                products.toContentState(searchQuery = query)
+            }
+            analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
+        } else {
+            _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
         }
     }
 
@@ -286,11 +328,84 @@ class WooPosItemsSearchViewModel @Inject constructor(
     private suspend fun List<WooPosProductModel>.toContentState(
         searchQuery: String,
         paginationState: WooPosPaginationState = WooPosPaginationState.None,
+        pullToRefreshState: WooPosPullToRefreshState = determinePullToRefreshState(),
     ) = WooPosItemsSearchViewState.Content(
         items = map { it.toViewModelProduct() },
         searchQuery = searchQuery,
         paginationState = paginationState,
+        pullToRefreshState = pullToRefreshState,
     )
+
+    private fun determinePullToRefreshState(): WooPosPullToRefreshState {
+        return when (dataSource.getCurrentSyncStrategy()) {
+            SyncStrategy.LOCAL_CATALOG -> WooPosPullToRefreshState.Enabled
+            SyncStrategy.REMOTE -> WooPosPullToRefreshState.Disabled
+        }
+    }
+
+    private fun handlePullToRefresh() {
+        val currentState = _viewState.value
+        _viewState.value = when (currentState) {
+            is WooPosItemsSearchViewState.Content ->
+                currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            is WooPosItemsSearchViewState.Empty ->
+                currentState.copy(pullToRefreshState = WooPosPullToRefreshState.Refreshing)
+            else -> return
+        }
+
+        viewModelScope.launch {
+            wooPosAnalyticsTracker.track(
+                WooPosAnalyticsEvent.Event.PullToRefreshTriggered(
+                    WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                    WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT
+                )
+            )
+
+            dataSource.refreshProducts().onSuccess { syncResult ->
+                check(syncResult is PosLocalCatalogProductSyncResult) {
+                    "PTR should be enabled/available only for Local Catalog: $syncResult"
+                }
+                when (syncResult.value) {
+                    is PosLocalCatalogSyncResult.Success -> {
+                        performSearch(
+                            query = currentQuery.get(),
+                            showLoadingState = false,
+                            skipDebounce = true,
+                        )
+                    }
+
+                    is PosLocalCatalogSyncResult.Failure -> {
+                        handlePTRError(syncResult.value)
+                    }
+                }
+            }.onFailure {
+                handlePTRError(failure = null)
+            }
+        }
+    }
+
+    private suspend fun handlePTRError(failure: PosLocalCatalogSyncResult.Failure?) {
+        val messageResId = if (failure is PosLocalCatalogSyncResult.Failure.NetworkError) {
+            R.string.woo_pos_ptr_offline_error
+        } else {
+            R.string.something_went_wrong_try_again
+        }
+        childToParentEventSender.sendToParent(
+            ChildToParentEvent.ToastMessageDisplayed(
+                message = resourceProvider.getString(messageResId)
+            )
+        )
+        val currentState = _viewState.value
+        _viewState.value = when (currentState) {
+            is WooPosItemsSearchViewState.Content ->
+                currentState.copy(pullToRefreshState = determinePullToRefreshState())
+
+            is WooPosItemsSearchViewState.Empty ->
+                currentState.copy(pullToRefreshState = determinePullToRefreshState())
+
+            else -> currentState
+        }
+    }
 
     private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
         if (type == WooPosProductModel.WooPosProductType.VARIABLE) {

@@ -10,9 +10,6 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
-    private val posProductsOnly: Boolean
-        get() = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled()
-
     sealed class WooPosCheckCatalogSizeResult {
         object SizeAcceptable : WooPosCheckCatalogSizeResult()
         object SizeUnknown : WooPosCheckCatalogSizeResult()
@@ -29,7 +26,11 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
         }
         logger.d("Checking catalog size before sync")
 
-        val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, posProductsOnly, modifiedAfterGmt)
+        val productsCountResult = posLocalCatalogStore.fetchProductsCount(
+            site = site,
+            posProductsOnly = true,
+            modifiedAfterGmt = modifiedAfterGmt
+        )
         if (productsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}. " +
@@ -38,7 +39,11 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
             return WooPosCheckCatalogSizeResult.SizeUnknown
         }
 
-        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, posProductsOnly, modifiedAfterGmt)
+        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(
+            site = site,
+            posProductsOnly = true,
+            modifiedAfterGmt = modifiedAfterGmt
+        )
         if (variationsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}. " +

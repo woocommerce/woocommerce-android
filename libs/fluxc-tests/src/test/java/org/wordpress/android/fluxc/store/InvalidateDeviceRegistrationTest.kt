@@ -7,7 +7,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.store.NotificationStore.Companion.WPCOM_PUSH_DEVICE_SERVER_ID
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.Companion.WPCOM_PUSH_DEVICE_SERVER_ID
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 
 class InvalidateDeviceRegistrationTest {

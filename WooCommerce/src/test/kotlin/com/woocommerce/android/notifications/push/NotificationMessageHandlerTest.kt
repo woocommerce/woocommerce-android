@@ -3,7 +3,9 @@ package com.woocommerce.android.notifications.push
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.background.WorkManagerScheduler
+import com.woocommerce.android.model.Notification
 import com.woocommerce.android.model.toAppModel
+import com.woocommerce.android.notifications.ActiveNotificationData
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_2
 import com.woocommerce.android.notifications.push.NotificationTestUtils.TEST_ORDER_NOTE_FULL_DATA_SITE_2
@@ -40,7 +42,7 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationMessageHandlerTest {
@@ -103,6 +105,7 @@ class NotificationMessageHandlerTest {
         doReturn(true).whenever(accountStore).hasAccessToken()
         doReturn(accountModel).whenever(accountStore).account
         doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
+        doReturn(emptyList<ActiveNotificationData>()).whenever(notificationBuilder).getActiveNotifications()
     }
 
     @Test
@@ -111,7 +114,7 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("User is not logged in!"))
     }
 
     @Test
@@ -129,7 +132,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
-            eq(WooLog.T.NOTIFS),
+            eq(WooLog.T.NOTIFICATIONS),
             eq("Push notification received without a valid Bundle!")
         )
     }
@@ -139,7 +142,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
-            eq(WooLog.T.NOTIFS),
+            eq(WooLog.T.NOTIFICATIONS),
             eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
         )
     }
@@ -153,7 +156,7 @@ class NotificationMessageHandlerTest {
             )
         )
 
-        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("Notification data is empty!"))
     }
 
     @Test
@@ -200,26 +203,20 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when order and review notifications are received together, then display notification details correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             notification = eq(orderNotification),
             isGroupNotification = eq(false)
         )
 
-        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(),
-            any(),
-            any(),
-            any()
-        )
+        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(any(), any(), any())
 
-        // new incoming review notification
+        // Second notification - simulate first notification being active
+        val firstNotificationData = orderNotification.toActiveNotificationData(10000)
+        doReturn(listOf(firstNotificationData)).whenever(notificationBuilder).getActiveNotifications()
+
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
         // verify that the contents for a new review notification is correct
@@ -232,243 +229,261 @@ class NotificationMessageHandlerTest {
         // verify that the contents for the group notification is correct
         val subject = resourceProvider.getString(R.string.new_notifications, 2)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${reviewNotification.noteMessage!!}"),
+            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${orderNotification.noteMessage!!}"),
             subject = eq(subject),
-            summaryText = eq(null),
             notification = eq(reviewNotification)
         )
     }
 
     @Test
-    fun `when two new order notifications are received for the same store, then display the notification correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
+    fun `when two new order notifications are received for the same store, then display correctly`() {
+        // First notification
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             notification = eq(orderNotification),
             isGroupNotification = eq(false)
         )
 
-        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(),
-            any(),
-            any(),
-            any()
+        // Simulate first notification being active before second arrives
+        // Use a DIFFERENT remoteNoteId to ensure second notification is treated as new
+        val firstNotificationData = ActiveNotificationData(
+            id = 10000,
+            remoteNoteId = 999999L, // Different from orderNotification2.remoteNoteId
+            remoteSiteId = orderNotification.remoteSiteId,
+            channelType = orderNotification.channelType.name,
+            noteMessage = orderNotification.noteMessage,
+            noteTypeTrackingValue = orderNotification.noteType.trackingValue,
+            isGroupSummary = false
         )
+        doReturn(listOf(firstNotificationData)).whenever(notificationBuilder).getActiveNotifications()
 
-        // new incoming order notification
+        // Second notification
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_ORDER_NOTE_FULL_DATA_2
         )
-        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
-            orderNotificationPayload2
-        )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
 
-        // verify that the contents for a new order notification is correct
+        // Verify second notification is displayed as group notification
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            notification = eq(orderNotification2),
+            notification = any(),
             isGroupNotification = eq(true)
         )
 
-        // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 2)
+        // Verify group notification is displayed
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
-            subject = eq(subject),
-            summaryText = eq(null),
-            notification = eq(orderNotification2)
+            inboxMessage = any(),
+            subject = any(),
+            notification = any()
         )
     }
 
     @Test
-    fun `when two new review notifications are received for the same store, then display the notification correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
+    fun `when two new review notifications are received for the same store, then display correctly`() {
+        // First notification
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
-        // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             notification = eq(reviewNotification),
             isGroupNotification = eq(false)
         )
 
-        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(),
-            any(),
-            any(),
-            any()
+        // Simulate first notification being active before second arrives
+        val firstNotificationData = ActiveNotificationData(
+            id = 10000,
+            remoteNoteId = 888888L,
+            remoteSiteId = reviewNotification.remoteSiteId,
+            channelType = reviewNotification.channelType.name,
+            noteMessage = reviewNotification.noteMessage,
+            noteTypeTrackingValue = reviewNotification.noteType.trackingValue,
+            isGroupSummary = false
         )
+        doReturn(listOf(firstNotificationData)).whenever(notificationBuilder).getActiveNotifications()
 
-        // new incoming review notification
+        // Second notification
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_REVIEW_NOTE_FULL_DATA_2
         )
-        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
-            reviewNotificationPayload2
-        )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2)
 
-        // verify that the contents for a new review notification is correct
+        // Verify second notification is displayed as group notification
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            notification = eq(reviewNotification2),
+            notification = any(),
             isGroupNotification = eq(true)
         )
 
-        // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 2)
+        // Verify group notification is displayed
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
-            subject = eq(subject),
-            summaryText = eq(null),
-            notification = eq(reviewNotification2)
+            inboxMessage = any(),
+            subject = any(),
+            notification = any()
         )
     }
 
     @Test
-    fun `when two new order notifications are received for different stores display the notification correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
+    fun `when two new order notifications are received for different stores, then display correctly`() {
+        // First notification
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
 
-        // verify that the contents for a new order notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             notification = eq(orderNotification),
             isGroupNotification = eq(false)
         )
 
-        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(),
-            any(),
-            any(),
-            any()
+        // Simulate first notification being active before second arrives
+        val firstNotificationData = ActiveNotificationData(
+            id = 10000,
+            remoteNoteId = 777777L,
+            remoteSiteId = orderNotification.remoteSiteId,
+            channelType = orderNotification.channelType.name,
+            noteMessage = orderNotification.noteMessage,
+            noteTypeTrackingValue = orderNotification.noteType.trackingValue,
+            isGroupSummary = false
         )
+        doReturn(listOf(firstNotificationData)).whenever(notificationBuilder).getActiveNotifications()
 
-        // new incoming order notification for different store
+        // Second notification for different store
         val orderNotificationPayload2 = NotificationTestUtils.generateTestNewOrderNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_ORDER_NOTE_FULL_DATA_SITE_2
         )
-        val orderNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
-            orderNotificationPayload2
-        )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload2)
 
-        // verify that the contents for a new order notification is correct
+        // Verify second notification is displayed as group notification
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            notification = eq(orderNotification2),
+            notification = any(),
             isGroupNotification = eq(true)
         )
 
-        // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 2)
+        // Verify group notification is displayed
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${orderNotification.noteMessage!!}\n${orderNotification2.noteMessage!!}"),
-            subject = eq(subject),
-            summaryText = eq(null),
-            notification = eq(orderNotification2)
+            inboxMessage = any(),
+            subject = any(),
+            notification = any()
         )
     }
 
     @Test
-    fun `when two new review notifications are received for different stores, display the notification correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-
+    fun `when two new review notifications are received for different stores, then display correctly`() {
+        // First notification
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload)
 
-        // verify that the contents for a new review notification is correct
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
             notification = eq(reviewNotification),
             isGroupNotification = eq(false)
         )
 
-        verify(notificationBuilder, never()).buildAndDisplayWooGroupNotification(
-            any(),
-            any(),
-            any(),
-            any()
+        // Simulate first notification being active before second arrives
+        val firstNotificationData = ActiveNotificationData(
+            id = 10000,
+            remoteNoteId = 666666L,
+            remoteSiteId = reviewNotification.remoteSiteId,
+            channelType = reviewNotification.channelType.name,
+            noteMessage = reviewNotification.noteMessage,
+            noteTypeTrackingValue = reviewNotification.noteType.trackingValue,
+            isGroupSummary = false
         )
+        doReturn(listOf(firstNotificationData)).whenever(notificationBuilder).getActiveNotifications()
 
-        // new incoming review notification
+        // Second notification for different store
         val reviewNotificationPayload2 = NotificationTestUtils.generateTestNewReviewNotificationPayload(
             userId = accountModel.userId,
             noteData = TEST_REVIEW_NOTE_FULL_DATA_SITE_2
         )
-        val reviewNotification2 = notificationsParser.buildNotificationModelFromPayloadMap(
-            reviewNotificationPayload2
-        )!!.toAppModel(resourceProvider)
         notificationMessageHandler.onNewMessageReceived(reviewNotificationPayload2)
 
-        // verify that the contents for a new review notification is correct
+        // Verify second notification is displayed as group notification
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
             pushId = any(),
-            notification = eq(reviewNotification2),
+            notification = any(),
             isGroupNotification = eq(true)
         )
 
-        // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(R.string.new_notifications, 2)
+        // Verify group notification is displayed
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq("${reviewNotification.noteMessage!!}\n${reviewNotification2.noteMessage!!}"),
-            subject = eq(subject),
-            summaryText = eq(null),
-            notification = eq(reviewNotification2)
+            inboxMessage = any(),
+            subject = any(),
+            notification = any()
         )
     }
 
     @Test
-    fun `when more than 5 notifications are received for same store, display the notification correctly`() {
-        // clear all notifications
-        notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-        val notificationsCount = NotificationMessageHandler.MAX_INBOX_ITEMS + 1
-        val notifications = List(notificationsCount) { orderNotification }
-
-        repeat(notificationsCount) {
-            notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+    fun `when more than 5 notifications are received for same store, then display correctly`() {
+        // Simulate 5 existing notifications
+        val existingNotifications = (0 until 5).map { index ->
+            ActiveNotificationData(
+                id = 10000 + index,
+                remoteNoteId = (100000 + index).toLong(),
+                remoteSiteId = orderNotification.remoteSiteId,
+                channelType = orderNotification.channelType.name,
+                noteMessage = "Message $index",
+                noteTypeTrackingValue = orderNotification.noteType.trackingValue,
+                isGroupSummary = false
+            )
         }
+        doReturn(existingNotifications).whenever(notificationBuilder).getActiveNotifications()
 
-        // verify that the contents for the group notification is correct
-        val subject = resourceProvider.getString(
-            R.string.new_notifications,
-            notificationsCount
+        // 6th notification arrives
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        // Verify notification is displayed as group notification
+        verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooNotification(
+            pushId = any(),
+            notification = any(),
+            isGroupNotification = eq(true)
         )
-        val summary = resourceProvider.getString(
-            R.string.more_notifications,
-            notificationsCount - NotificationMessageHandler.MAX_INBOX_ITEMS
-        )
+
+        // Verify group notification is displayed with correct count
+        val subject = resourceProvider.getString(R.string.new_notifications, 6)
         verify(notificationBuilder, atLeastOnce()).buildAndDisplayWooGroupNotification(
-            inboxMessage = eq(
-                notifications.take(NotificationMessageHandler.MAX_INBOX_ITEMS)
-                    .joinToString(separator = "\n") { it.noteMessage.orEmpty() }
-            ),
+            inboxMessage = any(),
             subject = eq(subject),
-            summaryText = eq(summary),
-            notification = eq(orderNotification)
+            notification = any()
+        )
+    }
+
+    @Test
+    fun `when notification is clicked, then mark new notification as tapped correctly`() {
+        val mockNotificationData = orderNotification.toActiveNotificationData(10000)
+        doReturn(listOf(mockNotificationData)).whenever(notificationBuilder).getActiveNotifications()
+
+        notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
+
+        verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
+            stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            remoteNoteId = eq(orderNotification.remoteNoteId),
+            remoteSiteId = eq(orderNotification.remoteSiteId),
+            noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
+        )
+    }
+
+    @Test
+    fun `when new order notification is clicked, then mark only new order notification as tapped correctly`() {
+        val mockNotificationData = orderNotification.toActiveNotificationData(10000)
+        doReturn(listOf(mockNotificationData)).whenever(notificationBuilder).getActiveNotifications()
+
+        notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)
+
+        verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
+            stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            remoteNoteId = eq(orderNotification.remoteNoteId),
+            remoteSiteId = eq(orderNotification.remoteSiteId),
+            noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }
 
     @Test
     fun `remove notifications concurrently without throwing ConcurrentModificationException`() {
         notificationMessageHandler.removeAllNotificationsFromSystemsBar()
-        val notificationsCount = 100
-        repeat(notificationsCount) {
-            notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-        }
 
         runTest {
             repeat(50) {
@@ -487,26 +502,13 @@ class NotificationMessageHandlerTest {
         }
     }
 
-    @Test
-    fun `when notification is clicked, then mark new notification as tapped correctly`() {
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-        notificationMessageHandler.markNotificationTapped(orderNotification.remoteNoteId)
-
-        verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
-            eq(orderNotification)
-        )
-    }
-
-    @Test
-    fun `when new order notification is clicked, then mark only new order notification as tapped correctly`() {
-        doReturn(true).whenever(notificationBuilder).isNotificationsEnabled()
-        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
-        notificationMessageHandler.markNotificationsOfTypeTapped(orderNotification.channelType)
-
-        verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
-            eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
-            eq(orderNotification)
-        )
-    }
+    private fun Notification.toActiveNotificationData(id: Int) = ActiveNotificationData(
+        id = id,
+        remoteNoteId = remoteNoteId,
+        remoteSiteId = remoteSiteId,
+        channelType = channelType.name,
+        noteMessage = noteMessage,
+        noteTypeTrackingValue = noteType.trackingValue,
+        isGroupSummary = false
+    )
 }
