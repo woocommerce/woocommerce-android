@@ -155,5 +155,8 @@ class MediaLibraryCacheTest {
     }
 
     private fun createTestMedia(id: Int, fileName: String) =
-        MediaTestUtils.createRemoteTestMedia().mediaId(id.toLong()).fileName(fileName).build()
+        MediaTestUtils.createRemoteTestMedia()
+            .mediaId(id.toLong())
+            .fileName(fileName)
+            .build()
 }
