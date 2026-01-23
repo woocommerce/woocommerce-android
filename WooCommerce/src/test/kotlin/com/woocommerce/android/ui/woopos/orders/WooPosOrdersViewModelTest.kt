@@ -51,6 +51,11 @@ class WooPosOrdersViewModelTest {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
+    private lateinit var orderItemMapper: WooPosOrderItemMapper
+    private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
+    private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
+    private lateinit var orderActionsProvider: WooPosOrderActionsProvider
+    private lateinit var orderStatusMapper: WooPosOrderStatusMapper
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -61,20 +66,46 @@ class WooPosOrdersViewModelTest {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
-            locale = providedLocale,
-            getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
-            formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
-            getRefundableItems = getRefundableItems,
+            orderItemMapper = orderItemMapper,
+            orderDetailsMapper = orderDetailsMapper,
+            refundInfoBuilder = refundInfoBuilder,
+            orderActionsProvider = orderActionsProvider,
         )
     }
 
     @Before
     fun setUp() = runTest {
-        whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
+        setupResourceProviderMocks()
+        setupMockBehaviors()
+        setupMappers()
+        setupDataSourceMocks()
+    }
 
+    private fun setupResourceProviderMocks() {
+        whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
+        whenever(resourceProvider.getString(R.string.woopos_orders_details_refund_error))
+            .thenReturn("Refund error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title)).thenReturn("Search error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Search error description")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title)).thenReturn("No results")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
+            .thenReturn("No results description")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
+    }
+
+    private suspend fun setupMockBehaviors() {
         whenever(formatPrice(any<BigDecimal>(), any())).thenAnswer { invocation ->
             val amount = invocation.arguments[0] as? BigDecimal
             amount?.let { "$${it.abs()}" } ?: "$0.00"
@@ -86,33 +117,32 @@ class WooPosOrdersViewModelTest {
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
         whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
+    }
 
-        whenever(dataSource.loadOrders(any())).thenReturn(
-            flow {
-                emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2))))
-            }
+    private fun setupMappers() {
+        orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
+        refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
+        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems)
+        orderDetailsMapper = WooPosOrderDetailsMapper(
+            resourceProvider,
+            getProductById,
+            formatPrice,
+            orderStatusMapper,
+            refundInfoBuilder,
+            orderActionsProvider
         )
+        orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
+    }
 
+    private suspend fun setupDataSourceMocks() {
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2)))) }
+        )
         whenever(dataSource.getOrderById(any())).thenAnswer { invocation ->
             val orderId = invocation.arguments[0] as Long
             Result.success(order(orderId))
         }
-
         whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
-
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title))
-            .thenReturn("No orders found")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
-            .thenReturn("Try a different search term")
     }
 
     @Test
