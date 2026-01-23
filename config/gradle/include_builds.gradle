@@ -17,6 +17,7 @@ if (localBuilds.exists()) {
             dependencySubstitution {
                 println "Substituting media-picker with the local build"
                 substitute module("$gradle.ext.mediaPickerBinaryPath") using project(':mediapicker')
+                substitute module("$gradle.ext.mediaPickerSourceCameraBinaryPath") using project(':mediapicker:source-camera')
             }
         }
     }
