@@ -37,6 +37,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper = mock()
+    private val sharedPreferences: SharedPreferences = mock()
     private val siteModel: SiteModel = mock()
     private val preferences: Preferences = mock()
     private val pushNotificationsDataStore: DataStore<Preferences> = mock {
@@ -47,12 +49,15 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
     @Before
     fun setUp() {
+        whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
+
         sut = PushNotificationRepository(
             wooPushNotificationsStore,
             selectedSite,
             appPrefsWrapper,
             wpComPushNotificationStore,
             wooCommerceStore,
+            prefsWrapper,
             pushNotificationsDataStore
         )
     }
@@ -101,12 +106,13 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given selected site and stored uuid, when registering push token fails, then falls back to wpcom registration`() {
+    fun `given selected site and stored uuid and not wpcom registered, when registering push token fails, then falls back to wpcom registration`() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
+            setupWpComRegistration(isRegistered = false)
 
             sut.registerPushTokenInWooCoreSystem("token")
 
@@ -120,12 +126,29 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given selected site and already wpcom registered, when registering push token fails, then does not fallback to wpcom registration`() {
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
+                .thenReturn(PN_REGISTRATION_ERROR)
+            setupWpComRegistration(isRegistered = true)
+
+            sut.registerPushTokenInWooCoreSystem("token")
+
+            verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
+            verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
+        }
+    }
+
+    @Test
     fun `given selected site, when registering push token fails and falls back to wpcom, then does not save token to datastore`() {
         testBlocking {
             whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
+            setupWpComRegistration(isRegistered = false)
 
             sut.registerPushTokenInWooCoreSystem("token")
 
@@ -140,6 +163,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
+            setupWpComRegistration(isRegistered = false)
 
             sut.registerPushTokenInWooCoreSystem("token")
 
@@ -222,6 +246,12 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             assertThat(result).isFalse()
         }
+
+    private fun setupWpComRegistration(isRegistered: Boolean) {
+        val deviceId = if (isRegistered) "device-id-123" else null
+        whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
+            .thenReturn(deviceId)
+    }
 
     private companion object {
         const val RETURNED_TOKEN = "returned-token-123"

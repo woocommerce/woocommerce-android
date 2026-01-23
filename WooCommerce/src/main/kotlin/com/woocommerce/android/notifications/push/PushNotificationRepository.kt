@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
+import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
@@ -19,6 +20,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPu
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.utils.PreferenceUtils
 import java.util.UUID
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ class PushNotificationRepository @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
+    private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
     @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>
 ) {
@@ -67,7 +70,9 @@ class PushNotificationRepository @Inject constructor(
                     WooLog.T.NOTIFICATIONS,
                     "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
                 )
-                registerPushTokenInWpComSystem(token)
+                if (!isWpComPushRegistered()) {
+                    registerPushTokenInWpComSystem(token)
+                }
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
     }
@@ -138,5 +143,11 @@ class PushNotificationRepository @Inject constructor(
         return UUID.randomUUID().toString().also {
             appPrefsWrapper.wooCorePushDeviceUUID = it
         }
+    }
+
+    private fun isWpComPushRegistered(): Boolean {
+        val wpComPushServerId = prefsWrapper.getFluxCPreferences()
+            .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+        return wpComPushServerId.isNotNullOrEmpty()
     }
 }
