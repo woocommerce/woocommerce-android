@@ -1,1 +1,1 @@
-We’ve smoothed out the experience for you! This update brings a refined look to widgets and animations, plus faster loading for POS users. We also squashed several bugs, including a crash during checkout when handling deleted products and layout issues on tablets. It’s all about making your store management seamless.
+Woo POS Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
