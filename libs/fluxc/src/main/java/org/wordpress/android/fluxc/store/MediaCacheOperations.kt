@@ -4,7 +4,7 @@ import org.wordpress.android.fluxc.model.MediaModel
 import java.util.Locale
 import javax.inject.Inject
 
-class MediaCacheOperations @Inject constructor(
+internal class MediaCacheOperations @Inject constructor(
     private val cache: MediaLibraryCache
 ) {
     fun getSiteImages(siteId: Int): List<MediaModel> {

@@ -1,4 +1,4 @@
-package org.wordpress.android.fluxc.media;
+package org.wordpress.android.fluxc.store;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -17,10 +17,6 @@ import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
-import org.wordpress.android.fluxc.store.MediaCacheOperations;
-import org.wordpress.android.fluxc.store.MediaIdGenerator;
-import org.wordpress.android.fluxc.store.MediaLibraryCache;
-import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.utils.MediaUtils;
 
 import java.util.List;

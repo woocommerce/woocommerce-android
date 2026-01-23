@@ -10,9 +10,9 @@ import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
 @Module
-interface MediaModule {
+abstract class MediaModule {
     @Binds
-    fun bindMediaIdGenerator(generator: TimestampMediaIdGenerator): MediaIdGenerator
+    internal abstract fun bindMediaIdGenerator(generator: TimestampMediaIdGenerator): MediaIdGenerator
 
     companion object {
         @Provides

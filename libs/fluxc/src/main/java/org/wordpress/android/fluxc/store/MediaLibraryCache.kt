@@ -6,7 +6,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MediaLibraryCache @Inject constructor() {
+internal class MediaLibraryCache @Inject constructor() {
     private val cache = ConcurrentHashMap<Int, List<MediaModel>>()
 
     fun getMediaList(localSiteId: Int): List<MediaModel>? {

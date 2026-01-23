@@ -8,7 +8,7 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
 @OptIn(ExperimentalTime::class)
-class TimestampMediaIdGeneratorTest {
+internal class TimestampMediaIdGeneratorTest {
 
     lateinit var sut: TimestampMediaIdGenerator
 

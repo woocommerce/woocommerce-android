@@ -6,7 +6,7 @@ import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
 
 @OptIn(ExperimentalTime::class)
-class TimestampMediaIdGenerator @Inject constructor(private val clock: Clock) : MediaIdGenerator {
+internal class TimestampMediaIdGenerator @Inject constructor(private val clock: Clock) : MediaIdGenerator {
     override fun generate(filePath: String): LocalId {
         val combined = "$filePath:${clock.now().toEpochMilliseconds()}"
         return LocalId(combined.hashCode())
