@@ -24,8 +24,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Slider
 import androidx.compose.material.SliderDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -111,10 +109,7 @@ private fun CampaignBudgetScreen(
 
     Scaffold(
         topBar = {
-            Toolbar(
-                onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
-            )
+            Toolbar(onNavigationButtonClick = onBackPressed)
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
     ) { paddingValues ->

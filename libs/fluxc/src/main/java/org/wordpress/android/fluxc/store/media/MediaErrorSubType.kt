@@ -27,7 +27,6 @@ sealed class MediaErrorSubType(val category: MediaErrorSubtypeCategory, val subT
         }
 
         @JvmStatic
-        @Suppress("ReturnCount")
         fun deserialize(name: String?): MediaErrorSubType {
             if (name == null) return UndefinedSubType
 

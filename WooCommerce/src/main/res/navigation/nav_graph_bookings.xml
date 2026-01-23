@@ -19,7 +19,11 @@
         </action>
         <action
             android:id="@+id/action_bookingListFragment_to_bookingFilterList"
-            app:destination="@id/bookingFilterListFragment" />
+            app:destination="@id/bookingFilterListFragment"
+            app:enterAnim="@anim/activity_fade_in"
+            app:exitAnim="@null"
+            app:popEnterAnim="@null"
+            app:popExitAnim="@anim/activity_fade_out" />
     </fragment>
 
     <fragment

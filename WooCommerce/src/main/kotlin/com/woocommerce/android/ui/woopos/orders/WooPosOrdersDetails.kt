@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
@@ -33,7 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -44,6 +43,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -79,10 +79,44 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
+            OrderActions(details, onUIEvent)
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        OrdersHeader(details = details)
+
+        Spacer(Modifier.height(WooPosSpacing.Large.value))
+
+        OrdersProducts(lineItems = details.lineItems)
+
+        Spacer(Modifier.height(WooPosSpacing.Medium.value))
+
+        OrdersTotals(details = details)
+    }
+}
+
+@Composable
+private fun OrderActions(
+    details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+) {
+    when (val actionsState = details.actionsState) {
+        is WooPosOrdersState.OrderActionsState.Loading -> {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(160.dp)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+            )
+        }
+
+        is WooPosOrdersState.OrderActionsState.Loaded -> {
+            val actions = actionsState.actions
             when {
-                details.actions.size > 1 -> {
-                    val primaryAction = details.actions.first()
-                    val overflowActions = details.actions.drop(1)
+                actions.size > 1 -> {
+                    val primaryAction = actions.first()
+                    val overflowActions = actions.drop(1)
 
                     OrderActionButton(
                         action = primaryAction,
@@ -97,26 +131,14 @@ fun WooPosOrderDetails(
                     )
                 }
 
-                details.actions.size == 1 -> {
+                actions.size == 1 -> {
                     OrderActionButton(
-                        action = details.actions.first(),
+                        action = actions.first(),
                         onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
                     )
                 }
             }
         }
-
-        Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-        OrdersHeader(details = details)
-
-        Spacer(Modifier.height(WooPosSpacing.Large.value))
-
-        OrdersProducts(lineItems = details.lineItems)
-
-        Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-        OrdersTotals(details = details)
     }
 }
 
@@ -178,34 +200,53 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             .fillMaxWidth()
             .padding(vertical = marginSmall)
     ) {
-        val (image, nameText, qtyText, totalText) = createRefs()
-
-        OrderLineItemImage(
-            imageUrl = row.imageUrl,
-            modifier = Modifier.constrainAs(image) {
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-            }
-        )
+        val (image, nameText, attributesText, qtyText, totalText) = createRefs()
 
         WooPosText(
             text = row.name,
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.constrainAs(nameText) {
-                top.linkTo(image.top)
+                top.linkTo(parent.top)
                 start.linkTo(image.end, margin = marginMedium)
                 end.linkTo(totalText.start, margin = marginSmall)
                 width = Dimension.fillToConstraints
             }
         )
 
+        OrderLineItemImage(
+            imageUrl = row.imageUrl,
+            modifier = Modifier.constrainAs(image) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+            }
+        )
+
+        val hasAttributes = !row.attributesDescription.isNullOrEmpty()
+        if (hasAttributes) {
+            WooPosText(
+                text = row.attributesDescription.orEmpty(),
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(attributesText) {
+                    top.linkTo(nameText.bottom, margin = marginXSmall)
+                    start.linkTo(nameText.start)
+                    end.linkTo(totalText.start, margin = marginSmall)
+                    width = Dimension.fillToConstraints
+                }
+            )
+        }
+
         WooPosText(
             text = row.qtyAndUnitPrice,
             style = WooPosTypography.BodyMedium,
             color = WooPosTheme.colors.onSurfaceVariantHighest,
             modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(nameText.bottom, margin = marginXSmall)
+                top.linkTo(
+                    if (hasAttributes) attributesText.bottom else nameText.bottom,
+                    margin = marginXSmall
+                )
                 start.linkTo(nameText.start)
                 end.linkTo(totalText.start, margin = marginSmall)
                 width = Dimension.fillToConstraints
@@ -355,7 +396,7 @@ private fun OrderLineItemImage(
         modifier = modifier
             .size(56.dp)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value)),
-        placeholderIcon = Icons.Outlined.Inventory2,
+        placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
         placeholderIconSize = 24.dp
     )
 }
@@ -379,6 +420,7 @@ private fun OrderActionButton(
                 onClick = { onClick(action) }
             )
         }
+
         is WooPosOrdersState.OrderAction.EmailReceipt -> {
             WooPosButtonSmall(
                 text = stringResource(R.string.woopos_orders_email_receipt),
@@ -398,7 +440,7 @@ private fun OrderDetailsOverflowMenu(
     Box {
         IconButton(onClick = { showMenu = true }) {
             Icon(
-                imageVector = Icons.Outlined.MoreVert,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
                 contentDescription = stringResource(R.string.more_menu),
                 tint = MaterialTheme.colorScheme.onSurface
             )
@@ -416,6 +458,7 @@ private fun OrderDetailsOverflowMenu(
                             is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(
                                 R.string.orderdetail_issue_refund_button
                             )
+
                             is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(
                                 R.string.woopos_orders_email_receipt
                             )
@@ -446,26 +489,29 @@ fun WooPosOrderDetailsPreview() {
         status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
         lineItems = listOf(
             WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                101,
-                "Cup",
-                "2 x $4.00",
-                "$8.00",
-                null
+                id = 101,
+                name = "Cup",
+                attributesDescription = null,
+                qtyAndUnitPrice = "2 x $4.00",
+                lineTotal = "$8.00",
+                imageUrl = null
             ),
             WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                102,
-                "Coffee Container",
-                "1 x $10.00",
-                "$10.00",
-                null
+                id = 102,
+                name = "T-Shirt",
+                attributesDescription = "Blue, Large",
+                qtyAndUnitPrice = "1 x $10.00",
+                lineTotal = "$10.00",
+                imageUrl = null
             ),
             WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                103,
-                "A vey tasty coffee that incidentally has a very long name " +
+                id = 103,
+                name = "A vey tasty coffee that incidentally has a very long name " +
                     "and should go over a few lines without overlapping anything",
-                "1 x $5.00",
-                "$5.00",
-                null
+                attributesDescription = "Medium roast, Decaf",
+                qtyAndUnitPrice = "1 x $5.00",
+                lineTotal = "$5.00",
+                imageUrl = null
             )
         ),
         breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
@@ -480,9 +526,11 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actions = listOf(
-            WooPosOrdersState.OrderAction.IssueRefund(1L),
-            WooPosOrdersState.OrderAction.EmailReceipt(1L)
+        actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+            listOf(
+                WooPosOrdersState.OrderAction.IssueRefund(1L),
+                WooPosOrdersState.OrderAction.EmailReceipt(1L)
+            )
         )
     )
 

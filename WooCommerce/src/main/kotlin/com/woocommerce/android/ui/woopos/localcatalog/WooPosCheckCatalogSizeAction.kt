@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -15,15 +16,21 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
         class CatalogTooLarge(val error: String) : WooPosCheckCatalogSizeResult()
     }
 
-    @Suppress("ReturnCount")
     suspend fun execute(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
         maxTotalItems: Int,
     ): WooPosCheckCatalogSizeResult {
+        if (FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH.isEnabled()) {
+            return WooPosCheckCatalogSizeResult.SizeAcceptable
+        }
         logger.d("Checking catalog size before sync")
 
-        val productsCountResult = posLocalCatalogStore.fetchProductsCount(site, modifiedAfterGmt)
+        val productsCountResult = posLocalCatalogStore.fetchProductsCount(
+            site = site,
+            posProductsOnly = true,
+            modifiedAfterGmt = modifiedAfterGmt
+        )
         if (productsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch products count: ${productsCountResult.exceptionOrNull()?.message}. " +
@@ -32,7 +39,11 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
             return WooPosCheckCatalogSizeResult.SizeUnknown
         }
 
-        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(site, modifiedAfterGmt)
+        val variationsCountResult = posLocalCatalogStore.fetchVariationsCount(
+            site = site,
+            posProductsOnly = true,
+            modifiedAfterGmt = modifiedAfterGmt
+        )
         if (variationsCountResult.isFailure) {
             logger.w(
                 "Failed to fetch variations count: ${variationsCountResult.exceptionOrNull()?.message}. " +

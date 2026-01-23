@@ -15,9 +15,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -26,10 +23,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -62,7 +61,7 @@ fun ShippingLineFormSection(
                     )
                     if (isEnabled) {
                         Icon(
-                            imageVector = Icons.Default.Add,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                             contentDescription = stringResource(id = R.string.order_creation_add_shipping),
                             modifier = Modifier
                                 .clickable(
@@ -169,7 +168,7 @@ fun ShippingLineEditCard(
         )
         if (isEnabled) {
             Icon(
-                imageVector = Icons.Outlined.Edit,
+                imageVector = ImageVector.vectorResource(R.drawable.ic_edit_pencil),
                 contentDescription = null,
                 modifier = Modifier
                     .align(Alignment.CenterVertically)

@@ -123,17 +123,32 @@ class WooPosGetRefundableItemsTest {
     }
 
     @Test
-    fun `given order with only non-product items, when invoke called, then returns empty list`() {
+    fun `given order with deleted product (productId 0), when invoke called, then returns refundable item with product details`() {
         // GIVEN
-        val nonProductItem = generateOrderItem(productId = 0L, name = "Fee Item")
-        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(nonProductItem))
+        val deletedProductItem = generateOrderItem(
+            productId = 0L,
+            name = "Deleted Product",
+            price = BigDecimal("25.00"),
+            quantity = 2f,
+            totalTax = BigDecimal("5.00")
+        )
+        val order = OrderTestUtils.generateTestOrder().copy(
+            items = listOf(deletedProductItem),
+            currency = "USD"
+        )
         val refunds = emptyList<Refund>()
 
         // WHEN
         val result = sut.invoke(order, refunds)
 
         // THEN
-        assertThat(result).isEmpty()
+        assertThat(result).hasSize(2)
+        val item = result[0]
+        assertThat(item.productId).isEqualTo(0L)
+        assertThat(item.name).isEqualTo("Deleted Product")
+        assertThat(item.unitPrice).isEqualTo(BigDecimal("25.00"))
+        assertThat(item.unitTax).isEqualTo(BigDecimal("2.5"))
+        assertThat(item.formattedUnitPrice).isEqualTo("USD25.00")
     }
 
     @Test
@@ -161,10 +176,10 @@ class WooPosGetRefundableItemsTest {
         assertThat(item.variationId).isEqualTo(0)
         assertThat(item.name).isEqualTo("Test Product")
         assertThat(item.unitPrice).isEqualTo(BigDecimal("20.00"))
-        assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+        assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         assertThat(item.rowIndex).isEqualTo(0)
         assertThat(item.formattedUnitPrice).isEqualTo("USD20.00")
-        assertThat(item.formattedUnitTax).isEqualTo("USD2.00")
+        assertThat(item.formattedUnitTax).isEqualTo("USD2.0")
     }
 
     @Test
@@ -191,7 +206,7 @@ class WooPosGetRefundableItemsTest {
             assertThat(item.productId).isEqualTo(50L)
             assertThat(item.name).isEqualTo("Test Product")
             assertThat(item.unitPrice).isEqualTo(BigDecimal("20.00"))
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -767,7 +782,7 @@ class WooPosGetRefundableItemsTest {
         // THEN
         assertThat(result).hasSize(5)
         result.forEach { item ->
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -826,7 +841,7 @@ class WooPosGetRefundableItemsTest {
         // THEN
         assertThat(result).hasSize(3) // 3.5 converted to int = 3
         result.forEach { item ->
-            assertThat(item.unitTax).isEqualTo(BigDecimal("2.00"))
+            assertThat(item.unitTax).isEqualTo(BigDecimal("2.0"))
         }
     }
 
@@ -893,13 +908,13 @@ class WooPosGetRefundableItemsTest {
 
         // THEN
         assertThat(result).hasSize(1)
-        assertThat(result[0].formattedUnitTax).isEqualTo("GBP2.50")
+        assertThat(result[0].formattedUnitTax).isEqualTo("GBP2.5")
     }
 
     // Edge Cases
 
     @Test
-    fun `given order mixing product items and non-product items, when invoke called, then returns only product items`() {
+    fun `given order mixing product items and deleted products, when invoke called, then returns both as refundable items`() {
         // GIVEN
         val productItem = Order.Item(
             itemId = 1L,
@@ -916,10 +931,10 @@ class WooPosGetRefundableItemsTest {
             attributesList = emptyList(),
             taxes = emptyList()
         )
-        val feeItem = Order.Item(
+        val deletedProductItem = Order.Item(
             itemId = 2L,
-            productId = 0L, // Non-product
-            name = "Fee",
+            productId = 0L,
+            name = "Deleted Product",
             price = BigDecimal("5.00"),
             sku = "",
             quantity = 1f,
@@ -931,15 +946,18 @@ class WooPosGetRefundableItemsTest {
             attributesList = emptyList(),
             taxes = emptyList()
         )
-        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(productItem, feeItem))
+        val order = OrderTestUtils.generateTestOrder().copy(items = listOf(productItem, deletedProductItem))
         val refunds = emptyList<Refund>()
 
         // WHEN
         val result = sut.invoke(order, refunds)
 
         // THEN
-        assertThat(result).hasSize(1)
+        assertThat(result).hasSize(2)
         assertThat(result[0].productId).isEqualTo(50L)
+        assertThat(result[0].name).isEqualTo("Product")
+        assertThat(result[1].productId).isEqualTo(0L)
+        assertThat(result[1].name).isEqualTo("Deleted Product")
     }
 
     @Test

@@ -24,19 +24,17 @@ import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.Icons.Filled
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -66,7 +64,6 @@ fun ThemePickerScreen(viewModel: ThemePickerViewModel) {
         Scaffold(topBar = {
             Toolbar(
                 title = stringResource(id = R.string.settings_themes),
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
                 onNavigationButtonClick = viewModel::onArrowBackPressed
             )
         }) { padding ->
@@ -233,7 +230,7 @@ private fun Error(onRetryClick: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.CenterHorizontally),
             onClick = onRetryClick,
-            icon = Filled.Refresh,
+            icon = ImageVector.vectorResource(R.drawable.ic_gridicons_refresh),
             text = stringResource(id = R.string.retry),
         )
     }

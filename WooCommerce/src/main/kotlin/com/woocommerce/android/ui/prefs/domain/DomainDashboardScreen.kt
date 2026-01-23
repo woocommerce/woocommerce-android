@@ -23,8 +23,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.woocommerce.android.R
 import com.woocommerce.android.R.color
 import com.woocommerce.android.R.dimen
 import com.woocommerce.android.R.drawable
@@ -83,6 +82,7 @@ fun DomainDashboardScreen(viewModel: DomainDashboardViewModel) {
                                 .padding(padding)
                         )
                     }
+
                     is ErrorState -> ErrorScreen(viewState.errorType)
                     LoadingState -> ProgressIndicator()
                 }
@@ -175,7 +175,7 @@ private fun DomainDashboard(
                             .fillMaxWidth(),
                         onClick = onFindDomainButtonTapped,
                         allCaps = true,
-                        icon = Icons.Default.Add,
+                        icon = ImageVector.vectorResource(R.drawable.ic_add),
                         text = stringResource(id = string.domains_add_domain_button_title),
                         contentPadding = PaddingValues(0.dp)
                     )

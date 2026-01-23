@@ -4,11 +4,13 @@ import android.content.Context
 import dagger.Module
 import dagger.Provides
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
+import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase
 import org.wordpress.android.fluxc.persistence.WPAndroidDatabase.Companion.buildDb
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeObjectivesDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
+import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import javax.inject.Singleton
 
@@ -48,5 +50,15 @@ class DatabaseModule {
     @Provides
     fun provideBlazeObjectivesDao(wpAndroidDatabase: WPAndroidDatabase): BlazeObjectivesDao {
         return wpAndroidDatabase.blazeObjectivesDao()
+    }
+
+    @Provides
+    internal fun provideWhatsNewDao(wpAndroidDatabase: WPAndroidDatabase): WhatsNewDao {
+        return wpAndroidDatabase.whatsNewDao()
+    }
+
+    @Provides
+    fun provideSitePluginDao(wpAndroidDatabase: WPAndroidDatabase): SitePluginDao {
+        return wpAndroidDatabase.sitePluginDao()
     }
 }

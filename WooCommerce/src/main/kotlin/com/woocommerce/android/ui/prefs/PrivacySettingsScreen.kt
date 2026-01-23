@@ -30,7 +30,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.icons.OpenInNew
 
 @Composable
 fun PrivacySettingsScreen(
@@ -126,7 +127,7 @@ fun PrivacySettingsScreen(
                             onClick = onAdvertisingOptionsClicked
                         ) {
                             Icon(
-                                imageVector = OpenInNew,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                                 contentDescription = stringResource(id = R.string.settings_web_options)
                             )
                         }
@@ -141,7 +142,7 @@ fun PrivacySettingsScreen(
                             onClick = onUsageTrackerClicked,
                         ) {
                             Icon(
-                                imageVector = OpenInNew,
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_open_in_new_24dp),
                                 contentDescription = stringResource(id = R.string.settings_usage_tracking)
                             )
                         }

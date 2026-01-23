@@ -13,14 +13,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.shareIn
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Subkind.STORE_REVIEW
-import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UnseenReviewsCountHandler @Inject constructor(
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
-    private val notificationStore: NotificationStore,
+    private val wpComPushNotificationStore: WpComPushNotificationStore,
     selectedSite: SelectedSite
 ) {
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -28,7 +28,7 @@ class UnseenReviewsCountHandler @Inject constructor(
         selectedSite.observe()
             .filterNotNull()
             .flatMapLatest { site ->
-                notificationStore.observeNotificationsForSite(
+                wpComPushNotificationStore.observeNotificationsForSite(
                     site = site,
                     filterBySubtype = listOf(STORE_REVIEW.toString())
                 )

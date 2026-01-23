@@ -182,7 +182,6 @@ data class WCProductModel(
     /**
      * Returns true if this product has the same attributes as the passed product
      */
-    @Suppress("ReturnCount")
     fun hasSameAttributes(otherProduct: WCProductModel): Boolean {
         // do a quick string comparison first so we can avoid parsing the attributes when possible
         if (this.attributes == otherProduct.attributes) {
@@ -420,7 +419,6 @@ data class WCProductModel(
      * Compares this product's images with the passed product's images, returns true only if both
      * lists contain the same images in the same order
      */
-    @Suppress("ReturnCount")
     fun hasSameImages(updatedProduct: WCProductModel): Boolean {
         val updatedImages = updatedProduct.getImageListOrEmpty()
         val thisImages = getImageListOrEmpty()
@@ -439,7 +437,6 @@ data class WCProductModel(
      * Compares this product's categories with the passed product's categories, returns true only if both
      * lists contain the same categories in the same order
      */
-    @Suppress("ReturnCount")
     fun hasSameCategories(updatedProduct: WCProductModel): Boolean {
         val updatedCategories = updatedProduct.getCategoryList()
         val storedCategories = getCategoryList()
@@ -458,7 +455,6 @@ data class WCProductModel(
      * Compares this product's tags with the passed product's tags, returns true only if both
      * lists contain the same tags in the same order
      */
-    @Suppress("ReturnCount")
     fun hasSameTags(updatedProduct: WCProductModel): Boolean {
         val updatedTags = updatedProduct.getTagList()
         val storedTags = getTagList()

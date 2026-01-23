@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.WCOrderStatusModel
 import org.wordpress.android.fluxc.model.order.UpdateOrderRequest
-import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.model.taxes.TaxBasedOnSettingEntity
 import org.wordpress.android.fluxc.network.BaseRequest
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
@@ -36,6 +35,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.CoreOrderStatus
 import org.wordpress.android.fluxc.store.OrderUpdateStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WooCommerceStore.WooPlugin.WOO_GIFT_CARDS
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 import java.math.BigDecimal
 import java.util.Date
 
@@ -285,11 +285,11 @@ class OrderCreateEditRepositoryTest : BaseUnitTest() {
     fun `when isGiftCardExtensionEnabled is called, then it should return the correct value`() = testBlocking {
         // Given
         val giftCardPluginName = "woocommerce-gift-cards/woocommerce-gift-cards"
-        val pluginMock = mock<SitePluginModel> {
-            on { name } doReturn giftCardPluginName
-            on { isActive } doReturn true
-            on { version } doReturn "1.16.6"
-        }
+        val pluginMock = createTestSitePlugin(
+            name = giftCardPluginName,
+            isActive = true,
+            version = "1.16.6"
+        )
         whenever(wooCommerceStore.getSitePlugins(defaultSiteModel, listOf(WOO_GIFT_CARDS)))
             .thenReturn(listOf(pluginMock))
 

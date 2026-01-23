@@ -67,6 +67,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                     anyOrNull(),
                     anyOrNull(),
                     anyOrNull(),
+                    anyOrNull(),
                 )
             ).thenReturn(result)
 
@@ -91,6 +92,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
             val result = WooResult(searchResult)
             whenever(
                 productStore.searchProducts(
+                    anyOrNull(),
                     anyOrNull(),
                     anyOrNull(),
                     anyOrNull(),
@@ -132,6 +134,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
+                anyOrNull(),
             )
         ).thenReturn(result)
 
@@ -152,6 +155,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(model = null)
         whenever(
             productStore.searchProducts(
+                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -198,6 +202,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
+                anyOrNull(),
             )
         ).thenReturn(result)
 
@@ -232,6 +237,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
+                anyOrNull(),
             )
         ).thenReturn(result)
 
@@ -256,6 +262,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(error = error)
         whenever(
             productStore.searchProducts(
+                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -299,6 +306,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
+                anyOrNull(),
             )
         ).thenReturn(result)
 
@@ -324,6 +332,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(error = error)
         whenever(
             productStore.searchProducts(
+                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
@@ -365,6 +374,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
+                anyOrNull(),
             )
         ).thenReturn(result)
 
@@ -389,6 +399,7 @@ class WooPosSearchByIdentifierGlobalUniqueSearchTest {
         val result: WooResult<WCProductStore.ProductSearchResult> = WooResult(error = error)
         whenever(
             productStore.searchProducts(
+                anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),
                 anyOrNull(),

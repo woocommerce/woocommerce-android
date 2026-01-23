@@ -5,12 +5,15 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
-import java.math.RoundingMode
+import java.math.MathContext
 import javax.inject.Inject
 
 /**
  * Get a list of refundable items for an order, taking into account previous refunds.
  *
+ * @param order The order to get refundable items from
+ * @param refunds List of previous refunds for this order
+ * @param numberOfDecimals Number of decimal places to use for rounding (from store settings)
  * @returns A list of [WooPosRefundableItem] representing each refundable unit. In case line item has quantity > 1,
  * each unit will be represented as a separate [WooPosRefundableItem] with a unique rowIndex.
  */
@@ -19,24 +22,22 @@ class WooPosGetRefundableItems @Inject constructor(
 ) {
     operator fun invoke(
         order: Order,
-        refunds: List<Refund>
+        refunds: List<Refund>,
     ): List<WooPosRefundableItem> {
-        val productItems = order.items.filter { it.productId != 0L }
-
-        if (productItems.isEmpty()) {
+        if (order.items.isEmpty()) {
             return emptyList()
         }
 
-        val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, productItems)
+        val maxQuantities: Map<Long, Float> = calculateMaxRefundQuantities(refunds, order.items)
 
         // Expand grouped items (items with quantity > 1) into individual rows
-        return productItems.flatMap { orderItem ->
+        return order.items.flatMap { orderItem ->
             val maxQuantity = maxQuantities[orderItem.itemId]?.toInt() ?: 0
 
             if (maxQuantity <= 0) {
                 emptyList()
             } else {
-                val unitPrice = calculateUnitPrice(orderItem)
+                val unitPrice = orderItem.price
                 val unitTax = calculateUnitTax(orderItem)
                 val formattedUnitPrice = PriceUtils.formatCurrency(unitPrice, order.currency, currencyFormatter)
                 val formattedUnitTax = PriceUtils.formatCurrency(unitTax, order.currency, currencyFormatter)
@@ -47,7 +48,7 @@ class WooPosGetRefundableItems @Inject constructor(
                         productId = orderItem.productId,
                         variationId = orderItem.variationId,
                         name = orderItem.name,
-                        unitPrice = unitPrice,
+                        unitPrice = orderItem.price,
                         unitTax = unitTax,
                         formattedUnitPrice = formattedUnitPrice,
                         formattedUnitTax = formattedUnitTax,
@@ -75,19 +76,11 @@ class WooPosGetRefundableItems @Inject constructor(
             .filterValues { it > 0 }
     }
 
-    private fun calculateUnitPrice(item: Order.Item): BigDecimal {
-        return item.price
-    }
-
     private fun calculateUnitTax(item: Order.Item): BigDecimal {
-        // Calculate per-unit tax by dividing total tax by quantity.
-        // This matches the approach used in store management refunds (RefundsExt.calculateTotalTaxes).
-        // Note: Hardcoded 2 decimal places - matches existing implementation, but could be improved
-        // by fetching decimal places from store settings (see WooPosCashPaymentRepository.getNumberOfDecimals).
         return if (item.quantity == 0f) {
             item.totalTax
         } else {
-            item.totalTax.divide(item.quantity.toBigDecimal(), 2, RoundingMode.HALF_UP)
+            item.totalTax.divide(item.quantity.toBigDecimal(), MathContext.DECIMAL128)
         }
     }
 }

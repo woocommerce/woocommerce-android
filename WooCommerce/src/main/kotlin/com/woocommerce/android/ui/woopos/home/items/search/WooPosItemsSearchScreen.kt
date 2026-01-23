@@ -9,12 +9,17 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -46,6 +51,7 @@ fun WooPosItemsSearchScreen(
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WooPosItemsSearchScreen(
     modifier: Modifier = Modifier,
@@ -53,8 +59,19 @@ private fun WooPosItemsSearchScreen(
     onUIEvent: (WooPosItemsSearchUiEvent) -> Unit = {},
 ) {
     val listState = rememberLazyListState()
+
+    val pullRefreshState = rememberPullRefreshState(
+        refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+        onRefresh = { onUIEvent(WooPosItemsSearchUiEvent.OnPullToRefreshTriggered) },
+    )
+
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .pullRefresh(
+                state = pullRefreshState,
+                enabled = state.pullToRefreshState == WooPosPullToRefreshState.Enabled,
+            ),
     ) {
         val stateClass by remember(state) {
             derivedStateOf {
@@ -144,6 +161,12 @@ private fun WooPosItemsSearchScreen(
                 else -> error("Unsupported state: $currentStateClass")
             }
         }
+
+        PullRefreshIndicator(
+            modifier = Modifier.align(Alignment.TopCenter),
+            refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            state = pullRefreshState
+        )
     }
 }
 
@@ -258,7 +281,7 @@ fun WooPosItemsSearchEmptyPreview() {
                 .padding(WooPosSpacing.Medium.value)
         ) {
             WooPosItemsSearchScreen(
-                state = WooPosItemsSearchViewState.Empty,
+                state = WooPosItemsSearchViewState.Empty(),
                 onUIEvent = {}
             )
         }

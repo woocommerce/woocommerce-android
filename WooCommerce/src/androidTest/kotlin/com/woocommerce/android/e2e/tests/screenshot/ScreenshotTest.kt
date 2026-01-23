@@ -7,7 +7,6 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
 import com.woocommerce.android.AppPrefs
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.screens.TabNavComponent
@@ -17,6 +16,9 @@ import com.woocommerce.android.e2e.screens.notifications.NotificationsScreen
 import com.woocommerce.android.e2e.screens.orders.CardReaderPaymentScreen
 import com.woocommerce.android.e2e.screens.orders.UnifiedOrderScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
+import com.woocommerce.android.e2e.tests.FAKE_PASSWORD
+import com.woocommerce.android.e2e.tests.FAKE_URL
+import com.woocommerce.android.e2e.tests.FAKE_USERNAME
 import com.woocommerce.android.notifications.WooNotificationBuilder
 import com.woocommerce.android.ui.main.MainActivity
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -79,9 +81,9 @@ class ScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         WelcomeScreen
             .logoutIfNeeded(composeTestRule)
             .selectLogin()
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+            .proceedWith(FAKE_URL)
+            .proceedWith(FAKE_USERNAME)
+            .proceedWith(FAKE_PASSWORD)
 
         if (testedTheme == "light" || testedTheme == "dark") {
             TabNavComponent()

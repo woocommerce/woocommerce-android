@@ -438,6 +438,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             pageSize = pageSize,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
+            posProductsOnly = true,
         )
     }
 
@@ -549,7 +550,6 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             }
         }
 
-    @Suppress("ReturnCount")
     override suspend fun getVariationById(productId: Long, variationId: Long): WooPosVariation? {
         val cachedVariations = getCachedVariations(productId)
         val cachedVariation = cachedVariations.find { it.remoteVariationId == variationId }
@@ -561,6 +561,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             val remoteVariationsResult = productRestClient.fetchProductVariations(
                 site = selectedSite.get(),
                 productId = productId,
+                posProductsOnly = true,
             )
 
             if (!remoteVariationsResult.isError) {

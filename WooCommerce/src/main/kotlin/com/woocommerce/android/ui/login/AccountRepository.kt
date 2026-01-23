@@ -5,6 +5,7 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.di.AppCoroutineScope
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
@@ -18,13 +19,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.AccountActionBuilder
-import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.SiteActionBuilder
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.AccountStore.OnAccountChanged
-import org.wordpress.android.fluxc.store.NotificationStore.OnDeviceUnregistered
 import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore
 import org.wordpress.android.fluxc.store.account.CloseAccountStore.CloseAccountErrorType
@@ -40,7 +39,8 @@ class AccountRepository @Inject constructor(
     private val prefs: AppPrefs,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope,
     private val siteVisibilityDataStore: VisibleWooSitesDataStore,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val pushNotificationRepository: PushNotificationRepository
 ) {
     fun getUserAccount(): AccountModel? = accountStore.account.takeIf { it.userId != 0L }
 
@@ -58,11 +58,10 @@ class AccountRepository @Inject constructor(
             (selectedSite.connectionType == SiteConnectionType.ApplicationPasswords)
     }
 
-    @Suppress("ReturnCount")
     suspend fun logout(): Boolean {
         if (!isUserLoggedIn()) return true
         return if (accountStore.hasAccessToken()) {
-            unregisterDevice()
+            pushNotificationRepository.unregisterDeviceFromAllPushes()
 
             // WordPress.com account logout
             val event: OnAccountChanged = dispatcher.dispatchAndAwait(AccountActionBuilder.newSignOutAction())
@@ -123,12 +122,6 @@ class AccountRepository @Inject constructor(
 
         // Delete sites
         dispatcher.dispatch(SiteActionBuilder.newRemoveAllSitesAction())
-    }
-
-    private suspend fun unregisterDevice() {
-        dispatcher.dispatchAndAwait<Void, OnDeviceUnregistered>(
-            NotificationActionBuilder.newUnregisterDeviceAction()
-        )
     }
 
     private suspend fun deleteApplicationPasswordsOfUserSites() {

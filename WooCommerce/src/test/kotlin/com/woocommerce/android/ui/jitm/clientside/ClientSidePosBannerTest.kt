@@ -1,0 +1,102 @@
+package com.woocommerce.android.ui.jitm.clientside
+
+import android.content.Context
+import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.Before
+import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.WooCommerceStore
+
+@ExperimentalCoroutinesApi
+class ClientSidePosBannerTest : BaseUnitTest() {
+
+    private val context: Context = mock()
+    private val selectedSite: SelectedSite = mock()
+    private val wooStore: WooCommerceStore = mock()
+    private val wooPosIsScreenSizeAllowed: WooPosIsScreenSizeAllowed = mock()
+    private val dismissalStorage: ClientSideBannerDismissalStorage = mock()
+    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled = mock()
+
+    private lateinit var sut: ClientSidePosBanner
+
+    @Before
+    fun setup() = testBlocking {
+        whenever(isRemoteFeatureFlagEnabled(any())).thenReturn(true)
+        sut = ClientSidePosBanner(
+            context = context,
+            selectedSite = selectedSite,
+            wooStore = wooStore,
+            wooPosIsScreenSizeAllowed = wooPosIsScreenSizeAllowed,
+            dismissalStorage = dismissalStorage,
+            isRemoteFeatureFlagEnabled = isRemoteFeatureFlagEnabled,
+        )
+    }
+
+    @Test
+    fun `given no site selected, when shouldShow called, then returns false`() = testBlocking {
+        whenever(selectedSite.getIfExists()).thenReturn(null)
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given tablet device, when shouldShow called, then returns false`() = testBlocking {
+        setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(true)
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given non-eligible country, when shouldShow called, then returns false`() = testBlocking {
+        val site = setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("CA")
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given all conditions met, when shouldShow called, then returns true`() = testBlocking {
+        val site = setupValidSite()
+        whenever(wooPosIsScreenSizeAllowed()).thenReturn(false)
+        whenever(wooStore.getStoreCountryCode(site)).thenReturn("US")
+        whenever(dismissalStorage.isBannerHidden(any())).thenReturn(false)
+
+        val result = sut.shouldShow()
+
+        assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `when onDismiss called, then banner is hidden in storage`() {
+        sut.onDismiss()
+
+        verify(dismissalStorage).hideBanner("woo_pos_client_banner")
+    }
+
+    private fun setupValidSite(): SiteModel {
+        val site = SiteModel().apply {
+            id = 1
+            siteId = 99L
+            selfHostedSiteId = 0L
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
+        return site
+    }
+}

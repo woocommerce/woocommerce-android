@@ -33,7 +33,8 @@ class WooPosSearchByIdentifierGlobalUniqueSearch @Inject constructor(
             globalUniqueIdSearchQuery = globalUniqueId,
             offset = 0,
             pageSize = WCProductStore.DEFAULT_PRODUCT_PAGE_SIZE,
-            filterOptions = emptyMap()
+            filterOptions = emptyMap(),
+            posProductsOnly = true,
         )
 
         return when {

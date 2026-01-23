@@ -10,6 +10,8 @@ import androidx.room.TypeConverters
 import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import org.wordpress.android.fluxc.model.ThemeModel
+import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao.BlazeCampaignEntity
@@ -19,12 +21,19 @@ import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDao
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingDeviceEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingLanguageEntity
 import org.wordpress.android.fluxc.persistence.blaze.BlazeTargetingTopicEntity
+import org.wordpress.android.fluxc.persistence.converters.AppVersionTargetsConverter
+import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
+import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
+import org.wordpress.android.fluxc.persistence.dao.ThemeDao
+import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
+import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 30,
+        version = 33,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -33,6 +42,10 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
             BlazeTargetingLanguageEntity::class,
             BlazeTargetingDeviceEntity::class,
             BlazeTargetingTopicEntity::class,
+            ThemeModel::class,
+            WhatsNewAnnouncementEntity::class,
+            WhatsNewAnnouncementFeatureEntity::class,
+            SitePluginModel::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -47,11 +60,17 @@ import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
             AutoMigration(from = 27, to = 28),
             AutoMigration(from = 28, to = 29),
             AutoMigration(from = 29, to = 30, spec = AutoMigration29to30::class),
+            AutoMigration(from = 30, to = 31),
+            AutoMigration(from = 31, to = 32),
+            AutoMigration(from = 32, to = 33),
         ]
 )
 @TypeConverters(
     value = [
-        StringListConverter::class
+        StringListConverter::class,
+        LocalIdConverter::class,
+        AppVersionTargetsConverter::class,
+        RemoteIdConverter::class
     ]
 )
 abstract class WPAndroidDatabase : RoomDatabase() {
@@ -64,6 +83,12 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun blazeTargetingDao(): BlazeTargetingDao
 
     abstract fun blazeObjectivesDao(): BlazeObjectivesDao
+
+    internal abstract fun themeDao(): ThemeDao
+
+    internal abstract fun whatsNewDao(): WhatsNewDao
+
+    abstract fun sitePluginDao(): SitePluginDao
 
     @Suppress("MemberVisibilityCanBePrivate")
     companion object {

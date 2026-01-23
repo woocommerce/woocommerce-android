@@ -13,21 +13,20 @@ import com.woocommerce.android.model.isOrderNotification
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.notifications.NotificationChannelType
 import com.woocommerce.android.notifications.WooNotificationBuilder
-import com.woocommerce.android.notifications.WooNotificationType.NewOrder
+import com.woocommerce.android.notifications.WooNotificationType
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
-import com.woocommerce.android.util.WooLog.T.NOTIFS
+import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
-import kotlin.random.Random
 
 @Singleton
 class NotificationMessageHandler @Inject constructor(
@@ -48,8 +47,6 @@ class NotificationMessageHandler @Inject constructor(
 
         @VisibleForTesting
         const val MAX_INBOX_ITEMS = 5
-
-        private val ACTIVE_NOTIFICATIONS_MAP = mutableMapOf<Int, Notification>()
     }
 
     @Synchronized
@@ -69,37 +66,37 @@ class NotificationMessageHandler @Inject constructor(
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>) {
         if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFS, "User is not logged in!")
+            wooLog.e(NOTIFICATIONS, "User is not logged in!")
             return
         }
 
         if (!selectedSite.exists()) {
-            wooLog.e(NOTIFS, "User has no site selected!")
+            wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
         }
 
         if (messageData.isEmpty()) {
-            wooLog.e(NOTIFS, "Push notification received without a valid Bundle!")
+            wooLog.e(NOTIFICATIONS, "Push notification received without a valid Bundle!")
             return
         }
 
         val pushUserId = messageData[PUSH_ARG_USER]
         // pushUserId is always set server side, but better to double check it here.
         if (accountStore.account.userId.toString() != pushUserId) {
-            wooLog.e(NOTIFS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
+            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
 
         val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
-            wooLog.e(NOTIFS, "Notification data is empty!")
+            wooLog.e(NOTIFICATIONS, "Notification data is empty!")
             return
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
         if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
-            wooLog.e(NOTIFS, "Push notification received without a valid note_id in the payload!")
+            wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
             return
         }
 
@@ -130,16 +127,16 @@ class NotificationMessageHandler @Inject constructor(
     }
 
     private fun handleWooNotification(notification: Notification) {
-        val randomNumber = if (notification.noteType == NewOrder) Random.nextInt() else 0
-        val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId, randomNumber)
-        ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(localPushId, randomNumber)] = notification
-        if (notificationBuilder.isNotificationsEnabled()) {
-            analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_RECEIVED, notification)
-            analyticsTracker.flush()
-        }
-
-        val isGroupNotification = ACTIVE_NOTIFICATIONS_MAP.size > 1
+        val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId)
         with(notificationBuilder) {
+            if (isNotificationsEnabled()) {
+                analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_RECEIVED, notification)
+                analyticsTracker.flush()
+            }
+
+            val activeNotifications = getActiveNotifications()
+            val otherNotifications = activeNotifications.filter { it.id != localPushId }
+            val isGroupNotification = otherNotifications.isNotEmpty()
             buildAndDisplayWooNotification(
                 pushId = localPushId,
                 notification = notification,
@@ -147,25 +144,16 @@ class NotificationMessageHandler @Inject constructor(
             )
 
             if (isGroupNotification) {
-                val notesMap = ACTIVE_NOTIFICATIONS_MAP.toMap()
-                val message = notesMap.values.take(MAX_INBOX_ITEMS).joinToString("\n") {
-                    it.noteMessage.orEmpty()
-                }
+                val existingMessages = otherNotifications
+                    .take(MAX_INBOX_ITEMS - 1)
+                    .mapNotNull { it.noteMessage }
+                val message = (listOfNotNull(notification.noteMessage) + existingMessages).joinToString("\n")
 
-                val subject = resourceProvider.getString(R.string.new_notifications, notesMap.size)
-                val showGroupSummary = notesMap.size > MAX_INBOX_ITEMS
-                val summaryText = if (showGroupSummary) {
-                    resourceProvider.getString(
-                        R.string.more_notifications,
-                        notesMap.size - MAX_INBOX_ITEMS
-                    )
-                } else {
-                    null
-                }
+                val totalCount = otherNotifications.size + 1
+                val subject = resourceProvider.getString(R.string.new_notifications, totalCount)
                 buildAndDisplayWooGroupNotification(
                     inboxMessage = message,
                     subject = subject,
-                    summaryText = summaryText,
                     notification = notification
                 )
             }
@@ -174,108 +162,89 @@ class NotificationMessageHandler @Inject constructor(
         EventBus.getDefault().post(NotificationReceivedEvent(notification.remoteSiteId, notification.channelType))
     }
 
-    private fun getLocalPushId(wpComNoteId: Int, randomNumber: Int) = wpComNoteId + randomNumber
+    private fun getLocalPushIdForNoteId(noteId: Long): Int {
+        with(notificationBuilder) {
+            val activeNotifications = getActiveNotifications()
 
-    // New order notifications have the same notification_note_id. So if there is a new incoming notification
-    // when there is an existing new order notification in the notification tray,
-    // the cha ching sound is not played and the new notification replaces the existing notification
-    // See issue for more details: https://github.com/woocommerce/woocommerce-android/pull/2546
-    // This solution is a temporary HACK to generate a random number for each new order notification
-    // and use that number to group notifications along with notification_note_id
-    private fun getLocalPushIdForNoteId(noteId: Long, randomNumber: Int): Int {
-        for (id in ACTIVE_NOTIFICATIONS_MAP.keys) {
-            val notification = ACTIVE_NOTIFICATIONS_MAP[getLocalPushId(id, randomNumber)]
-            if (notification?.remoteNoteId == noteId) {
-                return id
-            }
+            // Return existing ID if this noteId already has an active notification
+            // New order notifications have the same notification_note_id. So if there is a new incoming notification
+            // when there is an existing new order notification in the notification tray,
+            // the cha ching sound is not played and the new notification replaces the existing notification
+            // See issue for more details: https://github.com/woocommerce/woocommerce-android/pull/2546
+            // We always generate new id for NewOrder.
+            activeNotifications
+                .firstOrNull {
+                    it.remoteNoteId == noteId &&
+                        it.noteTypeTrackingValue != WooNotificationType.NewOrder.trackingValue
+                }
+                ?.let { return it.id }
+
+            // Generate a unique ID by incrementing until we find one not in use
+            val activeIds = activeNotifications.map { it.id }.toSet()
+            return generateSequence(PUSH_NOTIFICATION_ID) { it + 1 }.first { it !in activeIds }
         }
-        return PUSH_NOTIFICATION_ID + ACTIVE_NOTIFICATIONS_MAP.size
     }
-
-    private fun hasNotifications() = ACTIVE_NOTIFICATIONS_MAP.isNotEmpty()
-    private fun clearNotifications() = ACTIVE_NOTIFICATIONS_MAP.clear()
 
     /**
      * Find the matching notification and send a track event for [PUSH_NOTIFICATION_TAPPED].
      */
     fun markNotificationTapped(remoteNoteId: Long) {
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
-            .firstOrNull { it.value.remoteNoteId == remoteNoteId }?.let { row ->
-                analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_TAPPED, row.value)
-                analyticsTracker.flush()
-            }
+        with(notificationBuilder) {
+            getActiveNotifications()
+                .firstOrNull { it.remoteNoteId == remoteNoteId }
+                ?.let {
+                    analyticsTracker.trackNotificationAnalytics(
+                        stat = PUSH_NOTIFICATION_TAPPED,
+                        remoteNoteId = it.remoteNoteId,
+                        remoteSiteId = it.remoteSiteId,
+                        noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
+                    )
+                    analyticsTracker.flush()
+                }
+        }
     }
 
     /**
      * Loop over all active notifications and send the [PUSH_NOTIFICATION_TAPPED] track event for each one.
      */
     fun markNotificationsOfTypeTapped(type: NotificationChannelType) {
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
-            .filter { it.value.channelType == type }
-            .forEach { row ->
-                analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_TAPPED, row.value)
+        notificationBuilder.getActiveNotifications()
+            .filter { it.channelType == type.name && !it.isGroupSummary }
+            .forEach {
+                analyticsTracker.trackNotificationAnalytics(
+                    stat = PUSH_NOTIFICATION_TAPPED,
+                    remoteNoteId = it.remoteNoteId,
+                    remoteSiteId = it.remoteSiteId,
+                    noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
+                )
                 analyticsTracker.flush()
             }
     }
 
     fun removeAllNotificationsFromSystemsBar() {
-        clearNotifications()
         notificationBuilder.cancelAllNotifications()
     }
 
     @Synchronized
     fun removeNotificationByRemoteIdFromSystemsBar(remoteNoteId: Long) {
-        val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
-            .forEach { row ->
-                if (row.value.remoteNoteId == remoteNoteId) {
-                    notificationBuilder.cancelNotification(row.key)
-                } else {
-                    keptNotifs[row.key] = row.value
-                }
-            }
-
-        clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-        updateNotificationsState()
+        with(notificationBuilder) {
+            getActiveNotifications()
+                .filter { it.remoteNoteId == remoteNoteId }
+                .forEach { cancelNotification(it.id) }
+        }
     }
 
     @Synchronized
     fun removeNotificationByNotificationIdFromSystemsBar(localPushId: Int) {
-        val keptNotifs = HashMap<Int, Notification>()
-        ACTIVE_NOTIFICATIONS_MAP.asSequence()
-            .forEach { row ->
-                if (row.key == localPushId) {
-                    notificationBuilder.cancelNotification(row.key)
-                } else {
-                    keptNotifs[row.key] = row.value
-                }
-            }
-
-        clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-        updateNotificationsState()
+        notificationBuilder.cancelNotification(localPushId)
     }
 
     @Synchronized
     fun removeNotificationsOfTypeFromSystemsBar(type: NotificationChannelType, remoteSiteId: Long) {
-        val keptNotifs = HashMap<Int, Notification>()
-        // Using a copy of the map to avoid concurrency problems
-        ACTIVE_NOTIFICATIONS_MAP.toMap().asSequence().forEach { row ->
-            if (row.value.channelType == type && row.value.remoteSiteId == remoteSiteId) {
-                notificationBuilder.cancelNotification(row.key)
-            } else {
-                keptNotifs[row.key] = row.value
-            }
-        }
-        clearNotifications()
-        ACTIVE_NOTIFICATIONS_MAP.putAll(keptNotifs)
-        updateNotificationsState()
-    }
-
-    private fun updateNotificationsState() {
-        if (!hasNotifications()) {
-            notificationBuilder.cancelAllNotifications()
+        with(notificationBuilder) {
+            getActiveNotifications()
+                .filter { it.channelType == type.name && it.remoteSiteId == remoteSiteId }
+                .forEach { cancelNotification(it.id) }
         }
     }
 }

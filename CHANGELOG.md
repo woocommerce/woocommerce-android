@@ -1,6 +1,12 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.0
+Woo POS Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
+
+## 23.9
+We’ve smoothed out the experience for you! This update brings a refined look to widgets and animations, plus faster loading for POS users. We also squashed several bugs, including a crash during checkout when handling deleted products and layout issues on tablets. It’s all about making your store management seamless.
+
 ## 23.8
 This update smooths your workflow with fixes to back navigation, shipping rate crashes, and payment screen layout. POS also gets improvements, including faster Local Catalog settings, better handling of deleted products, and automatic scrolling to your newest orders.
 

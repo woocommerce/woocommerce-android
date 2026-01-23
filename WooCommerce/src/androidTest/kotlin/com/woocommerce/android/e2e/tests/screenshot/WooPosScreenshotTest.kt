@@ -6,7 +6,6 @@ import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.ActivityTestRule
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.rules.RetryTestRule
@@ -15,6 +14,9 @@ import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosHomeScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosPaymentSuccessScreen
 import com.woocommerce.android.e2e.screens.woopos.WooPosTotalsScreen
+import com.woocommerce.android.e2e.tests.FAKE_PASSWORD
+import com.woocommerce.android.e2e.tests.FAKE_URL
+import com.woocommerce.android.e2e.tests.FAKE_USERNAME
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -72,9 +74,9 @@ class WooPosScreenshotTest : TestBase(failOnUnmatchedWireMockRequests = false) {
         WelcomeScreen
             .skipCarouselIfNeeded()
             .selectLogin()
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+            .proceedWith(FAKE_URL)
+            .proceedWith(FAKE_USERNAME)
+            .proceedWith(FAKE_PASSWORD)
 
         val homeScreen = TabNavComponent()
             .gotoPosScreen()

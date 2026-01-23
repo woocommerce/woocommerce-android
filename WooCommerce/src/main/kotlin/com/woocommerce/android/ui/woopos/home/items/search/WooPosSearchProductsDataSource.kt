@@ -80,6 +80,7 @@ class WooPosSearchProductsDataSource @Inject constructor(
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
             searchFields = SEARCH_FIELDS,
+            posProductsOnly = true,
         ).let { result ->
             if (result.isError) {
                 WooLog.w(
