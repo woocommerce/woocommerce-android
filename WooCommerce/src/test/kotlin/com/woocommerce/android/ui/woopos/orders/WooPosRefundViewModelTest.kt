@@ -432,6 +432,65 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given content state, when OnRefundReasonChanged event, then refundReason is updated`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            val initialState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(initialState.refundReason).isEmpty()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer bought wrong item"))
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(updatedState.refundReason).isEqualTo("Customer bought wrong item")
+        }
+
+    @Test
+    fun `given content state with refund reason, when navigating between steps, then refundReason is preserved`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer changed mind"))
+
+            val reviewState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewState.refundReason).isEqualTo("Customer changed mind")
+
+            // WHEN - Navigate back to SelectItems
+            viewModel.onUIEvent(WooPosRefundUIEvent.BackToSelectItemsClicked)
+
+            // THEN - Reason is preserved
+            val selectItemsState = viewModel.state.value as WooPosRefundState.Content
+            assertThat(selectItemsState.refundReason).isEqualTo("Customer changed mind")
+            assertThat(selectItemsState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+
+            // WHEN - Navigate forward to ReviewRefund again
+            viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
+
+            // THEN - Reason is still preserved
+            val reviewStateAgain = viewModel.state.value as WooPosRefundState.Content
+            assertThat(reviewStateAgain.refundReason).isEqualTo("Customer changed mind")
+            assertThat(reviewStateAgain.step).isEqualTo(WooPosRefundState.Content.RefundStep.ReviewRefund)
+        }
+
+    @Test
     fun `given content state at ReviewRefund step, when BackToSelectItemsClicked event, then step changes to SelectItems`() =
         runTest {
             // GIVEN
@@ -645,7 +704,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given valid refund request, when refund confirmed, then refund store called with correct parameters`() =
+    fun `given valid refund request without reason, when refund confirmed, then refund store called with empty reason`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -687,6 +746,57 @@ class WooPosRefundViewModelTest {
                 orderId = eq(testOrderId),
                 amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
                 reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
+            )
+        }
+
+    @Test
+    fun `given valid refund request with reason, when refund confirmed, then refund store called with provided reason`() =
+        runTest {
+            // GIVEN
+            val testReason = "Customer bought wrong item"
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(testReason),
                 restockItems = eq(true),
                 autoRefund = eq(false),
                 items = eq(groupedItems)

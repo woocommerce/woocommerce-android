@@ -122,22 +122,20 @@ class WooPosOrdersViewModel @Inject constructor(
     ) {
         val keys = loadedItems.items.keys.toList()
         val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
-        val selectedItem = keys.firstOrNull { it.id == orderId }
+        val selectedItem = keys.firstOrNull { it.id == orderId } ?: return
 
-        selectedItem?.let {
-            viewModelScope.launch {
-                ordersAnalyticsTracker.trackOrdersListRowTapped(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    listPosition = position,
-                    createdAtMillis = it.createdAtMillis
-                )
-                ordersAnalyticsTracker.trackOrderDetailsLoaded(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    createdAtMillis = it.createdAtMillis
-                )
-            }
+        viewModelScope.launch {
+            ordersAnalyticsTracker.trackOrdersListRowTapped(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                listPosition = position,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
+            ordersAnalyticsTracker.trackOrderDetailsLoaded(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
         }
     }
 

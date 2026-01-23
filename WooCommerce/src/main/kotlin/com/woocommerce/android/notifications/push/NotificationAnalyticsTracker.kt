@@ -15,12 +15,26 @@ class NotificationAnalyticsTracker @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
     fun trackNotificationAnalytics(stat: AnalyticsEvent, notification: Notification) {
-        val isFromSelectedSite = selectedSite.getIfExists()?.siteId == notification.remoteSiteId
+        trackNotificationAnalytics(
+            stat = stat,
+            remoteNoteId = notification.remoteNoteId,
+            remoteSiteId = notification.remoteSiteId,
+            noteTypeTrackingValue = notification.noteType.trackingValue
+        )
+    }
+
+    fun trackNotificationAnalytics(
+        stat: AnalyticsEvent,
+        remoteNoteId: Long,
+        remoteSiteId: Long,
+        noteTypeTrackingValue: String
+    ) {
+        val isFromSelectedSite = selectedSite.getIfExists()?.siteId == remoteSiteId
         val properties = mutableMapOf<String, Any>()
-        properties["notification_note_id"] = notification.remoteNoteId
-        properties["notification_type"] = notification.noteType.trackingValue
+        properties["notification_note_id"] = remoteNoteId
+        properties["notification_type"] = noteTypeTrackingValue
         properties["push_notification_token"] = appPrefsWrapper.getFCMToken()
-        properties["is_from_selected_site"] = isFromSelectedSite == true
+        properties["is_from_selected_site"] = isFromSelectedSite
         analyticsTrackerWrapper.track(stat, properties)
     }
 

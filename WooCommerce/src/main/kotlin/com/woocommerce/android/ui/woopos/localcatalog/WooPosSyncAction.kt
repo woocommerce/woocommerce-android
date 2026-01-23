@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
@@ -18,9 +17,6 @@ class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
 ) {
-    private val posProductsOnlyFeatureFlag: Boolean
-        get() = FeatureFlag.WOO_POS_PRODUCT_VISIBILITY_FILTERING.isEnabled()
-
     suspend fun syncCatalog(
         site: SiteModel,
         modifiedAfterGmt: String? = null,
@@ -51,7 +47,7 @@ class WooPosSyncAction @Inject constructor(
                 modifiedAfterGmt,
                 pageSize,
                 maxPages,
-                this@WooPosSyncAction.posProductsOnlyFeatureFlag
+                posProductsOnly = true
             )
         }
         val trashProductsDeferred = async {
@@ -64,7 +60,7 @@ class WooPosSyncAction @Inject constructor(
         }
 
         val allProductsDeferred = async {
-            if (!posProductsOnlyFeatureFlag || isFullSync) {
+            if (isFullSync) {
                 emptyList()
             } else {
                 fetchAllProductPages(
@@ -93,7 +89,7 @@ class WooPosSyncAction @Inject constructor(
          * This logic is skipped for full sync, since full sync always purges the whole database.
          */
         val productsRecentlyMarkedAsHiddenInPos =
-            if (!posProductsOnlyFeatureFlag || isFullSync) {
+            if (isFullSync) {
                 emptyList()
             } else {
                 findProductsMarkedAsHiddenInPos(
@@ -224,7 +220,7 @@ class WooPosSyncAction @Inject constructor(
             fetchPage = { page ->
                 posLocalCatalogStore.fetchRecentlyModifiedVariations(
                     site = site,
-                    posProductsOnly = posProductsOnlyFeatureFlag,
+                    posProductsOnly = true,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     pageSize = pageSize,
@@ -249,7 +245,7 @@ class WooPosSyncAction @Inject constructor(
                 posLocalCatalogStore.fetchRecentlyModifiedProducts(
                     site = site,
                     pageSize = pageSize,
-                    posProductsOnly = posProductsOnlyFeatureFlag,
+                    posProductsOnly = true,
                     modifiedAfterGmt = modifiedAfterGmt,
                     page = page,
                     includeStatus = listOf(CoreProductStatus.TRASH),

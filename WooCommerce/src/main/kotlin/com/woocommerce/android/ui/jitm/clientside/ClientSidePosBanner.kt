@@ -5,6 +5,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jitm.JitmMessagePathsProvider
 import com.woocommerce.android.ui.woopos.WooPosIsScreenSizeAllowed
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
 import com.woocommerce.android.util.RemoteFeatureFlag
 import dagger.Reusable
@@ -29,6 +30,7 @@ class ClientSidePosBanner @Inject constructor(
 
     @Suppress("ReturnCount")
     suspend fun shouldShow(): Boolean {
+        if (!FeatureFlag.WOO_POS_CLIENT_SIDE_BANNER.isEnabled()) return false
         if (!isRemoteFeatureFlagEnabled(RemoteFeatureFlag.WOO_POS_TABLET_PROMO_BANNER)) return false
 
         val site = selectedSite.getIfExists() ?: return false
@@ -84,7 +86,7 @@ class ClientSidePosBanner @Inject constructor(
     companion object {
         private const val BANNER_ID = "woo_pos_client_banner"
         private const val FEATURE_CLASS = "woo_pos_promotion"
-        private const val BANNER_URL = "https://woocommerce.com/in-person-payments/"
+        private const val BANNER_URL = "https://woocommerce.com/mobile/pos/learn-more"
         private val ELIGIBLE_COUNTRIES = listOf("US", "GB")
     }
 }

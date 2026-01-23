@@ -60,11 +60,11 @@ class NotificationsProcessingService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        WooLog.i(T.NOTIFS, "NotificationsProcessingService > created")
+        WooLog.i(T.NOTIFICATIONS, "NotificationsProcessingService > created")
     }
 
     override fun onDestroy() {
-        WooLog.i(T.NOTIFS, "NotificationsProcessingService > destroyed")
+        WooLog.i(T.NOTIFICATIONS, "NotificationsProcessingService > destroyed")
         super.onDestroy()
     }
 

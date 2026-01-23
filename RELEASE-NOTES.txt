@@ -11,6 +11,8 @@
 - [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
 - [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
 - [Internal] Fix push notification double "cha-ching" issue [https://github.com/woocommerce/woocommerce-android/pull/15208]
+- [Internal] Remove `MediaXMLRPCClient` [https://github.com/woocommerce/woocommerce-android/pull/15178]
+- [*] Fixed group notification displaying issues [https://github.com/woocommerce/woocommerce-android/pull/15205]
 
 23.9
 -----

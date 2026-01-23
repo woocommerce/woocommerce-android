@@ -3,13 +3,13 @@ package com.woocommerce.android.ui.prefs
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.payments.cardreader.ClearCardReaderDataAction
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.store.NotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import javax.inject.Inject
 
 class AppSettingsPresenter @Inject constructor(
     private val accountRepository: AccountRepository,
     @Suppress("unused") // We keep it here to make sure that the store is subscribed to the event bus
-    private val notificationStore: NotificationStore,
+    private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val clearCardReaderDataAction: ClearCardReaderDataAction
 ) : AppSettingsContract.Presenter {
     private var appSettingsView: AppSettingsContract.View? = null

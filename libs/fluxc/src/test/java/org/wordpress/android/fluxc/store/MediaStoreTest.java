@@ -1,52 +1,50 @@
-package org.wordpress.android.fluxc.media;
+package org.wordpress.android.fluxc.store;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 import static org.wordpress.android.fluxc.media.MediaTestUtils.generateMediaFromPath;
-import static org.wordpress.android.fluxc.media.MediaTestUtils.insertMediaIntoDatabase;
+import static org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId;
 
-import android.content.Context;
-
-import com.yarolegovich.wellsql.WellSql;
-
-import org.junit.Before;
+import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.RuntimeEnvironment;
 import org.wordpress.android.fluxc.Dispatcher;
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests;
+import org.wordpress.android.fluxc.logging.FakeCrashLogging;
 import org.wordpress.android.fluxc.model.MediaModel;
 import org.wordpress.android.fluxc.model.SiteModel;
 import org.wordpress.android.fluxc.network.rest.wpapi.media.ApplicationPasswordsMediaRestClient;
 import org.wordpress.android.fluxc.network.rest.wpcom.media.wpv2.WPComV2MediaRestClient;
-import org.wordpress.android.fluxc.network.xmlrpc.media.MediaXMLRPCClient;
-import org.wordpress.android.fluxc.persistence.WellSqlConfig;
-import org.wordpress.android.fluxc.store.MediaStore;
 import org.wordpress.android.fluxc.utils.MediaUtils;
 
 import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class MediaStoreTest {
+    private final RemoteMediaCache mRemoteMediaCache = new RemoteMediaCache();
+    private final MediaCacheOperations mMediaCacheOperations = new MediaCacheOperations(mRemoteMediaCache);
+
+    private static class FakeMediaIdGenerator implements MediaIdGenerator {
+        private int nextId = 1;
+        @Override
+        public @NotNull LocalId generate(@NotNull String filePath) {
+            return new LocalId(nextId++);
+        }
+    }
+
     @SuppressWarnings("KotlinInternalInJava")
     private final MediaStore mMediaStore = new MediaStore(new Dispatcher(),
-            Mockito.mock(MediaXMLRPCClient.class),
             Mockito.mock(WPComV2MediaRestClient.class),
             Mockito.mock(ApplicationPasswordsMediaRestClient.class),
             Mockito.mock(org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
-                    .ApplicationPasswordsConfiguration.class)
+                    .ApplicationPasswordsConfiguration.class),
+            FakeCrashLogging.INSTANCE,
+            mRemoteMediaCache,
+            mMediaCacheOperations,
+            new FakeMediaIdGenerator()
     );
-
-    @Before
-    public void setUp() {
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        WellSqlConfig config = new SingleStoreWellSqlConfigForTests(context, MediaModel.class);
-        WellSql.init(config);
-        config.reset();
-    }
 
     @Test
     public void testGetSiteImages() {
@@ -61,8 +59,8 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isVideoMimeType(videoMedia.getMimeType()));
         MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath);
         assertTrue(MediaUtils.isImageMimeType(imageMedia.getMimeType()));
-        insertMediaIntoDatabase(videoMedia);
-        insertMediaIntoDatabase(imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
 
         final List<MediaModel> storeImages = mMediaStore.getSiteImages(getTestSiteWithLocalId(testSiteId));
         assertNotNull(storeImages);
@@ -83,24 +81,22 @@ public class MediaStoreTest {
         final long testAudioId = 540;
 
         // generate media of different types
-        MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath);
-        imageMedia.setTitle("Awesome Image");
-        imageMedia.setDescription("This is an image test");
+        MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath,
+                "Awesome Image", "This is an image test", null);
         assertTrue(MediaUtils.isImageMimeType(imageMedia.getMimeType()));
 
-        MediaModel videoMedia = generateMediaFromPath(testSiteId, testVideoId, testVideoPath);
-        videoMedia.setTitle("Video Title");
-        videoMedia.setCaption("Test Caption");
+        MediaModel videoMedia = generateMediaFromPath(testSiteId, testVideoId, testVideoPath,
+                "Video Title", null, "Test Caption");
         assertTrue(MediaUtils.isVideoMimeType(videoMedia.getMimeType()));
 
-        MediaModel audioMedia = generateMediaFromPath(testSiteId, testAudioId, testAudioPath);
-        audioMedia.setDescription("This is an audio test");
+        MediaModel audioMedia = generateMediaFromPath(testSiteId, testAudioId, testAudioPath,
+                null, "This is an audio test", null);
         assertTrue(MediaUtils.isAudioMimeType(audioMedia.getMimeType()));
 
         // insert media of different types
-        insertMediaIntoDatabase(videoMedia);
-        insertMediaIntoDatabase(imageMedia);
-        insertMediaIntoDatabase(audioMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia);
 
         // verify the correct media is returned
         final List<MediaModel> storeImages = mMediaStore
@@ -125,22 +121,22 @@ public class MediaStoreTest {
         final long testDocumentId = 125;
 
         // generate media of different types
-        MediaModel videoMedia1 = generateMediaFromPath(testSiteId, testVideoId1, testVideoPath1);
-        videoMedia1.setTitle("My trip title");
+        MediaModel videoMedia1 = generateMediaFromPath(testSiteId, testVideoId1, testVideoPath1,
+                "My trip title", null, null);
         assertTrue(MediaUtils.isVideoMimeType(videoMedia1.getMimeType()));
 
-        MediaModel videoMedia2 = generateMediaFromPath(testSiteId, testVideoId2, testVideoPath2);
-        videoMedia2.setTitle("Test video title");
+        MediaModel videoMedia2 = generateMediaFromPath(testSiteId, testVideoId2, testVideoPath2,
+                "Test video title", null, null);
         assertTrue(MediaUtils.isVideoMimeType(videoMedia2.getMimeType()));
 
-        MediaModel documentMedia = generateMediaFromPath(testSiteId, testDocumentId, testDocumentPath);
-        documentMedia.setTitle("My first test");
+        MediaModel documentMedia = generateMediaFromPath(testSiteId, testDocumentId, testDocumentPath,
+                "My first test", null, null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia.getMimeType()));
 
         // insert media of different types
-        insertMediaIntoDatabase(videoMedia1);
-        insertMediaIntoDatabase(videoMedia2);
-        insertMediaIntoDatabase(documentMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia);
 
         // verify the correct media is returned
         final List<MediaModel> storeVideos = mMediaStore
@@ -166,29 +162,27 @@ public class MediaStoreTest {
         final long testDocumentId = 43;
 
         // generate media of different types
-        MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath);
-        imageMedia.setTitle("Title test");
+        MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath,
+                "Title test", null, null);
         assertTrue(MediaUtils.isImageMimeType(imageMedia.getMimeType()));
 
-        MediaModel audioMedia1 = generateMediaFromPath(testSiteId, testAudioId1, testAudioPath1);
-        audioMedia1.setTitle("The big one");
-        audioMedia1.setDescription("Test for the World");
+        MediaModel audioMedia1 = generateMediaFromPath(testSiteId, testAudioId1, testAudioPath1,
+                "The big one", "Test for the World", null);
         assertTrue(MediaUtils.isAudioMimeType(audioMedia1.getMimeType()));
 
-        MediaModel audioMedia2 = generateMediaFromPath(testSiteId, testAudioId2, testAudioPath2);
-        audioMedia2.setTitle("The test!");
-        audioMedia2.setDescription("Without description");
+        MediaModel audioMedia2 = generateMediaFromPath(testSiteId, testAudioId2, testAudioPath2,
+                "The test!", "Without description", null);
         assertTrue(MediaUtils.isAudioMimeType(audioMedia2.getMimeType()));
 
-        MediaModel documentMedia = generateMediaFromPath(testSiteId, testDocumentId, testDocumentPath);
-        documentMedia.setTitle("Document with every test of the app");
+        MediaModel documentMedia = generateMediaFromPath(testSiteId, testDocumentId, testDocumentPath,
+                "Document with every test of the app", null, null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia.getMimeType()));
 
         // insert media of different types
-        insertMediaIntoDatabase(imageMedia);
-        insertMediaIntoDatabase(audioMedia1);
-        insertMediaIntoDatabase(audioMedia2);
-        insertMediaIntoDatabase(documentMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia);
 
         // verify the correct media is returned (just audio)
         final List<MediaModel> storeAudio = mMediaStore
@@ -221,38 +215,32 @@ public class MediaStoreTest {
         final long testDocumentId4 = 543;
 
         // generate media of different types
-        MediaModel audioMedia = generateMediaFromPath(testSiteId, testAudioId, testAudioPath);
-        audioMedia.setTitle("My first test");
-        audioMedia.setDescription("This is a description test");
-        audioMedia.setCaption("Caption test");
+        MediaModel audioMedia = generateMediaFromPath(testSiteId, testAudioId, testAudioPath,
+                "My first test", "This is a description test", "Caption test");
         assertTrue(MediaUtils.isAudioMimeType(audioMedia.getMimeType()));
 
-        MediaModel documentMedia1 = generateMediaFromPath(testSiteId, testDocumentId1, testDocumentPath1);
-        documentMedia1.setTitle("The Document");
-        documentMedia1.setDescription("short description");
+        MediaModel documentMedia1 = generateMediaFromPath(testSiteId, testDocumentId1, testDocumentPath1,
+                "The Document", "short description", null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia1.getMimeType()));
 
-        MediaModel documentMedia2 = generateMediaFromPath(testSiteId, testDocumentId2, testDocumentPath2);
-        documentMedia2.setTitle("Document to Test");
-        documentMedia2.setDescription("medium description");
+        MediaModel documentMedia2 = generateMediaFromPath(testSiteId, testDocumentId2, testDocumentPath2,
+                "Document to Test", "medium description", null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia2.getMimeType()));
 
-        MediaModel documentMedia3 = generateMediaFromPath(testSiteId, testDocumentId3, testDocumentPath3);
-        documentMedia3.setTitle("Document");
-        documentMedia3.setDescription("Large description with a test");
+        MediaModel documentMedia3 = generateMediaFromPath(testSiteId, testDocumentId3, testDocumentPath3,
+                "Document", "Large description with a test", null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia3.getMimeType()));
 
-        MediaModel documentMedia4 = generateMediaFromPath(testSiteId, testDocumentId4, testDocumentPath4);
-        documentMedia4.setTitle("Document Title");
-        documentMedia4.setDescription("description");
+        MediaModel documentMedia4 = generateMediaFromPath(testSiteId, testDocumentId4, testDocumentPath4,
+                "Document Title", "description", null);
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia4.getMimeType()));
 
         // insert media of different types
-        insertMediaIntoDatabase(audioMedia);
-        insertMediaIntoDatabase(documentMedia1);
-        insertMediaIntoDatabase(documentMedia2);
-        insertMediaIntoDatabase(documentMedia3);
-        insertMediaIntoDatabase(documentMedia4);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia3);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia4);
 
         // verify the correct media is returned (just documents)
         final List<MediaModel> storeDocuments = mMediaStore

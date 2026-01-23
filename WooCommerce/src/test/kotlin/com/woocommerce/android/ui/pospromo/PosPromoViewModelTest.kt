@@ -4,19 +4,24 @@ import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class PosPromoViewModelTest : BaseUnitTest() {
 
     private lateinit var viewModel: PosPromoViewModel
     private val analyticsTracker: PosPromoAnalyticsTracker = mock()
+    private val utmProvider: PosPromoUtmProvider = mock()
 
     private fun createViewModel() {
+        whenever(utmProvider.getUrlWithUtmParams(any())).thenReturn("https://test.url")
         viewModel = PosPromoViewModel(
             savedStateHandle = mock(),
-            analyticsTracker = analyticsTracker
+            analyticsTracker = analyticsTracker,
+            utmProvider = utmProvider
         )
     }
 
@@ -87,5 +92,15 @@ class PosPromoViewModelTest : BaseUnitTest() {
         viewModel.onExploreClick()
 
         verify(analyticsTracker).trackExploreClicked()
+    }
+
+    @Test
+    fun `when onExploreClick called, then NavigateToExplore event is triggered with UTM url`() = testBlocking {
+        val expectedUrl = "https://test.url"
+        createViewModel()
+
+        viewModel.onExploreClick()
+
+        assertThat(viewModel.event.value).isEqualTo(PosPromoViewModel.NavigateToExplore(expectedUrl))
     }
 }
