@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.cardreader.connection
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderOnboardingState
+import com.woocommerce.android.ui.woopos.util.WooPosPermissionUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosCardReaderConnectionViewModel @Inject constructor(
     private val controllerFactory: WooPosCardReaderConnectionControllerFactory,
+    private val permissionUtils: WooPosPermissionUtils,
 ) : ViewModel() {
 
     private val controller: WooPosCardReaderConnectionController by lazy {
@@ -39,6 +41,9 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
                     }
                     WooPosCardReaderConnectionController.ControllerEvent.RequestEnableLocation -> {
                         _event.emit(Event.RequestEnableLocation)
+                    }
+                    WooPosCardReaderConnectionController.ControllerEvent.OpenAppSettings -> {
+                        permissionUtils.showAppSettings()
                     }
                     WooPosCardReaderConnectionController.ControllerEvent.Cancelled -> {
                         _event.emit(Event.Dismissed)
@@ -101,8 +106,12 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
         }
     }
 
-    fun onPermissionResult(granted: Boolean) {
-        controller.onPermissionResult(granted)
+    fun onBluetoothPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        controller.onBluetoothPermissionResult(granted, shouldShowRationale)
+    }
+
+    fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        controller.onLocationPermissionResult(granted, shouldShowRationale)
     }
 
     fun onLocationEnabled() {
@@ -115,6 +124,10 @@ class WooPosCardReaderConnectionViewModel @Inject constructor(
 
     fun onOnboardingCompleted() {
         controller.onOnboardingCompleted()
+    }
+
+    fun onResume() {
+        controller.recheckPermissions()
     }
 
     sealed interface Event {

@@ -67,6 +67,8 @@ class WooPosCardReaderConnectionController(
     private var selectedReader: CardReader? = null
     private var showUpdateCancelWarning = false
     private var isRequiredUpdate = true
+    private var isBluetoothPermissionPermanentlyDenied = false
+    private var isLocationPermissionPermanentlyDenied = false
 
     fun startConnectionFlow() {
         isRequiredUpdate = true
@@ -120,10 +122,14 @@ class WooPosCardReaderConnectionController(
         }
     }
 
-    fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            checkRequirementsAndStartDiscovery()
-        }
+    fun onBluetoothPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        isBluetoothPermissionPermanentlyDenied = !granted && !shouldShowRationale
+        checkRequirementsAndStartDiscovery()
+    }
+
+    fun onLocationPermissionResult(granted: Boolean, shouldShowRationale: Boolean) {
+        isLocationPermissionPermanentlyDenied = !granted && !shouldShowRationale
+        checkRequirementsAndStartDiscovery()
     }
 
     fun onBluetoothEnabled() {
@@ -134,6 +140,15 @@ class WooPosCardReaderConnectionController(
         checkRequirementsAndStartDiscovery()
     }
 
+    fun recheckPermissions() {
+        val currentState = _state.value
+        if (currentState is WooPosCardReaderConnectionState.MissingBluetoothPermission ||
+            currentState is WooPosCardReaderConnectionState.MissingLocationPermission
+        ) {
+            checkRequirementsAndStartDiscovery()
+        }
+    }
+
     @Suppress("DEPRECATION")
     private fun checkRequirementsAndStartDiscovery() {
         when {
@@ -141,7 +156,13 @@ class WooPosCardReaderConnectionController(
                 !WooPermissionUtils.hasBluetoothConnectPermission(context) -> {
                 logger.d("Bluetooth permission not granted")
                 _state.value = WooPosCardReaderConnectionState.MissingBluetoothPermission(
-                    onRequestPermissionClicked = { emitEvent(ControllerEvent.RequestBluetoothPermission) },
+                    onRequestPermissionClicked = {
+                        if (isBluetoothPermissionPermanentlyDenied) {
+                            emitEvent(ControllerEvent.OpenAppSettings)
+                        } else {
+                            emitEvent(ControllerEvent.RequestBluetoothPermission)
+                        }
+                    },
                     onCancelClicked = { cancel() }
                 )
             }
@@ -155,7 +176,13 @@ class WooPosCardReaderConnectionController(
             !WooPermissionUtils.hasFineLocationPermission(context) -> {
                 logger.d("Location permission not granted")
                 _state.value = WooPosCardReaderConnectionState.MissingLocationPermission(
-                    onRequestPermissionClicked = { emitEvent(ControllerEvent.RequestLocationPermission) },
+                    onRequestPermissionClicked = {
+                        if (isLocationPermissionPermanentlyDenied) {
+                            emitEvent(ControllerEvent.OpenAppSettings)
+                        } else {
+                            emitEvent(ControllerEvent.RequestLocationPermission)
+                        }
+                    },
                     onCancelClicked = { cancel() }
                 )
             }
@@ -183,6 +210,7 @@ class WooPosCardReaderConnectionController(
         data object RequestEnableBluetooth : ControllerEvent
         data object RequestLocationPermission : ControllerEvent
         data object RequestEnableLocation : ControllerEvent
+        data object OpenAppSettings : ControllerEvent
         data object Cancelled : ControllerEvent
         data class OnboardingRequired(val onboardingState: CardReaderOnboardingState) : ControllerEvent
     }

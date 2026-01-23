@@ -40,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
@@ -102,13 +103,28 @@ private fun WooPosCardReaderDialogInternal(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { permissions ->
         val allGranted = permissions.values.all { it }
-        viewModel.onPermissionResult(allGranted)
+        val shouldShowRationale = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context as Activity,
+                Manifest.permission.BLUETOOTH_SCAN
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.BLUETOOTH_CONNECT
+            )
+        } else {
+            true
+        }
+        viewModel.onBluetoothPermissionResult(allGranted, shouldShowRationale)
     }
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { granted ->
-        viewModel.onPermissionResult(granted)
+        val shouldShowRationale = ActivityCompat.shouldShowRequestPermissionRationale(
+            context as Activity,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+        viewModel.onLocationPermissionResult(granted, shouldShowRationale)
     }
 
     val locationSettingsLauncher = rememberLauncherForActivityResult(
@@ -144,6 +160,12 @@ private fun WooPosCardReaderDialogInternal(
             delay(1500)
             viewModel.dismissDialog()
             onConnectionSuccess()
+        }
+    }
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.onResume()
         }
     }
 
