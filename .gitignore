@@ -125,3 +125,4 @@ google-upload-credentials.json
 .claude/
 
 *.mp4
+.grepai/
