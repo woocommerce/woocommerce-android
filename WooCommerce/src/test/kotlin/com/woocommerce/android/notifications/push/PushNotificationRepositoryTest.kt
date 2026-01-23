@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.push
 
+import android.content.SharedPreferences
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
@@ -29,6 +30,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPu
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.utils.PreferenceUtils
 
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
