@@ -5,7 +5,7 @@ import java.util.Locale
 import javax.inject.Inject
 
 internal class MediaCacheOperations @Inject constructor(
-    private val cache: MediaLibraryCache
+    private val cache: RemoteMediaCache
 ) {
     fun getSiteImages(siteId: Int): List<MediaModel> {
         return filterByMimeType(siteId, "image")

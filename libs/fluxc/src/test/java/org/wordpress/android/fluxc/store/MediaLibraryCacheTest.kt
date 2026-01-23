@@ -8,13 +8,13 @@ import org.wordpress.android.fluxc.model.MediaModel
 import java.util.concurrent.CountDownLatch
 
 class MediaLibraryCacheTest {
-    private lateinit var cache: MediaLibraryCache
+    private lateinit var cache: RemoteMediaCache
     private lateinit var testMedia1: MediaModel
     private lateinit var testMedia2: MediaModel
 
     @Before
     fun setup() {
-        cache = MediaLibraryCache()
+        cache = RemoteMediaCache()
         testMedia1 = createTestMedia(1, "image1.jpg")
         testMedia2 = createTestMedia(2, "image2.jpg")
     }

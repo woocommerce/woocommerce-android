@@ -406,7 +406,7 @@ public class MediaStore extends Store {
 
     private final WPComV2MediaRestClient mWPComV2MediaRestClient;
     private final ApplicationPasswordsMediaRestClient mApplicationPasswordsMediaRestClient;
-    @NonNull private final MediaLibraryCache mMediaLibraryCache;
+    @NonNull private final RemoteMediaCache mRemoteMediaCache;
     @NonNull private final MediaCacheOperations mMediaCacheOperations;
     @NonNull private final MediaIdGenerator mMediaIdGenerator;
 
@@ -420,7 +420,7 @@ public class MediaStore extends Store {
             ApplicationPasswordsMediaRestClient applicationPasswordsMediaRestClient,
             ApplicationPasswordsConfiguration applicationPasswordsConfiguration,
             @NonNull FluxCCrashLogger crashLogger,
-            @NonNull MediaLibraryCache mediaLibraryCache,
+            @NonNull RemoteMediaCache remoteMediaCache,
             @NonNull MediaCacheOperations mediaCacheOperations,
             @NonNull MediaIdGenerator mediaIdGenerator) {
         super(dispatcher);
@@ -428,7 +428,7 @@ public class MediaStore extends Store {
         mApplicationPasswordsMediaRestClient = applicationPasswordsMediaRestClient;
         mApplicationPasswordsConfiguration = applicationPasswordsConfiguration;
         mCrashLogger = crashLogger;
-        mMediaLibraryCache = mediaLibraryCache;
+        mRemoteMediaCache = remoteMediaCache;
         mMediaCacheOperations = mediaCacheOperations;
         mMediaIdGenerator = mediaIdGenerator;
     }
@@ -545,7 +545,7 @@ public class MediaStore extends Store {
         if (media == null) {
             event.error = new MediaError(MediaErrorType.NULL_MEDIA_ARG);
         } else {
-            mMediaLibraryCache.addOrUpdate(media.getLocalSiteId(), media);
+            mRemoteMediaCache.addOrUpdate(media.getLocalSiteId(), media);
             event.mediaList.add(media);
         }
 
@@ -626,7 +626,7 @@ public class MediaStore extends Store {
     private void performCancelUpload(@NonNull CancelMediaPayload payload) {
         MediaModel media = payload.media;
         if (payload.delete) {
-            mMediaLibraryCache.remove(payload.site.getId(), media.getMediaId());
+            mRemoteMediaCache.remove(payload.site.getId(), media.getMediaId());
         }
 
         if (payload.site.getOrigin() == SiteModel.ORIGIN_WPCOM_REST) {
@@ -666,7 +666,7 @@ public class MediaStore extends Store {
     }
 
     private void updateFetchedMediaList(@NonNull FetchMediaListResponsePayload payload) {
-        List<MediaModel> currentCache = mMediaLibraryCache.getMediaList(payload.site.getId());
+        List<MediaModel> currentCache = mRemoteMediaCache.getMediaList(payload.site.getId());
 
         if (payload.loadedMore) {
             // Append to existing cache
@@ -675,10 +675,10 @@ public class MediaStore extends Store {
             }
             List<MediaModel> updatedList = new ArrayList<>(currentCache);
             updatedList.addAll(payload.mediaList);
-            mMediaLibraryCache.cacheMediaList(payload.site.getId(), updatedList);
+            mRemoteMediaCache.cacheMediaList(payload.site.getId(), updatedList);
         } else {
             // Replace entire cache with fresh data
-            mMediaLibraryCache.cacheMediaList(payload.site.getId(), new ArrayList<>(payload.mediaList));
+            mRemoteMediaCache.cacheMediaList(payload.site.getId(), new ArrayList<>(payload.mediaList));
         }
     }
 
@@ -698,7 +698,7 @@ public class MediaStore extends Store {
     private void handleMediaFetched(@NonNull MediaPayload payload) {
         OnMediaChanged onMediaChanged = new OnMediaChanged(MediaAction.FETCH_MEDIA, payload.error);
         if (payload.media != null) {
-            mMediaLibraryCache.addOrUpdate(payload.site.getId(), payload.media);
+            mRemoteMediaCache.addOrUpdate(payload.site.getId(), payload.media);
             onMediaChanged.mediaList = new ArrayList<>();
             onMediaChanged.mediaList.add(payload.media);
         }

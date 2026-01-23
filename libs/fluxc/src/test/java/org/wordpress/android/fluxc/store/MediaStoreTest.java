@@ -23,8 +23,8 @@ import java.util.List;
 
 @RunWith(RobolectricTestRunner.class)
 public class MediaStoreTest {
-    private final MediaLibraryCache mMediaLibraryCache = new MediaLibraryCache();
-    private final MediaCacheOperations mMediaCacheOperations = new MediaCacheOperations(mMediaLibraryCache);
+    private final RemoteMediaCache mRemoteMediaCache = new RemoteMediaCache();
+    private final MediaCacheOperations mMediaCacheOperations = new MediaCacheOperations(mRemoteMediaCache);
 
     private static class FakeMediaIdGenerator implements MediaIdGenerator {
         private int nextId = 1;
@@ -41,7 +41,7 @@ public class MediaStoreTest {
             Mockito.mock(org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords
                     .ApplicationPasswordsConfiguration.class),
             FakeCrashLogging.INSTANCE,
-            mMediaLibraryCache,
+            mRemoteMediaCache,
             mMediaCacheOperations,
             new FakeMediaIdGenerator()
     );
@@ -59,8 +59,8 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isVideoMimeType(videoMedia.getMimeType()));
         MediaModel imageMedia = generateMediaFromPath(testSiteId, testImageId, testImagePath);
         assertTrue(MediaUtils.isImageMimeType(imageMedia.getMimeType()));
-        mMediaLibraryCache.addOrUpdate(testSiteId, videoMedia);
-        mMediaLibraryCache.addOrUpdate(testSiteId, imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
 
         final List<MediaModel> storeImages = mMediaStore.getSiteImages(getTestSiteWithLocalId(testSiteId));
         assertNotNull(storeImages);
@@ -94,9 +94,9 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isAudioMimeType(audioMedia.getMimeType()));
 
         // insert media of different types
-        mMediaLibraryCache.addOrUpdate(testSiteId, videoMedia);
-        mMediaLibraryCache.addOrUpdate(testSiteId, imageMedia);
-        mMediaLibraryCache.addOrUpdate(testSiteId, audioMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia);
 
         // verify the correct media is returned
         final List<MediaModel> storeImages = mMediaStore
@@ -134,9 +134,9 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia.getMimeType()));
 
         // insert media of different types
-        mMediaLibraryCache.addOrUpdate(testSiteId, videoMedia1);
-        mMediaLibraryCache.addOrUpdate(testSiteId, videoMedia2);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, videoMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia);
 
         // verify the correct media is returned
         final List<MediaModel> storeVideos = mMediaStore
@@ -179,10 +179,10 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia.getMimeType()));
 
         // insert media of different types
-        mMediaLibraryCache.addOrUpdate(testSiteId, imageMedia);
-        mMediaLibraryCache.addOrUpdate(testSiteId, audioMedia1);
-        mMediaLibraryCache.addOrUpdate(testSiteId, audioMedia2);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, imageMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia);
 
         // verify the correct media is returned (just audio)
         final List<MediaModel> storeAudio = mMediaStore
@@ -236,11 +236,11 @@ public class MediaStoreTest {
         assertTrue(MediaUtils.isApplicationMimeType(documentMedia4.getMimeType()));
 
         // insert media of different types
-        mMediaLibraryCache.addOrUpdate(testSiteId, audioMedia);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia1);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia2);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia3);
-        mMediaLibraryCache.addOrUpdate(testSiteId, documentMedia4);
+        mRemoteMediaCache.addOrUpdate(testSiteId, audioMedia);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia1);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia2);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia3);
+        mRemoteMediaCache.addOrUpdate(testSiteId, documentMedia4);
 
         // verify the correct media is returned (just documents)
         final List<MediaModel> storeDocuments = mMediaStore
