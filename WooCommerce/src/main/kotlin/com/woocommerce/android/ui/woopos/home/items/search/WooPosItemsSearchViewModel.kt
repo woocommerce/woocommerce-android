@@ -116,14 +116,12 @@ class WooPosItemsSearchViewModel @Inject constructor(
         performSearch(currentState.searchQuery)
     }
 
-    @Suppress("CyclomaticComplexMethod", "LongMethod")
     private fun performSearch(
         query: String,
         showLoadingState: Boolean = true,
         skipDebounce: Boolean = false,
     ) {
         searchJob?.cancel()
-
         currentQuery.set(query)
 
         if (query.isEmpty()) {
@@ -136,64 +134,78 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 if (!skipDebounce) {
                     delay(SEARCH_DEBOUNCING_TIME)
                 }
-
                 if (query != currentQuery.get()) return@launch
 
-                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
+                executeSearch(query, showLoadingState)
+            }
+        }
+    }
 
-                dataSource.searchProducts(query).collectLatest { searchResult ->
-                    if (query != currentQuery.get()) {
-                        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                        return@collectLatest
-                    }
+    private suspend fun executeSearch(
+        query: String,
+        showLoadingState: Boolean,
+    ) {
+        childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Started)
 
-                    when (searchResult) {
-                        is SearchProductsResult.Local -> {
-                            analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+        dataSource.searchProducts(query).collectLatest { searchResult ->
+            if (query != currentQuery.get()) {
+                childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+                return@collectLatest
+            }
 
-                            if (searchResult.products.isEmpty()) {
-                                if (showLoadingState) {
-                                    _viewState.value = WooPosItemsSearchViewState.Loading
-                                } else {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty(
-                                        pullToRefreshState = determinePullToRefreshState()
-                                    )
-                                }
-                            } else {
-                                _viewState.value = searchResult.products.toContentState(
-                                    searchQuery = query,
-                                )
-                            }
-                        }
-
-                        is SearchProductsResult.Remote -> {
-                            if (searchResult.productsResult.isSuccess) {
-                                val products = searchResult.productsResult.getOrThrow()
-                                if (products.isEmpty()) {
-                                    _viewState.value = WooPosItemsSearchViewState.Empty(
-                                        pullToRefreshState = determinePullToRefreshState()
-                                    )
-                                } else {
-                                    _viewState.value = products.toContentState(searchQuery = query)
-                                }
-
-                                analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
-                            } else {
-                                _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
-                            }
-                        }
-                    }
+            when (searchResult) {
+                is SearchProductsResult.Local -> {
+                    handleLocalSearchResult(searchResult, query, showLoadingState)
                 }
 
-                if (query == currentQuery.get()) {
-                    childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
-                    if (_viewState.value is WooPosItemsSearchViewState.Loading) {
-                        _viewState.value = WooPosItemsSearchViewState.Empty(
-                            pullToRefreshState = determinePullToRefreshState()
-                        )
-                    }
+                is SearchProductsResult.Remote -> {
+                    handleRemoteSearchResult(searchResult, query)
                 }
             }
+        }
+
+        if (query == currentQuery.get()) {
+            childToParentEventSender.sendToParent(ChildToParentEvent.SearchEvent.Finished)
+            if (_viewState.value is WooPosItemsSearchViewState.Loading) {
+                _viewState.value = WooPosItemsSearchViewState.Empty(
+                    pullToRefreshState = determinePullToRefreshState()
+                )
+            }
+        }
+    }
+
+    private suspend fun handleLocalSearchResult(
+        searchResult: SearchProductsResult.Local,
+        query: String,
+        showLoadingState: Boolean
+    ) {
+        analyticsTracker.storedLocalSearchResultIds(searchResult.products.map { it.remoteId })
+
+        if (searchResult.products.isEmpty()) {
+            _viewState.value = if (showLoadingState) {
+                WooPosItemsSearchViewState.Loading
+            } else {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            }
+        } else {
+            _viewState.value = searchResult.products.toContentState(searchQuery = query)
+        }
+    }
+
+    private suspend fun handleRemoteSearchResult(
+        searchResult: SearchProductsResult.Remote,
+        query: String
+    ) {
+        if (searchResult.productsResult.isSuccess) {
+            val products = searchResult.productsResult.getOrThrow()
+            _viewState.value = if (products.isEmpty()) {
+                WooPosItemsSearchViewState.Empty(pullToRefreshState = determinePullToRefreshState())
+            } else {
+                products.toContentState(searchQuery = query)
+            }
+            analyticsTracker.trackSearchPerformance(searchResult.searchTimeMillis)
+        } else {
+            _viewState.value = WooPosItemsSearchViewState.Error(searchQuery = query)
         }
     }
 
