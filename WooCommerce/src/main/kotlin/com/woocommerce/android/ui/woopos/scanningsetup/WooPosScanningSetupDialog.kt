@@ -31,7 +31,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -46,13 +45,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -132,6 +129,7 @@ fun WooPosScanningSetupDialog(
     WooPosDialogWrapper(
         isVisible = isVisible,
         onDismissRequest = onDismissRequestWrapper,
+        onCloseClick = onDismissRequestWrapper,
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_scanning_setup_dialog_content_description
         )
@@ -140,35 +138,12 @@ fun WooPosScanningSetupDialog(
 
         val state by viewModel.state.collectAsState()
         Column(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value)
-                .listenForBarcodes(
-                    { barcodeResult ->
-                        viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
-                    }
-                )
-        ) {
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(
-                    onClick = onDismissRequestWrapper,
-                    modifier = Modifier
-                ) {
-                    Icon(
-                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(
-                            id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                        ),
-                        modifier = Modifier
-                            .size(40.dp),
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
+            modifier = Modifier.listenForBarcodes(
+                { barcodeResult ->
+                    viewModel.onUiEvent(WooPosScanningSetupUiEvent.OnBarcodeScanned(barcodeResult))
                 }
-            }
-
-            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
-
+            )
+        ) {
             AnimatedContent(
                 targetState = state.currentStep,
                 transitionSpec = {
