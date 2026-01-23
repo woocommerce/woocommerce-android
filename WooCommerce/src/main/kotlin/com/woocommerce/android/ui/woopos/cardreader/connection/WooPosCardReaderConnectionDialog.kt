@@ -25,7 +25,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -534,17 +533,12 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
         Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
         Row(
+            modifier = Modifier.padding(bottom = WooPosSpacing.XXSmall.value),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
             WooPosCircularLoadingIndicator(
                 modifier = Modifier.size(20.dp)
-            )
-            Spacer(modifier = Modifier.width(WooPosSpacing.Small.value))
-            WooPosText(
-                text = stringResource(R.string.woopos_card_reader_multiple_found_scanning),
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
             )
         }
     }
