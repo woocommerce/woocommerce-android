@@ -54,28 +54,28 @@ class WooPosOrdersDataSource @Inject constructor(
         private const val UNKNOWN_ERROR = "Unknown error"
     }
 
-    fun loadOrders(): Flow<LoadOrdersResult> = flow {
+    fun loadOrders(forceRefreshRefunds: Boolean = false): Flow<LoadOrdersResult> = flow {
         val cached = ordersCache.getAll()
         if (cached.isNotEmpty()) {
-            val cachedWithRefunds = fetchRefundsForOrders(cached)
+            val cachedWithRefunds = fetchRefundsForOrders(cached, forceRefresh = false)
             emit(LoadOrdersResult.SuccessCache(cachedWithRefunds))
         }
 
         val result = loadFirstPage()
         result.onSuccess { orders ->
             ordersCache.setAll(orders)
-            val ordersWithRefunds = fetchRefundsForOrders(orders)
+            val ordersWithRefunds = fetchRefundsForOrders(orders, forceRefresh = forceRefreshRefunds)
             emit(LoadOrdersResult.SuccessRemote(ordersWithRefunds))
         }.onFailure {
             emit(LoadOrdersResult.Error(it.message ?: UNKNOWN_ERROR))
         }
     }
 
-    suspend fun searchOrders(searchQuery: String): SearchOrdersResult {
+    suspend fun searchOrders(searchQuery: String, forceRefreshRefunds: Boolean = false): SearchOrdersResult {
         val result = loadFirstPage(searchQuery)
         return result.fold(
             onSuccess = { orders ->
-                val ordersWithRefunds = fetchRefundsForOrders(orders)
+                val ordersWithRefunds = fetchRefundsForOrders(orders, forceRefresh = forceRefreshRefunds)
                 SearchOrdersResult.Success(ordersWithRefunds)
             },
             onFailure = { SearchOrdersResult.Error(it.message ?: UNKNOWN_ERROR) }
@@ -168,11 +168,14 @@ class WooPosOrdersDataSource @Inject constructor(
     private fun WCOrderStore.OrderError.toThrowable(): Throwable =
         Throwable("[$type] $message")
 
-    private suspend fun fetchRefundsForOrders(orders: List<Order>): Map<Order, RefundsFetchResult> =
+    private suspend fun fetchRefundsForOrders(
+        orders: List<Order>,
+        forceRefresh: Boolean = false
+    ): Map<Order, RefundsFetchResult> =
         coroutineScope {
             orders.map { order ->
                 async {
-                    retrieveOrderRefunds(order).fold(
+                    retrieveOrderRefunds(order, forceRefresh = forceRefresh).fold(
                         onSuccess = { refunds -> order to RefundsFetchResult.Success(refunds) },
                         onFailure = { order to RefundsFetchResult.Error }
                     )

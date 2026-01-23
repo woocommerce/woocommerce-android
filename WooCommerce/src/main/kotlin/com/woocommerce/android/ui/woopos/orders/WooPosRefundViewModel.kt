@@ -91,7 +91,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             val order = orderResult.getOrThrow()
             currentOrder = order
 
-            val refundsResult = retrieveOrderRefunds(order)
+            val refundsResult = retrieveOrderRefunds(order, forceRefresh = true)
             val refunds = if (refundsResult.isSuccess) {
                 refundsResult.getOrThrow()
             } else {
