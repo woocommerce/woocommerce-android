@@ -39,15 +39,15 @@ internal class MediaCacheOperations @Inject constructor(
         return searchByMimeTypeAndTerm(siteId, "application", searchTerm)
     }
 
-    fun getCacheSize(siteId: Int): Int {
-        return cache.getMediaList(siteId)?.size ?: 0
-    }
-
     fun getUploadedMediaCount(siteId: Int, mimeTypePrefix: String?): Int {
         if (mimeTypePrefix == null) {
             return getCacheSize(siteId)
         }
         return filterByMimeType(siteId, mimeTypePrefix).size
+    }
+
+    private fun getCacheSize(siteId: Int): Int {
+        return cache.getMediaList(siteId)?.size ?: 0
     }
 
     private fun filterByMimeType(siteId: Int, mimeTypePrefix: String): List<MediaModel> {
