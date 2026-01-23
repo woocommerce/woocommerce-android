@@ -58,10 +58,6 @@ dependencies {
 
     ksp(libs.google.dagger.hilt.compiler)
 
-    api project(":libs:fluxc")
-    api project(":libs:fluxc-plugin")
-    api testFixtures(project(":libs:fluxc-plugin"))
-
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.assertj.core)
     testImplementation(libs.junit)
@@ -74,4 +70,5 @@ dependencies {
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
     testFixturesCompileOnly(libs.androidx.arch.core.testing)
+    testFixturesImplementation(project(":libs:fluxc-plugin"))
 }
