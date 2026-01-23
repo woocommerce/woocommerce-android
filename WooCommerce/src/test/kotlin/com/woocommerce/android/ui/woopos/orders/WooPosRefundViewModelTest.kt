@@ -1034,7 +1034,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1090,7 +1090,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1146,7 +1146,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1200,7 +1200,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1269,7 +1269,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2, item3)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithThreeItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1325,7 +1325,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1, item2)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithTwoItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithTwoItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithTwoItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1359,7 +1359,7 @@ class WooPosRefundViewModelTest {
             )
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(testOrder)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1419,7 +1419,7 @@ class WooPosRefundViewModelTest {
             val refundableItems = listOf(item1Unit1, item1Unit2, item1Unit3)
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeUnits))
-            whenever(retrieveOrderRefunds.invoke(orderWithThreeUnits)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeUnits), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
@@ -1507,7 +1507,7 @@ class WooPosRefundViewModelTest {
             )
 
             whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(orderWithThreeItems))
-            whenever(retrieveOrderRefunds.invoke(orderWithThreeItems)).thenReturn(Result.success(emptyList()))
+            whenever(retrieveOrderRefunds.invoke(eq(orderWithThreeItems), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(
                 groupRefundItems.invoke(eq(selectedItems), eq(orderWithThreeItems), any())
