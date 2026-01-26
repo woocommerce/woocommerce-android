@@ -71,7 +71,7 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     private val trackerWrapper: AnalyticsTrackerWrapper = mock()
     private val notificationStore: NotificationStore = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock {
-        onBlocking { isWooPushTokenRegisteredForSite(any()) } doReturn false
+        onBlocking { getWooPushRegisteredSiteIds() } doReturn emptySet()
     }
 
     @Test
@@ -181,8 +181,8 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     fun `given site has Woo Push token, when tapping save, then exclude it from notification settings API`() =
         testBlocking {
             val siteWithWooPush = AVAILABLE_WOO_SITES_TO_HIDE.first()
-            whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(siteWithWooPush.siteId))
-                .thenReturn(true)
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds())
+                .thenReturn(setOf(siteWithWooPush.siteId))
             val viewModel = createViewModel()
 
             viewModel.onSaveTapped()
@@ -202,7 +202,8 @@ class WooSitesVisibilityViewModelTest : BaseUnitTest() {
     @Test
     fun `given all sites have Woo Push token, when tapping save, then skip notification settings API call`() =
         testBlocking {
-            whenever(pushNotificationRepository.isWooPushTokenRegisteredForSite(any())).thenReturn(true)
+            val allSiteIds = AVAILABLE_WOO_SITES_TO_HIDE.map { it.siteId }.toSet()
+            whenever(pushNotificationRepository.getWooPushRegisteredSiteIds()).thenReturn(allSiteIds)
             val viewModel = createViewModel()
 
             viewModel.onSaveTapped()
