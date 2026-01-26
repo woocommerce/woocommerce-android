@@ -40,4 +40,6 @@ dependencies {
     testImplementation(libs.kotlin.test.junit)
     testImplementation(libs.assertj.core)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(testFixtures(project(":libs:commons")))
+    testImplementation(testFixtures(project(":libs:fluxc-plugin")))
 }
