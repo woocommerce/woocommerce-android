@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType
 import com.woocommerce.android.extensions.orNullIfEmpty
@@ -15,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
@@ -29,7 +31,8 @@ class PushNotificationRepository @Inject constructor(
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
     @DataStoreQualifier(DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
-    private val pushNotificationsDataStore: DataStore<Preferences>
+    private val pushNotificationsDataStore: DataStore<Preferences>,
+    private val notificationAnalyticsTracker: NotificationAnalyticsTracker
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -54,14 +57,30 @@ class PushNotificationRepository @Inject constructor(
             )
             if (!result.isError) {
                 result.model?.let { pushToken ->
+                    notificationAnalyticsTracker.track(
+                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
+                        siteId = site.siteId
+                    )
                     savePushTokenForSite(site.siteId, pushToken)
                     disableWpComNotificationsForSite(site.siteId)
                 } ?: run {
-                    WooLog.w(
-                        WooLog.T.NOTIFICATIONS,
-                        "Push token registration in Woo Core succeeded but API returned null token;"
+                    val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
+                    WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
+                    notificationAnalyticsTracker.trackError(
+                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                        siteId = site.siteId,
+                        errorDescription = errorMsg,
+                        errorType = WooErrorType.EMPTY_RESPONSE.name
                     )
                 }
+            } else {
+                notificationAnalyticsTracker.trackError(
+                    stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                    siteId = site.siteId,
+                    errorDescription = result.error?.message,
+                    errorType = result.error?.type?.name,
+                    errorCode = result.error?.apiErrorCode
+                )
             }
         } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
     }
@@ -74,9 +93,20 @@ class PushNotificationRepository @Inject constructor(
         )
         val result = wpComPushNotificationStore.updateNotificationSettingsFor(listOf(setting))
         if (result.isFailure) {
+            val error = result.exceptionOrNull() as? WpComPushNotificationStore.NotificationSettingsUpdateError
             WooLog.w(WooLog.T.NOTIFICATIONS, "Failed to disable WPCom notifications for site $siteId")
+            notificationAnalyticsTracker.trackError(
+                stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR,
+                siteId = siteId,
+                errorDescription = error?.message,
+                errorType = error?.type?.let { it::class.simpleName }
+            )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
+            notificationAnalyticsTracker.track(
+                stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_SUCCESS,
+                siteId = siteId
+            )
         }
     }
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -114,17 +115,20 @@ class AnalyticsTracker private constructor(
 
     private fun Map<String, *>.buildFinalProperties(siteLess: Boolean): MutableMap<String, Any?> {
         val finalProperties = this.toMutableMap()
-
         val selectedSiteModel = selectedSite.getOrNull()
-        if (!siteLess) {
-            selectedSiteModel?.let {
-                if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
-                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
-                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
-                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
-            }
+
+        if (!siteLess && selectedSiteModel != null) {
+            finalProperties.putIfAbsent(KEY_BLOG_ID, selectedSiteModel.siteId)
+            finalProperties[KEY_IS_WPCOM_STORE] = selectedSiteModel.isWpComStore
+            finalProperties[KEY_PLAN_PRODUCT_SLUG] = selectedSiteModel.planProductSlug
+            appPrefs.getWCStoreID(selectedSiteModel.siteId)?.let { finalProperties[KEY_STORE_ID] = it }
+            finalProperties.putIfAbsent(IS_JETPACK_INSTALLED, selectedSiteModel.isJetpackInstalled)
+            finalProperties.putIfAbsent(IS_JETPACK_CONNECTED, selectedSiteModel.isJetpackConnected)
+            finalProperties.putIfAbsent(IS_JETPACK_CP_CONNECTED, selectedSiteModel.isJetpackCPConnected)
+            finalProperties.putIfAbsent(IS_CIAB, selectedSiteModel.isCIABSite())
+            selectedSiteModel.gardenPartner?.let { finalProperties.putIfAbsent(GARDEN_PARTNER, it) }
         }
+
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
         selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
         getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
@@ -169,6 +173,11 @@ class AnalyticsTracker private constructor(
         private const val EVENTS_PREFIX = "woocommerceandroid_"
         private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
         const val KEY_SITE_URL = "site_url"
+        const val IS_JETPACK_INSTALLED = "is_jetpack_installed"
+        const val IS_JETPACK_CONNECTED = "is_jetpack_connected"
+        const val IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_connected"
+        const val IS_CIAB = "is_ciab"
+        const val GARDEN_PARTNER = "garden_partner"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"
@@ -335,7 +344,6 @@ class AnalyticsTracker private constructor(
         const val KEY_IS_GIFT_CARD_REMOVED = "removed"
         const val KEY_SHIPPING_LINES_COUNT = "shipping_lines_count"
 
-        const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
         const val KEY_CACHED_WOO_VERSION = "cached_woo_core_version"
 

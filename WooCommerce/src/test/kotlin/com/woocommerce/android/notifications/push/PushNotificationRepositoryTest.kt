@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.MutablePreferences
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
@@ -12,6 +13,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.eq
@@ -37,6 +39,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val notificationAnalyticsTracker: NotificationAnalyticsTracker = mock()
     private val siteModel: SiteModel = mock()
     private val preferences: Preferences = mock()
     private val pushNotificationsDataStore: DataStore<Preferences> = mock {
@@ -53,7 +56,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             appPrefsWrapper,
             wpComPushNotificationStore,
             wooCommerceStore,
-            pushNotificationsDataStore
+            pushNotificationsDataStore,
+            notificationAnalyticsTracker
         )
     }
 
@@ -203,6 +207,51 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
 
             assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given registration succeeds, when registering push token, then tracks success event`() =
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+            whenever(siteModel.siteId).thenReturn(SITE_ID)
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
+                .thenReturn(WooResult(RETURNED_TOKEN))
+
+            val mutablePreferences: MutablePreferences = mock()
+            whenever(preferences.toMutablePreferences()).thenReturn(mutablePreferences)
+            whenever(pushNotificationsDataStore.updateData(any())).thenAnswer { invocation ->
+                val transform = invocation.getArgument<suspend (Preferences) -> Preferences>(0)
+                testBlocking { transform(preferences) }
+                preferences
+            }
+
+            sut.registerPushTokenInWooCoreSystem("token")
+
+            verify(notificationAnalyticsTracker).track(
+                stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS),
+                siteId = eq(SITE_ID)
+            )
+        }
+
+    @Test
+    fun `given registration fails, when registering push token, then tracks error event`() =
+        testBlocking {
+            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
+            whenever(siteModel.siteId).thenReturn(SITE_ID)
+            whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
+            whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
+                .thenReturn(PN_REGISTRATION_ERROR)
+
+            sut.registerPushTokenInWooCoreSystem("token")
+
+            verify(notificationAnalyticsTracker).trackError(
+                stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR),
+                siteId = eq(SITE_ID),
+                errorDescription = anyOrNull(),
+                errorType = anyOrNull(),
+                errorCode = anyOrNull()
+            )
         }
 
     private companion object {
