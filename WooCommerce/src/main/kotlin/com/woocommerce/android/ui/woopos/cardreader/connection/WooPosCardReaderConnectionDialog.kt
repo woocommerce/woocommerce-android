@@ -17,8 +17,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -58,6 +60,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderOnboardingActivity
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -531,9 +534,18 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
                 maxLines = 1,
                 onClick = reader.onConnectClicked,
             )
-            if (index < readers.lastIndex) {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-            }
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        }
+
+        Row(
+            modifier = Modifier
+                .height(80.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            WooPosCircularLoadingIndicator(
+                modifier = Modifier.size(20.dp)
+            )
         }
     }
 }
@@ -947,19 +959,25 @@ fun WooPosCardReaderConnectionDialogReaderFoundPreview() {
 @Composable
 fun WooPosCardReaderConnectionDialogMultipleReadersPreview() {
     WooPosTheme {
-        MultipleReadersFoundContent(
-            readers = listOf(
-                WooPosCardReaderConnectionState.FoundReader(
-                    id = "STRM261380012691",
-                    name = "STRM261380012691",
-                    onConnectClicked = {}
+        WooPosCardReaderConnectionDialogContent(
+            isVisible = true,
+            state = WooPosCardReaderConnectionState.MultipleReadersFound(
+                readers = listOf(
+                    WooPosCardReaderConnectionState.FoundReader(
+                        id = "STRM261380012691",
+                        name = "STRM261380012691",
+                        onConnectClicked = {}
+                    ),
+                    WooPosCardReaderConnectionState.FoundReader(
+                        id = "STRM261380012692",
+                        name = "STRM261380012692",
+                        onConnectClicked = {}
+                    )
                 ),
-                WooPosCardReaderConnectionState.FoundReader(
-                    id = "STRM261380012692",
-                    name = "STRM261380012692",
-                    onConnectClicked = {}
-                )
+                onCancelClicked = {},
             ),
+            onBackPressed = {},
+            onDismiss = {},
         )
     }
 }
