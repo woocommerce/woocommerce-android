@@ -70,9 +70,10 @@ class WooSitesVisibilityViewModel @Inject constructor(
         )
         _wooStoresState.value = _wooStoresState.value.copy(isLoading = true)
         launch {
+            val wooPushRegisteredSiteIds = pushNotificationRepository.getWooPushRegisteredSiteIds()
             val sitesToUpdate = _wooStoresState.value.wooStores
                 // Exclude sites using Woo Push Notifications System
-                .filterNot { pushNotificationRepository.isWooPushTokenRegisteredForSite(it.siteId) }
+                .filterNot { it.siteId in wooPushRegisteredSiteIds }
                 .map {
                     SiteNotificationSetting(
                         siteId = it.siteId,
