@@ -117,13 +117,22 @@ class PushNotificationRepository @Inject constructor(
     }
 
     private fun getPushTokenKeyForSite(siteId: Long): Preferences.Key<String> {
-        return stringPreferencesKey("push_token_$siteId")
+        return stringPreferencesKey("$PUSH_TOKEN_KEY_PREFIX$siteId")
     }
 
     suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
         val tokenKey = getPushTokenKeyForSite(siteId)
         return preferences[tokenKey] != null
+    }
+
+    suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
+        val preferences = pushNotificationsDataStore.data.first()
+        return preferences.asMap().keys
+            .mapNotNull { key ->
+                key.name.removePrefix(PUSH_TOKEN_KEY_PREFIX).toLongOrNull()
+            }
+            .toSet()
     }
 
     suspend fun unregisterDeviceFromAllPushes() = coroutineScope {
@@ -162,5 +171,9 @@ class PushNotificationRepository @Inject constructor(
         return UUID.randomUUID().toString().also {
             appPrefsWrapper.wooCorePushDeviceUUID = it
         }
+    }
+
+    companion object {
+        private const val PUSH_TOKEN_KEY_PREFIX = "push_token_"
     }
 }
