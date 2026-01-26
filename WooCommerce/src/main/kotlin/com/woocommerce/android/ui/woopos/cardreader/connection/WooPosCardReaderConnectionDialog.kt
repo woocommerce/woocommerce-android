@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothAdapter
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import android.util.Patterns
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -32,13 +33,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withLink
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityOptionsCompat
@@ -58,6 +66,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIco
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 
 @Composable
@@ -567,12 +576,23 @@ private fun ErrorContent(
     onRetryClicked: (() -> Unit)?,
     onCancelClicked: () -> Unit,
 ) {
+    val context = LocalContext.current
+    val linkColor = MaterialTheme.colorScheme.primary
+
     CardReaderDialogContent(
         title = title,
         icon = WooPosIcons.CardReaderError,
     ) {
-        WooPosText(
+        val annotatedMessage = buildAnnotatedStringWithLinks(
             text = message,
+            linkColor = linkColor,
+            onLinkClick = { url ->
+                ChromeCustomTabUtils.launchUrl(context, url)
+            }
+        )
+
+        WooPosText(
+            text = annotatedMessage,
             style = WooPosTypography.BodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
@@ -845,6 +865,44 @@ private fun UpdateBatteryLowErrorContent(
         onRetryClicked = null,
         onCancelClicked = onCancelClicked,
     )
+}
+
+@Composable
+private fun buildAnnotatedStringWithLinks(
+    text: String,
+    linkColor: Color,
+    onLinkClick: (String) -> Unit,
+) = buildAnnotatedString {
+    val urlMatcher = Patterns.WEB_URL.matcher(text)
+    var lastEnd = 0
+
+    while (urlMatcher.find()) {
+        val urlStart = urlMatcher.start()
+        val urlEnd = urlMatcher.end()
+        val url = text.substring(urlStart, urlEnd)
+
+        append(text.substring(lastEnd, urlStart))
+
+        val linkAnnotation = LinkAnnotation.Url(url) {
+            onLinkClick(url)
+        }
+        withStyle(
+            style = SpanStyle(
+                color = linkColor,
+                textDecoration = TextDecoration.Underline
+            )
+        ) {
+            withLink(linkAnnotation) {
+                append(url)
+            }
+        }
+
+        lastEnd = urlEnd
+    }
+
+    if (lastEnd < text.length) {
+        append(text.substring(lastEnd))
+    }
 }
 
 @WooPosPreview
