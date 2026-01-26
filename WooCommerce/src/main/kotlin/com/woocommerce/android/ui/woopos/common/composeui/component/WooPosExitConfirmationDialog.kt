@@ -1,24 +1,16 @@
 package com.woocommerce.android.ui.woopos.common.composeui.component
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -44,55 +36,37 @@ fun WooPosExitConfirmationDialog(
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_dialog_exit_confirmation_background_content_description
         ),
+        onCloseClick = onDismissRequest,
         onDismissRequest = onDismissRequest,
     ) {
-        Box(
-            modifier = modifier.padding(WooPosSpacing.XLarge.value)
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
-                WooPosText(
-                    text = title,
-                    style = WooPosTypography.Heading,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(modifier = modifier.height(WooPosSpacing.Medium.value))
-                WooPosText(
-                    text = message,
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Spacer(modifier = modifier.height(WooPosSpacing.XXXLarge.value))
-                WooPosButton(
-                    modifier = modifier
-                        .fillMaxWidth(),
-                    onClick = {
-                        scope.launch {
-                            onDismissRequest()
-                            delay(300)
-                            onExit()
-                        }
-                    },
-                    text = dismissButtonText
-                )
-            }
-
-            IconButton(
-                onClick = { onDismissRequest() },
-                modifier = modifier
-                    .align(Alignment.TopEnd)
-            ) {
-                Icon(
-                    ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                    contentDescription = stringResource(
-                        id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                    ),
-                    modifier = modifier
-                        .size(40.dp),
-                    tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                )
-            }
+            WooPosText(
+                text = title,
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            WooPosText(
+                text = message,
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
+            WooPosButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {
+                    scope.launch {
+                        onDismissRequest()
+                        delay(300)
+                        onExit()
+                    }
+                },
+                text = dismissButtonText
+            )
         }
     }
 }
