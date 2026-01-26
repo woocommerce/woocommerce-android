@@ -1136,7 +1136,11 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     ORDER_VIEW_CUSTOM_FIELDS_TAPPED,
 
     // Black-flagged sites
-    BLACK_FLAGGED_WEBSITE_DETECTED;
+    BLACK_FLAGGED_WEBSITE_DETECTED,
+
+    // Age restriction check
+    ACCOUNT_AGE_RESTRICTION_CHECKED,
+    ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN;
 
     override val isPosEvent: Boolean = false
 }

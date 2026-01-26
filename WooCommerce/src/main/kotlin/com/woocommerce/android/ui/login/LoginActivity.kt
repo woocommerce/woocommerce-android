@@ -9,6 +9,7 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -37,6 +38,7 @@ import com.woocommerce.android.extensions.parcelable
 import com.woocommerce.android.support.help.HelpActivity
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.support.requests.SupportRequestFormActivity
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.login.LoginPrologueCarouselFragment.PrologueCarouselListener
 import com.woocommerce.android.ui.login.LoginPrologueFragment.PrologueListener
@@ -150,6 +152,9 @@ class LoginActivity :
     @Inject
     internal lateinit var uiMessageResolver: UIMessageResolver
 
+    @Inject
+    internal lateinit var ageEligibilityChecker: AgeEligibilityChecker
+
     private var loginMode: LoginMode? = null
     private lateinit var binding: ActivityLoginBinding
 
@@ -206,6 +211,8 @@ class LoginActivity :
             unifiedLoginTracker.setFlow(ss.getString(KEY_UNIFIED_TRACKER_FLOW))
             connectSiteInfo = ss.parcelable(KEY_CONNECT_SITE_INFO)
         }
+
+        keepTrackOfAgeEligibility()
     }
 
     private fun applyDefaultWindowInsets() {
@@ -1039,6 +1046,26 @@ class LoginActivity :
                 )
                 ToastUtils.showToast(this, R.string.login_app_login_malformed_link)
                 showPrologue()
+            }
+        }
+    }
+
+    private fun keepTrackOfAgeEligibility() {
+        lifecycleScope.launch {
+            ageEligibilityChecker.ageEligibilityState.collect { ageEligibilityState ->
+                val dialog = AlertDialog.Builder(this@LoginActivity)
+                    .setTitle(ageEligibilityState.ageRestrictedTitle)
+                    .setMessage(ageEligibilityState.ageRestrictedMessage)
+                    .setCancelable(false)
+                    .setPositiveButton(R.string.dialog_ok) { _, _ -> finishAffinity() }
+                    .create()
+
+                if (ageEligibilityState.isUserAgeRangeEligible.not()) {
+                    dialog.show()
+                    AnalyticsTracker.track(stat = AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_DIALOG_SHOWN)
+                } else {
+                    dialog.hide()
+                }
             }
         }
     }
