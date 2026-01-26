@@ -291,7 +291,7 @@ class AdjustProductQuantityTest : BaseUnitTest() {
     private val bundleProduct = OrderCreationProduct.GroupedProductItemWithRules(
         item = bundleItem,
         rules = bundleItem.configuration!!.rules,
-        configuration = bundleItem.configuration!!,
+        configuration = bundleItem.configuration,
         productInfo = defaultProductInfo.copy(isConfigurable = true, productType = ProductType.BUNDLE),
         children = listOf(childrenProduct)
     )

@@ -1713,7 +1713,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
             .isInstanceOf(ShippingRatesState.DataState::class.java)
         val ratesState = shipment.shippingRatesState as ShippingRatesState.DataState
         assertThat(ratesState.selectedRate!!.selectedRateOption).isEqualTo(rateToBeSelected)
-        assertThat(ratesState.selectedRate!!.additionalSelectedOptions)
+        assertThat(ratesState.selectedRate.additionalSelectedOptions)
             .isEqualTo(listOf(ShippingRateOption.ADDITIONAL_HANDLING))
     }
 
