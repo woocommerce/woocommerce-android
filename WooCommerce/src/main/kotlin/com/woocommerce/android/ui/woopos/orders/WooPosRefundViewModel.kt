@@ -36,7 +36,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val loadPaymentGateway: WooPosLoadPaymentGateway
 ) : ViewModel() {
 
     @AssistedFactory
@@ -221,13 +222,15 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 }
             val refundItems = groupRefundItems(contentState.refundableItems, order, numberOfDecimalPoints)
 
+            val paymentGateway = loadPaymentGateway(order)
+
             val result = refundStore.createItemsRefund(
                 site = selectedSite.get(),
                 orderId = contentState.orderId,
                 amount = contentState.total,
                 reason = contentState.refundReason,
                 restockItems = true,
-                autoRefund = false,
+                autoRefund = paymentGateway.supportsRefunds,
                 items = refundItems
             )
 
