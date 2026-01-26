@@ -336,6 +336,19 @@ object AppPrefs {
         get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
         set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
 
+    private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
+
+    fun isFeatureFlagOverrideEnabled(flag: com.woocommerce.android.util.FeatureFlag, defaultValue: Boolean): Boolean {
+        return getBoolean(getFeatureFlagKey(flag), defaultValue)
+    }
+
+    fun setFeatureFlagOverride(flag: com.woocommerce.android.util.FeatureFlag, enabled: Boolean) {
+        setBoolean(getFeatureFlagKey(flag), enabled)
+    }
+
+    private fun getFeatureFlagKey(flag: com.woocommerce.android.util.FeatureFlag) =
+        PrefKeyString("$FEATURE_FLAG_OVERRIDE_PREFIX:${flag.name}")
+
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 
     fun setProductSortingChoice(currentSiteId: Int, value: String) {
