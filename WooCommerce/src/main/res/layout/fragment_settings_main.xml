@@ -244,6 +244,14 @@
             android:layout_height="wrap_content"
             app:optionTitle="@string/settings_licenses" />
 
+        <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+            android:id="@+id/option_dev_feature_flags"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:optionTitle="@string/dev_feature_flags"
+            tools:visibility="visible" />
+
         <View style="@style/Woo.Divider" />
 
         <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
