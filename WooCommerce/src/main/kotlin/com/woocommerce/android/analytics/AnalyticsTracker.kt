@@ -120,7 +120,6 @@ class AnalyticsTracker private constructor(
             selectedSiteModel?.let {
                 if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
-                finalProperties[KEY_WAS_ECOMMERCE_TRIAL] = it.wasEcommerceTrial
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
                 appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
             }
@@ -335,7 +334,6 @@ class AnalyticsTracker private constructor(
         const val KEY_IS_GIFT_CARD_REMOVED = "removed"
         const val KEY_SHIPPING_LINES_COUNT = "shipping_lines_count"
 
-        const val KEY_WAS_ECOMMERCE_TRIAL = "was_ecommerce_trial"
         const val KEY_PLAN_PRODUCT_SLUG = "plan_product_slug"
         const val KEY_CACHED_WOO_VERSION = "cached_woo_core_version"
 
