@@ -60,8 +60,9 @@ local.properties
 # Android Studio Navigation editor temp files
 .navigation/
 
-# Android Studio captures folder
+# Temporary Media files
 captures/
+*.mp4
 
 # Android Studio backup files
 projectFilesBackup/
@@ -119,6 +120,9 @@ google-upload-credentials.json
 
 # Junie AI Assistant
 .junie/
-/CLAUDE.md
-*.mp4
+
+# Claude Code
+/CLAUDE.local.md
 .claude/
+
+.grepai/

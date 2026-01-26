@@ -32,7 +32,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCApiVersionResp
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WCSystemPluginResponse.SystemPluginModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.WooSystemRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.system.toDomainModel
-import org.wordpress.android.fluxc.persistence.PluginSqlUtilsWrapper
+import org.wordpress.android.fluxc.persistence.SitePluginDao
 import org.wordpress.android.fluxc.persistence.SiteSqlUtils
 import org.wordpress.android.fluxc.persistence.dao.ProductSettingsDao
 import org.wordpress.android.fluxc.persistence.dao.SettingsDao
@@ -61,7 +61,7 @@ open class WooCommerceStore @Inject internal constructor(
     private val siteSqlUtils: SiteSqlUtils,
     private val accountStore: AccountStore,
     private val taxBasedOnDao: TaxBasedOnDao,
-    private val pluginSqlUtils: PluginSqlUtilsWrapper,
+    private val sitePluginDao: SitePluginDao,
     private val productSettingsDao: ProductSettingsDao,
     private val settingsDao: SettingsDao,
 ) : Store(dispatcher) {
@@ -106,7 +106,6 @@ open class WooCommerceStore @Inject internal constructor(
         return withContext(Dispatchers.IO) { WooResult(getWooCommerceSites()) }
     }
 
-    @Suppress("ReturnCount")
     suspend fun fetchWooCommerceSite(site: SiteModel): WooResult<SiteModel> {
         val fetchResult = siteStore.fetchSite(site)
 
@@ -173,23 +172,32 @@ open class WooCommerceStore @Inject internal constructor(
     }
 
     fun getSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
-        return pluginSqlUtils.getSitePluginByName(site, plugin.pluginName)
+        return runBlocking {
+            sitePluginDao.getSitePluginByName(site.localId(), plugin.pluginName)
+        }
     }
 
     fun getActiveSitePlugin(site: SiteModel, plugin: WooPlugin): SitePluginModel? {
-        return pluginSqlUtils.getActiveSitePluginByName(site, plugin.pluginName)
+        return runBlocking {
+            val allPlugins = sitePluginDao.getActiveSitePlugins(site.localId())
+            val extractedRequestedPluginName = plugin.pluginName.substringAfterLast('/')
+            allPlugins.firstOrNull { sitePlugin ->
+                val extractedPluginName = sitePlugin.name.substringAfterLast('/')
+                extractedPluginName == extractedRequestedPluginName
+            }
+        }
     }
 
     suspend fun getSitePlugins(site: SiteModel, plugins: List<WooPlugin>): List<SitePluginModel> {
         return coroutineEngine.withDefaultContext(T.DB, this, "getSitePlugins") {
             val pluginNames = plugins.map { it.pluginName }
-            pluginSqlUtils.getSitePluginByNames(site, pluginNames)
+            sitePluginDao.getSitePluginsByNames(site.localId(), pluginNames)
         }
     }
 
     suspend fun getSitePlugins(site: SiteModel): List<SitePluginModel> {
         return coroutineEngine.withDefaultContext(T.DB, this, "getSitePlugins") {
-            pluginSqlUtils.getSitePlugins(site)
+            sitePluginDao.getSitePlugins(site.localId())
         }
     }
 
@@ -203,7 +211,7 @@ open class WooCommerceStore @Inject internal constructor(
 
                 response.result?.plugins != null -> {
                     val plugins = response.result.plugins.map { it.toDomainModel(site.id) }
-                    pluginSqlUtils.insertOrReplaceSitePlugins(site, plugins)
+                    sitePluginDao.replaceAllSitePlugins(site.localId(), plugins)
                     WooResult(plugins)
                 }
 
@@ -335,6 +343,29 @@ open class WooCommerceStore @Inject internal constructor(
                     settingsDao.upsertSettings(settingsModel)
 
                     WooResult(settingsModel.let { WCSettingsMapper.mapToDomain(it) })
+                }
+
+                else -> {
+                    WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+                }
+            }
+        }
+    }
+
+    suspend fun fetchSiteSettingsTaxRoundAtSubtotal(site: SiteModel): WooResult<Boolean> {
+        return coroutineEngine.withDefaultContext(T.API, this, "fetchSiteSettingsTaxRoundAtSubtotal") {
+            val response = wcCoreRestClient.fetchSiteSettingsTaxRoundTaxAtSubtotal(site)
+            return@withDefaultContext when {
+                response.isError -> {
+                    AppLog.w(
+                        T.API,
+                        "Failed to fetch tax round at subtotal setting for site ${site.siteId}"
+                    )
+                    WooResult(response.error)
+                }
+
+                response.result != null -> {
+                    WooResult(response.result)
                 }
 
                 else -> {

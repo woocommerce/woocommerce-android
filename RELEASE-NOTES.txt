@@ -2,12 +2,37 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.1
+-----
+
+
+24.0
+-----
+- [*][Woo POS] Fixed order list and detail screens showing wrong currency for multi-currency orders [https://github.com/woocommerce/woocommerce-android/pull/15210]
+- [*][Woo POS] Display variation attributes on order detail screen [https://github.com/woocommerce/woocommerce-android/pull/15187]
+- [Internal][Woo POS] Optimize SQL queries for batch deletion in local catalog store [https://github.com/woocommerce/woocommerce-android/pull/15199]
+- [Internal][Woo POS] Apply POS product visibility filtering to remote/non-local-catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15191]
+- [Internal][Woo POS] Remove products hidden from POS during local catalog sync [https://github.com/woocommerce/woocommerce-android/pull/15190]
+- [Internal] Show JITMs on Dashboard regardless of onboarding status [https://github.com/woocommerce/woocommerce-android/pull/15170]
+- [Internal] Fix push notification double "cha-ching" issue [https://github.com/woocommerce/woocommerce-android/pull/15208]
+- [Internal] Remove `MediaXMLRPCClient` [https://github.com/woocommerce/woocommerce-android/pull/15178]
+- [*] Fixed group notification displaying issues [https://github.com/woocommerce/woocommerce-android/pull/15205]
+
 23.9
 -----
+- [Internal] Updated JITM banner design and migrated to Material 3 [https://github.com/woocommerce/woocommerce-android/pull/15155]
+- [*] Fixed First Product Created celebration dialog layout on tablets to eliminate excessive white space [https://github.com/woocommerce/woocommerce-android/pull/15116]
 - [Internal][Woo POS] Add analytics tracking for stale catalog warning dialog display [https://github.com/woocommerce/woocommerce-android/pull/15055]
 - [*][Woo POS] Fixed loading indicator colors to match the design [https://github.com/woocommerce/woocommerce-android/pull/15043]
 - [**][Woo POS] Fixed crash when deleted products are in cart during checkout [https://github.com/woocommerce/woocommerce-android/pull/15083]
 - [*][Woo POS] Display specific error when removed variation is added to the cart [https://github.com/woocommerce/woocommerce-android/pull/15076]
+- [*] Fixed a rare crash in the refund flow [https://github.com/woocommerce/woocommerce-android/pull/15109]
+- [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
+- [*][Internal] Migrated legacy Material Icons to Material Symbols [https://github.com/woocommerce/woocommerce-android/pull/15081]
+- [*] Fix widget sizing issues and improve refresh rate upon switching site or logging out [https://github.com/woocommerce/woocommerce-android/pull/15127]
+- [*] Unified transition animations across screens [https://github.com/woocommerce/woocommerce-android/pull/15128]
+- [*] Fixed a rare NullPointerException crash on the Dashboard screen [https://github.com/woocommerce/woocommerce-android/pull/15138]
+- [*][Internal] Remove the network call to the Woo Services plugin when it’s not supported [https://github.com/woocommerce/woocommerce-android/pull/15142]
 
 23.8
 -----
@@ -19,6 +44,7 @@
 - [Internal] Restore coupon drawable files mistakenly removed in previous release [https://github.com/woocommerce/woocommerce-android/pull/15005]
 - [*] Fixed a rare crash that occurred when displaying shipping rates for a selected package [https://github.com/woocommerce/woocommerce-android/pull/15032]
 - [*][Woo POS] Prepopulate orders cache after opening POS to improve performance [https://github.com/woocommerce/woocommerce-android/pull/15066]
+- [*] [WEAR] Resolved title clipping on round screens for Wear [https://github.com/woocommerce/woocommerce-android/pull/15108]
 
 23.7
 -----

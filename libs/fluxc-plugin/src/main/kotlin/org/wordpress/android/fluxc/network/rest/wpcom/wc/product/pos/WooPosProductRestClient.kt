@@ -16,7 +16,7 @@ class WooPosProductRestClient @Inject constructor(
     private val wooNetwork: WooNetwork,
 ) {
     companion object {
-        private const val PRODUCT_FIELDS = "localSiteId,id,name,sku,global_unique_id,type,price,downloadable," +
+        private const val PRODUCT_FIELDS = "id,name,sku,global_unique_id,type,price,downloadable," +
             "images,attributes,parent_id,status,regular_price,sale_price,on_sale,description," +
             "short_description,manage_stock,stock_quantity,stock_status,backorders_allowed," +
             "backordered,categories,tags,date_modified"
@@ -28,9 +28,10 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchProducts(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
         includeStatus: List<CoreProductStatus>? = null,
     ): WooResult<Array<ProductApiResponse>> {
         val url = WOOCOMMERCE.products.pathV3
@@ -39,7 +40,8 @@ class WooPosProductRestClient @Inject constructor(
             page = page,
             modifiedAfter = modifiedAfter,
             fields = PRODUCT_FIELDS,
-            includeStatus = includeStatus
+            includeStatus = includeStatus,
+            posProductsOnly = posProductsOnly
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -62,12 +64,19 @@ class WooPosProductRestClient @Inject constructor(
 
     suspend fun fetchVariations(
         site: SiteModel,
-        modifiedAfter: String? = null,
         page: Int,
         pageSize: Int,
+        posProductsOnly: Boolean,
+        modifiedAfter: String? = null,
     ): WooResult<Array<WooPosVariationApiResponse>> {
         val url = WOOCOMMERCE.variations.pathV3
-        val params = buildBaseParams(pageSize, page, VARIATIONS_FIELDS, modifiedAfter)
+        val params = buildBaseParams(
+            pageSize = pageSize,
+            page = page,
+            fields = VARIATIONS_FIELDS,
+            modifiedAfter = modifiedAfter,
+            posProductsOnly = posProductsOnly
+        )
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
@@ -90,7 +99,7 @@ class WooPosProductRestClient @Inject constructor(
     suspend fun postGenerateCatalog(
         site: SiteModel,
     ): WooResult<WooPosGenerateCatalogResponse> {
-        val url = WOOCOMMERCE.product_catalog.create.pathPosV1
+        val url = WOOCOMMERCE.catalog.create.pathPosV1
         val params = mutableMapOf(
             "_product_fields" to PRODUCT_FIELDS,
             "_variation_fields" to VARIATIONS_FIELDS
@@ -120,17 +129,21 @@ class WooPosProductRestClient @Inject constructor(
         fields: String,
         modifiedAfter: String?,
         includeStatus: List<CoreProductStatus>? = null,
+        posProductsOnly: Boolean = false,
     ): MutableMap<String, String> {
         return mutableMapOf(
             "per_page" to pageSize.toString(),
             "page" to page.toString(),
             "_fields" to fields,
-            ).also {
+        ).also {
             modifiedAfter?.let { modified ->
                 it["modified_after"] = modified
             }
             includeStatus?.let { statuses ->
                 it["include_status"] = statusListToString(statuses)
+            }
+            if (posProductsOnly) {
+                it["pos_products_only"] = "true"
             }
         }
     }

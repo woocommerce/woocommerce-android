@@ -3,12 +3,16 @@ package com.woocommerce.android.ui.bookings.filter.datetime
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.Time
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import java.time.Clock
 import java.time.Instant
@@ -20,6 +24,7 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
 
     private val zone = ZoneOffset.UTC
 
+    private val dateFormatter = mock<DateFormatter>()
     private val clock = Clock.fixed(
         LocalDateTime.of(2025, 11, 13, 10, 0)
             .toInstant(zone),
@@ -195,10 +200,13 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             )
 
             // When
+            whenever(dateFormatter.formatDate(any<LocalDateTime>())).thenReturn("Dec 12, 2025")
+            whenever(dateFormatter.formatTime(any<LocalDateTime>())).thenReturn("12:00")
             val vm = DateTimeFilterViewModel(
                 onTypeFilterChanged = { _ -> },
                 savedStateHandle = SavedStateHandle(),
                 clock = clock,
+                dateFormatter = dateFormatter,
                 initialRange = range,
             )
 
@@ -281,10 +289,13 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             // Given
             val fromInitial = LocalDateTime.of(2025, 1, 1, 9, 0)
             val toInitial = LocalDateTime.of(2025, 1, 1, 10, 0)
+            whenever(dateFormatter.formatDate(any<LocalDateTime>())).thenReturn("Dec 12, 2025")
+            whenever(dateFormatter.formatTime(any<LocalDateTime>())).thenReturn("12:00")
             val vm = DateTimeFilterViewModel(
                 onTypeFilterChanged = { _ -> },
                 savedStateHandle = SavedStateHandle(),
                 clock = clock,
+                dateFormatter = dateFormatter,
                 initialRange = BookingsFilterOption.DateRange(
                     after = fromInitial.toInstant(ZoneOffset.UTC),
                     before = toInitial.toInstant(ZoneOffset.UTC)
@@ -317,10 +328,13 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
             // Given
             val fromInitial = LocalDateTime.of(2025, 1, 1, 9, 0)
             val toInitial = LocalDateTime.of(2025, 1, 1, 10, 0)
+            whenever(dateFormatter.formatDate(any<LocalDateTime>())).thenReturn("Dec 12, 2025")
+            whenever(dateFormatter.formatTime(any<LocalDateTime>())).thenReturn("12:00")
             val vm = DateTimeFilterViewModel(
                 onTypeFilterChanged = { _ -> },
                 savedStateHandle = SavedStateHandle(),
                 clock = clock,
+                dateFormatter = dateFormatter,
                 initialRange = BookingsFilterOption.DateRange(
                     after = fromInitial.toInstant(ZoneOffset.UTC),
                     before = toInitial.toInstant(ZoneOffset.UTC)
@@ -419,10 +433,13 @@ class DateTimeFilterViewModelTest : BaseUnitTest() {
     }
 
     private fun createVm(): DateTimeFilterViewModel {
+        whenever(dateFormatter.formatDate(any<LocalDateTime>())).thenReturn("Dec 12, 2025")
+        whenever(dateFormatter.formatTime(any<LocalDateTime>())).thenReturn("12:00")
         return DateTimeFilterViewModel(
             onTypeFilterChanged = { _ -> },
             savedStateHandle = SavedStateHandle(),
             clock = clock,
+            dateFormatter = dateFormatter,
         )
     }
 }

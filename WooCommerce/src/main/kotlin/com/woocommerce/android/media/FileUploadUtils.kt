@@ -72,38 +72,38 @@ object FileUploadUtils {
         localSiteId: Int,
         mimeType: String
     ): MediaModel? {
-        var filename = FluxCMediaUtils.getFileName(fetchedUri.path) ?: ""
-        val fileExtension: String = filename
-            .substringAfterLast(delimiter = ".", missingDelimiterValue = "")
-            .ifBlank {
-                MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)?.also {
-                    // Filename doesn't have an extension in this case
-                    filename += ".$it"
-                }
-            }
-            ?: run {
-                // If file extension is null, upload won't work on wordpress.com
-                WooLog.w(T.MEDIA, "We couldn't identify the file's extension")
-                return null
-            }
+        val originalFilename = FluxCMediaUtils.getFileName(fetchedUri.path) ?: ""
+        val filenameWithExtension = ensureFilenameHasExtension(originalFilename, mimeType) ?: run {
+            WooLog.w(T.MEDIA, "Cannot upload file without extension")
+            return null
+        }
 
         val media = MediaModel(
             localSiteId,
             DateTimeUtils.iso8601UTCFromTimestamp(System.currentTimeMillis() / 1000),
-            filename,
+            filenameWithExtension,
             path,
-            fileExtension,
             mimeType,
-            filename,
-            null
+            filenameWithExtension,
         )
         val instantiatedMedia = mediaStore.instantiateMediaModel(media)
-        return if (instantiatedMedia != null) {
-            instantiatedMedia
-        } else {
-            WooLog.w(T.MEDIA, "We couldn't instantiate the media")
-            null
+        return instantiatedMedia
+    }
+
+    /**
+     * Ensures the filename has a file extension, which is required for WordPress.com uploads.
+     * If the filename doesn't have an extension, attempts to derive one from the mimeType.
+     *
+     * @return filename with extension, or null if no extension could be determined
+     */
+    private fun ensureFilenameHasExtension(filename: String, mimeType: String): String? {
+        val extension = filename.substringAfterLast(".", "")
+        if (extension.isNotBlank()) {
+            return filename
         }
+
+        val extensionFromMime = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType)
+        return extensionFromMime?.let { "$filename.$it" }
     }
 
     @Suppress("TooGenericExceptionCaught")

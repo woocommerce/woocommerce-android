@@ -1,1 +1,1 @@
-This update smooths your workflow with fixes to back navigation, shipping rate crashes, and payment screen layout. POS also gets improvements, including faster Local Catalog settings, better handling of deleted products, and automatic scrolling to your newest orders.
+Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.

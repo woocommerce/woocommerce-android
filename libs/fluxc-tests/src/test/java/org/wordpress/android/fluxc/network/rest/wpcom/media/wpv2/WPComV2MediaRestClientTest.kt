@@ -21,7 +21,7 @@ import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.UnitTestUtils
-import org.wordpress.android.fluxc.action.UploadAction.UPLOADED_MEDIA
+import org.wordpress.android.fluxc.action.MediaAction.UPLOADED_MEDIA
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.model.SiteModel

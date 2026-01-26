@@ -20,19 +20,17 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import com.woocommerce.android.R
@@ -83,7 +81,6 @@ fun AdDestinationParametersScreen(
             Toolbar(
                 title = stringResource(id = R.string.blaze_campaign_edit_ad_destination_parameters_property_title),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack
             )
         },
         modifier = Modifier.background(MaterialTheme.colors.surface)
@@ -101,7 +98,7 @@ fun AdDestinationParametersScreen(
                         .padding(dimensionResource(id = R.dimen.minor_50)),
                     onClick = onAddParameterTapped,
                     text = stringResource(id = R.string.blaze_campaign_edit_ad_destination_add_parameter_button),
-                    icon = Icons.Default.Add
+                    icon = ImageVector.vectorResource(R.drawable.ic_add)
                 )
             }
 
@@ -213,7 +210,7 @@ private fun ParameterItem(
                 onClick = { onDeleteParameterTapped(key) }
             ) {
                 Icon(
-                    imageVector = Icons.Default.DeleteOutline,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
                     contentDescription = stringResource(id = R.string.delete),
                     tint = colorResource(id = R.color.color_on_surface_medium)
                 )
@@ -239,7 +236,7 @@ fun PreviewAdDestinationParametersScreen() {
                     "utm_medium" to "android",
                     "utm_campaign" to "blaze"
                 ),
-                bottomSheetState = ViewState.ParameterBottomSheetState.Hidden
+                bottomSheetState = ParameterBottomSheetState.Hidden
             ),
             onBackPressed = {},
             onAddParameterTapped = {},

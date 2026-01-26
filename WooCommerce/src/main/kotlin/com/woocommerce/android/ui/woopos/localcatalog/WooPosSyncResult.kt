@@ -16,6 +16,7 @@ sealed class PosLocalCatalogSyncResult {
         class DatabaseError(error: String) : Failure(error)
         class InvalidResponse(error: String) : Failure(error)
         class UnexpectedError(error: String) : Failure(error)
+        class CatalogGenerationTimeout(error: String) : Failure(error)
     }
 }
 

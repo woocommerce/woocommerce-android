@@ -15,7 +15,6 @@ import org.wordpress.android.fluxc.store.WCOrderStore
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.HeadersParser
 import org.wordpress.android.util.AppLog
-import java.time.Clock
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -27,7 +26,6 @@ class BookingsStore @Inject internal constructor(
     private val bookingDtoMapper: BookingDtoMapper,
     private val headersParser: HeadersParser,
     private val coroutineEngine: CoroutineEngine,
-    private val clock: Clock,
 ) {
     suspend fun fetchBookings(
         site: SiteModel,
@@ -56,31 +54,23 @@ class BookingsStore @Inject internal constructor(
                             )
                         }
                     }
-                    // Clear existing bookings when fetching the first page.
-                    // If filters are applied, only clear entries that match the applied filters,
-                    // otherwise (no filters) clear all entries for the site.
-                    if (page == 1 && query.isNullOrEmpty()) {
-                        when {
-                            filters == BookingFilters.EMPTY -> {
-                                bookingsDao.replaceAllForSite(site.localId(), entities)
-                            }
 
-                            filters.dateRange != null && filters.isTodayOrUpcoming -> {
-                                bookingsDao.cleanAndUpsertBookings(
-                                    site.localId(),
-                                    filters.dateRange,
-                                    entities
-                                )
-                            }
-
-                            else -> {
-                                // For any other filters, avoid deletions to prevent removing unrelated cached items
-                                bookingsDao.insertOrReplace(entities)
-                            }
+                    when {
+                        page == 1 && query.isNullOrEmpty() && filters == BookingFilters.EMPTY -> {
+                            // Refreshing with no filters applied: perform a bulk delete.
+                            bookingsDao.replaceAllForSite(site.localId(), entities)
                         }
-                    } else {
-                        bookingsDao.insertOrReplace(entities)
+
+                        page == 1 && query.isNullOrEmpty() -> {
+                            // Refreshing with filters applied: selectively remove only the stale entries.
+                            bookingsDao.cleanAndUpsertBookings(site.localId(), filters, entities)
+                        }
+
+                        else -> {
+                            bookingsDao.upsert(entities)
+                        }
                     }
+
                     val totalPages = headersParser.getTotalPages(response.headers)
                     // Determine if we can load more from the total pages header if available, otherwise
                     // infer it from the number of items returned
@@ -97,13 +87,6 @@ class BookingsStore @Inject internal constructor(
             }
         }
     }
-
-    private val BookingFilters.isTodayOrUpcoming: Boolean
-        get() {
-            val today = BookingsDateRangePresets.today(clock)
-            val upcoming = BookingsDateRangePresets.upcoming(clock)
-            return (dateRange == today || dateRange == upcoming) && enabledFiltersCount == 1
-        }
 
     fun observeBookings(
         site: SiteModel,
@@ -150,7 +133,7 @@ class BookingsStore @Inject internal constructor(
                             orderEntity = orderResult?.model,
                         )
                     }
-                    bookingsDao.insertOrReplace(listOf(entity))
+                    bookingsDao.upsert(listOf(entity))
                     WooResult(entity)
                 }
 
@@ -186,7 +169,7 @@ class BookingsStore @Inject internal constructor(
                 val entity = with(bookingDtoMapper) {
                     response.result.toEntity(site.localId())
                 }
-                bookingsDao.insertOrReplace(entity)
+                bookingsDao.upsert(entity)
                 WooResult(entity)
             }
 
@@ -230,7 +213,7 @@ class BookingsStore @Inject internal constructor(
                     if (updatedBookingEntity == null) {
                         return@withDefaultContext WooResult(WooError(GENERIC_ERROR, UNKNOWN))
                     } else {
-                        bookingsDao.insertOrReplace(updatedBookingEntity)
+                        bookingsDao.upsert(updatedBookingEntity)
                         return@withDefaultContext WooResult(updatedBookingEntity)
                     }
                 }

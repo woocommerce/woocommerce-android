@@ -57,7 +57,7 @@ class NotificationChannelsHandler @Inject constructor(
             if (channelType == NEW_ORDER) {
                 checkAndTrackNewOrderNotificationSound(it)
             }
-            WooLog.i(WooLog.T.NOTIFS, "Notification channel already created with the following attributes: $it")
+            WooLog.i(WooLog.T.NOTIFICATIONS, "Notification channel already created with the following attributes: $it")
             return
         }
 
@@ -84,7 +84,7 @@ class NotificationChannelsHandler @Inject constructor(
         var updatedChannel = channel
         if (sound?.toString()?.matches("^android\\.resource.*\\d+$".toRegex()) == true) {
             // The channel still uses the Uri based on the resource id, so we need to recreate it
-            WooLog.d(WooLog.T.NOTIFS, "Orders notification channel still uses ID based sound, recreating it.")
+            WooLog.d(WooLog.T.NOTIFICATIONS, "Orders notification channel still uses ID based sound, recreating it.")
             recreateNotificationChannel(NEW_ORDER)
             updatedChannel = notificationManagerCompat.getNotificationChannel(NEW_ORDER.getChannelId())!!
         }

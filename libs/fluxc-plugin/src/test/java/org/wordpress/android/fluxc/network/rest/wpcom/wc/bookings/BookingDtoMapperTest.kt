@@ -270,7 +270,8 @@ class BookingDtoMapperTest {
         orderItemId = orderItemId,
         parentId = parentId,
         personCounts = personCounts,
-        localTimezone = localTimezone
+        localTimezone = localTimezone,
+        attendanceStatus = null,
     )
 
     private fun createSampleOrderEntity() = OrderEntity(

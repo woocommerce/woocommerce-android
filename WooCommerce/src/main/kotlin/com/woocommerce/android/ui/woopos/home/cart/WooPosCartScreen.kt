@@ -33,12 +33,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteOutline
-import androidx.compose.material.icons.outlined.AddShoppingCart
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.Inventory2
-import androidx.compose.material.icons.outlined.LocalOffer
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -54,10 +48,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -203,7 +198,7 @@ fun CartBodyEmpty(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
-            imageVector = Icons.Outlined.AddShoppingCart,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_add_shopping_cart_24dp),
             contentDescription = stringResource(R.string.woopos_cart_empty_content_description),
             modifier = Modifier.size(80.dp),
             tint = WooPosTheme.colors.onSurfaceVariantLowest.copy(alpha = 0.5F)
@@ -446,7 +441,7 @@ private fun ClearCartButton(
 
     Box(modifier = modifier) {
         WooPosIconButton(
-            icon = Icons.Default.DeleteOutline,
+            icon = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
             enabled = !dropdownExpanded,
             onClick = { dropdownExpanded = true },
             contentDescription = stringResource(
@@ -520,7 +515,7 @@ private fun ProductItem(
                     .width(96.dp)
                     .fillMaxHeight()
                     .heightIn(min = 96.dp),
-                placeholderIcon = Icons.Outlined.Inventory2,
+                placeholderIcon = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                 placeholderIconSize = 36.dp
             )
 
@@ -625,7 +620,7 @@ private fun CouponItem(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    imageVector = Icons.Outlined.LocalOffer,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_sell_24dp),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(
                         when (item.validationState) {
@@ -797,7 +792,7 @@ private fun ErrorItem(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    imageVector = Icons.Outlined.Inventory2,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_inventory_2_24dp),
                     contentDescription = null,
                     colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onError),
                     modifier = Modifier.size(36.dp)
@@ -858,7 +853,7 @@ private fun RemoveItemFromCartButton(
             .semantics { contentDescription = removeButtonContentDescription }
     ) {
         Icon(
-            imageVector = Icons.Outlined.Delete,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_delete_24dp),
             tint = WooPosTheme.colors.onSurfaceVariantHighest,
             contentDescription = null,
         )

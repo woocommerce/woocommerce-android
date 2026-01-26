@@ -32,9 +32,6 @@ import androidx.compose.material.SnackbarHost
 import androidx.compose.material.SnackbarHostState
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -44,9 +41,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
@@ -136,7 +135,7 @@ private fun CustomFieldsScreen(
                 contentColor = Color.White
             ) {
                 Icon(
-                    imageVector = Icons.Default.Add,
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_add),
                     contentDescription = stringResource(id = R.string.custom_fields_add_button)
                 )
             }
@@ -314,7 +313,7 @@ private fun CustomFieldItem(
         }
 
         Icon(
-            imageVector = Icons.AutoMirrored.Default.ArrowForwardIos,
+            imageVector = ImageVector.vectorResource(R.drawable.ic_arrow_forward_ios_24dp),
             contentDescription = null,
             modifier = Modifier
                 .padding(start = 8.dp)

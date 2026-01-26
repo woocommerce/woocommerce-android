@@ -62,7 +62,7 @@ class ProductTypeBottomSheetBuilder @Inject constructor(
                 type = ProductType.EXTERNAL,
                 titleResource = R.string.product_type_external_title,
                 descResource = R.string.product_type_external_desc,
-                iconResource = R.drawable.ic_gridicons_up_right
+                iconResource = R.drawable.ic_arrow_outward_24dp
             )
         )
     }

@@ -16,8 +16,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -57,7 +55,6 @@ private fun MediaUploadErrorListScreen(
             Toolbar(
                 title = stringResource(id = R.string.product_upload_error_title),
                 onNavigationButtonClick = onBackPressed,
-                navigationIcon = Icons.AutoMirrored.Filled.ArrowBack,
             )
         },
         content = { padding ->

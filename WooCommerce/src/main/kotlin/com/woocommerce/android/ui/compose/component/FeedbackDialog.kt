@@ -19,17 +19,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.outlined.Reviews
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -100,7 +99,7 @@ fun FeedbackDialog(
                         )
                         WCTextButton(
                             onClick = { onAction() },
-                            icon = Icons.Outlined.Reviews,
+                            icon = ImageVector.vectorResource(R.drawable.ic_reviews_24dp),
                             text = action,
                             colors = ButtonDefaults
                                 .textButtonColors(contentColor = colorResource(R.color.woo_message_on_surface)),
@@ -110,7 +109,7 @@ fun FeedbackDialog(
                     }
                     IconButton(onClick = { onClose() }) {
                         Icon(
-                            imageVector = Icons.Filled.Close,
+                            imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                             tint = MaterialTheme.colors.onPrimary.copy(alpha = .60f),
                             contentDescription = stringResource(id = R.string.close),
                             modifier = Modifier.padding(14.dp)

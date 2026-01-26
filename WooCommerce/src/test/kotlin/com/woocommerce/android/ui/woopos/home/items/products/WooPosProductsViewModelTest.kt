@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.home.items.products
 
 import app.cash.turbine.test
+import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -11,6 +13,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemSelectionViewState
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosProductsViewState
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogProductSyncResult
+import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -38,6 +42,9 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -556,6 +563,150 @@ class WooPosProductsViewModelTest {
             )
         )
     }
+
+    @Test
+    fun `given network error on PTR, when pull to refresh fails, then show offline error message`() = runTest {
+        // GIVEN
+        val offlineErrorMessage = "No internet connection. Please check your network and try again."
+        whenever(resourceProvider.getString(R.string.woo_pos_ptr_offline_error)).thenReturn(offlineErrorMessage)
+        whenever(productsDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(
+                    PosLocalCatalogSyncResult.Failure.NetworkError("Network unavailable")
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.ToastMessageDisplayed(message = offlineErrorMessage))
+        )
+    }
+
+    @Test
+    fun `given non-network error on PTR, when pull to refresh fails, then show generic error message`() = runTest {
+        // GIVEN
+        val genericErrorMessage = "Something went wrong, Please try again later."
+        whenever(resourceProvider.getString(R.string.something_went_wrong_try_again)).thenReturn(genericErrorMessage)
+        whenever(productsDataSource.refreshProducts()).thenReturn(
+            Result.success(
+                PosLocalCatalogProductSyncResult(
+                    PosLocalCatalogSyncResult.Failure.DatabaseError("Database error")
+                )
+            )
+        )
+
+        // WHEN
+        val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+        // THEN
+        verify(fromChildToParentEventSender).sendToParent(
+            eq(ChildToParentEvent.ToastMessageDisplayed(message = genericErrorMessage))
+        )
+    }
+
+    @Test
+    fun `given remote sync network error on PTR, when pull to refresh fails, then show offline error message`() =
+        runTest {
+            // GIVEN
+            val offlineErrorMessage = "No internet connection. Please check your network and try again."
+            whenever(resourceProvider.getString(R.string.woo_pos_ptr_offline_error)).thenReturn(offlineErrorMessage)
+            whenever(productsDataSource.refreshProducts()).thenReturn(
+                Result.success(
+                    ProductsResult.Remote(
+                        Result.failure(
+                            WooException(
+                                WooError(
+                                    type = WooErrorType.NO_CONNECTION,
+                                    original = GenericErrorType.NO_CONNECTION,
+                                    message = "No network"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+            // THEN
+            verify(fromChildToParentEventSender).sendToParent(
+                eq(ChildToParentEvent.ToastMessageDisplayed(message = offlineErrorMessage))
+            )
+        }
+
+    @Test
+    fun `given remote sync timeout error on PTR, when pull to refresh fails, then show offline error message`() =
+        runTest {
+            // GIVEN
+            val offlineErrorMessage = "No internet connection. Please check your network and try again."
+            whenever(resourceProvider.getString(R.string.woo_pos_ptr_offline_error)).thenReturn(offlineErrorMessage)
+            whenever(productsDataSource.refreshProducts()).thenReturn(
+                Result.success(
+                    ProductsResult.Remote(
+                        Result.failure(
+                            WooException(
+                                WooError(
+                                    type = WooErrorType.TIMEOUT,
+                                    original = GenericErrorType.TIMEOUT,
+                                    message = "Request timed out"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+            // THEN
+            verify(fromChildToParentEventSender).sendToParent(
+                eq(ChildToParentEvent.ToastMessageDisplayed(message = offlineErrorMessage))
+            )
+        }
+
+    @Test
+    fun `given remote sync generic error on PTR, when pull to refresh fails, then show generic error message`() =
+        runTest {
+            // GIVEN
+            val genericErrorMessage = "Something went wrong, Please try again later."
+            whenever(
+                resourceProvider.getString(R.string.something_went_wrong_try_again)
+            ).thenReturn(genericErrorMessage)
+            whenever(productsDataSource.refreshProducts()).thenReturn(
+                Result.success(
+                    ProductsResult.Remote(
+                        Result.failure(
+                            WooException(
+                                WooError(
+                                    type = WooErrorType.GENERIC_ERROR,
+                                    original = GenericErrorType.UNKNOWN,
+                                    message = "Something went wrong"
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+
+            // WHEN
+            val viewModel = createViewModel()
+            viewModel.onUIEvent(WooPosProductsUIEvent.PullToRefreshTriggered)
+
+            // THEN
+            verify(fromChildToParentEventSender).sendToParent(
+                eq(ChildToParentEvent.ToastMessageDisplayed(message = genericErrorMessage))
+            )
+        }
 
     private fun createViewModel(): WooPosProductsViewModel {
         return WooPosProductsViewModel(

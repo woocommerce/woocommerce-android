@@ -19,7 +19,7 @@ private typealias Assets = Map<String, String>?
 @HiltViewModel
 class JitmViewModel @Inject constructor(
     savedState: SavedStateHandle,
-    private val jitmStoreCache: JitmStoreInMemoryCache,
+    private val bannerMessageRepository: JitmBannerMessageRepository,
     private val jitmTracker: JitmTracker,
     private val jitmUtmProvider: JitmUtmProvider,
     private val selectedSite: SelectedSite,
@@ -40,7 +40,7 @@ class JitmViewModel @Inject constructor(
 
     private fun fetchJitms(jitmMessagePath: String) {
         launch {
-            val messages = jitmStoreCache.getMessagesForPath(jitmMessagePath)
+            val messages = bannerMessageRepository.getMessagesForPath(jitmMessagePath)
             populateResultToUI(messages.firstOrNull())
         }
     }
@@ -82,7 +82,7 @@ class JitmViewModel @Inject constructor(
     }
 
     private fun onJitmCtaClicked(model: JITMApiResponse) {
-        jitmStoreCache.onCtaClicked(messagePath)
+        bannerMessageRepository.onCtaClicked(messagePath, model.id)
         jitmTracker.trackJitmCtaTapped(
             utmSource,
             model.id,
@@ -105,24 +105,21 @@ class JitmViewModel @Inject constructor(
         _jitmState.value = JitmState.Hidden
         jitmTracker.trackJitmDismissTapped(utmSource, model.id, model.featureClass)
         launch {
-            jitmStoreCache.dismissJitmMessage(messagePath, model.id, model.featureClass).also { response ->
-                when {
-                    response.model != null && response.model!! -> {
-                        jitmTracker.trackJitmDismissSuccess(
-                            utmSource,
-                            model.id,
-                            model.featureClass
-                        )
-                    }
-
-                    else -> jitmTracker.trackJitmDismissFailure(
-                        utmSource,
-                        model.id,
-                        model.featureClass,
-                        response.error?.type,
-                        response.error?.message
-                    )
-                }
+            val success = bannerMessageRepository.dismissMessage(messagePath, model.id, model.featureClass)
+            if (success) {
+                jitmTracker.trackJitmDismissSuccess(
+                    utmSource,
+                    model.id,
+                    model.featureClass
+                )
+            } else {
+                jitmTracker.trackJitmDismissFailure(
+                    utmSource,
+                    model.id,
+                    model.featureClass,
+                    null,
+                    null
+                )
             }
         }
     }
@@ -135,16 +132,16 @@ class JitmViewModel @Inject constructor(
             )
         } ?: JitmState.Banner.LocalOrRemoteImage.Local(R.drawable.ic_banner_upsell_card_reader_illustration)
 
-    private fun Assets.getBadgeIcon() =
-        this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)?.let {
-            JitmState.Banner.LabelOrRemoteIcon.Remote(
-                urlLightMode = it,
-                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: it
+    private fun Assets.getBadgeIcon(): JitmState.Banner.LabelOrRemoteIcon? {
+        val badgeUrl = this?.get(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY)
+        return when {
+            badgeUrl.isNullOrEmpty().not() -> JitmState.Banner.LabelOrRemoteIcon.Remote(
+                urlLightMode = badgeUrl,
+                urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: badgeUrl
             )
+            else -> null
         }
-            ?: JitmState.Banner.LabelOrRemoteIcon.Label(
-                UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-            )
+    }
 
     data class CtaClick(val url: String) : MultiLiveEvent.Event()
 

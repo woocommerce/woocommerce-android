@@ -68,7 +68,6 @@ class PaymentsHubAdapter :
         submitList(rows)
     }
 
-    @Suppress("ReturnCount")
     object ListItemDiffCallback : DiffUtil.ItemCallback<PaymentsHubViewState.ListItem>() {
         override fun areItemsTheSame(
             oldItem: PaymentsHubViewState.ListItem,

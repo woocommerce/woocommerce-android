@@ -1,6 +1,7 @@
 package com.woocommerce.android.wear.ui.stats
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Description
-import androidx.compose.material.icons.filled.Group
-import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,7 +109,9 @@ fun StoreStatsScreen(
                             style = WooTypography.body1,
                             modifier = modifier
                                 .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
                                 .padding(top = 8.dp)
+                                .basicMarquee(Int.MAX_VALUE)
                         )
                     }
                     when {
@@ -120,6 +120,7 @@ fun StoreStatsScreen(
                             errorText = stringResource(id = R.string.stats_screen_error_message),
                             onRetryClicked = onRetryClicked
                         )
+
                         else -> StatsContentScreen(
                             modifier,
                             totalRevenue,
@@ -171,15 +172,15 @@ private fun StatsContentScreen(
                     .padding(top = 4.dp)
             ) {
                 IconStats(
-                    icon = Icons.Filled.Description,
+                    icon = ImageVector.vectorResource(R.drawable.ic_description_filled_24dp),
                     value = ordersCount,
                 )
                 IconStats(
-                    icon = Icons.Filled.Group,
+                    icon = ImageVector.vectorResource(R.drawable.ic_group_filled_24dp),
                     value = visitorsCount,
                 )
                 IconStats(
-                    icon = Icons.Filled.Timeline,
+                    icon = ImageVector.vectorResource(R.drawable.ic_timeline_24dp),
                     value = conversionRate,
                 )
             }

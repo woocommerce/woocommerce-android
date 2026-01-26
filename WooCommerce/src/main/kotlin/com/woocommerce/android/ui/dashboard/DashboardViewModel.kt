@@ -20,6 +20,8 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
+import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -65,6 +67,7 @@ class DashboardViewModel @Inject constructor(
     dashboardTransactionLauncher: DashboardTransactionLauncher,
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
+    private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
     private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -294,7 +297,8 @@ class DashboardViewModel @Inject constructor(
             .map {
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner = durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
+                val showBanner = pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
+                    durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
                     onDismiss = {

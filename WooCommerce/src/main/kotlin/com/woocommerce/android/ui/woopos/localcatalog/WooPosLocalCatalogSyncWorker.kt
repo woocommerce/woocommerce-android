@@ -36,7 +36,6 @@ constructor(
         private const val DAYS_SINCE_LAST_USE_THRESHOLD = 30L
     }
 
-    @Suppress("ReturnCount")
     override suspend fun doWork(): Result {
         if (isPosInactive()) {
             logger.d("POS has been inactive recently, skipping local catalog sync")
@@ -83,14 +82,14 @@ constructor(
             is PosLocalCatalogSyncResult.Failure.NetworkError,
             is PosLocalCatalogSyncResult.Failure.DatabaseError,
             is PosLocalCatalogSyncResult.Failure.InvalidResponse,
-            is PosLocalCatalogSyncResult.Failure.UnexpectedError -> {
+            is PosLocalCatalogSyncResult.Failure.UnexpectedError,
+            is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> {
                 logger.e("Local catalog FULL sync failed: ${fullSyncResult.error}. Retrying ...")
                 Result.retry()
             }
         }
     }
 
-    @Suppress("ReturnCount")
     private suspend fun validateSyncStatus(): Result? {
         val syncRequirement = syncStatusChecker.checkSyncRequirement()
         return when (syncRequirement) {

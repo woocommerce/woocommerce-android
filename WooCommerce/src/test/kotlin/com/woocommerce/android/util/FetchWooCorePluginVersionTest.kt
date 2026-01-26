@@ -16,6 +16,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import org.wordpress.android.fluxc.wp.site.SitePluginFixtures.createTestSitePlugin
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FetchWooCorePluginVersionTest : BaseUnitTest() {
@@ -88,10 +89,11 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         val version = "1.2.3"
-        val wooCorePlugin = mock<SitePluginModel>()
-        whenever(wooCorePlugin.name).thenReturn("woocommerce/woocommerce") // CORRECT VALUE
-        whenever(wooCorePlugin.version).thenReturn(version)
-        whenever(wooCorePlugin.isActive).thenReturn(true)
+        val wooCorePlugin = createTestSitePlugin(
+            name = "woocommerce/woocommerce",
+            version = version,
+            isActive = true
+        )
 
         val plugins: List<SitePluginModel> = listOf(wooCorePlugin)
 
@@ -112,10 +114,11 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         val version = "1.2.3"
-        val wooCorePlugin = mock<SitePluginModel>()
-        whenever(wooCorePlugin.name).thenReturn("woocommerce_in-shoebox/woocommerce")
-        whenever(wooCorePlugin.version).thenReturn(version)
-        whenever(wooCorePlugin.isActive).thenReturn(true)
+        val wooCorePlugin = createTestSitePlugin(
+            name = "woocommerce_in-shoebox/woocommerce",
+            version = version,
+            isActive = true
+        )
 
         val plugins: List<SitePluginModel> = listOf(wooCorePlugin)
 
@@ -136,10 +139,11 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         val version = "1.2.3"
-        val singleFilePlugin = mock<SitePluginModel>()
-        whenever(singleFilePlugin.name).thenReturn("woocommerce") // No directory structure
-        whenever(singleFilePlugin.version).thenReturn(version)
-        whenever(singleFilePlugin.isActive).thenReturn(true)
+        val singleFilePlugin = createTestSitePlugin(
+            name = "woocommerce",
+            version = version,
+            isActive = true
+        )
 
         val plugins: List<SitePluginModel> = listOf(singleFilePlugin)
 
@@ -169,10 +173,11 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         )
 
         testCases.forEach { pluginName ->
-            val wooCorePlugin = mock<SitePluginModel>()
-            whenever(wooCorePlugin.name).thenReturn(pluginName)
-            whenever(wooCorePlugin.version).thenReturn(version)
-            whenever(wooCorePlugin.isActive).thenReturn(true)
+            val wooCorePlugin = createTestSitePlugin(
+                name = pluginName,
+                version = version,
+                isActive = true
+            )
 
             val plugins: List<SitePluginModel> = listOf(wooCorePlugin)
             val fetchResult = WooResult(plugins)
@@ -195,15 +200,17 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         val activeVersion = "2.0.0"
 
         // Inactive plugin (first in list)
-        val inactivePlugin = mock<SitePluginModel>()
-        whenever(inactivePlugin.name).thenReturn("woocommerce-dev/woocommerce")
-        whenever(inactivePlugin.isActive).thenReturn(false)
+        val inactivePlugin = createTestSitePlugin(
+            name = "woocommerce-dev/woocommerce",
+            isActive = false
+        )
 
         // Active plugin (second in list)
-        val activePlugin = mock<SitePluginModel>()
-        whenever(activePlugin.name).thenReturn("woocommerce/woocommerce")
-        whenever(activePlugin.version).thenReturn(activeVersion)
-        whenever(activePlugin.isActive).thenReturn(true)
+        val activePlugin = createTestSitePlugin(
+            name = "woocommerce/woocommerce",
+            version = activeVersion,
+            isActive = true
+        )
 
         val plugins: List<SitePluginModel> = listOf(inactivePlugin, activePlugin)
         val fetchResult = WooResult(plugins)
@@ -223,14 +230,16 @@ class FetchWooCorePluginVersionTest : BaseUnitTest() {
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
 
         // First inactive plugin
-        val firstPlugin = mock<SitePluginModel>()
-        whenever(firstPlugin.name).thenReturn("woocommerce-dev/woocommerce")
-        whenever(firstPlugin.isActive).thenReturn(false)
+        val firstPlugin = createTestSitePlugin(
+            name = "woocommerce-dev/woocommerce",
+            isActive = false
+        )
 
         // Second inactive plugin
-        val secondPlugin = mock<SitePluginModel>()
-        whenever(secondPlugin.name).thenReturn("woocommerce/woocommerce")
-        whenever(secondPlugin.isActive).thenReturn(false)
+        val secondPlugin = createTestSitePlugin(
+            name = "woocommerce/woocommerce",
+            isActive = false
+        )
 
         val plugins: List<SitePluginModel> = listOf(firstPlugin, secondPlugin)
         val fetchResult = WooResult(plugins)
