@@ -115,29 +115,20 @@ class AnalyticsTracker private constructor(
 
     private fun Map<String, *>.buildFinalProperties(siteLess: Boolean): MutableMap<String, Any?> {
         val finalProperties = this.toMutableMap()
-
         val selectedSiteModel = selectedSite.getOrNull()
-        if (!siteLess) {
-            selectedSiteModel?.let {
-                if (!finalProperties.containsKey(KEY_BLOG_ID)) finalProperties[KEY_BLOG_ID] = it.siteId
-                finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
-                finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
-                appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
-                if (!finalProperties.containsKey(IS_JETPACK_INSTALLED)) {
-                    finalProperties[IS_JETPACK_INSTALLED] = it.isJetpackInstalled
-                }
-                if (!finalProperties.containsKey(IS_JETPACK_CONNECTED)) {
-                    finalProperties[IS_JETPACK_CONNECTED] = it.isJetpackConnected
-                }
-                if (!finalProperties.containsKey(IS_JETPACK_CP_CONNECTED)) {
-                    finalProperties[IS_JETPACK_CP_CONNECTED] = it.isJetpackCPConnected
-                }
-                if (!finalProperties.containsKey(IS_CIAB)) finalProperties[IS_CIAB] = it.isCIABSite()
-                if (!finalProperties.containsKey(GARDEN_PARTNER)) {
-                    it.gardenPartner?.let { gardenPartner -> finalProperties[GARDEN_PARTNER] = gardenPartner }
-                }
-            }
+
+        if (!siteLess && selectedSiteModel != null) {
+            finalProperties.putIfAbsent(KEY_BLOG_ID, selectedSiteModel.siteId)
+            finalProperties[KEY_IS_WPCOM_STORE] = selectedSiteModel.isWpComStore
+            finalProperties[KEY_PLAN_PRODUCT_SLUG] = selectedSiteModel.planProductSlug
+            appPrefs.getWCStoreID(selectedSiteModel.siteId)?.let { finalProperties[KEY_STORE_ID] = it }
+            finalProperties.putIfAbsent(IS_JETPACK_INSTALLED, selectedSiteModel.isJetpackInstalled)
+            finalProperties.putIfAbsent(IS_JETPACK_CONNECTED, selectedSiteModel.isJetpackConnected)
+            finalProperties.putIfAbsent(IS_JETPACK_CP_CONNECTED, selectedSiteModel.isJetpackCPConnected)
+            finalProperties.putIfAbsent(IS_CIAB, selectedSiteModel.isCIABSite())
+            selectedSiteModel.gardenPartner?.let { finalProperties.putIfAbsent(GARDEN_PARTNER, it) }
         }
+
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
         selectedSiteModel?.url?.let { finalProperties[KEY_SITE_URL] = it }
         getWooVersion()?.let { finalProperties[KEY_CACHED_WOO_VERSION] = it }
