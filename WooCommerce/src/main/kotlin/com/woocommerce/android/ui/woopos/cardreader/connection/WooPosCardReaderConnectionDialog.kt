@@ -256,7 +256,7 @@ fun WooPosCardReaderConnectionDialogContent(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_card_reader_connection_dialog_background_content_description
         ),
-        widthFraction = 0.5f,
+        widthFraction = 0.6f,
         onDismissRequest = onBackPressed,
     ) {
         Column(
