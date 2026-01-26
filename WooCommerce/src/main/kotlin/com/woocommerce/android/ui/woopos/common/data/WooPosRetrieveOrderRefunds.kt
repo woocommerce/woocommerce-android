@@ -14,7 +14,7 @@ class WooPosRetrieveOrderRefunds @Inject constructor(
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite
 ) {
-    suspend operator fun invoke(order: Order): Result<List<Refund>> =
+    suspend operator fun invoke(order: Order, forceRefresh: Boolean = false): Result<List<Refund>> =
         withContext(Dispatchers.IO) {
             if (order.refundTotal.compareTo(BigDecimal.ZERO) == 0) {
                 return@withContext Result.success(emptyList())
@@ -22,15 +22,25 @@ class WooPosRetrieveOrderRefunds @Inject constructor(
 
             val site = selectedSite.get()
 
-            var refundModels = refundStore.getAllRefunds(site, order.id)
-            if (refundModels.isEmpty()) {
+            val refundModels = if (forceRefresh) {
                 val fetchResult = refundStore.fetchAllRefunds(site, order.id)
                 if (fetchResult.isError) {
                     return@withContext Result.failure(
                         Exception("Failed to fetch refunds: ${fetchResult.error.message}")
                     )
                 }
-                refundModels = fetchResult.model ?: emptyList()
+                fetchResult.model ?: emptyList()
+            } else {
+                val cachedRefunds = refundStore.getAllRefunds(site, order.id)
+                cachedRefunds.ifEmpty {
+                    val fetchResult = refundStore.fetchAllRefunds(site, order.id)
+                    if (fetchResult.isError) {
+                        return@withContext Result.failure(
+                            Exception("Failed to fetch refunds: ${fetchResult.error.message}")
+                        )
+                    }
+                    fetchResult.model ?: emptyList()
+                }
             }
 
             Result.success(refundModels.map { it.toAppModel() })

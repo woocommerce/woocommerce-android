@@ -51,6 +51,11 @@ class WooPosOrdersViewModelTest {
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
     private val getRefundableItems: WooPosGetRefundableItems = mock()
+    private lateinit var orderItemMapper: WooPosOrderItemMapper
+    private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
+    private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
+    private lateinit var orderActionsProvider: WooPosOrderActionsProvider
+    private lateinit var orderStatusMapper: WooPosOrderStatusMapper
 
     private fun order(id: Long = 1L): Order = OrderTestUtils.generateTestOrder(orderId = id)
 
@@ -61,46 +66,83 @@ class WooPosOrdersViewModelTest {
         return WooPosOrdersViewModel(
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
-            locale = providedLocale,
-            getProductById = getProductById,
             childrenToParentEventSender = childrenToParentEventSender,
-            formatPrice = formatPrice,
             retrieveOrderRefunds = retrieveOrderRefunds,
             ordersAnalyticsTracker = ordersAnalyticsTracker,
-            getRefundableItems = getRefundableItems,
+            orderItemMapper = orderItemMapper,
+            orderDetailsMapper = orderDetailsMapper,
+            refundInfoBuilder = refundInfoBuilder,
+            orderActionsProvider = orderActionsProvider,
         )
     }
 
     @Before
     fun setUp() = runTest {
+        setupResourceProviderMocks()
+        setupMockBehaviors()
+        setupMappers()
+        setupDataSourceMocks()
+    }
+
+    private fun setupResourceProviderMocks() {
         whenever(resourceProvider.getString(R.string.date_time_connector)).thenReturn("at")
-
-        whenever(formatPrice(any(), any())).thenReturn("$0.00")
-        whenever(getProductById.invoke(any())).thenReturn(null)
-        whenever(retrieveOrderRefunds.invoke(any())).thenReturn(Result.success(emptyList()))
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
-
-        whenever(dataSource.loadOrders()).thenReturn(
-            flow {
-                emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2))))
-            }
-        )
-
-        whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
-
+        whenever(resourceProvider.getString(R.string.woopos_orders_details_refund_error))
+            .thenReturn("Refund error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title)).thenReturn("Search error")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
+            .thenReturn("Search error description")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title)).thenReturn("No results")
+        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
+            .thenReturn("No results description")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_auto_draft)).thenReturn("Draft")
-        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending Payment")
+        whenever(resourceProvider.getString(R.string.woopos_orders_status_pending)).thenReturn("Pending")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_processing)).thenReturn("Processing")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_on_hold)).thenReturn("On hold")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_failed)).thenReturn("Failed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders)).thenReturn("Search orders")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_title))
-            .thenReturn("No orders found")
-        whenever(resourceProvider.getString(R.string.woopos_search_orders_empty_description))
-            .thenReturn("Try a different search term")
+    }
+
+    private suspend fun setupMockBehaviors() {
+        whenever(formatPrice(any<BigDecimal>(), any())).thenAnswer { invocation ->
+            val amount = invocation.arguments[0] as? BigDecimal
+            amount?.let { "$${it.abs()}" } ?: "$0.00"
+        }
+        whenever(formatPrice(any<BigDecimal>())).thenAnswer { invocation ->
+            val amount = invocation.arguments[0] as? BigDecimal
+            amount?.let { "$${it.abs()}" } ?: "$0.00"
+        }
+        whenever(getProductById.invoke(any())).thenReturn(null)
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
+    }
+
+    private fun setupMappers() {
+        orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
+        refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
+        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems)
+        orderDetailsMapper = WooPosOrderDetailsMapper(
+            resourceProvider,
+            getProductById,
+            formatPrice,
+            orderStatusMapper,
+            refundInfoBuilder,
+            orderActionsProvider
+        )
+        orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
+    }
+
+    private suspend fun setupDataSourceMocks() {
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessCache(ordersMap(order(1), order(2)))) }
+        )
+        whenever(dataSource.getOrderById(any())).thenAnswer { invocation ->
+            val orderId = invocation.arguments[0] as Long
+            Result.success(order(orderId))
+        }
+        whenever(dataSource.refreshOrderById(any())).thenReturn(Result.success(order()))
     }
 
     @Test
@@ -108,7 +150,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val cached = listOf(order(1))
         val network = listOf(order(2), order(3))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(*cached.toTypedArray())))
                 emit(LoadOrdersResult.SuccessRemote(ordersMap(*network.toTypedArray())))
@@ -135,7 +177,7 @@ class WooPosOrdersViewModelTest {
     fun `given empty cache and non-empty network, when init, then final state shows network content`() = runTest {
         // GIVEN
         val network = listOf(order(10))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(emptyMap()))
                 emit(LoadOrdersResult.SuccessRemote(ordersMap(*network.toTypedArray())))
@@ -157,7 +199,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given empty cache and empty network, when init, then final state is Empty`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(emptyMap()))
                 emit(LoadOrdersResult.SuccessRemote(emptyMap()))
@@ -176,7 +218,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given data source error, when init, then state is Error`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.Error("boom")) }
         )
 
@@ -194,7 +236,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given initial content, when refresh, then clear cache and update with network result`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
         viewModel = createViewModel()
@@ -203,7 +245,7 @@ class WooPosOrdersViewModelTest {
         val beforeItems = before.items as WooPosOrdersState.Content.Items.Loaded
         assertThat(beforeItems.items.keys.map { it.id }).containsExactly(1L)
 
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(emptyMap()))
                 emit(LoadOrdersResult.SuccessRemote(ordersMap(order(5), order(6))))
@@ -220,13 +262,14 @@ class WooPosOrdersViewModelTest {
         assertThat(afterItems.items.keys.map { it.id }).containsExactly(5L, 6L)
         assertThat(after.pullToRefreshState).isEqualTo(WooPosPullToRefreshState.Enabled)
         verify(dataSource).clearCache()
-        verify(dataSource, times(2)).loadOrders()
+        verify(dataSource).loadOrders(false) // Initial load
+        verify(dataSource).loadOrders(true) // Refresh
     }
 
     @Test
     fun `given orders loaded, when selecting an order, then selected id, flags and details update`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2), order(3)))) }
         )
 
@@ -249,7 +292,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given selection removed after reload, when refreshing, then first item is auto selected with details`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
         )
         viewModel = createViewModel()
@@ -257,7 +300,7 @@ class WooPosOrdersViewModelTest {
         viewModel.onOrderSelected(200L)
         advanceUntilIdle()
 
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(emptyMap()))
                 emit(LoadOrdersResult.SuccessRemote(ordersMap(order(300), order(400))))
@@ -300,10 +343,10 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val query = "test query"
         val searchResult = listOf(order(10), order(20))
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(ordersMap(*searchResult.toTypedArray()))
         )
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
 
@@ -342,12 +385,12 @@ class WooPosOrdersViewModelTest {
     fun `given search will fail, when search is performed, then Error state is shown with search input state preserved`() = runTest {
         // GIVEN
         val query = "test query"
-        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(SearchOrdersResult.Error("search failed"))
         whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
             .thenReturn("Unable to load orders")
         whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
             .thenReturn("Please try again.")
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
 
@@ -375,7 +418,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given more pages, when end reached and loadMore succeeds, then items append and pagination None`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
         whenever(dataSource.hasMorePages).thenReturn(true)
@@ -400,7 +443,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given more pages, when end reached and loadMore fails, then keep items and show pagination error`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
         whenever(dataSource.hasMorePages).thenReturn(true)
@@ -422,7 +465,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given initial load active, when end reached, then do nothing`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(order(1))))
                 delay(Long.MAX_VALUE)
@@ -444,7 +487,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given selected order, when appending next page, then selection and details are preserved`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(10), order(20)))) }
         )
         whenever(dataSource.hasMorePages).thenReturn(true)
@@ -472,7 +515,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given pagination error, when try again succeeds, then append next page and clear error`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
         whenever(dataSource.hasMorePages).thenReturn(true)
@@ -512,7 +555,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val base = OrderTestUtils.generateTestOrder(orderId = 42L)
         val withOnHold = base.copy(status = Order.Status.OnHold)
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withOnHold))) }
         )
 
@@ -532,7 +575,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val base = OrderTestUtils.generateTestOrder(orderId = 77L)
         val custom = base.copy(status = Order.Status.Custom("awaiting-payment"))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(custom))) }
         )
 
@@ -551,7 +594,7 @@ class WooPosOrdersViewModelTest {
     fun `given connector from resources, when mapping date, then connector appears in formatted date`() = runTest {
         // GIVEN
         val one = OrderTestUtils.generateTestOrder(orderId = 11L)
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(one))) }
         )
 
@@ -569,7 +612,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given orders loaded, when selecting an order, then selectedOrderDetails is populated`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
 
@@ -586,13 +629,13 @@ class WooPosOrdersViewModelTest {
         assertThat(selectedItemId).isEqualTo(2L)
         assertThat(content.selectedDetails?.id).isEqualTo(2L)
         assertThat(content.selectedDetails?.lineItems).isNotEmpty
-        assertThat(content.selectedDetails?.total).isEqualTo("$0.00")
+        assertThat(content.selectedDetails?.total).isEqualTo("$106.00")
     }
 
     @Test
     fun `given selected order, when appending next page, then selectedOrderDetails content remains correct`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(10), order(20)))) }
         )
         whenever(dataSource.hasMorePages).thenReturn(true)
@@ -612,18 +655,18 @@ class WooPosOrdersViewModelTest {
         val details = content.selectedDetails!!
         assertThat(loadedItems.items.keys.map { it.id }).containsExactly(10L, 20L, 30L, 40L)
         assertThat(details.id).isEqualTo(20L)
-        assertThat(details.totalPaid).isEqualTo("$0.00")
+        assertThat(details.totalPaid).isEqualTo("$106.00")
     }
 
     @Test
     fun `given orders reloaded, when refreshing, then first order details are auto-populated`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
         )
         viewModel = createViewModel()
         advanceUntilIdle()
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(300), order(400)))) }
         )
 
@@ -642,7 +685,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given content loaded, when onEmailReceiptButtonClicked called, then ToEmailReceipt is sent`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(123)))) }
         )
         viewModel = createViewModel()
@@ -660,10 +703,10 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given order with no refunds, when mapped, then breakdown has empty refunds and null net payment`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
-        whenever(retrieveOrderRefunds.invoke(order(1))).thenReturn(Result.success(emptyList()))
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
 
         // WHEN
         viewModel = createViewModel()
@@ -701,9 +744,7 @@ class WooPosOrdersViewModelTest {
             feeLines = emptyList()
         )
 
-        whenever(formatPrice(eq(BigDecimal("10.00")), any())).thenReturn("$10.00")
-        whenever(formatPrice(eq(BigDecimal("5.00")), any())).thenReturn("$5.00")
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(
                     LoadOrdersResult.SuccessRemote(
@@ -728,7 +769,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt succeeds, then refreshes details`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
         )
         viewModel = createViewModel()
@@ -752,7 +793,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given selected order, when onBackFromSuccessfullySendingEmailReceipt fails, then details remain unchanged`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
         viewModel = createViewModel()
@@ -778,7 +819,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given orders loaded, when selecting an order, then tracks OrdersListRowTapped and OrderDetailsLoaded`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2), order(3)))) }
         )
         viewModel = createViewModel()
@@ -808,7 +849,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val cached = listOf(order(1))
         val remote = listOf(order(2), order(3))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow {
                 emit(LoadOrdersResult.SuccessCache(ordersMap(*cached.toTypedArray())))
                 emit(LoadOrdersResult.SuccessRemote(ordersMap(*remote.toTypedArray())))
@@ -828,10 +869,10 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val query = "abc"
         val searchResult = listOf(order(10), order(20))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(ordersMap(*searchResult.toTypedArray()))
         )
 
@@ -856,7 +897,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withZeros))) }
         )
 
@@ -880,10 +921,7 @@ class WooPosOrdersViewModelTest {
         )
 
         // WHEN
-        whenever(formatPrice(eq(BigDecimal("3.50")), any())).thenReturn("$3.50")
-        whenever(formatPrice(eq(BigDecimal("4.00")), any())).thenReturn("$4.00")
-
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(withValues))) }
         )
 
@@ -901,11 +939,11 @@ class WooPosOrdersViewModelTest {
     fun `given search returns no results, when search performed, then selectedDetails is null`() = runTest {
         // GIVEN
         val query = "no results query"
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(emptyMap())
         )
 
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1), order(2)))) }
         )
         viewModel = createViewModel()
@@ -931,10 +969,10 @@ class WooPosOrdersViewModelTest {
         val order2 = order(2)
         val searchResults = listOf(order1, order2, order(3))
 
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
         )
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
         )
         viewModel = createViewModel()
@@ -966,10 +1004,10 @@ class WooPosOrdersViewModelTest {
         val order2 = order(2)
         val searchResults = listOf(order(3), order(4))
 
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
         )
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order1, order2))) }
         )
         viewModel = createViewModel()
@@ -999,14 +1037,14 @@ class WooPosOrdersViewModelTest {
         val query = "test query"
         val searchResults = listOf(order(5), order(6))
 
-        whenever(dataSource.searchOrders("empty")).thenReturn(
+        whenever(dataSource.searchOrders(eq("empty"), any())).thenReturn(
             SearchOrdersResult.Success(emptyMap())
         )
-        whenever(dataSource.searchOrders(query)).thenReturn(
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(
             SearchOrdersResult.Success(ordersMap(*searchResults.toTypedArray()))
         )
 
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
         viewModel = createViewModel()
@@ -1034,12 +1072,12 @@ class WooPosOrdersViewModelTest {
     fun `given search fails, when search performed, then no order selected`() = runTest {
         // GIVEN
         val query = "test query"
-        whenever(dataSource.searchOrders(query)).thenReturn(SearchOrdersResult.Error("search failed"))
+        whenever(dataSource.searchOrders(eq(query), any())).thenReturn(SearchOrdersResult.Error("search failed"))
         whenever(resourceProvider.getString(R.string.woopos_search_orders_error_title))
             .thenReturn("Unable to load orders")
         whenever(resourceProvider.getString(R.string.woopos_search_orders_error_description))
             .thenReturn("Please try again.")
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(1)))) }
         )
 
@@ -1062,7 +1100,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given content loaded, when onIssueRefundButtonClicked called, then issue refund dialog is shown`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(123)))) }
         )
         viewModel = createViewModel()
@@ -1082,7 +1120,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given non-Content state, when onIssueRefundButtonClicked called, then state remains unchanged`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.Error("error")) }
         )
         viewModel = createViewModel()
@@ -1102,7 +1140,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed called, then dialog is hidden`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(456)))) }
         )
         viewModel = createViewModel()
@@ -1126,7 +1164,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given non-Content state, when onIssueRefundDialogDismissed called, then state remains unchanged`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(emptyMap())) }
         )
         viewModel = createViewModel()
@@ -1146,7 +1184,7 @@ class WooPosOrdersViewModelTest {
     @Test
     fun `given Content state, when showing and hiding dialog, then other state properties remain unchanged`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
         )
         viewModel = createViewModel()
@@ -1203,10 +1241,10 @@ class WooPosOrdersViewModelTest {
             rowIndex = 0
         )
 
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
+        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
 
         // WHEN
         viewModel = createViewModel()
@@ -1215,8 +1253,9 @@ class WooPosOrdersViewModelTest {
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
         val details = state.selectedDetails!!
-        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
-        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
 
     @Test
@@ -1224,8 +1263,7 @@ class WooPosOrdersViewModelTest {
         // GIVEN
         val testOrder = order(2)
 
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
 
@@ -1236,14 +1274,15 @@ class WooPosOrdersViewModelTest {
         // THEN
         val state = viewModel.state.value as WooPosOrdersState.Content
         val details = state.selectedDetails!!
-        assertThat(details.actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
-        assertThat(details.actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
 
     @Test
     fun `when refund dialog is dismissed, then refreshes selected order`() = runTest {
         // GIVEN
-        whenever(dataSource.loadOrders()).thenReturn(
+        whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(order(100), order(200)))) }
         )
         viewModel = createViewModel()
