@@ -49,7 +49,7 @@ class MediaFilesRepository @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val mediaPickerUtils: MediaPickerUtils
 ) {
-    suspend fun fetchMedia(localUri: String): MediaModel? {
+    suspend fun getLocalMedia(localUri: String): MediaModel? {
         return withContext(dispatchers.io) {
             val mediaModel = FileUploadUtils.mediaModelFromLocalUri(
                 context,
@@ -120,7 +120,7 @@ class MediaFilesRepository @Inject constructor(
 
     fun uploadFile(localUri: String): Flow<UploadResult> {
         return flow {
-            val mediaModel = fetchMedia(localUri)
+            val mediaModel = getLocalMedia(localUri)
 
             if (mediaModel == null) {
                 WooLog.w(T.MEDIA, "MediaFilesRepository > null media")

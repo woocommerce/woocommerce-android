@@ -2,11 +2,13 @@ package com.woocommerce.android.ui.woopos.common.data
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
@@ -20,7 +22,12 @@ import org.wordpress.android.fluxc.store.WCRefundStore
 import java.math.BigDecimal
 import java.util.Date
 
+@ExperimentalCoroutinesApi
 class WooPosRetrieveOrderRefundsTest {
+    @Rule
+    @JvmField
+    val coroutinesTestRule = WooPosCoroutineTestRule()
+
     private lateinit var refundStore: WCRefundStore
     private lateinit var selectedSite: SelectedSite
     private lateinit var sut: WooPosRetrieveOrderRefunds
@@ -41,7 +48,7 @@ class WooPosRetrieveOrderRefundsTest {
     }
 
     @Test
-    fun `given refunds exist locally, when invoke called, then returns mapped refunds`() = runTest {
+    fun `given refunds exist locally, when invoke called without forceRefresh, then returns cached refunds`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
@@ -70,7 +77,7 @@ class WooPosRetrieveOrderRefundsTest {
         whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(fluxCRefunds)
 
         // WHEN
-        val result = sut.invoke(order)
+        val result = sut.invoke(order, forceRefresh = false)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
@@ -80,29 +87,50 @@ class WooPosRetrieveOrderRefundsTest {
         assertThat(refunds[0].amount).isEqualTo(BigDecimal.TEN)
         assertThat(refunds[1].id).isEqualTo(2L)
         assertThat(refunds[1].amount).isEqualTo(BigDecimal.valueOf(5))
+        verify(refundStore).getAllRefunds(site, order.id)
     }
 
     @Test
-    fun `given no refunds exist locally, when invoke called, then fetches and returns mapped refunds`() = runTest {
+    fun `given forceRefresh is true, when invoke called, then fetches fresh refunds from network`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 123L)
 
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
-
-        val remoteRefunds = listOf(
+        val fluxCRefunds = listOf(
             WCRefundModel(
-                id = 10L,
+                id = 1L,
                 dateCreated = Date(),
-                amount = BigDecimal.ONE,
-                reason = "Remote refund",
-                automaticGatewayRefund = false,
+                amount = BigDecimal.TEN,
+                reason = "Test refund",
+                automaticGatewayRefund = true,
                 items = emptyList(),
                 shippingLineItems = emptyList(),
                 feeLineItems = emptyList()
             )
         )
         whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
-            WooResult(model = remoteRefunds)
+            WooResult(model = fluxCRefunds)
+        )
+
+        // WHEN
+        val result = sut.invoke(order, forceRefresh = true)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        val refunds = result.getOrThrow()
+        assertThat(refunds).hasSize(1)
+        assertThat(refunds[0].id).isEqualTo(1L)
+        assertThat(refunds[0].amount).isEqualTo(BigDecimal.TEN)
+        verify(refundStore).fetchAllRefunds(site, order.id)
+    }
+
+    @Test
+    fun `given empty refunds in cache, when invoke called, then falls back to network fetch`() = runTest {
+        // GIVEN
+        val order = OrderTestUtils.generateTestOrder(orderId = 123L)
+
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(emptyList())
         )
 
         // WHEN
@@ -111,9 +139,26 @@ class WooPosRetrieveOrderRefundsTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         val refunds = result.getOrThrow()
-        assertThat(refunds).hasSize(1)
-        assertThat(refunds[0].id).isEqualTo(10L)
-        assertThat(refunds[0].amount).isEqualTo(BigDecimal.ONE)
+        assertThat(refunds).isEmpty()
+        verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
+    }
+
+    @Test
+    fun `given empty cache and network fetch fails, when invoke called, then returns failure`() = runTest {
+        // GIVEN
+        val order = OrderTestUtils.generateTestOrder(orderId = 123L)
+
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
+            WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+        )
+
+        // WHEN
+        val result = sut.invoke(order)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
         verify(refundStore).getAllRefunds(site, order.id)
         verify(refundStore).fetchAllRefunds(site, order.id)
     }
@@ -129,36 +174,66 @@ class WooPosRetrieveOrderRefundsTest {
         // THEN
         assertThat(result.isSuccess).isTrue()
         assertThat(result.getOrThrow()).isEmpty()
-        verify(refundStore, org.mockito.kotlin.never()).getAllRefunds(any(), any())
     }
 
     @Test
-    fun `given order provided, when invoke called, then passes correct orderId to store`() = runTest {
+    fun `given order provided, when invoke called with forceRefresh false and cache has data, then only uses cache`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 456L, refundTotal = BigDecimal.ONE)
-        whenever(refundStore.getAllRefunds(any(), any())).thenReturn(emptyList())
-        whenever(refundStore.fetchAllRefunds(any(), any(), any(), any())).thenReturn(
+        val cachedRefund = WCRefundModel(
+            id = 1L,
+            dateCreated = Date(),
+            amount = BigDecimal.TEN,
+            reason = "Cached",
+            automaticGatewayRefund = false,
+            items = emptyList(),
+            shippingLineItems = emptyList(),
+            feeLineItems = emptyList()
+        )
+        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(listOf(cachedRefund))
+
+        // WHEN
+        val result = sut.invoke(order, forceRefresh = false)
+
+        // THEN
+        assertThat(result.isSuccess).isTrue()
+        verify(refundStore).getAllRefunds(site, order.id)
+        verify(
+            refundStore,
+            org.mockito.kotlin.never()
+        ).fetchAllRefunds(
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any(),
+            org.mockito.kotlin.any()
+        )
+    }
+
+    @Test
+    fun `given order provided, when invoke called with forceRefresh true, then passes correct orderId to network`() = runTest {
+        // GIVEN
+        val order = OrderTestUtils.generateTestOrder(orderId = 456L, refundTotal = BigDecimal.ONE)
+        whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
             WooResult(emptyList())
         )
 
         // WHEN
-        sut.invoke(order)
+        sut.invoke(order, forceRefresh = true)
 
         // THEN
-        verify(refundStore).getAllRefunds(site, order.id)
+        verify(refundStore).fetchAllRefunds(site, order.id)
     }
 
     @Test
-    fun `given fetch refunds fails, when invoke called, then returns failure result`() = runTest {
+    fun `given fetch refunds fails, when invoke called with forceRefresh true, then returns failure result`() = runTest {
         // GIVEN
         val order = OrderTestUtils.generateTestOrder(orderId = 789L, refundTotal = BigDecimal.ONE)
-        whenever(refundStore.getAllRefunds(site, order.id)).thenReturn(emptyList())
         whenever(refundStore.fetchAllRefunds(site, order.id)).thenReturn(
             WooResult(WooError(GENERIC_ERROR, UNKNOWN))
         )
 
         // WHEN
-        val result = sut.invoke(order)
+        val result = sut.invoke(order, forceRefresh = true)
 
         // THEN
         assertThat(result.isFailure).isTrue()

@@ -7,15 +7,11 @@ import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
-import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -30,22 +26,21 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.math.BigDecimal
-import java.util.Locale
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
 
+@Suppress("LargeClass")
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
     private val resourceProvider: ResourceProvider,
-    private val locale: Locale,
-    private val getProductById: WooPosGetProductById,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
-    private val formatPrice: WooPosFormatPrice,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
-    private val getRefundableItems: WooPosGetRefundableItems,
+    private val orderItemMapper: WooPosOrderItemMapper,
+    private val orderDetailsMapper: WooPosOrderDetailsMapper,
+    private val refundInfoBuilder: WooPosRefundInfoBuilder,
+    private val orderActionsProvider: WooPosOrderActionsProvider,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -64,6 +59,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
+    private var sideLoadActionsJob: Job? = null
 
     private val currentSearchQuery: String?
         get() = (
@@ -93,69 +89,158 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun getAvailableActions(
-        order: Order,
-        refundResult: RefundsFetchResult
-    ): List<WooPosOrdersState.OrderAction> {
-        return buildList {
-            if (FeatureFlag.POS_REFUNDS.isEnabled() && hasRefundableItems(order, refundResult)) {
-                add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
-            }
-            add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
-        }
-    }
-
-    private fun hasRefundableItems(order: Order, refundResult: RefundsFetchResult): Boolean {
-        val refunds = when (refundResult) {
-            is RefundsFetchResult.Success -> refundResult.refunds
-            is RefundsFetchResult.Error -> emptyList()
-        }
-        return getRefundableItems(order, refunds).isNotEmpty()
-    }
-
     fun onOrderSelected(orderId: Long) {
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val keys = loadedItems.items.keys.toList()
-        val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
-        val selectedItem = keys.firstOrNull { it.id == orderId }
+        if (isAlreadySelectedWithActions(current, orderId)) return
 
-        selectedItem?.let {
-            viewModelScope.launch {
-                ordersAnalyticsTracker.trackOrdersListRowTapped(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    listPosition = position,
-                    createdAtMillis = it.createdAtMillis
-                )
-                ordersAnalyticsTracker.trackOrderDetailsLoaded(
-                    orderId = it.id,
-                    orderStatus = it.statusSlug,
-                    createdAtMillis = it.createdAtMillis
-                )
-            }
-        }
+        trackOrderSelectionAnalytics(loadedItems, orderId)
 
         viewModelScope.launch {
-            val details = getOrComputeDetails(orderId)
-
-            val updatedItems = loadedItems.items.mapKeys { (item, _) ->
-                item.copy(isSelected = item.id == orderId)
-            }.mapValues { (item, orderDetails) ->
-                if (item.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Lazy) {
-                    WooPosOrdersState.OrderDetailsViewState.Computed(orderId = orderId, details = details)
-                } else {
-                    orderDetails
-                }
-            }
+            val orderDetailsViewState = loadedItems.items.values.firstOrNull { it.orderId == orderId }
+            val details = computeOrderDetails(orderId, orderDetailsViewState)
+            val updatedItems = updateItemsSelection(loadedItems, orderId, details)
 
             _state.value = current.copy(
-                items = WooPosOrdersState.Content.Items.Loaded(
-                    items = updatedItems
-                ),
+                items = WooPosOrdersState.Content.Items.Loaded(items = updatedItems),
                 selectedDetails = details
             )
+
+            startSideLoadActionsIfNeeded(orderId, details, orderDetailsViewState, loadedItems)
+        }
+    }
+
+    private fun isAlreadySelectedWithActions(current: WooPosOrdersState.Content, orderId: Long): Boolean {
+        return current.selectedDetails?.id == orderId &&
+            current.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loaded
+    }
+
+    private fun trackOrderSelectionAnalytics(
+        loadedItems: WooPosOrdersState.Content.Items.Loaded,
+        orderId: Long
+    ) {
+        val keys = loadedItems.items.keys.toList()
+        val position = keys.indexOfFirst { it.id == orderId }.coerceAtLeast(0)
+        val selectedItem = keys.firstOrNull { it.id == orderId } ?: return
+
+        viewModelScope.launch {
+            ordersAnalyticsTracker.trackOrdersListRowTapped(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                listPosition = position,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
+            ordersAnalyticsTracker.trackOrderDetailsLoaded(
+                orderId = selectedItem.id,
+                orderStatus = selectedItem.statusSlug,
+                createdAtMillis = selectedItem.createdAtMillis
+            )
+        }
+    }
+
+    private suspend fun computeOrderDetails(
+        orderId: Long,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?
+    ): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
+        return if (orderDetailsViewState is WooPosOrdersState.OrderDetailsViewState.Lazy) {
+            getOrComputeDetailsWithoutActions(orderId)
+        } else {
+            getOrComputeDetails(orderId)
+        }
+    }
+
+    private fun updateItemsSelection(
+        loadedItems: WooPosOrdersState.Content.Items.Loaded,
+        orderId: Long,
+        details: WooPosOrdersState.OrderDetailsViewState.Computed.Details
+    ): Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState> {
+        return loadedItems.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == orderId)
+        }.mapValues { (item, orderDetails) ->
+            if (item.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Lazy) {
+                WooPosOrdersState.OrderDetailsViewState.Computed(orderId = orderId, details = details)
+            } else {
+                orderDetails
+            }
+        }
+    }
+
+    private suspend fun startSideLoadActionsIfNeeded(
+        orderId: Long,
+        details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ) {
+        if (details.actionsState !is WooPosOrdersState.OrderActionsState.Loading) return
+
+        val order = getOrderForSideLoading(orderId, orderDetailsViewState, loadedItems) ?: return
+        sideLoadActions(orderId, order)
+    }
+
+    private suspend fun getOrderForSideLoading(
+        orderId: Long,
+        orderDetailsViewState: WooPosOrdersState.OrderDetailsViewState?,
+        loadedItems: WooPosOrdersState.Content.Items.Loaded
+    ): Order? {
+        return when (orderDetailsViewState) {
+            is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetailsViewState.order
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                loadedItems.items.keys.firstOrNull { it.id == orderId }?.let { item ->
+                    ordersDataSource.getOrderById(item.id).getOrNull()
+                }
+            }
+            else -> null
+        }
+    }
+
+    private fun sideLoadActions(orderId: Long, order: Order) {
+        sideLoadActionsJob?.cancel()
+        sideLoadActionsJob = viewModelScope.launch {
+            val refundsResult = retrieveOrderRefunds(order = order, forceRefresh = true).fold(
+                onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
+                onFailure = { RefundsFetchResult.Error }
+            )
+
+            val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
+            val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
+            val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+
+            val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
+            val updatedSelectedDetails = updatedState.selectedDetails
+
+            if (updatedSelectedDetails?.id == orderId &&
+                updatedSelectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loading
+            ) {
+                val loadedItems = updatedState.items as? WooPosOrdersState.Content.Items.Loaded
+                val updatedItems = loadedItems?.items?.map { (item, details) ->
+                    val updatedDetails =
+                        if (item.id == orderId && details is WooPosOrdersState.OrderDetailsViewState.Computed) {
+                            WooPosOrdersState.OrderDetailsViewState.Computed(
+                                orderId = orderId,
+                                details = details.details.copy(
+                                    actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
+                                    breakdown = updatedBreakdown
+                                )
+                            )
+                        } else {
+                            details
+                        }
+                    item to updatedDetails
+                }?.toMap()
+
+                _state.value = updatedState.copy(
+                    items = if (updatedItems != null) {
+                        WooPosOrdersState.Content.Items.Loaded(updatedItems)
+                    } else {
+                        updatedState.items
+                    },
+                    selectedDetails = updatedSelectedDetails.copy(
+                        actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
+                        breakdown = updatedBreakdown
+                    )
+                )
+            }
         }
     }
 
@@ -182,7 +267,7 @@ class WooPosOrdersViewModel @Inject constructor(
 
         val query = currentSearchQuery
         if (query.isNullOrEmpty()) {
-            loadOrders()
+            loadOrders(isRefreshing = true)
         } else {
             performSearch(query, isRefreshing = true)
         }
@@ -349,14 +434,14 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val loaded = current.items as? WooPosOrdersState.Content.Items.Loaded ?: return
 
-        val historicalRefundsResult = retrieveOrderRefunds(updated).fold(
+        val historicalRefundsResult = retrieveOrderRefunds(updated, forceRefresh = true).fold(
             onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
             onFailure = { RefundsFetchResult.Error }
         )
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
-        val newItem = mapOrderItem(updated, selectedId)
-        val newDetailsViewState = mapOrderDetails(updated, historicalRefundsResult)
+        val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
+        val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
         val newDetails = WooPosOrdersState.OrderDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
@@ -398,7 +483,7 @@ class WooPosOrdersViewModel @Inject constructor(
             }
 
             val mark = Monotonic.markNow()
-            val result = ordersDataSource.searchOrders(query)
+            val result = ordersDataSource.searchOrders(query, forceRefreshRefunds = isRefreshing)
             val elapsedMs = mark.elapsedNow().inWholeMilliseconds
             ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
             when (result) {
@@ -435,11 +520,11 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
-    private fun loadOrders() {
+    private fun loadOrders(isRefreshing: Boolean = false) {
         cancelJobs()
         val mark = Monotonic.markNow()
         loadingJob = viewModelScope.launch {
-            ordersDataSource.loadOrders().collect { result ->
+            ordersDataSource.loadOrders(forceRefreshRefunds = isRefreshing).collect { result ->
                 when (result) {
                     is LoadOrdersResult.Error -> {
                         val elapsedMs = mark.elapsedNow().inWholeMilliseconds
@@ -491,12 +576,37 @@ class WooPosOrdersViewModel @Inject constructor(
         val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
             ?: error("Order $orderId not found in state")
 
+        return orderDetailsMapper.mapOrderDetails(
+            when (orderDetails) {
+                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.order
+                is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                    loadedItems.items.keys.firstOrNull { it.id == orderId }?.let {
+                        ordersDataSource.getOrderById(it.id).getOrNull()
+                    } ?: error("Order $orderId not found")
+                }
+            },
+            when (orderDetails) {
+                is WooPosOrdersState.OrderDetailsViewState.Lazy -> orderDetails.refundResult
+                is WooPosOrdersState.OrderDetailsViewState.Computed -> RefundsFetchResult.Error
+            }
+        )
+    }
+
+    private suspend fun getOrComputeDetailsWithoutActions(
+        orderId: Long
+    ): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
+        val current = _state.value as? WooPosOrdersState.Content ?: error("State is not Content")
+        val loadedItems = current.items as? WooPosOrdersState.Content.Items.Loaded ?: error("Items not loaded")
+
+        val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
+            ?: error("Order $orderId not found in state")
+
         return when (orderDetails) {
-            is WooPosOrdersState.OrderDetailsViewState.Lazy -> mapOrderDetails(
-                orderDetails.order,
-                orderDetails.refundResult
-            )
-            is WooPosOrdersState.OrderDetailsViewState.Computed -> orderDetails.details
+            is WooPosOrdersState.OrderDetailsViewState.Lazy ->
+                orderDetailsMapper.mapOrderDetailsWithoutActions(orderDetails.order)
+            is WooPosOrdersState.OrderDetailsViewState.Computed -> {
+                orderDetails.details
+            }
         }
     }
 
@@ -569,9 +679,9 @@ class WooPosOrdersViewModel @Inject constructor(
     ): Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
             async {
-                val item = mapOrderItem(order, selectedId)
+                val item = orderItemMapper.mapOrderItem(order, selectedId)
                 val details: WooPosOrdersState.OrderDetailsViewState = if (order.id == selectedId) {
-                    val fullDetails = mapOrderDetails(order, refundResult)
+                    val fullDetails = orderDetailsMapper.mapOrderDetails(order, refundResult)
                     WooPosOrdersState.OrderDetailsViewState.Computed(orderId = order.id, details = fullDetails)
                 } else {
                     WooPosOrdersState.OrderDetailsViewState.Lazy(
@@ -585,151 +695,4 @@ class WooPosOrdersViewModel @Inject constructor(
             }
         }.awaitAll().toMap()
     }
-
-    private suspend fun mapOrderItem(order: Order, selectedId: Long?): WooPosOrdersState.OrderItemViewState {
-        val statusText = order.status.localizedLabel(resourceProvider, locale)
-
-        return WooPosOrdersState.OrderItemViewState(
-            id = order.id,
-            title = "#${order.number}",
-            date = order.dateCreated.formatToMMMddYYYYAtHHmm(
-                atWord = resourceProvider.getString(R.string.date_time_connector)
-            ),
-            total = formatPrice(order.total, order.currency),
-            customerEmail = order.customer?.email ?: order.billingAddress.email,
-            isSelected = order.id == selectedId,
-            status = PosOrderStatus(
-                text = statusText,
-                colorKey = OrderStatusColorKey.fromStatus(order.status)
-            ),
-            statusSlug = order.status.toString(),
-            createdAtMillis = order.dateCreated.time
-        )
-    }
-
-    private suspend fun mapOrderDetails(
-        order: Order,
-        historicalRefundsResult: RefundsFetchResult
-    ): WooPosOrdersState.OrderDetailsViewState.Computed.Details = coroutineScope {
-        val status = mapOrderStatus(order)
-        val lineItems = buildLineItems(order)
-        val refundInfo = buildRefundInfo(order, historicalRefundsResult)
-        val breakdown = buildTotalsBreakdown(order, refundInfo)
-        val actions = getAvailableActions(order, historicalRefundsResult)
-
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details(
-            id = order.id,
-            number = "#${order.number}",
-            dateTime = order.dateCreated.formatToMMMddYYYYAtHHmm(
-                atWord = resourceProvider.getString(R.string.date_time_connector)
-            ),
-            customerEmail = order.customer?.email ?: order.billingAddress.email,
-            status = status,
-            lineItems = lineItems,
-            breakdown = breakdown,
-            total = formatPrice(order.total, order.currency),
-            totalPaid = formatPrice(order.total, order.currency),
-            paymentMethodTitle = order.paymentMethodTitle.takeIf { it.isNotBlank() },
-            actions = actions
-        )
-    }
-
-    private fun mapOrderStatus(order: Order): PosOrderStatus {
-        val statusText = order.status.localizedLabel(resourceProvider, locale)
-        return PosOrderStatus(
-            text = statusText,
-            colorKey = OrderStatusColorKey.fromStatus(order.status)
-        )
-    }
-
-    private suspend fun buildLineItems(
-        order: Order
-    ): List<WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow> = coroutineScope {
-        order.items.map { item ->
-            async {
-                val unitPrice =
-                    if (item.quantity == 0f) {
-                        item.total
-                    } else {
-                        item.total / item.quantity.toBigDecimal()
-                    }
-                val product = getProductById(item.productId)
-                WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
-                    id = item.itemId,
-                    name = item.name,
-                    attributesDescription = item.attributesDescription.takeIf { it.isNotEmpty() },
-                    qtyAndUnitPrice = "${item.quantity.toInt()} x ${formatPrice(unitPrice)}",
-                    lineTotal = formatPrice(item.total, order.currency),
-                    imageUrl = product?.firstImageUrl
-                )
-            }
-        }.awaitAll()
-    }
-
-    private data class RefundInfo(
-        val refundAmounts: List<String>,
-        val totalRefunded: BigDecimal
-    )
-
-    private suspend fun buildRefundInfo(
-        order: Order,
-        refundResult: RefundsFetchResult
-    ): RefundInfo {
-        return when (refundResult) {
-            is RefundsFetchResult.Success -> {
-                val amounts = refundResult.refunds.map { "-${formatPrice(it.amount, order.currency)}" }
-                val total = refundResult.refunds.sumOf { it.amount }
-                RefundInfo(amounts, total)
-            }
-            is RefundsFetchResult.Error -> {
-                val amounts =
-                    if (order.refundTotal > BigDecimal.ZERO) {
-                        listOf(resourceProvider.getString(R.string.woopos_orders_details_refund_error))
-                    } else {
-                        emptyList()
-                    }
-                RefundInfo(amounts, BigDecimal.ZERO)
-            }
-        }
-    }
-
-    private suspend fun buildTotalsBreakdown(
-        order: Order,
-        refundInfo: RefundInfo
-    ): WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown {
-        val netPayment = if (refundInfo.totalRefunded > BigDecimal.ZERO) {
-            formatPrice(order.total - refundInfo.totalRefunded, order.currency)
-        } else {
-            null
-        }
-
-        val discountCode = order.couponLines.firstOrNull()?.code
-
-        return WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
-            products = formatPrice(order.productsTotal, order.currency),
-            discount = order.discountTotal.takeIf { !it.isZero() }
-                ?.let { "-${formatPrice(it, order.currency)}" },
-            discountCode = discountCode,
-            taxes = formatPrice(order.totalTax, order.currency),
-            shipping = order.shippingTotal.takeIf { !it.isZero() }?.let { formatPrice(it, order.currency) },
-            refunds = refundInfo.refundAmounts,
-            netPayment = netPayment
-        )
-    }
 }
-
-private fun Order.Status.localizedLabel(resourceProvider: ResourceProvider, locale: Locale): String {
-    return when (this) {
-        Order.Status.Cancelled -> resourceProvider.getString(R.string.woopos_orders_status_cancelled)
-        Order.Status.Completed -> resourceProvider.getString(R.string.woopos_orders_status_completed)
-        is Order.Status.Custom ->
-            value.replaceFirstChar { it.titlecase(locale) }.replace("-", " ")
-        Order.Status.Failed -> resourceProvider.getString(R.string.woopos_orders_status_failed)
-        Order.Status.OnHold -> resourceProvider.getString(R.string.woopos_orders_status_on_hold)
-        Order.Status.Pending -> resourceProvider.getString(R.string.woopos_orders_status_pending)
-        Order.Status.Processing -> resourceProvider.getString(R.string.woopos_orders_status_processing)
-        Order.Status.Refunded -> resourceProvider.getString(R.string.woopos_orders_status_refunded)
-    }
-}
-
-private fun BigDecimal.isZero() = this.compareTo(BigDecimal.ZERO) == 0
