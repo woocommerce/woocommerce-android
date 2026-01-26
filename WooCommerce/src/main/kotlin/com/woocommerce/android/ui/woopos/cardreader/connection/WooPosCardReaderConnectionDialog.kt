@@ -525,15 +525,12 @@ private fun MultipleReadersFoundContent(readers: List<WooPosCardReaderConnection
                 maxLines = 1,
                 onClick = reader.onConnectClicked,
             )
-            if (index < readers.lastIndex) {
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-            }
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
         Row(
-            modifier = Modifier.padding(bottom = WooPosSpacing.XXSmall.value),
+            modifier = Modifier
+                .height(80.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
