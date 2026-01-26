@@ -8,6 +8,7 @@ import com.woocommerce.android.AppPrefs
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.analytics.AnalyticsEvent.BACK_PRESSED
 import com.woocommerce.android.analytics.AnalyticsEvent.VIEW_SHOWN
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.PackageUtils
@@ -122,6 +123,19 @@ class AnalyticsTracker private constructor(
                 finalProperties[KEY_IS_WPCOM_STORE] = it.isWpComStore
                 finalProperties[KEY_PLAN_PRODUCT_SLUG] = it.planProductSlug
                 appPrefs.getWCStoreID(it.siteId)?.let { id -> finalProperties[KEY_STORE_ID] = id }
+                if (!finalProperties.containsKey(IS_JETPACK_INSTALLED)) {
+                    finalProperties[IS_JETPACK_INSTALLED] = it.isJetpackInstalled
+                }
+                if (!finalProperties.containsKey(IS_JETPACK_CONNECTED)) {
+                    finalProperties[IS_JETPACK_CONNECTED] = it.isJetpackConnected
+                }
+                if (!finalProperties.containsKey(IS_JETPACK_CP_CONNECTED)) {
+                    finalProperties[IS_JETPACK_CP_CONNECTED] = it.isJetpackCPConnected
+                }
+                if (!finalProperties.containsKey(IS_CIAB)) finalProperties[IS_CIAB] = it.isCIABSite()
+                if (!finalProperties.containsKey(GARDEN_PARTNER)) {
+                    it.gardenPartner?.let { gardenPartner -> finalProperties[GARDEN_PARTNER] = gardenPartner }
+                }
             }
         }
         finalProperties[IS_DEBUG] = BuildConfig.DEBUG
@@ -168,6 +182,11 @@ class AnalyticsTracker private constructor(
         private const val EVENTS_PREFIX = "woocommerceandroid_"
         private const val POS_EVENTS_PREFIX = "woocommerceandroid_pos_"
         const val KEY_SITE_URL = "site_url"
+        const val IS_JETPACK_INSTALLED = "is_jetpack_installed"
+        const val IS_JETPACK_CONNECTED = "is_jetpack_connected"
+        const val IS_JETPACK_CP_CONNECTED = "is_jetpack_cp_connected"
+        const val IS_CIAB = "is_ciab"
+        const val GARDEN_PARTNER = "garden_partner"
 
         const val IS_DEBUG = "is_debug"
         const val KEY_ALREADY_READ = "already_read"

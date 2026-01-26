@@ -58,11 +58,11 @@ class NotificationAnalyticsTracker @Inject constructor(
     }
 
     private fun MutableMap<String, Any>.addCommonSiteProperties(site: SiteModel) = apply {
-        this["is_jetpack_installed"] = site.isJetpackInstalled
-        this["is_jetpack_connected"] = site.isJetpackConnected
-        this["is_jetpack_cp_connected"] = site.isJetpackCPConnected
-        this["is_ciab"] = site.isCIABSite()
-        site.gardenPartner?.let { this["garden_partner"] = it }
+        this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled
+        this[AnalyticsTracker.IS_JETPACK_CONNECTED] = site.isJetpackConnected
+        this[AnalyticsTracker.IS_JETPACK_CP_CONNECTED] = site.isJetpackCPConnected
+        this[AnalyticsTracker.IS_CIAB] = site.isCIABSite()
+        site.gardenPartner?.let { this[AnalyticsTracker.GARDEN_PARTNER] = it }
     }
 
     fun flush() {
