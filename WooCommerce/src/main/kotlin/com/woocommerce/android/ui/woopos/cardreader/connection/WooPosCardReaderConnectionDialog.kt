@@ -474,6 +474,7 @@ private fun ScanningContent() {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 
@@ -562,6 +563,7 @@ private fun ConnectingContent() {
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center,
         )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 
@@ -578,6 +580,7 @@ private fun ConnectedContent(readerName: String) {
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
     }
 }
 
