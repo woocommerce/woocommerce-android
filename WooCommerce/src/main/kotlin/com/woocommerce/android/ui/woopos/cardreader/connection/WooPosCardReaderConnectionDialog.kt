@@ -251,7 +251,7 @@ fun WooPosCardReaderConnectionDialogContent(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_card_reader_connection_dialog_background_content_description
         ),
-        widthFraction = 0.6f,
+        widthFraction = 0.55f,
         onCloseClick = if (state.showCloseButton) onDismiss else null,
         onDismissRequest = onBackPressed,
     ) {
@@ -746,8 +746,10 @@ private fun UpdateRequiredContent(
             color = MaterialTheme.colorScheme.onSurface,
         )
 
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
         if (showCancelWarning) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
             WooPosText(
                 text = stringResource(R.string.woopos_card_reader_update_required_message),
