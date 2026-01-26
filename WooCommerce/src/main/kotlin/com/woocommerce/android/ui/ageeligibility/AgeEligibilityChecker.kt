@@ -8,6 +8,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.ui.login.AccountRepository
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,40 +35,44 @@ class AgeEligibilityChecker @Inject constructor(
     val ageEligibilityState: StateFlow<AgeEligibilityState> = _ageEligibilityState.asStateFlow()
 
     suspend fun checkAge() {
-        val trackingProperties = mutableMapOf<String, Any>()
-        try {
-            val result = client.checkAge()
-            val isUserAgeEligible = isUserAgeEligibleForAppUse(result.userStatus, result.ageUpper)
+        if (FeatureFlag.AGE_ELIGIBILITY_CHECKS.isEnabled()) {
+            val trackingProperties = mutableMapOf<String, Any>()
+            try {
+                val result = client.checkAge()
+                val isUserAgeEligible = isUserAgeEligibleForAppUse(result.userStatus, result.ageUpper)
 
-            _ageEligibilityState.update {
-                ageEligibilityState.value.copy(
-                    isUserAgeRangeEligible = isUserAgeEligible,
-                    ageRestrictedMessage = if (isAgeBelowWooCommerceTOSMinimum(result.ageUpper)) {
-                        R.string.age_restriction_user_below_tos_minimum_age_dialog_message
-                    } else {
-                        R.string.age_restriction_supervised_user_account_dialog_message
-                    }
+                _ageEligibilityState.update {
+                    ageEligibilityState.value.copy(
+                        isUserAgeRangeEligible = isUserAgeEligible,
+                        ageRestrictedMessage = if (isAgeBelowWooCommerceTOSMinimum(result.ageUpper)) {
+                            R.string.age_restriction_user_below_tos_minimum_age_dialog_message
+                        } else {
+                            R.string.age_restriction_supervised_user_account_dialog_message
+                        }
+                    )
+                }
+
+                prefsWrapper.isUserAgeEligibleForAppUse = _ageEligibilityState.value.isUserAgeRangeEligible
+                trackingProperties["retrieved_age"] = result.ageUpper ?: -1
+                trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
+            } catch (exception: ApiException) {
+                WooLog.i(
+                    WooLog.T.UTILS,
+                    "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
+                        "age: ${exception.message}, reverting user eligibility to default true"
                 )
+                _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
             }
 
-            prefsWrapper.isUserAgeEligibleForAppUse = _ageEligibilityState.value.isUserAgeRangeEligible
-            trackingProperties["retrieved_age"] = result.ageUpper ?: -1
-            trackingProperties["user_status"] = getUserStatusAsString(result.userStatus)
-        } catch (exception: ApiException) {
-            WooLog.i(
-                WooLog.T.UTILS,
-                "AgeEligibilityChecker ${exception.javaClass.simpleName} while checking user " +
-                    "age: ${exception.message}, reverting user eligibility to default true"
-            )
+            val isAccessRestricted = _ageEligibilityState.value.isUserAgeRangeEligible.not()
+            trackingProperties["access_restricted"] = isAccessRestricted
+            trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
+
+            if (isAccessRestricted) {
+                accountRepository.logout()
+            }
+        } else {
             _ageEligibilityState.update { _ageEligibilityState.value.copy(isUserAgeRangeEligible = true) }
-        }
-
-        val isAccessRestricted = _ageEligibilityState.value.isUserAgeRangeEligible.not()
-        trackingProperties["access_restricted"] = isAccessRestricted
-        trackerWrapper.track(AnalyticsEvent.ACCOUNT_AGE_RESTRICTION_CHECKED, properties = trackingProperties)
-
-        if (isAccessRestricted) {
-            accountRepository.logout()
         }
     }
 
