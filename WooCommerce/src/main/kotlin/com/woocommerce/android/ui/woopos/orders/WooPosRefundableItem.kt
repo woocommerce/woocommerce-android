@@ -14,10 +14,4 @@ data class WooPosRefundableItem(
     val formattedUnitPrice: String,
     val formattedUnitTax: String,
     val rowIndex: Int,
-) {
-    val lineTotal: BigDecimal
-        get() = unitPrice
-
-    val lineTax: BigDecimal
-        get() = unitTax
-}
+)

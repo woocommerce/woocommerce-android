@@ -127,7 +127,7 @@ val BookingFilterPage.titleRes: Int
         BookingFilterPage.Customer -> R.string.bookings_filter_customer
         BookingFilterPage.Location -> R.string.bookings_filter_location
         BookingFilterPage.DateTime -> R.string.bookings_filter_title_date
-        BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service_event
+        BookingFilterPage.ServiceEvent -> R.string.bookings_filter_title_service
         BookingFilterPage.List -> R.string.bookings_filters_default_title
     }
 

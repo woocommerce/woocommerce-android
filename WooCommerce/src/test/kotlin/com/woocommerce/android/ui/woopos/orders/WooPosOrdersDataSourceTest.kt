@@ -8,11 +8,11 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.toList
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
+import org.mockito.ArgumentMatchers.anyInt
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.argumentCaptor
@@ -52,10 +52,8 @@ class WooPosOrdersDataSourceTest {
     )
 
     @Before
-    fun setUp() {
-        runBlocking {
-            whenever(retrieveOrderRefunds.invoke(any<Order>())).thenReturn(Result.success(emptyList()))
-        }
+    fun setUp() = runTest {
+        whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
     }
 
     @Test
@@ -86,7 +84,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
                 createdVia = any(),
-                searchQuery = anyOrNull()
+                searchQuery = anyOrNull(),
+                decimalPoints = anyInt(),
             )
         ).thenReturn(payload)
 
@@ -113,7 +112,8 @@ class WooPosOrdersDataSourceTest {
             sortOrder = any(),
             statusFilter = anyOrNull(),
             createdVia = any(),
-            searchQuery = anyOrNull()
+            searchQuery = anyOrNull(),
+            decimalPoints = anyInt(),
         )
     }
 
@@ -139,7 +139,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
                 createdVia = any(),
-                searchQuery = anyOrNull()
+                searchQuery = anyOrNull(),
+                decimalPoints = anyInt(),
             )
         ).thenReturn(payload)
 
@@ -165,7 +166,8 @@ class WooPosOrdersDataSourceTest {
             sortOrder = any(),
             statusFilter = anyOrNull(),
             createdVia = any(),
-            searchQuery = anyOrNull()
+            searchQuery = anyOrNull(),
+            decimalPoints = anyInt(),
         )
     }
 
@@ -186,7 +188,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = any(),
                 statusFilter = anyOrNull(),
                 createdVia = any(),
-                searchQuery = anyOrNull()
+                searchQuery = anyOrNull(),
+                decimalPoints = anyInt(),
             )
         ).thenReturn(payload)
 
@@ -208,7 +211,8 @@ class WooPosOrdersDataSourceTest {
             sortOrder = any(),
             statusFilter = anyOrNull(),
             createdVia = any(),
-            searchQuery = anyOrNull()
+            searchQuery = anyOrNull(),
+            decimalPoints = anyInt(),
         )
     }
 
@@ -238,7 +242,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
                 statusFilter = null,
                 createdVia = "pos-rest-api",
-                searchQuery = query
+                searchQuery = query,
+                decimalPoints = 8,
             )
         ).thenReturn(payload)
 
@@ -258,7 +263,8 @@ class WooPosOrdersDataSourceTest {
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
             createdVia = "pos-rest-api",
-            searchQuery = query
+            searchQuery = query,
+            decimalPoints = 8,
         )
     }
 
@@ -283,7 +289,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
                 statusFilter = null,
                 createdVia = "pos-rest-api",
-                searchQuery = query
+                searchQuery = query,
+                decimalPoints = 8,
             )
         ).thenReturn(payload)
 
@@ -313,7 +320,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
                 statusFilter = null,
                 createdVia = "pos-rest-api",
-                searchQuery = query
+                searchQuery = query,
+                decimalPoints = 8,
             )
         ).thenReturn(payload)
 
@@ -340,7 +348,7 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e1 to emptyList(), e2 to emptyList()),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
             .thenReturn(payload)
 
         val emissions = sut.loadOrders().toList(mutableListOf())
@@ -358,7 +366,7 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
             .thenReturn(firstPayload)
         sut.loadOrders().toList(mutableListOf())
         assertThat(sut.hasMorePages).isTrue
@@ -373,7 +381,7 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = listOf(e3 to emptyList(), e4 to emptyList()),
             canLoadMore = false
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull()))
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
             .thenReturn(page2Payload)
 
         val result = sut.loadMore()
@@ -392,7 +400,7 @@ class WooPosOrdersDataSourceTest {
             ordersWithMeta = emptyList(),
             canLoadMore = true
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull()))
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(1), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
             .thenReturn(firstPayload)
         sut.loadOrders().toList(mutableListOf())
         assertThat(sut.hasMorePages).isTrue
@@ -405,7 +413,7 @@ class WooPosOrdersDataSourceTest {
             site = siteModel,
             error = error
         )
-        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull()))
+        whenever(orderRestClient.fetchOrders(any(), any(), eq(2), any(), any(), anyOrNull(), any(), isNull(), eq(8)))
             .thenReturn(errorPayload)
 
         val result = sut.loadMore()
@@ -438,7 +446,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
                 statusFilter = null,
                 createdVia = "pos-rest-api",
-                searchQuery = query
+                searchQuery = query,
+                decimalPoints = 8,
             )
         ).thenReturn(page1Payload)
         val first = sut.searchOrders(query)
@@ -464,7 +473,8 @@ class WooPosOrdersDataSourceTest {
                 sortOrder = OrderRestClient.SortOrder.DESCENDING,
                 statusFilter = null,
                 createdVia = "pos-rest-api",
-                searchQuery = query
+                searchQuery = query,
+                decimalPoints = 8,
             )
         ).thenReturn(page2Payload)
 
@@ -484,7 +494,8 @@ class WooPosOrdersDataSourceTest {
             sortOrder = OrderRestClient.SortOrder.DESCENDING,
             statusFilter = null,
             createdVia = "pos-rest-api",
-            searchQuery = query
+            searchQuery = query,
+            decimalPoints = 8,
         )
     }
 
@@ -501,7 +512,7 @@ class WooPosOrdersDataSourceTest {
             orderWithMeta = entity to emptyList<WCMetaData>(),
             site = siteModel
         )
-        whenever(orderRestClient.fetchSingleOrder(siteModel, orderId)).thenReturn(payload)
+        whenever(orderRestClient.fetchSingleOrder(siteModel, orderId, 8)).thenReturn(payload)
 
         // WHEN
         val result = sut.refreshOrderById(orderId)
@@ -511,7 +522,7 @@ class WooPosOrdersDataSourceTest {
         assertThat(result.getOrThrow()).isEqualTo(mapped)
 
         verify(selectedSite).get()
-        verify(orderRestClient).fetchSingleOrder(siteModel, orderId)
+        verify(orderRestClient).fetchSingleOrder(siteModel, orderId, 8)
         verify(orderMapper).toAppModel(entity)
     }
 
@@ -534,7 +545,7 @@ class WooPosOrdersDataSourceTest {
             orderWithMeta = entity to emptyList<WCMetaData>(),
             site = site
         )
-        whenever(orderRestClient.fetchSingleOrder(site, orderId)).thenReturn(payload)
+        whenever(orderRestClient.fetchSingleOrder(site, orderId, 8)).thenReturn(payload)
 
         // WHEN
         val result = sut.refreshOrderById(orderId)

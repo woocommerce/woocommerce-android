@@ -214,22 +214,22 @@ class WooPosCheckCatalogSizeActionTest {
     }
 
     private suspend fun givenProductsCount(count: Int) {
-        whenever(posLocalCatalogStore.fetchProductsCount(any(), anyOrNull()))
+        whenever(posLocalCatalogStore.fetchProductsCount(any(), any(), anyOrNull()))
             .thenReturn(KotlinResult.success(count))
     }
 
     private suspend fun givenVariationsCount(count: Int) {
-        whenever(posLocalCatalogStore.fetchVariationsCount(any(), anyOrNull()))
+        whenever(posLocalCatalogStore.fetchVariationsCount(any(), any(), anyOrNull()))
             .thenReturn(KotlinResult.success(count))
     }
 
     private suspend fun givenProductsCountFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.fetchProductsCount(any(), anyOrNull()))
+        whenever(posLocalCatalogStore.fetchProductsCount(any(), any(), anyOrNull()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 
     private suspend fun givenVariationsCountFails(errorMessage: String) {
-        whenever(posLocalCatalogStore.fetchVariationsCount(any(), anyOrNull()))
+        whenever(posLocalCatalogStore.fetchVariationsCount(any(), any(), anyOrNull()))
             .thenReturn(KotlinResult.failure(Exception(errorMessage)))
     }
 }

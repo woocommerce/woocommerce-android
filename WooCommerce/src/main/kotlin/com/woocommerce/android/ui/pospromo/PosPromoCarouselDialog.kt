@@ -47,7 +47,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun PosPromoCarouselModal(
+fun PosPromoCarouselDialog(
     state: PosPromoState,
     onDismiss: () -> Unit,
     onNextClick: () -> Unit,

@@ -21,10 +21,8 @@ import org.json.JSONObject
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.annotations.endpoint.WPAPIEndpoint
 import org.wordpress.android.fluxc.generated.MediaActionBuilder
-import org.wordpress.android.fluxc.generated.UploadActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPAPI
 import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequest
@@ -70,7 +68,7 @@ abstract class BaseWPV2MediaRestClient(
                     currentUploads.remove(media.id)
                 }
                 .collect { payload ->
-                    dispatcher.dispatch(UploadActionBuilder.newUploadedMediaAction(payload))
+                    dispatcher.dispatch(MediaActionBuilder.newUploadedMediaAction(payload))
                 }
         }
     }
@@ -103,7 +101,6 @@ abstract class BaseWPV2MediaRestClient(
     @Suppress("TooGenericExceptionCaught", "SwallowedException")
     private fun syncUploadMedia(site: SiteModel, media: MediaModel): Flow<ProgressPayload> {
         fun ProducerScope<ProgressPayload>.handleFailure(media: MediaModel, error: MediaError) {
-            media.setUploadState(FAILED)
             val payload = ProgressPayload(media, 1f, false, error)
             trySendBlocking(payload)
             close()

@@ -139,12 +139,7 @@ class JitmViewModel @Inject constructor(
                 urlLightMode = badgeUrl,
                 urlDarkMode = this[JITM_ASSETS_BADGE_IMAGE_DARK_THEME_KEY] ?: badgeUrl
             )
-
-            this?.containsKey(JITM_ASSETS_BADGE_IMAGE_LIGHT_THEME_KEY) == true -> null
-
-            else -> JitmState.Banner.LabelOrRemoteIcon.Label(
-                UiString.UiStringRes(R.string.card_reader_upsell_card_reader_banner_new)
-            )
+            else -> null
         }
     }
 

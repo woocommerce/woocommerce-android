@@ -24,6 +24,15 @@ sealed class WooPosOrdersState {
     }
 
     @Immutable
+    sealed class OrderActionsState {
+        @Immutable
+        data object Loading : OrderActionsState()
+
+        @Immutable
+        data class Loaded(val actions: List<OrderAction>) : OrderActionsState()
+    }
+
+    @Immutable
     sealed class OrderDetailsViewState {
         abstract val orderId: Long
 
@@ -52,12 +61,13 @@ sealed class WooPosOrdersState {
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
-                val actions: List<OrderAction>
+                val actionsState: OrderActionsState
             ) {
                 @Immutable
                 data class LineItemRow(
                     val id: Long,
                     val name: String,
+                    val attributesDescription: String?,
                     val qtyAndUnitPrice: String,
                     val lineTotal: String,
                     val imageUrl: String?,

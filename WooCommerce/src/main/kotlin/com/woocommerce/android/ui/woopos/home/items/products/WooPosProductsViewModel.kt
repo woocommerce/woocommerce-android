@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.products
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.ParentToChildrenEvent
@@ -32,6 +33,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import javax.inject.Inject
 
 @HiltViewModel
@@ -325,7 +327,7 @@ class WooPosProductsViewModel @Inject constructor(
                                 _viewState.value = hidePTRIndicator()
                             }
                             is PosLocalCatalogSyncResult.Failure -> {
-                                handlePTRError()
+                                handlePTRError(isNetworkError = isNetworkError(syncResult.value))
                             }
                         }
                     }
@@ -339,22 +341,37 @@ class WooPosProductsViewModel @Inject constructor(
                                 WooPosProductsViewState.Empty()
                             }
                         } else {
-                            handlePTRError()
+                            handlePTRError(
+                                isNetworkError = isNetworkError(syncResult.productsResult.exceptionOrNull())
+                            )
                         }
                     }
                 }
-            }.onFailure { _ ->
-                handlePTRError()
+            }.onFailure { error ->
+                handlePTRError(isNetworkError = isNetworkError(error))
             }
         }
     }
 
-    private fun handlePTRError() {
+    private fun isNetworkError(error: Any?): Boolean {
+        return when (error) {
+            is WooException ->
+                error.error.type == WooErrorType.TIMEOUT ||
+                    error.error.type == WooErrorType.NO_CONNECTION
+            is PosLocalCatalogSyncResult.Failure.NetworkError -> true
+            else -> false
+        }
+    }
+
+    private fun handlePTRError(isNetworkError: Boolean) {
+        val messageResId = if (isNetworkError) {
+            R.string.woo_pos_ptr_offline_error
+        } else {
+            R.string.something_went_wrong_try_again
+        }
         sendEventToParent(
             ChildToParentEvent.ToastMessageDisplayed(
-                message = resourceProvider.getString(
-                    R.string.something_went_wrong_try_again
-                )
+                message = resourceProvider.getString(messageResId)
             )
         )
         _viewState.value = hidePTRIndicator()

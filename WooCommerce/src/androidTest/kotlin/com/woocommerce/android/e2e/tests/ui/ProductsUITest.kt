@@ -3,7 +3,6 @@
 package com.woocommerce.android.e2e.tests.ui
 
 import androidx.test.rule.ActivityTestRule
-import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.e2e.helpers.InitializationRule
 import com.woocommerce.android.e2e.helpers.TestBase
 import com.woocommerce.android.e2e.helpers.util.MocksReader
@@ -14,6 +13,9 @@ import com.woocommerce.android.e2e.rules.RetryTestRule
 import com.woocommerce.android.e2e.screens.TabNavComponent
 import com.woocommerce.android.e2e.screens.login.WelcomeScreen
 import com.woocommerce.android.e2e.screens.products.ProductListScreen
+import com.woocommerce.android.e2e.tests.FAKE_PASSWORD
+import com.woocommerce.android.e2e.tests.FAKE_URL
+import com.woocommerce.android.e2e.tests.FAKE_USERNAME
 import com.woocommerce.android.ui.login.LoginActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -41,9 +43,9 @@ class ProductsUITest : TestBase() {
         WelcomeScreen
             .skipCarouselIfNeeded()
             .selectLogin()
-            .proceedWith(BuildConfig.SCREENSHOTS_URL)
-            .proceedWith(BuildConfig.SCREENSHOTS_USERNAME)
-            .proceedWith(BuildConfig.SCREENSHOTS_PASSWORD)
+            .proceedWith(FAKE_URL)
+            .proceedWith(FAKE_USERNAME)
+            .proceedWith(FAKE_PASSWORD)
 
         TabNavComponent().gotoProductsScreen()
     }

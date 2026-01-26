@@ -18,9 +18,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.store.NotificationStore
-import org.wordpress.android.fluxc.store.NotificationStore.NotificationSettingsUpdateError
-import org.wordpress.android.fluxc.store.NotificationStore.SiteNotificationSetting
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingsUpdateError
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +28,7 @@ class WooSitesVisibilityViewModel @Inject constructor(
     private val sitePickerRepository: SitePickerRepository,
     private val selectedSite: SelectedSite,
     private val visibleSitesDataStore: VisibleWooSitesDataStore,
-    private val notificationsStore: NotificationStore,
+    private val notificationsStore: WpComPushNotificationStore,
     private val pushNotificationRepository: PushNotificationRepository,
     private val trackerWrapper: AnalyticsTrackerWrapper,
     savedStateHandle: SavedStateHandle

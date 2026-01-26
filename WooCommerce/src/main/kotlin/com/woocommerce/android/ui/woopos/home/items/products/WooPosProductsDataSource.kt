@@ -438,6 +438,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             pageSize = pageSize,
             filterOptions = productsTypesFilterConfig.filters,
             includeTypes = productsTypesFilterConfig.includeTypes,
+            posProductsOnly = true,
         )
     }
 
@@ -560,6 +561,7 @@ class WooPosProductsRemoteDataSource @Inject constructor(
             val remoteVariationsResult = productRestClient.fetchProductVariations(
                 site = selectedSite.get(),
                 productId = productId,
+                posProductsOnly = true,
             )
 
             if (!remoteVariationsResult.isError) {

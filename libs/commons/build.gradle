@@ -1,7 +1,10 @@
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.parcelize)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.dependency.analysis)
 }
 
@@ -19,17 +22,41 @@ android {
         targetCompatibility = libs.versions.java.get()
     }
 
+    buildFeatures {
+        buildConfig = true
+        compose = true
+    }
+
+    lintOptions {
+        // Workaround for kotlinx-metadata version incompatibility:
+        // Kotlin 2.2.21 generates metadata v2.2.0, but AGP 8.13.2's Compose lint detector
+        // only supports up to v2.0.0, causing crashes when analyzing Kotlin files.
+        // This can be removed when AGP updates its bundled kotlinx-metadata-jvm dependency.
+        disable "StateFlowValueCalledInComposition"
+
+        baseline file("lint-baseline.xml")
+    }
+
     testFixtures.enable = true
 }
 
 dependencies {
     implementation(libs.androidx.annotation)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.compose.ui.main)
     implementation(libs.glassfish.javax.annotation)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.automattic.tracks.crashlogging)
     implementation(libs.androidx.lifecycle.process)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.eventbus.android)
     implementation(libs.google.dagger.hilt.android.main)
     implementation(libs.wordpress.utils)
+    implementation(libs.apache.commons.text)
+    implementation(project(":libs:fluxc"))
+    implementation(project(":libs:fluxc-plugin"))
+
+    ksp(libs.google.dagger.hilt.compiler)
 
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.assertj.core)
@@ -38,6 +65,7 @@ dependencies {
     testImplementation(libs.androidx.arch.core.testing)
     testImplementation(libs.androidx.lifecycle.runtime.testing)
 
+    testFixturesImplementation(libs.androidx.compose.ui.main)
     testFixturesCompileOnly(libs.kotlinx.coroutines.test)
     testFixturesCompileOnly(libs.junit)
     testFixturesCompileOnly(libs.mockito.kotlin)
