@@ -35,16 +35,16 @@ class WooPosLoadPaymentGatewayTest {
     fun `given payment gateway supports refunds, when invoke called, then returns gateway with supportsRefunds true`() =
         runTest {
             // GIVEN
-            val stripeGateway: WCGatewayModel = mock {
-                on { id }.thenReturn("stripe")
-                on { title }.thenReturn("Stripe")
-                on { description }.thenReturn("Pay with Stripe")
-                on { order }.thenReturn(0)
-                on { isEnabled }.thenReturn(true)
-                on { methodTitle }.thenReturn("Credit Card (Stripe)")
-                on { methodDescription }.thenReturn("")
-                on { features }.thenReturn(listOf("refunds"))
-            }
+            val stripeGateway = WCGatewayModel(
+                id = "stripe",
+                title = "Stripe",
+                description = "Pay with Stripe",
+                order = 0,
+                isEnabled = true,
+                methodTitle = "Credit Card (Stripe)",
+                methodDescription = "",
+                features = listOf("refunds")
+            )
             whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(stripeGateway)
 
             // WHEN
@@ -60,16 +60,16 @@ class WooPosLoadPaymentGatewayTest {
     fun `given payment gateway does not support refunds, when invoke called, then returns gateway with supportsRefunds false`() =
         runTest {
             // GIVEN
-            val codGateway: WCGatewayModel = mock {
-                on { id }.thenReturn("cod")
-                on { title }.thenReturn("Cash on Delivery")
-                on { description }.thenReturn("Pay with cash on delivery")
-                on { order }.thenReturn(0)
-                on { isEnabled }.thenReturn(true)
-                on { methodTitle }.thenReturn("Cash on Delivery")
-                on { methodDescription }.thenReturn("")
-                on { features }.thenReturn(emptyList())
-            }
+            val codGateway = WCGatewayModel(
+                id = "cod",
+                title = "Cash on Delivery",
+                description = "Pay with cash on delivery",
+                order = 0,
+                isEnabled = true,
+                methodTitle = "Cash on Delivery",
+                methodDescription = "",
+                features = emptyList()
+            )
             whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(codGateway)
 
             // WHEN
@@ -85,16 +85,16 @@ class WooPosLoadPaymentGatewayTest {
     fun `given payment gateway is disabled, when invoke called, then returns manual gateway`() =
         runTest {
             // GIVEN
-            val disabledGateway: WCGatewayModel = mock {
-                on { id }.thenReturn("stripe")
-                on { title }.thenReturn("Stripe")
-                on { description }.thenReturn("Pay with Stripe")
-                on { order }.thenReturn(0)
-                on { isEnabled }.thenReturn(false)
-                on { methodTitle }.thenReturn("Credit Card (Stripe)")
-                on { methodDescription }.thenReturn("")
-                on { features }.thenReturn(listOf("refunds"))
-            }
+            val disabledGateway = WCGatewayModel(
+                id = "stripe",
+                title = "Stripe",
+                description = "Pay with Stripe",
+                order = 0,
+                isEnabled = false,
+                methodTitle = "Credit Card (Stripe)",
+                methodDescription = "",
+                features = listOf("refunds")
+            )
             whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(disabledGateway)
 
             // WHEN
