@@ -131,6 +131,17 @@ class WooPosRefundViewModelTest {
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(WooResult(testSettings))
         whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(WooResult(false))
+
+        // Default payment gateway mock for tests that don't explicitly test gateway logic
+        val defaultGateway = com.woocommerce.android.model.PaymentGateway(
+            title = "Default",
+            description = "",
+            isEnabled = true,
+            methodTitle = "Default",
+            methodDescription = "",
+            supportsRefunds = false
+        )
+        whenever(loadPaymentGateway.invoke(any())).thenReturn(defaultGateway)
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
