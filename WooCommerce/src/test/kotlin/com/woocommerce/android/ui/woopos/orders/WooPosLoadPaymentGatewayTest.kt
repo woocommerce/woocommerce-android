@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
+import com.woocommerce.android.viewmodel.BaseUnitTest
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -12,7 +14,8 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.gateways.WCGatewayModel
 import org.wordpress.android.fluxc.store.WCGatewayStore
 
-class WooPosLoadPaymentGatewayTest {
+@OptIn(ExperimentalCoroutinesApi::class)
+class WooPosLoadPaymentGatewayTest : BaseUnitTest() {
     private val gatewayStore: WCGatewayStore = mock()
     private val selectedSite: SelectedSite = mock()
 
@@ -27,7 +30,8 @@ class WooPosLoadPaymentGatewayTest {
 
         sut = WooPosLoadPaymentGateway(
             gatewayStore = gatewayStore,
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            coroutineDispatchers = coroutinesTestRule.testDispatchers
         )
     }
 
@@ -61,7 +65,7 @@ class WooPosLoadPaymentGatewayTest {
         runTest {
             // GIVEN
             val codGateway = WCGatewayModel(
-                id = "cod",
+                id = "stripe",
                 title = "Cash on Delivery",
                 description = "Pay with cash on delivery",
                 order = 0,
@@ -103,6 +107,7 @@ class WooPosLoadPaymentGatewayTest {
             // THEN
             assertThat(result.methodTitle).isEqualTo("manual")
             assertThat(result.supportsRefunds).isFalse()
+            assertThat(result.isEnabled).isFalse()
         }
 
     @Test
@@ -117,5 +122,6 @@ class WooPosLoadPaymentGatewayTest {
             // THEN
             assertThat(result.methodTitle).isEqualTo("manual")
             assertThat(result.supportsRefunds).isFalse()
+            assertThat(result.isEnabled).isFalse()
         }
 }
