@@ -1,22 +1,17 @@
 package com.woocommerce.android.ui.woopos.settings.details.localcatalog
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -26,11 +21,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -310,78 +302,54 @@ fun WooPosSyncErrorDialog(
         dialogBackgroundContentDescription = stringResource(
             id = R.string.woopos_settings_local_catalog_sync_error_dialog_background_content_description
         ),
+        onCloseClick = onDismissRequest,
         onDismissRequest = onDismissRequest
     ) {
         Column(
             modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row {
-                Spacer(modifier = Modifier.weight(1f))
-                IconButton(
-                    onClick = onDismissRequest,
-                    modifier = Modifier
-                ) {
-                    Icon(
-                        ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                        contentDescription = stringResource(
-                            id = R.string.woopos_exit_dialog_confirmation_close_content_description
-                        ),
-                        modifier = Modifier.size(40.dp),
-                        tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.size(WooPosSpacing.XLarge.value))
-
-            Column(
+            Image(
+                imageVector = WooPosIcons.ErrorX,
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState()),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    imageVector = WooPosIcons.ErrorX,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(WooPosSpacing.Medium.value)
-                )
+                    .padding(bottom = WooPosSpacing.Medium.value)
+            )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
-                    style = WooPosTypography.Heading,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_title),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                WooPosText(
-                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_message),
-                    style = WooPosTypography.BodyLarge,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            WooPosText(
+                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_message),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
 
-                WooPosButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onRetry,
-                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_retry_button)
-                )
+            WooPosButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onRetry,
+                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_retry_button)
+            )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                WooPosOutlinedButton(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = onDismissRequest,
-                    text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_cancel_button)
-                )
-            }
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onDismissRequest,
+                text = stringResource(R.string.woopos_settings_local_catalog_sync_error_dialog_cancel_button)
+            )
         }
     }
 }

@@ -4355,6 +4355,9 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+    <string name="age_restriction_dialog_title">Account Access Restricted</string>
+    <string name="age_restriction_supervised_user_account_dialog_message">Your Google Account settings indicate that you need a parent or guardian\'s permission to continue. They can grant access using their Google account to get you back online.</string>
+    <string name="age_restriction_user_below_tos_minimum_age_dialog_message">Your Google Account indicates that you are under 13 years old, which is below the minimum age allowed to use the WooCommerce platform under its terms of service.</string>
 
     <!-- Woo POS Promo Carousel -->
     <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>
