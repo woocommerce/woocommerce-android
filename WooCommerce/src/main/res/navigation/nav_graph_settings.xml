@@ -38,6 +38,9 @@
             android:id="@+id/action_mainSettingsFragment_to_developerOptionsFragment"
             app:destination="@id/developerOptionsFragment" />
         <action
+            android:id="@+id/action_mainSettingsFragment_to_devFeatureFlagsFragment"
+            app:destination="@id/devFeatureFlagsFragment" />
+        <action
             android:id="@+id/action_mainSettingsFragment_to_nav_graph_domain_change"
             app:destination="@id/nav_graph_domain_change">
             <argument
@@ -174,6 +177,10 @@
             android:id="@+id/action_developerOptionsFragment_to_ApiFaker"
             app:destination="@id/apiFakerHostFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/devFeatureFlagsFragment"
+        android:name="com.woocommerce.android.ui.prefs.developer.DevFeatureFlagsFragment"
+        android:label="DevFeatureFlagsFragment" />
     <fragment
         android:id="@+id/accountSettingsFragment"
         android:name="com.woocommerce.android.ui.prefs.account.AccountSettingsFragment"
