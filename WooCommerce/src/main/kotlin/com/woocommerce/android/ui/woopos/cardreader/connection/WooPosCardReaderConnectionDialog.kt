@@ -18,16 +18,12 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -257,156 +252,137 @@ fun WooPosCardReaderConnectionDialogContent(
             R.string.woopos_card_reader_connection_dialog_background_content_description
         ),
         widthFraction = 0.6f,
+        onCloseClick = if (state.showCloseButton) onDismiss else null,
         onDismissRequest = onBackPressed,
     ) {
-        Column(
-            modifier = Modifier.padding(WooPosSpacing.XLarge.value)
-        ) {
-            if (state.showCloseButton) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.align(Alignment.TopEnd)
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                            contentDescription = stringResource(R.string.woopos_card_reader_close_content_description),
-                            modifier = Modifier.size(40.dp),
-                            tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                        )
-                    }
+        AnimatedContent(
+            targetState = state,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) togetherWith
+                    fadeOut(animationSpec = tween(300)) using
+                    SizeTransform(clip = false)
+            },
+            contentKey = { it::class },
+            label = "CardReaderConnectionStateTransition",
+            modifier = Modifier.fillMaxWidth()
+        ) { currentState ->
+            when (currentState) {
+                is WooPosCardReaderConnectionState.Scanning -> {
+                    ScanningContent()
                 }
-            }
-
-            AnimatedContent(
-                targetState = state,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) togetherWith
-                        fadeOut(animationSpec = tween(300)) using
-                        SizeTransform(clip = false)
-                },
-                contentKey = { it::class },
-                label = "CardReaderConnectionStateTransition",
-                modifier = Modifier.fillMaxWidth()
-            ) { currentState ->
-                when (currentState) {
-                    is WooPosCardReaderConnectionState.Scanning -> {
-                        ScanningContent()
-                    }
-                    is WooPosCardReaderConnectionState.ReaderFound -> {
-                        ReaderFoundContent(
-                            readerName = currentState.reader.name,
-                            onConnectClicked = currentState.reader.onConnectClicked,
-                            onKeepSearchingClicked = currentState.onKeepSearchingClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.MultipleReadersFound -> {
-                        MultipleReadersFoundContent(
-                            readers = currentState.readers,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.Connecting -> {
-                        ConnectingContent()
-                    }
-                    is WooPosCardReaderConnectionState.Connected -> {
-                        ConnectedContent(readerName = currentState.readerName)
-                    }
-                    is WooPosCardReaderConnectionState.ScanningFailed -> {
-                        ErrorContent(
-                            title = stringResource(R.string.woopos_card_reader_scanning_failed_title),
-                            message = currentState.errorMessage,
-                            onRetryClicked = currentState.onRetryClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.ConnectingFailed -> {
-                        ErrorContent(
-                            title = stringResource(R.string.woopos_card_reader_connecting_failed_title),
-                            message = currentState.errorMessage,
-                            onRetryClicked = currentState.onRetryClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.ConnectingFailedBatteryLow -> {
-                        BatteryLowErrorContent(
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.BluetoothDisabled -> {
-                        BluetoothDisabledContent(
-                            onEnableBluetoothClicked = currentState.onEnableBluetoothClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.LocationDisabled -> {
-                        LocationDisabledContent(
-                            onEnableLocationClicked = currentState.onEnableLocationClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.MissingLocationPermission -> {
-                        MissingPermissionContent(
-                            title = stringResource(R.string.woopos_card_reader_location_permission_title),
-                            message = stringResource(R.string.woopos_card_reader_location_permission_message),
-                            onRequestPermissionClicked = currentState.onRequestPermissionClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.MissingBluetoothPermission -> {
-                        MissingPermissionContent(
-                            title = stringResource(R.string.woopos_card_reader_bluetooth_permission_title),
-                            message = stringResource(R.string.woopos_card_reader_bluetooth_permission_message),
-                            onRequestPermissionClicked = currentState.onRequestPermissionClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.InvalidMerchantAddress -> {
-                        ErrorContent(
-                            title = stringResource(R.string.woopos_card_reader_invalid_address_title),
-                            message = stringResource(R.string.woopos_card_reader_invalid_address_message),
-                            onRetryClicked = null,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.InvalidPostalCode -> {
-                        ErrorContent(
-                            title = stringResource(R.string.woopos_card_reader_invalid_postal_code_title),
-                            message = stringResource(R.string.woopos_card_reader_invalid_postal_code_message),
-                            onRetryClicked = null,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.UpdateRequired -> {
-                        UpdateRequiredContent(
-                            progress = currentState.progress,
-                            showCancelWarning = currentState.showCancelWarning,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.UpdateAvailable -> {
-                        UpdateOptionalContent(
-                            progress = currentState.progress,
-                            showCancelWarning = currentState.showCancelWarning,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.UpdateCompleted -> {
-                        UpdateCompletedContent()
-                    }
-                    is WooPosCardReaderConnectionState.UpdateFailed -> {
-                        ErrorContent(
-                            title = stringResource(R.string.woopos_card_reader_update_failed_title),
-                            message = currentState.errorMessage,
-                            onRetryClicked = currentState.onRetryClicked,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
-                    is WooPosCardReaderConnectionState.UpdateFailedBatteryLow -> {
-                        UpdateBatteryLowErrorContent(
-                            currentBatteryLevel = currentState.currentBatteryLevel,
-                            onCancelClicked = currentState.onCancelClicked,
-                        )
-                    }
+                is WooPosCardReaderConnectionState.ReaderFound -> {
+                    ReaderFoundContent(
+                        readerName = currentState.reader.name,
+                        onConnectClicked = currentState.reader.onConnectClicked,
+                        onKeepSearchingClicked = currentState.onKeepSearchingClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.MultipleReadersFound -> {
+                    MultipleReadersFoundContent(
+                        readers = currentState.readers,
+                    )
+                }
+                is WooPosCardReaderConnectionState.Connecting -> {
+                    ConnectingContent()
+                }
+                is WooPosCardReaderConnectionState.Connected -> {
+                    ConnectedContent(readerName = currentState.readerName)
+                }
+                is WooPosCardReaderConnectionState.ScanningFailed -> {
+                    ErrorContent(
+                        title = stringResource(R.string.woopos_card_reader_scanning_failed_title),
+                        message = currentState.errorMessage,
+                        onRetryClicked = currentState.onRetryClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.ConnectingFailed -> {
+                    ErrorContent(
+                        title = stringResource(R.string.woopos_card_reader_connecting_failed_title),
+                        message = currentState.errorMessage,
+                        onRetryClicked = currentState.onRetryClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.ConnectingFailedBatteryLow -> {
+                    BatteryLowErrorContent(
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.BluetoothDisabled -> {
+                    BluetoothDisabledContent(
+                        onEnableBluetoothClicked = currentState.onEnableBluetoothClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.LocationDisabled -> {
+                    LocationDisabledContent(
+                        onEnableLocationClicked = currentState.onEnableLocationClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.MissingLocationPermission -> {
+                    MissingPermissionContent(
+                        title = stringResource(R.string.woopos_card_reader_location_permission_title),
+                        message = stringResource(R.string.woopos_card_reader_location_permission_message),
+                        onRequestPermissionClicked = currentState.onRequestPermissionClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.MissingBluetoothPermission -> {
+                    MissingPermissionContent(
+                        title = stringResource(R.string.woopos_card_reader_bluetooth_permission_title),
+                        message = stringResource(R.string.woopos_card_reader_bluetooth_permission_message),
+                        onRequestPermissionClicked = currentState.onRequestPermissionClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.InvalidMerchantAddress -> {
+                    ErrorContent(
+                        title = stringResource(R.string.woopos_card_reader_invalid_address_title),
+                        message = stringResource(R.string.woopos_card_reader_invalid_address_message),
+                        onRetryClicked = null,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.InvalidPostalCode -> {
+                    ErrorContent(
+                        title = stringResource(R.string.woopos_card_reader_invalid_postal_code_title),
+                        message = stringResource(R.string.woopos_card_reader_invalid_postal_code_message),
+                        onRetryClicked = null,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.UpdateRequired -> {
+                    UpdateRequiredContent(
+                        progress = currentState.progress,
+                        showCancelWarning = currentState.showCancelWarning,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.UpdateAvailable -> {
+                    UpdateOptionalContent(
+                        progress = currentState.progress,
+                        showCancelWarning = currentState.showCancelWarning,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.UpdateCompleted -> {
+                    UpdateCompletedContent()
+                }
+                is WooPosCardReaderConnectionState.UpdateFailed -> {
+                    ErrorContent(
+                        title = stringResource(R.string.woopos_card_reader_update_failed_title),
+                        message = currentState.errorMessage,
+                        onRetryClicked = currentState.onRetryClicked,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
+                }
+                is WooPosCardReaderConnectionState.UpdateFailedBatteryLow -> {
+                    UpdateBatteryLowErrorContent(
+                        currentBatteryLevel = currentState.currentBatteryLevel,
+                        onCancelClicked = currentState.onCancelClicked,
+                    )
                 }
             }
         }
