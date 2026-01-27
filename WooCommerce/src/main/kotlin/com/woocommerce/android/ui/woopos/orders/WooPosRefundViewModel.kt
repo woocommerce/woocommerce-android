@@ -273,10 +273,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun processRefund(contentState: WooPosRefundState.Content) {
         viewModelScope.launch {
-            val currentState = _state.value
-            if (currentState is WooPosRefundState.Content &&
-                currentState.step == WooPosRefundState.Content.RefundStep.Processing
-            ) {
+            if (contentState.step == WooPosRefundState.Content.RefundStep.Processing) {
                 return@launch
             }
 
