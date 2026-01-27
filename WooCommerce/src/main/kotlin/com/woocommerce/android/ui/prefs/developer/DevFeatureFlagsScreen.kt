@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
+import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -82,17 +83,16 @@ fun DevFeatureFlagsScreen(
                     }
                 },
                 actions = {
-                    IconButton(
+                    TextButton(
                         onClick = onRestartClick,
-                        enabled = hasChanges
+                        enabled = hasChanges,
                     ) {
-                        Icon(
-                            ImageVector.vectorResource(R.drawable.ic_gridicons_refresh),
-                            contentDescription = stringResource(R.string.restart),
-                            tint = if (hasChanges) {
-                                MaterialTheme.colorScheme.onSurface
+                        Text(
+                            text = stringResource(R.string.restart).uppercase(),
+                            color = if (hasChanges) {
+                                MaterialTheme.colorScheme.primary
                             } else {
-                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                             }
                         )
                     }
