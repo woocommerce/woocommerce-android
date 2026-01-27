@@ -272,7 +272,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given order fetch succeeds and refunds fetch fails, when init, then uses empty refunds list`() = runTest {
+    fun `given order fetch succeeds and refunds fetch fails, when init, then doesn't allow refund`() = runTest {
         // GIVEN
         val refundableItems = listOf(testRefundableItem)
         whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
@@ -287,8 +287,7 @@ class WooPosRefundViewModelTest {
 
         // THEN
         val state = viewModel.state.value
-        assertThat(state).isInstanceOf(WooPosRefundState.Content::class.java)
-        assertThat((state as WooPosRefundState.Content).refundableItems).hasSize(1)
+        assertThat(state).isInstanceOf(WooPosRefundState.Error::class.java)
     }
 
     @Test
