@@ -37,7 +37,10 @@ import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.util.FeatureFlag
 
 @Composable
-fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
+fun DevFeatureFlagsScreen(
+    onBackClick: () -> Unit,
+    onRestartClick: () -> Unit
+) {
     val allFeatureFlags = remember { FeatureFlag.entries.toList() }
     var searchQuery by remember { mutableStateOf("") }
     val filteredFlags by remember(searchQuery) {
@@ -46,6 +49,20 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
                 allFeatureFlags
             } else {
                 allFeatureFlags.filter { it.name.contains(searchQuery, ignoreCase = true) }
+            }
+        }
+    }
+
+    val initialValues = remember {
+        allFeatureFlags.associateWith { it.isEnabled() }.toMutableMap()
+    }
+    var hasChanges by remember { mutableStateOf(false) }
+
+    fun updateHasChanges(flag: FeatureFlag, newValue: Boolean) {
+        initialValues[flag]?.let { initial ->
+            hasChanges = allFeatureFlags.any { f ->
+                val currentValue = if (f == flag) newValue else f.isEnabled()
+                currentValue != initialValues[f]
             }
         }
     }
@@ -61,6 +78,22 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
                         Icon(
                             ImageVector.vectorResource(R.drawable.ic_back_24dp),
                             contentDescription = stringResource(R.string.back)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = onRestartClick,
+                        enabled = hasChanges
+                    ) {
+                        Icon(
+                            ImageVector.vectorResource(R.drawable.ic_gridicons_refresh),
+                            contentDescription = stringResource(R.string.restart),
+                            tint = if (hasChanges) {
+                                MaterialTheme.colorScheme.onSurface
+                            } else {
+                                MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
+                            }
                         )
                     }
                 },
@@ -81,7 +114,12 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
 
             LazyColumn {
                 items(filteredFlags, key = { it.name }) { flag ->
-                    FeatureFlagItem(flag)
+                    FeatureFlagItem(
+                        flag = flag,
+                        onValueChanged = { newValue ->
+                            updateHasChanges(flag, newValue)
+                        }
+                    )
                 }
             }
         }
@@ -89,7 +127,10 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
 }
 
 @Composable
-private fun FeatureFlagItem(flag: FeatureFlag) {
+private fun FeatureFlagItem(
+    flag: FeatureFlag,
+    onValueChanged: (Boolean) -> Unit
+) {
     var isEnabled by remember(flag) {
         mutableStateOf(flag.isEnabled())
     }
@@ -103,6 +144,7 @@ private fun FeatureFlagItem(flag: FeatureFlag) {
             .clickable {
                 isEnabled = !isEnabled
                 AppPrefs.setFeatureFlagOverride(flag, isEnabled)
+                onValueChanged(isEnabled)
             }
     ) {
         Row(
@@ -132,6 +174,7 @@ private fun FeatureFlagItem(flag: FeatureFlag) {
                 onCheckedChange = { checked ->
                     isEnabled = checked
                     AppPrefs.setFeatureFlagOverride(flag, checked)
+                    onValueChanged(checked)
                 }
             )
         }
