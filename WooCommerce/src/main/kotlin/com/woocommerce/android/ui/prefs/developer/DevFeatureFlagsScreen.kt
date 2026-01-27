@@ -60,10 +60,10 @@ fun DevFeatureFlagsScreen(
     var hasChanges by remember { mutableStateOf(false) }
 
     fun updateHasChanges(flag: FeatureFlag, newValue: Boolean) {
-        initialValues[flag]?.let { initial ->
-            hasChanges = allFeatureFlags.any { f ->
-                val currentValue = if (f == flag) newValue else f.isEnabled()
-                currentValue != initialValues[f]
+        initialValues[flag]?.let { _ ->
+            hasChanges = allFeatureFlags.any { featureFlag ->
+                val currentValue = if (featureFlag == flag) newValue else featureFlag.isEnabled()
+                currentValue != initialValues[featureFlag]
             }
         }
     }
@@ -72,7 +72,7 @@ fun DevFeatureFlagsScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    androidx.compose.material.Text(text = stringResource(R.string.dev_feature_flags))
+                    Text(text = stringResource(R.string.dev_feature_flags))
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {

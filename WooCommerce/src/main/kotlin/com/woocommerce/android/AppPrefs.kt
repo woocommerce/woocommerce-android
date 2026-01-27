@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.commons.prefs.PreferenceUtils
@@ -338,15 +339,15 @@ object AppPrefs {
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
-    fun isFeatureFlagOverrideEnabled(flag: com.woocommerce.android.util.FeatureFlag, defaultValue: Boolean): Boolean {
+    fun isFeatureFlagOverrideEnabled(flag: FeatureFlag, defaultValue: Boolean): Boolean {
         return getBoolean(getFeatureFlagKey(flag), defaultValue)
     }
 
-    fun setFeatureFlagOverride(flag: com.woocommerce.android.util.FeatureFlag, enabled: Boolean) {
+    fun setFeatureFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         setBoolean(getFeatureFlagKey(flag), enabled)
     }
 
-    private fun getFeatureFlagKey(flag: com.woocommerce.android.util.FeatureFlag) =
+    private fun getFeatureFlagKey(flag: FeatureFlag) =
         PrefKeyString("$FEATURE_FLAG_OVERRIDE_PREFIX:${flag.name}")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
