@@ -141,9 +141,10 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `when the user id does not match, then do not process the notification`() = runTest {
-        whenever(registrationStatus.invoke()).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
+        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        val payload = mapOf("type" to "new_order", "user" to "67890", "note_id" to "123")
 
-        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
+        notificationMessageHandler.onNewMessageReceived(payload)
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
             eq(WooLog.T.NOTIFICATIONS),
@@ -165,7 +166,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `given woo push registered, when wpcom notification received, then skip notification`() = runTest {
-        whenever(registrationStatus.invoke()).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
+        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
 
         // WPCOM notifications have remoteNoteId > 0
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)

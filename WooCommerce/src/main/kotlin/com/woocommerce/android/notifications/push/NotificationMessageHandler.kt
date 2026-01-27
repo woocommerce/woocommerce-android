@@ -82,16 +82,6 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val pushUserId = messageData[PUSH_ARG_USER]
-        val isRegisteredForWooPush = runBlocking {
-            registrationStatus() == PushNotificationRegistrationStatus.Status.WOO_REGISTERED
-        }
-        // pushUserId is always set server side, but better to double check it here.
-        if (isRegisteredForWooPush && accountStore.account.userId.toString() != pushUserId) {
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
-        }
-
         val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
             wooLog.e(NOTIFICATIONS, "Notification data is empty!")
@@ -99,6 +89,10 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
+        val isRegisteredForWooPush = runBlocking {
+            registrationStatus(notification.remoteSiteId) == PushNotificationRegistrationStatus.Status.WOO_REGISTERED
+        }
+        val pushUserId = messageData[PUSH_ARG_USER]
 
         // We need to filter out duplicate notifications from the WPCOM system
         if (isRegisteredForWooPush) {
@@ -109,6 +103,10 @@ class NotificationMessageHandler @Inject constructor(
         } else if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
             wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+            return
+        } else if (accountStore.account.userId.toString() != pushUserId) {
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
 
