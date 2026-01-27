@@ -20,7 +20,11 @@ enum class FeatureFlag {
 
     fun isEnabled(context: Context? = null): Boolean {
         if (PackageUtils.isDebugBuild()) {
-            return AppPrefs.isFeatureFlagOverrideEnabled(this, getDefaultValue(context))
+            return try {
+                AppPrefs.isFeatureFlagOverrideEnabled(this, getDefaultValue(context))
+            } catch (e: UninitializedPropertyAccessException) {
+                getDefaultValue(context)
+            }
         }
         return getDefaultValue(context)
     }
