@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.util.CurrencyFormatter
@@ -55,56 +56,78 @@ class WooPosRefundViewModel @AssistedInject constructor(
         loadRefundableItems()
     }
 
+    private suspend fun fetchSiteSettings(): Result<Int> {
+        val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
+        if (siteSettingsResult.isError || siteSettingsResult.model == null) {
+            WooLog.d(WooLog.T.POS, "Failed to fetch site settings")
+            return Result.failure(Exception("Failed to fetch site settings"))
+        }
+        val siteSettings = checkNotNull(siteSettingsResult.model) {
+            "siteSettings.model should not be null after null check"
+        }
+        cachedNumberOfDecimalPoints = siteSettings.currencyDecimalNumber
+        return Result.success(siteSettings.currencyDecimalNumber)
+    }
+
+    private suspend fun fetchTaxRoundAtSubtotal(): Result<Boolean> {
+        val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
+        if (taxRoundAtSubtotalResult.isError || taxRoundAtSubtotalResult.model == null) {
+            WooLog.d(WooLog.T.POS, "Failed to fetch tax round at subtotal setting")
+            return Result.failure(Exception("Failed to fetch tax round at subtotal setting"))
+        }
+        val taxRoundAtSubtotal = checkNotNull(taxRoundAtSubtotalResult.model) {
+            "taxRoundAtSubtotalResult.model should not be null after null check"
+        }
+        cachedTaxRoundAtSubtotal = taxRoundAtSubtotal
+        return Result.success(taxRoundAtSubtotal)
+    }
+
+    private suspend fun fetchOrderAndRefunds(): Result<Pair<Order, List<Refund>>> {
+        val orderResult = ordersDataSource.refreshOrderById(orderId)
+        if (orderResult.isFailure) {
+            return Result.failure(Exception("Failed to refresh order"))
+        }
+
+        val order = orderResult.getOrThrow()
+        currentOrder = order
+
+        val refundsResult = retrieveOrderRefunds(order, forceRefresh = true)
+        if (refundsResult.isFailure) {
+            WooLog.d(WooLog.T.POS, "Failed to fetch refunds for order ${order.id}")
+            return Result.failure(Exception("Failed to fetch refunds"))
+        }
+
+        val refunds = refundsResult.getOrThrow()
+        return Result.success(order to refunds)
+    }
+
     private fun loadRefundableItems() {
         viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
-            val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
-            if (siteSettingsResult.isError || siteSettingsResult.model == null) {
-                WooLog.d(WooLog.T.POS, "Failed to fetch site settings")
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
-                )
-                return@launch
-            }
-            val siteSettings = checkNotNull(siteSettingsResult.model) {
-                "siteSettings.model should not be null after null check"
-            }
-            cachedNumberOfDecimalPoints = siteSettings.currencyDecimalNumber
-
-            val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
-            if (taxRoundAtSubtotalResult.isError || taxRoundAtSubtotalResult.model == null) {
-                WooLog.d(WooLog.T.POS, "Failed to fetch tax round at subtotal setting")
-                _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
-                )
-                return@launch
-            }
-            cachedTaxRoundAtSubtotal = checkNotNull(taxRoundAtSubtotalResult.model) {
-                "taxRoundAtSubtotalResult.model should not be null after null check"
-            }
-
-            val orderResult = ordersDataSource.refreshOrderById(orderId)
-            if (orderResult.isFailure) {
+            if (fetchSiteSettings().isFailure) {
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
                 )
                 return@launch
             }
 
-            val order = orderResult.getOrThrow()
-            currentOrder = order
-
-            val refundsResult = retrieveOrderRefunds(order, forceRefresh = true)
-            if (refundsResult.isFailure) {
-                WooLog.d(WooLog.T.POS, "Failed to fetch refunds for order ${order.id}")
+            if (fetchTaxRoundAtSubtotal().isFailure) {
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
                 )
                 return@launch
             }
 
-            val refunds = refundsResult.getOrThrow()
+            val orderAndRefundsResult = fetchOrderAndRefunds()
+            if (orderAndRefundsResult.isFailure) {
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
+            }
+
+            val (order, refunds) = orderAndRefundsResult.getOrThrow()
             val refundableItems = getRefundableItems(order, refunds)
 
             if (refundableItems.isEmpty()) {
