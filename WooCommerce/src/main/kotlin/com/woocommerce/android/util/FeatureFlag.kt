@@ -22,7 +22,7 @@ enum class FeatureFlag {
         if (PackageUtils.isDebugBuild()) {
             return try {
                 AppPrefs.isFeatureFlagOverrideEnabled(this, getDefaultValue(context))
-            } catch (e: UninitializedPropertyAccessException) {
+            } catch (_: UninitializedPropertyAccessException) {
                 getDefaultValue(context)
             }
         }
