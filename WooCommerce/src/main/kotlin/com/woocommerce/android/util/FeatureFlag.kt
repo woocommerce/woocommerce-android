@@ -12,6 +12,7 @@ enum class FeatureFlag {
     ORDER_CREATION_AUTO_TAX_RATE,
     BOOKINGS_MVP,
     POS_REFUNDS,
+    POS_PRODUCTS_FTS,
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
     WOO_PUSH_NOTIFICATIONS_SYSTEM,
     WOO_POS_CLIENT_SIDE_BANNER,
@@ -27,8 +28,9 @@ enum class FeatureFlag {
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
             BOOKINGS_MVP,
+            POS_PRODUCTS_FTS,
             POS_REFUNDS,
-            AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
+            AGE_ELIGIBILITY_CHECKS-> PackageUtils.isDebugBuild()
 
             WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
