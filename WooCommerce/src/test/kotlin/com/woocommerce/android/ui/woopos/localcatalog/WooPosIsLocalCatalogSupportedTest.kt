@@ -14,7 +14,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
-import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
@@ -40,8 +39,8 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     @Before
     fun setup() = testBlocking {
         whenever(featureFlagM1Enabled.invoke()).thenReturn(true)
-        whenever(getWooVersion()).thenReturn("10.3.0")
-        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(any())).thenReturn(true)
+        whenever(fileApproachEnabled.invoke()).thenReturn(true)
+        whenever(getWooVersion()).thenReturn("10.5.0")
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(true))
         whenever(posCanBeLaunchedInTab.invoke(false)).thenReturn(WooPosLaunchability.Launchable)
 
@@ -99,8 +98,9 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given periodic sync disabled, when check invoked, then returns false`() = testBlocking {
+    fun `given file approach disabled and periodic sync disabled, when check invoked, then returns false`() = testBlocking {
         // GIVEN
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
         whenever(preferencesRepository.isPeriodicSyncEnabledForSite(SITE_ID)).thenReturn(false)
 
         // WHEN

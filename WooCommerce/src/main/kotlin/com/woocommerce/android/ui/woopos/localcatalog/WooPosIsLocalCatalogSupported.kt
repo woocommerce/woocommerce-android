@@ -32,15 +32,23 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
-        if (!isVariationsEndpointAvailable()) {
-            return false.also {
-                wooPosLogWrapper.d("Local Catalog not supported: Variations endpoint not available.")
+        if (fileApproachEnabled()) {
+            if (!isFileBasedSyncSupported()) {
+                return false.also {
+                    wooPosLogWrapper.d("Local Catalog not supported: WooCommerce version does not support file-based sync (requires $WC_FILE_BASED_SYNC_MIN_VERSION).")
+                }
             }
-        }
+        } else {
+            if (!isVariationsEndpointAvailable()) {
+                return false.also {
+                    wooPosLogWrapper.d("Local Catalog not supported: Variations endpoint not available.")
+                }
+            }
 
-        if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
-            return false.also {
-                wooPosLogWrapper.d("Local Catalog not supported: Periodic sync disabled.")
+            if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
+                return false.also {
+                    wooPosLogWrapper.d("Local Catalog not supported: Periodic sync disabled.")
+                }
             }
         }
 
@@ -59,5 +67,14 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
         }
 
         return true
+    }
+
+    private suspend fun isFileBasedSyncSupported(): Boolean {
+        val wooVersion = getWooVersion() ?: fetchWooVersion() ?: return false
+        return wooVersion.semverCompareTo(WC_FILE_BASED_SYNC_MIN_VERSION) >= 0
+    }
+
+    companion object {
+        private const val WC_FILE_BASED_SYNC_MIN_VERSION = "10.5.0"
     }
 }
