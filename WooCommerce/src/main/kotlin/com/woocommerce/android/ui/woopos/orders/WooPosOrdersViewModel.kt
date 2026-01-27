@@ -202,6 +202,11 @@ class WooPosOrdersViewModel @Inject constructor(
                 onFailure = { RefundsFetchResult.Error }
             )
 
+            val stateAfterRefundsFetch = _state.value as? WooPosOrdersState.Content
+            if (stateAfterRefundsFetch?.selectedDetails?.id != orderId) {
+                return@launch
+            }
+
             val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
@@ -424,6 +429,7 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val selectedOrderId = current.selectedDetails?.id ?: return
 
+        sideLoadActionsJob?.cancel()
         viewModelScope.launch {
             ordersDataSource.refreshOrderById(selectedOrderId)
                 .onSuccess { applyOrderUpdate(it) }
