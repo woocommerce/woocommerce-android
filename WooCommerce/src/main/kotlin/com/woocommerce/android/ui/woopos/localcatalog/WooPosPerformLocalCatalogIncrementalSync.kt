@@ -69,9 +69,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
             is Failure -> {
                 wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
 
-                if (syncResult is Failure.CatalogTooLarge &&
-                    !fileApproachEnabled()
-                ) {
+                if (syncResult is Failure.CatalogTooLarge && !fileApproachEnabled()) {
                     wooPosLogWrapper.e("Disabling Local Catalog periodic sync for site due to catalog size too large")
                     prefsRepo.disablePeriodicSyncForSite(site.localId())
                 }

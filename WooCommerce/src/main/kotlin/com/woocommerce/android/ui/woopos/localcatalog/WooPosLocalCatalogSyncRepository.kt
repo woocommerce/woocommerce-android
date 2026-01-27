@@ -66,9 +66,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge &&
-                        !fileApproachEnabled()
-                    ) {
+                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge && !fileApproachEnabled()) {
                         preferencesRepository.disablePeriodicSyncForSite(site.localId())
                     }
                     trackSyncFailed(SyncType.FULL, result)
