@@ -30,7 +30,7 @@ enum class FeatureFlag {
             BOOKINGS_MVP,
             POS_PRODUCTS_FTS,
             POS_REFUNDS,
-            AGE_ELIGIBILITY_CHECKS-> PackageUtils.isDebugBuild()
+            AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
 
             WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
