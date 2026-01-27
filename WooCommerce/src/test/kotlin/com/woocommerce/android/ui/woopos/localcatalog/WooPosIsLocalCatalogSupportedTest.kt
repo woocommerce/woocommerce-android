@@ -86,8 +86,9 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given variations endpoint not available, when check invoked, then returns false`() = testBlocking {
+    fun `given file approach disabled and variations endpoint not available, when check invoked, then returns false`() = testBlocking {
         // GIVEN
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
         whenever(getWooVersion()).thenReturn("10.2.9")
 
         // WHEN
@@ -95,6 +96,20 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         // THEN
         assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given file approach disabled and all legacy checks pass, when check invoked, then returns true`() = testBlocking {
+        // GIVEN
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
+        whenever(getWooVersion()).thenReturn("10.3.0")
+        whenever(preferencesRepository.isPeriodicSyncEnabledForSite(SITE_ID)).thenReturn(true)
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isTrue()
     }
 
     @Test
