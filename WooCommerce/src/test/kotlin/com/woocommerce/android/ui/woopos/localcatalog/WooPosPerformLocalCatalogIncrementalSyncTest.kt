@@ -192,15 +192,13 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large and file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() = runTest(
+    fun `given sync fails with file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() = runTest(
         testScheduler
     ) {
         // GIVEN
         val sut = createSut()
         val site = SiteModel().apply { id = 789 }
-        val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-            error = "Catalog exceeds limit",
-        )
+        val syncResult = PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
 
         whenever(fileApproachEnabled.invoke()).thenReturn(true)
         whenever(networkStatus.isConnected()).thenReturn(true)
@@ -214,7 +212,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
 
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
-        verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
+        verify(wooPosLogWrapper).e("Sync periodic hourly failed: Network timeout")
         verifyNoInteractions(prefsRepo)
     }
 

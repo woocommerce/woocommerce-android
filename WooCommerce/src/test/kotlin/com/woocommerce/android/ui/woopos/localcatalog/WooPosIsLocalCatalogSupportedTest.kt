@@ -99,7 +99,7 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given file approach disabled and all legacy checks pass, when check invoked, then returns true`() = testBlocking {
+    fun `given file approach disabled and all paginated sync checks pass, when check invoked, then returns true`() = testBlocking {
         // GIVEN
         whenever(fileApproachEnabled.invoke()).thenReturn(false)
         whenever(getWooVersion()).thenReturn("10.3.0")

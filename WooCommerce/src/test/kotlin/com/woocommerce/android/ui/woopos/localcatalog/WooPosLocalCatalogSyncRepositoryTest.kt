@@ -120,10 +120,10 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync fails, then does not disable periodic sync when file-based flag enabled`() = testBlocking {
+    fun `when file-based full sync fails, then does not disable periodic sync`() = testBlocking {
         // GIVEN
         givenFileBasedFullSyncFails(
-            PosLocalCatalogSyncResult.Failure.CatalogTooLarge(error = "Catalog too large")
+            PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
         )
 
         // WHEN
@@ -137,7 +137,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     fun `when full sync fails with CatalogTooLarge and file-based flag disabled, then disables periodic sync`() = testBlocking {
         // GIVEN
         whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        givenCatalogTooLargeForLegacySync()
+        givenCatalogTooLargeForPaginatedFullSync()
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -338,7 +338,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
     }
 
-    private fun givenCatalogTooLargeForLegacySync() = runBlocking {
+    private fun givenCatalogTooLargeForPaginatedFullSync() = runBlocking {
         whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
             .thenReturn(
                 WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge(
