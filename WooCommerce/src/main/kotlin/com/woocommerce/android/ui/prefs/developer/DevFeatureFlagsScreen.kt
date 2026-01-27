@@ -14,24 +14,49 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.AppPrefs
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.util.FeatureFlag
 
 @Composable
 fun DevFeatureFlagsScreen() {
-    val featureFlags = remember { FeatureFlag.entries.toList() }
+    val allFeatureFlags = remember { FeatureFlag.entries.toList() }
+    var searchQuery by remember { mutableStateOf("") }
+    val filteredFlags by remember(searchQuery) {
+        derivedStateOf {
+            if (searchQuery.isBlank()) {
+                allFeatureFlags
+            } else {
+                allFeatureFlags.filter { it.name.contains(searchQuery, ignoreCase = true) }
+            }
+        }
+    }
 
-    LazyColumn {
-        items(featureFlags) { flag ->
-            FeatureFlagItem(flag)
+    Column {
+        WCSearchField(
+            value = searchQuery,
+            onValueChange = { searchQuery = it },
+            hint = "Search feature flags",
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(dimensionResource(id = R.dimen.major_100))
+        )
+
+        LazyColumn {
+            items(filteredFlags) { flag ->
+                FeatureFlagItem(flag)
+            }
         }
     }
 }
