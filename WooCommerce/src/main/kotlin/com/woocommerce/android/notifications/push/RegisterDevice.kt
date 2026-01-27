@@ -4,6 +4,7 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.store.AccountStore
@@ -13,10 +14,11 @@ class RegisterDevice @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val accountStore: AccountStore,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
-    private val pushNotificationRepository: PushNotificationRepository
+    private val pushNotificationRepository: PushNotificationRepository,
+    private val selectedSite: SelectedSite
 ) {
     suspend operator fun invoke(mode: Mode) {
-        val pushRegistrationStatus = pushNotificationRegistrationStatus()
+        val pushRegistrationStatus = pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)
         WooLog.d(WooLog.T.NOTIFICATIONS, "Current PN registration status: $pushRegistrationStatus")
         when (mode) {
             IF_NEEDED -> {
@@ -47,7 +49,8 @@ class RegisterDevice @Inject constructor(
         }
         WooLog.d(
             WooLog.T.NOTIFICATIONS,
-            "Updated push notification registration status: " + "${pushNotificationRegistrationStatus()}"
+            "Updated push notification registration status: " +
+                "${pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)}"
         )
     }
 

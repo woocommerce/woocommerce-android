@@ -43,6 +43,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -78,10 +79,44 @@ fun WooPosOrderDetails(
 
             Spacer(Modifier.weight(1f))
 
+            OrderActions(details, onUIEvent)
+        }
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        OrdersHeader(details = details)
+
+        Spacer(Modifier.height(WooPosSpacing.Large.value))
+
+        OrdersProducts(lineItems = details.lineItems)
+
+        Spacer(Modifier.height(WooPosSpacing.Medium.value))
+
+        OrdersTotals(details = details)
+    }
+}
+
+@Composable
+private fun OrderActions(
+    details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+) {
+    when (val actionsState = details.actionsState) {
+        is WooPosOrdersState.OrderActionsState.Loading -> {
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(160.dp)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Medium.value))
+            )
+        }
+
+        is WooPosOrdersState.OrderActionsState.Loaded -> {
+            val actions = actionsState.actions
             when {
-                details.actions.size > 1 -> {
-                    val primaryAction = details.actions.first()
-                    val overflowActions = details.actions.drop(1)
+                actions.size > 1 -> {
+                    val primaryAction = actions.first()
+                    val overflowActions = actions.drop(1)
 
                     OrderActionButton(
                         action = primaryAction,
@@ -96,26 +131,14 @@ fun WooPosOrderDetails(
                     )
                 }
 
-                details.actions.size == 1 -> {
+                actions.size == 1 -> {
                     OrderActionButton(
-                        action = details.actions.first(),
+                        action = actions.first(),
                         onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
                     )
                 }
             }
         }
-
-        Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-        OrdersHeader(details = details)
-
-        Spacer(Modifier.height(WooPosSpacing.Large.value))
-
-        OrdersProducts(lineItems = details.lineItems)
-
-        Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-        OrdersTotals(details = details)
     }
 }
 
@@ -503,9 +526,11 @@ fun WooPosOrderDetailsPreview() {
         total = "$18.00",
         totalPaid = "$18.00",
         paymentMethodTitle = "WooCommerce In-Person Payments",
-        actions = listOf(
-            WooPosOrdersState.OrderAction.IssueRefund(1L),
-            WooPosOrdersState.OrderAction.EmailReceipt(1L)
+        actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+            listOf(
+                WooPosOrdersState.OrderAction.IssueRefund(1L),
+                WooPosOrdersState.OrderAction.EmailReceipt(1L)
+            )
         )
     )
 

@@ -2,40 +2,67 @@ package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.Notification
+import com.woocommerce.android.extensions.isCIABSite
 import com.woocommerce.android.tools.SelectedSite
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.SiteStore
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class NotificationAnalyticsTracker @Inject constructor(
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) {
-    fun trackNotificationAnalytics(stat: AnalyticsEvent, notification: Notification) {
-        trackNotificationAnalytics(
-            stat = stat,
-            remoteNoteId = notification.remoteNoteId,
-            remoteSiteId = notification.remoteSiteId,
-            noteTypeTrackingValue = notification.noteType.trackingValue
-        )
+    fun track(stat: AnalyticsEvent, siteId: Long) {
+        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val properties = mutableMapOf<String, Any>().addCommonSiteProperties(site)
+        analyticsTrackerWrapper.track(stat, properties)
     }
 
     fun trackNotificationAnalytics(
         stat: AnalyticsEvent,
+        siteId: Long,
         remoteNoteId: Long,
-        remoteSiteId: Long,
         noteTypeTrackingValue: String
     ) {
-        val isFromSelectedSite = selectedSite.getIfExists()?.siteId == remoteSiteId
-        val properties = mutableMapOf<String, Any>()
-        properties["notification_note_id"] = remoteNoteId
-        properties["notification_type"] = noteTypeTrackingValue
-        properties["push_notification_token"] = appPrefsWrapper.getFCMToken()
-        properties["is_from_selected_site"] = isFromSelectedSite
+        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val isFromSelectedSite = selectedSite.getIfExists()?.siteId == siteId
+        val properties = mutableMapOf<String, Any>(
+            "notification_note_id" to remoteNoteId,
+            "notification_type" to noteTypeTrackingValue,
+            "push_notification_token" to appPrefsWrapper.getFCMToken(),
+            "is_from_selected_site" to isFromSelectedSite
+        ).addCommonSiteProperties(site)
         analyticsTrackerWrapper.track(stat, properties)
+    }
+
+    fun trackError(
+        stat: AnalyticsEvent,
+        siteId: Long,
+        errorDescription: String?,
+        errorType: String?,
+        errorCode: String? = null
+    ) {
+        val site = siteStore.getSiteBySiteId(siteId) ?: return
+        val properties = mutableMapOf<String, Any>().apply {
+            errorDescription?.let { this[AnalyticsTracker.KEY_ERROR_DESC] = it }
+            errorType?.let { this[AnalyticsTracker.KEY_ERROR_TYPE] = it }
+            errorCode?.let { this[AnalyticsTracker.KEY_ERROR_CODE] = it }
+        }.addCommonSiteProperties(site)
+        analyticsTrackerWrapper.track(stat, properties)
+    }
+
+    private fun MutableMap<String, Any>.addCommonSiteProperties(site: SiteModel) = apply {
+        this[AnalyticsTracker.IS_JETPACK_INSTALLED] = site.isJetpackInstalled
+        this[AnalyticsTracker.IS_JETPACK_CONNECTED] = site.isJetpackConnected
+        this[AnalyticsTracker.IS_JETPACK_CP_CONNECTED] = site.isJetpackCPConnected
+        this[AnalyticsTracker.IS_CIAB] = site.isCIABSite()
+        site.gardenPartner?.let { this[AnalyticsTracker.GARDEN_PARTNER] = it }
     }
 
     fun flush() {

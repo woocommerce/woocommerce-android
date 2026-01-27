@@ -142,7 +142,12 @@ class NotificationMessageHandler @Inject constructor(
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId)
         with(notificationBuilder) {
             if (isNotificationsEnabled()) {
-                analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_RECEIVED, notification)
+                analyticsTracker.trackNotificationAnalytics(
+                    stat = PUSH_NOTIFICATION_RECEIVED,
+                    siteId = notification.remoteSiteId,
+                    remoteNoteId = notification.remoteNoteId,
+                    noteTypeTrackingValue = notification.noteType.trackingValue
+                )
                 analyticsTracker.flush()
             }
 
@@ -207,8 +212,8 @@ class NotificationMessageHandler @Inject constructor(
                 ?.let {
                     analyticsTracker.trackNotificationAnalytics(
                         stat = PUSH_NOTIFICATION_TAPPED,
+                        siteId = it.remoteSiteId,
                         remoteNoteId = it.remoteNoteId,
-                        remoteSiteId = it.remoteSiteId,
                         noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
                     )
                     analyticsTracker.flush()
@@ -225,8 +230,8 @@ class NotificationMessageHandler @Inject constructor(
             .forEach {
                 analyticsTracker.trackNotificationAnalytics(
                     stat = PUSH_NOTIFICATION_TAPPED,
+                    siteId = it.remoteSiteId,
                     remoteNoteId = it.remoteNoteId,
-                    remoteSiteId = it.remoteSiteId,
                     noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
                 )
                 analyticsTracker.flush()

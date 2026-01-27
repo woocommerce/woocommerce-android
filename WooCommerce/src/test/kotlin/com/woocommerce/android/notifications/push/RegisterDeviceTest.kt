@@ -4,14 +4,17 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.FORCEFULLY
 import com.woocommerce.android.notifications.push.RegisterDevice.Mode.IF_NEEDED
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.AccountStore
 
 @ExperimentalCoroutinesApi
@@ -22,6 +25,7 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val accountStore: AccountStore = mock()
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val selectedSite: SelectedSite = mock()
 
     @Before
     fun setUp() {
@@ -32,6 +36,10 @@ class RegisterDeviceTest : BaseUnitTest() {
     private fun setupDefaultMocks() {
         whenever(appPrefs.getFCMToken()).thenReturn(TEST_TOKEN)
         whenever(accountStore.hasAccessToken()).thenReturn(true)
+        val site = mock<SiteModel>().apply {
+            whenever(this.siteId).thenReturn(TEST_SITE_ID)
+        }
+        whenever(selectedSite.getIfExists()).thenReturn(site)
     }
 
     private fun createSut() {
@@ -39,7 +47,8 @@ class RegisterDeviceTest : BaseUnitTest() {
             appPrefs,
             accountStore,
             pushNotificationRegistrationStatus,
-            pushNotificationRepository
+            pushNotificationRepository,
+            selectedSite
         )
     }
 
@@ -150,11 +159,22 @@ class RegisterDeviceTest : BaseUnitTest() {
         verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
     }
 
+    @Test
+    fun `given no selected site, when invoked forcefully, then registers in WPCom`() = testBlocking {
+        whenever(selectedSite.getIfExists()).thenReturn(null)
+        setupStatus(Status.UNREGISTERED)
+
+        sut(FORCEFULLY)
+
+        verify(pushNotificationRepository).registerPushTokenInWpComSystem(TEST_TOKEN)
+    }
+
     private suspend fun setupStatus(status: Status) {
-        whenever(pushNotificationRegistrationStatus()).thenReturn(status)
+        whenever(pushNotificationRegistrationStatus(any())).thenReturn(status)
     }
 
     companion object {
         private const val TEST_TOKEN = "test-fcm-token-123"
+        private const val TEST_SITE_ID = 123L
     }
 }
