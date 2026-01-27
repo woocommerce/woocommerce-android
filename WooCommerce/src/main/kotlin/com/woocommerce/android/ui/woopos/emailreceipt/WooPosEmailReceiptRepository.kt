@@ -2,11 +2,7 @@ package com.woocommerce.android.ui.woopos.emailreceipt
 
 import android.util.Patterns
 import com.woocommerce.android.extensions.semverCompareTo
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -16,18 +12,12 @@ import javax.inject.Inject
 class WooPosEmailReceiptRepository @Inject constructor(
     private val selectedSite: SelectedSite,
     private val orderStore: WCOrderStore,
-    private val orderCreateEditRepository: OrderCreateEditRepository,
-    private val orderMapper: OrderMapper,
     private val provideEmailPattern: WooPosProvideEmailPattern,
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
-        val order = getOrderById(orderId) ?: fetchOrderById(orderId)
-        if (order == null) {
-            return@withContext Result.failure(Exception("Failed to get order"))
-        }
-
-        if (updateOrderWithEmail(order, email).isFailure) {
+        val updateResult = orderStore.updateOrderBillingEmail(selectedSite.get(), orderId, email)
+        if (updateResult.isError) {
             return@withContext Result.failure(Exception("Failed to update order with email"))
         }
 
@@ -48,33 +38,6 @@ class WooPosEmailReceiptRepository @Inject constructor(
             Result.failure(Exception("Failed to send order receipt"))
         } else {
             Result.success(Unit)
-        }
-    }
-
-    private suspend fun updateOrderWithEmail(order: Order, email: String): Result<Order> {
-        val updatedBillingAddress = order.billingAddress.copy(email = email)
-        val updatedCustomer = order.customer?.copy(billingAddress = updatedBillingAddress)
-        return orderCreateEditRepository.createOrUpdateOrder(
-            order = order.copy(customer = updatedCustomer),
-            source = OrderCreationSource.POINT_OF_SALE
-        )
-    }
-
-    private suspend fun getOrderById(orderId: Long) =
-        orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
-            orderMapper.toAppModel(it)
-        }
-
-    private suspend fun fetchOrderById(orderId: Long): Order? {
-        val result = orderStore.fetchSingleOrder(
-            selectedSite.get(),
-            orderId
-        )
-
-        return if (!result.isError) {
-            getOrderById(orderId)
-        } else {
-            null
         }
     }
 
