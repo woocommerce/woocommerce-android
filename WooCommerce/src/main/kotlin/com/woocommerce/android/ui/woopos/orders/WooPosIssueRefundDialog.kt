@@ -111,7 +111,6 @@ fun WooPosIssueRefundDialog(
             is WooPosRefundState.Error -> ErrorContent(currentState.message, handleDismiss)
             is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
             is WooPosRefundState.RefundSuccess -> RefundSuccessContent(currentState, handleDismiss)
-            is WooPosRefundState.RefundError -> ErrorContent(currentState.message, handleDismiss)
         }
     }
 }

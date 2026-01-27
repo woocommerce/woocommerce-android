@@ -57,9 +57,4 @@ sealed class WooPosRefundState {
         val orderNumber: String,
         val refundedAmount: String
     ) : WooPosRefundState()
-
-    @Immutable
-    data class RefundError(
-        val message: String
-    ) : WooPosRefundState()
 }

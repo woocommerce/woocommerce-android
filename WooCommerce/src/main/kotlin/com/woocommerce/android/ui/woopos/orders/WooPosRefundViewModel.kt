@@ -264,7 +264,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     WooLog.T.POS,
                     "WooPosRefund: currentOrder is null during processRefund"
                 )
-                _state.value = WooPosRefundState.RefundError(
+                _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic)
                 )
                 return@launch
@@ -276,7 +276,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                         WooLog.T.POS,
                         "WooPosRefund: failed to read site settings currencyDecimalNumber from DB"
                     )
-                    _state.value = WooPosRefundState.RefundError(
+                    _state.value = WooPosRefundState.Error(
                         message = resourceProvider.getString(R.string.error_generic)
                     )
                     return@launch
@@ -295,7 +295,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             )
 
             if (result.isError) {
-                _state.value = WooPosRefundState.RefundError(
+                _state.value = WooPosRefundState.Error(
                     message = result.error.message ?: resourceProvider.getString(R.string.error_generic)
                 )
             } else {

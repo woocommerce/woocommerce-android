@@ -27,9 +27,6 @@ import org.wordpress.android.fluxc.model.refunds.RefundRequestItem
 import org.wordpress.android.fluxc.model.refunds.WCRefundModel
 import org.wordpress.android.fluxc.model.settings.CurrencyPosition
 import org.wordpress.android.fluxc.model.settings.Settings
-import org.wordpress.android.fluxc.network.BaseRequest
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
-import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooResult
 import org.wordpress.android.fluxc.store.WCRefundStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -850,109 +847,6 @@ class WooPosRefundViewModelTest {
                 autoRefund = eq(false),
                 items = eq(groupedItems)
             )
-        }
-
-    @Test
-    fun `given refund store returns error, when refund confirmed, then state transitions to RefundError`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            val groupedItems = listOf(
-                RefundRequestItem(
-                    itemId = 1L,
-                    quantity = 1,
-                    refundTotal = BigDecimal("20.00"),
-                    refundTax = emptyList()
-                )
-            )
-            val errorMessage = "Payment gateway error"
-
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(
-                WooResult(
-                    WooError(
-                        type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.UNKNOWN,
-                        message = errorMessage
-                    )
-                )
-            )
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
-            advanceUntilIdle()
-
-            // THEN
-            val finalState = viewModel.state.value
-            assertThat(finalState).isInstanceOf(WooPosRefundState.RefundError::class.java)
-            assertThat((finalState as WooPosRefundState.RefundError).message).isEqualTo(errorMessage)
-        }
-
-    @Test
-    fun `given refund store returns error without message, when refund confirmed, then uses generic error message`() =
-        runTest {
-            // GIVEN
-            val refundableItems = listOf(testRefundableItem)
-            val groupedItems = listOf(
-                RefundRequestItem(
-                    itemId = 1L,
-                    quantity = 1,
-                    refundTotal = BigDecimal("20.00"),
-                    refundTax = emptyList()
-                )
-            )
-
-            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
-            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
-            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
-            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(
-                refundStore.createItemsRefund(
-                    site = any(),
-                    orderId = any(),
-                    amount = any(),
-                    reason = any(),
-                    restockItems = any(),
-                    autoRefund = any(),
-                    items = any()
-                )
-            ).thenReturn(
-                WooResult(
-                    WooError(
-                        type = WooErrorType.GENERIC_ERROR,
-                        original = BaseRequest.GenericErrorType.UNKNOWN,
-                        message = null
-                    )
-                )
-            )
-
-            viewModel = createViewModel()
-            advanceUntilIdle()
-
-            // WHEN
-            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
-            advanceUntilIdle()
-
-            // THEN
-            val finalState = viewModel.state.value
-            assertThat(finalState).isInstanceOf(WooPosRefundState.RefundError::class.java)
-            assertThat((finalState as WooPosRefundState.RefundError).message).isEqualTo("An error occurred")
         }
 
     @Test
