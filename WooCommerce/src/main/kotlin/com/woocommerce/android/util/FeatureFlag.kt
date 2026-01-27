@@ -28,7 +28,8 @@ enum class FeatureFlag {
             BOOKINGS_MVP,
             POS_REFUNDS -> PackageUtils.isDebugBuild()
 
-            WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
+            WOO_POS_LOCAL_CATALOG_FILE_APPROACH -> PackageUtils.isDebugBuild()
+
             WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
 
             WOO_POS_CLIENT_SIDE_BANNER -> true
