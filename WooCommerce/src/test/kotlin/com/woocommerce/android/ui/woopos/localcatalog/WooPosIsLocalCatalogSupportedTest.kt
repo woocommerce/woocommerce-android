@@ -126,6 +126,44 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given file approach enabled and WC version below minimum, when check invoked, then returns false`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn("10.4.9")
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given file approach enabled and WC version unknown, when check invoked, then returns false`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn(null)
+        whenever(fetchWooVersion()).thenReturn(null)
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isFalse()
+    }
+
+    @Test
+    fun `given file approach enabled and cached version null but fetched version sufficient, when check invoked, then returns true`() = testBlocking {
+        // GIVEN
+        whenever(getWooVersion()).thenReturn(null)
+        whenever(fetchWooVersion()).thenReturn("10.5.0")
+
+        // WHEN
+        val result = isLocalCatalogSupported(SITE_ID)
+
+        // THEN
+        assertThat(result).isTrue()
+    }
+
+    @Test
     fun `given POS tab should not be visible, when check invoked, then returns false`() = testBlocking {
         // GIVEN
         whenever(posTabShouldBeVisible.invoke(false)).thenReturn(Result.success(false))
