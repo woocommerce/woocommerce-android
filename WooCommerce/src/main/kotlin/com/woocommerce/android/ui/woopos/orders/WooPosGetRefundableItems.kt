@@ -72,7 +72,7 @@ class WooPosGetRefundableItems @Inject constructor(
             .fold(0f) { acc, item -> acc + item.quantity }
 
         return productItems
-            .associate { it.itemId to (it.quantity - (refundedByItemId[it.itemId] ?: 0f)) }
+            .associate { it.itemId to (it.quantity + (refundedByItemId[it.itemId] ?: 0f)) }
             .filterValues { it > 0 }
     }
 
