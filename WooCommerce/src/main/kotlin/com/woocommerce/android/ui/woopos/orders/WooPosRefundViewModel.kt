@@ -67,7 +67,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 )
                 return@launch
             }
-            val siteSettings = siteSettingsResult.model!!
+            val siteSettings = checkNotNull(siteSettingsResult.model) {
+                "siteSettings.model should not be null after null check"
+            }
             cachedNumberOfDecimalPoints = siteSettings.currencyDecimalNumber
 
             val taxRoundAtSubtotalResult = wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(selectedSite.get())
@@ -78,7 +80,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 )
                 return@launch
             }
-            cachedTaxRoundAtSubtotal = taxRoundAtSubtotalResult.model!!
+            cachedTaxRoundAtSubtotal = checkNotNull(taxRoundAtSubtotalResult.model) {
+                "taxRoundAtSubtotalResult.model should not be null after null check"
+            }
 
             val orderResult = ordersDataSource.refreshOrderById(orderId)
             if (orderResult.isFailure) {
@@ -111,8 +115,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
             _state.value = buildContentState(
                 order = order,
                 refundableItems = refundableItems,
-                numberOfDecimalPoints = cachedNumberOfDecimalPoints!!,
-                taxRoundAtSubtotal = cachedTaxRoundAtSubtotal!!,
+                numberOfDecimalPoints = checkNotNull(cachedNumberOfDecimalPoints) {
+                    "cachedNumberOfDecimalPoints should not be null when building content state"
+                },
+                taxRoundAtSubtotal = checkNotNull(cachedTaxRoundAtSubtotal) {
+                    "cachedTaxRoundAtSubtotal should not be null when building content state"
+                },
             )
         }
     }
