@@ -102,8 +102,7 @@ class DeveloperOptionsViewModel @Inject constructor(
 
     private val featureFlagsFlow = flowOf(
         NonToggleableListItem(
-            icon = R.drawable.ic_more_screen_settings,
-            iconTint = R.color.color_primary,
+            icon = R.drawable.ic_lock,
             label = UiStringRes(R.string.dev_feature_flags),
             isEnabled = true,
             onClick = {
