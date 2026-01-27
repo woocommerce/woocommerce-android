@@ -1,21 +1,25 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
+import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 import com.woocommerce.android.ui.woopos.tab.WooPosTabShouldBeVisible
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FetchActiveWCPluginVersion
+import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import javax.inject.Inject
 
-/**
- * Checks if local catalog is supported and enabled for a given site.
- */
 class WooPosIsLocalCatalogSupported @Inject constructor(
     private val wooPosLocalCatalogM1Enabled: WooPosLocalCatalogM1Enabled,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
     private val prefsRepo: WooPosPreferencesRepository,
     private val isVariationsEndpointAvailable: WooPosIsLocalCatalogVariationsEndpointAvailable,
+    private val getWooVersion: GetWooCorePluginCachedVersion,
+    private val fetchWooVersion: FetchActiveWCPluginVersion,
     private val posTabShouldBeVisible: WooPosTabShouldBeVisible,
     private val posCanBeLaunchedInTab: WooPosCanBeLaunchedInTab,
     private val wooPosLogWrapper: WooPosLogWrapper,

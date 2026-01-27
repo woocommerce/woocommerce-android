@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -29,6 +30,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val prefsRepo: WooPosPreferencesRepository = mock()
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -40,6 +42,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         isLocalCatalogSupported = isLocalCatalogSupported,
         wooPosLogWrapper = wooPosLogWrapper,
         prefsRepo = prefsRepo,
+        fileApproachEnabled = fileApproachEnabled,
         analyticsTracker = analyticsTracker,
         appCoroutineScope = TestScope(testDispatcher)
     )

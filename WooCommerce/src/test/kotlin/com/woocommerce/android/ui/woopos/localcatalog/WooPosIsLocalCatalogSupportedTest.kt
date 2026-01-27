@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogM1Enabled
 import com.woocommerce.android.ui.woopos.tab.WooPosCanBeLaunchedInTab
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
@@ -22,6 +23,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId
 class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
     private var featureFlagM1Enabled: WooPosLocalCatalogM1Enabled = mock()
+    private var fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private var preferencesRepository: WooPosPreferencesRepository = mock()
     private var getWooVersion: GetWooCorePluginCachedVersion = mock()
     private var fetchWooVersion: FetchActiveWCPluginVersion = mock()
@@ -52,8 +54,11 @@ class WooPosIsLocalCatalogSupportedTest : BaseUnitTest() {
 
         isLocalCatalogSupported = WooPosIsLocalCatalogSupported(
             wooPosLocalCatalogM1Enabled = featureFlagM1Enabled,
+            fileApproachEnabled = fileApproachEnabled,
             prefsRepo = preferencesRepository,
             isVariationsEndpointAvailable = variationsEndpointChecker,
+            getWooVersion = getWooVersion,
+            fetchWooVersion = fetchWooVersion,
             posTabShouldBeVisible = posTabShouldBeVisible,
             posCanBeLaunchedInTab = posCanBeLaunchedInTab,
             wooPosLogWrapper = logger,

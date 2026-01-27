@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -23,6 +24,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val prefsRepo: WooPosPreferencesRepository,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
     private val analyticsTracker: WooPosAnalyticsTracker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {

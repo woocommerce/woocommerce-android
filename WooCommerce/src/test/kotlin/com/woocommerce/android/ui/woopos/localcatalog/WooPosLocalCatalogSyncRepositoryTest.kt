@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -38,6 +39,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
+    private var fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
 
@@ -53,6 +55,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             posSyncAction = posSyncAction,
             posFileBasedSyncAction = posFileBasedSyncAction,
             posCheckCatalogSizeAction = posCheckCatalogSizeAction,
+            fileApproachEnabled = fileApproachEnabled,
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,

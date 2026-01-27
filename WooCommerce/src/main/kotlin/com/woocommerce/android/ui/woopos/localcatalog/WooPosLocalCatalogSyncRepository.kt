@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed
@@ -11,7 +12,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
-import com.woocommerce.android.util.FeatureFlag
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,6 +24,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncAction: WooPosSyncAction,
     private val posFileBasedSyncAction: WooPosFileBasedSyncAction,
     private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val dispatchers: CoroutineDispatchers,
@@ -49,7 +50,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             )
         )
 
-        return@withContext if (FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH.isEnabled()) {
+        return@withContext if (fileApproachEnabled()) {
             performFileBasedSync(site)
         } else {
             performSync(
