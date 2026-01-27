@@ -85,15 +85,9 @@ object FileUploadUtils {
             path,
             mimeType,
             filenameWithExtension,
-            null
         )
         val instantiatedMedia = mediaStore.instantiateMediaModel(media)
-        return if (instantiatedMedia != null) {
-            instantiatedMedia
-        } else {
-            WooLog.w(T.MEDIA, "We couldn't instantiate the media")
-            null
-        }
+        return instantiatedMedia
     }
 
     /**

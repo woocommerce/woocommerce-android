@@ -13,10 +13,10 @@ enum class FeatureFlag {
     BOOKINGS_MVP,
     POS_REFUNDS,
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
-    WOO_POS_PRODUCT_VISIBILITY_FILTERING,
-    WOO_POS_CLIENT_SIDE_BANNER,
     WOO_PUSH_NOTIFICATIONS_SYSTEM,
-    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2;
+    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,
+    WOO_POS_CLIENT_SIDE_BANNER,
+    AGE_ELIGIBILITY_CHECKS;
 
     fun isEnabled(context: Context? = null): Boolean {
         return when (this) {
@@ -29,7 +29,7 @@ enum class FeatureFlag {
             ORDER_CREATION_AUTO_TAX_RATE,
             BOOKINGS_MVP,
             POS_REFUNDS,
-            WOO_POS_PRODUCT_VISIBILITY_FILTERING -> PackageUtils.isDebugBuild()
+            AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
 
             WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             WOO_PUSH_NOTIFICATIONS_SYSTEM,

@@ -42,7 +42,7 @@ import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.AccountModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
-import org.wordpress.android.fluxc.store.NotificationStore.FetchNotificationPayload
+import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class NotificationMessageHandlerTest {
@@ -114,7 +114,7 @@ class NotificationMessageHandlerTest {
 
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("User is not logged in!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("User is not logged in!"))
     }
 
     @Test
@@ -132,7 +132,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(emptyMap())
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
-            eq(WooLog.T.NOTIFS),
+            eq(WooLog.T.NOTIFICATIONS),
             eq("Push notification received without a valid Bundle!")
         )
     }
@@ -142,7 +142,7 @@ class NotificationMessageHandlerTest {
         notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
         verify(accountStore, atLeastOnce()).hasAccessToken()
         verify(wooLog, only()).e(
-            eq(WooLog.T.NOTIFS),
+            eq(WooLog.T.NOTIFICATIONS),
             eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
         )
     }
@@ -156,7 +156,7 @@ class NotificationMessageHandlerTest {
             )
         )
 
-        verify(wooLog, only()).e(eq(WooLog.T.NOTIFS), eq("Notification data is empty!"))
+        verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("Notification data is empty!"))
     }
 
     @Test
@@ -460,8 +460,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }
@@ -475,8 +475,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }

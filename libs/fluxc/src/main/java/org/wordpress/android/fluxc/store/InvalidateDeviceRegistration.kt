@@ -9,7 +9,7 @@ class InvalidateDeviceRegistration @Inject constructor(
     operator fun invoke() {
         prefsWrapper.getFluxCPreferences()
             .edit()
-            .remove(NotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID)
+            .remove(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID)
             .apply()
     }
 }
