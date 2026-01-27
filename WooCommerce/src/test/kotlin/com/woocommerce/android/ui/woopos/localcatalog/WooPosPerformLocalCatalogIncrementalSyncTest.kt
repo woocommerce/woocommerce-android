@@ -167,7 +167,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large, when execute called, then logs failure and disables periodic sync`() = runTest(
+    fun `given sync fails with catalog too large and file-based flag disabled, when execute called, then disables periodic sync`() = runTest(
         testScheduler
     ) {
         // GIVEN
@@ -177,6 +177,32 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
             error = "Catalog exceeds limit",
         )
 
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(selectedSite.getOrNull()).thenReturn(site)
+        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
+
+        // WHEN
+        sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+        testScheduler.advanceUntilIdle()
+
+        // THEN
+        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
+    }
+
+    @Test
+    fun `given sync fails with catalog too large and file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() = runTest(
+        testScheduler
+    ) {
+        // GIVEN
+        val sut = createSut()
+        val site = SiteModel().apply { id = 789 }
+        val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+            error = "Catalog exceeds limit",
+        )
+
+        whenever(fileApproachEnabled.invoke()).thenReturn(true)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(selectedSite.getOrNull()).thenReturn(site)
         whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
@@ -189,8 +215,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Catalog exceeds limit")
-        verify(wooPosLogWrapper).e("Disabling Local Catalog periodic sync for site due to catalog size too large")
-        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
+        verifyNoInteractions(prefsRepo)
     }
 
     @Test

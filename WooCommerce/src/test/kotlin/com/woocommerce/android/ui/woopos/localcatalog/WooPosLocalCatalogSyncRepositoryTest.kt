@@ -51,6 +51,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             computation = UnconfinedTestDispatcher()
         )
 
+        whenever(fileApproachEnabled.invoke()).thenReturn(true)
+
         sut = WooPosLocalCatalogSyncRepository(
             posSyncAction = posSyncAction,
             posFileBasedSyncAction = posFileBasedSyncAction,
@@ -81,16 +83,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `when full sync succeeds, then returns success`() = testBlocking {
         // GIVEN
-        val productsSynced = 150
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = productsSynced,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
+        givenFileBasedFullSyncSucceeds()
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -102,16 +95,8 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `when full sync succeeds, then stores both last sync and last full sync timestamps`() = testBlocking {
         // GIVEN
-        val productsSynced = 150
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = productsSynced,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
+        givenFileBasedFullSyncSucceeds()
+        whenever(syncTimestampManager.parseTimestampFromApi(any())).thenReturn(123456L)
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -125,16 +110,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `when full sync succeeds, then does not disable periodic sync`() = testBlocking {
         // GIVEN
-        val productsSynced = 150
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = productsSynced,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
+        givenFileBasedFullSyncSucceeds()
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -144,12 +120,24 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync fails, then disables periodic sync`() = testBlocking {
+    fun `when full sync fails, then does not disable periodic sync when file-based flag enabled`() = testBlocking {
         // GIVEN
-        val totalPages = 15
-        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.CatalogTooLarge(error = "Catalog too large")
+        )
+
+        // WHEN
+        sut.syncLocalCatalogFull(site)
+
+        // THEN
+        verify(preferencesRepository, never()).disablePeriodicSyncForSite(any())
+    }
+
+    @Test
+    fun `when full sync fails with CatalogTooLarge and file-based flag disabled, then disables periodic sync`() = testBlocking {
+        // GIVEN
+        whenever(fileApproachEnabled.invoke()).thenReturn(false)
+        givenCatalogTooLargeForLegacySync()
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -159,26 +147,25 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync fails with catalog too large, then returns CatalogTooLarge failure`() = testBlocking {
+    fun `when full sync fails with network error, then returns NetworkError failure`() = testBlocking {
         // GIVEN
-        val totalPages = 15
-        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
+        )
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
 
         // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogTooLarge::class.java)
+        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.NetworkError::class.java)
     }
 
     @Test
     fun `when full sync fails with unexpected error, then returns UnexpectedError failure`() = testBlocking {
         // GIVEN
-        val errorMessage = "Network timeout"
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncResult.Failed.UnexpectedError(errorMessage))
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.UnexpectedError("Unexpected error")
+        )
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
@@ -260,85 +247,24 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given catalog size exceeds limit, when sync starts, then returns CatalogTooLarge`() = testBlocking {
+    fun `when file-based full sync succeeds, then returns success with correct counts`() = testBlocking {
         // GIVEN
-        givenCatalogTooLarge("Catalog too large: 1100 items")
-
-        // WHEN
-        val result = sut.syncLocalCatalogFull(site)
-
-        // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Failure.CatalogTooLarge::class.java)
-        val failure = result as PosLocalCatalogSyncResult.Failure.CatalogTooLarge
-        assertThat(failure.error).contains("1100 items")
-    }
-
-    @Test
-    fun `given catalog size is exactly at limit, when sync starts, then proceeds with sync`() = testBlocking {
-        // GIVEN
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = 600,
-                    variationsSynced = 400,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
+        givenFileBasedFullSyncSucceeds(productsSynced = 600, variationsSynced = 400)
 
         // WHEN
         val result = sut.syncLocalCatalogFull(site)
 
         // THEN
         assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
-    }
-
-    @Test
-    fun `given products count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
-        // GIVEN
-        givenCatalogSizeUnknown()
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = 100,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
-
-        // WHEN
-        val result = sut.syncLocalCatalogFull(site)
-
-        // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
-    }
-
-    @Test
-    fun `given variations count fetch fails, when sync starts, then proceeds with sync anyway`() = testBlocking {
-        // GIVEN
-        givenCatalogSizeUnknown()
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = 500,
-                    variationsSynced = 200,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
-                )
-            )
-
-        // WHEN
-        val result = sut.syncLocalCatalogFull(site)
-
-        // THEN
-        assertThat(result).isInstanceOf(PosLocalCatalogSyncResult.Success::class.java)
+        val success = result as PosLocalCatalogSyncResult.Success
+        assertThat(success.productsSynced).isEqualTo(600)
+        assertThat(success.variationsSynced).isEqualTo(400)
     }
 
     @Test
     fun `when full sync starts, then tracks sync started event`() = testBlocking {
         // GIVEN
-        givenFullSyncSucceeds()
+        givenFileBasedFullSyncSucceeds()
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -350,7 +276,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `when full sync completes successfully, then tracks sync completed event`() = testBlocking {
         // GIVEN
-        givenFullSyncSucceeds()
+        givenFileBasedFullSyncSucceeds()
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -362,10 +288,9 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     @Test
     fun `when full sync fails, then tracks sync failed event`() = testBlocking {
         // GIVEN
-        val totalPages = 15
-        val maxPages = WooPosLocalCatalogSyncRepository.MAX_PAGES_PER_FULL_SYNC
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
-            .thenReturn(WooPosSyncResult.Failed.CatalogTooLarge(totalPages, maxPages))
+        givenFileBasedFullSyncFails(
+            PosLocalCatalogSyncResult.Failure.UnexpectedError("Sync failed")
+        )
 
         // WHEN
         sut.syncLocalCatalogFull(site)
@@ -413,30 +338,45 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
         verify(analyticsTracker).track(any<WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed>())
     }
 
+    private fun givenCatalogTooLargeForLegacySync() = runBlocking {
+        whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
+            .thenReturn(
+                WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge(
+                    error = "Too large"
+                )
+            )
+    }
+
     private fun givenCatalogSizeAcceptable() = runBlocking {
         whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
             .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeAcceptable)
     }
 
-    private fun givenCatalogSizeUnknown() = runBlocking {
-        whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
-            .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.SizeUnknown)
-    }
-
-    private fun givenCatalogTooLarge(errorMessage: String) = runBlocking {
-        whenever(posCheckCatalogSizeAction.execute(any(), anyOrNull(), any()))
-            .thenReturn(WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge(errorMessage))
-    }
-
-    private suspend fun givenFullSyncSucceeds() {
-        whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
+    private suspend fun givenFileBasedFullSyncSucceeds(
+        productsSynced: Int = 150,
+        variationsSynced: Int = 50,
+        syncDurationMs: Long = 1000L,
+        lastModifiedDate: String? = "2024-01-01T12:00:00Z"
+    ) {
+        whenever(posFileBasedSyncAction.syncCatalog(any()))
             .thenReturn(
-                WooPosSyncResult.Success(
-                    productsSynced = 150,
-                    variationsSynced = 50,
-                    productsServerDate = "2024-01-01T12:00:00Z",
-                    variationsServerDate = "2024-01-01T12:00:00Z"
+                WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Success(
+                    result = PosLocalCatalogSyncResult.Success(
+                        productsSynced = productsSynced,
+                        variationsSynced = variationsSynced,
+                        syncDurationMs = syncDurationMs
+                    ),
+                    lastModifiedDate = lastModifiedDate
                 )
+            )
+    }
+
+    private suspend fun givenFileBasedFullSyncFails(
+        failure: PosLocalCatalogSyncResult.Failure
+    ) {
+        whenever(posFileBasedSyncAction.syncCatalog(any()))
+            .thenReturn(
+                WooPosFileBasedSyncAction.WooPosFileBasedSyncResult.Failure(result = failure)
             )
     }
 
