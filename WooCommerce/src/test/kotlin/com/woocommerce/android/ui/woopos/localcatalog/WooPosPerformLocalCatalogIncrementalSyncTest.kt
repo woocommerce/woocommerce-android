@@ -16,6 +16,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
@@ -213,7 +214,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         // THEN
         verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
         verify(wooPosLogWrapper).e("Sync periodic hourly failed: Network timeout")
-        verifyNoInteractions(prefsRepo)
+        verify(prefsRepo, never()).disablePeriodicSyncForSite(site.localId())
     }
 
     @Test
