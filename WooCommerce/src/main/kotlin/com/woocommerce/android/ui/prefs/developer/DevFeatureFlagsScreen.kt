@@ -80,7 +80,7 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
             )
 
             LazyColumn {
-                items(filteredFlags) { flag ->
+                items(filteredFlags, key = { it.name }) { flag ->
                     FeatureFlagItem(flag)
                 }
             }
@@ -90,10 +90,10 @@ fun DevFeatureFlagsScreen(onBackClick: () -> Unit) {
 
 @Composable
 private fun FeatureFlagItem(flag: FeatureFlag) {
-    var isEnabled by remember {
+    var isEnabled by remember(flag) {
         mutableStateOf(flag.isEnabled())
     }
-    val defaultValue = remember { flag.getDefaultValue() }
+    val defaultValue = remember(flag) { flag.getDefaultValue() }
     val defaultText = if (defaultValue) "Default: enabled" else "Default: disabled"
 
     Column(
