@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -11,7 +12,6 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel

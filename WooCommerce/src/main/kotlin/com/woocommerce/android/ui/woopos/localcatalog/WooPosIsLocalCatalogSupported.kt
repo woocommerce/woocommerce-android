@@ -32,24 +32,8 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
-        if (fileApproachEnabled()) {
-            if (!isFileBasedSyncSupported()) {
-                return false.also {
-                    wooPosLogWrapper.d("Local Catalog not supported: WooCommerce version does not support file-based sync (requires $WC_FILE_BASED_SYNC_MIN_VERSION).")
-                }
-            }
-        } else {
-            if (!isVariationsEndpointAvailable()) {
-                return false.also {
-                    wooPosLogWrapper.d("Local Catalog not supported: Variations endpoint not available.")
-                }
-            }
-
-            if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
-                return false.also {
-                    wooPosLogWrapper.d("Local Catalog not supported: Periodic sync disabled.")
-                }
-            }
+        if (!isSyncApproachSupported(localSiteId)) {
+            return false
         }
 
         val tabVisibleResult = posTabShouldBeVisible()
@@ -66,6 +50,31 @@ class WooPosIsLocalCatalogSupported @Inject constructor(
             }
         }
 
+        return true
+    }
+
+    private suspend fun isSyncApproachSupported(
+        localSiteId: LocalOrRemoteId.LocalId
+    ): Boolean {
+        if (fileApproachEnabled()) {
+            if (!isFileBasedSyncSupported()) {
+                wooPosLogWrapper.d(
+                    "Local Catalog not supported: WooCommerce version does not support" +
+                        " file-based sync (requires $WC_FILE_BASED_SYNC_MIN_VERSION)."
+                )
+                return false
+            }
+        } else {
+            if (!isVariationsEndpointAvailable()) {
+                wooPosLogWrapper.d("Local Catalog not supported: Variations endpoint not available.")
+                return false
+            }
+
+            if (!prefsRepo.isPeriodicSyncEnabledForSite(localSiteId)) {
+                wooPosLogWrapper.d("Local Catalog not supported: Periodic sync disabled.")
+                return false
+            }
+        }
         return true
     }
 
