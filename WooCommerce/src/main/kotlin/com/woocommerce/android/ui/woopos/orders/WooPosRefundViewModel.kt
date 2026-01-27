@@ -92,12 +92,15 @@ class WooPosRefundViewModel @AssistedInject constructor(
             currentOrder = order
 
             val refundsResult = retrieveOrderRefunds(order, forceRefresh = true)
-            val refunds = if (refundsResult.isSuccess) {
-                refundsResult.getOrThrow()
-            } else {
-                emptyList()
+            if (refundsResult.isFailure) {
+                WooLog.d(WooLog.T.POS, "Failed to fetch refunds for order ${order.id}")
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic)
+                )
+                return@launch
             }
 
+            val refunds = refundsResult.getOrThrow()
             val refundableItems = getRefundableItems(order, refunds)
 
             if (refundableItems.isEmpty()) {
