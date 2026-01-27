@@ -100,13 +100,26 @@ class DeveloperOptionsViewModel @Inject constructor(
         )
     )
 
+    private val featureFlagsFlow = flowOf(
+        NonToggleableListItem(
+            icon = R.drawable.ic_more_screen_settings,
+            iconTint = R.color.color_primary,
+            label = UiStringRes(R.string.dev_feature_flags),
+            isEnabled = true,
+            onClick = {
+                triggerEvent(DeveloperOptionsEvents.OpenFeatureFlags)
+            }
+        )
+    )
+
     val viewState = combine(
         simulatedCardReaderFlow,
         readerUpdateFrequencyFlow,
         interacPaymentEnabledFlow,
         savedPrivacySettingsOnDialogFlow,
         apiFakerFlow,
-        sendSentryReportFlow
+        sendSentryReportFlow,
+        featureFlagsFlow
     ) { items ->
         DeveloperOptionsViewState(
             rows = items.filterNotNull()
@@ -158,6 +171,7 @@ class DeveloperOptionsViewModel @Inject constructor(
         ) : DeveloperOptionsEvents()
 
         data object OpenApiFaker : DeveloperOptionsEvents()
+        data object OpenFeatureFlags : DeveloperOptionsEvents()
     }
 
     data class DeveloperOptionsViewState(

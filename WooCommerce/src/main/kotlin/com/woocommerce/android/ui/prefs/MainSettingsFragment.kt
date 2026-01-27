@@ -145,14 +145,8 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
             binding.optionDevelopers.setOnClickListener {
                 findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_developerOptionsFragment)
             }
-
-            binding.optionDevFeatureFlags.visibility = View.VISIBLE
-            binding.optionDevFeatureFlags.setOnClickListener {
-                findNavController().navigateSafely(R.id.action_mainSettingsFragment_to_devFeatureFlagsFragment)
-            }
         } else {
             binding.optionDevelopers.visibility = View.GONE
-            binding.optionDevFeatureFlags.visibility = View.GONE
         }
 
         binding.optionBetaFeatures.setOnClickListener {
