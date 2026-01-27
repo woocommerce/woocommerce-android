@@ -40,6 +40,8 @@ private fun FeatureFlagItem(flag: FeatureFlag) {
     var isEnabled by remember {
         mutableStateOf(flag.isEnabled())
     }
+    val defaultValue = remember { flag.getDefaultValue() }
+    val defaultText = if (defaultValue) "Default: enabled" else "Default: disabled"
 
     Column(
         modifier = Modifier
@@ -57,10 +59,17 @@ private fun FeatureFlagItem(flag: FeatureFlag) {
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
-            Text(
-                text = flag.name,
-                modifier = Modifier.weight(1f)
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = flag.name,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Text(
+                    text = defaultText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
 
             Switch(
                 checked = isEnabled,

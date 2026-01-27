@@ -25,7 +25,7 @@ enum class FeatureFlag {
         return getDefaultValue(context)
     }
 
-    private fun getDefaultValue(context: Context? = null): Boolean {
+    fun getDefaultValue(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
