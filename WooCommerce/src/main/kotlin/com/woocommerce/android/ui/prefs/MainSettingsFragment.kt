@@ -203,9 +203,15 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
 
+        binding.optionEnablePushNotifications.isVisible = presenter.isEnablePushNotificationsVisible
+        binding.optionEnablePushNotifications.setOnClickListener {
+            // TODO: Implement push notification connection flow
+        }
+
         binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
             binding.optionDomain.isVisible ||
-            binding.optionStoreName.isVisible
+            binding.optionStoreName.isVisible ||
+            binding.optionEnablePushNotifications.isVisible
 
         binding.optionStoreName.setOnClickListener {
             findNavController()
