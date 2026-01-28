@@ -30,6 +30,7 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.data.ObservePushNotificationsWidgetStatus
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -68,6 +69,7 @@ class DashboardViewModel @Inject constructor(
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
+    observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus,
     private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -97,11 +99,15 @@ class DashboardViewModel @Inject constructor(
         } ?: resourceProvider.getString(R.string.store_name_default)
     }.asLiveData()
 
-    val jetpackBenefitsBannerState = selectedSite.observe()
-        .filterNotNull()
-        .flatMapLatest { site ->
-            jetpackBenefitsBannerState(site.connectionType)
-        }.asLiveData()
+    val jetpackBenefitsBannerState = combine(
+        selectedSite.observe().filterNotNull(),
+        observePushNotificationsWidgetStatus()
+    ) { site, pushCardStatus ->
+        val pushCardAvailable = pushCardStatus == DashboardWidget.Status.Available
+        Pair(site.connectionType, pushCardAvailable)
+    }.flatMapLatest { (connectionType, pushCardAvailable) ->
+        jetpackBenefitsBannerState(connectionType, pushCardAvailable)
+    }.asLiveData()
 
     private val dashboardWidgets = combine(
         dashboardRepository.widgets,
@@ -285,9 +291,13 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun jetpackBenefitsBannerState(
-        connectionType: SiteConnectionType
+        connectionType: SiteConnectionType,
+        pushCardAvailable: Boolean
     ): Flow<JetpackBenefitsBannerUiModel?> {
-        if (connectionType == SiteConnectionType.Jetpack || appPrefsWrapper.isSiteWPComSuspended) {
+        if (connectionType == SiteConnectionType.Jetpack ||
+            appPrefsWrapper.isSiteWPComSuspended ||
+            pushCardAvailable
+        ) {
             return flowOf(null)
         }
 

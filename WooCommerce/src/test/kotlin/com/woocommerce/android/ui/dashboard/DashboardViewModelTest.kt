@@ -11,6 +11,7 @@ import com.woocommerce.android.notifications.push.PushNotificationRegistrationSt
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
+import com.woocommerce.android.ui.dashboard.data.ObservePushNotificationsWidgetStatus
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.getOrAwaitValue
@@ -62,6 +63,9 @@ class DashboardViewModelTest : BaseUnitTest() {
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
     }
+    private val observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus = mock {
+        on { invoke() } doReturn flowOf(DashboardWidget.Status.Hidden)
+    }
 
     private lateinit var viewModel: DashboardViewModel
 
@@ -79,6 +83,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
+            observePushNotificationsWidgetStatus = observePushNotificationsWidgetStatus,
             feedbackPrefs = feedbackPrefs,
         )
     }
