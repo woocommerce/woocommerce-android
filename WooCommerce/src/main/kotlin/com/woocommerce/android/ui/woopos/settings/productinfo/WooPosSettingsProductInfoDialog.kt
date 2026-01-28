@@ -52,8 +52,6 @@ fun WooPosSettingsProductInfoDialog(
     ) {
         Box(
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(WooPosSpacing.XLarge.value)
                 .semantics(mergeDescendants = true) {
                     contentDescription = dialogContentDescription
                 },

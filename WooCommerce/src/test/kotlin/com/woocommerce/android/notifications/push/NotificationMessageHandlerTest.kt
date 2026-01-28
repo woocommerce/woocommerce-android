@@ -460,8 +460,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }
@@ -475,8 +475,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }
