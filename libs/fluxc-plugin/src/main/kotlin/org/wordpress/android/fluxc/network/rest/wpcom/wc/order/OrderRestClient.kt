@@ -1073,13 +1073,17 @@ class OrderRestClient @Inject constructor(
     suspend fun sendOrderPOSSpecificReceipt(
         site: SiteModel,
         orderId: Long,
+        email: String,
+        forceEmailUpdate: Boolean = true
     ): WooPayload<Unit> {
         val response = wooNetwork.executePostGsonRequest(
             site = site,
             path = WOOCOMMERCE.orders.id(orderId).actions.send_email.pathV3,
             clazz = Unit::class.java,
             body = mapOf(
-                "template_id" to "customer_pos_completed_order"
+                "template_id" to "customer_pos_completed_order",
+                "email" to email,
+                "force_email_update" to forceEmailUpdate
             )
         )
 
