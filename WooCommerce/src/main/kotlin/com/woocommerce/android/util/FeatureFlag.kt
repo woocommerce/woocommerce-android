@@ -30,12 +30,11 @@ enum class FeatureFlag {
             BOOKINGS_MVP,
             POS_PRODUCTS_FTS,
             POS_REFUNDS,
+            WOO_POS_CLIENT_SIDE_BANNER,
             AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
 
             WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
             WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
-
-            WOO_POS_CLIENT_SIDE_BANNER -> true
         }
     }
 }
