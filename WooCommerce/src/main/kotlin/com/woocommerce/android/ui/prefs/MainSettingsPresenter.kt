@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.StringUtils
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
@@ -96,6 +97,10 @@ class MainSettingsPresenter @Inject constructor(
 
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override val isEnablePushNotificationsVisible: Boolean
+        get() = FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2.isEnabled() &&
+            selectedSite.connectionType == SiteConnectionType.ApplicationPasswords
 
     override val wooPluginVersion: String
         get() = getWooVersion() ?: ""
