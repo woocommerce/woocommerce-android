@@ -11,6 +11,7 @@ interface MainSettingsContract {
         fun getStoreDomainName(): String
         fun hasMultipleStores(): Boolean
         fun setupAnnouncementOption()
+        fun setupEnablePushNotificationsOption()
         fun setupJetpackInstallOption()
         fun setupApplicationPasswordsSettings()
         fun onNotificationsClicked()
@@ -18,7 +19,6 @@ interface MainSettingsContract {
         val isDomainOptionVisible: Boolean
         val isCloseAccountOptionVisible: Boolean
         val isThemePickerOptionVisible: Boolean
-        val isEnablePushNotificationsVisible: Boolean
         val wooPluginVersion: String
     }
 
@@ -26,6 +26,7 @@ interface MainSettingsContract {
         fun showDeviceAppNotificationSettings()
         fun showNotificationsSettingsScreen()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
+        fun showEnablePushNotificationsOption()
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
     }

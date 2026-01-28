@@ -200,18 +200,15 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         }
 
         presenter.setupAnnouncementOption()
+        presenter.setupEnablePushNotificationsOption()
         presenter.setupJetpackInstallOption()
         presenter.setupApplicationPasswordsSettings()
 
-        binding.optionEnablePushNotifications.isVisible = presenter.isEnablePushNotificationsVisible
         binding.optionEnablePushNotifications.setOnClickListener {
             // TODO: Implement push notification connection flow
         }
 
-        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
-            binding.optionDomain.isVisible ||
-            binding.optionStoreName.isVisible ||
-            binding.optionEnablePushNotifications.isVisible
+        updateStoreSettingsContainerVisibility()
 
         binding.optionStoreName.setOnClickListener {
             findNavController()
@@ -320,5 +317,17 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
                 dialog.dismiss()
             }
             .show()
+    }
+
+    override fun showEnablePushNotificationsOption() {
+        binding.optionEnablePushNotifications.isVisible = true
+        updateStoreSettingsContainerVisibility()
+    }
+
+    private fun updateStoreSettingsContainerVisibility() {
+        binding.storeSettingsContainer.isVisible = binding.optionInstallJetpack.isVisible ||
+            binding.optionDomain.isVisible ||
+            binding.optionStoreName.isVisible ||
+            binding.optionEnablePushNotifications.isVisible
     }
 }
