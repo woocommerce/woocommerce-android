@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
@@ -88,32 +89,50 @@ class WooPosEmailReceiptRepositoryTest {
     }
 
     @Test
-    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher, it calls for POS receipts then return success`() = runTest {
+    fun `given WC version 10 or higher, when sendReceiptByEmail, then sends POS receipt with email directly`() = runTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.updateOrderBillingEmail(siteModel, orderId, email)).thenReturn(WooPayload(Unit))
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId)).thenReturn(WooPayload(Unit))
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email)).thenReturn(WooPayload(Unit))
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(orderStore).updateOrderBillingEmail(siteModel, orderId, email)
-        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId)
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email)
+        verify(orderStore, never()).updateOrderBillingEmail(siteModel, orderId, email)
     }
 
     @Test
-    fun `given email update fails, when sendReceiptByEmail, then return failure`() = runTest {
+    fun `given legacy WC version and email update fails, when sendReceiptByEmail, then return failure`() = runTest {
         // GIVEN
         val email = "test@example.com"
         val orderId = 1L
 
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
         whenever(orderStore.updateOrderBillingEmail(siteModel, orderId, email)).thenReturn(
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.NETWORK_ERROR))
+        )
+
+        // WHEN
+        val result = repository.sendReceiptByEmail(orderId, email)
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given WC 10 or higher and POS receipt fails, when sendReceiptByEmail, then return failure`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val email = "test@example.com"
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email)).thenReturn(
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.TIMEOUT))
         )
 
         // WHEN

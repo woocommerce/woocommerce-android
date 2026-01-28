@@ -308,4 +308,41 @@ class OrderRestClientTest {
 
         assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
     }
+
+    @Test
+    fun `when sendOrderPOSSpecificReceipt is called, then email and force_email_update are sent in request body`() = runTest {
+        // Given
+        val orderId = 123L
+        val email = "test@example.com"
+        val expectedPath = WOOCOMMERCE.orders.id(orderId).actions.send_email.pathV3
+        val expectedBody = mapOf(
+            "template_id" to "customer_pos_completed_order",
+            "email" to email,
+            "force_email_update" to true
+        )
+        val mockResponse = WPAPIResponse.Success(Unit, emptyList())
+
+        whenever(
+            wooNetwork.executePostGsonRequest(
+                site = any(),
+                path = any(),
+                clazz = eq(Unit::class.java),
+                body = any()
+            )
+        ).thenReturn(mockResponse)
+
+        // When
+        orderRestClient.sendOrderPOSSpecificReceipt(testSite, orderId, email)
+
+        // Then
+        val bodyCaptor = argumentCaptor<Map<String, Any>>()
+        verify(wooNetwork).executePostGsonRequest(
+            site = eq(testSite),
+            path = eq(expectedPath),
+            clazz = eq(Unit::class.java),
+            body = bodyCaptor.capture()
+        )
+
+        assertThat(bodyCaptor.firstValue).isEqualTo(expectedBody)
+    }
 }
