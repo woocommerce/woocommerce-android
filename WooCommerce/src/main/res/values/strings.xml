@@ -375,7 +375,7 @@
     <string name="my_store_edit_screen_widgets">Customize</string>
 
     <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
-    <string name="my_store_widget_push_notifications_menu_title">Unlock push notifications</string>
+    <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
     <string name="my_store_widget_push_notifications_description">Connect your store to a WordPress.com account to get alerts for new orders and reviews.</string>
 
     <string name="my_store_widget_onboarding_title">Store setup</string>
