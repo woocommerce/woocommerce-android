@@ -16,3 +16,4 @@ jobs:
         uses: gradle/actions/dependency-submission@v5
         with:
           dependency-graph-include-projects: '^:(WooCommerce|WooCommerce-Wear)$'
+          dependency-graph-include-configurations: 'vanillaReleaseRuntimeClasspath'
