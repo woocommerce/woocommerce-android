@@ -22,6 +22,7 @@ import com.woocommerce.android.network.ConnectionChangeReceiver
 import com.woocommerce.android.network.ConnectionChangeReceiver.ConnectionChangeEvent
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -30,7 +31,6 @@ import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.Op
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardEvent.RefreshJitm
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetUiModel.NewWidgetsCard
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
-import com.woocommerce.android.ui.dashboard.data.ObservePushNotificationsWidgetStatus
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
 import com.woocommerce.android.util.PackageUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
@@ -69,7 +69,7 @@ class DashboardViewModel @Inject constructor(
     shouldShowPrivacyBanner: ShouldShowPrivacyBanner,
     dashboardRepository: DashboardRepository,
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus,
-    observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus,
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val feedbackPrefs: FeedbackPrefs,
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -99,15 +99,11 @@ class DashboardViewModel @Inject constructor(
         } ?: resourceProvider.getString(R.string.store_name_default)
     }.asLiveData()
 
-    val jetpackBenefitsBannerState = combine(
-        selectedSite.observe().filterNotNull(),
-        observePushNotificationsWidgetStatus()
-    ) { site, pushCardStatus ->
-        val pushCardAvailable = pushCardStatus == DashboardWidget.Status.Available
-        Pair(site.connectionType, pushCardAvailable)
-    }.flatMapLatest { (connectionType, pushCardAvailable) ->
-        jetpackBenefitsBannerState(connectionType, pushCardAvailable)
-    }.asLiveData()
+    val jetpackBenefitsBannerState = selectedSite.observe()
+        .filterNotNull()
+        .flatMapLatest { site ->
+            jetpackBenefitsBannerState(site.connectionType)
+        }.asLiveData()
 
     private val dashboardWidgets = combine(
         dashboardRepository.widgets,
@@ -291,13 +287,9 @@ class DashboardViewModel @Inject constructor(
     }
 
     private fun jetpackBenefitsBannerState(
-        connectionType: SiteConnectionType,
-        pushCardAvailable: Boolean
+        connectionType: SiteConnectionType
     ): Flow<JetpackBenefitsBannerUiModel?> {
-        if (connectionType == SiteConnectionType.Jetpack ||
-            appPrefsWrapper.isSiteWPComSuspended ||
-            pushCardAvailable
-        ) {
+        if (connectionType == SiteConnectionType.Jetpack || appPrefsWrapper.isSiteWPComSuspended) {
             return flowOf(null)
         }
 
@@ -307,7 +299,8 @@ class DashboardViewModel @Inject constructor(
             .map {
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner = pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
+                val enablePnUiAvailable = shouldShowEnablePushNotificationsUi()
+                val showBanner = !enablePnUiAvailable && pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
                     durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
