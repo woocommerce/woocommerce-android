@@ -1,6 +1,7 @@
 package com.woocommerce.android.util
 
 import android.content.Context
+import com.woocommerce.android.AppPrefs
 
 /**
  * "Feature flags" are used to hide in-progress features from release versions
@@ -19,6 +20,17 @@ enum class FeatureFlag {
     AGE_ELIGIBILITY_CHECKS;
 
     fun isEnabled(context: Context? = null): Boolean {
+        if (PackageUtils.isDebugBuild()) {
+            return try {
+                AppPrefs.isFeatureFlagOverrideEnabled(this, getDefaultValue(context))
+            } catch (_: UninitializedPropertyAccessException) {
+                getDefaultValue(context)
+            }
+        }
+        return getDefaultValue(context)
+    }
+
+    fun getDefaultValue(context: Context? = null): Boolean {
         return when (this) {
             DB_DOWNGRADE -> {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)

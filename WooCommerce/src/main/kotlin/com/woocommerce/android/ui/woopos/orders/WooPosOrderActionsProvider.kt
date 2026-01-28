@@ -7,12 +7,14 @@ import javax.inject.Inject
 class WooPosOrderActionsProvider @Inject constructor(
     private val getRefundableItems: WooPosGetRefundableItems,
 ) {
+    internal var isPosRefundsEnabled: () -> Boolean = { FeatureFlag.POS_REFUNDS.isEnabled() }
+
     fun getAvailableActions(
         order: Order,
         refundResult: RefundsFetchResult
     ): List<WooPosOrdersState.OrderAction> {
         return buildList {
-            if (FeatureFlag.POS_REFUNDS.isEnabled() && hasRefundableItems(order, refundResult)) {
+            if (isPosRefundsEnabled() && hasRefundableItems(order, refundResult)) {
                 add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
             }
             add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
