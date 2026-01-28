@@ -3,6 +3,7 @@
     <!-- WARNING -->
 
     <!-- ERROR -->
+    <issue id="Aligned16KB" severity="error" />
     <issue id="InconsistentArrays" severity="error" />
     <issue id="HardcodedText" severity="error" />
     <issue id="IconDuplicates" severity="error" />
