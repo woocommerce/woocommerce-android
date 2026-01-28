@@ -64,8 +64,9 @@ class WooPosLoadPaymentGatewayTest : BaseUnitTest() {
     fun `given payment gateway does not support refunds, when invoke called, then returns gateway with supportsRefunds false`() =
         runTest {
             // GIVEN
+            val orderWithCod = testOrder.copy(paymentMethod = "cod")
             val codGateway = WCGatewayModel(
-                id = "stripe",
+                id = "cod",
                 title = "Cash on Delivery",
                 description = "Pay with cash on delivery",
                 order = 0,
@@ -74,10 +75,10 @@ class WooPosLoadPaymentGatewayTest : BaseUnitTest() {
                 methodDescription = "",
                 features = emptyList()
             )
-            whenever(gatewayStore.getGateway(testSite, "stripe")).thenReturn(codGateway)
+            whenever(gatewayStore.getGateway(testSite, "cod")).thenReturn(codGateway)
 
             // WHEN
-            val result = sut(testOrder)
+            val result = sut(orderWithCod)
 
             // THEN
             assertThat(result.supportsRefunds).isFalse()

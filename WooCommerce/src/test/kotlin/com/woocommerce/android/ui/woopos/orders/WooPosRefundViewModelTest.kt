@@ -1663,7 +1663,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given payment gateway not found, when refund confirmed, then autoRefund is false`() =
+    fun `given manual payment method, when refund confirmed, then autoRefund is false`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
