@@ -173,7 +173,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        if(!fileApproachEnabled()) {
+        if (!fileApproachEnabled()) {
             val catalogSizeCheckResult = posCheckCatalogSizeAction.execute(
                 site = site,
                 modifiedAfterGmt = modifiedAfterGmt,
