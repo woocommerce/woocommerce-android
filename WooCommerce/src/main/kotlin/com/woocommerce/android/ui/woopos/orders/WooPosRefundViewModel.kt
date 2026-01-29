@@ -54,10 +54,6 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var cachedNumberOfDecimalPoints: Int? = null
     private var cachedTaxRoundAtSubtotal: Boolean? = null
 
-    init {
-        loadRefundableItems()
-    }
-
     private suspend fun fetchSiteSettings(): Result<Int> {
         val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
         if (siteSettingsResult.isError || siteSettingsResult.model == null) {
