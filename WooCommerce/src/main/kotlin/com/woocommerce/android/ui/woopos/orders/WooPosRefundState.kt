@@ -14,6 +14,8 @@ sealed class WooPosRefundState {
         val orderNumber: String,
         val currency: String,
         val refundableItems: List<WooPosRefundableItem>,
+        val selectedItemIds: Set<String>,
+        val allItemsSelected: Boolean,
         val itemsCount: Int,
         val subtotal: BigDecimal,
         val taxes: BigDecimal,
@@ -54,10 +56,5 @@ sealed class WooPosRefundState {
         val orderId: Long,
         val orderNumber: String,
         val refundedAmount: String
-    ) : WooPosRefundState()
-
-    @Immutable
-    data class RefundError(
-        val message: String
     ) : WooPosRefundState()
 }

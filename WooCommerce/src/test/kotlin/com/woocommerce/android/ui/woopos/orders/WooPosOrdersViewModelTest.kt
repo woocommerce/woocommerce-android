@@ -122,7 +122,9 @@ class WooPosOrdersViewModelTest {
     private fun setupMappers() {
         orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
         refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
-        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems)
+        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems).apply {
+            isPosRefundsEnabled = { true }
+        }
         orderDetailsMapper = WooPosOrderDetailsMapper(
             resourceProvider,
             getProductById,
