@@ -90,7 +90,7 @@ class NotificationMessageHandler @Inject constructor(
 
         val notification = notificationModel.toAppModel(resourceProvider)
         val isRegisteredForWooPush = runBlocking {
-            registrationStatus(notification.remoteSiteId) == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY
+            registrationStatus(notification.remoteSiteId) == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
         }
         val pushUserId = messageData[PUSH_ARG_USER]
 
