@@ -21,7 +21,6 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest
@@ -37,7 +36,6 @@ import org.wordpress.android.fluxc.utils.PreferenceUtils
 @ExperimentalCoroutinesApi
 class PushNotificationRepositoryTest : BaseUnitTest() {
     private val wooPushNotificationsStore: WooPushNotificationsStore = mock()
-    private val selectedSite: com.woocommerce.android.tools.SelectedSite = mock()
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val wpComPushNotificationStore: WpComPushNotificationStore = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
@@ -55,10 +53,10 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Before
     fun setUp() {
         whenever(prefsWrapper.getFluxCPreferences()).thenReturn(sharedPreferences)
+        whenever(siteModel.siteId).thenReturn(SITE_ID)
 
         sut = PushNotificationRepository(
             wooPushNotificationsStore,
-            selectedSite,
             appPrefsWrapper,
             wpComPushNotificationStore,
             wooCommerceStore,
@@ -69,19 +67,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given no selected site, when registering push token called, then nothing happens`() = testBlocking {
-        whenever(selectedSite.getIfExists()).thenReturn(null)
-
-        sut.registerPushTokenInWooCoreSystem("token")
-
-        verifyNoInteractions(wooPushNotificationsStore, wpComPushNotificationStore)
-    }
-
-    @Test
-    fun `given selected site and stored uuid, when registering push token succeeds, then saves token and disables wpcom notifications`() =
+    fun `given stored uuid, when registering push token succeeds, then saves token and disables wpcom notifications`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-            whenever(siteModel.siteId).thenReturn(SITE_ID)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
                 .thenReturn(WooResult(RETURNED_TOKEN))
@@ -94,7 +81,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             val expectedTokenKey = stringPreferencesKey("push_token_$SITE_ID")
@@ -112,15 +99,14 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given selected site and stored uuid and not wpcom registered, when registering push token fails, then falls back to wpcom registration`() {
+    fun `given stored uuid and not wpcom registered, when registering push token fails, then falls back to wpcom registration`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = false)
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             verify(wpComPushNotificationStore, never()).updateNotificationSettingsFor(any())
@@ -129,49 +115,43 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE
             )
         }
-    }
 
     @Test
-    fun `given selected site and already wpcom registered, when registering push token fails, then does not fallback to wpcom registration`() {
+    fun `given already wpcom registered, when registering push token fails, then does not fallback to wpcom registration`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = true)
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(wooPushNotificationsStore).registerPushToken(siteModel, "token", "stored-uuid")
             verify(wpComPushNotificationStore, never()).registerDevice(any(), any())
         }
-    }
 
     @Test
-    fun `given selected site, when registering push token fails and falls back to wpcom, then does not save token to datastore`() {
+    fun `when registering push token fails and falls back to wpcom, then does not save token to datastore`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = false)
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(pushNotificationsDataStore, never()).updateData(any())
         }
-    }
 
     @Test
-    fun `given missing uuid, when registering push token called, then generates and stores new uuid `() =
+    fun `given missing uuid, when registering push token called, then generates and stores new uuid`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = false)
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             val uuidCaptor = argumentCaptor<String>()
             verify(appPrefsWrapper).wooCorePushDeviceUUID = uuidCaptor.capture()
@@ -256,8 +236,6 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given registration succeeds, when registering push token, then tracks success event`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-            whenever(siteModel.siteId).thenReturn(SITE_ID)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(siteModel, "token", "stored-uuid"))
                 .thenReturn(WooResult(RETURNED_TOKEN))
@@ -270,7 +248,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(notificationAnalyticsTracker).track(
                 stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS),
@@ -281,13 +259,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     @Test
     fun `given registration fails, when registering push token, then tracks error event`() =
         testBlocking {
-            whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-            whenever(siteModel.siteId).thenReturn(SITE_ID)
             whenever(appPrefsWrapper.wooCorePushDeviceUUID).thenReturn("stored-uuid")
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
-            sut.registerPushTokenInWooCoreSystem("token")
+            sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
             verify(notificationAnalyticsTracker).trackError(
                 stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR),

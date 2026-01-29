@@ -42,7 +42,9 @@ class RegisterDevice @Inject constructor(
         val token = appPrefsWrapper.getFCMToken()
         if (token.isNotEmpty()) {
             if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-                pushNotificationRepository.registerPushTokenInWooCoreSystem(token)
+                selectedSite.getIfExists()?.let { site ->
+                    pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site)
+                }
             } else if (accountStore.hasAccessToken()) {
                 pushNotificationRepository.registerPushTokenInWpComSystem(token)
             }

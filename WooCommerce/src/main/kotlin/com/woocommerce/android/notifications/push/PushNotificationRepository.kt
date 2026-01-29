@@ -11,12 +11,12 @@ import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 class PushNotificationRepository @Inject constructor(
     private val wooPushNotificationsStore: WooPushNotificationsStore,
-    private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val wpComPushNotificationStore: WpComPushNotificationStore,
     private val wooCommerceStore: WooCommerceStore,
@@ -46,53 +45,52 @@ class PushNotificationRepository @Inject constructor(
         wpComPushNotificationStore.registerDevice(token, WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE)
     }
 
-    suspend fun registerPushTokenInWooCoreSystem(token: String) {
+    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel) {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"
         )
-        selectedSite.getIfExists()?.let { site ->
-            val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
-            val result = wooPushNotificationsStore.registerPushToken(
-                site = site,
-                token = token,
-                deviceUuid = uuid
-            )
-            if (!result.isError) {
-                result.model?.let { pushToken ->
-                    notificationAnalyticsTracker.track(
-                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
-                        siteId = site.siteId
-                    )
-                    savePushTokenForSite(site.siteId, pushToken)
-                    disableWpComNotificationsForSite(site.siteId)
-                } ?: run {
-                    val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
-                    WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
-                    notificationAnalyticsTracker.trackError(
-                        stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
-                        siteId = site.siteId,
-                        errorDescription = errorMsg,
-                        errorType = WooErrorType.EMPTY_RESPONSE.name
-                    )
-                }
-            } else {
+
+        val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
+        val result = wooPushNotificationsStore.registerPushToken(
+            site = selectedSite,
+            token = token,
+            deviceUuid = uuid
+        )
+        if (!result.isError) {
+            result.model?.let { pushToken ->
+                notificationAnalyticsTracker.track(
+                    stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
+                    siteId = selectedSite.siteId
+                )
+                savePushTokenForSite(selectedSite.siteId, pushToken)
+                disableWpComNotificationsForSite(selectedSite.siteId)
+            } ?: run {
+                val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
+                WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
                 notificationAnalyticsTracker.trackError(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
-                    siteId = site.siteId,
-                    errorDescription = result.error?.message,
-                    errorType = result.error?.type?.name,
-                    errorCode = result.error?.apiErrorCode
+                    siteId = selectedSite.siteId,
+                    errorDescription = errorMsg,
+                    errorType = WooErrorType.EMPTY_RESPONSE.name
                 )
-                WooLog.w(
-                    WooLog.T.NOTIFICATIONS,
-                    "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
-                )
-                if (!isWpComPushRegistered()) {
-                    registerPushTokenInWpComSystem(token)
-                }
             }
-        } ?: run { WooLog.w(WooLog.T.NOTIFICATIONS, "No selected site, skipping PN registration") }
+        } else {
+            notificationAnalyticsTracker.trackError(
+                stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR,
+                siteId = selectedSite.siteId,
+                errorDescription = result.error?.message,
+                errorType = result.error?.type?.name,
+                errorCode = result.error?.apiErrorCode
+            )
+            WooLog.w(
+                WooLog.T.NOTIFICATIONS,
+                "Woo Core push token registration failed:${result.error?.message}, fallback to WPCom"
+            )
+            if (!isWpComPushRegistered()) {
+                registerPushTokenInWpComSystem(token)
+            }
+        }
     }
 
     private suspend fun disableWpComNotificationsForSite(siteId: Long) {

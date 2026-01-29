@@ -10,6 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -26,6 +27,7 @@ class RegisterDeviceTest : BaseUnitTest() {
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val selectedSite: SelectedSite = mock()
+    private val siteModel: SiteModel = mock()
 
     @Before
     fun setUp() {
@@ -36,10 +38,8 @@ class RegisterDeviceTest : BaseUnitTest() {
     private fun setupDefaultMocks() {
         whenever(appPrefs.getFCMToken()).thenReturn(TEST_TOKEN)
         whenever(accountStore.hasAccessToken()).thenReturn(true)
-        val site = mock<SiteModel>().apply {
-            whenever(this.siteId).thenReturn(TEST_SITE_ID)
-        }
-        whenever(selectedSite.getIfExists()).thenReturn(site)
+        whenever(siteModel.siteId).thenReturn(TEST_SITE_ID)
+        whenever(selectedSite.getIfExists()).thenReturn(siteModel)
     }
 
     private fun createSut() {
@@ -60,7 +60,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut(FORCEFULLY)
 
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -71,7 +71,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut(IF_NEEDED)
 
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -136,7 +136,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut(IF_NEEDED)
 
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -146,7 +146,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut(IF_NEEDED)
 
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
@@ -156,7 +156,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         sut(IF_NEEDED)
 
         verify(pushNotificationRepository, never()).registerPushTokenInWpComSystem(TEST_TOKEN)
-        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(TEST_TOKEN)
+        verify(pushNotificationRepository, never()).registerPushTokenInWooCoreSystem(eq(TEST_TOKEN), any())
     }
 
     @Test
