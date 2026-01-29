@@ -16,24 +16,38 @@ class WooPosEmailReceiptRepository @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion
 ) {
     suspend fun sendReceiptByEmail(orderId: Long, email: String): Result<Unit> = withContext(Dispatchers.IO) {
-        val updateResult = orderStore.updateOrderBillingEmail(selectedSite.get(), orderId, email)
-        if (updateResult.isError) {
-            return@withContext Result.failure(Exception("Failed to update order with email"))
+        return@withContext if (posReceiptsAreEnabled()) {
+            sendPOSReceipt(orderId, email)
+        } else {
+            sendLegacyReceipt(orderId, email)
         }
-
-        return@withContext triggerOrderReceiptSending(orderId)
     }
 
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
     fun posReceiptsAreEnabled(): Boolean = isWooCoreSupportsPOSReceipts()
 
-    private suspend fun triggerOrderReceiptSending(orderId: Long): Result<Unit> {
-        val sendOrderResult = if (posReceiptsAreEnabled()) {
-            orderStore.sendOrderPOSSpecificReceipt(selectedSite.get(), orderId)
+    private suspend fun sendPOSReceipt(orderId: Long, email: String): Result<Unit> {
+        val sendOrderResult = orderStore.sendOrderPOSSpecificReceipt(
+            selectedSite.get(),
+            orderId,
+            email,
+            forceEmailUpdate = true
+        )
+        return if (sendOrderResult.isError) {
+            Result.failure(Exception("Failed to send order receipt"))
         } else {
-            orderStore.sendOrderReceipt(selectedSite.get(), orderId)
+            Result.success(Unit)
         }
+    }
+
+    private suspend fun sendLegacyReceipt(orderId: Long, email: String): Result<Unit> {
+        val updateResult = orderStore.updateOrderBillingEmail(selectedSite.get(), orderId, email)
+        if (updateResult.isError) {
+            return Result.failure(Exception("Failed to update order with email"))
+        }
+
+        val sendOrderResult = orderStore.sendOrderReceipt(selectedSite.get(), orderId)
         return if (sendOrderResult.isError) {
             Result.failure(Exception("Failed to send order receipt"))
         } else {

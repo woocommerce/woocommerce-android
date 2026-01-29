@@ -637,12 +637,13 @@ internal class WCOrderStoreTest {
             val orderModel = OrderTestUtils.generateSampleOrder(42)
             val site = SiteModel().apply { id = orderModel.localSiteId.value }
             val orderId = 42L
+            val email = "test@example.com"
 
             // WHEN
-            orderStore.sendOrderPOSSpecificReceipt(site, orderId)
+            orderStore.sendOrderPOSSpecificReceipt(site, orderId, email, forceEmailUpdate = true)
 
             // THEN
-            verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId)
+            verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId, email, true)
         }
     }
 
