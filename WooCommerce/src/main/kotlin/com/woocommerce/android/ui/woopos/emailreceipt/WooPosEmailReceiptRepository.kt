@@ -31,7 +31,8 @@ class WooPosEmailReceiptRepository @Inject constructor(
         val sendOrderResult = orderStore.sendOrderPOSSpecificReceipt(
             selectedSite.get(),
             orderId,
-            email
+            email,
+            forceEmailUpdate = true
         )
         return if (sendOrderResult.isError) {
             Result.failure(Exception("Failed to send order receipt"))

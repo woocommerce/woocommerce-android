@@ -95,14 +95,14 @@ class WooPosEmailReceiptRepositoryTest {
         val email = "test@example.com"
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email)).thenReturn(WooPayload(Unit))
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(WooPayload(Unit))
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
-        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email)
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)
         verify(orderStore, never()).updateOrderBillingEmail(siteModel, orderId, email)
     }
 
@@ -131,7 +131,7 @@ class WooPosEmailReceiptRepositoryTest {
         val email = "test@example.com"
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email)).thenReturn(
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(
             WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.TIMEOUT))
         )
 

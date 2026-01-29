@@ -1074,7 +1074,7 @@ class OrderRestClient @Inject constructor(
         site: SiteModel,
         orderId: Long,
         email: String,
-        forceEmailUpdate: Boolean = true
+        forceEmailUpdate: Boolean
     ): WooPayload<Unit> {
         val response = wooNetwork.executePostGsonRequest(
             site = site,

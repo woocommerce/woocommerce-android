@@ -640,7 +640,7 @@ internal class WCOrderStoreTest {
             val email = "test@example.com"
 
             // WHEN
-            orderStore.sendOrderPOSSpecificReceipt(site, orderId, email)
+            orderStore.sendOrderPOSSpecificReceipt(site, orderId, email, forceEmailUpdate = true)
 
             // THEN
             verify(orderRestClient).sendOrderPOSSpecificReceipt(site, orderId, email, true)
