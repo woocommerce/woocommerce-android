@@ -787,6 +787,16 @@ class WCOrderStore @Inject internal constructor(
         orderId
     )
 
+    suspend fun updateOrderBillingEmail(
+        site: SiteModel,
+        orderId: Long,
+        email: String
+    ) = wcOrderRestClient.updateOrderBillingEmail(
+        site,
+        orderId,
+        email
+    )
+
     private suspend fun optimisticallyUpdateOrder(
         orderId: Long,
         localSiteId: LocalId,

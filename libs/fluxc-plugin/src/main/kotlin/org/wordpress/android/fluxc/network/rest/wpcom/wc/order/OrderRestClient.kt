@@ -1086,6 +1086,28 @@ class OrderRestClient @Inject constructor(
         return response.toWooPayload { it }
     }
 
+    suspend fun updateOrderBillingEmail(
+        site: SiteModel,
+        orderId: Long,
+        email: String
+    ): WooPayload<Unit> {
+        val url = WOOCOMMERCE.orders.id(orderId).pathV3
+        val body = mapOf(
+            "billing" to mapOf(
+                "email" to email
+            )
+        )
+
+        val response = wooNetwork.executePutGsonRequest(
+            site = site,
+            path = url,
+            clazz = Unit::class.java,
+            body = body
+        )
+
+        return response.toWooPayload { it }
+    }
+
     private suspend fun doFetchOrderCount(site: SiteModel, filterByStatus: String?): FetchOrdersCountResponsePayload {
         val url = WOOCOMMERCE.reports.orders.totals.pathV3
 
