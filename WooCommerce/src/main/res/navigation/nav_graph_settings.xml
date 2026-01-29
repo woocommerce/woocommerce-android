@@ -62,6 +62,9 @@
         <action
             android:id="@+id/action_mainSettingsFragment_to_pluginsFragment"
             app:destination="@id/pluginsFragment" />
+        <action
+            android:id="@+id/action_mainSettingsFragment_to_wooPushNotificationsIntroductionDialog"
+            app:destination="@id/wooPushNotificationsIntroductionDialog" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -207,4 +210,8 @@
         android:id="@+id/apiFakerHostFragment"
         android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
         android:label="ApiFakerHostFragment" />
+    <dialog
+        android:id="@+id/wooPushNotificationsIntroductionDialog"
+        android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
+        android:label="WooPushNotificationsIntroductionDialog" />
 </navigation>
