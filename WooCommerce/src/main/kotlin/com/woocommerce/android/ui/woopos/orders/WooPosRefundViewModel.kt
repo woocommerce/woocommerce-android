@@ -37,7 +37,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val getPaymentMethod: WooPosGetPaymentMethod
 ) : ViewModel() {
 
     @AssistedFactory
@@ -144,6 +145,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 taxRoundAtSubtotal = checkNotNull(cachedTaxRoundAtSubtotal) {
                     "cachedTaxRoundAtSubtotal should not be null when building content state"
                 },
+                paymentMethod = getPaymentMethod(order)
             )
         }
     }
@@ -153,6 +155,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         refundableItems: List<WooPosRefundableItem>,
         numberOfDecimalPoints: Int,
         taxRoundAtSubtotal: Boolean,
+        paymentMethod: String,
         selectedItemIds: Set<String> = refundableItems.map { it.uniqueId }.toSet()
     ): WooPosRefundState.Content {
         val selectedItems = refundableItems.filter { it.uniqueId in selectedItemIds }
@@ -175,7 +178,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedSubtotal = PriceUtils.formatCurrency(subtotal, order.currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(taxes, order.currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(total, order.currency, currencyFormatter),
-            paymentMethod = "TEST: payment card ••••1456", // TBD: use real payment method value
+            paymentMethod = paymentMethod,
             step = WooPosRefundState.Content.RefundStep.SelectItems
         )
     }
@@ -267,6 +270,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             refundableItems = currentState.refundableItems,
             numberOfDecimalPoints = numberOfDecimalPoints,
             taxRoundAtSubtotal = taxRoundAtSubtotal,
+            paymentMethod = currentState.paymentMethod,
             selectedItemIds = newSelectedIds
         ).copy(step = currentState.step)
     }
