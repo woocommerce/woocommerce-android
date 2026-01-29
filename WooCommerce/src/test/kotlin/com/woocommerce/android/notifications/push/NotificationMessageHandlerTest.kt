@@ -142,11 +142,11 @@ class NotificationMessageHandlerTest {
     @Test
     fun `when the user id does not match, then do not process the notification`() = runTest {
         whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
-        val payload = mapOf("type" to "new_order", "user" to "67890", "note_id" to "123")
+        val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
 
         notificationMessageHandler.onNewMessageReceived(payload)
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(
+        verify(wooLog).e(
             eq(WooLog.T.NOTIFICATIONS),
             eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
         )
