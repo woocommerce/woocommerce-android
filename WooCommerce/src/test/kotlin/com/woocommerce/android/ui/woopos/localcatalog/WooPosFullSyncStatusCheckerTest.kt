@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
@@ -37,6 +38,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
     private val time: DateTimeProvider = mock()
 
     private val siteModel = SiteModel().apply {
@@ -56,6 +58,7 @@ class WooPosFullSyncStatusCheckerTest {
         prefsRepo = prefsRepo,
         checkCatalogSizeAction = checkCatalogSizeAction,
         isLocalCatalogSupported = isLocalCatalogSupported,
+        fileApproachEnabled = fileApproachEnabled,
         wooPosLogWrapper = wooPosLogWrapper,
         time = time
     )
@@ -68,6 +71,7 @@ class WooPosFullSyncStatusCheckerTest {
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(time.now()).thenReturn(NOW)
+        whenever(fileApproachEnabled()).thenReturn(false)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
             .thenReturn(Result.success(15))
         whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -340,5 +344,25 @@ class WooPosFullSyncStatusCheckerTest {
 
             // THEN
             verify(checkCatalogSizeAction, never()).execute(any(), any(), any())
+        }
+
+    @Test
+    fun `given file-based sync enabled, when checkSyncRequirement, then should skip catalog size check`() =
+        runTest {
+            // GIVEN
+            whenever(fileApproachEnabled()).thenReturn(true)
+            whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
+            whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
+                .thenReturn(Result.success(0))
+
+            val sut = createSut()
+
+            // WHEN
+            sut.checkSyncRequirement()
+
+            // THEN
+            verify(checkCatalogSizeAction, never()).execute(any(), any(), any())
+            verify(prefsRepo, never()).disablePeriodicSyncForSite(any())
         }
 }

@@ -300,7 +300,8 @@ class DashboardViewModel @Inject constructor(
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
                 val enablePnUiAvailable = shouldShowEnablePushNotificationsUi()
-                val showBanner = !enablePnUiAvailable && pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
+                val showBanner = !enablePnUiAvailable &&
+                    pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId) == Status.UNREGISTERED &&
                     durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
