@@ -46,12 +46,12 @@ class RegisterDevice @Inject constructor(
             } else if (accountStore.hasAccessToken()) {
                 pushNotificationRepository.registerPushTokenInWpComSystem(token)
             }
+            WooLog.d(
+                WooLog.T.NOTIFICATIONS,
+                "Updated push notification registration status: " +
+                    "${pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)}"
+            )
         }
-        WooLog.d(
-            WooLog.T.NOTIFICATIONS,
-            "Updated push notification registration status: " +
-                "${pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId)}"
-        )
     }
 
     enum class Mode {
