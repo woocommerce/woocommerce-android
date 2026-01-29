@@ -55,6 +55,7 @@
     <string name="set_up_now">Set up now</string>
     <string name="offline_message">Offline \u2014 using cached data</string>
     <string name="offline_error">Your network is unavailable. Check your data or wifi connection.</string>
+    <!-- Error message displayed as a toast notification in WooCommerce POS when pull-to-refresh fails due to network connectivity issues while syncing product data or search results. -->
     <string name="woo_pos_ptr_offline_error">No internet connection. Please check your network and try again.</string>
     <string name="product">Product</string>
     <string name="today">Today</string>
@@ -2316,6 +2317,7 @@
     <string name="settings_about_recommend_app_subject">WooCommerce</string>
     <string name="settings_about_recommend_app_message">Hey! Here is a link to download the WooCommerce app. I\'m really enjoying it and thought you might too. %1$s</string>
     <string name="dev_options">Developer Options</string>
+    <!-- This text appears as the title in the top navigation bar of a developer options screen that allows developers to toggle various feature flags on/off, and also as a menu item label in the main developer options list that navigates to this feature flags screen. -->
     <string name="dev_feature_flags">Feature Flags</string>
     <string name="restart">Restart</string>
     <string name="settings_account">Account Settings</string>
@@ -3820,9 +3822,12 @@
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
+    <!-- This text appears as a label for an input field on the WooPos refund reason screen, where users enter the reason for refunding an order. It serves as the field label to guide users on what information to provide in the text input area. -->
     <string name="woopos_orders_refund_reason_placeholder">Reason for refunding order</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
+    <!-- This text appears as a button label on the WooPos refund reason screen when the input field is empty, allowing users to add a refund reason for an order. -->
     <string name="woopos_orders_refund_reason_add">Add</string>
+    <!-- Button text that appears on the refund reason entry screen in the WooPos (Point of Sale) system. The button displays 'Save' when the user has entered a refund reason and allows them to save and proceed with the refund process. -->
     <string name="woopos_orders_refund_reason_save">Save</string>
     <string name="woopos_orders_edit_refund">Edit refund</string>
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
@@ -4359,11 +4364,14 @@
     <string name="about_automattic_logo_description">Automattic logo</string>
     <string name="about_automattic_back_icon_description">Back icon</string>
     <string name="about_automattic_app_icon_description">App icon</string>
+    <!-- This text appears as the title of a dialog box that is displayed when a user's account access is restricted due to age eligibility requirements. The dialog is shown as part of the WooCommerce app's age verification system to inform users that their account has limited access. -->
     <string name="age_restriction_dialog_title">Account Access Restricted</string>
+    <!-- This message appears in a dialog box shown to users whose Google Account indicates they need parental permission to use the WooCommerce app, explaining how a parent or guardian can grant access through their Google account. -->
     <string name="age_restriction_supervised_user_account_dialog_message">Your Google Account settings indicate that you need a parent or guardian\'s permission to continue. They can grant access using their Google account to get you back online.</string>
+    <!-- This message appears in a dialog that blocks app access when the user's Google Account indicates they are under 13 years old, explaining they don't meet the minimum age requirement for WooCommerce's terms of service. -->
     <string name="age_restriction_user_below_tos_minimum_age_dialog_message">Your Google Account indicates that you are under 13 years old, which is below the minimum age allowed to use the WooCommerce platform under its terms of service.</string>
 
-    <!-- Woo POS Promo Carousel -->
+    <!-- This text appears as the main title in a promotional screen that introduces WooCommerce's Point of Sale feature to users. It's displayed prominently at the top of a carousel-style promotional interface that showcases the POS functionality. -->
     <string name="woo_pos_promo_title">Point of Sale from WooCommerce</string>
     <string name="woo_pos_promo_page1_description">Take payments in person and connect everything back to your store — all through the WooCommerce mobile app.</string>
     <string name="woo_pos_promo_page2_description">Real-time syncing for inventory, customer, and order data between online and in-person channels.</string>
