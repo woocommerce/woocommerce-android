@@ -51,12 +51,11 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     val openUrl = _openUrl.asSharedFlow()
 
     private lateinit var softwareUpdateAvailabilityJob: Job
-    private lateinit var batteryStatusJob: Job
+    private var batteryStatusJob: Job? = null
     private var currentSoftwareUpdateAvailable = false
 
     init {
         listenForSoftwareUpdateAvailability()
-        listenForBatteryStatus()
         observeCardReaderStatus()
     }
 
@@ -113,6 +112,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     }
 
     private fun listenForBatteryStatus() {
+        if (batteryStatusJob?.isActive == true) return
         batteryStatusJob = viewModelScope.launch {
             cardReaderFacade.batteryStatus.collect { status ->
                 if (status is CardReaderBatteryStatus.StatusChanged) {
@@ -132,6 +132,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
             cardReaderFacade.readerStatus.collect { status ->
                 _uiState.value = when (status) {
                     is CardReaderStatus.Connected -> {
+                        listenForBatteryStatus()
                         WooPosSettingsHardwareCardReaderUiState.Connected(
                             readerName = status.cardReader.id ?: resourceProvider.getString(
                                 R.string.woopos_settings_card_reader_unknown_reader
@@ -144,6 +145,7 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
 
                     is CardReaderStatus.Connecting,
                     is CardReaderStatus.NotConnected -> {
+                        cancelBatteryStatusJob()
                         currentSoftwareUpdateAvailable = false
                         WooPosSettingsHardwareCardReaderUiState.Disconnected
                     }
@@ -155,5 +157,10 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private fun cancelBatteryStatusJob() {
+        batteryStatusJob?.cancel()
+        batteryStatusJob = null
     }
 }
