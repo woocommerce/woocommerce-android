@@ -560,7 +560,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to SelectItems`() =
+    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -580,12 +580,11 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
-    fun `given content state at SelectItems step, when DialogDismissed event, then step remains at SelectItems`() =
+    fun `given content state at SelectItems step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -603,8 +602,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
@@ -677,7 +675,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to SelectItems`() =
+    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -698,8 +696,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
