@@ -86,6 +86,9 @@
         <action
             android:id="@+id/action_dashboard_to_inboxFragment"
             app:destination="@id/inboxFragment" />
+        <action
+            android:id="@+id/action_dashboard_to_wooPushNotificationsIntroductionDialog"
+            app:destination="@id/wooPushNotificationsIntroductionDialog" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -865,4 +868,8 @@
             android:name="positiveButtonLabel"
             app:argType="integer" />
     </dialog>
+    <dialog
+        android:id="@+id/wooPushNotificationsIntroductionDialog"
+        android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
+        android:label="WooPushNotificationsIntroductionDialog" />
 </navigation>
