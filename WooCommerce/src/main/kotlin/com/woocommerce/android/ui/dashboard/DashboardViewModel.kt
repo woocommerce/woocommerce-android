@@ -297,8 +297,9 @@ class DashboardViewModel @Inject constructor(
             .map {
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner = pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
-                    durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
+                val showBanner =
+                    pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId) == Status.UNREGISTERED &&
+                        durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
                     onDismiss = {

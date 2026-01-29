@@ -2,9 +2,11 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -18,6 +20,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val prefsRepo: WooPosPreferencesRepository,
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val time: DateTimeProvider,
 ) {
@@ -36,15 +39,10 @@ class WooPosFullSyncStatusChecker @Inject constructor(
 
         val productCount = localCatalogStore.getProductCount(site.localId()).getOrElse { 0 }
         val variationsCount = localCatalogStore.getVariationCount(site.localId()).getOrElse { 0 }
-        val itemsCount = productCount + variationsCount
-        if (productCount == 0 || itemsCount >= WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC) {
-            val size = checkCatalogSizeAction
-                .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
 
-            if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
-                prefsRepo.disablePeriodicSyncForSite(site.localId())
-                return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
-            }
+        if (!fileApproachEnabled()) {
+            val catalogTooLarge = checkCatalogSizeIfNeeded(productCount, variationsCount, site)
+            if (catalogTooLarge != null) return catalogTooLarge
         }
 
         val lastFullSyncTimestamp = syncTimestampManager.getFullSyncLastCompletedTimestamp()
@@ -84,6 +82,24 @@ class WooPosFullSyncStatusChecker @Inject constructor(
                 WooPosFullSyncRequirement.NonBlockingRequired(lastFullSyncTimestamp, isFullSyncOverdue)
             }
         }
+    }
+
+    private suspend fun checkCatalogSizeIfNeeded(
+        productCount: Int,
+        variationsCount: Int,
+        site: SiteModel,
+    ): WooPosFullSyncRequirement.LocalCatalogDisabled? {
+        val itemsCount = productCount + variationsCount
+        if (productCount == 0 || itemsCount >= WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC) {
+            val size = checkCatalogSizeAction
+                .execute(site, maxTotalItems = WooPosLocalCatalogSyncRepository.MAX_TOTAL_ITEMS_FULL_SYNC)
+
+            if (size is WooPosCheckCatalogSizeAction.WooPosCheckCatalogSizeResult.CatalogTooLarge) {
+                prefsRepo.disablePeriodicSyncForSite(site.localId())
+                return WooPosFullSyncRequirement.LocalCatalogDisabled("Catalog too large - ${size.error}")
+            }
+        }
+        return null
     }
 
     companion object {
