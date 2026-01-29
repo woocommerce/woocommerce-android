@@ -66,6 +66,10 @@ fun WooPosIssueRefundDialog(
             factory.create(orderId)
         }
 
+    LaunchedEffect(Unit) {
+        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+    }
+
     refundReasonUpdate?.let { reason ->
         LaunchedEffect(reason) {
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(reason))

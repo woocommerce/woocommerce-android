@@ -14,6 +14,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,13 +49,11 @@ class WooPosRefundViewModel @AssistedInject constructor(
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
     private var currentOrder: Order? = null
-
-    init {
-        loadRefundableItems()
-    }
+    private var loadingJob: Job? = null
 
     private fun loadRefundableItems() {
-        viewModelScope.launch {
+        loadingJob?.cancel()
+        loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
             val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
@@ -150,6 +149,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     fun onUIEvent(event: WooPosRefundUIEvent) {
         when (event) {
+            WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
             WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
@@ -159,14 +159,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun handleDialogDismissed() {
-        val currentState = _state.value
-        if (currentState is WooPosRefundState.Content &&
-            currentState.step != WooPosRefundState.Content.RefundStep.Processing
-        ) {
-            _state.value = currentState.copy(
-                step = WooPosRefundState.Content.RefundStep.SelectItems
-            )
-        }
+        _state.value = WooPosRefundState.Loading
+        loadingJob?.cancel()
     }
 
     private fun handleContentStateEvent(event: WooPosRefundUIEvent, currentState: WooPosRefundState.Content) {
@@ -183,6 +177,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
             WooPosRefundUIEvent.DialogDismissed -> Unit
+            WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
         }
     }
 
