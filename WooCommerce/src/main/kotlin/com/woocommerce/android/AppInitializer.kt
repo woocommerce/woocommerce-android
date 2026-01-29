@@ -37,6 +37,7 @@ import com.woocommerce.android.tools.SiteConnectionType.ApplicationPasswords
 import com.woocommerce.android.tools.connectionType
 import com.woocommerce.android.tracker.SendTelemetry
 import com.woocommerce.android.tracker.TrackStoreSnapshot
+import com.woocommerce.android.ui.ageeligibility.AgeEligibilityChecker
 import com.woocommerce.android.ui.appwidgets.getWidgetName
 import com.woocommerce.android.ui.blaze.notification.BlazeCampaignsObserver
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -148,6 +149,8 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
     @Inject lateinit var prefs: AppPrefs
 
     @Inject lateinit var getWooVersion: GetWooCorePluginCachedVersion
+
+    @Inject lateinit var ageEligibilityChecker: AgeEligibilityChecker
 
     @Inject
     @AppCoroutineScope
@@ -334,6 +337,9 @@ class AppInitializer @Inject constructor() : ApplicationLifecycleListener {
                     }.awaitAll()
                 }
             }
+        }
+        appCoroutineScope.launch {
+            ageEligibilityChecker.checkAge()
         }
     }
 

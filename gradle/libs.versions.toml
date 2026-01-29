@@ -70,6 +70,7 @@ google-mlkit-subject-segmentation = '16.0.0-beta1'
 google-mlkit-text-recognition = '16.0.1'
 google-play-app-update = '2.1.0'
 google-play-review = '2.0.2'
+google-play-ageSignals = "0.0.2"
 google-play-services-auth = '21.4.0'
 google-play-services-code-scanner = '16.1.0'
 google-play-services-wearable = '19.0.0'
@@ -228,6 +229,7 @@ google-mlkit-text-recognition-chinese = { group = "com.google.android.gms", name
 google-mlkit-text-recognition-korean = { group = "com.google.android.gms", name = "play-services-mlkit-text-recognition-korean", version.ref = "google-mlkit-text-recognition" }
 google-play-app-update = { group = "com.google.android.play", name = "app-update", version.ref = "google-play-app-update" }
 google-play-review = { group = "com.google.android.play", name = "review", version.ref = "google-play-review" }
+google-play-ageSignals = { module = "com.google.android.play:age-signals", version.ref = "google-play-ageSignals" }
 google-play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "google-play-services-auth" }
 google-play-services-code-scanner = { group = "com.google.android.gms", name = "play-services-code-scanner", version.ref = "google-play-services-code-scanner" }
 google-play-services-wearable = { group = "com.google.android.gms", name = "play-services-wearable", version.ref = "google-play-services-wearable" }
