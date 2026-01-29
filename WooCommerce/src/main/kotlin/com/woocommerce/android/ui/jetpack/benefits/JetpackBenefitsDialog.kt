@@ -91,7 +91,7 @@ class JetpackBenefitsDialog : DialogFragment() {
     override fun onStart() {
         super.onStart()
         if (isTabletLandscape()) {
-            requireDialog().window!!.setLayout(
+            requireDialog().window?.setLayout(
                 (DisplayUtils.getWindowPixelWidth(requireContext()) * TABLET_LANDSCAPE_WIDTH_RATIO).toInt(),
                 (DisplayUtils.getWindowPixelHeight(requireContext()) * TABLET_LANDSCAPE_HEIGHT_RATIO).toInt()
             )
