@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.dashboard.pushnotifications
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -29,6 +30,7 @@ import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 @Composable
 fun DashboardPushNotificationsCard(
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
     onHideClicked: () -> Unit,
 ) {
     val menu = DashboardWidgetMenu(
@@ -39,6 +41,7 @@ fun DashboardPushNotificationsCard(
 
     Row(
         modifier = modifier
+            .clickable(onClick = onClick)
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.woo_gray_5),
