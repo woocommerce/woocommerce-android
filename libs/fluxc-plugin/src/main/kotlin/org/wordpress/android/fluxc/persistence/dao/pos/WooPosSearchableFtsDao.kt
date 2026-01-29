@@ -31,22 +31,24 @@ abstract class WooPosSearchableFtsDao {
     abstract suspend fun deleteVariations(localSiteId: String, variationIds: List<String>)
 
     /**
-     * Search products and variations with BM25 ranking.
+     * Search products and variations with simple ranking.
      *
-     * Column weights (lower = more important):
-     * - localSiteId: 0 (not searchable, just for filtering)
-     * - itemId: 0 (not searchable)
-     * - parentProductId: 0 (not searchable)
-     * - name: 1 (highest priority)
-     * - sku: 2 (medium priority)
-     * - barcode: 2 (medium priority)
-     * - attributeValues: 3 (lower priority)
+     * Ranking:
+     * 1. Products appear before variations (parentProductId = '' first)
+     * 2. Shorter names appear first (more specific matches)
+     *
+     * This ranking is fast because it only uses values already in each row,
+     * avoiding expensive LIKE scans that would defeat FTS optimization.
+     *
+     * @param query FTS query with wildcards (e.g., "shirt*" or "blue* shirt*")
      */
     @Query(
         "SELECT * FROM PosSearchableFts " +
             "WHERE localSiteId = :localSiteId " +
             "AND PosSearchableFts MATCH :query " +
-            "ORDER BY bm25(PosSearchableFts, 0, 0, 0, 1, 2, 2, 3) " +
+            "ORDER BY " +
+            "CASE WHEN parentProductId = '' THEN 0 ELSE 1 END, " +
+            "LENGTH(name) " +
             "LIMIT :limit OFFSET :offset"
     )
     abstract suspend fun search(

@@ -428,6 +428,43 @@ class WooPosSearchableFtsDaoTest {
         assertThat(results.map { it.itemId }).containsExactlyInAnyOrder("1", "2")
     }
 
+    @Test
+    fun `when searching, then products are ranked before variations`() = runTest {
+        // GIVEN
+        val entries = listOf(
+            createVariation(itemId = "10", parentProductId = "1", name = "T-Shirt", attributeValues = "blue"),
+            createProduct(itemId = "1", name = "T-Shirt"),
+            createVariation(itemId = "11", parentProductId = "1", name = "T-Shirt", attributeValues = "red"),
+        )
+        sut.insertAll(entries)
+
+        // WHEN
+        val results = sut.search(LOCAL_SITE_ID, "shirt*", limit = 10, offset = 0)
+
+        // THEN
+        assertThat(results).hasSize(3)
+        assertThat(results[0].itemId).isEqualTo("1")
+        assertThat(results[0].parentProductId).isEmpty()
+    }
+
+    @Test
+    fun `when searching, then shorter names are ranked first`() = runTest {
+        // GIVEN
+        val entries = listOf(
+            createProduct(itemId = "1", name = "Blue T-Shirt Extra Long Name"),
+            createProduct(itemId = "2", name = "Blue T-Shirt"),
+            createProduct(itemId = "3", name = "Blue"),
+        )
+        sut.insertAll(entries)
+
+        // WHEN
+        val results = sut.search(LOCAL_SITE_ID, "blue*", limit = 10, offset = 0)
+
+        // THEN
+        assertThat(results).hasSize(3)
+        assertThat(results.map { it.itemId }).containsExactly("3", "2", "1")
+    }
+
     private fun createProduct(
         siteId: String = LOCAL_SITE_ID,
         itemId: String,

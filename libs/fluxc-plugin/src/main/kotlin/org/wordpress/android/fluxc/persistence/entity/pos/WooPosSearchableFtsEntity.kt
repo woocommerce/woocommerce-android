@@ -11,9 +11,6 @@ import androidx.room.FtsOptions
  * Room's @Fts4 annotation officially supports only String fields.
  * See: https://developer.android.com/reference/androidx/room/Fts4
  *
- * Separate columns enable BM25 column weighting for better relevance ranking.
- * Use bm25(PosSearchableFts, weightName, weightSku, weightBarcode, weightAttributes) in queries.
- *
  * - [parentProductId]: Empty string "" means this is a product, non-empty means it's a variation
  *   (containing the parent product ID). We use empty string instead of nullable because
  *   FTS virtual tables handle NULL inconsistently.
