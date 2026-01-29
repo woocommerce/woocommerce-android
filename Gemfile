@@ -11,6 +11,7 @@ gem 'rubocop', '~> 1.65'
 ### Fastlane Plugins
 
 gem 'fastlane-plugin-wpmreleasetoolkit', '~> 13.8'
+gem 'txcontext', git: 'https://github.com/iangmaia/txcontext'
 # gem 'fastlane-plugin-wpmreleasetoolkit', path: '../../release-toolkit'
 # gem 'fastlane-plugin-wpmreleasetoolkit', git: 'https://github.com/wordpress-mobile/release-toolkit', branch: ''
 
