@@ -326,7 +326,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = WooPosRefundState.RefundSuccess(
                     orderId = contentState.orderId,
                     orderNumber = contentState.orderNumber,
-                    refundedAmount = contentState.formattedTotal
+                    refundedAmount = contentState.formattedTotal,
+                    paymentMethod = contentState.paymentMethod
                 )
             }
         }
