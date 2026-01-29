@@ -15,17 +15,17 @@ class PushNotificationRegistrationStatus @Inject constructor(
         val isWooRegistered = siteId != null && pushNotificationRepository.isWooPushTokenRegisteredForSite(siteId)
         val isWpComRegistered = wpComPushServerId.isNotNullOrEmpty()
         return when {
-            isWooRegistered && isWpComRegistered -> Status.REGISTERED_IN_BOTH
-            isWooRegistered -> Status.WOO_REGISTERED
-            isWpComRegistered -> Status.WPCOM_REGISTERED
+            isWooRegistered && isWpComRegistered -> Status.REGISTERED_BOTH
+            isWooRegistered -> Status.REGISTERED_WOO_ONLY
+            isWpComRegistered -> Status.REGISTERED_WPCOM_ONLY
             else -> Status.UNREGISTERED
         }
     }
 
     enum class Status {
-        WOO_REGISTERED,
-        WPCOM_REGISTERED,
-        REGISTERED_IN_BOTH, // Registered in both WP.com and Woo Core PN systems
+        REGISTERED_WOO_ONLY,
+        REGISTERED_WPCOM_ONLY,
+        REGISTERED_BOTH, // Registered in both WP.com and Woo Core PN systems
         UNREGISTERED
     }
 }

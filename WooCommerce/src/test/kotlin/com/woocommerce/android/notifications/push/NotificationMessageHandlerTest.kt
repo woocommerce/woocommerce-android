@@ -166,7 +166,7 @@ class NotificationMessageHandlerTest {
 
     @Test
     fun `given woo push registered, when wpcom notification received, then skip notification`() = runTest {
-        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.WOO_REGISTERED)
+        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
 
         // WPCOM notifications have remoteNoteId > 0
         notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
