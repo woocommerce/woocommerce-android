@@ -22,6 +22,7 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
         val site = selectedSite.getIfExists() ?: return false
         if (site.connectionType != SiteConnectionType.ApplicationPasswords) return false
 
-        return pushNotificationRegistrationStatus() != Status.REGISTERED
+        return pushNotificationRegistrationStatus(site.siteId) != Status.WOO_REGISTERED ||
+            pushNotificationRegistrationStatus(site.siteId) != Status.REGISTERED_IN_BOTH
     }
 }
