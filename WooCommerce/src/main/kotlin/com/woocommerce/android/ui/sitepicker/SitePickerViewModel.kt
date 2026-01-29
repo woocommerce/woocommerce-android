@@ -531,7 +531,7 @@ class SitePickerViewModel @Inject constructor(
 
                                     trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                                     appPrefsWrapper.removeLoginSiteAddress()
-                                    registerDevice(RegisterDevice.Mode.FORCEFULLY)
+                                    registerDevice(RegisterDevice.Mode.IF_NEEDED)
                                     triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                                 },
                                 onFailure = {
