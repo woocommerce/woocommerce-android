@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.payments.cardreader.onboarding.PluginType.STRIPE_EXTENSION_GATEWAY
@@ -50,10 +51,12 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
     val openUrl = _openUrl.asSharedFlow()
 
     private lateinit var softwareUpdateAvailabilityJob: Job
+    private lateinit var batteryStatusJob: Job
     private var currentSoftwareUpdateAvailable = false
 
     init {
         listenForSoftwareUpdateAvailability()
+        listenForBatteryStatus()
         observeCardReaderStatus()
     }
 
@@ -106,6 +109,21 @@ class WooPosSettingsHardwareCardReaderViewModel @Inject constructor(
             _uiState.value = currentState.copy(
                 isSoftwareUpdateAvailable = currentSoftwareUpdateAvailable
             )
+        }
+    }
+
+    private fun listenForBatteryStatus() {
+        batteryStatusJob = viewModelScope.launch {
+            cardReaderFacade.batteryStatus.collect { status ->
+                if (status is CardReaderBatteryStatus.StatusChanged) {
+                    val currentState = _uiState.value
+                    if (currentState is WooPosSettingsHardwareCardReaderUiState.Connected) {
+                        _uiState.value = currentState.copy(
+                            batteryLevel = status.batteryLevel
+                        )
+                    }
+                }
+            }
         }
     }
 
