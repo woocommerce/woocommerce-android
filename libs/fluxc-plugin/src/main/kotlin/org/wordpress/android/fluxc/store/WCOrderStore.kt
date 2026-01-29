@@ -783,7 +783,7 @@ class WCOrderStore @Inject internal constructor(
         site: SiteModel,
         orderId: Long,
         email: String,
-        forceEmailUpdate: Boolean = true
+        forceEmailUpdate: Boolean
     ) = wcOrderRestClient.sendOrderPOSSpecificReceipt(
         site,
         orderId,

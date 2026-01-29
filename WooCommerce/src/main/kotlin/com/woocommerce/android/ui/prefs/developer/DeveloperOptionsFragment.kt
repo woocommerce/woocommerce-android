@@ -68,6 +68,12 @@ class DeveloperOptionsFragment : BaseFragment() {
                         DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToApiFaker()
                     )
                 }
+
+                is DeveloperOptionsViewModel.DeveloperOptionsEvents.OpenFeatureFlags -> {
+                    findNavController().navigate(
+                        DeveloperOptionsFragmentDirections.actionDeveloperOptionsFragmentToDevFeatureFlagsFragment()
+                    )
+                }
             }
         }
     }
