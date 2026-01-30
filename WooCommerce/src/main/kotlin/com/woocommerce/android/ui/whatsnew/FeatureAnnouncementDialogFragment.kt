@@ -1,10 +1,12 @@
 package com.woocommerce.android.ui.whatsnew
 
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.net.Uri
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -40,7 +42,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
         viewModel.setAnnouncementData(navArgs.announcement)
         setupView(binding)
-        setupObservers()
+        setupObservers(binding)
     }
 
     override fun onStart() {
@@ -52,11 +54,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
     }
 
     private fun setupView(binding: FeatureAnnouncementDialogFragmentBinding) {
-        binding.closeFeatureAnnouncementButton.setOnClickListener {
-            viewModel.handleAnnouncementIsViewed()
-            findNavController().popBackStack()
-        }
-
         listAdapter = FeatureAnnouncementListAdapter()
         binding.featureList.adapter = listAdapter
         binding.featureList.layoutManager = LinearLayoutManager(activity)
@@ -68,13 +65,44 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         super.onDismiss(dialog)
     }
 
-    private fun setupObservers() {
+    private fun setupObservers(binding: FeatureAnnouncementDialogFragmentBinding) {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.announcement.takeIfNotEqualTo(old?.announcement) {
-                it?.let {
-                    listAdapter.submitList(it.features)
+                it?.let { announcement ->
+                    val hasSingleFeature = announcement.features.size == 1
+                    val hasDetailsUrl = announcement.detailsUrl.isNotEmpty()
+                    if (hasSingleFeature && hasDetailsUrl) {
+                        binding.closeFeatureAnnouncementButton.text = getString(R.string.learn_more)
+                        binding.closeFeatureAnnouncementButton.setOnClickListener {
+                            openDetailsUrl(announcement.detailsUrl)
+                        }
+                        binding.dismissFeatureAnnouncementButton.visibility = View.VISIBLE
+                        binding.dismissFeatureAnnouncementButton.setOnClickListener {
+                            viewModel.handleAnnouncementIsViewed()
+                            findNavController().popBackStack()
+                        }
+                        listAdapter.submitList(announcement.features.map { feature ->
+                            feature.copy(detailsUrl = "")
+                        })
+                    } else {
+                        binding.dismissFeatureAnnouncementButton.visibility = View.GONE
+                        binding.dismissFeatureAnnouncementButton.setOnClickListener(null)
+                        binding.closeFeatureAnnouncementButton.text = getString(R.string.continue_button)
+                        binding.closeFeatureAnnouncementButton.setOnClickListener {
+                            viewModel.handleAnnouncementIsViewed()
+                            findNavController().popBackStack()
+                        }
+                        listAdapter.submitList(announcement.features)
+                    }
                 }
             }
+        }
+    }
+
+    private fun openDetailsUrl(url: String) {
+        runCatching {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            startActivity(intent)
         }
     }
 }

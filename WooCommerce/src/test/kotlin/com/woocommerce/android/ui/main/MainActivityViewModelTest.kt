@@ -120,25 +120,29 @@ class MainActivityViewModelTest : BaseUnitTest() {
         minimumAppVersion = "14.2",
         maximumAppVersion = "14.3",
         appVersionTargets = listOf("alpha-centauri-1", "alpha-centauri-2"),
+        detailsUrl = "https://woocommerce.com/mobile/pos/learn-more",
         isLocalized = true,
         features = listOf(
             FeatureAnnouncementItem(
                 title = "Super Publishing",
                 subtitle = "Super Publishing is here! Publish using the power of your mind.",
                 iconBase64 = "",
-                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-personal.png"
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-personal.png",
+                detailsUrl = "https://woocommerce.com/mobile/pos/learn-more"
             ),
             FeatureAnnouncementItem(
                 title = "Amazing Feature",
                 subtitle = "That's right! They are right in the app! They require pets right now.",
                 iconBase64 = "",
-                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-premium.png"
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-premium.png",
+                detailsUrl = "https://woocommerce.com/mobile/pos/learn-more"
             ),
             FeatureAnnouncementItem(
                 title = "Third feature",
                 subtitle = "Sorry we forgot to include an image here!",
                 iconBase64 = "",
-                iconUrl = ""
+                iconUrl = "",
+                detailsUrl = ""
             )
         )
     )

@@ -4,6 +4,7 @@ import android.content.Context
 import com.android.volley.RequestQueue
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
+import org.wordpress.android.fluxc.BuildConfig
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMV2
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel
 import org.wordpress.android.fluxc.model.whatsnew.WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature
@@ -16,6 +17,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response.Success
 import org.wordpress.android.fluxc.network.rest.wpcom.auth.AccessToken
 import org.wordpress.android.fluxc.network.rest.wpcom.whatsnew.WhatsNewRestClient.WhatsNewResponse.Announcement
+import java.util.Locale
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -33,8 +35,9 @@ class WhatsNewRestClient @Inject constructor(
         val url = WPCOMV2.mobile.feature_announcements.url
 
         val params = mapOf(
-                "app_id" to WhatsNewAppId.WOO_ANDROID.id.toString(),
-                "app_version" to versionName
+                "app_id" to appIdForAnnouncements.toString(),
+                "app_version" to versionName,
+                "_locale" to Locale.getDefault().toString()
         )
 
         val response = wpComGsonRequestBuilder.syncGetRequest(
@@ -68,6 +71,7 @@ class WhatsNewRestClient @Inject constructor(
                     minimumAppVersion = announce.minimumAppVersion,
                     maximumAppVersion = announce.maximumAppVersion,
                     appVersionTargets = announce.appVersionTargets ?: emptyList(),
+                    detailsUrl = announce.detailsUrl,
                     isLocalized = announce.isLocalized,
                     features = announce.features.map {
                         WhatsNewAnnouncementFeature(
@@ -107,4 +111,7 @@ class WhatsNewRestClient @Inject constructor(
     class WhatsNewFetchedPayload(
         val whatsNewItems: List<WhatsNewAnnouncementModel>? = null
     ) : Payload<BaseNetworkError>()
+
+    private val appIdForAnnouncements: Int
+        get() = WhatsNewAppId.WOO_ANDROID.id
 }

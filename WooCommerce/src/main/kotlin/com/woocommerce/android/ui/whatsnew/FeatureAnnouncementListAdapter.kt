@@ -1,7 +1,9 @@
 package com.woocommerce.android.ui.whatsnew
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -44,6 +46,16 @@ class FeatureAnnouncementListAdapter :
         fun bind(item: FeatureAnnouncementItem) {
             viewBinding.featureTitle.text = item.title
             viewBinding.featureSubtitle.text = item.subtitle
+            if (item.detailsUrl.isNotEmpty()) {
+                viewBinding.featureLearnMoreButton.visibility = android.view.View.VISIBLE
+                viewBinding.featureLearnMoreButton.setOnClickListener {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(item.detailsUrl))
+                    viewBinding.root.context.startActivity(intent)
+                }
+            } else {
+                viewBinding.featureLearnMoreButton.visibility = android.view.View.GONE
+                viewBinding.featureLearnMoreButton.setOnClickListener(null)
+            }
 
             val placeholder = ContextCompat.getDrawable(
                 viewBinding.root.context,
@@ -86,7 +98,7 @@ class FeatureAnnouncementListAdapter :
                 .load(imgUrl)
                 .placeholder(placeholder)
                 .error(placeholder)
-                .circleCrop()
+                .fitCenter()
                 .into(imageView)
                 .clearOnDetach()
         }
@@ -103,7 +115,7 @@ class FeatureAnnouncementListAdapter :
         ) {
             val imageData: ByteArray
             try {
-                val sanitizedBase64String = base64ImageData.replace("data:image/png;base64,", "")
+                val sanitizedBase64String = base64ImageData.replace(Regex("^data:image/[^;]+;base64,"), "")
                 imageData = Base64.decode(sanitizedBase64String, Base64.DEFAULT)
             } catch (ex: IllegalArgumentException) {
                 WooLog.e(WooLog.T.MEDIA, "Cant parse base64 image data: ${ex.message}")
@@ -114,7 +126,7 @@ class FeatureAnnouncementListAdapter :
                 .load(imageData)
                 .placeholder(placeholder)
                 .error(placeholder)
-                .circleCrop()
+                .fitCenter()
                 .into(imageView)
                 .clearOnDetach()
         }
