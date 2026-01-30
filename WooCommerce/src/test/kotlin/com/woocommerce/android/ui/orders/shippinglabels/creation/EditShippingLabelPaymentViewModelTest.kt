@@ -73,9 +73,9 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         )
         verify(shippingLabelRepository).getAccountSettings()
         assertThat(viewState!!.dataLoadState).isEqualTo(DataLoadState.Success)
-        assertThat(viewState!!.paymentMethods).isEqualTo(paymentMethodModels)
-        assertThat(viewState!!.emailReceipts).isEqualTo(shippingAccountSettings.isEmailReceiptEnabled)
-        assertThat(viewState!!.canManagePayments).isEqualTo(shippingAccountSettings.canManagePayments)
+        assertThat(viewState.paymentMethods).isEqualTo(paymentMethodModels)
+        assertThat(viewState.emailReceipts).isEqualTo(shippingAccountSettings.isEmailReceiptEnabled)
+        assertThat(viewState.canManagePayments).isEqualTo(shippingAccountSettings.canManagePayments)
     }
 
     @Test
@@ -220,7 +220,7 @@ class EditShippingLabelPaymentViewModelTest : BaseUnitTest() {
         viewModel.viewStateData.observeForever { _, new -> viewState = new }
 
         assertThat(viewState!!.showAddFirstPaymentButton).isEqualTo(false)
-        assertThat(viewState!!.showAddPaymentButton).isEqualTo(false)
+        assertThat(viewState.showAddPaymentButton).isEqualTo(false)
     }
 
     @Test

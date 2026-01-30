@@ -137,7 +137,7 @@ private fun CurrentTheme(
                 )
             }
 
-            else -> {}
+            CurrentThemeState.Hidden -> {}
         }
 
         Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
