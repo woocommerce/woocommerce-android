@@ -114,12 +114,12 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
 
     private fun ProductSelectorFlow.toAnalyticsTrackerValue() =
         when (this) {
-                ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
-                ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
-                ProductSelectorFlow.CouponEdition,
-                ProductSelectorFlow.OrderListFilter,
-                ProductSelectorFlow.Undefined -> AnalyticsTracker.VALUE_OTHER
-            }
+            ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
+            ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
+            ProductSelectorFlow.CouponEdition,
+            ProductSelectorFlow.OrderListFilter,
+            ProductSelectorFlow.Undefined -> AnalyticsTracker.VALUE_OTHER
+        }
 
     enum class ProductSelectorSource {
         ProductSelector,
