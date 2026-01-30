@@ -26,24 +26,39 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val logger: WooPosLogWrapper,
 ) {
     suspend fun populateFtsAfterFullSync(site: SiteModel) {
-        if (!isFtsEnabled()) return
+        logger.d("populateFtsAfterFullSync called")
+        if (!isFtsEnabled()) {
+            logger.d("FTS is disabled, skipping")
+            return
+        }
         rebuildFtsIndex(site)
     }
 
     suspend fun updateFtsAfterIncrementalSync(site: SiteModel) {
-        if (!isFtsEnabled()) return
+        logger.d("updateFtsAfterIncrementalSync called")
+        if (!isFtsEnabled()) {
+            logger.d("FTS is disabled, skipping")
+            return
+        }
         rebuildFtsIndex(site)
     }
 
     suspend fun ensureFtsPopulated(site: SiteModel) {
-        if (!isFtsEnabled()) return
+        logger.d("ensureFtsPopulated called")
+        if (!isFtsEnabled()) {
+            logger.d("FTS is disabled, skipping")
+            return
+        }
 
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()
 
         val productCount = productsDao.getProductCount(siteId)
         if (productCount > 0 && isFtsTableEmpty(siteIdString)) {
+            logger.d("FTS table empty with $productCount products, rebuilding index")
             rebuildFtsIndex(site)
+        } else {
+            logger.d("FTS already populated or no products to index")
         }
     }
 
