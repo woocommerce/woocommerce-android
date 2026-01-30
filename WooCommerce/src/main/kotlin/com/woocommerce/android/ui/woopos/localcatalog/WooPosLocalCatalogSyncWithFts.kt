@@ -5,7 +5,6 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.util.WooLog
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
@@ -42,7 +41,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
         val productCount = productsDao.getProductCount(siteId)
         if (productCount > 0 && isFtsTableEmpty(siteIdString)) {
-            populateFtsFromExistingData(siteId)
+            rebuildFtsIndex(site)
         }
     }
 
@@ -66,20 +65,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         return ftsDao.countAllForSite(siteId) == 0
     }
 
-    private suspend fun populateFtsFromExistingData(siteId: LocalId) {
-        val siteIdString = siteId.value.toString()
-
-        val products = productsDao.getAllProducts(siteId)
-        val variations = variationsDao.getAllVariations(siteId)
-
-        val ftsEntities = buildFtsEntities(siteIdString, products, variations)
-
-        if (ftsEntities.isNotEmpty()) {
-            ftsDao.insertAll(ftsEntities)
-        }
-    }
-
-    private suspend fun buildFtsEntities(
+    private fun buildFtsEntities(
         siteIdString: String,
         products: List<WooPosProductEntity>,
         variations: List<WooPosVariationEntity>
