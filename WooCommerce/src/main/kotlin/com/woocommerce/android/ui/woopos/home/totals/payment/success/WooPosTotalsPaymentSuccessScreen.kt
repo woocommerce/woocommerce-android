@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
@@ -40,35 +41,37 @@ fun WooPosPaymentSuccessScreen(
     onNewTransactionClicked: () -> Unit,
 ) {
     val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
-    val hugeSpacing = WooPosSpacing.Huge.value
-    val mediumSpacing = WooPosSpacing.Medium.value
-    val xxxLargeSpacing = WooPosSpacing.XXXLarge.value
-    val smallSpacing = WooPosSpacing.Small.value
-    val marginBetweenButtonAndText by animateDpAsState(
-        targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
-            hugeSpacing
-        } else {
-            mediumSpacing
-        },
-        label = "Check mark size"
-    )
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright)
+            .background(MaterialTheme.colorScheme.surfaceBright),
+        contentAlignment = Alignment.Center
     ) {
-        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
-            val (checkmark, title, message, newOrderButton, receiptButton) = createRefs()
+        val hugeSpacing = WooPosSpacing.Huge.value
+        val mediumSpacing = WooPosSpacing.Medium.value
+        val marginBetweenButtonAndText by animateDpAsState(
+            targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
+                hugeSpacing
+            } else {
+                mediumSpacing
+            },
+            label = "Check mark size"
+        )
+        val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
+        val textsMargin = WooPosSpacing.Small.value
+
+        ConstraintLayout {
+            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
                 onAnimationStageChanged = { stage -> animationStage.value = stage },
                 modifier = Modifier
-                    .constrainAs(checkmark) {
-                        top.linkTo(parent.top, margin = xxxLargeSpacing)
+                    .constrainAs(icon) {
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
+                        bottom.linkTo(title.top, margin = checkMarkIconMargin)
                     }
                     .testTag(WooPosTestTags.SUCCESS_CHECKMARK_ICON)
             )
@@ -80,9 +83,9 @@ fun WooPosPaymentSuccessScreen(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.constrainAs(title) {
-                    top.linkTo(checkmark.bottom, margin = xxxLargeSpacing)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    bottom.linkTo(message.top, margin = textsMargin)
                 }
             )
 
@@ -92,16 +95,17 @@ fun WooPosPaymentSuccessScreen(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.constrainAs(message) {
-                    top.linkTo(title.bottom, margin = smallSpacing)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
                 }
             )
 
+            val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(
                 modifier = Modifier
-                    .constrainAs(newOrderButton) {
-                        bottom.linkTo(receiptButton.top, margin = marginBetweenButtonAndText)
+                    .constrainAs(buttonNewOrder) {
+                        bottom.linkTo(buttonEmailReceipts.top, margin = marginBetweenButtons)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
@@ -114,8 +118,8 @@ fun WooPosPaymentSuccessScreen(
 
             WooPosOutlinedButton(
                 modifier = Modifier
-                    .constrainAs(receiptButton) {
-                        bottom.linkTo(parent.bottom, margin = xxxLargeSpacing)
+                    .constrainAs(buttonEmailReceipts) {
+                        bottom.linkTo(parent.bottom)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
