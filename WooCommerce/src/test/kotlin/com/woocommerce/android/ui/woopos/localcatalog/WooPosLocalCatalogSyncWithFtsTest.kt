@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.google.gson.Gson
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,6 +31,7 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     private val variationsDao: WooPosVariationsDao = mock()
     private val isFtsEnabled: IsPosProductsFtsEnabled = mock()
     private val gson = Gson()
+    private val logger: WooPosLogWrapper = mock()
 
     private lateinit var site: SiteModel
 
@@ -40,7 +42,8 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
             productsDao = productsDao,
             variationsDao = variationsDao,
             isFtsEnabled = isFtsEnabled,
-            gson = gson
+            gson = gson,
+            logger = logger
         )
 
         site = SiteModel().apply {

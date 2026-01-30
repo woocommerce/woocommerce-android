@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.SiteModel
@@ -22,6 +23,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val variationsDao: WooPosVariationsDao,
     private val isFtsEnabled: IsPosProductsFtsEnabled,
     private val gson: Gson,
+    private val logger: WooPosLogWrapper,
 ) {
     suspend fun populateFtsAfterFullSync(site: SiteModel) {
         if (!isFtsEnabled()) return
@@ -46,6 +48,9 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     }
 
     private suspend fun rebuildFtsIndex(site: SiteModel) {
+        val startTime = System.currentTimeMillis()
+        logger.d("Starting FTS index rebuild")
+
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()
 
@@ -59,6 +64,12 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         if (ftsEntities.isNotEmpty()) {
             ftsDao.insertAll(ftsEntities)
         }
+
+        val duration = System.currentTimeMillis() - startTime
+        logger.d(
+            "FTS index rebuild completed: ${products.size} products, " +
+                "${variations.size} variations. Duration: ${duration}ms"
+        )
     }
 
     private suspend fun isFtsTableEmpty(siteId: String): Boolean {
