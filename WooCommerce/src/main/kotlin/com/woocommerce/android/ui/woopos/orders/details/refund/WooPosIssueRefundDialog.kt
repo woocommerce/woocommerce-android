@@ -127,6 +127,7 @@ private fun ContentStateHandler(
     when (state.step) {
         WooPosRefundState.Content.RefundStep.SelectItems -> {
             SelectItemsContent(
+                showCloseButton = state.showCloseButton,
                 state = state,
                 onDismissRequest = onDismissRequest,
                 onEvent = onEvent,
@@ -138,6 +139,7 @@ private fun ContentStateHandler(
 
         WooPosRefundState.Content.RefundStep.ReviewRefund -> {
             ReviewRefundContent(
+                showCloseButton = state.showCloseButton,
                 state = state,
                 onDismissRequest = onDismissRequest,
                 onContinue = {
@@ -159,6 +161,7 @@ private fun ContentStateHandler(
 
         WooPosRefundState.Content.RefundStep.ConfirmRefund -> {
             ConfirmRefundContent(
+                showCloseButton = state.showCloseButton,
                 state = state,
                 isProcessing = false,
                 onDismissRequest = onDismissRequest,
@@ -172,9 +175,10 @@ private fun ContentStateHandler(
         }
         WooPosRefundState.Content.RefundStep.Processing -> {
             ConfirmRefundContent(
+                showCloseButton = state.showCloseButton,
                 state = state,
                 isProcessing = true,
-                onDismissRequest = {},
+                onDismissRequest = onDismissRequest,
                 onConfirm = {},
                 onBack = {}
             )
@@ -284,13 +288,17 @@ private fun RefundSuccessContent(
 
 @Composable
 private fun SelectItemsContent(
+    showCloseButton: Boolean,
     state: WooPosRefundState.Content,
     onDismissRequest: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onContinue: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        RefundDialogHeader(onDismissRequest = onDismissRequest)
+        RefundDialogHeader(
+            showCloseButton = showCloseButton,
+            onDismissRequest = onDismissRequest
+        )
 
         ItemsHeaderRow(
             allItemsSelected = state.allItemsSelected,
@@ -338,7 +346,10 @@ private fun SelectItemsContent(
 }
 
 @Composable
-private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
+private fun RefundDialogHeader(
+    showCloseButton: Boolean,
+    onDismissRequest: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -352,16 +363,18 @@ private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+        if (showCloseButton) {
+            IconButton(
+                modifier = Modifier.size(48.dp),
+                onClick = onDismissRequest,
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                    contentDescription = stringResource(R.string.close),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -477,6 +490,7 @@ private fun RefundableItemRow(
 
 @Composable
 private fun ReviewRefundContent(
+    showCloseButton: Boolean,
     state: WooPosRefundState.Content,
     onDismissRequest: () -> Unit,
     onContinue: () -> Unit,
@@ -484,7 +498,10 @@ private fun ReviewRefundContent(
     onEditReason: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ReviewRefundHeader(onDismissRequest = onDismissRequest)
+        ReviewRefundHeader(
+            showCloseButton = showCloseButton,
+            onDismissRequest = onDismissRequest
+        )
 
         Column(
             modifier = Modifier
@@ -577,7 +594,10 @@ private fun ReviewRefundContent(
 }
 
 @Composable
-private fun ReviewRefundHeader(onDismissRequest: () -> Unit) {
+private fun ReviewRefundHeader(
+    showCloseButton: Boolean,
+    onDismissRequest: () -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -591,16 +611,18 @@ private fun ReviewRefundHeader(onDismissRequest: () -> Unit) {
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+        if (showCloseButton) {
+            IconButton(
+                modifier = Modifier.size(48.dp),
+                onClick = onDismissRequest,
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                    contentDescription = stringResource(R.string.close),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -666,6 +688,7 @@ private fun Divider(modifier: Modifier = Modifier) {
 
 @Composable
 private fun ConfirmRefundContent(
+    showCloseButton: Boolean,
     state: WooPosRefundState.Content,
     isProcessing: Boolean,
     onDismissRequest: () -> Unit,
@@ -675,6 +698,7 @@ private fun ConfirmRefundContent(
     Column(modifier = Modifier.fillMaxWidth()) {
         ConfirmRefundHeader(
             title = stringResource(R.string.woopos_orders_confirm_refund_title, state.formattedTotal),
+            showCloseButton = showCloseButton,
             onDismissRequest = onDismissRequest
         )
 
@@ -697,6 +721,7 @@ private fun ConfirmRefundContent(
 @Composable
 private fun ConfirmRefundHeader(
     title: String,
+    showCloseButton: Boolean,
     onDismissRequest: () -> Unit
 ) {
     Row(
@@ -712,16 +737,18 @@ private fun ConfirmRefundHeader(
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSurface
         )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+        if (showCloseButton) {
+            IconButton(
+                modifier = Modifier.size(48.dp),
+                onClick = onDismissRequest,
+            ) {
+                Icon(
+                    modifier = Modifier.size(32.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                    contentDescription = stringResource(R.string.close),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
@@ -837,6 +864,7 @@ fun SelectItemsContentPreview() {
 
     WooPosTheme {
         SelectItemsContent(
+            showCloseButton = true,
             state = state,
             onDismissRequest = {},
             onEvent = {},
@@ -904,6 +932,7 @@ fun ReviewRefundContentPreview() {
 
     WooPosTheme {
         ReviewRefundContent(
+            showCloseButton = true,
             state = state,
             onDismissRequest = {},
             onContinue = {},
@@ -972,6 +1001,7 @@ fun ConfirmRefundContentPreview() {
 
     WooPosTheme {
         ConfirmRefundContent(
+            showCloseButton = true,
             state = state,
             isProcessing = false,
             onDismissRequest = {},
