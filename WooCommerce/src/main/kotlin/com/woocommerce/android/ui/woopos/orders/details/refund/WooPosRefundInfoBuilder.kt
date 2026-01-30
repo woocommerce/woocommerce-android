@@ -1,7 +1,9 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import java.math.BigDecimal

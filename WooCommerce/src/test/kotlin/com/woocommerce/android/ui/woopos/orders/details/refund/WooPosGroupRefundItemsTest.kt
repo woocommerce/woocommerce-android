@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
