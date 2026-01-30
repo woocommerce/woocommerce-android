@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
@@ -22,6 +23,18 @@ class AddressValidationHelper @Inject constructor(
             resourceProvider.getString(R.string.woo_shipping_field_required_error)
         } else {
             null
+        }
+    }
+
+    fun validateEmail(value: String): String? {
+        return when {
+            value.isEmpty() || value.isBlank() -> {
+                resourceProvider.getString(R.string.woo_shipping_field_required_error)
+            }
+            !StringUtils.isValidEmail(value) -> {
+                resourceProvider.getString(R.string.email_invalid)
+            }
+            else -> null
         }
     }
 
