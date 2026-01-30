@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -23,6 +24,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val prefsRepo: WooPosPreferencesRepository,
+    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
     private val analyticsTracker: WooPosAnalyticsTracker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -67,7 +69,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
             is Failure -> {
                 wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
 
-                if (syncResult is Failure.CatalogTooLarge) {
+                if (syncResult is Failure.CatalogTooLarge && !fileApproachEnabled()) {
                     wooPosLogWrapper.e("Disabling Local Catalog periodic sync for site due to catalog size too large")
                     prefsRepo.disablePeriodicSyncForSite(site.localId())
                 }

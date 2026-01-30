@@ -16,4 +16,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       - name: Setup Gradle to generate and submit dependency graphs
-        uses: gradle/actions/dependency-submission@v3
+        uses: gradle/actions/dependency-submission@v5
+        with:
+          dependency-graph-include-projects: '^:(WooCommerce|WooCommerce-Wear)$'
+          dependency-graph-include-configurations: 'vanillaReleaseRuntimeClasspath'
