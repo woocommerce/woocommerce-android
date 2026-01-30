@@ -29,7 +29,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val dispatchers: CoroutineDispatchers,
     private val logger: WooPosLogWrapper,
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
-    private val dateTimeProvider: DateTimeProvider,
+    private val dateTimeProvider: WooPosDateTimeProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val connectionTypeProvider: WooPosConnectionTypeProvider,
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,

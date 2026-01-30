@@ -37,7 +37,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
-    private val time: DateTimeProvider = mock()
+    private val time: WooPosDateTimeProvider = mock()
 
     private val siteModel = SiteModel().apply {
         id = 123

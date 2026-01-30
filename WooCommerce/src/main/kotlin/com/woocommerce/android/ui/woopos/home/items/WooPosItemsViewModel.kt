@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsToolbarViewState.Tab
 import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCouponCreationFacade
 import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsNavigationData
-import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosDateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -40,7 +40,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
-    private val dateTimeProvider: DateTimeProvider,
+    private val dateTimeProvider: WooPosDateTimeProvider,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())

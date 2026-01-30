@@ -36,7 +36,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private lateinit var dispatchers: CoroutineDispatchers
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
-    private var dateTimeProvider: DateTimeProvider = mock()
+    private var dateTimeProvider: WooPosDateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
