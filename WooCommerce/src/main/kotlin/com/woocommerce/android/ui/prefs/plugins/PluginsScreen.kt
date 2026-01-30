@@ -135,7 +135,7 @@ private fun PluginItem(
             )
 
             if (plugin.authorName.isNotNullOrEmpty()) {
-                Text(text = plugin.authorName!!, color = colorResource(id = R.color.color_on_surface_medium))
+                Text(text = plugin.authorName, color = colorResource(id = R.color.color_on_surface_medium))
             }
         }
 
