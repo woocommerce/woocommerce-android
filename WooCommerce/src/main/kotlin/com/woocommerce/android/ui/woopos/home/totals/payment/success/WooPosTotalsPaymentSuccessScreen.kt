@@ -1,10 +1,10 @@
+@file:Suppress("DestructuringDeclarationWithTooManyEntries")
+
 package com.woocommerce.android.ui.woopos.home.totals.payment.success
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -13,13 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -42,6 +42,8 @@ fun WooPosPaymentSuccessScreen(
     val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
     val hugeSpacing = WooPosSpacing.Huge.value
     val mediumSpacing = WooPosSpacing.Medium.value
+    val xxxLargeSpacing = WooPosSpacing.XXXLarge.value
+    val smallSpacing = WooPosSpacing.Small.value
     val marginBetweenButtonAndText by animateDpAsState(
         targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
             hugeSpacing
@@ -51,58 +53,78 @@ fun WooPosPaymentSuccessScreen(
         label = "Check mark size"
     )
 
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .background(MaterialTheme.colorScheme.surfaceBright)
     ) {
-        WooPosSuccessCheckmark(
-            contentDescription = stringResource(R.string.woopos_payment_successful_label),
-            onAnimationStageChanged = { stage -> animationStage.value = stage },
-            modifier = Modifier.testTag(WooPosTestTags.SUCCESS_CHECKMARK_ICON)
-        )
+        ConstraintLayout(modifier = Modifier.fillMaxSize()) {
+            val (checkmark, title, message, newOrderButton, receiptButton) = createRefs()
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
+            WooPosSuccessCheckmark(
+                contentDescription = stringResource(R.string.woopos_payment_successful_label),
+                onAnimationStageChanged = { stage -> animationStage.value = stage },
+                modifier = Modifier
+                    .constrainAs(checkmark) {
+                        top.linkTo(parent.top, margin = xxxLargeSpacing)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .testTag(WooPosTestTags.SUCCESS_CHECKMARK_ICON)
+            )
 
-        WooPosText(
-            text = stringResource(R.string.woopos_payment_successful_label),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+            WooPosText(
+                text = stringResource(R.string.woopos_payment_successful_label),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.constrainAs(title) {
+                    top.linkTo(checkmark.bottom, margin = xxxLargeSpacing)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            WooPosText(
+                text = state.orderTotalText,
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.constrainAs(message) {
+                    top.linkTo(title.bottom, margin = smallSpacing)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
 
-        WooPosText(
-            text = state.orderTotalText,
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
+            WooPosButton(
+                modifier = Modifier
+                    .constrainAs(newOrderButton) {
+                        bottom.linkTo(receiptButton.top, margin = marginBetweenButtonAndText)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .height(80.dp)
+                    .width(604.dp)
+                    .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
+                onClick = onNewTransactionClicked,
+                text = stringResource(R.string.woopos_new_order_button)
+            )
 
-        Spacer(modifier = Modifier.height(marginBetweenButtonAndText))
-
-        WooPosButton(
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp)
-                .testTag(WooPosTestTags.NEW_ORDER_BUTTON),
-            onClick = onNewTransactionClicked,
-            text = stringResource(R.string.woopos_new_order_button)
-        )
-
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosOutlinedButton(
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp),
-            onClick = onReceiptClicked,
-            text = stringResource(R.string.woopos_receipt_button)
-        )
+            WooPosOutlinedButton(
+                modifier = Modifier
+                    .constrainAs(receiptButton) {
+                        bottom.linkTo(parent.bottom, margin = xxxLargeSpacing)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .height(80.dp)
+                    .width(604.dp),
+                onClick = onReceiptClicked,
+                text = stringResource(R.string.woopos_receipt_button)
+            )
+        }
     }
 }
 
