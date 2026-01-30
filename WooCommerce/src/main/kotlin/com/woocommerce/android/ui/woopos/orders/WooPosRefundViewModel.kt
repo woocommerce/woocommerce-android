@@ -305,7 +305,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
             val selectedItems = contentState.refundableItems.filter { it.uniqueId in contentState.selectedItemIds }
             val refundItems = groupRefundItems(selectedItems, order, numberOfDecimalPoints)
 
-            val paymentGateway = loadPaymentGateway(order)
+            val paymentGatewayResult = loadPaymentGateway(order)
+            if (paymentGatewayResult.isFailure) {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "WooPosRefund: Failed to load payment gateway: ${paymentGatewayResult.exceptionOrNull()?.message}"
+                )
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found)
+                )
+                return@launch
+            }
+
+            val paymentGateway = paymentGatewayResult.getOrThrow()
 
             val result = refundStore.createItemsRefund(
                 site = selectedSite.get(),

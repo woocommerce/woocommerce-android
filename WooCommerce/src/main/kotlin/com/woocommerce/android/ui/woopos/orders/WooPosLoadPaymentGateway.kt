@@ -14,16 +14,26 @@ class WooPosLoadPaymentGateway @Inject constructor(
     private val selectedSite: SelectedSite,
     private val coroutineDispatchers: CoroutineDispatchers
 ) {
-    suspend operator fun invoke(order: Order): PaymentGateway = withContext(coroutineDispatchers.io) {
-        val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
-        return@withContext if (paymentGateway != null && paymentGateway.isEnabled) {
-            paymentGateway
-        } else {
-            PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
-        }
-    }
+    suspend operator fun invoke(order: Order): Result<PaymentGateway> = withContext(coroutineDispatchers.io) {
+        val site = selectedSite.get()
 
-    companion object {
-        private const val REFUND_METHOD_MANUAL = "manual"
+        var gateway = gatewayStore.getGateway(site, order.paymentMethod)?.toAppModel()
+
+        if (gateway == null) {
+            val fetchResult = gatewayStore.fetchAllGateways(site)
+            if (fetchResult.isError) {
+                return@withContext Result.failure(
+                    Exception("Failed to fetch payment gateways: ${fetchResult.error.message}")
+                )
+            }
+
+            gateway = gatewayStore.getGateway(site, order.paymentMethod)?.toAppModel()
+        }
+
+        return@withContext if (gateway != null) {
+            Result.success(gateway)
+        } else {
+            Result.failure(Exception("Payment gateway '${order.paymentMethod}' not found"))
+        }
     }
 }

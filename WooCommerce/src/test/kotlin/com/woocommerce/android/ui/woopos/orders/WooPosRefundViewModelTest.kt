@@ -138,7 +138,7 @@ class WooPosRefundViewModelTest {
             methodDescription = "",
             supportsRefunds = false
         )
-        whenever(loadPaymentGateway.invoke(any())).thenReturn(defaultGateway)
+        whenever(loadPaymentGateway.invoke(any())).thenReturn(Result.success(defaultGateway))
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -960,7 +960,7 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(gatewayWithRefunds)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gatewayWithRefunds))
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -1572,7 +1572,7 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(gatewayWithoutRefunds)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gatewayWithoutRefunds))
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -1630,7 +1630,7 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(manualGateway)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(manualGateway))
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
@@ -1688,7 +1688,7 @@ class WooPosRefundViewModelTest {
             whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
             whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
-            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(manualGateway)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(manualGateway))
             whenever(
                 refundStore.createItemsRefund(
                     site = any(),
