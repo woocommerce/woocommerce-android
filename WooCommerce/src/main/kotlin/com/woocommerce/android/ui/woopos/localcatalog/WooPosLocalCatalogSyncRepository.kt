@@ -96,6 +96,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         ).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
+                    syncWithFts.updateFtsAfterIncrementalSync(site)
                     trackSyncCompleted(site, SyncType.INCREMENTAL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {

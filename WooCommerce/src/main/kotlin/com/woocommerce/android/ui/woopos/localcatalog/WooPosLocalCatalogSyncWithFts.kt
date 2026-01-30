@@ -26,7 +26,27 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 ) {
     suspend fun populateFtsAfterFullSync(site: SiteModel) {
         if (!isFtsEnabled()) return
+        rebuildFtsIndex(site)
+    }
 
+    suspend fun updateFtsAfterIncrementalSync(site: SiteModel) {
+        if (!isFtsEnabled()) return
+        rebuildFtsIndex(site)
+    }
+
+    suspend fun ensureFtsPopulated(site: SiteModel) {
+        if (!isFtsEnabled()) return
+
+        val siteId = site.localId()
+        val siteIdString = siteId.value.toString()
+
+        val productCount = productsDao.getProductCount(siteId)
+        if (productCount > 0 && isFtsTableEmpty(siteIdString)) {
+            populateFtsFromExistingData(siteId)
+        }
+    }
+
+    private suspend fun rebuildFtsIndex(site: SiteModel) {
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()
 
@@ -39,18 +59,6 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
 
         if (ftsEntities.isNotEmpty()) {
             ftsDao.insertAll(ftsEntities)
-        }
-    }
-
-    suspend fun ensureFtsPopulated(site: SiteModel) {
-        if (!isFtsEnabled()) return
-
-        val siteId = site.localId()
-        val siteIdString = siteId.value.toString()
-
-        val productCount = productsDao.getProductCount(siteId)
-        if (productCount > 0 && isFtsTableEmpty(siteIdString)) {
-            populateFtsFromExistingData(siteId)
         }
     }
 
