@@ -58,10 +58,6 @@ abstract class WooPosSearchableFtsDao {
         offset: Int
     ): List<WooPosSearchableFtsEntity>
 
-    @Query(
-        "SELECT COUNT(*) FROM PosSearchableFts " +
-            "WHERE localSiteId = :localSiteId " +
-            "AND PosSearchableFts MATCH :query"
-    )
-    abstract suspend fun searchCount(localSiteId: String, query: String): Int
+    @Query("SELECT COUNT(*) FROM PosSearchableFts WHERE localSiteId = :localSiteId")
+    abstract suspend fun countAllForSite(localSiteId: String): Int
 }
