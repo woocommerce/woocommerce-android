@@ -283,14 +283,14 @@ private fun RefundSuccessContent(
         verticalArrangement = Arrangement.Center
     ) {
         WooPosSuccessCheckmark(
-            contentDescription = stringResource(R.string.woopos_refund_complete),
+            contentDescription = stringResource(R.string.woopos_orders_refund_complete),
             onAnimationStageChanged = { stage -> animationStage.value = stage }
         )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
 
         WooPosText(
-            text = stringResource(R.string.woopos_refund_complete),
+            text = stringResource(R.string.woopos_orders_refund_complete),
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
@@ -301,7 +301,7 @@ private fun RefundSuccessContent(
 
         WooPosText(
             text = stringResource(
-                R.string.woopos_refund_success_message,
+                R.string.woopos_orders_refund_success_message,
                 state.refundedAmount,
                 state.paymentMethod
             ),
