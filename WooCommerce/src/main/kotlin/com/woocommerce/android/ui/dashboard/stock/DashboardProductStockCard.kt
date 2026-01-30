@@ -281,7 +281,7 @@ fun ProductStockRow(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = product.stockQuantity.toString(),
+                    text = product.stockQuantity,
                     style = MaterialTheme.typography.subtitle1,
                     color = colorResource(id = R.color.color_error)
                 )

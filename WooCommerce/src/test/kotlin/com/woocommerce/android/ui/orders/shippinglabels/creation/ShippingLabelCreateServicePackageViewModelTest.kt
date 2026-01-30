@@ -125,6 +125,6 @@ class ShippingLabelCreateServicePackageViewModelTest : BaseUnitTest() {
             viewModel.viewStateData.observeForever { _, new -> state = new }
 
             assertThat(state!!.isEmpty).isEqualTo(true)
-            assertThat(state!!.canSave).isEqualTo(false)
+            assertThat(state.canSave).isEqualTo(false)
         }
 }

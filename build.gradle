@@ -51,8 +51,9 @@ allprojects {
             allWarningsAsErrors = true
             optIn.add("kotlin.RequiresOptIn")
             freeCompilerArgs.addAll([
-                    "-Xjvm-default=all-compatibility",
-                    "-Xannotation-default-target=param-property"
+                    "-jvm-default=enable",
+                    "-Xannotation-default-target=param-property",
+                    "-Xwarning-level=USELESS_CAST:disabled"
             ])
         }
     }

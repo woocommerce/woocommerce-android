@@ -91,7 +91,7 @@ class DashboardViewModel @Inject constructor(
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
-            site?.displayName
+            site.displayName
         } else {
             site?.name
         } ?: resourceProvider.getString(R.string.store_name_default)
@@ -297,8 +297,9 @@ class DashboardViewModel @Inject constructor(
             .map {
                 val durationSinceDismissal =
                     (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val showBanner = pushNotificationRegistrationStatus() == Status.UNREGISTERED &&
-                    durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
+                val showBanner =
+                    pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId) == Status.UNREGISTERED &&
+                        durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
                 JetpackBenefitsBannerUiModel(
                     show = showBanner,
                     onDismiss = {

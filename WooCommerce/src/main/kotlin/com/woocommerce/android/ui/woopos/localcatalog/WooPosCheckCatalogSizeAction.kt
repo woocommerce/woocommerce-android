@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.util.FeatureFlag
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosLocalCatalogStore
 import javax.inject.Inject
@@ -21,9 +20,6 @@ class WooPosCheckCatalogSizeAction @Inject constructor(
         modifiedAfterGmt: String? = null,
         maxTotalItems: Int,
     ): WooPosCheckCatalogSizeResult {
-        if (FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH.isEnabled()) {
-            return WooPosCheckCatalogSizeResult.SizeAcceptable
-        }
         logger.d("Checking catalog size before sync")
 
         val productsCountResult = posLocalCatalogStore.fetchProductsCount(
