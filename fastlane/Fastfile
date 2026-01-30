@@ -1696,7 +1696,7 @@ platform :android do
   def fetch_release_tags
     Actions.sh('git', 'fetch', '--tags', '--force')
     tags = Actions.sh('git', 'tag', '--list', '--sort=-v:refname').split("\n")
-    tags.select { |tag| tag.match?(/^\d+\.\d+(\.\d+)?$/) }
+    tags.grep(/^\d+\.\d+(\.\d+)?$/)
   end
 
   # Returns true if the tag version is numerically less than the comparison parts.
