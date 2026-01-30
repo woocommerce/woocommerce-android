@@ -39,12 +39,8 @@ class WooPosGetPaymentMethod @Inject constructor(
     }
 
     private suspend fun loadPaymentGateway(order: Order): PaymentGateway = withContext(coroutineDispatchers.io) {
-        val paymentGateway = gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
-        return@withContext if (paymentGateway != null && paymentGateway.isEnabled) {
-            paymentGateway
-        } else {
-            PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
-        }
+        gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
+            ?: PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
     }
 
     private suspend fun enrichRefundMethodWithCardDetails(order: Order, refundMethod: String): String {
