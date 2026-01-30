@@ -19,7 +19,7 @@ class WooPosFullSyncStatusChecker @Inject constructor(
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
-    private val time: WooPosDateTimeProvider,
+    private val time: DateTimeProvider,
 ) {
     @Suppress("ReturnCount")
     suspend fun checkSyncRequirement(): WooPosFullSyncRequirement {

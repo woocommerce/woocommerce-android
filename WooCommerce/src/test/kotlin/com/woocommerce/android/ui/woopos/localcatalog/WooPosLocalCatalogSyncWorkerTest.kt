@@ -34,7 +34,7 @@ class WooPosLocalCatalogSyncWorkerTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val mockTimeProvider: WooPosDateTimeProvider = mock {
+    private val mockTimeProvider: DateTimeProvider = mock {
         whenever(it.now()).thenReturn(CURRENT_TIME_MILLIS)
     }
 

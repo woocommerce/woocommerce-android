@@ -4,7 +4,7 @@ import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.woopos.localcatalog.WooPosDateTimeProvider
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIncrementalSyncReason
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsLocalCatalogSupported
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformLocalCatalogIncrementalSync
@@ -30,7 +30,7 @@ class WooPosPeriodicSyncFacade @Inject constructor(
     private val selectedSite: SelectedSite,
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val syncTimestampManager: WooPosSyncTimestampManager,
-    private val time: WooPosDateTimeProvider,
+    private val time: DateTimeProvider,
 ) : DefaultLifecycleObserver {
 
     private var periodicSyncJob: Job? = null

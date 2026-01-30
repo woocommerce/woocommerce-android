@@ -26,7 +26,7 @@ constructor(
     private val preferencesRepository: WooPosPreferencesRepository,
     private val syncRepository: WooPosLocalCatalogSyncRepository,
     private val logger: WooPosLogWrapper,
-    private val timeProvider: WooPosDateTimeProvider,
+    private val timeProvider: DateTimeProvider,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val analyticsTracker: WooPosAnalyticsTracker,
 ) : CoroutineWorker(appContext, workerParams) {
