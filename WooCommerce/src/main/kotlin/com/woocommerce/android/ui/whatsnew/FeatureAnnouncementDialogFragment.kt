@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.whatsnew
 
 import android.content.DialogInterface
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.net.Uri
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -81,9 +81,11 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                             viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
-                        listAdapter.submitList(announcement.features.map { feature ->
-                            feature.copy(detailsUrl = "")
-                        })
+                        listAdapter.submitList(
+                            announcement.features.map { feature ->
+                                feature.copy(detailsUrl = "")
+                            }
+                        )
                     } else {
                         binding.dismissFeatureAnnouncementButton.visibility = View.GONE
                         binding.dismissFeatureAnnouncementButton.setOnClickListener(null)
