@@ -19,13 +19,13 @@ class AddressValidationHelperTest : BaseUnitTest() {
     private val sut = AddressValidationHelper(resourceProvider)
 
     @Test
-    fun `when all values are empty or blank then validateAtLeastOneOf should return error`() {
+    fun `when all values are blank, then validateAtLeastOneOf should return error`() {
         val result = sut.validateAtLeastOneOf("", " ")
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when at least one value is not empty or blank validateAtLeastOneOf should return null`() {
+    fun `when at least one value is not blank, then validateAtLeastOneOf should return null`() {
         val result = sut.validateAtLeastOneOf("", " ", "value")
         assertThat(result).isNull()
     }
@@ -43,7 +43,7 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `validateFieldRequired should return null when value is not empty or blank`() {
+    fun `when value is not blank, then validateFieldRequired should return null`() {
         val result = sut.validateFieldRequired("value")
         assertThat(result).isNull()
     }
@@ -94,5 +94,17 @@ class AddressValidationHelperTest : BaseUnitTest() {
     fun `when value contains at least one digit validateCustomsPhone should return null`() {
         val result = sut.validateCustomsPhone("123")
         assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when email is empty, then validateEmail should return required error`() {
+        val result = sut.validateEmail("")
+        assertThat(result).isEqualTo(fieldRequiredError)
+    }
+
+    @Test
+    fun `when email is blank, then validateEmail should return required error`() {
+        val result = sut.validateEmail("   ")
+        assertThat(result).isEqualTo(fieldRequiredError)
     }
 }
