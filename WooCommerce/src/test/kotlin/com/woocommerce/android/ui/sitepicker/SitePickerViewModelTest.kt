@@ -8,6 +8,7 @@ import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -84,6 +85,7 @@ class SitePickerViewModelTest : BaseUnitTest() {
     private val getWooVisibleSites: GetWooVisibleSites = mock {
         onBlocking { invoke() } doReturn defaultExpectedSiteList
     }
+    private val registerDevice: RegisterDevice = mock()
 
     private lateinit var viewModel: SitePickerViewModel
     private lateinit var savedState: SavedStateHandle
@@ -96,11 +98,12 @@ class SitePickerViewModelTest : BaseUnitTest() {
             accountRepository = accountRepository,
             resourceProvider = resourceProvider,
             appPrefsWrapper = appPrefsWrapper,
+            unifiedLoginTracker = unifiedLoginTracker,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             userEligibilityFetcher = userEligibilityFetcher,
-            unifiedLoginTracker = unifiedLoginTracker,
             experimentTracker = experimentTracker,
-            getWooVisibleSites = getWooVisibleSites
+            getWooVisibleSites = getWooVisibleSites,
+            registerDevice = registerDevice
         )
     }
 

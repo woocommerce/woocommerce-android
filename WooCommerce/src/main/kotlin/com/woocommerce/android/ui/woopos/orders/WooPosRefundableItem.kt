@@ -14,4 +14,7 @@ data class WooPosRefundableItem(
     val formattedUnitPrice: String,
     val formattedUnitTax: String,
     val rowIndex: Int,
-)
+) {
+    val uniqueId: String
+        get() = "${orderItemId}_$rowIndex"
+}

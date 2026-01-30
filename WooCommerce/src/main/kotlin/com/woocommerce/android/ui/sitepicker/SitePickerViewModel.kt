@@ -18,6 +18,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.analytics.ExperimentTracker
 import com.woocommerce.android.extensions.getSiteName
 import com.woocommerce.android.extensions.isSimpleWPComSite
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.common.UserEligibilityFetcher
@@ -68,7 +69,8 @@ class SitePickerViewModel @Inject constructor(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val experimentTracker: ExperimentTracker,
-    private val getWooVisibleSites: GetWooVisibleSites
+    private val getWooVisibleSites: GetWooVisibleSites,
+    private val registerDevice: RegisterDevice
 ) : ScopedViewModel(savedState) {
     companion object {
         private const val WOOCOMMERCE_INSTALLATION_URL = "https://wordpress.com/plugins/woocommerce/"
@@ -529,6 +531,7 @@ class SitePickerViewModel @Inject constructor(
 
                                     trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
                                     appPrefsWrapper.removeLoginSiteAddress()
+                                    registerDevice(RegisterDevice.Mode.IF_NEEDED)
                                     triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
                                 },
                                 onFailure = {
