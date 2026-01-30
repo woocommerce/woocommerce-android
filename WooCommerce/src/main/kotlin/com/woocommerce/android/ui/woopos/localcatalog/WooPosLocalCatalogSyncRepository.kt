@@ -62,8 +62,8 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         }.also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
-                    syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
                     syncWithFts.populateFtsAfterFullSync(site)
+                    syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
