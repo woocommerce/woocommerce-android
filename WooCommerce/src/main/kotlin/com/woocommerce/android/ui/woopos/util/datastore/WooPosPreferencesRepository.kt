@@ -24,6 +24,10 @@ class WooPosPreferencesRepository @Inject constructor(
     private val wasOpenedOnceKey = booleanPreferencesKey(POS_WAS_OPENED_ONCE_KEY)
     private val lastUsedTimestampKey = longPreferencesKey(POS_LAST_USED_TIMESTAMP_KEY)
     private val allowCellularDataUpdateKey = booleanPreferencesKey(ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY)
+    private val wcVersionSunsetBannerDismissalTimestampSiteSpecificKey: Preferences.Key<Long>
+        get() = longPreferencesKey(
+            "${selectedSite.getOrNull()?.id}_v2_$WC_VERSION_SUNSET_BANNER_DISMISSAL_TIMESTAMP_KEY"
+        )
 
     val recentProductSearches: Flow<List<String>> = dataStore.data
         .map { preferences ->
@@ -112,6 +116,18 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun getWcVersionSunsetBannerDismissalTimestamp(): Long? {
+        return dataStore.data.map { preferences ->
+            preferences[wcVersionSunsetBannerDismissalTimestampSiteSpecificKey]
+        }.first()
+    }
+
+    suspend fun setWcVersionSunsetBannerDismissalTimestamp(timestamp: Long) {
+        dataStore.edit { preferences ->
+            preferences[wcVersionSunsetBannerDismissalTimestampSiteSpecificKey] = timestamp
+        }
+    }
+
     private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
         booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
@@ -123,6 +139,7 @@ class WooPosPreferencesRepository @Inject constructor(
         const val POS_WAS_OPENED_ONCE_KEY = "pos_was_opened_once_key"
         const val POS_LAST_USED_TIMESTAMP_KEY = "pos_last_used_timestamp_key"
         const val ALLOW_FULL_SYNC_ON_CELLULAR_DATA_KEY = "allow_full_sync_on_cellular_data_key"
+        const val WC_VERSION_SUNSET_BANNER_DISMISSAL_TIMESTAMP_KEY = "wc_version_sunset_banner_dismissal_timestamp_key"
 
         const val MAX_RECENT_SEARCHES_COUNT = 10
     }
