@@ -91,9 +91,9 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
         viewModel.onFieldTextChanged("", InputName.EMPTY_WEIGHT)
 
         assertThat(state!!.lengthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
     }
 
     @Test
@@ -107,9 +107,9 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
         viewModel.onFieldTextChanged(".", InputName.EMPTY_WEIGHT)
 
         assertThat(state!!.lengthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
-        assertThat(state!!.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.widthErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.heightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
+        assertThat(state.weightErrorMessage).isEqualTo(R.string.shipping_label_create_custom_package_field_empty_hint)
     }
 
     @Test
@@ -123,9 +123,9 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
         viewModel.onFieldTextChanged(".5", InputName.EMPTY_WEIGHT)
 
         assertThat(state!!.lengthErrorMessage).isEqualTo(null)
-        assertThat(state!!.widthErrorMessage).isEqualTo(null)
-        assertThat(state!!.heightErrorMessage).isEqualTo(null)
-        assertThat(state!!.weightErrorMessage).isEqualTo(null)
+        assertThat(state.widthErrorMessage).isEqualTo(null)
+        assertThat(state.heightErrorMessage).isEqualTo(null)
+        assertThat(state.weightErrorMessage).isEqualTo(null)
     }
 
     @Test
@@ -139,9 +139,9 @@ class ShippingLabelCreateCustomPackageViewModelTest : BaseUnitTest() {
 
         assertThat(state!!.lengthErrorMessage)
             .isEqualTo(R.string.shipping_label_create_custom_package_field_invalid_hint)
-        assertThat(state!!.widthErrorMessage)
+        assertThat(state.widthErrorMessage)
             .isEqualTo(R.string.shipping_label_create_custom_package_field_invalid_hint)
-        assertThat(state!!.heightErrorMessage)
+        assertThat(state.heightErrorMessage)
             .isEqualTo(R.string.shipping_label_create_custom_package_field_invalid_hint)
     }
 
