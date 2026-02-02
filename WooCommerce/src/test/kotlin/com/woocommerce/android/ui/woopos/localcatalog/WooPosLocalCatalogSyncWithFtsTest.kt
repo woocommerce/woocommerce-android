@@ -53,25 +53,22 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given FTS disabled, when populateFtsAfterFullSync, then does nothing`() = testBlocking {
+    fun `given FTS disabled, when syncFtsForFullSync, then does nothing`() = testBlocking {
         whenever(isFtsEnabled()).thenReturn(false)
 
-        sut.populateFtsAfterFullSync(site)
+        sut.syncFtsForFullSync("1", emptyList(), emptyList())
 
         verify(ftsDao, never()).deleteAllForSite(any())
         verify(ftsDao, never()).insertAll(any())
     }
 
     @Test
-    fun `given FTS enabled with products, when populateFtsAfterFullSync, then clears and populates FTS`() =
+    fun `given FTS enabled with products, when syncFtsForFullSync, then clears and populates FTS`() =
         testBlocking {
             whenever(isFtsEnabled()).thenReturn(true)
-            whenever(productsDao.getAllProducts(LocalId(1))).thenReturn(
-                listOf(createProduct(1, "Blue Shirt", "SKU-001", "BARCODE-001"))
-            )
-            whenever(variationsDao.getAllVariations(LocalId(1))).thenReturn(emptyList())
+            val products = listOf(createProduct(1, "Blue Shirt", "SKU-001", "BARCODE-001"))
 
-            sut.populateFtsAfterFullSync(site)
+            sut.syncFtsForFullSync("1", products, emptyList())
 
             verify(ftsDao).deleteAllForSite("1")
             verify(ftsDao).insertAll(
@@ -90,26 +87,22 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given FTS enabled with variations, when populateFtsAfterFullSync, then includes parent name and attributes`() =
+    fun `given FTS enabled with variations, when syncFtsForFullSync, then includes parent name and attributes`() =
         testBlocking {
             whenever(isFtsEnabled()).thenReturn(true)
-            whenever(productsDao.getAllProducts(LocalId(1))).thenReturn(
-                listOf(createProduct(1, "Gant T-Shirt", "SKU-001", ""))
-            )
-            whenever(variationsDao.getAllVariations(LocalId(1))).thenReturn(
-                listOf(
-                    createVariation(
-                        variationId = 10,
-                        productId = 1,
-                        sku = "VAR-SKU",
-                        barcode = "VAR-BARCODE",
-                        attributesJson = """[{"id":1,"name":"Color","option":"Blue"},""" +
-                            """{"id":2,"name":"Size","option":"Medium"}]"""
-                    )
+            val products = listOf(createProduct(1, "Gant T-Shirt", "SKU-001", ""))
+            val variations = listOf(
+                createVariation(
+                    variationId = 10,
+                    productId = 1,
+                    sku = "VAR-SKU",
+                    barcode = "VAR-BARCODE",
+                    attributesJson = """[{"id":1,"name":"Color","option":"Blue"},""" +
+                        """{"id":2,"name":"Size","option":"Medium"}]"""
                 )
             )
 
-            sut.populateFtsAfterFullSync(site)
+            sut.syncFtsForFullSync("1", products, variations)
 
             verify(ftsDao).insertAll(
                 listOf(
@@ -133,6 +126,63 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
                     )
                 )
             )
+        }
+
+    @Test
+    fun `given FTS disabled, when syncFtsForIncrementalSync, then does nothing`() = testBlocking {
+        whenever(isFtsEnabled()).thenReturn(false)
+        val products = listOf(createProduct(1, "Product", "SKU", ""))
+
+        sut.syncFtsForIncrementalSync("1", products, emptyList(), emptyList())
+
+        verify(ftsDao, never()).deleteProducts(any(), any())
+        verify(ftsDao, never()).insertAll(any())
+    }
+
+    @Test
+    fun `given no items to update, when syncFtsForIncrementalSync, then does nothing`() = testBlocking {
+        whenever(isFtsEnabled()).thenReturn(true)
+
+        sut.syncFtsForIncrementalSync("1", emptyList(), emptyList(), emptyList())
+
+        verify(ftsDao, never()).deleteProducts(any(), any())
+        verify(ftsDao, never()).insertAll(any())
+    }
+
+    @Test
+    fun `given products to update, when syncFtsForIncrementalSync, then deletes old and inserts new`() =
+        testBlocking {
+            whenever(isFtsEnabled()).thenReturn(true)
+            val products = listOf(createProduct(1, "Updated Product", "SKU-001", "BARCODE"))
+
+            sut.syncFtsForIncrementalSync("1", products, emptyList(), emptyList())
+
+            verify(ftsDao).deleteProducts("1", listOf("1"))
+            verify(ftsDao).insertAll(
+                listOf(
+                    WooPosSearchableFtsEntity(
+                        localSiteId = "1",
+                        itemId = "1",
+                        parentProductId = "",
+                        name = "Updated Product",
+                        sku = "SKU-001",
+                        barcode = "BARCODE",
+                        attributeValues = ""
+                    )
+                )
+            )
+        }
+
+    @Test
+    fun `given products to remove, when syncFtsForIncrementalSync, then deletes FTS entries`() =
+        testBlocking {
+            whenever(isFtsEnabled()).thenReturn(true)
+            val productsToRemove = listOf(RemoteId(5), RemoteId(10))
+
+            sut.syncFtsForIncrementalSync("1", emptyList(), emptyList(), productsToRemove)
+
+            verify(ftsDao).deleteProducts("1", listOf("5", "10"))
+            verify(ftsDao, never()).insertAll(any())
         }
 
     @Test
@@ -187,14 +237,10 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     fun `given variation with empty attributes, when building FTS entity, then attributeValues is empty`() =
         testBlocking {
             whenever(isFtsEnabled()).thenReturn(true)
-            whenever(productsDao.getAllProducts(LocalId(1))).thenReturn(
-                listOf(createProduct(1, "Product", "", ""))
-            )
-            whenever(variationsDao.getAllVariations(LocalId(1))).thenReturn(
-                listOf(createVariation(10, 1, "", "", "[]"))
-            )
+            val products = listOf(createProduct(1, "Product", "", ""))
+            val variations = listOf(createVariation(10, 1, "", "", "[]"))
 
-            sut.populateFtsAfterFullSync(site)
+            sut.syncFtsForFullSync("1", products, variations)
 
             verify(ftsDao).insertAll(
                 listOf(
@@ -224,14 +270,10 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
     fun `given variation with malformed JSON, when building FTS entity, then attributeValues is empty`() =
         testBlocking {
             whenever(isFtsEnabled()).thenReturn(true)
-            whenever(productsDao.getAllProducts(LocalId(1))).thenReturn(
-                listOf(createProduct(1, "Product", "", ""))
-            )
-            whenever(variationsDao.getAllVariations(LocalId(1))).thenReturn(
-                listOf(createVariation(10, 1, "", "", "not valid json"))
-            )
+            val products = listOf(createProduct(1, "Product", "", ""))
+            val variations = listOf(createVariation(10, 1, "", "", "not valid json"))
 
-            sut.populateFtsAfterFullSync(site)
+            sut.syncFtsForFullSync("1", products, variations)
 
             verify(ftsDao).insertAll(
                 listOf(

@@ -16,6 +16,7 @@ import javax.inject.Inject
 class WooPosSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val logger: WooPosLogWrapper,
+    private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) {
     suspend fun syncCatalog(
         site: SiteModel,
@@ -114,6 +115,7 @@ class WooPosSyncAction @Inject constructor(
         isFullSync: Boolean
     ): WooPosSyncResult {
         val allProducts = fetchResults.products + fetchResults.trashProducts
+        val siteIdString = site.localId().value.toString()
 
         return posLocalCatalogStore.executeInTransaction {
             if (isFullSync) {
@@ -130,6 +132,17 @@ class WooPosSyncAction @Inject constructor(
 
             posLocalCatalogStore.upsertProducts(allProducts).getOrThrow()
             posLocalCatalogStore.upsertVariations(fetchResults.variations).getOrThrow()
+
+            if (isFullSync) {
+                syncWithFts.syncFtsForFullSync(siteIdString, allProducts, fetchResults.variations)
+            } else {
+                syncWithFts.syncFtsForIncrementalSync(
+                    siteIdString,
+                    fetchResults.products,
+                    fetchResults.variations,
+                    fetchResults.productsToRemove
+                )
+            }
         }.fold(
             onSuccess = {
                 logger.d("Local Catalog transaction committed successfully")

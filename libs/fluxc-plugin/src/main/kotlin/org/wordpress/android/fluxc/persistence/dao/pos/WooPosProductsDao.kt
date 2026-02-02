@@ -33,6 +33,9 @@ abstract class WooPosProductsDao {
     @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun getAllProducts(localSiteId: LocalId): List<WooPosProductEntity>
 
+    @Query("SELECT * FROM PosProductEntity WHERE localSiteId = :localSiteId AND remoteId IN (:remoteIds)")
+    abstract suspend fun getProductsByIds(localSiteId: LocalId, remoteIds: List<RemoteId>): List<WooPosProductEntity>
+
     @Query("SELECT COUNT(*) FROM PosProductEntity WHERE localSiteId = :localSiteId")
     abstract suspend fun getProductCount(localSiteId: LocalId): Int
 

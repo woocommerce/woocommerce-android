@@ -6,6 +6,7 @@ import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.util.WooLog
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosProductsDao
 import org.wordpress.android.fluxc.persistence.dao.pos.WooPosSearchableFtsDao
@@ -25,22 +26,74 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
-    suspend fun populateFtsAfterFullSync(site: SiteModel) {
-        logger.d("populateFtsAfterFullSync called")
+    suspend fun syncFtsForFullSync(
+        siteIdString: String,
+        products: List<WooPosProductEntity>,
+        variations: List<WooPosVariationEntity>
+    ) {
         if (!isFtsEnabled()) {
-            logger.d("FTS is disabled, skipping")
+            logger.d("syncFtsForFullSync: FTS is disabled, skipping")
             return
         }
-        rebuildFtsIndex(site)
+        val startTime = System.currentTimeMillis()
+        logger.d("syncFtsForFullSync: clearing and rebuilding FTS index")
+
+        ftsDao.deleteAllForSite(siteIdString)
+
+        val ftsEntities = buildFtsEntities(siteIdString, products, variations)
+        if (ftsEntities.isNotEmpty()) {
+            ftsDao.insertAll(ftsEntities)
+        }
+
+        val duration = System.currentTimeMillis() - startTime
+        logger.d(
+            "syncFtsForFullSync completed: ${products.size} products, " +
+                "${variations.size} variations. Duration: ${duration}ms"
+        )
     }
 
-    suspend fun updateFtsAfterIncrementalSync(site: SiteModel) {
-        logger.d("updateFtsAfterIncrementalSync called")
+    suspend fun syncFtsForIncrementalSync(
+        siteIdString: String,
+        products: List<WooPosProductEntity>,
+        variations: List<WooPosVariationEntity>,
+        productsToRemove: List<RemoteId>
+    ) {
         if (!isFtsEnabled()) {
-            logger.d("FTS is disabled, skipping")
+            logger.d("syncFtsForIncrementalSync: FTS is disabled, skipping")
             return
         }
-        rebuildFtsIndex(site)
+        if (products.isEmpty() && variations.isEmpty() && productsToRemove.isEmpty()) {
+            logger.d("syncFtsForIncrementalSync: no items to update, skipping")
+            return
+        }
+        val startTime = System.currentTimeMillis()
+        logger.d(
+            "syncFtsForIncrementalSync: updating ${products.size} products, " +
+                "${variations.size} variations, removing ${productsToRemove.size} products"
+        )
+
+        if (products.isNotEmpty()) {
+            val productIds = products.map { it.remoteId.value.toString() }
+            ftsDao.deleteProducts(siteIdString, productIds)
+        }
+
+        if (productsToRemove.isNotEmpty()) {
+            val productIdsToRemove = productsToRemove.map { it.value.toString() }
+            ftsDao.deleteProducts(siteIdString, productIdsToRemove)
+        }
+
+        if (variations.isNotEmpty()) {
+            val variationIds = variations.map { it.remoteVariationId.value.toString() }
+            ftsDao.deleteVariations(siteIdString, variationIds)
+        }
+
+        val ftsEntities = buildFtsEntitiesForIncremental(siteIdString, products, variations)
+        if (ftsEntities.isNotEmpty()) {
+            ftsDao.insertAll(ftsEntities)
+        }
+
+        val duration = System.currentTimeMillis() - startTime
+        logger.d("syncFtsForIncrementalSync completed. Duration: ${duration}ms")
     }
 
     suspend fun ensureFtsPopulated(site: SiteModel) {
@@ -56,39 +109,50 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         val productCount = productsDao.getProductCount(siteId)
         if (productCount > 0 && isFtsTableEmpty(siteIdString)) {
             logger.d("FTS table empty with $productCount products, rebuilding index")
-            rebuildFtsIndex(site)
+            rebuildFtsIndexFromDb(site)
         } else {
             logger.d("FTS already populated or no products to index")
         }
     }
 
-    private suspend fun rebuildFtsIndex(site: SiteModel) {
-        val startTime = System.currentTimeMillis()
-        logger.d("Starting FTS index rebuild")
-
+    private suspend fun rebuildFtsIndexFromDb(site: SiteModel) {
         val siteId = site.localId()
         val siteIdString = siteId.value.toString()
-
-        ftsDao.deleteAllForSite(siteIdString)
-
         val products = productsDao.getAllProducts(siteId)
         val variations = variationsDao.getAllVariations(siteId)
-
-        val ftsEntities = buildFtsEntities(siteIdString, products, variations)
-
-        if (ftsEntities.isNotEmpty()) {
-            ftsDao.insertAll(ftsEntities)
-        }
-
-        val duration = System.currentTimeMillis() - startTime
-        logger.d(
-            "FTS index rebuild completed: ${products.size} products, " +
-                "${variations.size} variations. Duration: ${duration}ms"
-        )
+        syncFtsForFullSync(siteIdString, products, variations)
     }
 
     private suspend fun isFtsTableEmpty(siteId: String): Boolean {
         return ftsDao.countAllForSite(siteId) == 0
+    }
+
+    private suspend fun buildFtsEntitiesForIncremental(
+        siteIdString: String,
+        products: List<WooPosProductEntity>,
+        variations: List<WooPosVariationEntity>
+    ): List<WooPosSearchableFtsEntity> {
+        val productFtsEntities = products.map { it.toFtsEntity(siteIdString) }
+
+        val productNamesMap = products.associate { it.remoteId.value to it.name }.toMutableMap()
+
+        val missingParentIds = variations
+            .map { it.remoteProductId }
+            .filter { it.value !in productNamesMap.keys }
+            .distinct()
+
+        if (missingParentIds.isNotEmpty() && variations.isNotEmpty()) {
+            val localSiteId = variations.first().localSiteId
+            val parentProducts = productsDao.getProductsByIds(localSiteId, missingParentIds)
+            parentProducts.forEach { productNamesMap[it.remoteId.value] = it.name }
+        }
+
+        val variationFtsEntities = variations.map { variation ->
+            val parentName = productNamesMap[variation.remoteProductId.value] ?: ""
+            variation.toFtsEntity(siteIdString, parentName)
+        }
+
+        return productFtsEntities + variationFtsEntities
     }
 
     private fun buildFtsEntities(

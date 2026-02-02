@@ -31,10 +31,11 @@ class WooPosSyncActionTest {
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private lateinit var site: SiteModel
     private var logger: WooPosLogWrapper = mock()
+    private var syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
 
     @Before
     fun setup() {
-        sut = WooPosSyncAction(posLocalCatalogStore, logger)
+        sut = WooPosSyncAction(posLocalCatalogStore, logger, syncWithFts)
         site = SiteModel().apply {
             id = 1
             siteId = 123L

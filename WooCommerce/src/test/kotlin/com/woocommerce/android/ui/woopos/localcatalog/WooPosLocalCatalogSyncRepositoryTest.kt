@@ -40,7 +40,6 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
-    private var syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
 
     @Before
     fun setup() = runTest {
@@ -62,7 +61,6 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             dateTimeProvider = dateTimeProvider,
             analyticsTracker = analyticsTracker,
             connectionTypeProvider = connectionTypeProvider,
-            syncWithFts = syncWithFts,
         )
 
         site = SiteModel().apply {

@@ -32,7 +32,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val dateTimeProvider: DateTimeProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val connectionTypeProvider: WooPosConnectionTypeProvider,
-    private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) {
     companion object {
         const val PAGE_SIZE = 100
@@ -62,7 +61,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         }.also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
-                    syncWithFts.populateFtsAfterFullSync(site)
                     syncTimestampManager.storeFullSyncLastCompletedTimestamp(dateTimeProvider.now())
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
@@ -96,7 +94,6 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
         ).also { result ->
             when (result) {
                 is PosLocalCatalogSyncResult.Success -> {
-                    syncWithFts.updateFtsAfterIncrementalSync(site)
                     trackSyncCompleted(site, SyncType.INCREMENTAL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
