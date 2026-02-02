@@ -4227,6 +4227,7 @@
     <string name="bookings_resources_fetch_error">Error fetching team members</string>
     <string name="bookings_tab_today">Today</string>
     <string name="bookings_tab_upcoming">Upcoming</string>
+    <string name="bookings_tab_canceled">Canceled</string>
     <string name="bookings_tab_all">All</string>
     <string name="bookings_search_hint">Search bookings</string>
     <string name="bookings_search_with_filters_hint">Search filtered bookings</string>
@@ -4237,10 +4238,12 @@
     <string name="bookings_empty_state_title_default">No bookings found</string>
     <string name="bookings_empty_state_title_today">No bookings today</string>
     <string name="bookings_empty_state_title_upcoming">No upcoming bookings</string>
+    <string name="bookings_empty_state_title_canceled">No canceled bookings</string>
     <string name="bookings_empty_state_title_all">No bookings yet</string>
     <string name="bookings_empty_state_description_all">Bookings will appear here once customers start scheduling your services or registering for events.</string>
     <string name="bookings_empty_state_description_today_v2">Any bookings scheduled for today will appear here.</string>
     <string name="bookings_empty_state_description_upcoming_v2">New bookings will appear here as customers schedule your services or register for events.</string>
+    <string name="bookings_empty_state_description_canceled">Bookings that have been canceled will appear here.</string>
     <string name="bookings_search_no_results_without_filters">Try adjusting your search term to see more results.</string>
     <string name="bookings_search_no_results_with_filters">Try adjusting your search term or filters to see more results.</string>
     <string name="bookings_filtered_empty_state_description">Try adjusting or clearing your filters to see more results.</string>
