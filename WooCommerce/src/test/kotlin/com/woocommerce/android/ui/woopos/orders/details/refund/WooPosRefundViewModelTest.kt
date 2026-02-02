@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
@@ -6,6 +6,8 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
+import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider

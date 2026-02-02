@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
