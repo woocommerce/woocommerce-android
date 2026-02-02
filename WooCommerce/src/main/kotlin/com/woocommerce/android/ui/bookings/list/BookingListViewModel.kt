@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
@@ -288,6 +289,12 @@ class BookingListViewModel @Inject constructor(
         when (selectedTab) {
             BookingListTab.Today,
             BookingListTab.Upcoming -> BookingFilters(dateRange = selectedTab.asDateRangeFilter())
+
+            BookingListTab.Canceled -> BookingFilters(
+                bookingStatuses = BookingsFilterOption.BookingStatuses(
+                    setOf(BookingEntity.Status.Cancelled)
+                )
+            )
 
             BookingListTab.All -> filters
         }
