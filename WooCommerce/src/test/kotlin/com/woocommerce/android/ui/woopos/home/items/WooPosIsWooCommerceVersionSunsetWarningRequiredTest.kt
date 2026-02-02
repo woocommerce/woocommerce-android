@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home.items
 
+import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
@@ -15,15 +16,18 @@ class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
+    private val isLocalCatalogFileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
 
     private lateinit var sut: WooPosIsWooCommerceVersionSunsetWarningRequired
 
     @Before
     fun setup() {
+        whenever(isLocalCatalogFileApproachEnabled()).thenReturn(true)
         sut = WooPosIsWooCommerceVersionSunsetWarningRequired(
             getWooCoreVersion = getWooCoreVersion,
             preferencesRepository = preferencesRepository,
-            dateTimeProvider = dateTimeProvider
+            dateTimeProvider = dateTimeProvider,
+            isLocalCatalogFileApproachEnabled = isLocalCatalogFileApproachEnabled
         )
     }
 
@@ -138,5 +142,19 @@ class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
 
         // THEN
         assertThat(result).isTrue()
+    }
+
+    @Test
+    fun `given local catalog feature flag disabled, when invoked, then returns false`() = runTest {
+        // GIVEN
+        whenever(isLocalCatalogFileApproachEnabled()).thenReturn(false)
+        whenever(getWooCoreVersion()).thenReturn("10.4.0")
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
+
+        // WHEN
+        val result = sut()
+
+        // THEN
+        assertThat(result).isFalse()
     }
 }
