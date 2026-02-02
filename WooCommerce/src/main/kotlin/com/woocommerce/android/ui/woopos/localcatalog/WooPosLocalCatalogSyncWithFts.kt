@@ -15,9 +15,7 @@ import org.wordpress.android.fluxc.persistence.entity.pos.WooPosProductEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosSearchableFtsEntity
 import org.wordpress.android.fluxc.persistence.entity.pos.WooPosVariationEntity
 import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val ftsDao: WooPosSearchableFtsDao,
     private val productsDao: WooPosProductsDao,
