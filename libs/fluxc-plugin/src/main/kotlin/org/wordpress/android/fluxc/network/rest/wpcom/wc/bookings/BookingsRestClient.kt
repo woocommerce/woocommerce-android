@@ -136,6 +136,12 @@ class BookingsRestClient @Inject constructor(
                 "attendance_status",
                 attendanceStatuses.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
         }
+        if (bookingStatuses != BookingsFilterOption.BookingStatuses.DEFAULT) {
+            set(
+                "status",
+                bookingStatuses.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key }
+            )
+        }
         if (paymentStatus != null) TODO()
         if (customer != null) set("customer", customer.customerId.toString())
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
