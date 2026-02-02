@@ -67,11 +67,6 @@ class NotificationMessageHandler @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>) {
-        if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        }
-
         if (!selectedSite.exists()) {
             wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
@@ -101,6 +96,9 @@ class NotificationMessageHandler @Inject constructor(
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
+        } else if (!accountStore.hasAccessToken()) {
+            wooLog.e(NOTIFICATIONS, "User is not logged in!")
+            return
         } else if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
             wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
