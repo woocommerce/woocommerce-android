@@ -40,7 +40,7 @@ class WooPosGetPaymentMethod @Inject constructor(
 
     private suspend fun loadPaymentGateway(order: Order): PaymentGateway = withContext(coroutineDispatchers.io) {
         gatewayStore.getGateway(selectedSite.get(), order.paymentMethod)?.toAppModel()
-            ?: PaymentGateway(methodTitle = REFUND_METHOD_MANUAL)
+            ?: error("Payment gateway not found for method: ${order.paymentMethod}")
     }
 
     private suspend fun enrichRefundMethodWithCardDetails(order: Order, refundMethod: String): String {
@@ -65,9 +65,5 @@ class WooPosGetPaymentMethod @Inject constructor(
                 refundMethod
             }
         }
-    }
-
-    companion object {
-        private const val REFUND_METHOD_MANUAL = "manual"
     }
 }
