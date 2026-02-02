@@ -57,8 +57,8 @@ class WooPosItemsViewModel @Inject constructor(
     val catalogSyncOverdueBannerState: StateFlow<CatalogSyncOverdueBannerState> = _catalogSyncOverdueBannerState
 
     private val _wooCommerceVersionSunsetBannerState =
-        MutableStateFlow<WcVersionSunsetBannerState>(WcVersionSunsetBannerState.Hidden)
-    val wooCommerceVersionSunsetBannerState: StateFlow<WcVersionSunsetBannerState>
+        MutableStateFlow<WooCommerceVersionSunsetBannerState>(WooCommerceVersionSunsetBannerState.Hidden)
+    val wooCommerceVersionSunsetBannerState: StateFlow<WooCommerceVersionSunsetBannerState>
         get() = _wooCommerceVersionSunsetBannerState
 
     init {
@@ -73,7 +73,7 @@ class WooPosItemsViewModel @Inject constructor(
         }
 
         refreshSyncOverdueBannerState()
-        refreshWcVersionSunsetBannerState()
+        refreshWooCommerceVersionSunsetBannerState()
     }
 
     private fun refreshSyncOverdueBannerState() {
@@ -103,14 +103,14 @@ class WooPosItemsViewModel @Inject constructor(
         )
     }
 
-    private fun refreshWcVersionSunsetBannerState() {
+    private fun refreshWooCommerceVersionSunsetBannerState() {
         viewModelScope.launch {
             val isRequired = isWooCommerceVersionSunsetWarningRequired()
             _wooCommerceVersionSunsetBannerState.value = if (isRequired) {
                 analyticsTracker.track(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningShown)
-                WcVersionSunsetBannerState.Visible
+                WooCommerceVersionSunsetBannerState.Visible
             } else {
-                WcVersionSunsetBannerState.Hidden
+                WooCommerceVersionSunsetBannerState.Hidden
             }
         }
     }
@@ -145,9 +145,9 @@ class WooPosItemsViewModel @Inject constructor(
             }
 
             WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed -> {
-                _wooCommerceVersionSunsetBannerState.value = WcVersionSunsetBannerState.Hidden
+                _wooCommerceVersionSunsetBannerState.value = WooCommerceVersionSunsetBannerState.Hidden
                 viewModelScope.launch {
-                    preferencesRepository.setWcVersionSunsetBannerDismissalTimestamp(dateTimeProvider.now())
+                    preferencesRepository.setWooVersionSunsetBannerDismissalTimestamp(dateTimeProvider.now())
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningDismissed
                     )
@@ -327,8 +327,8 @@ class WooPosItemsViewModel @Inject constructor(
         data object Visible : CatalogSyncOverdueBannerState()
     }
 
-    sealed class WcVersionSunsetBannerState {
-        data object Hidden : WcVersionSunsetBannerState()
-        data object Visible : WcVersionSunsetBannerState()
+    sealed class WooCommerceVersionSunsetBannerState {
+        data object Hidden : WooCommerceVersionSunsetBannerState()
+        data object Visible : WooCommerceVersionSunsetBannerState()
     }
 }

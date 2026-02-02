@@ -13,10 +13,10 @@ class WooPosIsWooCommerceVersionSunsetWarningRequired @Inject constructor(
     private val dateTimeProvider: DateTimeProvider,
 ) {
     suspend operator fun invoke(): Boolean {
-        val wcVersion = getWooCoreVersion() ?: return false
-        if (wcVersion.semverCompareTo(REQUIRED_WC_VERSION) >= 0) return false
+        val wooCommerceVersion = getWooCoreVersion() ?: return false
+        if (wooCommerceVersion.semverCompareTo(REQUIRED_WC_VERSION) >= 0) return false
 
-        val dismissalTimestamp = preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()
+        val dismissalTimestamp = preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()
         if (dismissalTimestamp != null) {
             val elapsed = dateTimeProvider.now() - dismissalTimestamp
             if (elapsed < COOLDOWN_DURATION_MS) return false

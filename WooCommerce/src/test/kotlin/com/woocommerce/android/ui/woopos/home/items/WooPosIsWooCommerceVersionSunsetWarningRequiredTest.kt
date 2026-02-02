@@ -11,7 +11,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import kotlin.time.Duration.Companion.days
 
-class WooPosIsWcVersionSunsetWarningRequiredTest {
+class WooPosIsWooCommerceVersionSunsetWarningRequiredTest {
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
@@ -30,7 +30,7 @@ class WooPosIsWcVersionSunsetWarningRequiredTest {
     @Test
     fun `given WC version below 10_5_0 and no dismissal, when invoked, then returns true`() = runTest {
         whenever(getWooCoreVersion()).thenReturn("10.4.0")
-        whenever(preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
 
         val result = sut()
 
@@ -70,7 +70,7 @@ class WooPosIsWcVersionSunsetWarningRequiredTest {
         val dismissalTime = currentTime - 13.days.inWholeMilliseconds
 
         whenever(getWooCoreVersion()).thenReturn("10.4.0")
-        whenever(preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
         whenever(dateTimeProvider.now()).thenReturn(currentTime)
 
         val result = sut()
@@ -84,7 +84,7 @@ class WooPosIsWcVersionSunsetWarningRequiredTest {
         val dismissalTime = currentTime - 14.days.inWholeMilliseconds
 
         whenever(getWooCoreVersion()).thenReturn("10.4.0")
-        whenever(preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
         whenever(dateTimeProvider.now()).thenReturn(currentTime)
 
         val result = sut()
@@ -98,7 +98,7 @@ class WooPosIsWcVersionSunsetWarningRequiredTest {
         val dismissalTime = currentTime - 15.days.inWholeMilliseconds
 
         whenever(getWooCoreVersion()).thenReturn("10.4.0")
-        whenever(preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(dismissalTime)
         whenever(dateTimeProvider.now()).thenReturn(currentTime)
 
         val result = sut()
@@ -109,7 +109,7 @@ class WooPosIsWcVersionSunsetWarningRequiredTest {
     @Test
     fun `given WC version 9_x below 10_5_0, when invoked, then returns true`() = runTest {
         whenever(getWooCoreVersion()).thenReturn("9.9.0")
-        whenever(preferencesRepository.getWcVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
+        whenever(preferencesRepository.getWooVersionSunsetBannerDismissalTimestamp()).thenReturn(null)
 
         val result = sut()
 
