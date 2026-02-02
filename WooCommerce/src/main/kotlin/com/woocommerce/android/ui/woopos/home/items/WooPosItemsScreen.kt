@@ -296,8 +296,8 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
             tabs = tabs()
         )
     )
-    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible)
-    val wooCommerceVersionSunsetBannerState = MutableStateFlow(WooCommerceVersionSunsetBannerState.Hidden)
+    val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncOverdueBannerState.Hidden)
+    val wooCommerceVersionSunsetBannerState = MutableStateFlow(WooCommerceVersionSunsetBannerState.Visible)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
