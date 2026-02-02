@@ -222,8 +222,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
-            WooPosRefundUIEvent.DialogDismissed -> Unit
-            WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
+            WooPosRefundUIEvent.DialogDismissed,
+            WooPosRefundUIEvent.DialogOpened -> Unit
         }
     }
 
