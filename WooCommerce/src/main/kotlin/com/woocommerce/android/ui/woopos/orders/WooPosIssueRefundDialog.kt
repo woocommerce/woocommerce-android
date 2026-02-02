@@ -1039,3 +1039,22 @@ fun ConfirmRefundContentPreview() {
         )
     }
 }
+
+@WooPosPreview
+@Composable
+fun RefundSuccessContentPreview() {
+    val state = WooPosRefundState.RefundSuccess(
+        orderId = 123,
+        orderNumber = "#123",
+        refundedAmount = "$62.65",
+        paymentMethod = "payment card ••••1456"
+    )
+
+    WooPosTheme {
+        RefundSuccessContent(
+            state = state,
+            onDismissRequest = {},
+            onNavigationEvent = {}
+        )
+    }
+}
