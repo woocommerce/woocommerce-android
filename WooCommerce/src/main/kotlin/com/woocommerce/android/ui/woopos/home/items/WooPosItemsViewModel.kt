@@ -41,6 +41,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val dateTimeProvider: DateTimeProvider,
+    private val isWooCommerceVersionSunsetWarningRequired: WooPosIsWooCommerceVersionSunsetWarningRequired,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -55,6 +56,11 @@ class WooPosItemsViewModel @Inject constructor(
         MutableStateFlow<CatalogSyncOverdueBannerState>(CatalogSyncOverdueBannerState.Hidden)
     val catalogSyncOverdueBannerState: StateFlow<CatalogSyncOverdueBannerState> = _catalogSyncOverdueBannerState
 
+    private val _wooCommerceVersionSunsetBannerState =
+        MutableStateFlow<WcVersionSunsetBannerState>(WcVersionSunsetBannerState.Hidden)
+    val wooCommerceVersionSunsetBannerState: StateFlow<WcVersionSunsetBannerState>
+        get() = _wooCommerceVersionSunsetBannerState
+
     init {
         listenUpEvents()
         searchHelper.initialize(
@@ -67,6 +73,7 @@ class WooPosItemsViewModel @Inject constructor(
         }
 
         refreshSyncOverdueBannerState()
+        refreshWcVersionSunsetBannerState()
     }
 
     private fun refreshSyncOverdueBannerState() {
@@ -96,6 +103,18 @@ class WooPosItemsViewModel @Inject constructor(
         )
     }
 
+    private fun refreshWcVersionSunsetBannerState() {
+        viewModelScope.launch {
+            val isRequired = isWooCommerceVersionSunsetWarningRequired()
+            _wooCommerceVersionSunsetBannerState.value = if (isRequired) {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningShown)
+                WcVersionSunsetBannerState.Visible
+            } else {
+                WcVersionSunsetBannerState.Hidden
+            }
+        }
+    }
+
     fun onUIEvent(event: WooPosItemsUIEvent) {
         when (event) {
             WooPosItemsUIEvent.BackFromVariationsClicked -> {
@@ -121,6 +140,16 @@ class WooPosItemsViewModel @Inject constructor(
                 viewModelScope.launch {
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed
+                    )
+                }
+            }
+
+            WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed -> {
+                _wooCommerceVersionSunsetBannerState.value = WcVersionSunsetBannerState.Hidden
+                viewModelScope.launch {
+                    preferencesRepository.setWcVersionSunsetBannerDismissalTimestamp(dateTimeProvider.now())
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningDismissed
                     )
                 }
             }
@@ -296,5 +325,10 @@ class WooPosItemsViewModel @Inject constructor(
     sealed class CatalogSyncOverdueBannerState {
         data object Hidden : CatalogSyncOverdueBannerState()
         data object Visible : CatalogSyncOverdueBannerState()
+    }
+
+    sealed class WcVersionSunsetBannerState {
+        data object Hidden : WcVersionSunsetBannerState()
+        data object Visible : WcVersionSunsetBannerState()
     }
 }

@@ -24,7 +24,7 @@ class WooPosIsWooCommerceVersionSunsetWarningRequired @Inject constructor(
         return true
     }
 
-    companion object Companion {
+    companion object {
         const val REQUIRED_WC_VERSION = "10.5.0"
         val COOLDOWN_DURATION_MS = 14.days.inWholeMilliseconds
     }

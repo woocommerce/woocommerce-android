@@ -51,6 +51,7 @@ fun WooPosItemsScreen(modifier: Modifier = Modifier) {
         modifier = modifier,
         itemsStateFlow = productsViewModel.viewState,
         catalogSyncOverdueBannerStateFlow = productsViewModel.catalogSyncOverdueBannerState,
+        wooCommerceVersionSunsetBannerStateFlow = productsViewModel.wooCommerceVersionSunsetBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         onUIEvent = { productsViewModel.onUIEvent(it) },
@@ -63,6 +64,7 @@ private fun WooPosItemsScreen(
     modifier: Modifier = Modifier,
     itemsStateFlow: StateFlow<WooPosItemsToolbarViewState>,
     catalogSyncOverdueBannerStateFlow: StateFlow<WooPosItemsViewModel.CatalogSyncOverdueBannerState>,
+    wooCommerceVersionSunsetBannerStateFlow: StateFlow<WooPosItemsViewModel.WcVersionSunsetBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onUIEvent: (WooPosItemsUIEvent) -> Unit,
@@ -73,11 +75,13 @@ private fun WooPosItemsScreen(
 ) {
     val state = itemsStateFlow.collectAsState()
     val catalogSyncOverdueBannerState = catalogSyncOverdueBannerStateFlow.collectAsState()
+    val wcVersionSunsetBannerState = wooCommerceVersionSunsetBannerStateFlow.collectAsState()
 
     MainItemsList(
         modifier = modifier,
         state = state,
         bannerState = catalogSyncOverdueBannerState,
+        wcVersionSunsetBannerState = wcVersionSunsetBannerState,
         productsViewState = productsViewState,
         couponsListState = couponsListState,
         onSearchEvent = {
@@ -100,6 +104,7 @@ private fun WooPosItemsScreen(
         onTabClicked = { onUIEvent(WooPosItemsUIEvent.OnTabClicked(it)) },
         onBackClicked = { onUIEvent(WooPosItemsUIEvent.BackFromVariationsClicked) },
         onSyncWarningBannerDismissed = { onUIEvent(WooPosItemsUIEvent.SyncOverdueBannerDismissed) },
+        onWcVersionSunsetBannerDismissed = { onUIEvent(WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed) },
         productsContent = productsContent ?: {
             WooPosProductsScreen(
                 modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
@@ -123,6 +128,7 @@ private fun MainItemsList(
     modifier: Modifier,
     state: State<WooPosItemsToolbarViewState>,
     bannerState: State<WooPosItemsViewModel.CatalogSyncOverdueBannerState>,
+    wcVersionSunsetBannerState: State<WooPosItemsViewModel.WcVersionSunsetBannerState>,
     productsViewState: LazyListState,
     couponsListState: LazyListState,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
@@ -130,6 +136,7 @@ private fun MainItemsList(
     onAddCouponEvent: () -> Unit,
     onBackClicked: () -> Unit,
     onSyncWarningBannerDismissed: () -> Unit,
+    onWcVersionSunsetBannerDismissed: () -> Unit,
     productsContent: @Composable () -> Unit = {
         WooPosProductsScreen(
             modifier = Modifier.padding(horizontal = WooPosSpacing.Medium.value),
@@ -165,6 +172,11 @@ private fun MainItemsList(
                 Modifier
                     .height(WooPosSpacing.Small.value)
                     .padding(horizontal = WooPosSpacing.Medium.value)
+            )
+
+            WooPosWooCommerceVersionSunsetBanner(
+                state = wcVersionSunsetBannerState.value,
+                onDismiss = onWcVersionSunsetBannerDismissed
             )
 
             WooPosCatalogSyncOverdueBanner(
@@ -255,11 +267,13 @@ fun WooPosItemsScreenSearchVisiblePreview(modifier: Modifier = Modifier) {
         )
     )
     val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible)
+    val wcVersionSunsetBannerState = MutableStateFlow(WooPosItemsViewModel.WcVersionSunsetBannerState.Hidden)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
             catalogSyncOverdueBannerStateFlow = bannerState,
+            wooCommerceVersionSunsetBannerStateFlow = wcVersionSunsetBannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             onUIEvent = {},
@@ -282,11 +296,13 @@ fun WooPosItemsScreenSearchHiddenPreview(modifier: Modifier = Modifier) {
         )
     )
     val bannerState = MutableStateFlow(WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible)
+    val wcVersionSunsetBannerState = MutableStateFlow(WooPosItemsViewModel.WcVersionSunsetBannerState.Hidden)
     WooPosTheme {
         WooPosItemsScreen(
             modifier = modifier,
             itemsStateFlow = productState,
             catalogSyncOverdueBannerStateFlow = bannerState,
+            wooCommerceVersionSunsetBannerStateFlow = wcVersionSunsetBannerState,
             productsViewState = rememberLazyListState(),
             couponsListState = rememberLazyListState(),
             onUIEvent = {},
