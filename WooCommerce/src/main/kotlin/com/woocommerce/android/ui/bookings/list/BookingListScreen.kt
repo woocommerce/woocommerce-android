@@ -396,6 +396,7 @@ private fun EmptyListView(
             text = when (selectedTab) {
                 BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
+                BookingListTab.Canceled -> stringResource(R.string.bookings_empty_state_title_canceled)
                 BookingListTab.All -> if (areFiltersActive) {
                     stringResource(R.string.bookings_empty_state_title_default)
                 } else {
@@ -412,7 +413,8 @@ private fun EmptyListView(
             text = when (selectedTab) {
                 BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
                 BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
-                else -> {
+                BookingListTab.Canceled -> stringResource(R.string.bookings_empty_state_description_canceled)
+                BookingListTab.All -> {
                     if (areFiltersActive) {
                         stringResource(R.string.bookings_filtered_empty_state_description)
                     } else {
@@ -490,6 +492,7 @@ private fun EmptySearchResultsView(
 private fun BookingListTab.name(): String = when (this) {
     BookingListTab.Today -> stringResource(R.string.bookings_tab_today)
     BookingListTab.Upcoming -> stringResource(R.string.bookings_tab_upcoming)
+    BookingListTab.Canceled -> stringResource(R.string.bookings_tab_canceled)
     BookingListTab.All -> stringResource(R.string.bookings_tab_all)
 }
 
