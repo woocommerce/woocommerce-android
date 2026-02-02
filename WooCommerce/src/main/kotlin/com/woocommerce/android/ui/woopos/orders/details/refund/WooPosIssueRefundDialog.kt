@@ -518,7 +518,7 @@ private fun ReviewRefundContent(
                     isTotal = true
                 )
                 WooPosText(
-                    text = "TEST: Via payment card ••••1456",
+                    text = stringResource(R.string.woopos_orders_via_payment_method, state.paymentMethod),
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Normal,
                     color = WooPosTheme.colors.onSurfaceVariantHighest

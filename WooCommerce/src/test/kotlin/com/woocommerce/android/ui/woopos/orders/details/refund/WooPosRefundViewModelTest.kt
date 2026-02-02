@@ -52,6 +52,7 @@ class WooPosRefundViewModelTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val loadPaymentMethod: WooPosGetPaymentMethod = mock()
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -128,6 +129,7 @@ class WooPosRefundViewModelTest {
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(WooResult(testSettings))
         whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(WooResult(false))
+        whenever(loadPaymentMethod.invoke(any())).thenReturn("Manual refund")
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -143,7 +145,8 @@ class WooPosRefundViewModelTest {
             currencyFormatter = currencyFormatter,
             refundStore = refundStore,
             selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore
+            wooCommerceStore = wooCommerceStore,
+            getPaymentMethod = loadPaymentMethod
         )
     }
 
