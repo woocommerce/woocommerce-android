@@ -66,7 +66,7 @@ enum class BookingListLoadingState {
 }
 
 enum class BookingListTab {
-    Today, Upcoming, All
+    Today, Upcoming, Canceled, All
 }
 
 enum class BookingListSortOption {
