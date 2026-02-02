@@ -136,11 +136,12 @@ class WooPosSyncAction @Inject constructor(
             if (isFullSync) {
                 syncWithFts.syncFtsForFullSync(siteIdString, allProducts, fetchResults.variations)
             } else {
+                val trashProductIds = fetchResults.trashProducts.map { it.remoteId }
                 syncWithFts.syncFtsForIncrementalSync(
                     siteIdString,
                     fetchResults.products,
                     fetchResults.variations,
-                    fetchResults.productsToRemove
+                    fetchResults.productsToRemove + trashProductIds
                 )
             }
         }.fold(
