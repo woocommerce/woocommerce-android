@@ -439,6 +439,46 @@ git mv WooCommerce/src/.../orders/WooPosOrderStatusMapper.kt \
 
 ---
 
+## Merge with trunk (2026-02-02)
+
+### Date: 2026-02-02
+
+### Changes Merged from trunk
+Merged latest trunk changes into pos-refunds-package-reorg branch (29 commits ahead after merge).
+
+**Key changes from trunk**:
+- Added `WooPosGetPaymentMethod` class in `orders` package (replaces the `WooPosLoadPaymentMethod` we had in branch)
+- Payment method loading logic now in trunk with slightly different error handling (throws error instead of returning Result)
+- New FTS search database schema (WooPosSearchableFtsEntity)
+- Push notification handling improvements
+- Beta features UI updates
+
+### Merge Resolution
+
+**Issue**: Missing import for `WooPosGetPaymentMethod` in refund files after auto-merge
+
+**Fixed files**:
+1. **WooPosRefundViewModel.kt** (line 10):
+   - Added: `import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod`
+   - Constructor parameter already correct from merge (line 41): `private val getPaymentMethod: WooPosGetPaymentMethod`
+
+2. **WooPosRefundViewModelTest.kt** (line 9):
+   - Added: `import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod`
+   - Mock declaration already correct from merge (line 55): `private val loadPaymentMethod: WooPosGetPaymentMethod = mock()`
+
+**Note**: trunk's `WooPosGetPaymentMethod` is similar to our `WooPosLoadPaymentMethod` but:
+- Located in `orders` package (not `orders.details`)
+- Throws error instead of returning `Result<PaymentGateway>`
+- Simpler API: `suspend operator fun invoke(order: Order): String`
+
+### Testing
+- ✅ All POS unit tests pass (WooPosOrders*, WooPosRefund*, WooPosGetPaymentMethod*)
+- ✅ Detekt passes with no violations
+- ✅ Build successful
+- ✅ No behavior regressions
+
+---
+
 ## Package Reorganization (2026-01-30)
 
 ### Date: 2026-01-30
