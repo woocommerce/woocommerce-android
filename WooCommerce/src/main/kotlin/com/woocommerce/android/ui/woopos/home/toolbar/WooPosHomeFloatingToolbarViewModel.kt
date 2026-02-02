@@ -8,6 +8,8 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Reconnecting
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionController
 import com.woocommerce.android.ui.woopos.cardreader.connection.WooPosCardReaderConnectionControllerFactory
@@ -25,6 +27,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,10 +55,13 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            cardReaderFacade.readerStatus.collect {
-                _state.value = _state.value.copy(
-                    cardReaderStatus = mapCardReaderStatusToUiState(it)
-                )
+            combine(
+                cardReaderFacade.readerStatus,
+                cardReaderFacade.batteryStatus
+            ) { readerStatus, batteryStatus ->
+                mapCardReaderStatusToUiState(readerStatus, batteryStatus)
+            }.collect { cardReaderStatus ->
+                _state.value = _state.value.copy(cardReaderStatus = cardReaderStatus)
             }
         }
     }
@@ -115,7 +121,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private fun handleOnCardReaderStatusClicked() {
         when (_state.value.cardReaderStatus) {
-            WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
+            is WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected -> {
                 viewModelScope.launch {
                     controller.disconnect()
                 }
@@ -143,10 +149,27 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         }
     }
 
-    private fun mapCardReaderStatusToUiState(status: CardReaderStatus) = when (status) {
-        is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected
+    private fun mapCardReaderStatusToUiState(
+        status: CardReaderStatus,
+        batteryStatus: CardReaderBatteryStatus
+    ): WooPosHomeFloatingToolbarState.WooPosCardReaderStatus = when (status) {
+        is Connected -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Connected(
+            batteryState = mapBatteryState(batteryStatus)
+        )
         is NotConnected, Connecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.NotConnected
         Reconnecting -> WooPosHomeFloatingToolbarState.WooPosCardReaderStatus.Reconnecting
+    }
+
+    private fun mapBatteryState(status: CardReaderBatteryStatus): WooPosHomeFloatingToolbarState.BatteryState {
+        return when (status) {
+            is CardReaderBatteryStatus.StatusChanged -> when (status.batteryStatus) {
+                BatteryStatus.CRITICAL -> WooPosHomeFloatingToolbarState.BatteryState.CRITICAL
+                BatteryStatus.LOW -> WooPosHomeFloatingToolbarState.BatteryState.LOW
+                BatteryStatus.NOMINAL, BatteryStatus.UNKNOWN -> WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
+            }
+            CardReaderBatteryStatus.Warning -> WooPosHomeFloatingToolbarState.BatteryState.LOW
+            CardReaderBatteryStatus.Unknown -> WooPosHomeFloatingToolbarState.BatteryState.NOMINAL
+        }
     }
 
     private val toolbarMenuItems by lazy {
