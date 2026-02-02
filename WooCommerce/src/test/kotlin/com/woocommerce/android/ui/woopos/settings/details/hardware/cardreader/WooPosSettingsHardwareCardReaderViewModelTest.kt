@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.settings.details.hardware.cardreader
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.cardreader.connection.event.BatteryStatus
+import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.connection.event.SoftwareUpdateAvailability
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
@@ -47,12 +49,16 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
     private val softwareUpdateFlow = MutableStateFlow<SoftwareUpdateAvailability>(
         SoftwareUpdateAvailability.NotAvailable
     )
+    private val batteryStatusFlow = MutableStateFlow<CardReaderBatteryStatus>(
+        CardReaderBatteryStatus.Unknown
+    )
 
     @Test
     fun `given disconnected reader, when init, then shows disconnected state`() = runTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
         readerStatusFlow.value = CardReaderStatus.NotConnected()
 
         // WHEN
@@ -75,6 +81,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
         // WHEN
         val viewModel = createViewModel()
         readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
@@ -94,6 +101,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
         val viewModel = createViewModel()
 
         // WHEN
@@ -111,6 +119,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         // GIVEN
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
         val viewModel = createViewModel()
 
         // WHEN
@@ -133,6 +142,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
 
         // WHEN
         val viewModel = createViewModel()
@@ -157,6 +167,7 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         }
         whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
         whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
 
         // WHEN
         val viewModel = createViewModel()
@@ -169,6 +180,37 @@ class WooPosSettingsHardwareCardReaderViewModelTest {
         assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
         val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
         assertThat(connectedState.isSoftwareUpdateAvailable).isFalse()
+    }
+
+    @Test
+    fun `given connected reader, when battery status changes, then updates battery level`() = runTest {
+        // GIVEN
+        val mockReader = mock<CardReader> {
+            whenever(it.id).thenReturn("Test Reader")
+            whenever(it.currentBatteryLevel).thenReturn(0.75f)
+            whenever(it.firmwareVersion).thenReturn("1.2.3")
+        }
+        whenever(cardReaderFacade.readerStatus).thenReturn(readerStatusFlow)
+        whenever(cardReaderFacade.softwareUpdateAvailability).thenReturn(softwareUpdateFlow)
+        whenever(cardReaderFacade.batteryStatus).thenReturn(batteryStatusFlow)
+
+        val viewModel = createViewModel()
+        readerStatusFlow.value = CardReaderStatus.Connected(mockReader)
+        advanceUntilIdle()
+
+        // WHEN
+        batteryStatusFlow.value = CardReaderBatteryStatus.StatusChanged(
+            batteryLevel = 0.15f,
+            batteryStatus = BatteryStatus.LOW,
+            isCharging = false
+        )
+        advanceUntilIdle()
+
+        // THEN
+        val uiState = viewModel.uiState.value
+        assertThat(uiState).isInstanceOf(WooPosSettingsHardwareCardReaderUiState.Connected::class.java)
+        val connectedState = uiState as WooPosSettingsHardwareCardReaderUiState.Connected
+        assertThat(connectedState.batteryLevel).isEqualTo(0.15f)
     }
 
     private fun createViewModel() = WooPosSettingsHardwareCardReaderViewModel(
