@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.compose.runtime.Immutable
 import java.math.BigDecimal

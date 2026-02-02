@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateDpAsState
@@ -73,6 +73,10 @@ fun WooPosIssueRefundDialog(
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
+
+    LaunchedEffect(Unit) {
+        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+    }
 
     refundReasonUpdate?.let { reason ->
         LaunchedEffect(reason) {
