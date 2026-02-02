@@ -123,7 +123,7 @@ abstract class CustomerListViewModel(
             }
         }
     }
-    private suspend fun loadCustomers(page: Int) = mutex.withLock {
+    private suspend fun loadCustomers(page: Int): Unit = mutex.withLock {
         if (page != 1 && !paginationState.hasNextPage) return
 
         val searchBy = getSearchParam()

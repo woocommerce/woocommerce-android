@@ -91,7 +91,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
         verify(orderDetailRepository).getOrderById(any())
         verify(shippingLabelRepository).getLastUsedPackage()
         assertThat(viewState!!.packagesUiModels.size).isEqualTo(1)
-        assertThat(viewState!!.packages.first().selectedPackage).isEqualTo(availablePackages.first())
+        assertThat(viewState.packages.first().selectedPackage).isEqualTo(availablePackages.first())
     }
 
     @Test
@@ -131,7 +131,7 @@ class EditShippingLabelPackagesViewModelTest : BaseUnitTest() {
 
         viewModel.onWeightEdited(0, 10.0f)
         assertThat(viewState!!.packagesUiModels.first().data.weight).isEqualTo(10.0f)
-        assertThat(viewState!!.isDataValid).isTrue()
+        assertThat(viewState.isDataValid).isTrue()
     }
 
     @Test

@@ -32,9 +32,11 @@ import org.wordpress.android.fluxc.model.SiteModel
 class DashboardViewModelTest : BaseUnitTest() {
     private val resourceProvider: ResourceProvider = mock()
     private val selectedSite: SelectedSite = mock {
-        on { get() } doReturn SiteModel().apply {
+        val site = SiteModel().apply {
             url = "https://example.com"
         }
+        on { get() } doReturn site
+        on { getIfExists() } doReturn site
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val usageTracksEventEmitter: DashboardStatsUsageTracksEventEmitter = mock()
@@ -57,7 +59,7 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
-        onBlocking { invoke() } doReturn Status.REGISTERED
+        onBlocking { invoke(any()) } doReturn Status.REGISTERED_WPCOM_ONLY
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
@@ -113,7 +115,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                     }
                 )
             )
-            whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.UNREGISTERED)
+            whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.UNREGISTERED)
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -133,7 +135,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.UNREGISTERED)
+                whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.UNREGISTERED)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -349,7 +351,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.invoke()).thenReturn(Status.REGISTERED)
+                whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.REGISTERED_WPCOM_ONLY)
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()

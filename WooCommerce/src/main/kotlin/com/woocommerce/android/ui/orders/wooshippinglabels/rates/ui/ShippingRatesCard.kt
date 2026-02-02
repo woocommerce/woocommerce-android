@@ -409,7 +409,7 @@ private fun ShippingRateItem(
                 }
                 if (isSelected) {
                     ShippingRateItemExpandedDescription(
-                        shippingRate = selectedRate!!,
+                        shippingRate = selectedRate,
                         onSelectedRateOptionChanged = onSelectedRateOptionChanged,
                         modifier = Modifier.padding(start = 12.dp, top = 8.dp, end = 16.dp)
                     )
