@@ -610,7 +610,8 @@ fun WooPosOrdersScreenPreview() {
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
                 selectedDetails = details1,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -646,7 +647,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
                     isLoading = false
                 ),
                 selectedDetails = details,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -682,7 +684,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
                     isLoading = false
                 ),
                 selectedDetails = details,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},

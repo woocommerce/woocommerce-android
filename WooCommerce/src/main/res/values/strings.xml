@@ -3819,6 +3819,7 @@
         <item quantity="other">Items subtotal (%d items)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
+    <string name="woopos_orders_via_payment_method">Via %1$s</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
     <string name="woopos_orders_refund_reason_placeholder">Reason for refunding order</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
