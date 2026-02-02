@@ -352,13 +352,16 @@ Also questioned whether `WooPosOrderItemMapper` and `WooPosOrderStatusMapper` co
 
 ### Analysis
 
-**Mapper locations**:
-- `WooPosOrderItemMapper` - Used by `WooPosOrdersViewModel` (line 42) for the orders **list** screen
-- `WooPosOrderStatusMapper` - Used by both `WooPosOrderItemMapper` and `WooPosOrderDetailsMapper` (shared utility)
+**Initial assessment** was incorrect. Upon reconsideration:
+- Both mappers are fundamentally about **displaying order information** (which is the domain of the details view)
+- `WooPosOrderItemMapper` maps order data for display in the list (still order display logic)
+- `WooPosOrderStatusMapper` provides status display formatting (order presentation concern)
+- Both mappers are utilities for rendering order information, not core order list functionality
 
-**Conclusion**: Both mappers should stay in the `orders` package because:
-- `WooPosOrderItemMapper` is for the orders list, not details
-- `WooPosOrderStatusMapper` is shared between list and details views
+**Revised conclusion**: Both mappers should move to the `details` package because:
+- They handle order presentation/display concerns
+- The orders list just consumes these utilities
+- Better semantic grouping: details package contains all order display logic
 
 **File naming issue**:
 - File: `WooPosOrdersDetails.kt` (plural)
@@ -367,33 +370,72 @@ Also questioned whether `WooPosOrderItemMapper` and `WooPosOrderStatusMapper` co
 
 ### Solution
 
-Renamed file to match the singular naming:
-- `WooPosOrdersDetails.kt` → `WooPosOrderDetails.kt`
+1. Renamed file to match the singular naming:
+   - `WooPosOrdersDetails.kt` → `WooPosOrderDetails.kt`
+
+2. Moved mappers to `details` package:
+   - `WooPosOrderItemMapper` → `orders.details.WooPosOrderItemMapper`
+   - `WooPosOrderStatusMapper` → `orders.details.WooPosOrderStatusMapper`
 
 ### Changes Made
 
-**Step 1**: Used `git mv` to rename the file:
+**Step 1**: Used `git mv` to rename the details file:
 ```bash
 git mv WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/orders/details/WooPosOrdersDetails.kt \
        WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/orders/details/WooPosOrderDetails.kt
 ```
 
-**No code changes needed**:
+**No code changes needed for file rename**:
 - Composable function already named `WooPosOrderDetails` (singular) ✅
 - Package declaration unchanged: `package com.woocommerce.android.ui.woopos.orders.details` ✅
 - All imports reference the function name, not the file name ✅
 - No test files exist for this UI-only composable ✅
 
+**Step 2**: Moved mapper files using `git mv`:
+```bash
+git mv WooCommerce/src/.../orders/WooPosOrderItemMapper.kt \
+       WooCommerce/src/.../orders/details/WooPosOrderItemMapper.kt
+git mv WooCommerce/src/.../orders/WooPosOrderStatusMapper.kt \
+       WooCommerce/src/.../orders/details/WooPosOrderStatusMapper.kt
+```
+
+**Step 3**: Updated package declarations in moved files:
+
+**WooPosOrderItemMapper.kt**:
+- Changed package: `com.woocommerce.android.ui.woopos.orders` → `com.woocommerce.android.ui.woopos.orders.details`
+- Added import: `com.woocommerce.android.ui.woopos.orders.WooPosOrdersState` (needed after package change)
+
+**WooPosOrderStatusMapper.kt**:
+- Changed package: `com.woocommerce.android.ui.woopos.orders` → `com.woocommerce.android.ui.woopos.orders.details`
+- Added imports:
+  - `com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey`
+  - `com.woocommerce.android.ui.woopos.orders.PosOrderStatus`
+
+**Step 4**: Updated imports in files that reference the mappers:
+
+**WooPosOrdersViewModel.kt** (line 16):
+- Added: `import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper`
+
+**WooPosOrderDetailsMapper.kt** (line 7):
+- Removed: `import com.woocommerce.android.ui.woopos.orders.WooPosOrderStatusMapper`
+- Now uses same-package reference (both in `details` package)
+
+**WooPosOrdersViewModelTest.kt** (lines 16-17):
+- Added: `import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper`
+- Added: `import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper`
+
 ### Testing
 - ✅ All POS unit tests pass (WooPosOrders*, WooPosRefund*)
 - ✅ Detekt passes with no violations
 - ✅ Build successful
-- ✅ No behavior changes - pure file rename
+- ✅ No behavior changes - pure refactoring
 
 ### Benefits
 - **Consistency**: File name now matches composable function name
 - **Clarity**: Singular naming makes it clear this is for a single order detail view
 - **Alignment**: Matches naming pattern of `WooPosOrderDetailsMapper` (singular)
+- **Better organization**: Mappers now grouped with other display/presentation logic in `details` package
+- **Semantic clarity**: `details` package contains all order display concerns, `orders` package is for list functionality
 
 ---
 
