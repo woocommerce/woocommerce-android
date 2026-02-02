@@ -276,61 +276,68 @@ private fun RefundSuccessContent(
     )
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        WooPosSuccessCheckmark(
-            contentDescription = stringResource(R.string.woopos_orders_refund_complete),
-            onAnimationStageChanged = { stage -> animationStage.value = stage }
-        )
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(WooPosSpacing.XLarge.value),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            WooPosSuccessCheckmark(
+                contentDescription = stringResource(R.string.woopos_orders_refund_complete),
+                onAnimationStageChanged = { stage -> animationStage.value = stage }
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
 
-        WooPosText(
-            text = stringResource(R.string.woopos_orders_refund_complete),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSurface
-        )
+            WooPosText(
+                text = stringResource(R.string.woopos_orders_refund_complete),
+                style = WooPosTypography.Heading,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center,
+                color = MaterialTheme.colorScheme.onSurface
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        WooPosText(
-            text = stringResource(
-                R.string.woopos_orders_refund_success_message,
-                state.refundedAmount,
-                state.paymentMethod
-            ),
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.onSurface,
-            textAlign = TextAlign.Center
-        )
+            WooPosText(
+                text = stringResource(
+                    R.string.woopos_orders_refund_success_message,
+                    state.refundedAmount,
+                    state.paymentMethod
+                ),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center
+            )
+        }
 
         Spacer(modifier = Modifier.height(marginBetweenButtonAndText))
 
-        WooPosButton(
-            text = stringResource(R.string.done),
-            onClick = onDismissRequest,
+        Column(
             modifier = Modifier
-                .height(80.dp)
-                .width(604.dp)
-        )
+                .fillMaxWidth()
+                .padding(WooPosSpacing.XLarge.value),
+            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
+        ) {
+            WooPosButton(
+                text = stringResource(R.string.done),
+                onClick = onDismissRequest,
+                modifier = Modifier.fillMaxWidth()
+            )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_receipt_button),
-            onClick = {
-                onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(state.orderId))
-            },
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp)
-        )
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_receipt_button),
+                onClick = {
+                    onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(state.orderId))
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
