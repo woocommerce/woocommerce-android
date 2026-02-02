@@ -47,6 +47,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -108,7 +110,7 @@ fun WooPosIssueRefundDialog(
                 onNavigationEvent = onNavigationEvent,
                 onEvent = handleEvent
             )
-            is WooPosRefundState.Error -> ErrorContent(currentState.message, handleDismiss)
+            is WooPosRefundState.Error -> ErrorContent(currentState, handleEvent, handleDismiss)
             is WooPosRefundState.NoRefundableItems -> NoItemsContent(handleDismiss)
             is WooPosRefundState.RefundSuccess -> RefundSuccessContent(currentState, handleDismiss)
         }
@@ -201,28 +203,36 @@ private fun LoadingContent() {
 
 @Composable
 private fun ErrorContent(
-    message: String,
+    errorState: WooPosRefundState.Error,
+    onEvent: (WooPosRefundUIEvent) -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.XLarge.value),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        WooPosText(
-            text = message,
-            style = WooPosTypography.BodyLarge,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.size(WooPosSpacing.Large.value))
-        WooPosButton(
-            text = stringResource(R.string.close),
-            onClick = onDismissRequest
-        )
+    val (title, retryEvent) = when (errorState.errorType) {
+        WooPosRefundState.Error.ErrorType.Loading -> {
+            stringResource(R.string.woopos_refund_loading_error_title) to
+                WooPosRefundUIEvent.RetryLoadRefundableItems
+        }
+        WooPosRefundState.Error.ErrorType.Creating -> {
+            stringResource(R.string.woopos_refund_creating_error_title) to
+                WooPosRefundUIEvent.RetryCreateRefund
+        }
     }
+
+    WooPosErrorScreen(
+        message = title,
+        reason = stringResource(R.string.woopos_refund_error_subtitle),
+        primaryButton = WooPosErrorScreenButtonState(
+            text = stringResource(R.string.retry),
+            click = { onEvent(retryEvent) }
+        ),
+        secondaryButton = WooPosErrorScreenButtonState(
+            text = stringResource(R.string.cancel),
+            click = {
+                onEvent(WooPosRefundUIEvent.CancelRefund)
+                onDismissRequest()
+            }
+        )
+    )
 }
 
 @Composable

@@ -45,8 +45,15 @@ sealed class WooPosRefundState {
 
     @Immutable
     data class Error(
-        val message: String
-    ) : WooPosRefundState()
+        val message: String,
+        val errorType: ErrorType
+    ) : WooPosRefundState() {
+        @Immutable
+        enum class ErrorType {
+            Loading,
+            Creating
+        }
+    }
 
     @Immutable
     data object NoRefundableItems : WooPosRefundState()
