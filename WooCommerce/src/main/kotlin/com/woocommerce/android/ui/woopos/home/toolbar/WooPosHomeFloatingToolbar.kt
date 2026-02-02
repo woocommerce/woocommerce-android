@@ -351,14 +351,16 @@ private fun CardReaderStatusButton(
             ) {
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
                 Circle(size = 14.dp, color = illustrationColor)
-                if (state is WooPosCardReaderStatus.Connected) {
-                    BatteryWarningIcon(batteryState = state.batteryState)
-                }
                 Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
                 ReaderStatusText(
                     modifier = Modifier.animateContentSize(),
                     title = title,
                 )
+
+                if (state is WooPosCardReaderStatus.Connected) {
+                    BatteryWarningIcon(batteryState = state.batteryState)
+                }
+
                 Spacer(modifier = Modifier.width(WooPosSpacing.Medium.value))
             }
         }
@@ -395,21 +397,19 @@ private fun BatteryWarningIcon(batteryState: WooPosHomeFloatingToolbarState.Batt
     when (batteryState) {
         WooPosHomeFloatingToolbarState.BatteryState.NOMINAL -> { }
         WooPosHomeFloatingToolbarState.BatteryState.LOW -> {
-            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_low),
                 contentDescription = stringResource(R.string.woopos_battery_low),
                 tint = WooPosTheme.colors.alert,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
         WooPosHomeFloatingToolbarState.BatteryState.CRITICAL -> {
-            Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_woo_pos_battery_critical),
                 contentDescription = stringResource(R.string.woopos_battery_critical),
                 tint = MaterialTheme.colorScheme.error,
-                modifier = Modifier.size(16.dp)
+                modifier = Modifier.size(20.dp)
             )
         }
     }
