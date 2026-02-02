@@ -14,6 +14,7 @@ class WooPosIsWooCommerceVersionSunsetWarningRequired @Inject constructor(
     private val dateTimeProvider: DateTimeProvider,
     private val isLocalCatalogFileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
 ) {
+    @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
         if (!isLocalCatalogFileApproachEnabled()) return false
 
