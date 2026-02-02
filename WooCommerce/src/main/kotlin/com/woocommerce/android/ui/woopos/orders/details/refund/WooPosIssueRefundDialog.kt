@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
@@ -68,6 +68,10 @@ fun WooPosIssueRefundDialog(
         hiltViewModel<WooPosRefundViewModel, WooPosRefundViewModel.Factory>(key = "refund_$orderId") { factory ->
             factory.create(orderId)
         }
+
+    LaunchedEffect(Unit) {
+        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+    }
 
     refundReasonUpdate?.let { reason ->
         LaunchedEffect(reason) {
@@ -518,7 +522,7 @@ private fun ReviewRefundContent(
                     isTotal = true
                 )
                 WooPosText(
-                    text = "TEST: Via payment card ••••1456",
+                    text = stringResource(R.string.woopos_orders_via_payment_method, state.paymentMethod),
                     style = WooPosTypography.BodyMedium,
                     fontWeight = FontWeight.Normal,
                     color = WooPosTheme.colors.onSurfaceVariantHighest

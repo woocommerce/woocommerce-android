@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -49,6 +49,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCor
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
+import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
+import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
+import com.woocommerce.android.ui.woopos.orders.WOO_POS_ORDERS_TOOLBAR_HEIGHT
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 
 @Composable
 fun WooPosOrderDetails(

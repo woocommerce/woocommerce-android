@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.orders
 
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosGetRefundableItems
 import com.woocommerce.android.util.FeatureFlag
 import javax.inject.Inject
 
