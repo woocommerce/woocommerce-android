@@ -152,6 +152,7 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.Customer -> copy(customer = bookingsFilterOption)
         is BookingsFilterOption.TeamMembers -> copy(teamMembers = bookingsFilterOption)
         is BookingsFilterOption.AttendanceStatuses -> copy(attendanceStatuses = bookingsFilterOption)
+        is BookingsFilterOption.BookingStatuses -> copy(bookingStatuses = bookingsFilterOption)
         is BookingsFilterOption.PaymentStatus -> copy(paymentStatus = bookingsFilterOption)
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
