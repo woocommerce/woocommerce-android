@@ -1401,7 +1401,7 @@ platform :android do
       reuse_identifier: "#{app.downcase}-prototype-build-link"
     )
 
-    annotate_ci_build_with_prototype_build_install_link
+    annotate_ci_build_with_prototype_build_install_link(app: app)
   end
 
   #####################################################################################
@@ -1702,14 +1702,16 @@ end
 
 # If running in Buildkite, annotates the current build with prototype build info
 #
-def annotate_ci_build_with_prototype_build_install_link
+def annotate_ci_build_with_prototype_build_install_link(app:)
   install_link = 'Firebase App Distribution'
   install_url = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::FIREBASE_APP_DISTRO_RELEASE]&.dig(:testingUri)
   install_link = "[#{install_link}](#{install_url})" unless install_url.nil?
 
+  platform_name = APP_DISPLAY_NAMES.fetch(app, app)
+
   buildkite_annotate(
     style: 'success',
-    context: 'prototype-build',
-    message: "Prototype build uploaded to #{install_link}"
+    context: "prototype-build-#{app.downcase}",
+    message: "#{platform_name} prototype build uploaded to #{install_link}"
   )
 end
