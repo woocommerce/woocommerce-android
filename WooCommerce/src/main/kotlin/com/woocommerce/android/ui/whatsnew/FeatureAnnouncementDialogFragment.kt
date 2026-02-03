@@ -2,11 +2,11 @@ package com.woocommerce.android.ui.whatsnew
 
 import android.content.DialogInterface
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.net.toUri
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
@@ -103,7 +103,7 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
 
     private fun openDetailsUrl(url: String) {
         runCatching {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             startActivity(intent)
         }
     }
