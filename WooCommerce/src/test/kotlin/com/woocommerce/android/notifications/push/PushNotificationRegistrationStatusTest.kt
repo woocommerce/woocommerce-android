@@ -107,7 +107,8 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
     }
 
     private fun setupWooRegistration(siteId: Long, isRegistered: Boolean) {
-        whenever(pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId)).thenReturn(flowOf(isRegistered))
+        whenever(pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId))
+            .thenReturn(flowOf(isRegistered))
     }
 
     companion object {

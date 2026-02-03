@@ -358,7 +358,8 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.REGISTERED_WPCOM_ONLY))
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.REGISTERED_WPCOM_ONLY))
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -398,9 +399,10 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-            whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
-            whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(false))
-        }
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(false))
+            }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
 
