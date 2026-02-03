@@ -3848,6 +3848,7 @@
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
+    <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>

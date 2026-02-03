@@ -22,8 +22,6 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -100,11 +98,13 @@ fun WooPosIssueRefundDialog(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val showCloseButton = (state as? WooPosRefundState.Content)?.showCloseButton ?: false
     WooPosDialogWrapper(
         isVisible = true,
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_orders_issue_refund_content_description
         ),
+        onCloseClick = if (showCloseButton) handleDismiss else null,
         onDismissRequest = handleDismiss
     ) {
         when (val currentState = state) {
@@ -113,7 +113,6 @@ fun WooPosIssueRefundDialog(
                 state = currentState,
                 orderId = orderId,
                 viewModel = viewModel,
-                onDismissRequest = handleDismiss,
                 onNavigationEvent = onNavigationEvent,
                 onEvent = handleEvent
             )
@@ -133,7 +132,6 @@ private fun ContentStateHandler(
     state: WooPosRefundState.Content,
     orderId: Long,
     viewModel: WooPosRefundViewModel,
-    onDismissRequest: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit
 ) {
@@ -141,7 +139,6 @@ private fun ContentStateHandler(
         WooPosRefundState.Content.RefundStep.SelectItems -> {
             SelectItemsContent(
                 state = state,
-                onDismissRequest = onDismissRequest,
                 onEvent = onEvent,
                 onContinue = {
                     viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
@@ -152,7 +149,6 @@ private fun ContentStateHandler(
         WooPosRefundState.Content.RefundStep.ReviewRefund -> {
             ReviewRefundContent(
                 state = state,
-                onDismissRequest = onDismissRequest,
                 onContinue = {
                     viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
                 },
@@ -174,7 +170,6 @@ private fun ContentStateHandler(
             ConfirmRefundContent(
                 state = state,
                 isProcessing = false,
-                onDismissRequest = onDismissRequest,
                 onConfirm = {
                     viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
                 },
@@ -187,7 +182,6 @@ private fun ContentStateHandler(
             ConfirmRefundContent(
                 state = state,
                 isProcessing = true,
-                onDismissRequest = {},
                 onConfirm = {},
                 onBack = {}
             )
@@ -393,12 +387,11 @@ private fun RefundSuccessContent(
 @Composable
 private fun SelectItemsContent(
     state: WooPosRefundState.Content,
-    onDismissRequest: () -> Unit,
     onEvent: (WooPosRefundUIEvent) -> Unit,
     onContinue: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        RefundDialogHeader(onDismissRequest = onDismissRequest)
+        RefundDialogHeader()
 
         ItemsHeaderRow(
             allItemsSelected = state.allItemsSelected,
@@ -446,32 +439,16 @@ private fun SelectItemsContent(
 }
 
 @Composable
-private fun RefundDialogHeader(onDismissRequest: () -> Unit) {
-    Row(
+private fun RefundDialogHeader() {
+    WooPosText(
+        text = stringResource(R.string.woopos_orders_select_items_to_refund),
+        style = WooPosTypography.Heading,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_orders_select_items_to_refund),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+            .padding(WooPosSpacing.XLarge.value)
+    )
 }
 
 @Composable
@@ -586,13 +563,12 @@ private fun RefundableItemRow(
 @Composable
 private fun ReviewRefundContent(
     state: WooPosRefundState.Content,
-    onDismissRequest: () -> Unit,
     onContinue: () -> Unit,
     onEditRefund: () -> Unit,
     onEditReason: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        ReviewRefundHeader(onDismissRequest = onDismissRequest)
+        ReviewRefundHeader()
 
         Column(
             modifier = Modifier
@@ -685,32 +661,16 @@ private fun ReviewRefundContent(
 }
 
 @Composable
-private fun ReviewRefundHeader(onDismissRequest: () -> Unit) {
-    Row(
+private fun ReviewRefundHeader() {
+    WooPosText(
+        text = stringResource(R.string.woopos_orders_review_refund),
+        style = WooPosTypography.Heading,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        WooPosText(
-            text = stringResource(R.string.woopos_orders_review_refund),
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+            .padding(WooPosSpacing.XLarge.value)
+    )
 }
 
 @Composable
@@ -776,14 +736,12 @@ private fun Divider(modifier: Modifier = Modifier) {
 private fun ConfirmRefundContent(
     state: WooPosRefundState.Content,
     isProcessing: Boolean,
-    onDismissRequest: () -> Unit,
     onConfirm: () -> Unit,
     onBack: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         ConfirmRefundHeader(
-            title = stringResource(R.string.woopos_orders_confirm_refund_title, state.formattedTotal),
-            onDismissRequest = onDismissRequest
+            title = stringResource(R.string.woopos_orders_confirm_refund_title, state.formattedTotal)
         )
 
         ConfirmRefundMessage(
@@ -803,35 +761,16 @@ private fun ConfirmRefundContent(
 }
 
 @Composable
-private fun ConfirmRefundHeader(
-    title: String,
-    onDismissRequest: () -> Unit
-) {
-    Row(
+private fun ConfirmRefundHeader(title: String) {
+    WooPosText(
+        text = title,
+        style = WooPosTypography.Heading,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        WooPosText(
-            text = title,
-            style = WooPosTypography.Heading,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onSurface
-        )
-        IconButton(
-            modifier = Modifier.size(48.dp),
-            onClick = onDismissRequest,
-        ) {
-            Icon(
-                modifier = Modifier.size(32.dp),
-                imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
-                contentDescription = stringResource(R.string.close),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-    }
+            .padding(WooPosSpacing.XLarge.value)
+    )
 }
 
 @Composable
@@ -946,7 +885,6 @@ fun SelectItemsContentPreview() {
     WooPosTheme {
         SelectItemsContent(
             state = state,
-            onDismissRequest = {},
             onEvent = {},
             onContinue = {}
         )
@@ -1013,7 +951,6 @@ fun ReviewRefundContentPreview() {
     WooPosTheme {
         ReviewRefundContent(
             state = state,
-            onDismissRequest = {},
             onContinue = {},
             onEditRefund = {},
             onEditReason = {}
@@ -1082,7 +1019,6 @@ fun ConfirmRefundContentPreview() {
         ConfirmRefundContent(
             state = state,
             isProcessing = false,
-            onDismissRequest = {},
             onConfirm = {},
             onBack = {}
         )

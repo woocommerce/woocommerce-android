@@ -7,6 +7,7 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
+import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
@@ -53,6 +54,7 @@ class WooPosRefundViewModelTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val loadPaymentGateway: WooPosLoadPaymentGateway = mock()
     private val loadPaymentMethod: WooPosGetPaymentMethod = mock()
 
     private val testOrderId = 123L
@@ -130,6 +132,16 @@ class WooPosRefundViewModelTest {
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(WooResult(testSettings))
         whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(WooResult(false))
+
+        val defaultGateway = com.woocommerce.android.model.PaymentGateway(
+            title = "Default",
+            description = "",
+            isEnabled = true,
+            methodTitle = "Default",
+            methodDescription = "",
+            supportsRefunds = false
+        )
+        whenever(loadPaymentGateway.invoke(any())).thenReturn(Result.success(defaultGateway))
         whenever(loadPaymentMethod.invoke(any())).thenReturn("Manual refund")
     }
 
@@ -147,6 +159,7 @@ class WooPosRefundViewModelTest {
             refundStore = refundStore,
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
+            loadPaymentGateway = loadPaymentGateway,
             getPaymentMethod = loadPaymentMethod
         ).also {
             if (triggerDialogOpened) {
@@ -906,6 +919,64 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
+    fun `given payment gateway supports refunds, when refund confirmed, then autoRefund is true`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+            val gatewayWithRefunds = com.woocommerce.android.model.PaymentGateway(
+                title = "Stripe",
+                description = "Pay with Stripe",
+                isEnabled = true,
+                methodTitle = "Credit Card (Stripe)",
+                methodDescription = "",
+                supportsRefunds = true
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gatewayWithRefunds))
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(true),
+                items = eq(groupedItems)
+            )
+        }
+
+    @Test
     fun `given all items selected initially, when item deselected, then selectedItemIds updated and totals recalculated`() =
         runTest {
             // GIVEN
@@ -1443,6 +1514,180 @@ class WooPosRefundViewModelTest {
                 site = eq(testSite),
                 orderId = eq(testOrderId),
                 amount = argThat { this.compareTo(BigDecimal("27.50")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
+            )
+        }
+
+    @Test
+    fun `given payment gateway does not support refunds, when refund confirmed, then autoRefund is false`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+            val gatewayWithoutRefunds = com.woocommerce.android.model.PaymentGateway(
+                title = "Cash on Delivery",
+                description = "Pay with cash on delivery",
+                isEnabled = true,
+                methodTitle = "Cash on Delivery",
+                methodDescription = "",
+                supportsRefunds = false
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(gatewayWithoutRefunds))
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
+            )
+        }
+
+    @Test
+    fun `given payment gateway is disabled, when refund confirmed, then autoRefund is false`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+            val manualGateway = com.woocommerce.android.model.PaymentGateway(
+                title = "",
+                description = "",
+                isEnabled = false,
+                methodTitle = "manual",
+                methodDescription = "",
+                supportsRefunds = false
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(manualGateway))
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
+                reason = eq(""),
+                restockItems = eq(true),
+                autoRefund = eq(false),
+                items = eq(groupedItems)
+            )
+        }
+
+    @Test
+    fun `given manual payment method, when refund confirmed, then autoRefund is false`() =
+        runTest {
+            // GIVEN
+            val refundableItems = listOf(testRefundableItem)
+            val groupedItems = listOf(
+                RefundRequestItem(
+                    itemId = 1L,
+                    quantity = 1,
+                    refundTotal = BigDecimal("20.00"),
+                    refundTax = emptyList()
+                )
+            )
+            val manualGateway = com.woocommerce.android.model.PaymentGateway(
+                title = "",
+                description = "",
+                isEnabled = false,
+                methodTitle = "manual",
+                methodDescription = "",
+                supportsRefunds = false
+            )
+
+            whenever(ordersDataSource.refreshOrderById(testOrderId)).thenReturn(Result.success(testOrder))
+            whenever(retrieveOrderRefunds.invoke(eq(testOrder), any())).thenReturn(Result.success(emptyList()))
+            whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
+            whenever(groupRefundItems.invoke(eq(refundableItems), eq(testOrder), any())).thenReturn(groupedItems)
+            whenever(loadPaymentGateway.invoke(testOrder)).thenReturn(Result.success(manualGateway))
+            whenever(
+                refundStore.createItemsRefund(
+                    site = any(),
+                    orderId = any(),
+                    amount = any(),
+                    reason = any(),
+                    restockItems = any(),
+                    autoRefund = any(),
+                    items = any()
+                )
+            ).thenReturn(WooResult(testRefundModel))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(refundStore).createItemsRefund(
+                site = eq(testSite),
+                orderId = eq(testOrderId),
+                amount = argThat { this.compareTo(BigDecimal("22.00")) == 0 },
                 reason = eq(""),
                 restockItems = eq(true),
                 autoRefund = eq(false),
