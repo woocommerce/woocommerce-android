@@ -36,7 +36,17 @@ class WooPosLocalCatalogStore @Inject constructor(
         private const val DEFAULT_PAGE_SIZE = 100
         private const val MAX_PAGE_SIZE = 100
 
-        private val FTS_SPECIAL_CHARS = Regex("[\"*():]")
+        private val UNICODE61_SEPARATORS = Regex("[^\\p{L}\\p{N}]+")
+
+        // Split on the same boundaries as the unicode61 tokenizer (non-letter, non-digit)
+        // so that queries like "t-shirt" or "SKU-1234" match the indexed tokens.
+        fun formatFtsQuery(rawQuery: String): String {
+            return rawQuery
+                .trim()
+                .split(UNICODE61_SEPARATORS)
+                .filter { it.isNotBlank() }
+                .joinToString(" ") { "$it*" }
+        }
     }
 
     /**
@@ -614,18 +624,6 @@ class WooPosLocalCatalogStore @Inject constructor(
                 }
             }
         }
-
-    private fun formatFtsQuery(rawQuery: String): String {
-        return rawQuery
-            .trim()
-            .split("\\s+".toRegex())
-            .filter { it.isNotBlank() }
-            .joinToString(" ") { token ->
-                val sanitized = token.replace(FTS_SPECIAL_CHARS, "")
-                if (sanitized.isNotBlank()) "$sanitized*" else ""
-            }
-            .trim()
-    }
 
     private fun mapResponseError(error: WooError?): WooPosLocalCatalogError {
         return when (error?.type) {

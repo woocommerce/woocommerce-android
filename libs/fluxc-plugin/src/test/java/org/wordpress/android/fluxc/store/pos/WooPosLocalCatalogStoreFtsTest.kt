@@ -50,150 +50,86 @@ class WooPosLocalCatalogStoreFtsTest {
     }
 
     @Test
-    fun `when formatting multi-word query, then adds prefix wildcard to each word`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("blue shirt")
-        assertThat(result).isEqualTo("blue* shirt*")
+    fun `when formatting query, then splits on unicode61 separators and adds prefix wildcards`() {
+        // WHEN & THEN
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("shirt")).isEqualTo("shirt*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("blue shirt")).isEqualTo("blue* shirt*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("t-shirt")).isEqualTo("t* shirt*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("SHIRT-1234")).isEqualTo("SHIRT* 1234*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("t-shirt GANT blue m")).isEqualTo("t* shirt* GANT* blue* m*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("  shirt  blue  ")).isEqualTo("shirt* blue*")
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("shirt\"blue")).isEqualTo("shirt* blue*")
     }
 
     @Test
-    fun `when formatting single word query, then adds prefix wildcard`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("shirt")
-        assertThat(result).isEqualTo("shirt*")
-    }
-
-    @Test
-    fun `when formatting hyphenated query, then preserves hyphen and adds wildcard`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("t-shirt")
-        assertThat(result).isEqualTo("t-shirt*")
-    }
-
-    @Test
-    fun `when formatting query with extra whitespace, then trims and normalizes`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("  shirt  blue  ")
-        assertThat(result).isEqualTo("shirt* blue*")
-    }
-
-    @Test
-    fun `when formatting empty query, then returns blank`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("")
-        assertThat(result).isBlank()
-    }
-
-    @Test
-    fun `when formatting whitespace only query, then returns blank`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("   ")
-        assertThat(result).isBlank()
-    }
-
-    @Test
-    fun `when formatting query with fts special characters, then strips them`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("shirt\"blue")
-        assertThat(result).isEqualTo("shirtblue*")
-    }
-
-    @Test
-    fun `when formatting query with asterisk, then preserves single wildcard`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("shirt*")
-        assertThat(result).isEqualTo("shirt*")
-    }
-
-    @Test
-    fun `when formatting sku-like query, then preserves format and adds wildcard`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("SHIRT-1234")
-        assertThat(result).isEqualTo("SHIRT-1234*")
-    }
-
-    @Test
-    fun `when formatting multi-word variation search, then adds wildcard to each word`() {
-        val result = WooPosLocalCatalogStore.formatFtsQuery("t-shirt GANT blue m")
-        assertThat(result).isEqualTo("t-shirt* GANT* blue* m*")
+    fun `when formatting empty or whitespace query, then returns blank`() {
+        // WHEN & THEN
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("")).isBlank()
+        assertThat(WooPosLocalCatalogStore.formatFtsQuery("   ")).isBlank()
     }
 
     @Test
     fun `given blank query, when searching fts, then returns empty list`() = runTest {
+        // WHEN
         val result = store.searchProductsFts(siteId, "  ")
+
+        // THEN
         assertThat(result.getOrThrow()).isEmpty()
     }
 
     @Test
     fun `given no matching results, when searching fts, then returns empty list`() = runTest {
+        // GIVEN
         whenever(posFtsDao.search("123", "shirt*", 100, 0))
             .thenReturn(emptyList())
 
+        // WHEN
         val result = store.searchProductsFts(siteId, "shirt")
 
+        // THEN
         assertThat(result.getOrThrow()).isEmpty()
     }
 
     @Test
-    fun `given matching product, when searching fts, then returns hydrated product`() = runTest {
-        val ftsEntity = createFtsEntity(itemId = "1", parentProductId = "")
-        val productEntity = createProductEntity(remoteId = 1L)
-
-        whenever(posFtsDao.search("123", "mug*", 100, 0))
-            .thenReturn(listOf(ftsEntity))
-        whenever(posProductsDao.getProductsByIds(siteId, listOf(RemoteId(1L))))
-            .thenReturn(listOf(productEntity))
-
-        val result = store.searchProductsFts(siteId, "mug")
-
-        assertThat(result.getOrThrow()).hasSize(1)
-        assertThat(result.getOrThrow()[0]).isInstanceOf(WooPosFtsSearchResult.Product::class.java)
-        val product = result.getOrThrow()[0] as WooPosFtsSearchResult.Product
-        assertThat(product.entity.remoteId.value).isEqualTo(1L)
-    }
-
-    @Test
-    fun `given matching variation, when searching fts, then returns hydrated variation`() = runTest {
-        val ftsEntity = createFtsEntity(itemId = "10", parentProductId = "1")
-        val variationEntity = createVariationEntity(productId = 1L, variationId = 10L)
-
-        whenever(posFtsDao.search("123", "blue*", 100, 0))
-            .thenReturn(listOf(ftsEntity))
-        whenever(posVariationsDao.getVariationsByIds(siteId, listOf(RemoteId(10L))))
-            .thenReturn(listOf(variationEntity))
-
-        val result = store.searchProductsFts(siteId, "blue")
-
-        assertThat(result.getOrThrow()).hasSize(1)
-        assertThat(result.getOrThrow()[0]).isInstanceOf(WooPosFtsSearchResult.Variation::class.java)
-        val variation = result.getOrThrow()[0] as WooPosFtsSearchResult.Variation
-        assertThat(variation.entity.remoteVariationId.value).isEqualTo(10L)
-    }
-
-    @Test
-    fun `given mixed product and variation matches, when searching fts, then returns results in fts order`() = runTest {
+    fun `given mixed fts matches, when searching, then returns hydrated results in fts order`() = runTest {
+        // GIVEN
         val productFts = createFtsEntity(itemId = "1", parentProductId = "")
         val variationFts = createFtsEntity(itemId = "10", parentProductId = "1")
-
         val productEntity = createProductEntity(remoteId = 1L)
         val variationEntity = createVariationEntity(productId = 1L, variationId = 10L)
 
-        whenever(posFtsDao.search("123", "shirt*", 15, 0))
+        whenever(posFtsDao.search("123", "shirt*", 100, 0))
             .thenReturn(listOf(productFts, variationFts))
         whenever(posProductsDao.getProductsByIds(siteId, listOf(RemoteId(1L))))
             .thenReturn(listOf(productEntity))
         whenever(posVariationsDao.getVariationsByIds(siteId, listOf(RemoteId(10L))))
             .thenReturn(listOf(variationEntity))
 
-        val result = store.searchProductsFts(siteId, "shirt", pageSize = 15)
+        // WHEN
+        val result = store.searchProductsFts(siteId, "shirt")
 
-        assertThat(result.getOrThrow()).hasSize(2)
-        assertThat(result.getOrThrow()[0]).isInstanceOf(WooPosFtsSearchResult.Product::class.java)
-        assertThat(result.getOrThrow()[1]).isInstanceOf(WooPosFtsSearchResult.Variation::class.java)
+        // THEN
+        val results = result.getOrThrow()
+        assertThat(results).hasSize(2)
+        assertThat(results[0]).isInstanceOf(WooPosFtsSearchResult.Product::class.java)
+        assertThat(results[1]).isInstanceOf(WooPosFtsSearchResult.Variation::class.java)
+        assertThat((results[0] as WooPosFtsSearchResult.Product).entity.remoteId.value).isEqualTo(1L)
+        assertThat((results[1] as WooPosFtsSearchResult.Variation).entity.remoteVariationId.value).isEqualTo(10L)
     }
 
     @Test
     fun `given entity not found in dao, when searching fts, then skips missing results`() = runTest {
+        // GIVEN
         val ftsEntity = createFtsEntity(itemId = "999", parentProductId = "")
-
         whenever(posFtsDao.search("123", "missing*", 100, 0))
             .thenReturn(listOf(ftsEntity))
         whenever(posProductsDao.getProductsByIds(siteId, listOf(RemoteId(999L))))
             .thenReturn(emptyList())
 
+        // WHEN
         val result = store.searchProductsFts(siteId, "missing")
 
+        // THEN
         assertThat(result.getOrThrow()).isEmpty()
     }
 
