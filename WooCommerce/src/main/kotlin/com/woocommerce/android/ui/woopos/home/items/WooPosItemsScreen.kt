@@ -172,13 +172,11 @@ private fun MainItemsList(
             when (bannerState.value) {
                 WooPosItemsBannerState.SyncOverdue -> {
                     WooPosCatalogSyncOverdueBanner(
-                        visible = true,
                         onDismiss = onSyncWarningBannerDismissed
                     )
                 }
                 WooPosItemsBannerState.WooCommerceVersionSunset -> {
                     WooPosWooCommerceVersionSunsetBanner(
-                        visible = true,
                         onDismiss = onWooVersionSunsetBannerDismissed
                     )
                 }
