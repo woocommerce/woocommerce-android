@@ -176,6 +176,9 @@
         <action
             android:id="@+id/action_developerOptionsFragment_to_devFeatureFlagsFragment"
             app:destination="@id/devFeatureFlagsFragment" />
+        <action
+            android:id="@+id/action_developerOptionsFragment_to_featureAnnouncementDialogFragment"
+            app:destination="@id/featureAnnouncementDialogFragment" />
     </fragment>
     <fragment
         android:id="@+id/devFeatureFlagsFragment"
