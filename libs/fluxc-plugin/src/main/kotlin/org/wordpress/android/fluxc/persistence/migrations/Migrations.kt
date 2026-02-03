@@ -1086,7 +1086,7 @@ internal val MIGRATION_62_63 = object : Migration(62, 63) {
     }
 }
 
-internal val MIGRATION_76_77 = object : Migration(76, 77) {
+internal val MIGRATION_77_78 = object : Migration(77, 78) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("ALTER TABLE PosVariationEntity ADD COLUMN type TEXT NOT NULL DEFAULT 'variation'")
     }
