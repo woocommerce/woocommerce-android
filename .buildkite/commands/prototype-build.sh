@@ -18,4 +18,9 @@ APP_TO_BUILD="$(buildkite-agent meta-data get "app-to-build")"
 echo "Selected app: ${APP_TO_BUILD}"
 
 echo "--- :hammer_and_wrench: Building and uploading to Firebase App Distribution"
-bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"
+if [[ "${APP_TO_BUILD}" == "Both" ]]; then
+  bundle exec fastlane build_and_upload_prototype_build app:"WooCommerce"
+  bundle exec fastlane build_and_upload_prototype_build app:"WooCommerce-Wear"
+else
+  bundle exec fastlane build_and_upload_prototype_build app:"${APP_TO_BUILD}"
+fi

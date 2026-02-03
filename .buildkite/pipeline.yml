@@ -81,6 +81,8 @@ steps:
                 value: "WooCommerce"
               - label: "⌚️ WooCommerce Wear"
                 value: "WooCommerce-Wear"
+              - label: "📱⌚️ Both"
+                value: "Both"
       - label: ":firebase: Prototype Build"
         depends_on: prototype_build_triggered
         command: .buildkite/commands/prototype-build.sh
