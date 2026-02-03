@@ -5,8 +5,12 @@ import java.math.BigDecimal
 
 @Immutable
 sealed class WooPosRefundState {
+    abstract val showCloseButton: Boolean
+
     @Immutable
-    data object Loading : WooPosRefundState()
+    data object Loading : WooPosRefundState() {
+        override val showCloseButton: Boolean = false
+    }
 
     @Immutable
     data class Content(
@@ -27,6 +31,9 @@ sealed class WooPosRefundState {
         val refundReason: String = "",
         val step: RefundStep
     ) : WooPosRefundState() {
+        override val showCloseButton: Boolean
+            get() = step != RefundStep.Processing
+
         @Immutable
         sealed class RefundStep {
             @Immutable
@@ -46,10 +53,14 @@ sealed class WooPosRefundState {
     @Immutable
     data class Error(
         val message: String
-    ) : WooPosRefundState()
+    ) : WooPosRefundState() {
+        override val showCloseButton: Boolean = true
+    }
 
     @Immutable
-    data object NoRefundableItems : WooPosRefundState()
+    data object NoRefundableItems : WooPosRefundState() {
+        override val showCloseButton: Boolean = true
+    }
 
     @Immutable
     data class RefundSuccess(
@@ -57,5 +68,7 @@ sealed class WooPosRefundState {
         val orderNumber: String,
         val refundedAmount: String,
         val paymentMethod: String
-    ) : WooPosRefundState()
+    ) : WooPosRefundState() {
+        override val showCloseButton: Boolean = true
+    }
 }
