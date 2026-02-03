@@ -49,7 +49,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/dismiss_feature_announcement_button"
-            style="@style/Woo.Button.TextButton.Secondary"
+            style="@style/Woo.Button.Outlined"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/minor_75"
