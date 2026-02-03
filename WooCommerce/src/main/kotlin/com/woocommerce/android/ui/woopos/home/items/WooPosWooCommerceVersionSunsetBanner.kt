@@ -11,7 +11,7 @@ fun WooPosWooCommerceVersionSunsetBanner(
     state: WooPosItemsViewModel.WooCommerceVersionSunsetBannerState,
     onDismiss: () -> Unit
 ) {
-    WooPosInfoBanner(
+    WooPosItemsInfoBanner(
         visible = state is WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Visible,
         title = stringResource(R.string.woopos_wc_version_sunset_banner_title),
         message = stringResource(R.string.woopos_wc_version_sunset_banner_message),

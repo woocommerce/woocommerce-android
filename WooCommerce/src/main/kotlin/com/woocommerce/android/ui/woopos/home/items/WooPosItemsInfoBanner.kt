@@ -34,7 +34,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosInfoBanner(
+fun WooPosItemsInfoBanner(
     visible: Boolean,
     title: String,
     message: String,
@@ -106,9 +106,9 @@ fun WooPosInfoBanner(
 
 @Composable
 @WooPosPreview
-fun WooPosInfoBannerPreview() {
+fun WooPosItemsInfoBannerPreview() {
     WooPosTheme {
-        WooPosInfoBanner(
+        WooPosItemsInfoBanner(
             visible = true,
             title = "Update WooCommerce soon",
             message = "Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later.",

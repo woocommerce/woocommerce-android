@@ -11,7 +11,7 @@ fun WooPosCatalogSyncOverdueBanner(
     state: WooPosItemsViewModel.CatalogSyncOverdueBannerState,
     onDismiss: () -> Unit
 ) {
-    WooPosInfoBanner(
+    WooPosItemsInfoBanner(
         visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
         title = stringResource(R.string.woopos_refresh_catalog_banner_title),
         message = stringResource(R.string.woopos_refresh_catalog_banner_message),
