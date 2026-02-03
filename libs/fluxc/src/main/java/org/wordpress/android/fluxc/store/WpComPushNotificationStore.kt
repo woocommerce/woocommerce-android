@@ -151,8 +151,6 @@ class WpComPushNotificationStore @Inject constructor(
     }
 
     // OnChanged events
-    class OnDeviceUnregistered : OnChanged<DeviceUnregistrationError>()
-
     class OnNotificationChanged(var rowsAffected: Int) : OnChanged<NotificationError>() {
         var causeOfChange: NotificationAction? = null
         var success: Boolean = true
@@ -329,8 +327,6 @@ class WpComPushNotificationStore @Inject constructor(
     private fun handleUnregisteredDevicePayload(
         payload: UnregisterDeviceResponsePayload
     ): UnregisterDeviceResponsePayload {
-        val onDeviceUnregistered = OnDeviceUnregistered()
-
         preferences.edit().apply {
             remove(WPCOM_PUSH_DEVICE_SERVER_ID)
             remove(WPCOM_PUSH_DEVICE_UUID)
@@ -341,12 +337,10 @@ class WpComPushNotificationStore @Inject constructor(
             with(payload.error) {
                 AppLog.e(T.NOTIFS, "Unregister device from WP.com pushes failed: $type - $message")
             }
-            onDeviceUnregistered.error = payload.error
         } else {
             AppLog.i(T.NOTIFS, "Unregister device from WP.com pushes succeeded")
         }
 
-        emitChange(onDeviceUnregistered)
         return payload
     }
 
