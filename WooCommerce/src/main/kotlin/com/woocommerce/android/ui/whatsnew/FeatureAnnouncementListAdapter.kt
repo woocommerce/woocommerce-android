@@ -1,14 +1,12 @@
 package com.woocommerce.android.ui.whatsnew
 
 import android.content.Context
-import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.util.Base64
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -46,16 +44,6 @@ class FeatureAnnouncementListAdapter :
         fun bind(item: FeatureAnnouncementItem) {
             viewBinding.featureTitle.text = item.title
             viewBinding.featureSubtitle.text = item.subtitle
-            if (item.detailsUrl.isNotEmpty()) {
-                viewBinding.featureLearnMoreButton.visibility = android.view.View.VISIBLE
-                viewBinding.featureLearnMoreButton.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, item.detailsUrl.toUri())
-                    viewBinding.root.context.startActivity(intent)
-                }
-            } else {
-                viewBinding.featureLearnMoreButton.visibility = android.view.View.GONE
-                viewBinding.featureLearnMoreButton.setOnClickListener(null)
-            }
 
             val placeholder = ContextCompat.getDrawable(
                 viewBinding.root.context,

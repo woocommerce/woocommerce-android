@@ -69,9 +69,8 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         viewModel.viewStateData.observe(viewLifecycleOwner) { old, new ->
             new.announcement.takeIfNotEqualTo(old?.announcement) {
                 it?.let { announcement ->
-                    val hasSingleFeature = announcement.features.size == 1
-                    val hasDetailsUrl = announcement.detailsUrl.isNotEmpty()
-                    if (hasSingleFeature && hasDetailsUrl) {
+                    listAdapter.submitList(announcement.features)
+                    if (announcement.detailsUrl.isNotEmpty()) {
                         binding.closeFeatureAnnouncementButton.text = getString(R.string.learn_more)
                         binding.closeFeatureAnnouncementButton.setOnClickListener {
                             openDetailsUrl(announcement.detailsUrl)
@@ -81,11 +80,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                             viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
-                        listAdapter.submitList(
-                            announcement.features.map { feature ->
-                                feature.copy(detailsUrl = "")
-                            }
-                        )
                     } else {
                         binding.dismissFeatureAnnouncementButton.visibility = View.GONE
                         binding.dismissFeatureAnnouncementButton.setOnClickListener(null)
@@ -94,7 +88,6 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                             viewModel.handleAnnouncementIsViewed()
                             findNavController().popBackStack()
                         }
-                        listAdapter.submitList(announcement.features)
                     }
                 }
             }

@@ -52,16 +52,6 @@
             android:textAppearance="@style/TextAppearance.Woo.Body2"
             tools:text="Great explanation of feature" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/feature_learn_more_button"
-            style="@style/Woo.Button.TextButton.TextStart"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/learn_more"
-            android:layout_marginTop="@dimen/minor_75"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

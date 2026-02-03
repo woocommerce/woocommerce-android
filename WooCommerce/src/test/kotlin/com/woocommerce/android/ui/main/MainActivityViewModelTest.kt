@@ -127,22 +127,19 @@ class MainActivityViewModelTest : BaseUnitTest() {
                 title = "Super Publishing",
                 subtitle = "Super Publishing is here! Publish using the power of your mind.",
                 iconBase64 = "",
-                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-personal.png",
-                detailsUrl = "https://woocommerce.com/mobile/pos/learn-more"
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-personal.png"
             ),
             FeatureAnnouncementItem(
                 title = "Amazing Feature",
                 subtitle = "That's right! They are right in the app! They require pets right now.",
                 iconBase64 = "",
-                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-premium.png",
-                detailsUrl = "https://woocommerce.com/mobile/pos/learn-more"
+                iconUrl = "https://s0.wordpress.com/i/store/mobile/plans-premium.png"
             ),
             FeatureAnnouncementItem(
                 title = "Third feature",
                 subtitle = "Sorry we forgot to include an image here!",
                 iconBase64 = "",
-                iconUrl = "",
-                detailsUrl = ""
+                iconUrl = ""
             )
         )
     )

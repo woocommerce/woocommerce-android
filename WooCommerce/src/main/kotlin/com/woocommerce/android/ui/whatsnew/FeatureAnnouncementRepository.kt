@@ -35,19 +35,16 @@ class FeatureAnnouncementRepository @Inject constructor(
             appVersionTargets = appVersionTargets,
             detailsUrl = detailsUrl,
             isLocalized = isLocalized,
-            features = features.map {
-                it.build(detailsUrl)
-            }
+            features = features.map { it.build() }
         )
     }
 
-    fun WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature.build(detailsUrl: String): FeatureAnnouncementItem {
+    fun WhatsNewAnnouncementModel.WhatsNewAnnouncementFeature.build(): FeatureAnnouncementItem {
         return FeatureAnnouncementItem(
             StringUtils.notNullStr(title),
             StringUtils.notNullStr(subtitle),
             StringUtils.notNullStr(iconBase64),
-            StringUtils.notNullStr(iconUrl),
-            detailsUrl
+            StringUtils.notNullStr(iconUrl)
         )
     }
 }

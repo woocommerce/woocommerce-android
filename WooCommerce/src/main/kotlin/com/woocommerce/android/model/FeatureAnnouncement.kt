@@ -59,6 +59,5 @@ data class FeatureAnnouncementItem(
     val title: String,
     val subtitle: String,
     val iconBase64: String,
-    val iconUrl: String,
-    val detailsUrl: String
+    val iconUrl: String
 ) : Parcelable
