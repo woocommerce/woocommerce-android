@@ -89,13 +89,12 @@ fun WooPosItemsInfoBanner(
                 }
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier
-                        .size(32.dp)
-                        .align(Alignment.Top)
+                    modifier = Modifier.align(Alignment.Top)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
                         contentDescription = dismissContentDescription,
+                        modifier = Modifier.size(32.dp),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                     )
                 }
