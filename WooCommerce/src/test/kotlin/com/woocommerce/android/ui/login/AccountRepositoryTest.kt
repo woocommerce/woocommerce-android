@@ -5,6 +5,7 @@ import com.woocommerce.android.FakeDispatcher
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.zendesk.ZendeskSettings
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -79,4 +80,15 @@ class AccountRepositoryTest : BaseUnitTest() {
 
             assertThat(sitesDeleted).containsExactlyElementsOf(sites)
         }
+
+    @Test
+    fun `given signed in using app password, when logout is called, then unregister only Woo tokens`() = testBlocking {
+        given(accountStore.hasAccessToken()).willReturn(false)
+        given(selectedSite.connectionType).willReturn(SiteConnectionType.ApplicationPasswords)
+        given(selectedSite.get()).willReturn(SiteModel())
+
+        repository.logout()
+
+        verify(pushNotificationRepository).unregisterWooCoreTokensFromServer()
+    }
 }

@@ -158,7 +158,7 @@ class PushNotificationRepository @Inject constructor(
         unregisterWooCoreTokens.await()
     }
 
-    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+    suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val preferences = pushNotificationsDataStore.data.first()
         val sites = wooCommerceStore.getWooCommerceSites()
 
