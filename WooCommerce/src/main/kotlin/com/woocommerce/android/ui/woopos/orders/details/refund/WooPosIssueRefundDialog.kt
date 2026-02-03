@@ -50,8 +50,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
@@ -231,21 +229,58 @@ private fun ErrorContent(
         }
     }
 
-    WooPosErrorScreen(
-        message = title,
-        reason = stringResource(R.string.woopos_refund_error_subtitle),
-        primaryButton = WooPosErrorScreenButtonState(
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(WooPosSpacing.XLarge.value),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            modifier = Modifier.size(80.dp),
+            imageVector = com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons.ErrorX,
+            contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
+            tint = WooPosTheme.colors.unspecified,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+
+        WooPosText(
+            text = title,
+            style = WooPosTypography.Heading,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_refund_error_subtitle),
+            style = WooPosTypography.BodyLarge,
+            textAlign = TextAlign.Center,
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
+
+        WooPosButton(
             text = stringResource(R.string.retry),
-            click = { onEvent(retryEvent) }
-        ),
-        secondaryButton = WooPosErrorScreenButtonState(
+            onClick = { onEvent(retryEvent) },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+        WooPosOutlinedButton(
             text = stringResource(R.string.cancel),
-            click = {
+            onClick = {
                 onEvent(WooPosRefundUIEvent.CancelRefund)
                 onDismissRequest()
-            }
+            },
+            modifier = Modifier.fillMaxWidth()
         )
-    )
+    }
 }
 
 @Composable
