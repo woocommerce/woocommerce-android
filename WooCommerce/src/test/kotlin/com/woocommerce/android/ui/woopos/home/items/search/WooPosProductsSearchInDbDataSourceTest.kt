@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -23,6 +24,7 @@ class WooPosProductsSearchInDbDataSourceTest {
 
     private val posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private val selectedSite: SelectedSite = mock()
+    private val isFtsEnabled: IsPosProductsFtsEnabled = mock()
 
     private lateinit var sut: WooPosProductsSearchInDbDataSource
 
@@ -35,8 +37,8 @@ class WooPosProductsSearchInDbDataSourceTest {
 
     @Before
     fun setup() = runTest {
-        // Setup happy path mocks
         whenever(selectedSite.getOrNull()).thenReturn(siteModel)
+        whenever(isFtsEnabled.invoke()).thenReturn(false)
 
         whenever(posLocalCatalogStore.searchProducts(siteId, "query", 15, 0))
             .thenReturn(Result.success(firstPageEntities))
@@ -46,7 +48,8 @@ class WooPosProductsSearchInDbDataSourceTest {
         sut = WooPosProductsSearchInDbDataSource(
             posLocalCatalogStore = posLocalCatalogStore,
             selectedSite = selectedSite,
-            productMapper = WooPosProductModelMapper(mock())
+            productMapper = WooPosProductModelMapper(mock()),
+            isFtsEnabled = isFtsEnabled,
         )
     }
 
