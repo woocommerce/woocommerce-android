@@ -23,8 +23,6 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.Notification
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T
-import org.wordpress.android.util.AppLog.T.NOTIFS
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
@@ -177,7 +175,7 @@ class WpComPushNotificationStore @Inject constructor(
     }
 
     override fun onRegister() {
-        AppLog.d(T.API, WpComPushNotificationStore::class.java.simpleName + " onRegister")
+        AppLog.d(AppLog.T.API, WpComPushNotificationStore::class.java.simpleName + " onRegister")
     }
 
     /**
@@ -233,7 +231,7 @@ class WpComPushNotificationStore @Inject constructor(
         token: String,
         appKey: NotificationAppKey
     ): RegisterDeviceResponsePayload {
-        return coroutineEngine.withDefaultContext(T.API, this, "registerDevice") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "registerDevice") {
             val uuid = preferences.getString(WPCOM_PUSH_DEVICE_UUID, null) ?: generateAndStoreUUID()
 
             notificationRestClient.registerDevice(
@@ -245,32 +243,32 @@ class WpComPushNotificationStore @Inject constructor(
                     when (error.type) {
                         DeviceRegistrationErrorType.MISSING_DEVICE_ID ->
                             AppLog.e(
-                                T.NOTIFS,
+                                AppLog.T.NOTIFS,
                                 "Server response missing device_id - registration skipped!"
                             )
 
                         DeviceRegistrationErrorType.GENERIC_ERROR ->
                             AppLog.e(
-                                T.NOTIFS,
+                                AppLog.T.NOTIFS,
                                 "Error trying to register device: ${error.type} - ${error.message}"
                             )
 
                         DeviceRegistrationErrorType.INVALID_RESPONSE ->
                             AppLog.e(
-                                T.NOTIFS,
+                                AppLog.T.NOTIFS,
                                 "Server response missing response object: ${error.type} - ${error.message}"
                             )
                     }
                 } else {
                     preferences.edit().putString(WPCOM_PUSH_DEVICE_SERVER_ID, deviceId).apply()
-                    AppLog.i(T.NOTIFS, "Server response OK. Device ID: $deviceId")
+                    AppLog.i(AppLog.T.NOTIFS, "Server response OK. Device ID: $deviceId")
                 }
             }
         }
     }
 
     suspend fun unregisterWpComPushToken(): UnregisterDeviceResponsePayload {
-        val payload = coroutineEngine.withDefaultContext(T.API, this, "unregisterWpComDevice") {
+        val payload = coroutineEngine.withDefaultContext(AppLog.T.API, this, "unregisterWpComDevice") {
             val deviceId = preferences.getString(WPCOM_PUSH_DEVICE_SERVER_ID, null)
             if (deviceId.isNullOrEmpty()) {
                 UnregisterDeviceResponsePayload(
@@ -295,10 +293,10 @@ class WpComPushNotificationStore @Inject constructor(
 
         if (payload.isError) {
             with(payload.error) {
-                AppLog.e(T.NOTIFS, "Unregister device from WP.com pushes failed: $type - $message")
+                AppLog.e(AppLog.T.NOTIFS, "Unregister device from WP.com pushes failed: $type - $message")
             }
         } else {
-            AppLog.i(T.NOTIFS, "Unregister device from WP.com pushes succeeded")
+            AppLog.i(AppLog.T.NOTIFS, "Unregister device from WP.com pushes succeeded")
         }
 
         return payload
@@ -418,7 +416,7 @@ class WpComPushNotificationStore @Inject constructor(
 
     @Suppress("MemberVisibilityCanBePrivate")
     suspend fun markNotificationsRead(payload: MarkNotificationsReadPayload): OnNotificationChanged {
-        return coroutineEngine.withDefaultContext(T.API, this, "markNotificationsRead") {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "markNotificationsRead") {
             val result = notificationRestClient.markNotificationRead(payload.notifications)
             // Update the notification in the database
             var rowsAffected = 0
@@ -462,7 +460,7 @@ class WpComPushNotificationStore @Inject constructor(
     suspend fun updateNotificationSettingsFor(
         siteNotificationsEnabled: List<SiteNotificationSetting>
     ): Result<Unit> = coroutineEngine.withDefaultContext(
-        T.API,
+        AppLog.T.API,
         this,
         "Update notification settings for sites: ${siteNotificationsEnabled.joinToString(",")}}"
     ) {
@@ -485,12 +483,15 @@ class WpComPushNotificationStore @Inject constructor(
         }
         when (val result = notificationRestClient.disableNotificationsFor(payload)) {
             is Success -> {
-                AppLog.i(NOTIFS, "Server response OK. Notifications disabled for device: $deviceId")
+                AppLog.i(AppLog.T.NOTIFS, "Server response OK. Notifications disabled for device: $deviceId")
                 Result.success(Unit)
             }
 
             is Response.Error -> {
-                AppLog.e(NOTIFS, "Error updating notification settings: ${result.error} - ${result.error.message}")
+                AppLog.e(
+                    AppLog.T.NOTIFS,
+                    "Error updating notification settings: ${result.error} - ${result.error.message}"
+                )
                 Result.failure(
                     NotificationSettingsUpdateError(
                         type = NotificationSettingErrorType.ApiError(result.error.message)
