@@ -143,6 +143,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
+            val paymentMethodResult = getPaymentMethod(order)
+            if (paymentMethodResult.isFailure) {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "${paymentMethodResult.exceptionOrNull()?.message}"
+                )
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Loading
+                )
+                return@launch
+            }
+
             _state.value = buildContentState(
                 order = order,
                 refundableItems = refundableItems,
@@ -152,7 +165,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 taxRoundAtSubtotal = checkNotNull(cachedTaxRoundAtSubtotal) {
                     "cachedTaxRoundAtSubtotal should not be null when building content state"
                 },
-                paymentMethod = getPaymentMethod(order)
+                paymentMethod = paymentMethodResult.getOrThrow()
             )
         }
     }
