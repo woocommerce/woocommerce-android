@@ -56,7 +56,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var loadingJob: Job? = null
     private var cachedNumberOfDecimalPoints: Int? = null
     private var cachedTaxRoundAtSubtotal: Boolean? = null
-    private var lastContentStateBeforeProcessing: WooPosRefundState.Content? = null
+    private var contentStateBeforeRefund: WooPosRefundState.Content? = null
 
     private suspend fun fetchSiteSettings(): Result<Int> {
         val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
@@ -203,7 +203,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
             WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
             WooPosRefundUIEvent.RetryCreateRefund -> {
-                val contentState = lastContentStateBeforeProcessing
+                val contentState = contentStateBeforeRefund
                 if (contentState != null) {
                     processRefund(contentState)
                 }
@@ -293,7 +293,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
-            lastContentStateBeforeProcessing = contentState
+            contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             val order = currentOrder ?: run {
