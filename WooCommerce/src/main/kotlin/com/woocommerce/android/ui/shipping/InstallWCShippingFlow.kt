@@ -143,26 +143,24 @@ private fun AnimatedVisibilityScope.PreInstallationContent(viewState: PreInstall
 
             SpacerWithMinHeight(0.75f, dimensionResource(id = R.dimen.major_100))
         }
-        (viewState as? PreInstallation)?.let {
-            WCColoredButton(
-                onClick = viewState.onProceedClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .animateEnterExit(
-                        enter = slideInVertically(
-                            animationSpec = tween(
-                                durationMillis = 500,
-                                delayMillis = 500,
-                                // Ensure a bit of elasticity at the end of the animation
-                                easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
-                            ),
-                            initialOffsetY = { initialOffset }
+        WCColoredButton(
+            onClick = viewState.onProceedClick,
+            modifier = Modifier
+                .fillMaxWidth()
+                .animateEnterExit(
+                    enter = slideInVertically(
+                        animationSpec = tween(
+                            durationMillis = 500,
+                            delayMillis = 500,
+                            // Ensure a bit of elasticity at the end of the animation
+                            easing = CubicBezierEasing(0.7f, 0.6f, 0.74f, 1.3f)
                         ),
-                        exit = ExitTransition.None
-                    )
-            ) {
-                Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
-            }
+                        initialOffsetY = { initialOffset }
+                    ),
+                    exit = ExitTransition.None
+                )
+        ) {
+            Text(text = stringResource(id = R.string.install_wc_shipping_proceed_button))
         }
     }
 }

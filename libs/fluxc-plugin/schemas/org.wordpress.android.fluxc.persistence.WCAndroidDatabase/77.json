@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 77,
-    "identityHash": "2c8fc306d9ae5f803473ea0684baa60b",
+    "identityHash": "61fa7b1ef50d6c5e4fcca29c3d2fa9e6",
     "entities": [
       {
         "tableName": "AddonEntity",
@@ -2354,7 +2354,7 @@
       },
       {
         "tableName": "PosVariationEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `remoteVariationId` INTEGER NOT NULL, `type` TEXT NOT NULL, `dateModified` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `variationName` TEXT NOT NULL, `price` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `description` TEXT NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `attributesJson` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `status` TEXT NOT NULL, `lastUpdated` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductId`, `remoteVariationId`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localSiteId` INTEGER NOT NULL, `remoteProductId` INTEGER NOT NULL, `remoteVariationId` INTEGER NOT NULL, `dateModified` TEXT NOT NULL, `sku` TEXT NOT NULL, `globalUniqueId` TEXT NOT NULL, `variationName` TEXT NOT NULL, `price` TEXT NOT NULL, `regularPrice` TEXT NOT NULL, `salePrice` TEXT NOT NULL, `description` TEXT NOT NULL, `stockQuantity` REAL NOT NULL, `stockStatus` TEXT NOT NULL, `manageStock` INTEGER NOT NULL, `backordered` INTEGER NOT NULL, `attributesJson` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `status` TEXT NOT NULL, `lastUpdated` TEXT NOT NULL, `downloadable` INTEGER NOT NULL, PRIMARY KEY(`localSiteId`, `remoteProductId`, `remoteVariationId`))",
         "fields": [
           {
             "fieldPath": "localSiteId",
@@ -2372,12 +2372,6 @@
             "fieldPath": "remoteVariationId",
             "columnName": "remoteVariationId",
             "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "type",
-            "columnName": "type",
-            "affinity": "TEXT",
             "notNull": true
           },
           {
@@ -2491,6 +2485,70 @@
             "remoteVariationId"
           ]
         }
+      },
+      {
+        "tableName": "PosSearchableFts",
+        "createSql": "CREATE VIRTUAL TABLE IF NOT EXISTS `${TABLE_NAME}` USING FTS4(`localSiteId` TEXT NOT NULL, `itemId` TEXT NOT NULL, `parentProductId` TEXT NOT NULL, `name` TEXT NOT NULL, `sku` TEXT NOT NULL, `barcode` TEXT NOT NULL, `attributeValues` TEXT NOT NULL, tokenize=unicode61)",
+        "fields": [
+          {
+            "fieldPath": "localSiteId",
+            "columnName": "localSiteId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "itemId",
+            "columnName": "itemId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "parentProductId",
+            "columnName": "parentProductId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sku",
+            "columnName": "sku",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "barcode",
+            "columnName": "barcode",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attributeValues",
+            "columnName": "attributeValues",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": []
+        },
+        "ftsVersion": "FTS4",
+        "ftsOptions": {
+          "tokenizer": "unicode61",
+          "tokenizerArgs": [],
+          "contentTable": "",
+          "languageIdColumnName": "",
+          "matchInfo": "FTS4",
+          "notIndexedColumns": [],
+          "prefixSizes": [],
+          "preferredOrder": "ASC"
+        },
+        "contentSyncTriggers": []
       },
       {
         "tableName": "ProductCategoryEntity",
@@ -4551,7 +4609,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2c8fc306d9ae5f803473ea0684baa60b')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '61fa7b1ef50d6c5e4fcca29c3d2fa9e6')"
     ]
   }
 }

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -7,6 +7,7 @@ import com.woocommerce.android.util.PriceUtils
 import java.math.BigDecimal
 import java.math.MathContext
 import javax.inject.Inject
+import kotlin.math.abs
 
 /**
  * Get a list of refundable items for an order, taking into account previous refunds.
@@ -72,7 +73,7 @@ class WooPosGetRefundableItems @Inject constructor(
             .fold(0f) { acc, item -> acc + item.quantity }
 
         return productItems
-            .associate { it.itemId to (it.quantity - (refundedByItemId[it.itemId] ?: 0f)) }
+            .associate { it.itemId to (it.quantity - abs(refundedByItemId[it.itemId] ?: 0f)) }
             .filterValues { it > 0 }
     }
 

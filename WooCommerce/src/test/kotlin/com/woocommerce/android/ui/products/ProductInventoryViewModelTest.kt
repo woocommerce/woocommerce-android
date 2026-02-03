@@ -116,7 +116,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
     fun `Test that an error is shown if SKU is already taken`() = testBlocking {
         whenever(productDetailRepository.isSkuAvailableLocally(takenSku)).thenReturn(false)
         whenever(productDetailRepository.isSkuAvailableRemotely(expectedData.sku!!)).thenReturn(true)
-        whenever(productDetailRepository.isSkuAvailableLocally(expectedData.sku!!)).thenReturn(true)
+        whenever(productDetailRepository.isSkuAvailableLocally(expectedData.sku)).thenReturn(true)
 
         var actual: ViewState? = null
         viewModel.viewStateData.observeForever { _, new ->
@@ -128,7 +128,7 @@ class ProductInventoryViewModelTest : BaseUnitTest() {
         assertThat(actual?.inventoryData?.sku).isEqualTo(takenSku)
         assertThat(actual?.skuErrorMessage).isEqualTo(string.product_inventory_update_sku_error)
 
-        viewModel.onSkuChanged(expectedData.sku!!)
+        viewModel.onSkuChanged(expectedData.sku)
 
         assertThat(actual?.inventoryData?.sku).isEqualTo(expectedData.sku)
         assertThat(actual?.skuErrorMessage).isEqualTo(0)

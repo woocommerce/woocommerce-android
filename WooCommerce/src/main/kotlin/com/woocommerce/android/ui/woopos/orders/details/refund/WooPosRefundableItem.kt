@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.compose.runtime.Immutable
 import java.math.BigDecimal
@@ -14,4 +14,7 @@ data class WooPosRefundableItem(
     val formattedUnitPrice: String,
     val formattedUnitTax: String,
     val rowIndex: Int,
-)
+) {
+    val uniqueId: String
+        get() = "${orderItemId}_$rowIndex"
+}

@@ -12,6 +12,9 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -201,6 +204,11 @@ class WooPosOrdersViewModel @Inject constructor(
                 onSuccess = { refunds -> RefundsFetchResult.Success(refunds) },
                 onFailure = { RefundsFetchResult.Error }
             )
+
+            val stateAfterRefundsFetch = _state.value as? WooPosOrdersState.Content
+            if (stateAfterRefundsFetch?.selectedDetails?.id != orderId) {
+                return@launch
+            }
 
             val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
@@ -424,6 +432,7 @@ class WooPosOrdersViewModel @Inject constructor(
         val current = _state.value as? WooPosOrdersState.Content ?: return
         val selectedOrderId = current.selectedDetails?.id ?: return
 
+        sideLoadActionsJob?.cancel()
         viewModelScope.launch {
             ordersDataSource.refreshOrderById(selectedOrderId)
                 .onSuccess { applyOrderUpdate(it) }
@@ -478,7 +487,8 @@ class WooPosOrdersViewModel @Inject constructor(
                     pullToRefreshState = WooPosPullToRefreshState.Disabled,
                     searchInputState = _state.value.searchInputState,
                     selectedDetails = currentSelectedDetails,
-                    paginationState = WooPosPaginationState.None
+                    paginationState = WooPosPaginationState.None,
+                    dialogState = WooPosOrdersState.Content.DialogState.Hidden
                 )
             }
 
@@ -496,7 +506,8 @@ class WooPosOrdersViewModel @Inject constructor(
                         pullToRefreshState = WooPosPullToRefreshState.Enabled,
                         searchInputState = _state.value.searchInputState,
                         selectedDetails = null,
-                        paginationState = WooPosPaginationState.None
+                        paginationState = WooPosPaginationState.None,
+                        dialogState = WooPosOrdersState.Content.DialogState.Hidden
                     )
                 }
 
@@ -510,7 +521,8 @@ class WooPosOrdersViewModel @Inject constructor(
                             pullToRefreshState = WooPosPullToRefreshState.Enabled,
                             searchInputState = _state.value.searchInputState,
                             selectedDetails = null,
-                            paginationState = WooPosPaginationState.None
+                            paginationState = WooPosPaginationState.None,
+                            dialogState = WooPosOrdersState.Content.DialogState.Hidden
                         )
                     } else {
                         replaceOrders(result.ordersWithRefunds)
@@ -567,6 +579,7 @@ class WooPosOrdersViewModel @Inject constructor(
         searchJob?.cancel()
         loadingJob?.cancel()
         loadingMoreOrdersJob?.cancel()
+        sideLoadActionsJob?.cancel()
     }
 
     private suspend fun getOrComputeDetails(orderId: Long): WooPosOrdersState.OrderDetailsViewState.Computed.Details {
@@ -644,7 +657,9 @@ class WooPosOrdersViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            dialogState = (currentState as? WooPosOrdersState.Content)?.dialogState
+                ?: WooPosOrdersState.Content.DialogState.Hidden
         )
 
         if (currentFirstOrderId != null && currentFirstOrderId != newFirstOrderId) {
@@ -669,7 +684,8 @@ class WooPosOrdersViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = current.selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState
+            searchInputState = _state.value.searchInputState,
+            dialogState = current.dialogState
         )
     }
 

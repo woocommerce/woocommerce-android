@@ -209,7 +209,7 @@ private fun TopPerformersContent(
         when {
             topPerformersState?.topPerformers.isNullOrEmpty() -> TopPerformersEmptyView()
             else -> TopPerformerProductList(
-                topPerformers = topPerformersState?.topPerformers!!,
+                topPerformers = topPerformersState.topPerformers,
                 modifier = Modifier.padding(top = 8.dp)
             )
         }

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.compose.runtime.Immutable
 import java.math.BigDecimal
@@ -14,6 +14,8 @@ sealed class WooPosRefundState {
         val orderNumber: String,
         val currency: String,
         val refundableItems: List<WooPosRefundableItem>,
+        val selectedItemIds: Set<String>,
+        val allItemsSelected: Boolean,
         val itemsCount: Int,
         val subtotal: BigDecimal,
         val taxes: BigDecimal,
@@ -53,11 +55,7 @@ sealed class WooPosRefundState {
     data class RefundSuccess(
         val orderId: Long,
         val orderNumber: String,
-        val refundedAmount: String
-    ) : WooPosRefundState()
-
-    @Immutable
-    data class RefundError(
-        val message: String
+        val refundedAmount: String,
+        val paymentMethod: String
     ) : WooPosRefundState()
 }

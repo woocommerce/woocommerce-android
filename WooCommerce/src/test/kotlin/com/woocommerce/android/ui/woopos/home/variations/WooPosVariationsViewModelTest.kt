@@ -88,14 +88,14 @@ class WooPosVariationsViewModelTest {
             // Mock the basic behavior for tests
             if (parentProduct != null) {
                 // Use parent product's variation enabled attributes
-                parentProduct.variationEnabledAttributes?.joinToString(", ") { attribute ->
+                parentProduct.variationEnabledAttributes.joinToString(", ") { attribute ->
                     val option = variation.attributes.firstOrNull { it.name == attribute.name }
                     if (option?.option != null) {
                         "${attribute.name}: ${option.option}"
                     } else {
                         "Any ${attribute.name}"
                     }
-                } ?: "Any variation"
+                }.ifEmpty { "Any variation" }
             } else {
                 // No parent product, use all variation attributes
                 variation.attributes.mapNotNull { attribute ->

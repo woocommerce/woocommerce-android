@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -78,11 +78,11 @@ class WooPosGetRefundableItemsTest {
         id = id,
         productId = productId,
         variationId = variationId,
-        quantity = quantity,
+        quantity = -quantity,
         name = name,
-        subtotal = subtotal,
-        total = total,
-        totalTax = totalTax,
+        subtotal = -subtotal,
+        total = -total,
+        totalTax = -totalTax,
         price = price,
         orderItemId = orderItemId
     )
@@ -323,10 +323,10 @@ class WooPosGetRefundableItemsTest {
                     id = 1L,
                     productId = 10L,
                     variationId = 0,
-                    quantity = 2,
+                    quantity = -2,
                     name = "Product 1",
-                    subtotal = BigDecimal("20.00"),
-                    total = BigDecimal("20.00"),
+                    subtotal = BigDecimal("-20.00"),
+                    total = BigDecimal("-20.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("10.00"),
                     orderItemId = 1L
@@ -335,10 +335,10 @@ class WooPosGetRefundableItemsTest {
                     id = 2L,
                     productId = 20L,
                     variationId = 0,
-                    quantity = 1,
+                    quantity = -1,
                     name = "Product 2",
-                    subtotal = BigDecimal("15.00"),
-                    total = BigDecimal("15.00"),
+                    subtotal = BigDecimal("-15.00"),
+                    total = BigDecimal("-15.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("15.00"),
                     orderItemId = 2L
@@ -389,10 +389,10 @@ class WooPosGetRefundableItemsTest {
                     id = 1L,
                     productId = 50L,
                     variationId = 0,
-                    quantity = 2,
+                    quantity = -2,
                     name = "Test Product",
-                    subtotal = BigDecimal("40.00"),
-                    total = BigDecimal("40.00"),
+                    subtotal = BigDecimal("-40.00"),
+                    total = BigDecimal("-40.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
                     orderItemId = 1L
@@ -413,10 +413,10 @@ class WooPosGetRefundableItemsTest {
                     id = 2L,
                     productId = 50L,
                     variationId = 0,
-                    quantity = 3,
+                    quantity = -3,
                     name = "Test Product",
-                    subtotal = BigDecimal("60.00"),
-                    total = BigDecimal("60.00"),
+                    subtotal = BigDecimal("-60.00"),
+                    total = BigDecimal("-60.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
                     orderItemId = 1L
@@ -512,10 +512,10 @@ class WooPosGetRefundableItemsTest {
                     id = 1L,
                     productId = 50L,
                     variationId = 102L,
-                    quantity = 1,
+                    quantity = -1,
                     name = "T-Shirt - Large",
-                    subtotal = BigDecimal("20.00"),
-                    total = BigDecimal("20.00"),
+                    subtotal = BigDecimal("-20.00"),
+                    total = BigDecimal("-20.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
                     orderItemId = 999L // Different order item ID
@@ -566,10 +566,10 @@ class WooPosGetRefundableItemsTest {
                     id = 1L,
                     productId = 50L,
                     variationId = 101L, // Same variation
-                    quantity = 1,
+                    quantity = -1,
                     name = "T-Shirt - Small",
-                    subtotal = BigDecimal("20.00"),
-                    total = BigDecimal("20.00"),
+                    subtotal = BigDecimal("-20.00"),
+                    total = BigDecimal("-20.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
                     orderItemId = 1L
@@ -638,10 +638,10 @@ class WooPosGetRefundableItemsTest {
                     id = 1L,
                     productId = 50L,
                     variationId = 101L,
-                    quantity = 2,
+                    quantity = -2,
                     name = "T-Shirt - Small",
-                    subtotal = BigDecimal("40.00"),
-                    total = BigDecimal("40.00"),
+                    subtotal = BigDecimal("-40.00"),
+                    total = BigDecimal("-40.00"),
                     totalTax = BigDecimal.ZERO,
                     price = BigDecimal("20.00"),
                     orderItemId = 1L // Refund targets item1 only
