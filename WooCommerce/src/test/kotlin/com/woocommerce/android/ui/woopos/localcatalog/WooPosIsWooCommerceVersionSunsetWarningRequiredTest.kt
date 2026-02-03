@@ -1,7 +1,6 @@
-package com.woocommerce.android.ui.woopos.home.items
+package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
-import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.test.runTest

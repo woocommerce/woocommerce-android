@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.home.items
+package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
 import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
