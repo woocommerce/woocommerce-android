@@ -174,14 +174,18 @@ class WooPosLocalCatalogSyncWithFtsTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given products to remove, when syncFtsForIncrementalSync, then deletes FTS entries`() =
+    fun `given products to remove, when syncFtsForIncrementalSync, then deletes products and their variations from FTS`() =
         testBlocking {
+            // GIVEN
             whenever(isFtsEnabled()).thenReturn(true)
             val productsToRemove = listOf(RemoteId(5), RemoteId(10))
 
+            // WHEN
             sut.syncFtsForIncrementalSync("1", emptyList(), emptyList(), productsToRemove)
 
+            // THEN
             verify(ftsDao).deleteProducts("1", listOf("5", "10"))
+            verify(ftsDao).deleteVariationsByParentProductIds("1", listOf("5", "10"))
             verify(ftsDao, never()).insertAll(any())
         }
 

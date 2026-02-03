@@ -78,6 +78,7 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
         if (productsToRemove.isNotEmpty()) {
             val productIdsToRemove = productsToRemove.map { it.value.toString() }
             ftsDao.deleteProducts(siteIdString, productIdsToRemove)
+            ftsDao.deleteVariationsByParentProductIds(siteIdString, productIdsToRemove)
         }
 
         if (variations.isNotEmpty()) {
