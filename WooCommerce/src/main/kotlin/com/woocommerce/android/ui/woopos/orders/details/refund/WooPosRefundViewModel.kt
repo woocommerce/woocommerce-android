@@ -274,6 +274,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         ).copy(step = currentState.step)
     }
 
+    @Suppress("LongMethod")
     private fun processRefund(contentState: WooPosRefundState.Content) {
         viewModelScope.launch {
             if (contentState.step == WooPosRefundState.Content.RefundStep.Processing) {
