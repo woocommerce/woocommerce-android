@@ -23,6 +23,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -99,5 +101,19 @@ fun WooPosInfoBanner(
                 }
             }
         }
+    }
+}
+
+@Composable
+@WooPosPreview
+fun WooPosInfoBannerPreview() {
+    WooPosTheme {
+        WooPosInfoBanner(
+            visible = true,
+            title = "Update WooCommerce soon",
+            message = "Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later.",
+            dismissContentDescription = "Dismiss",
+            onDismiss = {}
+        )
     }
 }
