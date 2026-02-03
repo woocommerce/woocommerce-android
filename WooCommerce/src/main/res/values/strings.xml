@@ -4003,7 +4003,7 @@
     <string name="woopos_card_reader_cancel_anyway_button">Cancel anyway</string>
     <string name="woopos_card_reader_update_completed_title">Software updated</string>
     <string name="woopos_card_reader_update_failed_title">Update failed</string>
-    <string name="woopos_card_reader_update_battery_low_message">The reader battery is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
+    <string name="woopos_card_reader_update_battery_low_message">The reader battery is too low to install this update. Please charge your reader to at least 50% and try again.</string>
     <string name="woopos_card_reader_update_battery_low_message_with_level">The reader battery is at %d%%, which is too low to install this update. Please charge your reader to at least 50%% and try again.</string>
 
     <string name="customers_details_customer_section">Customer</string>
