@@ -223,7 +223,7 @@ private fun ErrorContent(
             stringResource(R.string.woopos_refund_loading_error_title) to
                 WooPosRefundUIEvent.RetryLoadRefundableItems
         }
-        WooPosRefundState.Error.ErrorType.Creating -> {
+        WooPosRefundState.Error.ErrorType.Processing -> {
             stringResource(R.string.woopos_refund_creating_error_title) to
                 WooPosRefundUIEvent.RetryCreateRefund
         }

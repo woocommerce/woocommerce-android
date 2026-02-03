@@ -51,7 +51,7 @@ sealed class WooPosRefundState {
         @Immutable
         enum class ErrorType {
             Loading,
-            Creating
+            Processing
         }
     }
 

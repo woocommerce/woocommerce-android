@@ -308,7 +308,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 )
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Creating
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
                 return@launch
             }
@@ -321,7 +321,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     )
                     _state.value = WooPosRefundState.Error(
                         message = resourceProvider.getString(R.string.error_generic),
-                        errorType = WooPosRefundState.Error.ErrorType.Creating
+                        errorType = WooPosRefundState.Error.ErrorType.Processing
                     )
                     return@launch
                 }
@@ -341,7 +341,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             if (result.isError) {
                 _state.value = WooPosRefundState.Error(
                     message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
-                    errorType = WooPosRefundState.Error.ErrorType.Creating
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
             } else {
                 _state.value = WooPosRefundState.RefundSuccess(
