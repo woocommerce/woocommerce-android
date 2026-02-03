@@ -70,7 +70,7 @@ class WhatsNewRestClient @Inject constructor(
                     minimumAppVersion = announce.minimumAppVersion,
                     maximumAppVersion = announce.maximumAppVersion,
                     appVersionTargets = announce.appVersionTargets ?: emptyList(),
-                    detailsUrl = announce.detailsUrl,
+                    detailsUrl = announce.detailsUrl.orEmpty(),
                     isLocalized = announce.isLocalized,
                     features = announce.features.map {
                         WhatsNewAnnouncementFeature(
@@ -93,7 +93,7 @@ class WhatsNewRestClient @Inject constructor(
             val minimumAppVersion: String,
             val maximumAppVersion: String,
             val appVersionTargets: List<String>?,
-            val detailsUrl: String,
+            val detailsUrl: String? = null,
             val isLocalized: Boolean,
             val responseLocale: String,
             val features: List<Feature>

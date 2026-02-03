@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.woocommerce.android.R
 import com.woocommerce.android.databinding.FeatureAnnouncementDialogFragmentBinding
 import com.woocommerce.android.extensions.takeIfNotEqualTo
+import com.woocommerce.android.util.WooLog
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -74,6 +75,8 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
                         binding.closeFeatureAnnouncementButton.text = getString(R.string.learn_more)
                         binding.closeFeatureAnnouncementButton.setOnClickListener {
                             openDetailsUrl(announcement.detailsUrl)
+                            viewModel.handleAnnouncementIsViewed()
+                            findNavController().popBackStack()
                         }
                         binding.dismissFeatureAnnouncementButton.visibility = View.VISIBLE
                         binding.dismissFeatureAnnouncementButton.setOnClickListener {
@@ -98,6 +101,8 @@ class FeatureAnnouncementDialogFragment : DialogFragment() {
         runCatching {
             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
             startActivity(intent)
+        }.onFailure {
+            WooLog.e(WooLog.T.UTILS, "Failed to open URL: $url", it)
         }
     }
 }
