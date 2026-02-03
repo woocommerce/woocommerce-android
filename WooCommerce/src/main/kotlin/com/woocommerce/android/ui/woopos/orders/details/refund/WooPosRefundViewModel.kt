@@ -207,7 +207,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 if (contentState != null) {
                     processRefund(contentState)
                 } else {
-                    WooLog.w(WooLog.T.POS, "WooPosRefund: RetryCreateRefund triggered but contentStateBeforeRefund is null")
+                    WooLog.w(
+                        WooLog.T.POS,
+                        "WooPosRefund: RetryCreateRefund triggered but contentStateBeforeRefund is null"
+                    )
                 }
             }
             WooPosRefundUIEvent.CancelRefund -> Unit
