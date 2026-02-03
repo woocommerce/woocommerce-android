@@ -124,6 +124,8 @@ interface WCDatabaseModule {
 
         @Provides internal fun providePosVariationsDao(database: WCAndroidDatabase) = database.posVariationsDao
 
+        @Provides internal fun providePosSearchableFtsDao(database: WCAndroidDatabase) = database.posSearchableFtsDao
+
         @Provides internal fun provideGatewaysDao(database: WCAndroidDatabase) = database.gatewaysDao
 
         @Provides internal fun provideNewVisitorStatsDao(database: WCAndroidDatabase) = database.newVisitorStatsDao
