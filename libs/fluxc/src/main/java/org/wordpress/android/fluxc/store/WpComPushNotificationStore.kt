@@ -158,19 +158,32 @@ class WpComPushNotificationStore @Inject constructor(
         val actionType = action.type as? NotificationAction ?: return
         when (actionType) {
             // remote actions
-            NotificationAction.FETCH_NOTIFICATIONS -> synchronizeNotifications()
-            NotificationAction.FETCH_NOTIFICATION -> fetchNotification(action.payload as FetchNotificationPayload)
+            NotificationAction.FETCH_NOTIFICATIONS ->
+                coroutineEngine.launch(AppLog.T.API, this, "synchronizeNotifications") {
+                    synchronizeNotifications()
+                }
+            NotificationAction.FETCH_NOTIFICATION ->
+                coroutineEngine.launch(AppLog.T.API, this, "fetchNotification") {
+                    fetchNotification(action.payload as FetchNotificationPayload)
+                }
             // remote responses
             NotificationAction.FETCHED_NOTIFICATIONS ->
-                handleFetchNotificationsCompleted(action.payload as FetchNotificationsResponsePayload)
-
+                coroutineEngine.launch(AppLog.T.API, this, "handleFetchNotificationsCompleted") {
+                    handleFetchNotificationsCompleted(action.payload as FetchNotificationsResponsePayload)
+                }
             NotificationAction.FETCHED_NOTIFICATION_HASHES ->
-                handleFetchNotificationHashesCompleted(action.payload as FetchNotificationHashesResponsePayload)
-
+                coroutineEngine.launch(AppLog.T.API, this, "handleFetchNotificationHashesCompleted") {
+                    handleFetchNotificationHashesCompleted(action.payload as FetchNotificationHashesResponsePayload)
+                }
             NotificationAction.FETCHED_NOTIFICATION ->
-                handleFetchNotificationCompleted(action.payload as FetchNotificationResponsePayload)
+                coroutineEngine.launch(AppLog.T.API, this, "handleFetchNotificationCompleted") {
+                    handleFetchNotificationCompleted(action.payload as FetchNotificationResponsePayload)
+                }
             // local actions
-            NotificationAction.UPDATE_NOTIFICATION -> updateNotification(action.payload as NotificationModel)
+            NotificationAction.UPDATE_NOTIFICATION ->
+                coroutineEngine.launch(AppLog.T.API, this, "updateNotification") {
+                    updateNotification(action.payload as NotificationModel)
+                }
         }
     }
 
@@ -189,7 +202,7 @@ class WpComPushNotificationStore @Inject constructor(
      * @param filterBySubtype Optional. A list of notification subtype strings to filter by
      */
     @SuppressLint("WrongConstant")
-    fun getNotificationsForSite(
+    suspend fun getNotificationsForSite(
         site: SiteModel,
         filterByType: List<String>? = null,
         filterBySubtype: List<String>? = null
@@ -220,7 +233,7 @@ class WpComPushNotificationStore @Inject constructor(
      * @param filterByType Optional. A list of notification type strings to filter by
      * @param filterBySubtype Optional. A list of notification subtype strings to filter by
      */
-    fun hasUnreadNotificationsForSite(
+    suspend fun hasUnreadNotificationsForSite(
         site: SiteModel,
         filterByType: List<String>? = null,
         filterBySubtype: List<String>? = null
@@ -318,7 +331,7 @@ class WpComPushNotificationStore @Inject constructor(
      * and use the smaller, faster results to build a list of notifications to be fetched, and delete
      * notifications in the database that no longer exist.
      */
-    private fun synchronizeNotifications() {
+    private suspend fun synchronizeNotifications() {
         val cachedCount = notificationSqlUtils.getNotificationsCount()
 
         if (cachedCount > 0) {
@@ -335,7 +348,7 @@ class WpComPushNotificationStore @Inject constructor(
      * Use the condensed map of newly fetched notification ids and hashes to determine which notifications are missing
      * from cache, require updates, or should be deleted.
      */
-    private fun handleFetchNotificationHashesCompleted(payload: FetchNotificationHashesResponsePayload) {
+    private suspend fun handleFetchNotificationHashesCompleted(payload: FetchNotificationHashesResponsePayload) {
         if (payload.isError) {
             // Unable to synchronize notifications with remote. Emit error event.
             val onNotificationChanged = OnNotificationChanged(0).also {
@@ -372,7 +385,7 @@ class WpComPushNotificationStore @Inject constructor(
         notificationRestClient.fetchNotifications(notifsToFetch.keys.toList())
     }
 
-    private fun handleFetchNotificationsCompleted(payload: FetchNotificationsResponsePayload) {
+    private suspend fun handleFetchNotificationsCompleted(payload: FetchNotificationsResponsePayload) {
         val onNotificationChanged = if (payload.isError) {
             // Notification error
             OnNotificationChanged(0).also { it.error = payload.error }
@@ -389,11 +402,11 @@ class WpComPushNotificationStore @Inject constructor(
         emitChange(onNotificationChanged)
     }
 
-    private fun fetchNotification(payload: FetchNotificationPayload) {
+    private suspend fun fetchNotification(payload: FetchNotificationPayload) {
         notificationRestClient.fetchNotification(payload.remoteNoteId)
     }
 
-    private fun handleFetchNotificationCompleted(payload: FetchNotificationResponsePayload) {
+    private suspend fun handleFetchNotificationCompleted(payload: FetchNotificationResponsePayload) {
         val onNotificationChanged = if (payload.isError) {
             OnNotificationChanged(0).also { it.error = payload.error }
         } else {
@@ -447,7 +460,7 @@ class WpComPushNotificationStore @Inject constructor(
         }
     }
 
-    private fun updateNotification(payload: NotificationModel) {
+    private suspend fun updateNotification(payload: NotificationModel) {
         // save notification to the db
         val rowsAffected = notificationSqlUtils.insertOrUpdateNotification(payload)
         val onNotificationChanged = OnNotificationChanged(rowsAffected).apply {
