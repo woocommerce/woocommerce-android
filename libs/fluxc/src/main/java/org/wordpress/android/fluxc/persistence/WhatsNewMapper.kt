@@ -15,6 +15,7 @@ internal object WhatsNewMapper {
             minimumAppVersion = model.minimumAppVersion,
             maximumAppVersion = model.maximumAppVersion,
             appVersionTargets = AppVersionTargets(model.appVersionTargets),
+            detailsUrl = model.detailsUrl,
             localized = model.isLocalized
         )
 
@@ -44,7 +45,7 @@ internal object WhatsNewMapper {
             minimumAppVersion = entity.announcement.minimumAppVersion,
             maximumAppVersion = entity.announcement.maximumAppVersion,
             appVersionTargets = entity.announcement.appVersionTargets.value,
-            detailsUrl = "",
+            detailsUrl = entity.announcement.detailsUrl,
             isLocalized = entity.announcement.localized,
             features = entity.features.map { featureToDomainModel(it) }
         )
