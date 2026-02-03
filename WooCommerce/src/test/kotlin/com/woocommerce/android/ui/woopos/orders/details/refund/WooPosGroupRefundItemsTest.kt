@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.tools.SelectedSite
@@ -127,8 +127,8 @@ class WooPosGroupRefundItemsTest {
         assertThat(result[0].quantity).isEqualTo(1)
         assertThat(result[0].refundTotal).isEqualTo(BigDecimal("20.00"))
         assertThat(result[0].refundTax).hasSize(1)
-        assertThat(result[0].refundTax!![0].taxRateId).isEqualTo(1L)
-        assertThat(result[0].refundTax!![0].refundTotal).isEqualTo(BigDecimal("2.00")) // 10.00 / 5 * 1
+        assertThat(result[0].refundTax[0].taxRateId).isEqualTo(1L)
+        assertThat(result[0].refundTax[0].refundTotal).isEqualTo(BigDecimal("2.00")) // 10.00 / 5 * 1
     }
 
     @Test
@@ -159,8 +159,8 @@ class WooPosGroupRefundItemsTest {
         assertThat(result[0].quantity).isEqualTo(3)
         assertThat(result[0].refundTotal).isEqualTo(BigDecimal("60.00")) // 20 * 3
         assertThat(result[0].refundTax).hasSize(1)
-        assertThat(result[0].refundTax!![0].taxRateId).isEqualTo(1L)
-        assertThat(result[0].refundTax!![0].refundTotal).isEqualTo(BigDecimal("6.00")) // (10.00 / 5) * 3
+        assertThat(result[0].refundTax[0].taxRateId).isEqualTo(1L)
+        assertThat(result[0].refundTax[0].refundTotal).isEqualTo(BigDecimal("6.00")) // (10.00 / 5) * 3
     }
 
     @Test

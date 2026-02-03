@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
@@ -6,6 +6,8 @@ import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
+import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -51,6 +53,7 @@ class WooPosRefundViewModelTest {
     private val refundStore: WCRefundStore = mock()
     private val selectedSite: SelectedSite = mock()
     private val wooCommerceStore: WooCommerceStore = mock()
+    private val loadPaymentMethod: WooPosGetPaymentMethod = mock()
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -127,9 +130,10 @@ class WooPosRefundViewModelTest {
         whenever(currencyFormatter.formatCurrency(any<BigDecimal>(), any<String>(), any<Boolean>())).thenReturn("$0.00")
         whenever(wooCommerceStore.fetchSiteGeneralSettings(testSite)).thenReturn(WooResult(testSettings))
         whenever(wooCommerceStore.fetchSiteSettingsTaxRoundAtSubtotal(testSite)).thenReturn(WooResult(false))
+        whenever(loadPaymentMethod.invoke(any())).thenReturn("Manual refund")
     }
 
-    private fun createViewModel(): WooPosRefundViewModel {
+    private fun createViewModel(triggerDialogOpened: Boolean = true): WooPosRefundViewModel {
         return WooPosRefundViewModel(
             orderId = testOrderId,
             ordersDataSource = ordersDataSource,
@@ -142,8 +146,13 @@ class WooPosRefundViewModelTest {
             currencyFormatter = currencyFormatter,
             refundStore = refundStore,
             selectedSite = selectedSite,
-            wooCommerceStore = wooCommerceStore
-        )
+            wooCommerceStore = wooCommerceStore,
+            getPaymentMethod = loadPaymentMethod
+        ).also {
+            if (triggerDialogOpened) {
+                it.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            }
+        }
     }
 
     /**
@@ -200,7 +209,6 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        advanceUntilIdle()
 
         // THEN
         val state = viewModel.state.value
@@ -221,7 +229,6 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // THEN
             val state = viewModel.state.value
@@ -247,7 +254,6 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        advanceUntilIdle()
 
         // THEN
         val state = viewModel.state.value
@@ -265,7 +271,6 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // THEN
             assertThat(viewModel.state.value).isEqualTo(WooPosRefundState.NoRefundableItems)
@@ -283,7 +288,6 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        advanceUntilIdle()
 
         // THEN
         val state = viewModel.state.value
@@ -326,7 +330,6 @@ class WooPosRefundViewModelTest {
 
         // WHEN
         viewModel = createViewModel()
-        advanceUntilIdle()
 
         // THEN
         val state = viewModel.state.value
@@ -415,7 +418,6 @@ class WooPosRefundViewModelTest {
 
             // WHEN
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // THEN
             val state = viewModel.state.value as WooPosRefundState.Content
@@ -436,7 +438,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
@@ -459,7 +460,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
 
@@ -486,7 +486,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val initialState = viewModel.state.value as WooPosRefundState.Content
@@ -510,7 +509,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged("Customer changed mind"))
@@ -545,7 +543,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val reviewState = viewModel.state.value as WooPosRefundState.Content
@@ -560,7 +557,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to SelectItems`() =
+    fun `given content state at ReviewRefund step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -569,7 +566,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val reviewState = viewModel.state.value as WooPosRefundState.Content
@@ -580,12 +576,11 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
-    fun `given content state at SelectItems step, when DialogDismissed event, then step remains at SelectItems`() =
+    fun `given content state at SelectItems step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -594,7 +589,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
@@ -603,8 +597,7 @@ class WooPosRefundViewModelTest {
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogDismissed)
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
@@ -615,7 +608,6 @@ class WooPosRefundViewModelTest {
         )
 
         viewModel = createViewModel()
-        advanceUntilIdle()
 
         val errorState = viewModel.state.value
         assertThat(errorState).isInstanceOf(WooPosRefundState.Error::class.java)
@@ -637,7 +629,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             val reviewState = viewModel.state.value as WooPosRefundState.Content
@@ -661,7 +652,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
@@ -677,7 +667,7 @@ class WooPosRefundViewModelTest {
         }
 
     @Test
-    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to SelectItems`() =
+    fun `given content state at ConfirmRefund step, when DialogDismissed event, then state resets to Loading`() =
         runTest {
             // GIVEN
             val refundableItems = listOf(testRefundableItem)
@@ -686,7 +676,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
@@ -698,8 +687,7 @@ class WooPosRefundViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            val updatedState = viewModel.state.value as WooPosRefundState.Content
-            assertThat(updatedState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosRefundState.Loading::class.java)
         }
 
     @Test
@@ -733,7 +721,6 @@ class WooPosRefundViewModelTest {
             ).thenReturn(WooResult(testRefundModel))
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -746,6 +733,7 @@ class WooPosRefundViewModelTest {
             val successState = finalState as WooPosRefundState.RefundSuccess
             assertThat(successState.orderId).isEqualTo(testOrderId)
             assertThat(successState.orderNumber).isEqualTo("#456")
+            assertThat(successState.paymentMethod).isEqualTo("Manual refund")
         }
 
     @Test
@@ -779,7 +767,6 @@ class WooPosRefundViewModelTest {
             ).thenReturn(WooResult(testRefundModel))
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -829,7 +816,6 @@ class WooPosRefundViewModelTest {
             ).thenReturn(WooResult(testRefundModel))
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundReasonChanged(testReason))
@@ -879,7 +865,6 @@ class WooPosRefundViewModelTest {
             ).thenReturn(WooResult(testRefundModel))
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             // WHEN
             viewModel.onUIEvent(WooPosRefundUIEvent.OnRefundConfirmed)
@@ -909,7 +894,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.step).isEqualTo(WooPosRefundState.Content.RefundStep.SelectItems)
@@ -958,7 +942,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.selectedItemIds).containsExactlyInAnyOrder(item1.uniqueId, item2.uniqueId)
@@ -1014,7 +997,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item1.uniqueId))
 
@@ -1070,7 +1052,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.selectedItemIds).hasSize(2)
@@ -1124,7 +1105,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.SelectAllToggled)
 
@@ -1195,7 +1175,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
 
@@ -1251,7 +1230,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
 
@@ -1285,7 +1263,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToReviewClicked)
             viewModel.onUIEvent(WooPosRefundUIEvent.ContinueToConfirmRefundClicked)
@@ -1347,7 +1324,6 @@ class WooPosRefundViewModelTest {
             whenever(getRefundableItems.invoke(any(), any())).thenReturn(refundableItems)
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             val initialState = viewModel.state.value as WooPosRefundState.Content
             assertThat(initialState.selectedItemIds).hasSize(3)
@@ -1451,7 +1427,6 @@ class WooPosRefundViewModelTest {
             ).thenReturn(WooResult(testRefundModel))
 
             viewModel = createViewModel()
-            advanceUntilIdle()
 
             viewModel.onUIEvent(WooPosRefundUIEvent.ItemSelectionToggled(item2.uniqueId))
 

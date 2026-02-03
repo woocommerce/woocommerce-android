@@ -24,12 +24,12 @@ class RegisterDevice @Inject constructor(
             IF_NEEDED -> {
                 when (pushRegistrationStatus) {
                     Status.UNREGISTERED -> sendToken()
-                    Status.WPCOM_REGISTERED -> if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
+                    Status.REGISTERED_WPCOM_ONLY -> if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
                         sendToken()
                     }
 
-                    Status.WOO_REGISTERED,
-                    Status.REGISTERED_IN_BOTH -> {
+                    Status.REGISTERED_WOO_ONLY,
+                    Status.REGISTERED_BOTH -> {
                     }
                 }
             }

@@ -93,7 +93,7 @@ class DashboardViewModel @Inject constructor(
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
-            site?.displayName
+            site.displayName
         } else {
             site?.name
         } ?: resourceProvider.getString(R.string.store_name_default)

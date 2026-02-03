@@ -1,6 +1,7 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 sealed class WooPosRefundUIEvent {
+    data object DialogOpened : WooPosRefundUIEvent()
     data class ItemSelectionToggled(val uniqueId: String) : WooPosRefundUIEvent()
     data object SelectAllToggled : WooPosRefundUIEvent()
     data object ContinueToReviewClicked : WooPosRefundUIEvent()

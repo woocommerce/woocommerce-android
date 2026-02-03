@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,6 +7,8 @@ import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
+import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.WooLog
@@ -15,6 +17,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -37,7 +40,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val currencyFormatter: CurrencyFormatter,
     private val refundStore: WCRefundStore,
     private val selectedSite: SelectedSite,
-    private val wooCommerceStore: WooCommerceStore
+    private val wooCommerceStore: WooCommerceStore,
+    private val getPaymentMethod: WooPosGetPaymentMethod
 ) : ViewModel() {
 
     @AssistedFactory
@@ -49,12 +53,9 @@ class WooPosRefundViewModel @AssistedInject constructor(
     val state: StateFlow<WooPosRefundState> = _state.asStateFlow()
 
     private var currentOrder: Order? = null
+    private var loadingJob: Job? = null
     private var cachedNumberOfDecimalPoints: Int? = null
     private var cachedTaxRoundAtSubtotal: Boolean? = null
-
-    init {
-        loadRefundableItems()
-    }
 
     private suspend fun fetchSiteSettings(): Result<Int> {
         val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
@@ -102,7 +103,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun loadRefundableItems() {
-        viewModelScope.launch {
+        loadingJob?.cancel()
+        loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading
 
             if (fetchSiteSettings().isFailure) {
@@ -144,6 +146,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 taxRoundAtSubtotal = checkNotNull(cachedTaxRoundAtSubtotal) {
                     "cachedTaxRoundAtSubtotal should not be null when building content state"
                 },
+                paymentMethod = getPaymentMethod(order)
             )
         }
     }
@@ -153,6 +156,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
         refundableItems: List<WooPosRefundableItem>,
         numberOfDecimalPoints: Int,
         taxRoundAtSubtotal: Boolean,
+        paymentMethod: String,
         selectedItemIds: Set<String> = refundableItems.map { it.uniqueId }.toSet()
     ): WooPosRefundState.Content {
         val selectedItems = refundableItems.filter { it.uniqueId in selectedItemIds }
@@ -175,7 +179,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             formattedSubtotal = PriceUtils.formatCurrency(subtotal, order.currency, currencyFormatter),
             formattedTaxes = PriceUtils.formatCurrency(taxes, order.currency, currencyFormatter),
             formattedTotal = PriceUtils.formatCurrency(total, order.currency, currencyFormatter),
-            paymentMethod = "TEST: payment card ••••1456", // TBD: use real payment method value
+            paymentMethod = paymentMethod,
             step = WooPosRefundState.Content.RefundStep.SelectItems
         )
     }
@@ -191,6 +195,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     fun onUIEvent(event: WooPosRefundUIEvent) {
         when (event) {
+            WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
             WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
@@ -200,14 +205,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun handleDialogDismissed() {
-        val currentState = _state.value
-        if (currentState is WooPosRefundState.Content &&
-            currentState.step != WooPosRefundState.Content.RefundStep.Processing
-        ) {
-            _state.value = currentState.copy(
-                step = WooPosRefundState.Content.RefundStep.SelectItems
-            )
-        }
+        _state.value = WooPosRefundState.Loading
+        loadingJob?.cancel()
     }
 
     private fun handleContentStateEvent(event: WooPosRefundUIEvent, currentState: WooPosRefundState.Content) {
@@ -228,7 +227,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
-            WooPosRefundUIEvent.DialogDismissed -> Unit
+            WooPosRefundUIEvent.DialogDismissed,
+            WooPosRefundUIEvent.DialogOpened -> Unit
         }
     }
 
@@ -267,6 +267,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             refundableItems = currentState.refundableItems,
             numberOfDecimalPoints = numberOfDecimalPoints,
             taxRoundAtSubtotal = taxRoundAtSubtotal,
+            paymentMethod = currentState.paymentMethod,
             selectedItemIds = newSelectedIds
         ).copy(step = currentState.step)
     }
@@ -322,7 +323,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = WooPosRefundState.RefundSuccess(
                     orderId = contentState.orderId,
                     orderNumber = contentState.orderNumber,
-                    refundedAmount = contentState.formattedTotal
+                    refundedAmount = contentState.formattedTotal,
+                    paymentMethod = contentState.paymentMethod
                 )
             }
         }

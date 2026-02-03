@@ -37,7 +37,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.REGISTERED_IN_BOTH)
+        assertThat(result).isEqualTo(Status.REGISTERED_BOTH)
     }
 
     @Test
@@ -47,7 +47,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.WOO_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WOO_ONLY)
     }
 
     @Test
@@ -57,7 +57,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(TEST_SITE_ID)
 
-        assertThat(result).isEqualTo(Status.WPCOM_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WPCOM_ONLY)
     }
 
     @Test
@@ -76,7 +76,7 @@ class PushNotificationRegistrationStatusTest : BaseUnitTest() {
 
         val result = sut(null)
 
-        assertThat(result).isEqualTo(Status.WPCOM_REGISTERED)
+        assertThat(result).isEqualTo(Status.REGISTERED_WPCOM_ONLY)
     }
 
     @Test
