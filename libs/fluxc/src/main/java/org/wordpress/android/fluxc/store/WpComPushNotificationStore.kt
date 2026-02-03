@@ -26,7 +26,6 @@ import org.wordpress.android.fluxc.utils.PreferenceUtils
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.AppLog.T.NOTIFS
-import java.util.Date
 import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
@@ -93,8 +92,7 @@ class WpComPushNotificationStore @Inject constructor(
 
     @Suppress("unused")
     class FetchNotificationsResponsePayload(
-        val notifs: List<NotificationModel> = emptyList(),
-        val lastSeen: Date? = null
+        val notifs: List<NotificationModel> = emptyList()
     ) : Payload<NotificationError>() {
         constructor(error: NotificationError) : this() {
             this.error = error
@@ -116,20 +114,6 @@ class WpComPushNotificationStore @Inject constructor(
 
     class FetchNotificationHashesResponsePayload(
         val hashesMap: Map<Long, Long> = emptyMap()
-    ) : Payload<NotificationError>() {
-        @Suppress("unused")
-        constructor(error: NotificationError) : this() {
-            this.error = error
-        }
-    }
-
-    class MarkNotificationsSeenPayload(
-        val lastSeenTime: Long
-    ) : Payload<BaseNetworkError>()
-
-    class MarkNotificationSeenResponsePayload(
-        val success: Boolean = false,
-        val lastSeenTime: Long? = null
     ) : Payload<NotificationError>() {
         @Suppress("unused")
         constructor(error: NotificationError) : this() {
@@ -171,7 +155,6 @@ class WpComPushNotificationStore @Inject constructor(
 
     class OnNotificationChanged(var rowsAffected: Int) : OnChanged<NotificationError>() {
         var causeOfChange: NotificationAction? = null
-        var lastSeenTime: Long? = null
         var success: Boolean = true
         val changedNotificationLocalIds = mutableListOf<Int>()
     }
@@ -183,8 +166,6 @@ class WpComPushNotificationStore @Inject constructor(
             // remote actions
             NotificationAction.FETCH_NOTIFICATIONS -> synchronizeNotifications()
             NotificationAction.FETCH_NOTIFICATION -> fetchNotification(action.payload as FetchNotificationPayload)
-            NotificationAction.MARK_NOTIFICATIONS_SEEN ->
-                markNotificationSeen(action.payload as MarkNotificationsSeenPayload)
             // remote responses
             NotificationAction.FETCHED_NOTIFICATIONS ->
                 handleFetchNotificationsCompleted(action.payload as FetchNotificationsResponsePayload)
@@ -194,9 +175,6 @@ class WpComPushNotificationStore @Inject constructor(
 
             NotificationAction.FETCHED_NOTIFICATION ->
                 handleFetchNotificationCompleted(action.payload as FetchNotificationResponsePayload)
-
-            NotificationAction.MARKED_NOTIFICATIONS_SEEN ->
-                handleMarkedNotificationSeen(action.payload as MarkNotificationSeenResponsePayload)
             // local actions
             NotificationAction.UPDATE_NOTIFICATION -> updateNotification(action.payload as NotificationModel)
         }
@@ -480,28 +458,6 @@ class WpComPushNotificationStore @Inject constructor(
             }
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATION
-        }
-        emitChange(onNotificationChanged)
-    }
-
-    private fun markNotificationSeen(payload: MarkNotificationsSeenPayload) {
-        notificationRestClient.markNotificationsSeen(payload.lastSeenTime)
-    }
-
-    private fun handleMarkedNotificationSeen(payload: MarkNotificationSeenResponsePayload) {
-        val onNotificationChanged = if (payload.isError) {
-            // Notification error
-            OnNotificationChanged(0).apply {
-                error = payload.error
-                success = false
-            }
-        } else {
-            OnNotificationChanged(0).apply {
-                success = payload.success
-                lastSeenTime = payload.lastSeenTime
-            }
-        }.apply {
-            causeOfChange = NotificationAction.MARK_NOTIFICATIONS_SEEN
         }
         emitChange(onNotificationChanged)
     }

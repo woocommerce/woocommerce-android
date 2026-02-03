@@ -9,8 +9,6 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotific
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationResponsePayload;
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsPayload;
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsResponsePayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationSeenResponsePayload;
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsSeenPayload;
 
 @ActionEnum
 public enum NotificationAction implements IAction {
@@ -19,8 +17,6 @@ public enum NotificationAction implements IAction {
     FETCH_NOTIFICATIONS, // Fetch notifications
     @Action(payloadType = FetchNotificationPayload.class)
     FETCH_NOTIFICATION, // Fetch a single notification
-    @Action(payloadType = MarkNotificationsSeenPayload.class)
-    MARK_NOTIFICATIONS_SEEN, // Submit the time notifications were last seen
 
     // Remote responses
     @Action(payloadType = FetchNotificationHashesResponsePayload.class)
@@ -29,8 +25,6 @@ public enum NotificationAction implements IAction {
     FETCHED_NOTIFICATIONS, // Response to fetching notifications
     @Action(payloadType = FetchNotificationResponsePayload.class)
     FETCHED_NOTIFICATION, // Response to fetching a single notification
-    @Action(payloadType = MarkNotificationSeenResponsePayload.class)
-    MARKED_NOTIFICATIONS_SEEN, // Response to submitting the time notifications were last seen
 
     // Local actions
     @Action(payloadType = NotificationModel.class)

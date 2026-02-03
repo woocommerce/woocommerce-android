@@ -24,7 +24,6 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceUnregi
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationHashesResponsePayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationResponsePayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationsResponsePayload
-import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationSeenResponsePayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.MarkNotificationsReadResponsePayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationAppKey
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationError
@@ -33,7 +32,6 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDevi
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.UnregisterDeviceResponsePayload
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.PackageUtils
-import java.util.Date
 import javax.inject.Inject
 import javax.inject.Named
 import javax.inject.Singleton
@@ -176,13 +174,10 @@ class NotificationRestClient @Inject constructor(
             WPComGsonRequest.buildGetRequest(
                 url, params, NotificationsApiResponse::class.java,
                 { response: NotificationsApiResponse?, _ ->
-                    val lastSeenTime = response?.last_seen_time?.let {
-                        Date(it)
-                    }
                     val notifications = response?.notes?.map {
                         NotificationApiResponse.notificationResponseToNotificationModel(it)
                     } ?: listOf()
-                    val payload = FetchNotificationsResponsePayload(notifications, lastSeenTime)
+                    val payload = FetchNotificationsResponsePayload(notifications)
                     dispatcher.dispatch(
                         NotificationActionBuilder.newFetchedNotificationsAction(
                             payload
@@ -238,45 +233,6 @@ class NotificationRestClient @Inject constructor(
                     }
                     dispatcher.dispatch(
                         NotificationActionBuilder.newFetchedNotificationAction(
-                            payload
-                        )
-                    )
-                })
-        add(request)
-    }
-
-    /**
-     * Send the timestamp of the last notification seen to update the last set of notifications seen
-     * on the server.
-     *
-     * https://developer.wordpress.com/docs/api/1/post/notifications/seen
-     */
-    fun markNotificationsSeen(timestamp: Long) {
-        val url = WPCOMREST.notifications.seen.urlV1_1
-        val params = mapOf("time" to timestamp.toString())
-        val request =
-            WPComGsonRequest.buildPostRequest(
-                url, params, NotificationSeenApiResponse::class.java,
-                { response, _ ->
-                    val payload = MarkNotificationSeenResponsePayload(
-                        response.success,
-                        response.last_seen_time
-                    )
-                    dispatcher.dispatch(
-                        NotificationActionBuilder.newMarkedNotificationsSeenAction(
-                            payload
-                        )
-                    )
-                },
-                { networkError ->
-                    val payload = MarkNotificationSeenResponsePayload().apply {
-                        error = NotificationError(
-                            NotificationErrorType.fromString(networkError.apiError),
-                            networkError.message
-                        )
-                    }
-                    dispatcher.dispatch(
-                        NotificationActionBuilder.newMarkedNotificationsSeenAction(
                             payload
                         )
                     )
