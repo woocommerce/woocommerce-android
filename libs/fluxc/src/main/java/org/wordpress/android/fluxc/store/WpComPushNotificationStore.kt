@@ -47,12 +47,6 @@ class WpComPushNotificationStore @Inject constructor(
 
     private val preferences by lazy { PreferenceUtils.getFluxCPreferences(context) }
 
-    class RegisterDevicePayload(
-        val gcmToken: String,
-        val appKey: NotificationAppKey,
-        val site: SiteModel?
-    ) : Payload<BaseNetworkError>()
-
     enum class NotificationAppKey(val value: String) {
         WORDPRESS("org.wordpress.android"),
         WOOCOMMERCE("com.woocommerce.android")
@@ -173,9 +167,6 @@ class WpComPushNotificationStore @Inject constructor(
     }
 
     // OnChanged events
-    @Suppress("unused")
-    class OnDeviceRegistered(val deviceId: String?) : OnChanged<DeviceRegistrationError>()
-
     class OnDeviceUnregistered : OnChanged<DeviceUnregistrationError>()
 
     class OnNotificationChanged(var rowsAffected: Int) : OnChanged<NotificationError>() {
@@ -190,15 +181,11 @@ class WpComPushNotificationStore @Inject constructor(
         val actionType = action.type as? NotificationAction ?: return
         when (actionType) {
             // remote actions
-            NotificationAction.REGISTER_DEVICE -> registerDevice(action.payload as RegisterDevicePayload)
             NotificationAction.FETCH_NOTIFICATIONS -> synchronizeNotifications()
             NotificationAction.FETCH_NOTIFICATION -> fetchNotification(action.payload as FetchNotificationPayload)
             NotificationAction.MARK_NOTIFICATIONS_SEEN ->
                 markNotificationSeen(action.payload as MarkNotificationsSeenPayload)
             // remote responses
-            NotificationAction.REGISTERED_DEVICE ->
-                handleRegisteredDevice(action.payload as RegisterDeviceResponsePayload)
-
             NotificationAction.FETCHED_NOTIFICATIONS ->
                 handleFetchNotificationsCompleted(action.payload as FetchNotificationsResponsePayload)
 
@@ -359,49 +346,6 @@ class WpComPushNotificationStore @Inject constructor(
         }
 
         return handleUnregisteredDevicePayload(payload)
-    }
-
-    @Deprecated("EventBus is deprecated.", ReplaceWith("registerDevice(token, appKey)"))
-    private fun registerDevice(payload: RegisterDevicePayload) {
-        val uuid = preferences.getString(WPCOM_PUSH_DEVICE_UUID, null) ?: generateAndStoreUUID()
-
-        with(payload) {
-            notificationRestClient.registerDeviceForPushNotifications(gcmToken, appKey, uuid, site)
-        }
-    }
-
-    private fun handleRegisteredDevice(payload: RegisterDeviceResponsePayload) {
-        val onDeviceRegistered = OnDeviceRegistered(payload.deviceId)
-
-        with(payload) {
-            if (isError || deviceId.isNullOrEmpty()) {
-                when (error.type) {
-                    DeviceRegistrationErrorType.MISSING_DEVICE_ID ->
-                        AppLog.e(
-                            T.NOTIFS,
-                            "Server response missing device_id - registration skipped!"
-                        )
-
-                    DeviceRegistrationErrorType.GENERIC_ERROR ->
-                        AppLog.e(
-                            T.NOTIFS,
-                            "Error trying to register device: ${error.type} - ${error.message}"
-                        )
-
-                    DeviceRegistrationErrorType.INVALID_RESPONSE ->
-                        AppLog.e(
-                            T.NOTIFS,
-                            "Server response missing response object: ${error.type} - ${error.message}"
-                        )
-                }
-                onDeviceRegistered.error = payload.error
-            } else {
-                preferences.edit().putString(WPCOM_PUSH_DEVICE_SERVER_ID, deviceId).apply()
-                AppLog.i(T.NOTIFS, "Server response OK. Device ID: $deviceId")
-            }
-        }
-
-        emitChange(onDeviceRegistered)
     }
 
     private fun handleUnregisteredDevicePayload(

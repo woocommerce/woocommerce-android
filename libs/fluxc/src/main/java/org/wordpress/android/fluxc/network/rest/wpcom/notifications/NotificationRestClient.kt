@@ -7,7 +7,6 @@ import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.generated.endpoint.WPCOMREST
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.UserAgent
 import org.wordpress.android.fluxc.network.rest.wpcom.BaseWPComRestClient
@@ -32,8 +31,6 @@ import org.wordpress.android.fluxc.store.WpComPushNotificationStore.Notification
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.RegisterDeviceResponsePayload
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.UnregisterDeviceResponsePayload
-import org.wordpress.android.util.AppLog
-import org.wordpress.android.util.AppLog.T
 import org.wordpress.android.util.DeviceUtils
 import org.wordpress.android.util.PackageUtils
 import java.util.Date
@@ -99,69 +96,6 @@ class NotificationRestClient @Inject constructor(
         }
     }
 
-    // region Device Registration
-    @Deprecated(
-        message = "EventBus is deprecated.",
-        ReplaceWith("registerDevice(fcmToken, appKey, uuid)")
-    )
-    fun registerDeviceForPushNotifications(
-        gcmToken: String,
-        appKey: NotificationAppKey,
-        uuid: String,
-        site: SiteModel? = null
-    ) {
-        val deviceName = DeviceUtils.getInstance().getDeviceName(appContext)
-        val params = listOfNotNull(
-            "device_token" to gcmToken,
-            "device_family" to "android",
-            "app_secret_key" to appKey.value,
-            "device_name" to deviceName,
-            "device_model" to "${Build.MANUFACTURER} ${Build.MODEL}",
-            "app_version" to PackageUtils.getVersionName(appContext),
-            "version_code" to PackageUtils.getVersionCode(appContext).toString(),
-            "os_version" to Build.VERSION.RELEASE,
-            "device_uuid" to uuid,
-            ("selected_blog_id" to site?.siteId.toString()).takeIf { site != null }
-        ).toMap()
-
-        val url = WPCOMREST.devices.new_.urlV1
-        val request = WPComGsonRequest.buildPostRequest(
-            url, params, RegisterDeviceRestResponse::class.java,
-            { response: RegisterDeviceRestResponse?, _ ->
-                response?.let {
-                    if (!it.id.isNullOrEmpty()) {
-                        val payload = RegisterDeviceResponsePayload(it.id)
-                        dispatcher.dispatch(
-                            NotificationActionBuilder.newRegisteredDeviceAction(
-                                payload
-                            )
-                        )
-                    } else {
-                        val registrationError =
-                            DeviceRegistrationError(DeviceRegistrationErrorType.MISSING_DEVICE_ID)
-                        val payload = RegisterDeviceResponsePayload(registrationError)
-                        dispatcher.dispatch(
-                            NotificationActionBuilder.newRegisteredDeviceAction(
-                                payload
-                            )
-                        )
-                    }
-                } ?: run {
-                    AppLog.e(T.API, "Response for url $url with param $params is null: $response")
-                    val registrationError =
-                        DeviceRegistrationError(DeviceRegistrationErrorType.INVALID_RESPONSE)
-                    val payload = RegisterDeviceResponsePayload(registrationError)
-                    dispatcher.dispatch(NotificationActionBuilder.newRegisteredDeviceAction(payload))
-                }
-            },
-            { wpComError ->
-                val registrationError = networkErrorToRegistrationError(wpComError)
-                val payload = RegisterDeviceResponsePayload(registrationError)
-                dispatcher.dispatch(NotificationActionBuilder.newRegisteredDeviceAction(payload))
-            })
-        add(request)
-    }
-
     suspend fun unregisterDevice(deviceId: String): UnregisterDeviceResponsePayload {
         val request = wpComGsonRequestBuilder.syncPostRequest(
             this,
@@ -177,7 +111,6 @@ class NotificationRestClient @Inject constructor(
             )
         }
     }
-    // endregion
 
     /**
      * Requests a fresh batch of notifications from the api containing only the fields "id" and "note_hash".
