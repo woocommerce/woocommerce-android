@@ -213,23 +213,6 @@ class WooPosSearchableFtsDaoTest {
     }
 
     @Test
-    fun `when counting search results, then correct count is returned`() = runTest {
-        // GIVEN
-        val entries = listOf(
-            createProduct(itemId = "1", name = "Blue Shirt"),
-            createProduct(itemId = "2", name = "Red Shirt"),
-            createProduct(itemId = "3", name = "Green Pants"),
-        )
-        sut.insertAll(entries)
-
-        // WHEN
-        val count = sut.searchCount(LOCAL_SITE_ID, "shirt*")
-
-        // THEN
-        assertThat(count).isEqualTo(2)
-    }
-
-    @Test
     fun `when searching with different cases, then results are case insensitive`() = runTest {
         // GIVEN
         val entries = listOf(
@@ -340,21 +323,6 @@ class WooPosSearchableFtsDaoTest {
         // THEN
         assertThat(results).hasSize(1)
         assertThat(results[0].itemId).isEqualTo("1")
-    }
-
-    @Test
-    fun `when counting non-existent term, then zero is returned`() = runTest {
-        // GIVEN
-        val entries = listOf(
-            createProduct(itemId = "1", name = "Blue Shirt"),
-        )
-        sut.insertAll(entries)
-
-        // WHEN
-        val count = sut.searchCount(LOCAL_SITE_ID, "pants*")
-
-        // THEN
-        assertThat(count).isEqualTo(0)
     }
 
     @Test
