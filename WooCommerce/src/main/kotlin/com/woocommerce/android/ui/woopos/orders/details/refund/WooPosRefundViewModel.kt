@@ -338,7 +338,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     "${paymentGatewayResult.exceptionOrNull()?.message}"
                 )
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found)
+                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found),
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
                 return@launch
             }
