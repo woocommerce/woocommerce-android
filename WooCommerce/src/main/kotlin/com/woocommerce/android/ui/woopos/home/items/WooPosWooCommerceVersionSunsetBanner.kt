@@ -8,11 +8,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 
 @Composable
 fun WooPosWooCommerceVersionSunsetBanner(
-    state: WooPosItemsViewModel.WooCommerceVersionSunsetBannerState,
+    visible: Boolean,
     onDismiss: () -> Unit
 ) {
     WooPosItemsInfoBanner(
-        visible = state is WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Visible,
+        visible = visible,
         title = stringResource(R.string.woopos_wc_version_sunset_banner_title),
         message = stringResource(R.string.woopos_wc_version_sunset_banner_message),
         dismissContentDescription = stringResource(R.string.woopos_wc_version_sunset_banner_dismiss),
@@ -25,7 +25,7 @@ fun WooPosWooCommerceVersionSunsetBanner(
 fun WooPosWooCommerceVersionSunsetBannerPreview() {
     WooPosTheme {
         WooPosWooCommerceVersionSunsetBanner(
-            state = WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Visible,
+            visible = true,
             onDismiss = {}
         )
     }

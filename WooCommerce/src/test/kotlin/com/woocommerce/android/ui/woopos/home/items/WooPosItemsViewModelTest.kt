@@ -527,9 +527,9 @@ class WooPosItemsViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        viewModel.wooCommerceVersionSunsetBannerState.test {
+        viewModel.bannerState.test {
             val state = awaitItem()
-            assertThat(state).isEqualTo(WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Visible)
+            assertThat(state).isEqualTo(WooPosItemsBannerState.WooCommerceVersionSunset)
         }
     }
 
@@ -554,9 +554,9 @@ class WooPosItemsViewModelTest {
         val viewModel = createViewModel()
 
         // THEN
-        viewModel.wooCommerceVersionSunsetBannerState.test {
+        viewModel.bannerState.test {
             val state = awaitItem()
-            assertThat(state).isEqualTo(WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Hidden)
+            assertThat(state).isEqualTo(WooPosItemsBannerState.Hidden)
         }
     }
 
@@ -570,9 +570,9 @@ class WooPosItemsViewModelTest {
         viewModel.onUIEvent(WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed)
 
         // THEN
-        viewModel.wooCommerceVersionSunsetBannerState.test {
+        viewModel.bannerState.test {
             val state = awaitItem()
-            assertThat(state).isEqualTo(WooPosItemsViewModel.WooCommerceVersionSunsetBannerState.Hidden)
+            assertThat(state).isEqualTo(WooPosItemsBannerState.Hidden)
         }
     }
 

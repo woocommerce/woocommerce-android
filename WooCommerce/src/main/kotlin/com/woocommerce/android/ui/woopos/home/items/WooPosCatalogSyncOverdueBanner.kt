@@ -8,11 +8,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 
 @Composable
 fun WooPosCatalogSyncOverdueBanner(
-    state: WooPosItemsViewModel.CatalogSyncOverdueBannerState,
+    visible: Boolean,
     onDismiss: () -> Unit
 ) {
     WooPosItemsInfoBanner(
-        visible = state is WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
+        visible = visible,
         title = stringResource(R.string.woopos_refresh_catalog_banner_title),
         message = stringResource(R.string.woopos_refresh_catalog_banner_message),
         dismissContentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
@@ -25,7 +25,7 @@ fun WooPosCatalogSyncOverdueBanner(
 fun WooPosRefreshCatalogBannerPreview() {
     WooPosTheme {
         WooPosCatalogSyncOverdueBanner(
-            state = WooPosItemsViewModel.CatalogSyncOverdueBannerState.Visible,
+            visible = true,
             onDismiss = {}
         )
     }
