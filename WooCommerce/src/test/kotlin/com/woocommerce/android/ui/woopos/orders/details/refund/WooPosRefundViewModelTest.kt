@@ -745,6 +745,7 @@ class WooPosRefundViewModelTest {
             val successState = finalState as WooPosRefundState.RefundSuccess
             assertThat(successState.orderId).isEqualTo(testOrderId)
             assertThat(successState.orderNumber).isEqualTo("#456")
+            assertThat(successState.paymentMethod).isEqualTo("Manual refund")
         }
 
     @Test
