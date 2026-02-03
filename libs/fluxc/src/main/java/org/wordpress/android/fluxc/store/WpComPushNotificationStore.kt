@@ -11,7 +11,6 @@ import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NoteIdSet
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
 import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Response
@@ -47,7 +46,6 @@ class WpComPushNotificationStore @Inject constructor(
     private val preferences by lazy { PreferenceUtils.getFluxCPreferences(context) }
 
     enum class NotificationAppKey(val value: String) {
-        WORDPRESS("org.wordpress.android"),
         WOOCOMMERCE("com.woocommerce.android")
     }
 
@@ -183,22 +181,6 @@ class WpComPushNotificationStore @Inject constructor(
     }
 
     /**
-     * Fetch all notifications from the database.
-     *
-     * Filtering. Filtering is done by fetching all records that match the strings in [filterByType] OR
-     * [filterBySubtype].
-     *
-     * @param filterByType Optional. A list of notification type strings to filter by
-     * @param filterBySubtype Optional. A list of notification subtype strings to filter by
-     */
-    @SuppressLint("WrongConstant")
-    fun getNotifications(
-        filterByType: List<String>? = null,
-        filterBySubtype: List<String>? = null
-    ): List<NotificationModel> =
-        notificationSqlUtils.getNotifications(ORDER_DESCENDING, filterByType, filterBySubtype)
-
-    /**
      * Fetch all notifications for the given site.
      *
      * Filtering. Filtering is done by fetching all records that match the strings in [filterByType] OR
@@ -246,28 +228,6 @@ class WpComPushNotificationStore @Inject constructor(
         filterBySubtype: List<String>? = null
     ): Boolean =
         notificationSqlUtils.hasUnreadNotificationsForSite(site, filterByType, filterBySubtype)
-
-    /**
-     * Fetch the first notification matching the parameters specified in [NoteIdSet].
-     *
-     * @param idSet A [NoteIdSet] containing the localSiteId, remoteNoteId, and localNoteId
-     */
-    @Suppress("unused")
-    fun getNotificationByIdSet(idSet: NoteIdSet) =
-        notificationSqlUtils.getNotificationByIdSet(idSet)
-
-    /**
-     * Fetch a notification from the database by the remote notification ID.
-     */
-    @Suppress("unused")
-    fun getNotificationByRemoteId(remoteNoteId: Long) =
-        notificationSqlUtils.getNotificationByRemoteId(remoteNoteId)
-
-    /**
-     * Fetch a notification from the database by it's local notification id.
-     */
-    fun getNotificationByLocalId(noteId: Int) =
-        notificationSqlUtils.getNotificationByIdSet(NoteIdSet(noteId, 0, 0))
 
     suspend fun registerDevice(
         token: String,

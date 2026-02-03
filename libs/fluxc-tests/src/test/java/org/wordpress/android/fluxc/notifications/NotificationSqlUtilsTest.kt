@@ -12,7 +12,6 @@ import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NoteIdSet
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationApiResponse
 import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
@@ -277,31 +276,6 @@ class NotificationSqlUtilsTest {
                 filterByType = listOf(NotificationModel.Kind.STORE_ORDER.toString()),
                 filterBySubtype = listOf(NotificationModel.Subkind.STORE_REVIEW.toString()))
         assertEquals(3, combinedNotifications.size)
-    }
-
-    @Test
-    fun testGetNotificationByIdSet() {
-        val noteId = 3616322875
-
-        // Insert notifications
-        val notificationSqlUtils = NotificationSqlUtils(FormattableContentMapper(Gson()))
-        val jsonString = UnitTestUtils
-                .getStringFromResourceFile(this.javaClass, "notifications/notifications-api-response.json")
-        val apiResponse = NotificationTestUtils.parseNotificationsApiResponseFromJsonString(jsonString)
-        val site = SiteModel().apply { siteId = 153482281 }
-        val notesList = apiResponse.notes?.map {
-            NotificationApiResponse.notificationResponseToNotificationModel(it)
-        } ?: emptyList()
-        val inserted = notesList.sumBy { notificationSqlUtils.insertOrUpdateNotification(it) }
-        assertEquals(6, inserted)
-
-        // Fetch a single notification using the noteIdSet
-        val idSet = NoteIdSet(-1, noteId, site.siteId)
-        val notification = notificationSqlUtils.getNotificationByIdSet(idSet)
-        assertNotNull(notification)
-
-        assertEquals(notification.remoteNoteId, noteId)
-        assertEquals(notification.remoteSiteId, site.siteId)
     }
 
     @Test

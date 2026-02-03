@@ -16,7 +16,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onStart
 import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.model.notification.NoteIdSet
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel.Kind
 import org.wordpress.android.fluxc.tools.FormattableContent
@@ -172,21 +171,6 @@ class NotificationSqlUtils @Inject constructor(private val formattableContentMap
         }
 
         return conditionClauseBuilder.endWhere().exists()
-    }
-
-    fun getNotificationByIdSet(idSet: NoteIdSet): NotificationModel? {
-        val (id, remoteNoteId, remoteSiteId) = idSet
-        return WellSql.select(NotificationModelBuilder::class.java)
-                .where().beginGroup()
-                .equals(NotificationModelTable.ID, id)
-                .or()
-                .beginGroup()
-                .equals(NotificationModelTable.REMOTE_SITE_ID, remoteSiteId)
-                .equals(NotificationModelTable.REMOTE_NOTE_ID, remoteNoteId)
-                .endGroup()
-                .endGroup().endWhere()
-                .asModel
-                .firstOrNull()?.build(formattableContentMapper)
     }
 
     fun getNotificationByRemoteId(remoteNoteId: Long): NotificationModel? {
