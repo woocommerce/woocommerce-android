@@ -364,4 +364,45 @@ class DashboardViewModelTest : BaseUnitTest() {
             assertThat(jetpackBenefitsBanner).isNotNull()
             assertThat(jetpackBenefitsBanner!!.show).isFalse()
         }
+
+    @Test
+    fun `given enable push notifications UI is available, when screen starts, then hide Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
+                )
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(true)
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isFalse()
+        }
+
+    @Test
+    fun `given enable push notifications UI is not available, when screen starts, then show Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
+                )
+                whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.UNREGISTERED)
+                // Note: shouldShowEnablePushNotificationsUi already defaults to false in the mock
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isTrue()
+        }
 }
