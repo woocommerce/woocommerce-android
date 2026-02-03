@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -50,6 +51,7 @@ class WooPosProductsSearchInDbDataSourceTest {
             selectedSite = selectedSite,
             productMapper = WooPosProductModelMapper(mock()),
             isFtsEnabled = isFtsEnabled,
+            logger = mock<WooPosLogWrapper>(),
         )
     }
 

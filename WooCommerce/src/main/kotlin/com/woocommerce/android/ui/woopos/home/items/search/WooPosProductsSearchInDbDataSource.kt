@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.items.search
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModel
 import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMapper
+import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
 import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -20,6 +21,7 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
     private val selectedSite: SelectedSite,
     private val productMapper: WooPosProductModelMapper,
     private val isFtsEnabled: IsPosProductsFtsEnabled,
+    private val logger: WooPosLogWrapper,
 ) {
     companion object {
         private const val PAGE_SIZE = 15
@@ -65,11 +67,15 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
         siteId: LocalOrRemoteId.LocalId,
         query: String
     ): Result<List<WooPosProductModel>> {
+        val startTime = System.currentTimeMillis()
+        val offset = searchOffset.get()
+        logger.d("performFtsSearch: query=\"$query\", offset=$offset, pageSize=$PAGE_SIZE")
+
         val result = posLocalCatalogStore.searchProductsFts(
             siteId = siteId,
             searchQuery = query,
             pageSize = PAGE_SIZE,
-            offset = searchOffset.get()
+            offset = offset
         )
 
         return result.fold(
@@ -85,9 +91,17 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                 canLoadMoreResults.set(ftsResults.size == PAGE_SIZE)
                 searchOffset.addAndGet(PAGE_SIZE)
 
+                val duration = System.currentTimeMillis() - startTime
+                logger.d(
+                    "performFtsSearch completed: ${ftsResults.size} results " +
+                        "(${accumulatedResults.size} total). Duration: ${duration}ms"
+                )
+
                 Result.success(accumulatedResults)
             },
             onFailure = { error ->
+                val duration = System.currentTimeMillis() - startTime
+                logger.e("performFtsSearch failed after ${duration}ms: ${error.message}", error)
                 Result.failure(error)
             }
         )
