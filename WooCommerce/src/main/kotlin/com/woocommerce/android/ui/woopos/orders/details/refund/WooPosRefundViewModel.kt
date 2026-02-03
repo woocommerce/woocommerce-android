@@ -310,7 +310,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
             if (paymentGatewayResult.isFailure) {
                 WooLog.e(
                     WooLog.T.POS,
-                    "WooPosRefund: Failed to load payment gateway: ${paymentGatewayResult.exceptionOrNull()?.message}"
+                    "${paymentGatewayResult.exceptionOrNull()?.message}"
                 )
                 _state.value = WooPosRefundState.Error(
                     message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found)
