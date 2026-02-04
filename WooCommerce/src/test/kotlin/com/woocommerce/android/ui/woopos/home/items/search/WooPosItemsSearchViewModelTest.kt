@@ -65,7 +65,7 @@ class WooPosItemsSearchViewModelTest {
         productId = 1,
         productName = "Test Product",
         amount = "10.0",
-        productType = WooPosProductModel.WooPosProductType.SIMPLE
+        productType = WooPosProductModel.WooPosProductType.Simple
     )
 
     @Before
@@ -300,7 +300,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Variable Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.VARIABLE,
+                productType = WooPosProductModel.WooPosProductType.Variable,
                 variationIds = listOf(101L, 102L, 103L)
             )
 
@@ -331,7 +331,7 @@ class WooPosItemsSearchViewModelTest {
             productId = 2,
             productName = "Test Product 2",
             amount = "20.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -365,7 +365,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 2,
                 productName = "Test Product 2",
                 amount = "20.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
 
             mockSuccessfulSearch(defaultQuery, listOf(defaultProduct))
@@ -412,14 +412,14 @@ class WooPosItemsSearchViewModelTest {
             productId = 1,
             productName = "Cached Product",
             amount = "10.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         val remoteProduct = generateWooPosProduct(
             productId = 2,
             productName = "Remote Product",
             amount = "20.0",
-            productType = WooPosProductModel.WooPosProductType.SIMPLE
+            productType = WooPosProductModel.WooPosProductType.Simple
         )
 
         mockCachedThenRemoteSearch(defaultQuery, cachedProduct, remoteProduct)
@@ -460,7 +460,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 
@@ -512,7 +512,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 
@@ -556,7 +556,7 @@ class WooPosItemsSearchViewModelTest {
                     productId = 1,
                     productName = "Test Product",
                     amount = "10.0",
-                    productType = WooPosProductModel.WooPosProductType.SIMPLE
+                    productType = WooPosProductModel.WooPosProductType.Simple
                 )
             )
 
@@ -598,7 +598,7 @@ class WooPosItemsSearchViewModelTest {
                 productId = 1,
                 productName = "Test Product",
                 amount = "10.0",
-                productType = WooPosProductModel.WooPosProductType.SIMPLE
+                productType = WooPosProductModel.WooPosProductType.Simple
             )
         )
 

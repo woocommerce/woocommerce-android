@@ -408,7 +408,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
-        if (type == WooPosProductModel.WooPosProductType.VARIABLE) {
+        if (type is WooPosProductModel.WooPosProductType.Variable) {
             WooPosItemSelectionViewState.Product.Variable(
                 id = this.remoteId,
                 name = this.name,

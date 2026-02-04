@@ -396,6 +396,6 @@ class WooPosProductsViewModel @Inject constructor(
     }
 
     private fun WooPosProductModel.isVariable() =
-        type == WooPosProductModel.WooPosProductType.VARIABLE ||
-            type == WooPosProductModel.WooPosProductType.VARIATION
+        type is WooPosProductModel.WooPosProductType.Variable ||
+            type is WooPosProductModel.WooPosProductType.Variation
 }

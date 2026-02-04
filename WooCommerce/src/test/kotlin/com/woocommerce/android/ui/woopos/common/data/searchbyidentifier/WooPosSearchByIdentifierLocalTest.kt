@@ -110,7 +110,7 @@ class WooPosSearchByIdentifierLocalTest {
         val productId = 1L
         val product = generateWooPosProduct(
             productId = productId,
-            productType = WooPosProductModel.WooPosProductType.VARIABLE
+            productType = WooPosProductModel.WooPosProductType.Variable
         )
         val variation = generateWooPosVariation(
             remoteVariationId = 10L,
@@ -136,7 +136,7 @@ class WooPosSearchByIdentifierLocalTest {
         val productId = 1L
         val product = generateWooPosProduct(
             productId = productId,
-            productType = WooPosProductModel.WooPosProductType.VARIABLE
+            productType = WooPosProductModel.WooPosProductType.Variable
         )
         val variation1 = generateWooPosVariation(
             remoteVariationId = 10L,
@@ -167,7 +167,7 @@ class WooPosSearchByIdentifierLocalTest {
         val productId = 1L
         val product = generateWooPosProduct(
             productId = productId,
-            productType = WooPosProductModel.WooPosProductType.VARIABLE
+            productType = WooPosProductModel.WooPosProductType.Variable
         )
         val variation = generateWooPosVariation(
             remoteVariationId = 10L,
