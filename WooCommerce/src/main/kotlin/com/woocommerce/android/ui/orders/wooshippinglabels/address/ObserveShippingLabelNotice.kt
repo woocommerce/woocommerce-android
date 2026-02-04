@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.orders.wooshippinglabels.WooShippingLabelCreat
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeBannerUiState
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_DESTINATION_ADDRESS
+import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_DESTINATION_PHONE
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.MISSING_ITN
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_DESTINATION_ADDRESS
 import com.woocommerce.android.ui.orders.wooshippinglabels.components.NoticeType.UNVERIFIED_ORIGIN_ADDRESS
@@ -68,6 +69,11 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
         !addresses.shipTo.isVerified && isDismissed[MISSING_DESTINATION_ADDRESS] == false &&
             isDismissed[UNVERIFIED_DESTINATION_ADDRESS] == false -> {
             UNVERIFIED_DESTINATION_ADDRESS
+        }
+
+        !addressValidationHelper.isPhoneValidForShippingLabel(addresses.shipTo.address.phone) &&
+            isDismissed[MISSING_DESTINATION_PHONE] == false -> {
+            MISSING_DESTINATION_PHONE
         }
 
         addresses.shipFrom.isVerified && previousNotice == UNVERIFIED_ORIGIN_ADDRESS &&
@@ -134,6 +140,14 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
             autoDismiss = false,
             error = true,
             onDismissed = onDismissed(MISSING_ITN)
+        )
+
+        MISSING_DESTINATION_PHONE -> NoticeBannerUiState(
+            message = R.string.woo_shipping_address_notification_destination_phone_missing,
+            type = MISSING_DESTINATION_PHONE,
+            autoDismiss = false,
+            error = true,
+            onDismissed = onDismissed(MISSING_DESTINATION_PHONE)
         )
     }
 
