@@ -28,6 +28,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -72,8 +74,12 @@ fun WooPosIssueRefundDialog(
             factory.create(orderId)
         }
 
+    var hasOpened by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+        if (!hasOpened) {
+            viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
+            hasOpened = true
+        }
     }
 
     refundReasonUpdate?.let { reason ->
