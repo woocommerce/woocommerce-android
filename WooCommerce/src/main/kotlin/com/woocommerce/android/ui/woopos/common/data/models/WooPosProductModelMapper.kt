@@ -50,14 +50,14 @@ class WooPosProductModelMapper @Inject constructor(val logger: WooPosLogWrapper)
         return entities.map { fromEntity(it) }
     }
 
-    fun fromVariationEntity(entity: WooPosVariationEntity): WooPosProductModel {
+    fun fromVariationEntity(entity: WooPosVariationEntity, parentProductName: String): WooPosProductModel {
         return WooPosProductModel(
             remoteId = entity.remoteVariationId.value,
             parentId = entity.remoteProductId.value,
             name = entity.variationName,
             sku = entity.sku,
             globalUniqueId = entity.globalUniqueId,
-            type = WooPosProductModel.WooPosProductType.Variation(parentProductName = ""),
+            type = WooPosProductModel.WooPosProductType.Variation(parentProductName = parentProductName),
             status = mapProductStatus(entity.status),
             pricing = mapPricing(
                 parsePriceOrNull(entity.price),

@@ -83,7 +83,10 @@ class WooPosProductsSearchInDbDataSource @Inject constructor(
                 val mappedProducts = ftsResults.map { ftsResult ->
                     when (ftsResult) {
                         is WooPosFtsSearchResult.Product -> productMapper.fromEntity(ftsResult.entity)
-                        is WooPosFtsSearchResult.Variation -> productMapper.fromVariationEntity(ftsResult.entity)
+                        is WooPosFtsSearchResult.Variation -> productMapper.fromVariationEntity(
+                            entity = ftsResult.entity,
+                            parentProductName = ftsResult.parentProductName,
+                        )
                     }
                 }
 
