@@ -667,7 +667,7 @@ class WooPosItemsSearchViewModelTest {
     @Test
     fun `given variation, when item clicked, then send variation click event to parent`() = runTest {
         // GIVEN
-        val variation = Product.Variation(
+        val variation = Product.VariationSearchResult(
             id = 1,
             name = "Test Variation",
             price = "$10.0",

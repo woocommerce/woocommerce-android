@@ -197,7 +197,6 @@ fun WooPosVariationsScreenPreview() {
                     productId = 1,
                     price = "10.0$",
                     imageUrl = null,
-                    parentProductName = "",
                 ),
                 WooPosItemSelectionViewState.Product.Variation(
                     2,
@@ -205,7 +204,6 @@ fun WooPosVariationsScreenPreview() {
                     productId = 1,
                     price = "2000.00$",
                     imageUrl = null,
-                    parentProductName = "",
                 ),
                 WooPosItemSelectionViewState.Product.Variation(
                     3,
@@ -213,7 +211,6 @@ fun WooPosVariationsScreenPreview() {
                     productId = 1,
                     price = "1.0$",
                     imageUrl = null,
-                    parentProductName = "",
                 ),
             ),
             pullToRefreshState = WooPosPullToRefreshState.Refreshing,

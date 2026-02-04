@@ -165,7 +165,6 @@ class WooPosVariationsViewModel @Inject constructor(
                             productId = it.remoteProductId,
                             price = priceFormat(it.price),
                             imageUrl = it.image?.source,
-                            parentProductName = "",
                         )
                     }
                 )
@@ -325,7 +324,6 @@ class WooPosVariationsViewModel @Inject constructor(
                     productId = variation.remoteProductId,
                     price = priceFormat(variation.price),
                     imageUrl = variation.image?.source,
-                    parentProductName = "",
                 )
             },
             paginationState = if (loadMoreJob?.isActive == true) {

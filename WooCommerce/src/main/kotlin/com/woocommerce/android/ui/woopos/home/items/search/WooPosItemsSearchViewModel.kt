@@ -233,7 +233,9 @@ class WooPosItemsSearchViewModel @Inject constructor(
                     is ParentToChildrenEvent.MissingVariationEvent -> Unit
                     is ParentToChildrenEvent.SettingsEvent -> Unit
                     is ParentToChildrenEvent.ItemClickedInItemsList -> {
-                        if (event.itemData is ItemClickedData.Product.Variation && searchHelper.isSearchOpen()) {
+                        if (event.itemData is ItemClickedData.Product.Variation &&
+                            searchHelper.isSearchOpen()
+                        ) {
                             storeRecentSearch()
                         }
                     }
@@ -307,30 +309,38 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 }
             }
 
-            is WooPosItemSelectionViewState.Product.Variation -> {
-                viewModelScope.launch {
-                    val itemData = ItemClickedData.Product.Variation(
-                        productId = item.productId,
-                        id = item.id,
-                    )
-                    childToParentEventSender.sendToParent(
-                        ChildToParentEvent.ItemClickedInItemsList(
-                            itemData = itemData,
-                            eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
-                                item = itemData,
-                                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
-                                sourceType = sourceType,
-                            ),
-                        )
-                    )
-                }
-                storeRecentSearch()
+            is WooPosItemSelectionViewState.Product.VariationSearchResult -> {
+                handleVariationSearchResultClicked(item, sourceType)
             }
 
+            is WooPosItemSelectionViewState.Product.Variation,
             is WooPosItemSelectionViewState.Coupon -> {
-                error("Coupon item click is not supported")
+                error("${item::class.simpleName} item click is not supported in search")
             }
         }
+    }
+
+    private fun handleVariationSearchResultClicked(
+        item: WooPosItemSelectionViewState.Product.VariationSearchResult,
+        sourceType: WooPosAnalyticsEventConstant.ItemsListSourceType
+    ) {
+        viewModelScope.launch {
+            val itemData = ItemClickedData.Product.Variation(
+                productId = item.productId,
+                id = item.id,
+            )
+            childToParentEventSender.sendToParent(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = itemData,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = itemData,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
+                        sourceType = sourceType,
+                    ),
+                )
+            )
+        }
+        storeRecentSearch()
     }
 
     private fun storeRecentSearch() {
@@ -436,7 +446,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                 )
             }
             is WooPosProductModel.WooPosProductType.Variation -> {
-                WooPosItemSelectionViewState.Product.Variation(
+                WooPosItemSelectionViewState.Product.VariationSearchResult(
                     id = this.remoteId,
                     name = this.name,
                     price = priceFormat(this.pricing.displayPrice),
