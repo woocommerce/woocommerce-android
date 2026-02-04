@@ -219,7 +219,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
                 WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
-                WooPosRefundState.Content.RefundStep.Processing -> ""
+                WooPosRefundState.Content.RefundStep.Processing -> "processing"
             }
 
             if (refundStep.isNotEmpty()) {
