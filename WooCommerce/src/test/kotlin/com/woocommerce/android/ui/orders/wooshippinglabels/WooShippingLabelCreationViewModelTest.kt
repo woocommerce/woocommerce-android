@@ -285,6 +285,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
 
     private val addressValidationHelper: AddressValidationHelper = mock {
         on { canFetchShippingRates(any()) } doReturn true
+        on { isPhoneValidForShippingLabel(any()) } doReturn true
     }
 
     private val observeOriginAddresses: ObserveOriginAddresses = mock {

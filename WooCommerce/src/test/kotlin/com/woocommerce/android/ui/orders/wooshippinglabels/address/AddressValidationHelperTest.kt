@@ -137,4 +137,34 @@ class AddressValidationHelperTest : BaseUnitTest() {
         val result = sut.isPhoneValidForShippingLabel("1")
         assertThat(result).isTrue()
     }
+
+    @Test
+    fun `when phone is empty, then validatePhoneRequired returns required error`() {
+        val result = sut.validatePhoneRequired("")
+        assertThat(result).isEqualTo(fieldRequiredError)
+    }
+
+    @Test
+    fun `when phone is blank, then validatePhoneRequired returns required error`() {
+        val result = sut.validatePhoneRequired("   ")
+        assertThat(result).isEqualTo(fieldRequiredError)
+    }
+
+    @Test
+    fun `when phone has no digits, then validatePhoneRequired returns invalid error`() {
+        val result = sut.validatePhoneRequired("abc-def")
+        assertThat(result).isEqualTo(invalidPhoneError)
+    }
+
+    @Test
+    fun `when phone has at least one digit, then validatePhoneRequired returns null`() {
+        val result = sut.validatePhoneRequired("123-456-7890")
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `when phone has mixed characters with digit, then validatePhoneRequired returns null`() {
+        val result = sut.validatePhoneRequired("+1 (555) 123-4567")
+        assertThat(result).isNull()
+    }
 }
