@@ -688,7 +688,7 @@ class WooPosItemsSearchViewModelTest {
                     itemData = itemData,
                     eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                         item = itemData,
-                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
                         sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
                     )
                 )

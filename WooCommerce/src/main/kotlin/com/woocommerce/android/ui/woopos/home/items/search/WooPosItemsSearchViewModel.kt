@@ -318,7 +318,7 @@ class WooPosItemsSearchViewModel @Inject constructor(
                             itemData = itemData,
                             eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
                                 item = itemData,
-                                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                                source = WooPosAnalyticsEventConstant.ItemsListSource.VARIATION,
                                 sourceType = sourceType,
                             ),
                         )
