@@ -187,7 +187,12 @@ class WooPosLocalCatalogStore @Inject constructor(
                 if (ftsEntity.parentProductId.isBlank()) {
                     productsMap[itemId]?.let { WooPosFtsSearchResult.Product(it) }
                 } else {
-                    variationsMap[itemId]?.let { WooPosFtsSearchResult.Variation(it) }
+                    variationsMap[itemId]?.let {
+                        WooPosFtsSearchResult.Variation(
+                            entity = it,
+                            parentProductName = ftsEntity.name,
+                        )
+                    }
                 }
             }
 
