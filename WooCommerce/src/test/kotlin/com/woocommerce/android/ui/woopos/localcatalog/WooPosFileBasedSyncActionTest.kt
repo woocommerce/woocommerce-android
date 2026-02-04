@@ -1,6 +1,8 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
@@ -28,6 +30,8 @@ class WooPosFileBasedSyncActionTest {
     private val catalogFileDownloader: WooPosCatalogFileDownloader = mock()
     private val catalogFileParser: WooPosCatalogFileParser = mock()
     private val syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
+    private val preferencesRepository: WooPosPreferencesRepository = mock()
+    private val syncTimestampManager: WooPosSyncTimestampManager = mock()
     private val logger: WooPosLogWrapper = mock()
     private lateinit var site: SiteModel
 
@@ -62,11 +66,15 @@ class WooPosFileBasedSyncActionTest {
 
     @Before
     fun setup() = runTest {
+        whenever(preferencesRepository.getFileBasedSyncPollAttempts(any())).thenReturn(0)
+
         sut = WooPosFileBasedSyncAction(
             posLocalCatalogStore = posLocalCatalogStore,
             catalogFileDownloader = catalogFileDownloader,
             catalogFileParser = catalogFileParser,
             syncWithFts = syncWithFts,
+            preferencesRepository = preferencesRepository,
+            syncTimestampManager = syncTimestampManager,
             logger = logger
         )
         site = SiteModel().apply {

@@ -1,7 +1,10 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import kotlinx.coroutines.delay
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogResult
 import org.wordpress.android.fluxc.store.pos.localcatalog.WooPosGenerateCatalogState
@@ -14,6 +17,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
     private val catalogFileDownloader: WooPosCatalogFileDownloader,
     private val catalogFileParser: WooPosCatalogFileParser,
     private val syncWithFts: WooPosLocalCatalogSyncWithFts,
+    private val preferencesRepository: WooPosPreferencesRepository,
+    private val syncTimestampManager: WooPosSyncTimestampManager,
     private val logger: WooPosLogWrapper,
 ) {
     companion object {
@@ -39,9 +44,15 @@ class WooPosFileBasedSyncAction @Inject constructor(
         val startTime = System.currentTimeMillis()
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
+        val siteId = site.localId()
+        val accumulatedPollAttempts = preferencesRepository.getFileBasedSyncPollAttempts(siteId)
+        var currentRunPollAttempts = 0
+        var lastGenerationState: WooPosGenerateCatalogState? = null
         var failedConsecutiveAttempts = 0
 
         repeat(MAX_POLL_ATTEMPTS) { attemptCount ->
+            currentRunPollAttempts = attemptCount + 1
+
             if (attemptCount > 0) {
                 val delayMs = computeBackoffDelay(attemptCount)
                 logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt $attemptCount")
@@ -57,6 +68,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                         "WooPosFileBasedSyncAction: File-based sync failed " +
                             "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
                     )
+                    preferencesRepository.clearFileBasedSyncPollAttempts(siteId)
                     return WooPosFileBasedSyncResult.Failure(
                         PosLocalCatalogSyncResult.Failure.NetworkError(
                             error?.message ?: "API error during catalog sync"
@@ -70,18 +82,44 @@ class WooPosFileBasedSyncAction @Inject constructor(
             failedConsecutiveAttempts = 0
 
             val result = response.getOrThrow()
-            logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptCount")
+            lastGenerationState = result.state
+            logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptCount, state: ${result.state}")
 
-            val processedResult = processPollingResult(result, site, startTime = startTime)
+            val totalPollAttempts = accumulatedPollAttempts + currentRunPollAttempts
+            val processedResult = processPollingResult(result, site, startTime, totalPollAttempts)
             if (processedResult != null) {
+                preferencesRepository.clearFileBasedSyncPollAttempts(siteId)
                 return processedResult
             }
         }
 
-        logger.e("WooPosFileBasedSyncAction: Catalog generation timed out after $MAX_POLL_ATTEMPTS attempts")
+        return handleTimeout(
+            siteId = siteId,
+            accumulatedPollAttempts = accumulatedPollAttempts,
+            currentRunPollAttempts = currentRunPollAttempts,
+            lastGenerationState = lastGenerationState
+        )
+    }
+
+    private suspend fun handleTimeout(
+        siteId: LocalOrRemoteId.LocalId,
+        accumulatedPollAttempts: Int,
+        currentRunPollAttempts: Int,
+        lastGenerationState: WooPosGenerateCatalogState?
+    ): WooPosFileBasedSyncResult.Failure {
+        val totalPollAttempts = accumulatedPollAttempts + currentRunPollAttempts
+        preferencesRepository.setFileBasedSyncPollAttempts(siteId, totalPollAttempts)
+
+        logger.e(
+            "WooPosFileBasedSyncAction: Catalog generation timed out after $totalPollAttempts total attempts " +
+                "(accumulated: $accumulatedPollAttempts, current run: $currentRunPollAttempts). " +
+                "Last state: $lastGenerationState"
+        )
         return WooPosFileBasedSyncResult.Failure(
             PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout(
-                "Catalog generation is taking longer than expected."
+                error = "Catalog generation is taking longer than expected.",
+                lastGenerationState = lastGenerationState?.rawValue,
+                pollAttempts = totalPollAttempts
             )
         )
     }
@@ -89,13 +127,14 @@ class WooPosFileBasedSyncAction @Inject constructor(
     private suspend fun processPollingResult(
         result: WooPosGenerateCatalogResult,
         site: SiteModel,
-        startTime: Long
+        startTime: Long,
+        pollAttempts: Int
     ): WooPosFileBasedSyncResult? {
         return when (result.state) {
             WooPosGenerateCatalogState.COMPLETED -> {
                 if (result.url != null) {
                     logger.d("WooPosFileBasedSyncAction: Catalog available, starting download.")
-                    processDownloadAndStore(result, site, startTime)
+                    processDownloadAndStore(result, site, startTime, pollAttempts)
                 } else {
                     logger.e("WooPosFileBasedSyncAction: Catalog generation completed but URL is missing")
                     WooPosFileBasedSyncResult.Failure(
@@ -118,7 +157,8 @@ class WooPosFileBasedSyncAction @Inject constructor(
     private suspend fun processDownloadAndStore(
         result: WooPosGenerateCatalogResult,
         site: SiteModel,
-        startTime: Long
+        startTime: Long,
+        pollAttempts: Int
     ): WooPosFileBasedSyncResult {
         val downloadedFile = catalogFileDownloader.downloadCatalogFile(result.url!!, site.localId())
             .onFailureLog("Failed to download catalog file")
@@ -162,17 +202,24 @@ class WooPosFileBasedSyncAction @Inject constructor(
         catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
 
         val syncDuration = System.currentTimeMillis() - startTime
+        val generationDuration = syncTimestampManager.calculateGenerationDuration(
+            scheduledAt = result.scheduledAt,
+            completedAt = result.completedAt
+        )
+
         logger.d(
             "WooPosFileBasedSyncAction: File-based sync completed successfully. " +
                 "Products: ${parsedData.products.size}, Variations: ${parsedData.variations.size}. " +
-                "Duration: ${syncDuration}ms."
+                "Duration: ${syncDuration}ms. Generation: ${generationDuration}ms. Poll attempts: $pollAttempts."
         )
 
         return WooPosFileBasedSyncResult.Success(
             PosLocalCatalogSyncResult.Success(
                 productsSynced = parsedData.products.size,
                 variationsSynced = parsedData.variations.size,
-                syncDurationMs = syncDuration
+                syncDurationMs = syncDuration,
+                generationDurationMs = generationDuration,
+                pollAttempts = pollAttempts
             ),
             // Using scheduledAt (not completedAt) to not miss changes made during generation
             lastModifiedDate = result.scheduledAt
