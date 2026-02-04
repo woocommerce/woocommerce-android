@@ -70,14 +70,23 @@ data class WooPosProductModel(
 
     sealed class WooPosProductType(val value: String) : Parcelable {
         @Parcelize data object Simple : WooPosProductType("simple")
+
         @Parcelize data object Variable : WooPosProductType("variable")
+
         @Parcelize data object Grouped : WooPosProductType("grouped")
+
         @Parcelize data object External : WooPosProductType("external")
+
         @Parcelize data class Variation(val parentProductName: String) : WooPosProductType("variation")
+
         @Parcelize data object Subscription : WooPosProductType("subscription")
+
         @Parcelize data object VariableSubscription : WooPosProductType("variable-subscription")
+
         @Parcelize data object Custom : WooPosProductType("custom")
+
         @Parcelize data object Bundle : WooPosProductType("bundle")
+
         @Parcelize data object Composite : WooPosProductType("composite")
     }
 

@@ -31,7 +31,6 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -666,24 +665,35 @@ class WooPosItemsSearchViewModelTest {
     }
 
     @Test
-    fun `given variation, when item clicked, then throw error`() = runTest {
+    fun `given variation, when item clicked, then send variation click event to parent`() = runTest {
         // GIVEN
         val variation = Product.Variation(
             id = 1,
             name = "Test Variation",
             price = "$10.0",
-            productId = 1L,
+            productId = 42L,
             imageUrl = null,
-            parentProductName = "",
+            parentProductName = "Parent Product",
         )
 
         // WHEN
         val viewModel = createViewModel()
+        viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variation))
 
         // THEN
-        assertThrows(IllegalStateException::class.java) {
-            viewModel.onUIEvent(WooPosItemsSearchUiEvent.OnItemClicked(variation))
-        }
+        val itemData = ItemClickedData.Product.Variation(productId = 42L, id = 1)
+        verify(mockChildToParentEventSender).sendToParent(
+            eq(
+                ChildToParentEvent.ItemClickedInItemsList(
+                    itemData = itemData,
+                    eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                        item = itemData,
+                        source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                        sourceType = WooPosAnalyticsEventConstant.ItemsListSourceType.SEARCH_RESULT,
+                    )
+                )
+            )
+        )
     }
 
     @Test
