@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -89,7 +90,9 @@ fun WooPosItemsInfoBanner(
                 }
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.align(Alignment.Top)
+                    modifier = Modifier
+                        .align(Alignment.Top)
+                        .offset(y = (-12).dp)
                 ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_close_24dp),
