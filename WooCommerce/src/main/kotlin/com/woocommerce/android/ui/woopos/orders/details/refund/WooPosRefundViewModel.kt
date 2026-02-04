@@ -10,6 +10,8 @@ import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.orders.WooPosGetPaymentMethod
 import com.woocommerce.android.ui.woopos.orders.WooPosLoadPaymentGateway
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.util.CurrencyFormatter
 import com.woocommerce.android.util.PriceUtils
 import com.woocommerce.android.util.WooLog
@@ -43,7 +45,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private val selectedSite: SelectedSite,
     private val wooCommerceStore: WooCommerceStore,
     private val loadPaymentGateway: WooPosLoadPaymentGateway,
-    private val getPaymentMethod: WooPosGetPaymentMethod
+    private val getPaymentMethod: WooPosGetPaymentMethod,
+    private val analyticsTracker: WooPosAnalyticsTracker
 ) : ViewModel() {
 
     @AssistedFactory
@@ -150,6 +153,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 },
                 paymentMethod = getPaymentMethod(order)
             )
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundFlowStarted)
         }
     }
 
@@ -207,6 +211,26 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun handleDialogDismissed() {
+        val currentState = _state.value
+        if (currentState is WooPosRefundState.Content &&
+            currentState.step != WooPosRefundState.Content.RefundStep.Processing
+        ) {
+            val refundStep = when (currentState.step) {
+                WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
+                WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
+                WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
+                WooPosRefundState.Content.RefundStep.Processing -> ""
+            }
+
+            if (refundStep.isNotEmpty()) {
+                viewModelScope.launch {
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.RefundFlowAborted(refundStep = refundStep)
+                    )
+                }
+            }
+        }
+
         _state.value = WooPosRefundState.Loading
         loadingJob?.cancel()
     }
@@ -228,9 +252,27 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ConfirmRefund)
             WooPosRefundUIEvent.BackToReviewClicked ->
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
-            WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
+            WooPosRefundUIEvent.OnRefundConfirmed -> {
+                trackConfirmRefundTapped(currentState)
+                processRefund(currentState)
+            }
             WooPosRefundUIEvent.DialogDismissed,
             WooPosRefundUIEvent.DialogOpened -> Unit
+        }
+    }
+
+    private fun trackConfirmRefundTapped(currentState: WooPosRefundState.Content) {
+        val allItemIds = currentState.refundableItems.map { it.uniqueId }.toSet()
+        val refundType = if (currentState.selectedItemIds.containsAll(allItemIds)) "full" else "partial"
+        val hasReason = currentState.refundReason.isNotBlank()
+
+        viewModelScope.launch {
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.RefundConfirmTapped(
+                    refundType = refundType,
+                    hasReason = hasReason
+                )
+            )
         }
     }
 
@@ -245,12 +287,24 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
     private fun handleSelectAllToggled(currentState: WooPosRefundState.Content) {
         val allItemIds = currentState.refundableItems.map { it.uniqueId }.toSet()
-        val newSelectedIds = if (currentState.selectedItemIds.containsAll(allItemIds)) {
+        val isDeselecting = currentState.selectedItemIds.containsAll(allItemIds)
+        val newSelectedIds = if (isDeselecting) {
             emptySet()
         } else {
             allItemIds
         }
+        trackSelectAllToggled(isDeselecting)
         recalculateRefundState(currentState, newSelectedIds)
+    }
+
+    private fun trackSelectAllToggled(isDeselecting: Boolean) {
+        viewModelScope.launch {
+            analyticsTracker.track(
+                WooPosAnalyticsEvent.Event.RefundSelectAllTapped(
+                    action = if (isDeselecting) "deselected" else "selected"
+                )
+            )
+        }
     }
 
     private fun recalculateRefundState(currentState: WooPosRefundState.Content, newSelectedIds: Set<String>) {
@@ -282,6 +336,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             }
 
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
+
+            analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingStarted)
 
             val order = currentOrder ?: run {
                 WooLog.e(
@@ -333,10 +389,12 @@ class WooPosRefundViewModel @AssistedInject constructor(
             )
 
             if (result.isError) {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingFailed)
                 _state.value = WooPosRefundState.Error(
                     message = result.error.message ?: resourceProvider.getString(R.string.error_generic)
                 )
             } else {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
                 _state.value = WooPosRefundState.RefundSuccess(
                     orderId = contentState.orderId,
                     orderNumber = contentState.orderNumber,
