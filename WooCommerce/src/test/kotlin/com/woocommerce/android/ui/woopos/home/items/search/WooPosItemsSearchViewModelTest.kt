@@ -674,6 +674,7 @@ class WooPosItemsSearchViewModelTest {
             price = "$10.0",
             productId = 1L,
             imageUrl = null,
+            parentProductName = "",
         )
 
         // WHEN

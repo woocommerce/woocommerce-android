@@ -308,7 +308,23 @@ class WooPosItemsSearchViewModel @Inject constructor(
             }
 
             is WooPosItemSelectionViewState.Product.Variation -> {
-                error("Variation item click is not supported")
+                viewModelScope.launch {
+                    val itemData = ItemClickedData.Product.Variation(
+                        productId = item.productId,
+                        id = item.id,
+                    )
+                    childToParentEventSender.sendToParent(
+                        ChildToParentEvent.ItemClickedInItemsList(
+                            itemData = itemData,
+                            eventForTracking = WooPosAnalyticsEvent.Event.ItemAddedToCart(
+                                item = itemData,
+                                source = WooPosAnalyticsEventConstant.ItemsListSource.PRODUCT,
+                                sourceType = sourceType,
+                            ),
+                        )
+                    )
+                }
+                storeRecentSearch()
             }
 
             is WooPosItemSelectionViewState.Coupon -> {
@@ -408,22 +424,35 @@ class WooPosItemsSearchViewModel @Inject constructor(
     }
 
     private suspend fun WooPosProductModel.toViewModelProduct(): WooPosItemSelectionViewState.Product =
-        if (type is WooPosProductModel.WooPosProductType.Variable) {
-            WooPosItemSelectionViewState.Product.Variable(
-                id = this.remoteId,
-                name = this.name,
-                price = priceFormat(this.pricing.displayPrice),
-                imageUrl = this.firstImageUrl,
-                numOfVariations = this.variationIds.size,
-                variationIds = this.variationIds
-            )
-        } else {
-            WooPosItemSelectionViewState.Product.Simple(
-                id = this.remoteId,
-                name = this.name,
-                price = priceFormat(this.pricing.displayPrice),
-                imageUrl = this.firstImageUrl,
-            )
+        when (type) {
+            is WooPosProductModel.WooPosProductType.Variable -> {
+                WooPosItemSelectionViewState.Product.Variable(
+                    id = this.remoteId,
+                    name = this.name,
+                    price = priceFormat(this.pricing.displayPrice),
+                    imageUrl = this.firstImageUrl,
+                    numOfVariations = this.variationIds.size,
+                    variationIds = this.variationIds
+                )
+            }
+            is WooPosProductModel.WooPosProductType.Variation -> {
+                WooPosItemSelectionViewState.Product.Variation(
+                    id = this.remoteId,
+                    name = this.name,
+                    price = priceFormat(this.pricing.displayPrice),
+                    imageUrl = this.firstImageUrl,
+                    productId = this.parentId ?: 0L,
+                    parentProductName = type.parentProductName,
+                )
+            }
+            else -> {
+                WooPosItemSelectionViewState.Product.Simple(
+                    id = this.remoteId,
+                    name = this.name,
+                    price = priceFormat(this.pricing.displayPrice),
+                    imageUrl = this.firstImageUrl,
+                )
+            }
         }
 
     private fun setEmptySearchQueryState() {

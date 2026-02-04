@@ -544,7 +544,7 @@ fun ItemListPreview() {
                         1,
                         listOf()
                     ),
-                    Product.Variation(3, "Variation", "$10", "", 0),
+                    Product.Variation(3, "Variation", "$10", "", 0, ""),
                     Coupon(
                         id = 4,
                         name = "Coupon",

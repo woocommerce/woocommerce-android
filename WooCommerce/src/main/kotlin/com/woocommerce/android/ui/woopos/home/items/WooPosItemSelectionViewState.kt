@@ -32,6 +32,7 @@ sealed class WooPosItemSelectionViewState(
             override val price: String,
             override val imageUrl: String?,
             val productId: Long,
+            val parentProductName: String,
         ) : Product(id, name, price, imageUrl)
     }
 
