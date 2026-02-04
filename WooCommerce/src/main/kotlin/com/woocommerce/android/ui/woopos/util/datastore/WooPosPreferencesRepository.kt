@@ -137,6 +137,7 @@ class WooPosPreferencesRepository @Inject constructor(
 
     private fun buildFileBasedSyncPollAttemptsKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Int> =
         intPreferencesKey("pos_file_based_sync_poll_attempts_${siteId.value}")
+
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String> =
         stringPreferencesKey("${selectedSite.getOrNull()?.id}_v2_$key")
 
