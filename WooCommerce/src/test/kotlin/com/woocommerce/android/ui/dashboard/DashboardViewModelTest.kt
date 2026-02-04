@@ -35,7 +35,7 @@ class DashboardViewModelTest : BaseUnitTest() {
         val site = SiteModel().apply {
             url = "https://example.com"
         }
-        on { get() } doReturn site
+        on { getOrNull() } doReturn site
         on { getIfExists() } doReturn site
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()

@@ -150,9 +150,9 @@ class DashboardViewModel @Inject constructor(
 
     private fun updateShareStoreButtonVisibility() {
         _appbarState.value = AppbarState(
-            showShareStoreButton = selectedSite.get().let {
+            showShareStoreButton = selectedSite.getOrNull()?.let {
                 it.isSitePublic && it.url != null
-            }
+            } ?: false
         )
     }
 
@@ -182,9 +182,9 @@ class DashboardViewModel @Inject constructor(
 
     fun onShareStoreClicked() {
         AnalyticsTracker.track(AnalyticsEvent.DASHBOARD_SHARE_YOUR_STORE_BUTTON_TAPPED)
-        triggerEvent(
-            DashboardEvent.ShareStore(storeUrl = selectedSite.get().url)
-        )
+        selectedSite.getOrNull()?.url?.let { url ->
+            triggerEvent(DashboardEvent.ShareStore(storeUrl = url))
+        }
     }
 
     fun onEditWidgetsClicked() {
@@ -238,9 +238,11 @@ class DashboardViewModel @Inject constructor(
         // We add the other cards even if they should not be visible, so that the addition/deletion
         // of the cards is animated properly
 
+        val site = selectedSite.getOrNull()
         val shouldShowShareCard = !widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
-            selectedSite.get().isSitePublic &&
-            selectedSite.get().url != null
+            site != null &&
+            site.isSitePublic &&
+            site.url != null
         add(DashboardWidgetUiModel.ShareStoreWidget(shouldShowShareCard, ::onShareStoreClicked))
 
         add(
