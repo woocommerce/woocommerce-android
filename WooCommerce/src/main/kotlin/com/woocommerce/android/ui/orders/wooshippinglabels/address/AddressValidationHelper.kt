@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.orders.wooshippinglabels.address
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.Address
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
@@ -10,7 +11,7 @@ class AddressValidationHelper @Inject constructor(
     private val resourceProvider: ResourceProvider
 ) {
     fun validateAtLeastOneOf(vararg values: String): String? {
-        return if (values.all { it.isEmpty() || it.isBlank() }) {
+        return if (values.all { it.isBlank() }) {
             resourceProvider.getString(R.string.woo_shipping_field_required_error)
         } else {
             null
@@ -18,16 +19,25 @@ class AddressValidationHelper @Inject constructor(
     }
 
     fun validateFieldRequired(value: String): String? {
-        return if (value.isEmpty() || value.isBlank()) {
+        return if (value.isBlank()) {
             resourceProvider.getString(R.string.woo_shipping_field_required_error)
         } else {
             null
         }
     }
 
+    fun validateEmail(value: String): String? {
+        val errorResId = when {
+            value.isBlank() -> R.string.woo_shipping_field_required_error
+            !StringUtils.isValidEmail(value) -> R.string.email_invalid
+            else -> null
+        }
+        return errorResId?.let { resourceProvider.getString(it) }
+    }
+
     fun validateUSCustomsPhone(value: String): String? {
         return when {
-            value.isEmpty() || value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
+            value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
             value.replace(Regex("^1|[^\\d]"), "").length != US_PHONE_NUMBER_LENGTH -> {
                 resourceProvider.getString(R.string.shipping_label_destination_address_phone_invalid)
             }
@@ -38,7 +48,7 @@ class AddressValidationHelper @Inject constructor(
 
     fun validateCustomsPhone(value: String): String? {
         return when {
-            value.isEmpty() || value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
+            value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
             value.contains(Regex("\\d")).not() -> {
                 resourceProvider.getString(R.string.shipping_label_destination_address_phone_invalid)
             }

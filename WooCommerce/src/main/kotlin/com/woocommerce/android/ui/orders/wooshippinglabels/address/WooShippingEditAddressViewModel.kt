@@ -145,7 +145,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val emailValidatedFlow = snapshotFlow { email }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
             if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+                inputValue.copy(error = addressValidator.validateEmail(inputValue.value))
             } else {
                 inputValue
             }
