@@ -3871,6 +3871,7 @@
     <string name="woopos_search_back_content_description">Back</string>
     <string name="woopos_search_clear_content_description">Clear</string>
     <string name="woopos_search_products">Search products</string>
+    <string name="woopos_search_products_and_variations">Search products and variations</string>
     <string name="woopos_search_coupons">Search coupons</string>
     <string name="woopos_search_orders">Search orders</string>
     <string name="woopos_search_popular_items_title">Popular products</string>
