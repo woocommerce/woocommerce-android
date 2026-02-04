@@ -4,6 +4,7 @@
 
 24.1
 -----
+- [Internal] Fixes crash in app Dashboard when no site is selected [https://github.com/woocommerce/woocommerce-android/pull/15287]
 
 
 24.0
