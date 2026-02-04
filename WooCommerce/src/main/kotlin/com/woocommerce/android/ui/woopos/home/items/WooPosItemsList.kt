@@ -269,7 +269,11 @@ private fun ProductInfo(modifier: Modifier, item: Product) {
         verticalArrangement = Arrangement.Center
     ) {
         WooPosText(
-            text = item.name,
+            text = if (item is Product.Variation && item.parentProductName.isNotEmpty()) {
+                item.parentProductName
+            } else {
+                item.name
+            },
             style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.Bold,
             maxLines = 1,
@@ -420,6 +424,16 @@ private fun VariableProductDetails() {
 
 @Composable
 fun VariationProductDetails(item: Product.Variation) {
+    if (item.parentProductName.isNotEmpty()) {
+        WooPosText(
+            text = item.name,
+            style = WooPosTypography.BodyLarge,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.XSmall.value))
+    }
     WooPosText(
         text = item.price,
         style = WooPosTypography.BodyLarge,
