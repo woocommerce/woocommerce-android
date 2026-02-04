@@ -134,7 +134,9 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                 variationsSynced = result.variationsSynced,
                 totalProducts = totalProducts,
                 totalVariations = totalVariations,
-                syncDurationMs = result.syncDurationMs
+                syncDurationMs = result.syncDurationMs,
+                generationDurationMs = result.generationDurationMs,
+                pollAttempts = result.pollAttempts
             )
         )
     }
@@ -152,12 +154,16 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             is PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout -> SyncErrorType.CATALOG_GENERATION_TIMEOUT
         }
 
+        val timeoutResult = result as? PosLocalCatalogSyncResult.Failure.CatalogGenerationTimeout
+
         analyticsTracker.track(
             LocalCatalogSyncFailed(
                 syncType = syncType,
                 errorContext = "WooPosLocalCatalogSyncRepository",
                 errorType = errorType,
-                errorDescription = result.error
+                errorDescription = result.error,
+                lastGenerationState = timeoutResult?.lastGenerationState,
+                pollAttempts = timeoutResult?.pollAttempts
             )
         )
     }
