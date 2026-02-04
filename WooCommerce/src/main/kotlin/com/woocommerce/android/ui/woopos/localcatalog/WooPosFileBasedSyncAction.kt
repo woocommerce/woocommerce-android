@@ -46,16 +46,13 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         val siteId = site.localId()
         val accumulatedPollAttempts = preferencesRepository.getAndClearFileBasedSyncPollAttempts(siteId)
-        var currentRunPollAttempts = 0
         var lastGenerationState: WooPosGenerateCatalogState? = null
         var failedConsecutiveAttempts = 0
 
-        repeat(MAX_POLL_ATTEMPTS) { attemptCount ->
-            currentRunPollAttempts = attemptCount + 1
-
-            if (attemptCount > 0) {
-                val delayMs = computeBackoffDelay(attemptCount)
-                logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt $attemptCount")
+        repeat(MAX_POLL_ATTEMPTS) { attemptIndex ->
+            if (attemptIndex > 0) {
+                val delayMs = computeBackoffDelay(attemptIndex)
+                logger.d("WooPosFileBasedSyncAction: Waiting ${delayMs}ms before poll attempt $attemptIndex")
                 delay(delayMs)
             }
 
@@ -74,7 +71,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
                         )
                     )
                 } else {
-                    logger.w("Poll attempt $attemptCount failed: ${response.exceptionOrNull()?.message}")
+                    logger.w("Poll attempt $attemptIndex failed: ${response.exceptionOrNull()?.message}")
                     return@repeat
                 }
             }
@@ -82,9 +79,9 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
             val result = response.getOrThrow()
             lastGenerationState = result.state
-            logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptCount, state: ${result.state}")
+            logger.d("WooPosFileBasedSyncAction: Poll attempt $attemptIndex, state: ${result.state}")
 
-            val totalPollAttempts = accumulatedPollAttempts + currentRunPollAttempts
+            val totalPollAttempts = accumulatedPollAttempts + attemptIndex + 1
             val processedResult = processPollingResult(result, site, startTime, totalPollAttempts)
             if (processedResult != null) {
                 return processedResult
@@ -93,24 +90,20 @@ class WooPosFileBasedSyncAction @Inject constructor(
 
         return handleTimeout(
             siteId = siteId,
-            accumulatedPollAttempts = accumulatedPollAttempts,
-            currentRunPollAttempts = currentRunPollAttempts,
+            totalPollAttempts = accumulatedPollAttempts + MAX_POLL_ATTEMPTS,
             lastGenerationState = lastGenerationState
         )
     }
 
     private suspend fun handleTimeout(
         siteId: LocalOrRemoteId.LocalId,
-        accumulatedPollAttempts: Int,
-        currentRunPollAttempts: Int,
+        totalPollAttempts: Int,
         lastGenerationState: WooPosGenerateCatalogState?
     ): WooPosFileBasedSyncResult.Failure {
-        val totalPollAttempts = accumulatedPollAttempts + currentRunPollAttempts
         preferencesRepository.setFileBasedSyncPollAttempts(siteId, totalPollAttempts)
 
         logger.e(
-            "WooPosFileBasedSyncAction: Catalog generation timed out after $totalPollAttempts total attempts " +
-                "(accumulated: $accumulatedPollAttempts, current run: $currentRunPollAttempts). " +
+            "WooPosFileBasedSyncAction: Catalog generation timed out after $totalPollAttempts total attempts. " +
                 "Last state: $lastGenerationState"
         )
         return WooPosFileBasedSyncResult.Failure(
