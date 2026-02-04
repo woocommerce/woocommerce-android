@@ -57,6 +57,10 @@ class AddressValidationHelper @Inject constructor(
         }
     }
 
+    fun isPhoneValidForShippingLabel(phone: String): Boolean {
+        return phone.isNotBlank() && phone.contains(Regex("\\d"))
+    }
+
     fun isMissingDestinationAddress(address: Address) = with(address) {
         (address1.isBlank() && address2.isBlank()) || city.isBlank() || postcode.isBlank() ||
             (firstName.isBlank() && lastName.isBlank() && company.isBlank())
