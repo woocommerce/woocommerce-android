@@ -7,7 +7,9 @@ sealed class PosLocalCatalogSyncResult {
     data class Success(
         val productsSynced: Int,
         val variationsSynced: Int,
-        val syncDurationMs: Long
+        val syncDurationMs: Long,
+        val generationDurationMs: Long? = null,
+        val pollAttempts: Int? = null
     ) : PosLocalCatalogSyncResult()
 
     sealed class Failure(val error: String) : PosLocalCatalogSyncResult() {
@@ -16,7 +18,11 @@ sealed class PosLocalCatalogSyncResult {
         class DatabaseError(error: String) : Failure(error)
         class InvalidResponse(error: String) : Failure(error)
         class UnexpectedError(error: String) : Failure(error)
-        class CatalogGenerationTimeout(error: String) : Failure(error)
+        class CatalogGenerationTimeout(
+            error: String,
+            val lastGenerationState: String? = null,
+            val pollAttempts: Int? = null
+        ) : Failure(error)
     }
 }
 
