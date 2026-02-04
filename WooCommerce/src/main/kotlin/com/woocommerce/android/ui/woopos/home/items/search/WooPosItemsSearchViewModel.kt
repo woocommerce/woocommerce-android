@@ -338,7 +338,8 @@ class WooPosItemsSearchViewModel @Inject constructor(
 
     private fun determinePullToRefreshState(): WooPosPullToRefreshState {
         return when (dataSource.getCurrentSyncStrategy()) {
-            SyncStrategy.LOCAL_CATALOG -> WooPosPullToRefreshState.Enabled
+            SyncStrategy.LOCAL_CATALOG,
+            SyncStrategy.LOCAL_CATALOG_FILE -> WooPosPullToRefreshState.Enabled
             SyncStrategy.REMOTE -> WooPosPullToRefreshState.Disabled
         }
     }

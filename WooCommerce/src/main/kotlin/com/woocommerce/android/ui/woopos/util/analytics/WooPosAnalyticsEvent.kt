@@ -1130,5 +1130,6 @@ internal fun SyncStrategy.toAnalyticsValue(): String {
     return when (this) {
         SyncStrategy.REMOTE -> "remote"
         SyncStrategy.LOCAL_CATALOG -> "local_catalog"
+        SyncStrategy.LOCAL_CATALOG_FILE -> "local_catalog_file"
     }
 }
