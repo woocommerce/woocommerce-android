@@ -45,7 +45,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
         logger.d("WooPosFileBasedSyncAction: Starting file-based catalog generation for site ${site.id}")
 
         val siteId = site.localId()
-        val accumulatedPollAttempts = preferencesRepository.getFileBasedSyncPollAttempts(siteId)
+        val accumulatedPollAttempts = preferencesRepository.getAndClearFileBasedSyncPollAttempts(siteId)
         var currentRunPollAttempts = 0
         var lastGenerationState: WooPosGenerateCatalogState? = null
         var failedConsecutiveAttempts = 0
@@ -68,7 +68,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
                         "WooPosFileBasedSyncAction: File-based sync failed " +
                             "after $MAX_CONSECUTIVE_FAILED_ATTEMPTS consecutive failures"
                     )
-                    preferencesRepository.clearFileBasedSyncPollAttempts(siteId)
                     return WooPosFileBasedSyncResult.Failure(
                         PosLocalCatalogSyncResult.Failure.NetworkError(
                             error?.message ?: "API error during catalog sync"
@@ -88,7 +87,6 @@ class WooPosFileBasedSyncAction @Inject constructor(
             val totalPollAttempts = accumulatedPollAttempts + currentRunPollAttempts
             val processedResult = processPollingResult(result, site, startTime, totalPollAttempts)
             if (processedResult != null) {
-                preferencesRepository.clearFileBasedSyncPollAttempts(siteId)
                 return processedResult
             }
         }

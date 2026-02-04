@@ -148,6 +148,16 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
+    suspend fun getAndClearFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
+        val key = buildFileBasedSyncPollAttemptsKey(siteId)
+        var attempts = 0
+        dataStore.edit { preferences ->
+            attempts = preferences[key] ?: 0
+            preferences.remove(key)
+        }
+        return attempts
+    }
+
     private fun buildPeriodicSyncEnabledKey(siteId: LocalOrRemoteId.LocalId): Preferences.Key<Boolean> =
         booleanPreferencesKey("pos_periodic_sync_enabled_v2_${siteId.value}")
 

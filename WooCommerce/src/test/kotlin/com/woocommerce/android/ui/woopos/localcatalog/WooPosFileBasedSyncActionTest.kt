@@ -66,7 +66,7 @@ class WooPosFileBasedSyncActionTest {
 
     @Before
     fun setup() = runTest {
-        whenever(preferencesRepository.getFileBasedSyncPollAttempts(any())).thenReturn(0)
+        whenever(preferencesRepository.getAndClearFileBasedSyncPollAttempts(any())).thenReturn(0)
 
         sut = WooPosFileBasedSyncAction(
             posLocalCatalogStore = posLocalCatalogStore,
