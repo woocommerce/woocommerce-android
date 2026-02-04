@@ -141,13 +141,6 @@ class WooPosPreferencesRepository @Inject constructor(
         }
     }
 
-    suspend fun clearFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId) {
-        val key = buildFileBasedSyncPollAttemptsKey(siteId)
-        dataStore.edit { preferences ->
-            preferences.remove(key)
-        }
-    }
-
     suspend fun getAndClearFileBasedSyncPollAttempts(siteId: LocalOrRemoteId.LocalId): Int {
         val key = buildFileBasedSyncPollAttemptsKey(siteId)
         var attempts = 0
