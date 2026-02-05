@@ -258,3 +258,43 @@ The POC deliberately avoids modifying existing POS checkout/orders code to minim
 - Navigation events (add booking-related events)
 - Child-to-parent events (add booking navigation events)
 - Orders screen (accept optional search parameter for "View Order")
+
+### 8. Payment UI Not Reusable
+
+Existing payment composables (`WooPosTotalsPaymentInProgressScreen`, `WooPosPaymentSuccessScreen`, `WooPosTotalsPaymentFailedScreen`) are tightly coupled to `WooPosTotalsViewState` and `WooPosTotalsUIEvent`. They cannot be called directly from the bookings payment screen. The POC copies the visual patterns (Lottie animation, success checkmark, error layout) into a standalone `WooPosBookingCardPaymentScreen`.
+
+**For production:** Extract shared, reusable payment composables that accept simple parameters (amount label, callbacks) instead of being tied to the totals ViewModel state.
+
+### 9. Card Reader Connection Check Required
+
+The original design did not mention checking whether a card reader is connected before starting payment. The POC adds a `ReaderNotConnected` state to the card payment screen that shows a "Connect Reader" button and automatically starts payment once a reader connects (same pattern as the main POS checkout flow via `WooPosCardReaderFacade`).
+
+**For production:** This is essential for any card payment flow. Consider extracting a shared "ensure reader connected" step.
+
+### 10. Cash Payment Returns to Home, Not Bookings
+
+After cash payment completes, the existing `WooPosCashPaymentScreen` navigates via `OpenHomeFromCashPaymentAfterSuccessfulPayment`, which pops the entire backstack to the home screen. The bookings screen is not in the backstack after this. The booking status is not automatically updated to "paid" after cash payment.
+
+**For production:** Either modify the cash payment return flow to support returning to the previous screen (not just home), or add a listener that updates the booking status when the bookings screen resumes.
+
+### 11. View Order Search Pre-fill Not Functional
+
+The "View Order" button navigates to the orders screen and sets `searchQuery` on `savedStateHandle`, but the orders screen ViewModel does not read this value on init. The order number is passed but ignored. The user sees the orders screen without any search pre-filled.
+
+**For production:** The orders ViewModel needs to check `savedStateHandle` for a `searchQuery` key on init and trigger a search if present.
+
+### 12. Cancel Dialog Uses AlertDialog
+
+The design specified using `WooPosDialogWrapper` for the cancel confirmation dialog. The POC uses a standard `AlertDialog` instead because `WooPosDialogWrapper` requires an `onCloseClick` parameter (close button) which is not wanted for a simple confirm/cancel dialog.
+
+**For production:** Either add a `WooPosDialogWrapper` variant that supports no close button, or stick with `AlertDialog` styled with POS theme colors.
+
+### 13. UiStringParser for Payment Errors
+
+`PaymentFlowError.message` returns a `UiString` type (not `@StringRes Int`). The card payment ViewModel uses `UiStringParser.asString()` to resolve error messages, not `ResourceProvider.getString()`. This is a pattern worth noting for any code that handles card reader error messages.
+
+### 14. WooPosSpacing Gap at 56dp
+
+The toolbar height spacer uses 56dp, but `WooPosSpacing` enum does not have a 56dp value (jumps from 48dp `XXXLarge` to 80dp `Huge`). The POC suppresses the `WooPosDesignSystemSpacingUsageRule` detekt rule for these spacers.
+
+**For production:** Consider adding a 56dp spacing value to `WooPosSpacing` or using a different approach for toolbar height compensation.

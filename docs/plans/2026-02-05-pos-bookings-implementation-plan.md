@@ -1015,9 +1015,15 @@ git add -A && git commit -m "Add booking detail pane with attendance, cancel, pa
 
 ---
 
-### Task 7: Card Payment Screen
+### Task 7: Card Payment Screen ✅
 
 Build the self-contained card payment screen for bookings that uses `CardReaderPaymentControllerFactory`.
+
+> **Implementation notes:**
+> - Existing payment composables could not be reused (coupled to `WooPosTotalsViewState`). Copied visual patterns instead.
+> - Added `ReaderNotConnected` state not in original plan - checks `WooPosCardReaderFacade.readerStatus` before starting payment.
+> - Used `UiStringParser.asString()` instead of `ResourceProvider.getString()` because `PaymentFlowError.message` is `UiString`, not `@StringRes Int`.
+> - `ToBookingCardPayment` child-to-parent event was already wired in Tasks 1-6.
 
 **Files:**
 - Create: `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/bookings/payment/WooPosBookingCardPaymentScreen.kt`
@@ -1134,9 +1140,15 @@ git add -A && git commit -m "Add self-contained card payment screen for bookings
 
 ---
 
-### Task 8: Cash Payment Integration and View Order
+### Task 8: Cash Payment Integration and View Order ✅ (No-op)
 
 Wire the cash payment return flow (mark booking as paid after cash payment completes) and the "View Order" navigation with search pre-fill.
+
+> **Implementation notes:**
+> - This task was largely a no-op. The existing navigation wiring from Tasks 1-6 already handles both flows.
+> - Cash payment navigates via `ToCashPayment` -> existing `WooPosCashPaymentScreen` -> but returns to home (not bookings) via `OpenHomeFromCashPaymentAfterSuccessfulPayment`. Booking status is not auto-updated after cash payment.
+> - View Order navigates via `ToOrderWithSearch` -> `OpenOrdersWithSearch` -> orders screen. However, the search query passed via `savedStateHandle` is not read by the orders ViewModel, so the search is not pre-filled.
+> - No code changes were needed for this task beyond what was already done.
 
 **Files:**
 - Modify: `WooCommerce/src/main/kotlin/com/woocommerce/android/ui/woopos/bookings/WooPosBookingsNavigation.kt`
@@ -1170,9 +1182,14 @@ git add -A && git commit -m "Wire cash payment return flow and view order naviga
 
 ---
 
-### Task 9: Polish and Edge Cases
+### Task 9: Polish and Edge Cases ✅
 
 Handle remaining edge cases, add string resources, and clean up.
+
+> **Implementation notes:**
+> - Added 28 string resources (more than originally listed) including card payment states and reader connection strings.
+> - Fixed detekt violations: `WooPosDesignSystemSpacingUsageRule` for 56dp spacers, `TooGenericExceptionCaught` in mapper, `CyclomaticComplexMethod` in navigation handler.
+> - Cancel dialog uses `AlertDialog` instead of `WooPosDialogWrapper` (see design doc finding #12).
 
 **Files:**
 - Create/Modify: `WooCommerce/src/main/res/values/strings.xml` (add bookings strings)
