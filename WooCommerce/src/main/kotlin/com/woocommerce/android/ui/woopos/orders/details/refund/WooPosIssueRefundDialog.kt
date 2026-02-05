@@ -74,11 +74,11 @@ fun WooPosIssueRefundDialog(
             factory.create(orderId)
         }
 
-    var hasOpened by rememberSaveable { mutableStateOf(false) }
+    var isOpen by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        if (!hasOpened) {
+        if (!isOpen) {
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
-            hasOpened = true
+            isOpen = true
         }
     }
 
