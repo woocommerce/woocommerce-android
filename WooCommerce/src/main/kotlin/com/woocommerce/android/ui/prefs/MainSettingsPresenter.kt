@@ -101,8 +101,10 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {
-            if (shouldShowEnablePushNotificationsUi()) {
-                appSettingsFragmentView?.showEnablePushNotificationsOption()
+            shouldShowEnablePushNotificationsUi().collect {
+                if (it) {
+                    appSettingsFragmentView?.showEnablePushNotificationsOption()
+                }
             }
         }
     }
