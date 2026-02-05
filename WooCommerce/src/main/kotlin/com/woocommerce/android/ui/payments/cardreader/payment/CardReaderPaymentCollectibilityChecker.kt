@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.payments.cardreader.payment
 
-import com.woocommerce.android.ciab.CIABAffectedFeature
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.extensions.CASH_ON_DELIVERY_PAYMENT_TYPE
 import com.woocommerce.android.extensions.STRIPE_PAYMENTS_PAYMENT_TYPE

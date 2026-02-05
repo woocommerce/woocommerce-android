@@ -203,7 +203,7 @@ class WooPosBookingsDataSource @Inject constructor(
                         before = endOfDay,
                     )
                 )
-                filters to BookingsOrderOption.ASC
+                filters to BookingsOrderOption.DESC
             }
             BookingTab.Upcoming -> {
                 val filters = BookingFilters(
@@ -212,7 +212,7 @@ class WooPosBookingsDataSource @Inject constructor(
                         after = endOfDay,
                     )
                 )
-                filters to BookingsOrderOption.ASC
+                filters to BookingsOrderOption.DESC
             }
             BookingTab.Canceled -> {
                 null to BookingsOrderOption.DESC
