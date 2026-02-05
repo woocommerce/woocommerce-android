@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -11,6 +13,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingDto
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
@@ -21,6 +25,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val dataSource: WooPosBookingsDataSource,
     private val mapper: WooPosBookingMapper,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
+    private val cardReaderFacade: WooPosCardReaderFacade,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
@@ -179,9 +184,23 @@ class WooPosBookingsViewModel @Inject constructor(
     fun onPayByCardClicked() {
         val detail = (_state.value as? WooPosBookingsState.Content)?.selectedDetail ?: return
         if (detail.orderId == 0L) return
+        if (cardReaderFacade.readerStatus.value is CardReaderStatus.Connected) {
+            navigateToCardPayment(detail.orderId)
+        } else {
+            cardReaderFacade.connectToReader()
+            viewModelScope.launch {
+                cardReaderFacade.readerStatus
+                    .filter { it is CardReaderStatus.Connected }
+                    .first()
+                navigateToCardPayment(detail.orderId)
+            }
+        }
+    }
+
+    private fun navigateToCardPayment(orderId: Long) {
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.NavigationEvent.ToBookingCardPayment(detail.orderId)
+                ChildToParentEvent.NavigationEvent.ToBookingCardPayment(orderId)
             )
         }
     }

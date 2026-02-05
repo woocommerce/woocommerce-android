@@ -3,19 +3,15 @@ package com.woocommerce.android.ui.woopos.bookings.payment
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund.Payment.PaymentType
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
-import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.util.UiStringParser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,7 +19,6 @@ import javax.inject.Inject
 class WooPosBookingCardPaymentViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory,
-    private val cardReaderFacade: WooPosCardReaderFacade,
     private val uiStringParser: UiStringParser,
 ) : ViewModel() {
 
@@ -38,34 +33,15 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
     private var paymentStateJob: Job? = null
 
     init {
-        checkReaderAndStartPayment()
+        startPayment()
     }
 
     fun onRetryClicked() {
-        checkReaderAndStartPayment()
+        startPayment()
     }
 
     fun onCancelClicked() {
         cardReaderPaymentController?.onBackPressed()
-    }
-
-    private fun checkReaderAndStartPayment() {
-        if (cardReaderFacade.readerStatus.value is CardReaderStatus.Connected) {
-            startPayment()
-        } else {
-            _state.value = BookingCardPaymentState.Loading
-            cardReaderFacade.connectToReader()
-            waitForReaderConnection()
-        }
-    }
-
-    private fun waitForReaderConnection() {
-        viewModelScope.launch {
-            cardReaderFacade.readerStatus
-                .filter { it is CardReaderStatus.Connected }
-                .first()
-            startPayment()
-        }
     }
 
     private fun startPayment() {
