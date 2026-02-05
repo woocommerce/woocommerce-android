@@ -4,7 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.IsPosProductsFtsEnabled
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -20,10 +21,12 @@ class WooPosLocalCatalogSyncWithFts @Inject constructor(
     private val ftsDao: WooPosSearchableFtsDao,
     private val productsDao: WooPosProductsDao,
     private val variationsDao: WooPosVariationsDao,
-    private val isFtsEnabled: IsPosProductsFtsEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val gson: Gson,
     private val logger: WooPosLogWrapper,
 ) {
+    private suspend fun isFtsEnabled() = featureFlagRepository.isEnabled(FeatureFlag.POS_PRODUCTS_FTS)
+
     suspend fun syncFtsForFullSync(
         siteIdString: String,
         products: List<WooPosProductEntity>,
