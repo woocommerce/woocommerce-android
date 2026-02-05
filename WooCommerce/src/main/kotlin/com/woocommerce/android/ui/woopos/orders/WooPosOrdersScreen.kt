@@ -83,12 +83,19 @@ fun WooPosOrdersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     navigatedFromEmailReceiptSent: Boolean,
     refundReasonResult: String? = null,
+    initialSearchQuery: String? = null,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     if (navigatedFromEmailReceiptSent) {
         viewModel.onBackFromSuccessfullySendingEmailReceipt()
+    }
+
+    LaunchedEffect(initialSearchQuery) {
+        if (!initialSearchQuery.isNullOrEmpty()) {
+            viewModel.startSearchWithQuery(initialSearchQuery)
+        }
     }
 
     val context = LocalContext.current

@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
 import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToRefundReason
+import com.woocommerce.android.ui.woopos.orders.SEARCH_QUERY_KEY
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
 import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
 import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
@@ -63,7 +64,7 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenOrdersWithSearch -> {
             navigateToOrdersScreen()
-            currentBackStackEntry?.savedStateHandle?.set("searchQuery", event.orderNumber)
+            currentBackStackEntry?.savedStateHandle?.set(SEARCH_QUERY_KEY, event.orderNumber)
         }
 
         is WooPosNavigationEvent.OpenBookingCardPayment -> {

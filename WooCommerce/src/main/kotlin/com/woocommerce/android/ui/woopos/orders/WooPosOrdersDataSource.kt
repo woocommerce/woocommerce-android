@@ -154,7 +154,7 @@ class WooPosOrdersDataSource @Inject constructor(
         orderBy = OrderBy.DATE,
         sortOrder = OrderRestClient.SortOrder.DESCENDING,
         statusFilter = null,
-        createdVia = "pos-rest-api",
+        createdVia = if (searchQuery.isNullOrEmpty()) "pos-rest-api" else null,
         searchQuery = searchQuery,
         decimalPoints = 8,
     )

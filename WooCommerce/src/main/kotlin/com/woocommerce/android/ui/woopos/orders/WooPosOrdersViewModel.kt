@@ -368,6 +368,16 @@ class WooPosOrdersViewModel @Inject constructor(
         }
     }
 
+    fun startSearchWithQuery(query: String) {
+        updateSearchState(
+            WooPosSearchInputState.Open(
+                input = WooPosSearchInputState.Open.Input.Query(query, query.length),
+                isLoading = false,
+            )
+        )
+        performSearch(query)
+    }
+
     fun onSearchEvent(event: WooPosSearchUIEvent) {
         when (event) {
             is WooPosSearchUIEvent.SearchIconClicked -> {

@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val ORDERS_ROUTE = "$HOME_ROUTE/orders"
+const val SEARCH_QUERY_KEY = "searchQuery"
 
 fun NavController.navigateToOrdersScreen() {
     navigateOnce(ORDERS_ROUTE)
@@ -52,15 +53,23 @@ fun NavGraphBuilder.ordersScreen(
             .getStateFlow<String?>(REFUND_REASON_RESULT_KEY, null)
             .collectAsState()
 
+        val initialSearchQuery = backStackEntry.savedStateHandle
+            .getStateFlow<String?>(SEARCH_QUERY_KEY, null)
+            .collectAsState()
+
         backStackEntry.savedStateHandle.remove<Boolean>(EMAIL_RECEIPT_SENT)
         if (refundReasonResult.value != null) {
             backStackEntry.savedStateHandle.remove<String>(REFUND_REASON_RESULT_KEY)
+        }
+        if (initialSearchQuery.value != null) {
+            backStackEntry.savedStateHandle.remove<String>(SEARCH_QUERY_KEY)
         }
 
         WooPosOrdersScreen(
             onNavigationEvent = onNavigationEvent,
             navigatedFromEmailReceiptSent = navigatedFromEmailReceiptSent.value,
-            refundReasonResult = refundReasonResult.value
+            refundReasonResult = refundReasonResult.value,
+            initialSearchQuery = initialSearchQuery.value,
         )
     }
 }
