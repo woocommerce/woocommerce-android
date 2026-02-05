@@ -68,12 +68,12 @@ class WPComRemoteFeatureFlagRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given non existing feature flag, when isRemoteFeatureFlagEnabled is called, then return false`() =
+    fun `given non existing feature flag, when isRemoteFeatureFlagEnabled is called, then return null`() =
         testBlocking {
             val key = "key"
             whenever(featureFlagStore.getFeatureFlagsByKey(any())).thenReturn(emptyList())
 
             val result = sut.isRemoteFeatureFlagEnabled(key)
-            assertThat(result).isEqualTo(false)
+            assertThat(result).isNull()
         }
 }
