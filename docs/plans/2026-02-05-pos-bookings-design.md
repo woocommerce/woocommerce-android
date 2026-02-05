@@ -304,3 +304,9 @@ The toolbar height spacer uses 56dp, but `WooPosSpacing` enum does not have a 56
 It's possible to create a booking via wp-admin that has a customer, time slot, etc. but no linked order. These bookings exist in the API response but have no orderId. It's not clear how POS should handle them - payment actions require an orderId to process, so they can't be paid through POS. Currently the POC just hides the payment buttons when there's no order, but the booking still shows up in the list.
 
 **For production:** Decide whether to hide these bookings entirely, show them as read-only, or create an order on-the-fly when the merchant wants to collect payment.
+
+### 16. Payments Menu Visibility in Main App
+
+The Payments button in the main app's More Menu is gated by `CIABSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)`. If the site doesn't have WooPayments installed/enabled, the Payments menu item is hidden entirely. This affects testing - you need a site with WooPayments configured to see the payments flow.
+
+**For production:** POS has its own eligibility checks, but this is worth noting for QA and documentation.
