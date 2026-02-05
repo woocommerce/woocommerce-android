@@ -65,10 +65,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.OrderDetailsLoadingPane
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersListLoadingPane
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersLoadingScreen
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersOrderLoadingRow
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -152,7 +148,7 @@ private fun WooPosBookingsScreen(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosBookingsState.Loading -> WooPosOrdersLoadingScreen()
+            is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen()
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {
@@ -224,7 +220,7 @@ private fun BookingsContent(
                     )
                 }
                 state.items is WooPosBookingsState.Content.Items.Searching -> {
-                    OrderDetailsLoadingPane(
+                    BookingDetailsLoadingPane(
                         modifier = Modifier
                             .fillMaxHeight()
                             .padding(
@@ -342,7 +338,7 @@ private fun BookingsList(
         }
 
         is WooPosBookingsState.Content.Items.Searching -> {
-            WooPosOrdersListLoadingPane(
+            WooPosBookingsListLoadingPane(
                 modifier = modifier.imePadding()
             )
         }
@@ -491,7 +487,7 @@ private fun LoadedBookingsList(
 
         if (paginationState == WooPosPaginationState.Loading) {
             item {
-                WooPosOrdersOrderLoadingRow()
+                WooPosBookingsBookingLoadingRow()
             }
         }
 
