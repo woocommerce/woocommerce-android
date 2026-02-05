@@ -21,6 +21,7 @@ sealed class WooPosBookingsState {
         val paginationState: WooPosPaginationState,
         val pullToRefreshState: WooPosPullToRefreshState,
         val dialogState: DialogState,
+        val isLoadingList: Boolean = false,
     ) : WooPosBookingsState()
 }
 

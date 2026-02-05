@@ -282,17 +282,27 @@ private fun BookingsListPane(
                 .fillMaxSize()
                 .pullRefresh(
                     pullRefreshState,
-                    enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled
+                    enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled &&
+                        !state.isLoadingList
                 )
         ) {
-            BookingsList(
-                items = state.items,
-                paginationState = state.paginationState,
-                onBookingSelected = onBookingSelected,
-                onEndOfListReached = onEndOfListReached,
-                onPaginationRetryClicked = onPaginationRetryClicked,
-                modifier = Modifier.fillMaxSize()
-            )
+            if (state.isLoadingList) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                BookingsList(
+                    items = state.items,
+                    paginationState = state.paginationState,
+                    onBookingSelected = onBookingSelected,
+                    onEndOfListReached = onEndOfListReached,
+                    onPaginationRetryClicked = onPaginationRetryClicked,
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
 
             PullRefreshIndicator(
                 refreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,

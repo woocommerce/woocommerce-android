@@ -40,6 +40,16 @@ class WooPosBookingsViewModel @Inject constructor(
         if (tab == currentTab) return
         currentTab = tab
         selectedBookingId = null
+
+        val current = _state.value
+        if (current is WooPosBookingsState.Content) {
+            _state.value = current.copy(
+                selectedTab = tab,
+                isLoadingList = true,
+                selectedDetail = null,
+            )
+        }
+
         loadBookings()
     }
 
@@ -228,15 +238,17 @@ class WooPosBookingsViewModel @Inject constructor(
             dataSource.fetchBookings(currentTab, currentPage).fold(
                 onSuccess = { result ->
                     bookings.addAll(result.bookings)
-                    if (bookings.isEmpty()) {
+                    if (bookings.isEmpty() && currentTab == BookingTab.All) {
                         _state.value = WooPosBookingsState.Empty
                     } else {
-                        if (selectedBookingId == null) {
+                        if (selectedBookingId == null && bookings.isNotEmpty()) {
                             selectedBookingId = bookings.first().id
                         }
                         updateContentState()
-                        dataSource.resolveNames(result.bookings)
-                        updateContentState()
+                        if (bookings.isNotEmpty()) {
+                            dataSource.resolveNames(result.bookings)
+                            updateContentState()
+                        }
                     }
                 },
                 onFailure = {
