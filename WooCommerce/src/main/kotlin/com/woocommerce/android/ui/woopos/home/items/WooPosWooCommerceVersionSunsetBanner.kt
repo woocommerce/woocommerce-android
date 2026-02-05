@@ -7,23 +7,23 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 
 @Composable
-fun WooPosCatalogSyncOverdueBanner(
+fun WooPosWooCommerceVersionSunsetBanner(
     onDismiss: () -> Unit
 ) {
     WooPosItemsInfoBanner(
         visible = true,
-        title = stringResource(R.string.woopos_refresh_catalog_banner_title),
-        message = stringResource(R.string.woopos_refresh_catalog_banner_message),
-        dismissContentDescription = stringResource(R.string.woopos_refresh_catalog_banner_dismiss),
+        title = stringResource(R.string.woopos_wc_version_sunset_banner_title),
+        message = stringResource(R.string.woopos_wc_version_sunset_banner_message),
+        dismissContentDescription = stringResource(R.string.woopos_wc_version_sunset_banner_dismiss),
         onDismiss = onDismiss
     )
 }
 
 @Composable
 @WooPosPreview
-fun WooPosRefreshCatalogBannerPreview() {
+fun WooPosWooCommerceVersionSunsetBannerPreview() {
     WooPosTheme {
-        WooPosCatalogSyncOverdueBanner(
+        WooPosWooCommerceVersionSunsetBanner(
             onDismiss = {}
         )
     }

@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.variations.WooPosVariationsN
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooCommerceVersionSunsetWarningRequired
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant
@@ -41,6 +42,7 @@ class WooPosItemsViewModel @Inject constructor(
     private val analyticsTracker: WooPosAnalyticsTracker,
     private val syncStatusChecker: WooPosFullSyncStatusChecker,
     private val dateTimeProvider: DateTimeProvider,
+    private val isWooCommerceVersionSunsetWarningRequired: WooPosIsWooCommerceVersionSunsetWarningRequired,
 ) : ViewModel() {
     private var preservedStateBeforeOpeningVariations: WooPosItemsToolbarViewState? = null
     private val _viewState = MutableStateFlow<WooPosItemsToolbarViewState>(initialState())
@@ -51,9 +53,8 @@ class WooPosItemsViewModel @Inject constructor(
             initialValue = _viewState.value,
         )
 
-    private val _catalogSyncOverdueBannerState =
-        MutableStateFlow<CatalogSyncOverdueBannerState>(CatalogSyncOverdueBannerState.Hidden)
-    val catalogSyncOverdueBannerState: StateFlow<CatalogSyncOverdueBannerState> = _catalogSyncOverdueBannerState
+    private val _bannerState = MutableStateFlow<WooPosItemsBannerState>(WooPosItemsBannerState.Hidden)
+    val bannerState: StateFlow<WooPosItemsBannerState> = _bannerState
 
     init {
         listenUpEvents()
@@ -66,23 +67,29 @@ class WooPosItemsViewModel @Inject constructor(
             preferencesRepository.setWasOpenedOnce(true)
         }
 
-        refreshSyncOverdueBannerState()
+        refreshBannerState()
     }
 
-    private fun refreshSyncOverdueBannerState() {
+    private fun refreshBannerState() {
         viewModelScope.launch {
             val requirement = syncStatusChecker.checkSyncRequirement()
-            _catalogSyncOverdueBannerState.value = when (requirement) {
-                is WooPosFullSyncRequirement.NonBlockingRequired -> {
-                    if (requirement.isOverdue) {
-                        trackStaleWarningShown(requirement.lastSyncTimestamp)
-                        CatalogSyncOverdueBannerState.Visible
-                    } else {
-                        CatalogSyncOverdueBannerState.Hidden
-                    }
-                }
-                else -> CatalogSyncOverdueBannerState.Hidden
+            val isSyncOverdue = requirement is WooPosFullSyncRequirement.NonBlockingRequired &&
+                requirement.isOverdue
+
+            if (isSyncOverdue) {
+                trackStaleWarningShown((requirement as WooPosFullSyncRequirement.NonBlockingRequired).lastSyncTimestamp)
+                _bannerState.value = WooPosItemsBannerState.SyncOverdue
+                return@launch
             }
+
+            val isWcVersionSunsetRequired = isWooCommerceVersionSunsetWarningRequired()
+            if (isWcVersionSunsetRequired) {
+                analyticsTracker.track(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningShown)
+                _bannerState.value = WooPosItemsBannerState.WooCommerceVersionSunset
+                return@launch
+            }
+
+            _bannerState.value = WooPosItemsBannerState.Hidden
         }
     }
 
@@ -117,10 +124,20 @@ class WooPosItemsViewModel @Inject constructor(
 
             is WooPosItemsUIEvent.AddCouponIconClicked -> createAndAddCoupon()
             WooPosItemsUIEvent.SyncOverdueBannerDismissed -> {
-                _catalogSyncOverdueBannerState.value = CatalogSyncOverdueBannerState.Hidden
+                _bannerState.value = WooPosItemsBannerState.Hidden
                 viewModelScope.launch {
                     analyticsTracker.track(
                         WooPosAnalyticsEvent.Event.LocalCatalogStaleWarningDismissed
+                    )
+                }
+            }
+
+            WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed -> {
+                _bannerState.value = WooPosItemsBannerState.Hidden
+                viewModelScope.launch {
+                    preferencesRepository.setWooVersionSunsetBannerDismissalTimestamp(dateTimeProvider.now())
+                    analyticsTracker.track(
+                        WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningDismissed
                     )
                 }
             }
@@ -291,10 +308,5 @@ class WooPosItemsViewModel @Inject constructor(
 
         @Parcelize
         data class Coupon(override val id: Long, val couponCode: String) : ItemClickedData(id), Parcelable
-    }
-
-    sealed class CatalogSyncOverdueBannerState {
-        data object Hidden : CatalogSyncOverdueBannerState()
-        data object Visible : CatalogSyncOverdueBannerState()
     }
 }
