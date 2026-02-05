@@ -65,7 +65,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -95,7 +94,6 @@ fun WooPosBookingsScreen(
         onBookingsEmptyActionClicked = viewModel::onBookingsEmptyActionClicked,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
-        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
     )
 }
@@ -115,7 +113,6 @@ private fun WooPosBookingsScreen(
     onBookingsEmptyActionClicked: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
-    onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     BackHandler { onBackClicked() }
@@ -158,19 +155,6 @@ private fun WooPosBookingsScreen(
                     .fillMaxWidth()
                     .statusBarsPadding()
             )
-        }
-
-        if (state is WooPosBookingsState.Content) {
-            when (val dialogState = state.dialogState) {
-                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
-                    WooPosIssueRefundDialog(
-                        orderId = dialogState.orderId,
-                        onDismissRequest = onIssueRefundDialogDismissed,
-                        onNavigationEvent = onNavigationEvent,
-                    )
-                }
-                WooPosBookingsState.Content.DialogState.Hidden -> Unit
-            }
         }
     }
 }
@@ -505,7 +489,7 @@ private fun BookingsEmpty(
 ) {
     WooPosEmptyScreen(
         modifier = modifier.fillMaxSize(),
-        icon = WooPosIcons.BookingsEmpty,
+        icon = WooPosIcons.OrdersEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
         contentDescription = stringResource(id = R.string.woopos_orders_empty_list_image_description),
@@ -604,7 +588,6 @@ fun WooPosBookingsScreenPreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -641,7 +624,6 @@ fun WooPosBookingsSearchErrorStatePreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -678,7 +660,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -704,7 +685,6 @@ fun WooPosBookingsEmptyStatePreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
-            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {},
         )
     }
@@ -760,7 +740,6 @@ private fun sampleBookingDetails(
     paymentMethodTitle = "WooCommerce In-Person Payments",
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(
         listOf(
-            WooPosBookingsState.BookingAction.IssueRefund(id),
             WooPosBookingsState.BookingAction.EmailReceipt(id)
         )
     )
