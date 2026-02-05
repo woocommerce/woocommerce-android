@@ -1,15 +1,15 @@
 package org.wordpress.android.fluxc.store
 
-import android.annotation.SuppressLint
 import android.content.Context
-import com.yarolegovich.wellsql.SelectQuery.ORDER_DESCENDING
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.NotificationAction
 import org.wordpress.android.fluxc.annotations.action.Action
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -18,7 +18,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient.DevicesDto
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient.SiteNotificationSettingDto
-import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
+import org.wordpress.android.fluxc.persistence.NotificationMapper
+import org.wordpress.android.fluxc.persistence.dao.NotificationDao
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.fluxc.utils.PreferenceUtils
@@ -29,11 +30,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WpComPushNotificationStore @Inject constructor(
+class WpComPushNotificationStore @Inject internal constructor(
     dispatcher: Dispatcher,
     private val context: Context,
     private val notificationRestClient: NotificationRestClient,
-    private val notificationSqlUtils: NotificationSqlUtils,
+    private val notificationDao: NotificationDao,
+    private val notificationMapper: NotificationMapper,
     private val coroutineEngine: CoroutineEngine
 ) : Store(dispatcher) {
     companion object {
@@ -200,30 +202,21 @@ class WpComPushNotificationStore @Inject constructor(
      * @param filterByType Optional. A list of notification type strings to filter by
      * @param filterBySubtype Optional. A list of notification subtype strings to filter by
      */
-    @SuppressLint("WrongConstant")
     suspend fun getNotificationsForSite(
         site: SiteModel,
         filterByType: List<String>? = null,
         filterBySubtype: List<String>? = null
     ): List<NotificationModel> =
-        notificationSqlUtils.getNotificationsForSite(
-            site,
-            ORDER_DESCENDING,
-            filterByType,
-            filterBySubtype
-        )
+        notificationDao.getNotificationsForSite(RemoteId(site.siteId), filterByType, filterBySubtype)
+            .map { notificationMapper.toDomainModel(it) }
 
     fun observeNotificationsForSite(
         site: SiteModel,
         filterByType: List<String>? = null,
         filterBySubtype: List<String>? = null
     ): Flow<List<NotificationModel>> =
-        notificationSqlUtils.observeNotificationsForSite(
-            site,
-            ORDER_DESCENDING,
-            filterByType,
-            filterBySubtype
-        )
+        notificationDao.observeNotificationsForSite(RemoteId(site.siteId), filterByType, filterBySubtype)
+            .map { entities -> entities.map { notificationMapper.toDomainModel(it) } }
 
     /**
      * Returns true if the given site has unread notifications
@@ -237,7 +230,7 @@ class WpComPushNotificationStore @Inject constructor(
         filterByType: List<String>? = null,
         filterBySubtype: List<String>? = null
     ): Boolean =
-        notificationSqlUtils.hasUnreadNotificationsForSite(site, filterByType, filterBySubtype)
+        notificationDao.hasUnreadNotificationsForSite(RemoteId(site.siteId), filterByType, filterBySubtype)
 
     suspend fun registerDevice(
         token: String,
@@ -331,7 +324,7 @@ class WpComPushNotificationStore @Inject constructor(
      * notifications in the database that no longer exist.
      */
     private suspend fun synchronizeNotifications() {
-        val cachedCount = notificationSqlUtils.getNotificationsCount()
+        val cachedCount = notificationDao.getNotificationsCount()
 
         if (cachedCount > 0) {
             // Fetch only the hashes to determine which notifications need to be fully fetched, and which
@@ -362,8 +355,9 @@ class WpComPushNotificationStore @Inject constructor(
         val notifsToFetch = payload.hashesMap.toMutableMap()
 
         // Pull cached notifications from the database and build a map of remoteNoteId to noteHash
-        val existingNotifsByRemoteIdMap = notificationSqlUtils
-            .getNotifications().associateBy { it.remoteNoteId }.toMap()
+        val existingNotifsByRemoteIdMap = notificationDao.getAllNotifications()
+            .map { notificationMapper.toDomainModel(it) }
+            .associateBy { it.remoteNoteId }
 
         // Scrub the newly fetched list against the cached db records. Remove any entries for records that
         // do not require an update from the remote API
@@ -376,8 +370,7 @@ class WpComPushNotificationStore @Inject constructor(
                     // list of notifs to fetch
                     notifsToFetch.remove(cached.key)
                 }
-            }
-                ?: notificationSqlUtils.deleteNotificationByRemoteId(cached.key) // Delete notification from the db
+            } ?: notificationDao.deleteByRemoteId(RemoteId(cached.key)) // Delete notification from the db
         }
 
         // Fetch new and updated notifications from the remote api
@@ -390,7 +383,9 @@ class WpComPushNotificationStore @Inject constructor(
             OnNotificationChanged().also { it.error = payload.error }
         } else {
             // Save notifications to the database
-            payload.notifs.forEach { notificationSqlUtils.insertOrUpdateNotification(it) }
+            payload.notifs.forEach {
+                notificationDao.insert(notificationMapper.toEntity(it))
+            }
             OnNotificationChanged()
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATIONS
@@ -408,7 +403,9 @@ class WpComPushNotificationStore @Inject constructor(
             OnNotificationChanged().also { it.error = payload.error }
         } else {
             // Save to the db
-            payload.notification?.let { notificationSqlUtils.insertOrUpdateNotification(it) }
+            payload.notification?.let {
+                notificationDao.insert(notificationMapper.toEntity(it))
+            }
             OnNotificationChanged()
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATION
@@ -425,7 +422,7 @@ class WpComPushNotificationStore @Inject constructor(
                 result.notifications?.forEach {
                     // Just in case it wasn't set by the calling client
                     val note = it.copy(read = true)
-                    notificationSqlUtils.insertOrUpdateNotification(note)
+                    notificationDao.insert(notificationMapper.toEntity(note))
                 }
             }
 
@@ -445,7 +442,7 @@ class WpComPushNotificationStore @Inject constructor(
 
     private suspend fun updateNotification(payload: NotificationModel) {
         // save notification to the db
-        notificationSqlUtils.insertOrUpdateNotification(payload)
+        notificationDao.insert(notificationMapper.toEntity(payload))
         val onNotificationChanged = OnNotificationChanged().apply {
             causeOfChange = NotificationAction.UPDATE_NOTIFICATION
         }

@@ -1,11 +1,13 @@
 package org.wordpress.android.fluxc.store
 
+import android.app.Application
+import androidx.test.core.app.ApplicationProvider
 import com.google.gson.Gson
-import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.any
@@ -14,12 +16,11 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.UnitTestUtils
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.network.BaseRequest.BaseNetworkError
@@ -29,8 +30,8 @@ import org.wordpress.android.fluxc.network.rest.wpcom.WPComGsonRequestBuilder.Re
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationApiResponse
 import org.wordpress.android.fluxc.network.rest.wpcom.notifications.NotificationRestClient
 import org.wordpress.android.fluxc.notifications.NotificationTestUtils
-import org.wordpress.android.fluxc.persistence.NotificationSqlUtils
-import org.wordpress.android.fluxc.persistence.NotificationSqlUtils.NotificationModelBuilder
+import org.wordpress.android.fluxc.persistence.NotificationMapper
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceRegistrationError
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.DeviceRegistrationErrorType
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationHashesResponsePayload
@@ -56,10 +57,15 @@ private const val API_RESPONSE = "notifications/notifications-api-response.json"
 @RunWith(RobolectricTestRunner::class)
 @Suppress("UnitTestNamingRule")
 class WpComPushNotificationStoreTest {
+    private val appContext = ApplicationProvider.getApplicationContext<Application>()
+
+    @Rule
+    @JvmField
+    val databaseRule = WPDatabaseTestRule(appContext)
+
     private val mockNotificationRestClient = mock<NotificationRestClient>()
-    private val notificationSqlUtils = NotificationSqlUtils(FormattableContentMapper(Gson()))
+    private val notificationMapper = NotificationMapper(FormattableContentMapper(Gson()))
     private lateinit var store: WpComPushNotificationStore
-    private lateinit var appContext: android.content.Context
 
     private val site = SiteModel().apply { siteId = 153482281 } // FYI: found within api response file.
     private val token = "fcm_token"
@@ -68,22 +74,14 @@ class WpComPushNotificationStoreTest {
 
     @Before
     fun setUp() {
-        appContext = RuntimeEnvironment.application.applicationContext
-        val config = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(NotificationModelBuilder::class.java)
-        )
-        WellSql.init(config)
-        config.reset()
-
-        // Clear preferences before each test
         PreferenceUtils.getFluxCPreferences(appContext).edit().clear().apply()
 
         store = WpComPushNotificationStore(
             dispatcher = Dispatcher(),
             context = appContext,
             notificationRestClient = mockNotificationRestClient,
-            notificationSqlUtils = notificationSqlUtils,
+            notificationDao = databaseRule.db.notificationDao(),
+            notificationMapper = notificationMapper,
             coroutineEngine = initCoroutineEngine()
         )
     }
@@ -386,7 +384,9 @@ class WpComPushNotificationStoreTest {
 
         store.markNotificationsRead(payload)
 
-        val updatedNotification = notificationSqlUtils.getNotificationByRemoteId(unreadNotification.remoteNoteId)
+        val updatedNotification = databaseRule.db.notificationDao().getNotificationByRemoteId(
+            RemoteId(unreadNotification.remoteNoteId)
+        )
         assertThat(updatedNotification?.read).isTrue()
     }
 
@@ -498,7 +498,8 @@ class WpComPushNotificationStoreTest {
     fun `given new hashes, when handle hashes completed, then fetches only new notifications`() = runTest {
         insertNotificationsFromJson()
         val newNoteId = 999L
-        val existingNotification = notificationSqlUtils.getNotifications().first()
+        val existingNotification = databaseRule.db.notificationDao().getAllNotifications().first()
+            .let { notificationMapper.toDomainModel(it) }
         val hashesMap = mapOf(
             existingNotification.remoteNoteId to existingNotification.noteHash,
             newNoteId to 123L
@@ -513,7 +514,8 @@ class WpComPushNotificationStoreTest {
     @Test
     fun `given outdated hash, when handle hashes completed, then fetches updated notification`() = runTest {
         insertNotificationsFromJson()
-        val existingNotification = notificationSqlUtils.getNotifications().first()
+        val existingNotification = databaseRule.db.notificationDao().getAllNotifications().first()
+            .let { notificationMapper.toDomainModel(it) }
         val newHash = existingNotification.noteHash + 1
         val hashesMap = mapOf(existingNotification.remoteNoteId to newHash)
         val payload = FetchNotificationHashesResponsePayload(hashesMap)
@@ -526,12 +528,12 @@ class WpComPushNotificationStoreTest {
     @Test
     fun `given notification removed from server, when handle hashes completed, then deletes from db`() = runTest {
         insertNotificationsFromJson()
-        val countBefore = notificationSqlUtils.getNotificationsCount()
+        val countBefore = databaseRule.db.notificationDao().getNotificationsCount()
         val payload = FetchNotificationHashesResponsePayload(emptyMap())
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationHashesAction(payload))
 
-        val countAfter = notificationSqlUtils.getNotificationsCount()
+        val countAfter = databaseRule.db.notificationDao().getNotificationsCount()
         assertThat(countAfter).isLessThan(countBefore)
     }
     // endregion
@@ -544,7 +546,7 @@ class WpComPushNotificationStoreTest {
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationsAction(payload))
 
-        val savedNotifications = notificationSqlUtils.getNotifications()
+        val savedNotifications = databaseRule.db.notificationDao().getAllNotifications()
         assertThat(savedNotifications).hasSize(notifications.size)
     }
 
@@ -556,7 +558,7 @@ class WpComPushNotificationStoreTest {
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationsAction(payload))
 
-        val savedNotifications = notificationSqlUtils.getNotifications()
+        val savedNotifications = databaseRule.db.notificationDao().getAllNotifications()
         assertThat(savedNotifications).isEmpty()
     }
     // endregion
@@ -581,7 +583,9 @@ class WpComPushNotificationStoreTest {
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationAction(payload))
 
-        val savedNotification = notificationSqlUtils.getNotificationByRemoteId(notification.remoteNoteId)
+        val savedNotification = databaseRule.db.notificationDao().getNotificationByRemoteId(
+            RemoteId(notification.remoteNoteId)
+        )
         assertThat(savedNotification).isNotNull
     }
 
@@ -593,20 +597,23 @@ class WpComPushNotificationStoreTest {
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationAction(payload))
 
-        val savedNotifications = notificationSqlUtils.getNotifications()
+        val savedNotifications = databaseRule.db.notificationDao().getAllNotifications()
         assertThat(savedNotifications).isEmpty()
     }
 
     @Test
     fun `given existing notification, when handle notification completed, then updates in db`() = runTest {
         insertNotificationsFromJson()
-        val existingNotification = notificationSqlUtils.getNotifications().first()
+        val existingNotification = databaseRule.db.notificationDao().getAllNotifications().first()
+            .let { notificationMapper.toDomainModel(it) }
         val updatedNotification = existingNotification.copy(title = "Updated Title")
         val payload = FetchNotificationResponsePayload(updatedNotification)
 
         store.onAction(NotificationActionBuilder.newFetchedNotificationAction(payload))
 
-        val savedNotification = notificationSqlUtils.getNotificationByRemoteId(existingNotification.remoteNoteId)
+        val savedNotification = databaseRule.db.notificationDao().getNotificationByRemoteId(
+            RemoteId(existingNotification.remoteNoteId)
+        )
         assertThat(savedNotification?.title).isEqualTo("Updated Title")
     }
     // endregion
@@ -618,42 +625,49 @@ class WpComPushNotificationStoreTest {
 
         store.onAction(NotificationActionBuilder.newUpdateNotificationAction(notification))
 
-        val savedNotification = notificationSqlUtils.getNotificationByRemoteId(notification.remoteNoteId)
+        val savedNotification = databaseRule.db.notificationDao().getNotificationByRemoteId(
+            RemoteId(notification.remoteNoteId)
+        )
         assertThat(savedNotification).isNotNull
     }
 
     @Test
     fun `given existing notification, when update notification, then updates in db`() = runTest {
         insertNotificationsFromJson()
-        val existingNotification = notificationSqlUtils.getNotifications().first()
+        val existingNotification = databaseRule.db.notificationDao().getAllNotifications().first()
+            .let { notificationMapper.toDomainModel(it) }
         val updatedNotification = existingNotification.copy(read = !existingNotification.read)
 
         store.onAction(NotificationActionBuilder.newUpdateNotificationAction(updatedNotification))
 
-        val savedNotification = notificationSqlUtils.getNotificationByRemoteId(existingNotification.remoteNoteId)
+        val savedNotification = databaseRule.db.notificationDao().getNotificationByRemoteId(
+            RemoteId(existingNotification.remoteNoteId)
+        )
         assertThat(savedNotification?.read).isEqualTo(!existingNotification.read)
     }
     // endregion
 
     /* HELPER */
 
-    private fun insertNotificationsFromJson(): Int {
+    private suspend fun insertNotificationsFromJson(): Int {
         val notesList = getNotificationsFromJson()
-        return notesList.sumOf { notificationSqlUtils.insertOrUpdateNotification(it) }
+        notesList.forEach { databaseRule.db.notificationDao().insert(notificationMapper.toEntity(it)) }
+        return notesList.size
     }
 
     private fun getNotificationsFromJson(): List<NotificationModel> {
         val jsonString = UnitTestUtils.getStringFromResourceFile(this.javaClass, API_RESPONSE)
+            ?: error("Failed to load test resource: $API_RESPONSE")
         val apiResponse = NotificationTestUtils.parseNotificationsApiResponseFromJsonString(jsonString)
         return apiResponse.notes?.map {
             NotificationApiResponse.notificationResponseToNotificationModel(it)
         } ?: emptyList()
     }
 
-    private fun markAllNotificationsAsRead() {
-        val notifications = notificationSqlUtils.getNotificationsForSite(site)
+    private suspend fun markAllNotificationsAsRead() {
+        val notifications = databaseRule.db.notificationDao().getNotificationsForSite(RemoteId(site.siteId), null, null)
         notifications.forEach { notification ->
-            notificationSqlUtils.insertOrUpdateNotification(notification.copy(read = true))
+            databaseRule.db.notificationDao().insert(notification.copy(read = true))
         }
     }
 }
