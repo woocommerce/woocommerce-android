@@ -101,15 +101,15 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
                         )
                     }
 
-                    is CardReaderPaymentState.ProcessingPayment,
-                    is CardReaderPaymentState.PaymentCapturing -> {
-                        val amount = when (paymentState) {
-                            is CardReaderPaymentState.ProcessingPayment -> paymentState.amountWithCurrencyLabel
-                            is CardReaderPaymentState.PaymentCapturing -> paymentState.amountWithCurrencyLabel
-                            else -> ""
-                        }
+                    is CardReaderPaymentState.ProcessingPayment -> {
                         _state.value = BookingCardPaymentState.ProcessingPayment(
-                            amountLabel = amount,
+                            amountLabel = paymentState.amountWithCurrencyLabel,
+                        )
+                    }
+
+                    is CardReaderPaymentState.PaymentCapturing -> {
+                        _state.value = BookingCardPaymentState.ProcessingPayment(
+                            amountLabel = paymentState.amountWithCurrencyLabel,
                         )
                     }
 
