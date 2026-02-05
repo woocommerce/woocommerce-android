@@ -14,15 +14,13 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.airbnb.lottie.compose.LottieAnimation
@@ -33,8 +31,6 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -51,7 +47,6 @@ fun WooPosBookingCardPaymentScreen(
 
     BackHandler {
         when (state) {
-            is BookingCardPaymentState.PaymentSuccessful,
             is BookingCardPaymentState.PaymentFailed -> {
                 onNavigationEvent(WooPosNavigationEvent.GoBack)
             }
@@ -75,10 +70,14 @@ fun WooPosBookingCardPaymentScreen(
             )
         }
         is BookingCardPaymentState.PaymentSuccessful -> {
-            BookingCardPaymentSuccessContent(
-                amountLabel = currentState.amountLabel,
-                onDone = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-            )
+            LaunchedEffect(Unit) {
+                onNavigationEvent(
+                    WooPosNavigationEvent.OpenBookingPaymentSuccess(
+                        orderId = currentState.orderId,
+                        amountLabel = currentState.amountLabel,
+                    )
+                )
+            }
         }
         is BookingCardPaymentState.PaymentFailed -> {
             BookingCardPaymentFailedContent(
@@ -194,55 +193,6 @@ private fun BookingCardPaymentProcessingContent(
                 color = MaterialTheme.colorScheme.onPrimary,
                 style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.Bold,
-            )
-        }
-    }
-}
-
-@Composable
-private fun BookingCardPaymentSuccessContent(
-    amountLabel: String,
-    onDone: () -> Unit,
-) {
-    @Suppress("UnusedVariable")
-    val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright),
-        contentAlignment = Alignment.Center,
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-        ) {
-            WooPosSuccessCheckmark(
-                contentDescription = stringResource(R.string.woopos_payment_successful_label),
-                onAnimationStageChanged = { stage -> animationStage.value = stage },
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
-            WooPosText(
-                text = stringResource(R.string.woopos_payment_successful_label),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-            WooPosText(
-                text = amountLabel,
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
-            WooPosButton(
-                modifier = Modifier
-                    .height(80.dp)
-                    .width(604.dp),
-                text = stringResource(R.string.woopos_bookings_card_payment_done),
-                onClick = onDone,
             )
         }
     }

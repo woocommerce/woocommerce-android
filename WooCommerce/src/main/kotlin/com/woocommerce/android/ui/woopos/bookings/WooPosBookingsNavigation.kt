@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.woocommerce.android.ui.woopos.bookings.payment.BOOKING_PAYMENT_RESULT_KEY
 import com.woocommerce.android.ui.woopos.home.HOME_ROUTE
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
@@ -40,7 +43,17 @@ fun NavGraphBuilder.bookingsScreen(
                 targetOffsetX = { fullWidth -> fullWidth },
             )
         },
-    ) {
-        WooPosBookingsScreen(onNavigationEvent = onNavigationEvent)
+    ) { backStackEntry ->
+        val paymentCompleted by backStackEntry.savedStateHandle
+            .getStateFlow(BOOKING_PAYMENT_RESULT_KEY, false)
+            .collectAsState()
+
+        WooPosBookingsScreen(
+            onNavigationEvent = onNavigationEvent,
+            paymentCompleted = paymentCompleted,
+            onPaymentResultConsumed = {
+                backStackEntry.savedStateHandle[BOOKING_PAYMENT_RESULT_KEY] = false
+            },
+        )
     }
 }

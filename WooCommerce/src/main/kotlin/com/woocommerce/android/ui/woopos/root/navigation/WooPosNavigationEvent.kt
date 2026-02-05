@@ -26,4 +26,5 @@ sealed class WooPosNavigationEvent {
     data object OpenBookings : WooPosNavigationEvent()
     data class OpenOrdersWithSearch(val orderNumber: String) : WooPosNavigationEvent()
     data class OpenBookingCardPayment(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenBookingPaymentSuccess(val orderId: Long, val amountLabel: String) : WooPosNavigationEvent()
 }

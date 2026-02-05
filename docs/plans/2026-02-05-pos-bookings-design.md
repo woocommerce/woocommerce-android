@@ -347,6 +347,24 @@ The same checker also validates order status (only `pending`, `processing`, `on-
 
 **For production:** Either bypass `CardReaderPaymentCollectibilityChecker` for POS booking payments (the bookings screen already validates payability), or extend the checker to support booking order payment methods and statuses. Also, the card payment VM should observe the controller's `event` flow to handle errors that don't update `paymentState`.
 
-### 19. Web Shows "Frequently Bought Together" With Services
+### 19. Email Receipt Not Working for Booking Orders
+
+Sending an email receipt after booking payment fails with:
+
+```json
+{
+  "code": "woocommerce_rest_invalid_email_template",
+  "message": "customer_pos_completed_order is not a valid template for this order.",
+  "data": {
+    "status": 400
+  }
+}
+```
+
+The POS email receipt endpoint uses the `customer_pos_completed_order` email template, but booking orders don't support this template. The WooCommerce Bookings plugin likely registers its own email templates and the POS-specific one is not among them.
+
+**For production:** Either register a POS-compatible email template for booking orders on the backend, or fall back to a generic order completion email template.
+
+### 20. Web Shows "Frequently Bought Together" With Services
 
 On the web storefront, appointment/service pages list regular products below them in a "Frequently bought together" section (e.g. a haircut service shows hair products underneath). This is an interesting observation - having a cart concept in POS bookings could enable similar cross-selling (booking a service + adding related products in one transaction). Not proposing this for implementation, just noting that the web already supports this pattern and it shows how bookings and products can be connected.

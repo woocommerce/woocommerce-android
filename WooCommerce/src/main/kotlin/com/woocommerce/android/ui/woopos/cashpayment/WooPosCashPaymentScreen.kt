@@ -47,11 +47,17 @@ import java.math.BigDecimal
 
 @Composable
 fun WooPosCashPaymentScreen(
+    orderId: Long = 0L,
     source: CashPaymentSource = CashPaymentSource.CHECKOUT,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
     val viewModel = hiltViewModel<WooPosCashPaymentViewModel>()
     val state = viewModel.state.collectAsState().value
+
+    var lastTotalText by remember { mutableStateOf("") }
+    if (state is WooPosCashPaymentState.Collecting) {
+        lastTotalText = state.totalText
+    }
 
     val onBackClicked = {
         viewModel.onBackClicked()
@@ -63,7 +69,9 @@ fun WooPosCashPaymentScreen(
             CashPaymentSource.CHECKOUT ->
                 onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
             CashPaymentSource.BOOKINGS ->
-                onNavigationEvent(WooPosNavigationEvent.GoBack)
+                onNavigationEvent(
+                    WooPosNavigationEvent.OpenBookingPaymentSuccess(orderId, lastTotalText)
+                )
         }
     }
 

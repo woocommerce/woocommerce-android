@@ -87,6 +87,7 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
 
                     is CardReaderPaymentState.PaymentSuccessful -> {
                         _state.value = BookingCardPaymentState.PaymentSuccessful(
+                            orderId = this@WooPosBookingCardPaymentViewModel.orderId,
                             amountLabel = paymentState.amountWithCurrencyLabel,
                         )
                     }
@@ -123,6 +124,7 @@ sealed class BookingCardPaymentState {
     ) : BookingCardPaymentState()
 
     data class PaymentSuccessful(
+        val orderId: Long,
         val amountLabel: String,
     ) : BookingCardPaymentState()
 

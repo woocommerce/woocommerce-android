@@ -236,14 +236,20 @@ class WooPosBookingsViewModel @Inject constructor(
         onEndOfListReached()
     }
 
-    fun onReturnFromCashPayment(bookingId: Long) {
+    fun onReturnFromPayment() {
+        val bookingId = selectedBookingId ?: return
         viewModelScope.launch {
             dataSource.markAsPaid(bookingId).fold(
                 onSuccess = { updated ->
                     replaceBookingInList(updated)
                     updateContentState()
                 },
-                onFailure = { }
+                onFailure = {
+                    dataSource.fetchBooking(bookingId).onSuccess { updated ->
+                        replaceBookingInList(updated)
+                        updateContentState()
+                    }
+                }
             )
         }
     }

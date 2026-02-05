@@ -3732,6 +3732,7 @@
     <string name="woopos_bookings_card_payment_reader_not_connected">Card reader not connected</string>
     <string name="woopos_bookings_card_payment_connect_reader_message">Connect a card reader to accept card payments.</string>
     <string name="woopos_bookings_card_payment_connect_reader">Connect Reader</string>
+    <string name="woopos_bookings_back_to_bookings">Back to Bookings</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>

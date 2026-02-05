@@ -4,6 +4,7 @@ import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
 import com.woocommerce.android.ui.woopos.bookings.payment.navigateToBookingCardPayment
+import com.woocommerce.android.ui.woopos.bookings.payment.navigateToBookingPaymentSuccess
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
@@ -69,6 +70,10 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenBookingCardPayment -> {
             navigateToBookingCardPayment(event.orderId)
+        }
+
+        is WooPosNavigationEvent.OpenBookingPaymentSuccess -> {
+            navigateToBookingPaymentSuccess(event.orderId, event.amountLabel)
         }
     }
 }

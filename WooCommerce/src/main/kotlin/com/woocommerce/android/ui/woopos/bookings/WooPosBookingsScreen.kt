@@ -69,9 +69,18 @@ import kotlinx.coroutines.flow.filter
 @Composable
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    paymentCompleted: Boolean = false,
+    onPaymentResultConsumed: () -> Unit = {},
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(paymentCompleted) {
+        if (paymentCompleted) {
+            viewModel.onReturnFromPayment()
+            onPaymentResultConsumed()
+        }
+    }
 
     BackHandler { onNavigationEvent(WooPosNavigationEvent.GoBack) }
 

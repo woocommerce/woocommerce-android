@@ -68,8 +68,10 @@ fun NavGraphBuilder.cashPaymentScreen(
         val source = sourceName?.let {
             runCatching { CashPaymentSource.valueOf(it) }.getOrNull()
         } ?: CashPaymentSource.CHECKOUT
+        val orderId = backStackEntry.arguments?.getLong(CASH_ROUTE_ORDER_ID_KEY) ?: 0L
 
         WooPosCashPaymentScreen(
+            orderId = orderId,
             source = source,
             onNavigationEvent = onNavigationEvent,
         )
