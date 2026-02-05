@@ -43,6 +43,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -69,7 +70,6 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersListLoadingPane
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersLoadingScreen
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersOrderLoadingRow
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
-import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
@@ -216,7 +216,7 @@ private fun BookingsContent(
         ) {
             when {
                 state.selectedDetails != null -> {
-                    WooPosOrderDetails(
+                    WooPosBookingDetails(
                         modifier = Modifier
                             .fillMaxHeight(),
                         details = state.selectedDetails,
