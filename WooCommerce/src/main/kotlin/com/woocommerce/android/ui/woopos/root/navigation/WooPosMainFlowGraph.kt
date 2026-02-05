@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
+import com.woocommerce.android.ui.woopos.bookings.bookingsScreen
+import com.woocommerce.android.ui.woopos.bookings.payment.bookingCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.cashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.emailReceiptScreen
 import com.woocommerce.android.ui.woopos.home.WooPosHomeViewModel
@@ -30,6 +32,8 @@ fun NavGraphBuilder.mainGraph(
         eligibilityScreen(onNavigationEvent = onNavigationEvent)
         settingsScreen(onNavigationEvent = onNavigationEvent)
         ordersScreen(onNavigationEvent = onNavigationEvent)
+        bookingsScreen(onNavigationEvent = onNavigationEvent)
+        bookingCardPaymentScreen(onNavigationEvent = onNavigationEvent)
         refundReasonScreen(onNavigationEvent = onNavigationEvent)
     }
 }

@@ -86,6 +86,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 }
             }
 
+            R.string.woopos_bookings_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToBookings)
+                }
+            }
+
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
@@ -137,6 +143,10 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
         buildList {
             addAll(
                 listOf(
+                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                        title = R.string.woopos_bookings_title,
+                        icon = R.drawable.ic_bookings_tab,
+                    ),
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_orders_title,
                         icon = R.drawable.ic_description_filled_24dp,
