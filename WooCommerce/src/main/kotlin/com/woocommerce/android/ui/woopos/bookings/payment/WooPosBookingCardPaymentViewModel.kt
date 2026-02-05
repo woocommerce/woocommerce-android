@@ -41,11 +41,6 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
         checkReaderAndStartPayment()
     }
 
-    fun onConnectReaderClicked() {
-        cardReaderFacade.connectToReader()
-        waitForReaderConnection()
-    }
-
     fun onRetryClicked() {
         checkReaderAndStartPayment()
     }
@@ -58,7 +53,8 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
         if (cardReaderFacade.readerStatus.value is CardReaderStatus.Connected) {
             startPayment()
         } else {
-            _state.value = BookingCardPaymentState.ReaderNotConnected
+            _state.value = BookingCardPaymentState.Loading
+            cardReaderFacade.connectToReader()
             waitForReaderConnection()
         }
     }
@@ -141,8 +137,6 @@ class WooPosBookingCardPaymentViewModel @Inject constructor(
 
 sealed class BookingCardPaymentState {
     data object Loading : BookingCardPaymentState()
-
-    data object ReaderNotConnected : BookingCardPaymentState()
 
     data class CollectingPayment(
         val amountLabel: String,

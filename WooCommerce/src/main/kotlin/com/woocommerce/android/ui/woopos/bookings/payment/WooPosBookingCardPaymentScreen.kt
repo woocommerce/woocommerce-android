@@ -52,8 +52,7 @@ fun WooPosBookingCardPaymentScreen(
     BackHandler {
         when (state) {
             is BookingCardPaymentState.PaymentSuccessful,
-            is BookingCardPaymentState.PaymentFailed,
-            is BookingCardPaymentState.ReaderNotConnected -> {
+            is BookingCardPaymentState.PaymentFailed -> {
                 onNavigationEvent(WooPosNavigationEvent.GoBack)
             }
             else -> viewModel.onCancelClicked()
@@ -63,12 +62,6 @@ fun WooPosBookingCardPaymentScreen(
     when (val currentState = state) {
         is BookingCardPaymentState.Loading -> {
             BookingCardPaymentLoadingContent()
-        }
-        is BookingCardPaymentState.ReaderNotConnected -> {
-            BookingCardPaymentReaderNotConnectedContent(
-                onConnectReader = { viewModel.onConnectReaderClicked() },
-                onCancel = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-            )
         }
         is BookingCardPaymentState.CollectingPayment -> {
             BookingCardPaymentCollectingContent(
@@ -104,50 +97,6 @@ private fun BookingCardPaymentLoadingContent() {
         contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
-    }
-}
-
-@Composable
-private fun BookingCardPaymentReaderNotConnectedContent(
-    onConnectReader: () -> Unit,
-    onCancel: () -> Unit,
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        Icon(
-            modifier = Modifier.size(84.dp),
-            imageVector = WooPosIcons.ErrorX,
-            contentDescription = null,
-            tint = WooPosTheme.colors.unspecified,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosText(
-            text = stringResource(R.string.woopos_bookings_card_payment_reader_not_connected),
-            style = WooPosTypography.BodyXLarge,
-            fontWeight = FontWeight.Bold,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        WooPosText(
-            text = stringResource(R.string.woopos_bookings_card_payment_connect_reader_message),
-            style = WooPosTypography.BodyLarge,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosButton(
-            text = stringResource(R.string.woopos_bookings_card_payment_connect_reader),
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp),
-            onClick = onConnectReader,
-        )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
-        WooPosOutlinedButton(
-            modifier = Modifier.width(604.dp),
-            text = stringResource(R.string.cancel),
-            onClick = onCancel,
-        )
     }
 }
 
