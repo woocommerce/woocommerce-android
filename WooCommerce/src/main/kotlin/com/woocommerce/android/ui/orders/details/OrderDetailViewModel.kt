@@ -70,6 +70,8 @@ import com.woocommerce.android.ui.payments.tracking.PaymentsFlowTracker
 import com.woocommerce.android.ui.products.addons.AddonRepository
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
 import com.woocommerce.android.ui.shipping.InstallWCShippingViewModel
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T
 import com.woocommerce.android.viewmodel.LiveDataDelegate
@@ -120,6 +122,7 @@ class OrderDetailViewModel @Inject constructor(
     private val giftCardRepository: GiftCardRepository,
     private val orderProductMapper: OrderProductMapper,
     private val productDetailRepository: ProductDetailRepository,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val paymentReceiptHelper: PaymentReceiptHelper,
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val refreshShippingMethods: RefreshShippingMethods,
@@ -225,6 +228,11 @@ class OrderDetailViewModel @Inject constructor(
         productImageMap.subscribeToOnProductFetchedEvents(this)
         launch {
             pluginsInformation = orderDetailRepository.getOrderDetailsPluginsInfo()
+        }
+        launch {
+            viewState = viewState.copy(
+                isWcShippingBannerEnabled = featureFlagRepository.isEnabled(FeatureFlag.WC_SHIPPING_BANNER)
+            )
         }
         _productList.distinctUntilChanged().observeForever(productListObserver)
 

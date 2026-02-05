@@ -222,6 +222,7 @@ class OrderDetailViewModelTest : BaseUnitTest() {
                 giftCardRepository,
                 orderProductMapper,
                 productDetailRepository,
+                mock(),
                 paymentReceiptHelper,
                 analyticsTracker,
                 refreshShippingMethods,
