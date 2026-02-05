@@ -127,7 +127,7 @@ sealed class WooPosBookingsState {
     }
 
     @Immutable
-    data object Loading: WooPosBookingsState() {
+    data object Loading : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 

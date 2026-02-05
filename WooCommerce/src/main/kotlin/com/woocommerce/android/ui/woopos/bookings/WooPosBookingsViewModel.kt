@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,15 +34,6 @@ class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
     }
 
     fun onPaginationErrorTryAgain() {
-        return Unit
-    }
-
-    @Suppress("UnusedParameter")
-    fun onSearchEvent(event: WooPosSearchUIEvent) {
-        return Unit
-    }
-
-    fun onSearchErrorRetry() {
         return Unit
     }
 

@@ -52,11 +52,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInput
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -89,8 +85,6 @@ fun WooPosBookingsScreen(
         onBookingSelected = viewModel::onBookingSelected,
         onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
-        onSearchEvent = viewModel::onSearchEvent,
-        onSearchErrorRetry = viewModel::onSearchErrorRetry,
         onBookingsEmptyActionClicked = viewModel::onBookingsEmptyActionClicked,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
@@ -100,6 +94,7 @@ fun WooPosBookingsScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
+@Suppress("UnusedParameter")
 private fun WooPosBookingsScreen(
     state: WooPosBookingsState,
     scrollToTopEvent: SharedFlow<Unit>,
@@ -108,8 +103,6 @@ private fun WooPosBookingsScreen(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onSearchErrorRetry: () -> Unit,
     onBookingsEmptyActionClicked: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
@@ -129,8 +122,6 @@ private fun WooPosBookingsScreen(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent,
-                onSearchErrorRetry = onSearchErrorRetry,
                 onUIEvent = onUIEvent
             )
 
@@ -146,16 +137,6 @@ private fun WooPosBookingsScreen(
 
             is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen()
         }
-
-        if (state.searchInputState is WooPosSearchInputState.Closed) {
-            WooPosToolbar(
-                titleText = stringResource(R.string.woopos_orders_title),
-                onBackClicked = onBackClicked,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .statusBarsPadding()
-            )
-        }
     }
 }
 
@@ -167,8 +148,6 @@ private fun BookingsContent(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onSearchErrorRetry: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
@@ -180,8 +159,6 @@ private fun BookingsContent(
             onBookingSelected = onBookingSelected,
             onEndOfBookingsListReached = onEndOfBookingsListReached,
             onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            onSearchEvent = onSearchEvent,
-            onSearchErrorRetry = onSearchErrorRetry,
             modifier = Modifier
                 .weight(0.3f)
                 .fillMaxHeight()
@@ -238,8 +215,6 @@ private fun BookingsListPane(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onSearchEvent: (WooPosSearchUIEvent) -> Unit,
-    onSearchErrorRetry: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -250,14 +225,7 @@ private fun BookingsListPane(
                 .fillMaxWidth()
                 .padding(end = WooPosSpacing.Medium.value)
                 .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
-        ) {
-            WooPosSearchInput(
-                state = state.searchInputState,
-                searchIconBackgroundColor = MaterialTheme.colorScheme.surface,
-                onEvent = onSearchEvent,
-                modifier = Modifier.align(Alignment.CenterEnd)
-            )
-        }
+        )
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
@@ -281,7 +249,6 @@ private fun BookingsListPane(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchErrorRetry = onSearchErrorRetry,
             )
 
             PullRefreshIndicator(
@@ -305,7 +272,6 @@ private fun BookingsList(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
-    onSearchErrorRetry: () -> Unit
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
@@ -340,7 +306,7 @@ private fun BookingsList(
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
                         text = stringResource(id = R.string.retry),
-                        click = onSearchErrorRetry
+                        click = { throw NotImplementedError("Retry button clicked") }
                     )
                 )
             }
@@ -572,7 +538,6 @@ fun WooPosBookingsScreenPreview() {
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                searchInputState = WooPosSearchInputState.Closed,
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -583,44 +548,6 @@ fun WooPosBookingsScreenPreview() {
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
-            onSearchEvent = {},
-            onSearchErrorRetry = {},
-            onBookingsEmptyActionClicked = {},
-            onBookingsLoadingErrorRetryButtonClicked = {},
-            onUIEvent = {},
-            onNavigationEvent = {}
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun WooPosBookingsSearchErrorStatePreview() {
-    val details = sampleBookingDetails()
-    WooPosTheme {
-        WooPosBookingsScreen(
-            state = WooPosBookingsState.Content(
-                items = WooPosBookingsState.Content.Items.Error(
-                    title = stringResource(R.string.woopos_search_orders_error_title),
-                    message = stringResource(R.string.woopos_search_orders_error_description)
-                ),
-                pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                searchInputState = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query("test", 4),
-                    isLoading = false
-                ),
-                selectedDetails = details,
-                paginationState = WooPosPaginationState.None,
-                dialogState = WooPosBookingsState.Content.DialogState.Hidden
-            ),
-            scrollToTopEvent = MutableSharedFlow(),
-            onBackClicked = {},
-            onRefresh = {},
-            onBookingSelected = {},
-            onEndOfBookingsListReached = {},
-            onPaginationErrorTryAgain = {},
-            onSearchEvent = {},
-            onSearchErrorRetry = {},
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
@@ -641,10 +568,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                searchInputState = WooPosSearchInputState.Open(
-                    input = WooPosSearchInputState.Open.Input.Query("test", 4),
-                    isLoading = false
-                ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -655,8 +578,6 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
-            onSearchEvent = {},
-            onSearchErrorRetry = {},
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
@@ -672,7 +593,6 @@ fun WooPosBookingsEmptyStatePreview() {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                searchInputState = WooPosSearchInputState.Closed,
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -680,8 +600,6 @@ fun WooPosBookingsEmptyStatePreview() {
             onBookingSelected = {},
             onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
-            onSearchEvent = {},
-            onSearchErrorRetry = {},
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
