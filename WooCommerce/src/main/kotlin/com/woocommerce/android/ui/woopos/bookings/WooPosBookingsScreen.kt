@@ -442,6 +442,15 @@ private fun BookingListCard(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 WooPosText(
+                    text = "#${item.id}",
+                    style = WooPosTypography.Caption,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 1,
+                )
+
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+                WooPosText(
                     text = item.customerName,
                     style = WooPosTypography.BodySmall,
                     color = MaterialTheme.colorScheme.onSurface,

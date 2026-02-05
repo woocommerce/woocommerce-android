@@ -119,6 +119,14 @@ fun WooPosBookingDetailPane(
 private fun BookingSummarySection(detail: BookingDetail) {
     Column {
         WooPosText(
+            text = "#${detail.id}",
+            style = WooPosTypography.BodyMedium,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+        )
+
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosText(
             text = detail.customerName,
             style = WooPosTypography.Heading,
             fontWeight = FontWeight.Bold,
