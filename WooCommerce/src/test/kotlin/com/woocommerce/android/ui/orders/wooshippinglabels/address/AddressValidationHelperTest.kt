@@ -79,20 +79,20 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when value is empty or blank validateCustomsPhone should return error`() {
-        val result = sut.validateCustomsPhone("")
+    fun `when value is empty or blank validatePhoneNumber should return error`() {
+        val result = sut.validatePhoneNumber("")
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when value does not contain any digits validateCustomsPhone should return error`() {
-        val result = sut.validateCustomsPhone("abc")
+    fun `when value does not contain any digits validatePhoneNumber should return error`() {
+        val result = sut.validatePhoneNumber("abc")
         assertThat(result).isEqualTo(invalidPhoneError)
     }
 
     @Test
-    fun `when value contains at least one digit validateCustomsPhone should return null`() {
-        val result = sut.validateCustomsPhone("123")
+    fun `when value contains at least one digit validatePhoneNumber should return null`() {
+        val result = sut.validatePhoneNumber("123")
         assertThat(result).isNull()
     }
 
@@ -139,32 +139,32 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when phone is empty, then validatePhoneRequired returns required error`() {
-        val result = sut.validatePhoneRequired("")
+    fun `when phone is empty, then validatePhoneNumber returns required error`() {
+        val result = sut.validatePhoneNumber("")
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when phone is blank, then validatePhoneRequired returns required error`() {
-        val result = sut.validatePhoneRequired("   ")
+    fun `when phone is blank, then validatePhoneNumber returns required error`() {
+        val result = sut.validatePhoneNumber("   ")
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when phone has no digits, then validatePhoneRequired returns invalid error`() {
-        val result = sut.validatePhoneRequired("abc-def")
+    fun `when phone has no digits, then validatePhoneNumber returns invalid error`() {
+        val result = sut.validatePhoneNumber("abc-def")
         assertThat(result).isEqualTo(invalidPhoneError)
     }
 
     @Test
-    fun `when phone has at least one digit, then validatePhoneRequired returns null`() {
-        val result = sut.validatePhoneRequired("123-456-7890")
+    fun `when phone has at least one digit, then validatePhoneNumber returns null`() {
+        val result = sut.validatePhoneNumber("123-456-7890")
         assertThat(result).isNull()
     }
 
     @Test
-    fun `when phone has mixed characters with digit, then validatePhoneRequired returns null`() {
-        val result = sut.validatePhoneRequired("+1 (555) 123-4567")
+    fun `when phone has mixed characters with digit, then validatePhoneNumber returns null`() {
+        val result = sut.validatePhoneNumber("+1 (555) 123-4567")
         assertThat(result).isNull()
     }
 }

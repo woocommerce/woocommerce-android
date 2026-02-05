@@ -46,7 +46,7 @@ class AddressValidationHelper @Inject constructor(
         }
     }
 
-    fun validateCustomsPhone(value: String): String? {
+    fun validatePhoneNumber(value: String): String? {
         return when {
             value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
             value.contains(Regex("\\d")).not() -> {
@@ -59,16 +59,6 @@ class AddressValidationHelper @Inject constructor(
 
     fun isPhoneValidForShippingLabel(phone: String): Boolean {
         return phone.isNotBlank() && phone.contains(Regex("\\d"))
-    }
-
-    fun validatePhoneRequired(value: String): String? {
-        return when {
-            value.isBlank() -> resourceProvider.getString(R.string.woo_shipping_field_required_error)
-            !value.contains(Regex("\\d")) -> {
-                resourceProvider.getString(R.string.shipping_label_destination_address_phone_invalid)
-            }
-            else -> null
-        }
     }
 
     fun isMissingDestinationAddress(address: Address) = with(address) {

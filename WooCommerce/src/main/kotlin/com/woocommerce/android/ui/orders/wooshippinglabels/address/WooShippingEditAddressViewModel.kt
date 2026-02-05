@@ -154,7 +154,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val phoneValidatedFlow = snapshotFlow { phone }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
             if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validatePhoneRequired(inputValue.value))
+                inputValue.copy(error = addressValidator.validatePhoneNumber(inputValue.value))
             } else {
                 inputValue
             }
