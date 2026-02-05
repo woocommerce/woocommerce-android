@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.orders.details.editing.address.AddressViewMode
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.ViewState
 import com.woocommerce.android.ui.orders.shippinglabels.creation.CreateShippingLabelTestUtils
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
@@ -44,6 +45,7 @@ class AddressViewModelTest : BaseUnitTest() {
         on { getCountries() } doReturn listOf(newCountry, newCountryWithoutStates)
         on { getStates(newCountry.code) } doReturn listOf(newState)
     }
+    private val featureFlagRepository: FeatureFlagRepository = mock()
 
     private lateinit var addressViewModel: AddressViewModel
 
@@ -54,12 +56,14 @@ class AddressViewModelTest : BaseUnitTest() {
     )
 
     @Before
-    fun setup() {
+    fun setup() = testBlocking {
+        whenever(featureFlagRepository.isEnabled(any())).thenReturn(false)
         addressViewModel = AddressViewModel(
             savedStateHandle,
             selectedSite,
             dataStore,
-            GetLocations(dataStore)
+            GetLocations(dataStore),
+            featureFlagRepository
         )
         addressViewModel.viewStateData.liveData.observeForever(viewStateObserver)
         addressViewModel.shouldEnableDoneButton.observeForever(mock())
@@ -106,10 +110,11 @@ class AddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `Should reset view state when onScreenDetached is called`() {
+    fun `Should reset view state when onScreenDetached is called`() = testBlocking {
         addressViewModel.onScreenDetached()
         // Default view state is first emitted in the test setup (observeForever) and again on onScreenDetached.
         // That's why we're verifying if default view state was emitted 2 times.
+        // Note: initDefaultViewState runs in launch{}, so we need to let the coroutine complete
         verify(viewStateObserver, times(2)).onChanged(ViewState())
     }
 

@@ -16,6 +16,8 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.DISABLED
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.HAVING_LOCATIONS
 import com.woocommerce.android.ui.orders.details.editing.address.AddressViewModel.StateSpinnerStatus.RAW_VALUE
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -35,6 +37,7 @@ class AddressViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val dataStore: WCDataStore,
     private val getLocations: GetLocations,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) : ScopedViewModel(savedState) {
     /**
      * Saving more data than necessary into the SavedState has associated risks which were not known at the time this
@@ -44,6 +47,20 @@ class AddressViewModel @Inject constructor(
     @Suppress("OPT_IN_USAGE")
     val viewStateData = LiveDataDelegate(savedState, ViewState())
     private var viewState by viewStateData
+
+    init {
+        initDefaultViewState()
+    }
+
+    private fun initDefaultViewState() {
+        launch {
+            viewState = ViewState(
+                isBetterCustomerSearchEnabled = featureFlagRepository.isEnabled(
+                    FeatureFlag.BETTER_CUSTOMER_SEARCH_M2
+                )
+            )
+        }
+    }
 
     private val countries: List<Location>
         get() = dataStore.getCountries().map { it.toAppModel() }
@@ -128,7 +145,7 @@ class AddressViewModel @Inject constructor(
      */
     fun onScreenDetached() {
         hasStarted = false
-        viewState = ViewState()
+        initDefaultViewState()
     }
 
     private fun getStateSpinnerStatus(countryCode: String): StateSpinnerStatus {
@@ -276,7 +293,7 @@ class AddressViewModel @Inject constructor(
             AddressType.BILLING to Address.EMPTY,
             AddressType.SHIPPING to Address.EMPTY,
         )
-        viewState = ViewState()
+        initDefaultViewState()
         initialize(initialState)
     }
 
@@ -288,6 +305,7 @@ class AddressViewModel @Inject constructor(
         val email: String? = null,
         val addressSelectionStates: Map<AddressType, AddressSelectionState> = emptyMap(),
         val isLoading: Boolean = false,
+        val isBetterCustomerSearchEnabled: Boolean = false,
     ) : Parcelable
 
     enum class AddressType {
