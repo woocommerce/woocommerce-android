@@ -27,6 +27,7 @@ class WooPosFileBasedSyncActionTest {
     private val posLocalCatalogStore: WooPosLocalCatalogStore = mock()
     private val catalogFileDownloader: WooPosCatalogFileDownloader = mock()
     private val catalogFileParser: WooPosCatalogFileParser = mock()
+    private val syncWithFts: WooPosLocalCatalogSyncWithFts = mock()
     private val logger: WooPosLogWrapper = mock()
     private lateinit var site: SiteModel
 
@@ -65,6 +66,7 @@ class WooPosFileBasedSyncActionTest {
             posLocalCatalogStore = posLocalCatalogStore,
             catalogFileDownloader = catalogFileDownloader,
             catalogFileParser = catalogFileParser,
+            syncWithFts = syncWithFts,
             logger = logger
         )
         site = SiteModel().apply {

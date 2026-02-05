@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.home.items.coupons.creation.WooPosCoupo
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosIsWooCommerceVersionSunsetWarningRequired
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.SearchButtonTapped
@@ -60,6 +61,7 @@ class WooPosItemsViewModelTest {
     private val preferencesRepository: WooPosPreferencesRepository = mock()
     private val syncStatusChecker: WooPosFullSyncStatusChecker = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
+    private val isWooVersionSunsetWarningRequired: WooPosIsWooCommerceVersionSunsetWarningRequired = mock()
 
     @Before
     fun setup() = runTest {
@@ -73,6 +75,7 @@ class WooPosItemsViewModelTest {
             WooPosFullSyncRequirement.NotRequired(System.currentTimeMillis())
         )
         whenever(dateTimeProvider.now()).thenReturn(1000)
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(false)
     }
 
     @Test
@@ -515,6 +518,92 @@ class WooPosItemsViewModelTest {
         )
     }
 
+    @Test
+    fun `given wc version sunset warning required, when view model created, then banner is visible`() = runTest {
+        // GIVEN
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(true)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.bannerState.test {
+            val state = awaitItem()
+            assertThat(state).isEqualTo(WooPosItemsBannerState.WooCommerceVersionSunset)
+        }
+    }
+
+    @Test
+    fun `given wc version sunset warning required, when view model created, then analytics tracked`() = runTest {
+        // GIVEN
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(true)
+
+        // WHEN
+        createViewModel()
+
+        // THEN
+        verify(analyticsTracker).track(eq(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningShown))
+    }
+
+    @Test
+    fun `given wc version sunset warning not required, when view model created, then banner is hidden`() = runTest {
+        // GIVEN
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(false)
+
+        // WHEN
+        val viewModel = createViewModel()
+
+        // THEN
+        viewModel.bannerState.test {
+            val state = awaitItem()
+            assertThat(state).isEqualTo(WooPosItemsBannerState.Hidden)
+        }
+    }
+
+    @Test
+    fun `given wc version sunset banner visible, when dismissed, then banner is hidden`() = runTest {
+        // GIVEN
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed)
+
+        // THEN
+        viewModel.bannerState.test {
+            val state = awaitItem()
+            assertThat(state).isEqualTo(WooPosItemsBannerState.Hidden)
+        }
+    }
+
+    @Test
+    fun `given wc version sunset banner visible, when dismissed, then dismissal timestamp is saved`() = runTest {
+        // GIVEN
+        val currentTime = 123456L
+        whenever(dateTimeProvider.now()).thenReturn(currentTime)
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed)
+
+        // THEN
+        verify(preferencesRepository).setWooVersionSunsetBannerDismissalTimestamp(currentTime)
+    }
+
+    @Test
+    fun `given wc version sunset banner visible, when dismissed, then analytics event is tracked`() = runTest {
+        // GIVEN
+        whenever(isWooVersionSunsetWarningRequired()).thenReturn(true)
+        val viewModel = createViewModel()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosItemsUIEvent.WooCommerceVersionSunsetBannerDismissed)
+
+        // THEN
+        verify(analyticsTracker).track(eq(WooPosAnalyticsEvent.Event.WooCommerceVersionSunsetWarningDismissed))
+    }
+
     private fun createViewModel(): WooPosItemsViewModel {
         return WooPosItemsViewModel(
             searchHelper = searchHelper,
@@ -526,6 +615,7 @@ class WooPosItemsViewModelTest {
             analyticsTracker = analyticsTracker,
             syncStatusChecker = syncStatusChecker,
             dateTimeProvider = dateTimeProvider,
+            isWooCommerceVersionSunsetWarningRequired = isWooVersionSunsetWarningRequired,
         )
     }
 }

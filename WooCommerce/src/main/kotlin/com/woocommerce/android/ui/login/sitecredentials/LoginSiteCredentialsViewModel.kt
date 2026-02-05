@@ -20,6 +20,7 @@ import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.model.UiString.UiStringRes
 import com.woocommerce.android.model.UiString.UiStringText
+import com.woocommerce.android.notifications.push.RegisterDevice
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.WPApiSiteRepository
 import com.woocommerce.android.ui.login.WPApiSiteRepository.CookieNonceAuthenticationException
@@ -58,7 +59,8 @@ class LoginSiteCredentialsViewModel @Inject constructor(
     private val analyticsTracker: AnalyticsTrackerWrapper,
     private val appPrefs: AppPrefsWrapper,
     private val resourceProvider: ResourceProvider,
-    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration
+    private val applicationPasswordsConfiguration: ApplicationPasswordsConfiguration,
+    private val registerDevice: RegisterDevice
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
         const val SITE_ADDRESS_KEY = "site-address"
@@ -337,6 +339,7 @@ class LoginSiteCredentialsViewModel @Inject constructor(
                 }
                 appPrefs.removeLoginSiteAddress()
                 selectedSite.set(site)
+                registerDevice(RegisterDevice.Mode.IF_NEEDED)
                 triggerEvent(LoggedIn(selectedSite.getSelectedSiteId()))
             },
             onFailure = { exception ->

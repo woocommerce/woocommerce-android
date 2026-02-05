@@ -16,6 +16,7 @@ enum class FeatureFlag {
     POS_PRODUCTS_FTS,
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH,
     WOO_PUSH_NOTIFICATIONS_SYSTEM,
+    WOO_PUSH_NOTIFICATIONS_SYSTEM_M2,
     WOO_POS_CLIENT_SIDE_BANNER,
     AGE_ELIGIBILITY_CHECKS;
 
@@ -46,7 +47,8 @@ enum class FeatureFlag {
             WOO_POS_CLIENT_SIDE_BANNER,
             AGE_ELIGIBILITY_CHECKS -> PackageUtils.isDebugBuild()
 
-            WOO_PUSH_NOTIFICATIONS_SYSTEM -> false
+            WOO_PUSH_NOTIFICATIONS_SYSTEM,
+            WOO_PUSH_NOTIFICATIONS_SYSTEM_M2 -> false
         }
     }
 }

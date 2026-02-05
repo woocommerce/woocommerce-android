@@ -553,6 +553,9 @@ enum class AnalyticsEvent(override val siteless: Boolean = false) : IAnalyticsEv
     CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_SUCCESS,
     CARD_PRESENT_TAP_TO_PAY_TEST_PAYMENT_REFUND_FAILED,
 
+    // -- POS Local Catalog Beta Toggle
+    POS_LOCAL_CATALOG_BETA_FEATURES_SWITCH_TOGGLED,
+
     // -- Product list
     PRODUCT_LIST_LOADED,
     PRODUCT_LIST_LOAD_ERROR,

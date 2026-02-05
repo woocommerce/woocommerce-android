@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.woopos.orders
+package com.woocommerce.android.ui.woopos.orders.details.refund
 
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before

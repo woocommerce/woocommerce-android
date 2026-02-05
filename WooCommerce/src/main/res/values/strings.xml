@@ -374,6 +374,10 @@
     <string name="my_store_custom_range_visitors_stats_unavailable_message">The stats feature does not support the display of visitors and conversions data for arbitrary date ranges.\n\nHowever, you can tap a value on the graph to see visitors and conversions for that specific range.</string>
     <string name="my_store_edit_screen_widgets">Customize</string>
 
+    <string name="my_store_widget_push_notifications_title">Never miss a new order</string>
+    <string name="my_store_widget_push_notifications_menu_title">Enable push notifications</string>
+    <string name="my_store_widget_push_notifications_description">Connect your store to a WordPress.com account to get alerts for new orders and reviews.</string>
+
     <string name="my_store_widget_onboarding_title">Store setup</string>
     <string name="my_store_widget_stats_title">Performance</string>
     <string name="my_store_widget_top_products_title">Top performers</string>
@@ -2296,6 +2300,7 @@
     <string name="settings_install_jetpack">Install Jetpack</string>
     <string name="settings_notifs">Notifications</string>
     <string name="settings_store_name">Store name</string>
+    <string name="settings_enable_push_notifications">Enable Push Notifications</string>
     <string name="settings_notifs_device">Manage notifications</string>
     <string name="settings_notifs_device_detail">Sounds, urgency, and notification dot</string>
     <string name="settings_notifs_enable_chaching_sound">Enable Cha-Ching sound</string>
@@ -3596,6 +3601,10 @@
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
 
+    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce soon</string>
+    <string name="woopos_wc_version_sunset_banner_message">Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later. Update WooCommerce on your store or ask your store administrator.</string>
+    <string name="woopos_wc_version_sunset_banner_dismiss">Dismiss WooCommerce update warning</string>
+
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -3819,6 +3828,7 @@
         <item quantity="other">Items subtotal (%d items)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
+    <string name="woopos_orders_via_payment_method">Via %1$s</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
     <string name="woopos_orders_refund_reason_placeholder">Reason for refunding order</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
@@ -3828,6 +3838,8 @@
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
+    <string name="woopos_orders_refund_complete">Refund complete</string>
+    <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
@@ -3842,6 +3854,7 @@
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
+    <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
