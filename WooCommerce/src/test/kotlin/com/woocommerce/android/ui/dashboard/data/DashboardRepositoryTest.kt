@@ -13,6 +13,7 @@ class DashboardRepositoryTest {
     private val dashboardDataStore: DashboardDataStore = mock()
     private val observeSiteOrdersState: ObserveSiteOrdersState = mock()
     private val observeBlazeWidgetStatus: ObserveBlazeWidgetStatus = mock()
+    private val observePushNotificationsWidgetStatus: ObservePushNotificationsWidgetStatus = mock()
     private val observeOnboardingWidgetStatus: ObserveOnboardingWidgetStatus = mock()
     private val observeStockWidgetStatus: ObserveStockWidgetStatus = mock()
     private val observeGoogleAdsWidgetStatus: ObserveGoogleAdsWidgetStatus = mock()
@@ -30,6 +31,7 @@ class DashboardRepositoryTest {
             dashboardDataStore,
             observeSiteOrdersState,
             observeBlazeWidgetStatus,
+            observePushNotificationsWidgetStatus,
             observeOnboardingWidgetStatus,
             observeStockWidgetStatus,
             observeGoogleAdsWidgetStatus
