@@ -339,12 +339,17 @@ object AppPrefs {
 
     private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
 
-    fun isFeatureFlagOverrideEnabled(flag: FeatureFlag, defaultValue: Boolean): Boolean {
-        return getBoolean(getFeatureFlagKey(flag), defaultValue)
+    fun getFeatureFlagOverride(flag: FeatureFlag): Boolean? {
+        val key = getFeatureFlagKey(flag)
+        return if (exists(key)) getBoolean(key, false) else null
     }
 
     fun setFeatureFlagOverride(flag: FeatureFlag, enabled: Boolean) {
         setBoolean(getFeatureFlagKey(flag), enabled)
+    }
+
+    fun removeFeatureFlagOverride(flag: FeatureFlag) {
+        remove(getFeatureFlagKey(flag))
     }
 
     private fun getFeatureFlagKey(flag: FeatureFlag) =
