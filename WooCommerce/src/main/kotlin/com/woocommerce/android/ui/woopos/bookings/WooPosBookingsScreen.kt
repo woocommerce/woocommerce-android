@@ -53,6 +53,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosPaginationErrorIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
@@ -137,6 +138,14 @@ private fun WooPosBookingsScreen(
 
             is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen()
         }
+
+        WooPosToolbar(
+            titleText = stringResource(R.string.woopos_bookings_title),
+            onBackClicked = onBackClicked,
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+        )
     }
 }
 
