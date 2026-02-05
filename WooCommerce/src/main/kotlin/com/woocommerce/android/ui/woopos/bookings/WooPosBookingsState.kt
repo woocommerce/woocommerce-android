@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.compose.runtime.Immutable
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Status
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
@@ -11,7 +10,6 @@ import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 @Immutable
 sealed class WooPosBookingsState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
-    abstract val searchInputState: WooPosSearchInputState
 
     @Immutable
     sealed interface BookingAction {
@@ -102,7 +100,6 @@ sealed class WooPosBookingsState {
     data class Content(
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
-        override val searchInputState: WooPosSearchInputState,
         val selectedDetails: BookingDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
@@ -125,22 +122,18 @@ sealed class WooPosBookingsState {
     @Immutable
     data class Error(
         val message: String,
-        override val searchInputState: WooPosSearchInputState
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
     @Immutable
-    data class Loading(
-        override val searchInputState: WooPosSearchInputState
-    ) : WooPosBookingsState() {
+    data object Loading: WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
 
     @Immutable
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val searchInputState: WooPosSearchInputState
     ) : WooPosBookingsState()
 }
 
