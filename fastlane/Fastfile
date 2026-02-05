@@ -82,6 +82,11 @@ FIREBASE_APP_ID = '1:124902176124:android:4046dc320bf1825b1620f9'
 FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 
 ########################################################################
+# S3 Prototype Builds
+########################################################################
+PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
+
+########################################################################
 # Environment
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
@@ -1348,26 +1353,19 @@ platform :android do
   #####################################################################################
   # build_and_upload_prototype_build
   #
-  # This lane builds a prototype build and uploads it to Firebase App Distribution
+  # This lane builds a prototype build and uploads it.
+  # - Mobile app is uploaded to Firebase App Distribution (FAD)
+  # - Wear app is uploaded to S3
   #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   #
-  desc 'Builds a prototype build and uploads it to Firebase App Distribution'
+  desc 'Builds a prototype build and uploads it (Mobile to FAD, Wear to S3)'
   lane :build_and_upload_prototype_build do |app:|
-    UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
-
     validate_app_param!(app)
 
     prototype_build_type = 'Debug'
     prototype_flavor = 'Jalapeno'
-
-    # Build release notes with branch, commit, and app info
     platform_name = APP_DISPLAY_NAMES.fetch(app, app)
-    release_notes = <<~NOTES
-      App: #{platform_name}
-      Branch: `#{ENV.fetch('BUILDKITE_BRANCH', 'N/A')}`
-      Commit: #{ENV.fetch('BUILDKITE_COMMIT', 'N/A')[0...7]}
-    NOTES
 
     # Build the APK
     gradle(
@@ -1376,32 +1374,72 @@ platform :android do
       build_type: prototype_build_type
     )
 
-    # Upload to Firebase App Distribution
-    firebase_app_distribution(
+    # Upload to appropriate service based on app type
+    install_url = if app == MOBILE_APP
+                    upload_prototype_to_fad(platform_name: platform_name)
+                  else
+                    upload_prototype_to_s3(app: app)
+                  end
+
+    next unless is_ci
+
+    comment_on_pr_with_prototype_build_install_link(
+      app_display_name: "#{app} Android",
+      app_icon: app == WEAR_APP ? ':amazon-s3:' : nil,
+      download_url: install_url,
+      metadata: {
+        Platform: platform_name,
+        Flavor: prototype_flavor,
+        'Build Type': prototype_build_type
+      },
+      fold: app == WEAR_APP,
+      reuse_identifier: "#{app.downcase}-prototype-build-link"
+    )
+
+    annotate_ci_build_with_prototype_build_install_link(app: app, download_url: install_url)
+  end
+
+  # Uploads a prototype build to Firebase App Distribution
+  #
+  # @return [String] The install URL for the uploaded build
+  #
+  private_lane :upload_prototype_to_fad do |platform_name:|
+    UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
+
+    release_notes = <<~NOTES
+      App: #{platform_name}
+      Branch: `#{ENV.fetch('BUILDKITE_BRANCH', 'N/A')}`
+      Commit: #{ENV.fetch('BUILDKITE_COMMIT', 'N/A')[0...7]}
+    NOTES
+
+    fad_release = firebase_app_distribution(
       app: FIREBASE_APP_ID,
       service_credentials_json_data: ENV.fetch('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY', nil),
       release_notes: release_notes,
       groups: FIREBASE_TESTERS_GROUP
     )
 
-    next unless is_ci
+    fad_release&.dig(:testingUri)
+  end
 
-    comment_on_pr_with_prototype_build_install_link(
-      app_display_name: "#{app} Android",
-      project: GITHUB_REPO,
-      metadata: {
-        Platform: APP_DISPLAY_NAMES.fetch(app, app),
-        Flavor: prototype_flavor,
-        'Build Type': prototype_build_type
-      },
-      # Keep comment for Mobile app always expanded,
-      # but collapse comment for Wear app by default,
-      # as it's modified less often
-      fold: app == WEAR_APP,
-      reuse_identifier: "#{app.downcase}-prototype-build-link"
+  # Uploads a prototype build to S3
+  #
+  # @return [String] The install URL for the uploaded build
+  #
+  private_lane :upload_prototype_to_s3 do |app:|
+    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
+
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    UI.user_error!('No APK found in Gradle output.') unless apk_path
+
+    upload_path = upload_to_s3(
+      bucket: 'a8c-apps-public-artifacts',
+      key: "#{app.downcase}-prototype-build-#{generate_prototype_build_number}.apk",
+      file: apk_path,
+      skip_if_exists: true
     )
 
-    annotate_ci_build_with_prototype_build_install_link(app: app)
+    "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
   end
 
   #####################################################################################
@@ -1542,6 +1580,23 @@ platform :android do
     obsolete_changelogs
   end
 
+  # This function is Buildkite-specific
+  def generate_prototype_build_number
+    if ENV['BUILDKITE']
+      commit = ENV.fetch('BUILDKITE_COMMIT', nil)[0, 7]
+      branch = ENV['BUILDKITE_BRANCH'].parameterize
+      pr_num = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+
+      pr_num == 'false' ? "#{branch}-#{commit}" : "pr#{pr_num}-#{commit}"
+    else
+      repo = Git.open(PROJECT_ROOT_FOLDER)
+      commit = repo.current_branch.parameterize
+      branch = repo.revparse('HEAD')[0, 7]
+
+      "#{branch}-#{commit}"
+    end
+  end
+
   #####################################################################################
   # Version Methods
   #####################################################################################
@@ -1680,38 +1735,40 @@ end
 #
 def comment_on_pr_with_prototype_build_install_link(
   app_display_name:,
-  project:,
+  download_url:,
   metadata:,
   fold:,
-  reuse_identifier:
+  reuse_identifier:,
+  app_icon: nil
 )
   pr_number = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
   return unless pr_number && pr_number != 'false'
 
+  comment_args = {
+    app_display_name: app_display_name,
+    download_url: download_url,
+    metadata: metadata,
+    fold: fold
+  }
+  comment_args[:app_icon] = app_icon if app_icon
+
   comment_on_pr(
-    project: project,
+    project: GITHUB_REPO,
     pr_number: Integer(pr_number),
     reuse_identifier: reuse_identifier,
-    body: prototype_build_details_comment(
-      app_display_name: app_display_name,
-      metadata: metadata,
-      fold: fold
-    )
+    body: prototype_build_details_comment(**comment_args)
   )
 end
 
 # If running in Buildkite, annotates the current build with prototype build info
 #
-def annotate_ci_build_with_prototype_build_install_link(app:)
-  install_link = 'Firebase App Distribution'
-  install_url = Fastlane::Actions.lane_context[Fastlane::Actions::SharedValues::FIREBASE_APP_DISTRO_RELEASE]&.dig(:testingUri)
-  install_link = "[#{install_link}](#{install_url})" unless install_url.nil?
-
+def annotate_ci_build_with_prototype_build_install_link(app:, download_url:)
   platform_name = APP_DISPLAY_NAMES.fetch(app, app)
+  install_link = download_url ? "[Download](#{download_url})" : 'N/A'
 
   buildkite_annotate(
     style: 'success',
     context: "prototype-build-#{app.downcase}",
-    message: "#{platform_name} prototype build uploaded to #{install_link}"
+    message: "#{platform_name} prototype build uploaded: #{install_link}"
   )
 end
