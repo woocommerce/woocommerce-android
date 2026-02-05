@@ -130,7 +130,10 @@ class ReviewListViewModel @Inject constructor(
 
     fun checkForUnreadReviews() {
         launch {
-            viewState = viewState.copy(hasUnreadReviews = reviewRepository.getHasUnreadCachedProductReviews())
+            // Extract suspend call first to avoid race condition with viewState.copy()
+            // See: capturing viewState before suspend can overwrite changes made during suspend
+            val hasUnread = reviewRepository.getHasUnreadCachedProductReviews()
+            viewState = viewState.copy(hasUnreadReviews = hasUnread)
         }
     }
 
