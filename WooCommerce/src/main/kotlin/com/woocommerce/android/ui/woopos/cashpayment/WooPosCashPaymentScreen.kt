@@ -46,7 +46,10 @@ import org.wordpress.android.fluxc.model.settings.CurrencyPosition.LEFT
 import java.math.BigDecimal
 
 @Composable
-fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
+fun WooPosCashPaymentScreen(
+    source: CashPaymentSource = CashPaymentSource.CHECKOUT,
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+) {
     val viewModel = hiltViewModel<WooPosCashPaymentViewModel>()
     val state = viewModel.state.collectAsState().value
 
@@ -55,12 +58,21 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
+    val onOrderComplete = {
+        when (source) {
+            CashPaymentSource.CHECKOUT ->
+                onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+            CashPaymentSource.BOOKINGS ->
+                onNavigationEvent(WooPosNavigationEvent.GoBack)
+        }
+    }
+
     WooPosCashPaymentScreen(
         state = state,
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
         onBackClicked = onBackClicked,
-        onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
+        onOrderComplete = onOrderComplete,
     )
     BackHandler {
         onBackClicked()

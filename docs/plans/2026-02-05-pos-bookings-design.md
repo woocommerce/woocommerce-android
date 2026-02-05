@@ -271,11 +271,11 @@ The original design did not mention checking whether a card reader is connected 
 
 **For production:** This is essential for any card payment flow. Consider extracting a shared "ensure reader connected" step.
 
-### 10. Cash Payment Returns to Home, Not Bookings
+### 10. Cash Payment Now Returns to Bookings
 
-After cash payment completes, the existing `WooPosCashPaymentScreen` navigates via `OpenHomeFromCashPaymentAfterSuccessfulPayment`, which pops the entire backstack to the home screen. The bookings screen is not in the backstack after this. The booking status is not automatically updated to "paid" after cash payment.
+The cash payment flow now includes a `source` parameter (`CashPaymentSource.CHECKOUT` or `CashPaymentSource.BOOKINGS`). When initiated from bookings, cash payment uses `GoBack` after completion instead of `OpenHomeFromCashPaymentAfterSuccessfulPayment`, returning the user to the bookings screen.
 
-**For production:** Either modify the cash payment return flow to support returning to the previous screen (not just home), or add a listener that updates the booking status when the bookings screen resumes.
+Card payment already used `GoBack` and returns to bookings correctly.
 
 ### 11. View Order Search Pre-fill Not Functional
 
@@ -283,11 +283,9 @@ The "View Order" button navigates to the orders screen and sets `searchQuery` on
 
 **For production:** The orders ViewModel needs to check `savedStateHandle` for a `searchQuery` key on init and trigger a search if present.
 
-### 12. Cancel Dialog Uses AlertDialog
+### 12. Cancel Dialog Uses WooPosDialogWrapper
 
-The design specified using `WooPosDialogWrapper` for the cancel confirmation dialog. The POC uses a standard `AlertDialog` instead because `WooPosDialogWrapper` requires an `onCloseClick` parameter (close button) which is not wanted for a simple confirm/cancel dialog.
-
-**For production:** Either add a `WooPosDialogWrapper` variant that supports no close button, or stick with `AlertDialog` styled with POS theme colors.
+The cancel confirmation dialog now uses `WooPosDialogWrapper` without the close button (`onCloseClick = null`). This matches the design system and provides consistent styling with other POS dialogs.
 
 ### 13. UiStringParser for Payment Errors
 
@@ -310,3 +308,37 @@ It's possible to create a booking via wp-admin that has a customer, time slot, e
 The Payments button in the main app's More Menu is gated by `CIABSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments)`. If the site doesn't have WooPayments installed/enabled, the Payments menu item is hidden entirely. This affects testing - you need a site with WooPayments configured to see the payments flow.
 
 **For production:** POS has its own eligibility checks, but this is worth noting for QA and documentation.
+
+### 17. Attendance Status API Inconsistency
+
+The attendance status API rejects values even that the main app uses. When sending `{"attendance_status": "checked-in"}`, return:
+
+```json
+{
+  "code": "rest_invalid_param",
+  "message": "Invalid parameter(s): attendance_status",
+  "data": {
+    "status": 400,
+    "params": {
+      "attendance_status": "attendance_status is not one of attended and unattended."
+    },
+    "details": {
+      "attendance_status": {
+        "code": "rest_not_in_enum",
+        "message": "attendance_status is not one of attended and unattended.",
+        "data": null
+      }
+    }
+  }
+}
+
+So it either we use the API wrongly or the API doesn't work yet. Needs to be checked properly
+```
+
+The API expects `attended` or `unattended`, but the main app and POS use `booked`, `checked-in`, `no-show`. This may be a plugin version mismatch or site configuration issue.
+
+**For production:** Investigate which WooCommerce Bookings plugin versions support which attendance status values, and handle the API error gracefully.
+
+### 18. Web Shows "Frequently Bought Together" With Services
+
+On the web storefront, appointment/service pages list regular products below them in a "Frequently bought together" section (e.g. a haircut service shows hair products underneath). This is an interesting observation - having a cart concept in POS bookings could enable similar cross-selling (booking a service + adding related products in one transaction). Not proposing this for implementation, just noting that the web already supports this pattern and it shows how bookings and products can be connected.

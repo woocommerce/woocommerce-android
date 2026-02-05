@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.home
 
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosItemsViewModel
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
 import dagger.hilt.android.scopes.ActivityRetainedScoped
@@ -55,7 +56,10 @@ sealed class ChildToParentEvent {
     data object RefreshProductList : ChildToParentEvent()
 
     sealed class NavigationEvent : ChildToParentEvent() {
-        data class ToCashPayment(val orderId: Long) : NavigationEvent()
+        data class ToCashPayment(
+            val orderId: Long,
+            val source: CashPaymentSource = CashPaymentSource.CHECKOUT
+        ) : NavigationEvent()
         data class ToEmailReceipt(val orderId: Long) : NavigationEvent()
         data object ReturnHomeFromCashWhenCardPaymentStarted : NavigationEvent()
         data object ExitPos : NavigationEvent()

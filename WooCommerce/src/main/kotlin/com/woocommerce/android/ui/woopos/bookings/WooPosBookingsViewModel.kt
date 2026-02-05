@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
@@ -190,7 +191,10 @@ class WooPosBookingsViewModel @Inject constructor(
         if (detail.orderId == 0L) return
         viewModelScope.launch {
             childrenToParentEventSender.sendToParent(
-                ChildToParentEvent.NavigationEvent.ToCashPayment(detail.orderId)
+                ChildToParentEvent.NavigationEvent.ToCashPayment(
+                    orderId = detail.orderId,
+                    source = CashPaymentSource.BOOKINGS
+                )
             )
         }
     }

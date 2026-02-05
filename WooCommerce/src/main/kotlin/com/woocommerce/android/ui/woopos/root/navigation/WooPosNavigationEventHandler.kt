@@ -27,7 +27,7 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.BackFromSplashClicked -> activity.finish()
 
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
-        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId)
+        is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
 
         is WooPosNavigationEvent.GoBackWithResult -> {
             previousBackStackEntry

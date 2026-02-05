@@ -28,7 +28,7 @@ fun WooPosRootHost(
     LaunchedEffect(Unit) {
         homeViewModel.navigationEvent.collect {
             when (it) {
-                is NavigationEvent.ToCashPayment -> onNavigationEvent(OpenCashPayment(it.orderId))
+                is NavigationEvent.ToCashPayment -> onNavigationEvent(OpenCashPayment(it.orderId, it.source))
                 is NavigationEvent.ToEmailReceipt -> onNavigationEvent(OpenEmailReceipt(it.orderId))
                 NavigationEvent.ExitPos -> onNavigationEvent(ExitPosClicked)
                 NavigationEvent.ReturnHomeFromCashWhenCardPaymentStarted -> onNavigationEvent(ReturnHomeFromCashPayment)
