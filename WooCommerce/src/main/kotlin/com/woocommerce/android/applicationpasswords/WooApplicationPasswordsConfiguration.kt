@@ -4,8 +4,8 @@ import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.util.DeviceInfo
-import com.woocommerce.android.util.IsRemoteFeatureFlagEnabled
-import com.woocommerce.android.util.RemoteFeatureFlag
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
@@ -15,14 +15,14 @@ import org.wordpress.android.fluxc.network.rest.wpapi.applicationpasswords.Appli
 
 class WooApplicationPasswordsConfiguration @Inject constructor(
     private val appPrefs: AppPrefsWrapper,
-    private val isRemoteFeatureFlagEnabled: IsRemoteFeatureFlagEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) : ApplicationPasswordsConfiguration {
     private val remoteFeatureFlagDeferred = appCoroutineScope.async(
         start = CoroutineStart.LAZY,
         context = Dispatchers.IO
     ) {
-        isRemoteFeatureFlagEnabled(RemoteFeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
+        featureFlagRepository.isEnabled(FeatureFlag.APP_PASSWORDS_FOR_JETPACK_SITES)
     }
 
     override val applicationName: String =
