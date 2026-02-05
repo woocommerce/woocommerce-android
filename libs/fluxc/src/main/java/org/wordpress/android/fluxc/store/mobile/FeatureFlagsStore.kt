@@ -6,7 +6,6 @@ import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsRestCli
 import org.wordpress.android.fluxc.network.rest.wpcom.mobile.FeatureFlagsRestClient.FeatureFlagsPayload
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
-import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlagValueSource
 import org.wordpress.android.fluxc.store.Store
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -25,13 +24,15 @@ class FeatureFlagsStore @Inject constructor(
         identifier: String,
         marketingVersion: String,
         platform: String
-    ) = fetchFeatureFlags(FeatureFlagsPayload(
-        buildNumber = buildNumber,
-        deviceId = deviceId,
-        identifier = identifier,
-        marketingVersion = marketingVersion,
-        platform = platform
-    ))
+    ) = fetchFeatureFlags(
+        FeatureFlagsPayload(
+            buildNumber = buildNumber,
+            deviceId = deviceId,
+            identifier = identifier,
+            marketingVersion = marketingVersion,
+            platform = platform
+        )
+    )
 
     suspend fun fetchFeatureFlags(payload: FeatureFlagsPayload) =
         coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetch feature-flags") {
@@ -47,30 +48,10 @@ class FeatureFlagsStore @Inject constructor(
             }
         }
 
-    fun getFeatureFlags(): List<FeatureFlag> {
-        return featureFlagConfigDao.getFeatureFlagList()
-    }
-
     // This returns a list because there can be multiple values for a single key.
     // It will be the client's responsibility to decide which value to use.
     fun getFeatureFlagsByKey(key: String): List<FeatureFlag> {
         return featureFlagConfigDao.getFeatureFlag(key)
-    }
-
-    fun insertFeatureFlagValue(key: String, value: Boolean) {
-        featureFlagConfigDao.insert(
-                FeatureFlag(
-                        key = key,
-                        value = value,
-                        createdAt = System.currentTimeMillis(),
-                        modifiedAt = System.currentTimeMillis(),
-                        source = FeatureFlagValueSource.BUILD_CONFIG
-                )
-        )
-    }
-
-    fun clearAllValues() {
-        featureFlagConfigDao.clear()
     }
 
     data class FeatureFlagsResult(
