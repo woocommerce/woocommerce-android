@@ -374,7 +374,6 @@ class WpComPushNotificationStoreTest {
         val result = store.markNotificationsRead(payload)
 
         assertThat(result.success).isTrue()
-        assertThat(result.rowsAffected).isEqualTo(notifications.size)
     }
 
     @Test

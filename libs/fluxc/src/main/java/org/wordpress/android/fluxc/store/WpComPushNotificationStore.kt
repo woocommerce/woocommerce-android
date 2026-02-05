@@ -147,7 +147,7 @@ class WpComPushNotificationStore @Inject constructor(
     }
 
     // OnChanged events
-    class OnNotificationChanged(var rowsAffected: Int) : OnChanged<NotificationError>() {
+    class OnNotificationChanged : OnChanged<NotificationError>() {
         var causeOfChange: NotificationAction? = null
         var success: Boolean = true
         val changedNotificationLocalIds = mutableListOf<Int>()
@@ -351,7 +351,7 @@ class WpComPushNotificationStore @Inject constructor(
     private suspend fun handleFetchNotificationHashesCompleted(payload: FetchNotificationHashesResponsePayload) {
         if (payload.isError) {
             // Unable to synchronize notifications with remote. Emit error event.
-            val onNotificationChanged = OnNotificationChanged(0).also {
+            val onNotificationChanged = OnNotificationChanged().also {
                 it.error = payload.error
                 it.causeOfChange = NotificationAction.FETCH_NOTIFICATIONS
             }
@@ -388,13 +388,11 @@ class WpComPushNotificationStore @Inject constructor(
     private suspend fun handleFetchNotificationsCompleted(payload: FetchNotificationsResponsePayload) {
         val onNotificationChanged = if (payload.isError) {
             // Notification error
-            OnNotificationChanged(0).also { it.error = payload.error }
+            OnNotificationChanged().also { it.error = payload.error }
         } else {
             // Save notifications to the database
-            val rowsAffected =
-                payload.notifs.sumBy { notificationSqlUtils.insertOrUpdateNotification(it) }
-
-            OnNotificationChanged(rowsAffected)
+            payload.notifs.forEach { notificationSqlUtils.insertOrUpdateNotification(it) }
+            OnNotificationChanged()
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATIONS
         }
@@ -408,17 +406,15 @@ class WpComPushNotificationStore @Inject constructor(
 
     private suspend fun handleFetchNotificationCompleted(payload: FetchNotificationResponsePayload) {
         val onNotificationChanged = if (payload.isError) {
-            OnNotificationChanged(0).also { it.error = payload.error }
+            OnNotificationChanged().also { it.error = payload.error }
         } else {
-            // Update the localSiteId and save to the db
-            val rows = payload.notification?.let {
-                notificationSqlUtils.insertOrUpdateNotification(it)
-            } ?: 0
+            // Save to the db
+            payload.notification?.let { notificationSqlUtils.insertOrUpdateNotification(it) }
             // Fetch inserted/updated local notification id
             val dbNotification = payload.notification?.let {
                 notificationSqlUtils.getNotificationByRemoteId(it.remoteNoteId)
             }
-            OnNotificationChanged(rows).apply {
+            OnNotificationChanged().apply {
                 dbNotification?.let { changedNotificationLocalIds.add(it.noteId) }
             }
         }.apply {
@@ -432,23 +428,22 @@ class WpComPushNotificationStore @Inject constructor(
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "markNotificationsRead") {
             val result = notificationRestClient.markNotificationRead(payload.notifications)
             // Update the notification in the database
-            var rowsAffected = 0
             if (result.success) {
                 result.notifications?.forEach {
                     // Just in case it wasn't set by the calling client
                     val note = it.copy(read = true)
-                    rowsAffected += notificationSqlUtils.insertOrUpdateNotification(note)
+                    notificationSqlUtils.insertOrUpdateNotification(note)
                 }
             }
 
             // Create and dispatch result
             val onNotificationChanged = if (result.isError) {
-                OnNotificationChanged(rowsAffected).apply {
+                OnNotificationChanged().apply {
                     error = result.error
                     success = false
                 }
             } else {
-                OnNotificationChanged(rowsAffected).apply {
+                OnNotificationChanged().apply {
                     success = true
                 }
             }.apply {
@@ -462,8 +457,8 @@ class WpComPushNotificationStore @Inject constructor(
 
     private suspend fun updateNotification(payload: NotificationModel) {
         // save notification to the db
-        val rowsAffected = notificationSqlUtils.insertOrUpdateNotification(payload)
-        val onNotificationChanged = OnNotificationChanged(rowsAffected).apply {
+        notificationSqlUtils.insertOrUpdateNotification(payload)
+        val onNotificationChanged = OnNotificationChanged().apply {
             changedNotificationLocalIds.add(payload.noteId)
             causeOfChange = NotificationAction.UPDATE_NOTIFICATION
         }
