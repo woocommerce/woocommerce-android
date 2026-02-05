@@ -70,7 +70,6 @@ import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersListLoadingPane
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersLoadingScreen
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersOrderLoadingRow
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersViewModel
@@ -97,13 +96,13 @@ fun WooPosBookingsScreen(
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = viewModel::onRefresh,
-        onOrderSelected = viewModel::onOrderSelected,
-        onEndOfOrdersListReached = viewModel::onEndOfOrdersListReached,
+        onBookingSelected = viewModel::onBookingSelected,
+        onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onSearchEvent = viewModel::onSearchEvent,
         onSearchErrorRetry = viewModel::onSearchErrorRetry,
-        onOrdersEmptyActionClicked = viewModel::onOrdersEmptyActionClicked,
-        onOrdersLoadingErrorRetryButtonClicked = viewModel::onOrdersLoadingErrorRetryButtonClicked,
+        onBookingsEmptyActionClicked = viewModel::onBookingsEmptyActionClicked,
+        onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
         onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
@@ -113,17 +112,17 @@ fun WooPosBookingsScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun WooPosBookingsScreen(
-    state: WooPosOrdersState,
+    state: WooPosBookingsState,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
-    onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onBookingSelected: (Long) -> Unit,
+    onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onOrdersEmptyActionClicked: () -> Unit,
-    onOrdersLoadingErrorRetryButtonClicked: () -> Unit,
+    onBookingsEmptyActionClicked: () -> Unit,
+    onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
@@ -135,29 +134,29 @@ private fun WooPosBookingsScreen(
             .fillMaxSize()
     ) {
         when (state) {
-            is WooPosOrdersState.Content -> BookingsContent(
+            is WooPosBookingsState.Content -> BookingsContent(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchEvent = onSearchEvent,
                 onSearchErrorRetry = onSearchErrorRetry,
                 onUIEvent = onUIEvent
             )
 
-            is WooPosOrdersState.Empty -> BookingsEmpty(
-                onActionClicked = onOrdersEmptyActionClicked,
+            is WooPosBookingsState.Empty -> BookingsEmpty(
+                onActionClicked = onBookingsEmptyActionClicked,
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersState.Error -> BookingsError(
-                onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
+            is WooPosBookingsState.Error -> BookingsError(
+                onRetryClicked = onBookingsLoadingErrorRetryButtonClicked,
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersState.Loading -> WooPosOrdersLoadingScreen()
+            is WooPosBookingsState.Loading -> WooPosOrdersLoadingScreen()
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {
@@ -170,16 +169,16 @@ private fun WooPosBookingsScreen(
             )
         }
 
-        if (state is WooPosOrdersState.Content) {
+        if (state is WooPosBookingsState.Content) {
             when (val dialogState = state.dialogState) {
-                is WooPosOrdersState.Content.DialogState.IssueRefund -> {
+                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
                     WooPosIssueRefundDialog(
                         orderId = dialogState.orderId,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
                     )
                 }
-                WooPosOrdersState.Content.DialogState.Hidden -> Unit
+                WooPosBookingsState.Content.DialogState.Hidden -> Unit
             }
         }
     }
@@ -187,11 +186,11 @@ private fun WooPosBookingsScreen(
 
 @Composable
 private fun BookingsContent(
-    state: WooPosOrdersState.Content,
+    state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
-    onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onBookingSelected: (Long) -> Unit,
+    onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
@@ -203,8 +202,8 @@ private fun BookingsContent(
             scrollToTopEvent = scrollToTopEvent,
             onRefresh = onRefresh,
             isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = onOrderSelected,
-            onEndOfOrdersListReached = onEndOfOrdersListReached,
+            onBookingSelected = onBookingSelected,
+            onEndOfBookingsListReached = onEndOfBookingsListReached,
             onPaginationErrorTryAgain = onPaginationErrorTryAgain,
             onSearchEvent = onSearchEvent,
             onSearchErrorRetry = onSearchErrorRetry,
@@ -228,7 +227,7 @@ private fun BookingsContent(
                         onUIEvent = onUIEvent
                     )
                 }
-                state.items is WooPosOrdersState.Content.Items.Searching -> {
+                state.items is WooPosBookingsState.Content.Items.Searching -> {
                     OrderDetailsLoadingPane(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -257,12 +256,12 @@ private fun BookingsContent(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun OrdersListPane(
-    state: WooPosOrdersState.Content,
+    state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     isRefreshing: Boolean,
-    onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onBookingSelected: (Long) -> Unit,
+    onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
@@ -304,8 +303,8 @@ private fun OrdersListPane(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
                 onSearchErrorRetry = onSearchErrorRetry,
             )
@@ -326,33 +325,33 @@ private fun OrdersListPane(
 @Composable
 private fun OrdersList(
     modifier: Modifier = Modifier,
-    state: WooPosOrdersState.Content,
+    state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
-    onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onBookingSelected: (Long) -> Unit,
+    onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
     onSearchErrorRetry: () -> Unit
 ) {
     when (val items = state.items) {
-        is WooPosOrdersState.Content.Items.Loaded -> {
+        is WooPosBookingsState.Content.Items.Loaded -> {
             LoadedOrdersList(
                 modifier = modifier,
                 items = items.items,
                 paginationState = state.paginationState,
                 scrollToTopEvent = scrollToTopEvent,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain
             )
         }
 
-        is WooPosOrdersState.Content.Items.Searching -> {
+        is WooPosBookingsState.Content.Items.Searching -> {
             WooPosOrdersListLoadingPane(
                 modifier = modifier.imePadding()
             )
         }
 
-        is WooPosOrdersState.Content.Items.Error -> {
+        is WooPosBookingsState.Content.Items.Error -> {
             Box(
                 modifier = modifier,
                 contentAlignment = Alignment.Center
@@ -372,7 +371,7 @@ private fun OrdersList(
             }
         }
 
-        is WooPosOrdersState.Content.Items.NothingFound -> {
+        is WooPosBookingsState.Content.Items.NothingFound -> {
             WooPosEmptyScreen(
                 modifier = modifier
                     .imePadding()
@@ -388,11 +387,11 @@ private fun OrdersList(
 @Composable
 private fun LoadedOrdersList(
     modifier: Modifier = Modifier,
-    items: Map<WooPosOrdersState.OrderItemViewState, WooPosOrdersState.OrderDetailsViewState>,
+    items: Map<WooPosBookingsState.OrderItemViewState, WooPosBookingsState.OrderDetailsViewState>,
     paginationState: WooPosPaginationState,
     scrollToTopEvent: SharedFlow<Unit>,
-    onOrderSelected: (Long) -> Unit,
-    onEndOfOrdersListReached: () -> Unit,
+    onBookingSelected: (Long) -> Unit,
+    onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit
 ) {
     val listState = rememberLazyListState()
@@ -411,7 +410,7 @@ private fun LoadedOrdersList(
         snapshotFlow { shouldLoadMore.value }
             .distinctUntilChanged()
             .filter { it }
-            .collect { onEndOfOrdersListReached() }
+            .collect { onEndOfBookingsListReached() }
     }
 
     LaunchedEffect(Unit) {
@@ -440,7 +439,7 @@ private fun LoadedOrdersList(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { onOrderSelected(item.id) }
+                        .clickable { onBookingSelected(item.id) }
                         .padding(WooPosSpacing.Medium.value),
                     verticalAlignment = Alignment.Top
                 ) {
@@ -556,7 +555,7 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
 @WooPosPreview
 @Composable
 fun WooPosOrdersScreenPreview() {
-    val item1 = WooPosOrdersState.OrderItemViewState(
+    val item1 = WooPosBookingsState.OrderItemViewState(
         id = 1,
         title = "#014",
         date = "Aug 28, 2025 at 10:31 AM",
@@ -570,7 +569,7 @@ fun WooPosOrdersScreenPreview() {
         statusSlug = "Completed",
         createdAtMillis = 1
     )
-    val item2 = WooPosOrdersState.OrderItemViewState(
+    val item2 = WooPosBookingsState.OrderItemViewState(
         id = 2,
         title = "#013",
         date = "Jul 28, 2025 at 10:31 AM",
@@ -590,29 +589,29 @@ fun WooPosOrdersScreenPreview() {
 
     WooPosTheme {
         WooPosBookingsScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.Loaded(
+            state = WooPosBookingsState.Content(
+                items = WooPosBookingsState.Content.Items.Loaded(
                     items = mapOf(
-                        item1 to WooPosOrdersState.OrderDetailsViewState.Computed(orderId = 1L, details = details1),
-                        item2 to WooPosOrdersState.OrderDetailsViewState.Computed(orderId = 2L, details = details2)
+                        item1 to WooPosBookingsState.OrderDetailsViewState.Computed(orderId = 1L, details = details1),
+                        item2 to WooPosBookingsState.OrderDetailsViewState.Computed(orderId = 2L, details = details2)
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                dialogState = WooPosBookingsState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
-            onOrderSelected = {},
-            onEndOfOrdersListReached = {},
+            onBookingSelected = {},
+            onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
             onSearchErrorRetry = {},
-            onOrdersEmptyActionClicked = {},
-            onOrdersLoadingErrorRetryButtonClicked = {},
+            onBookingsEmptyActionClicked = {},
+            onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
@@ -626,8 +625,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
     val details = sampleOrderDetails()
     WooPosTheme {
         WooPosBookingsScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.Error(
+            state = WooPosBookingsState.Content(
+                items = WooPosBookingsState.Content.Items.Error(
                     title = stringResource(R.string.woopos_search_orders_error_title),
                     message = stringResource(R.string.woopos_search_orders_error_description)
                 ),
@@ -638,18 +637,18 @@ fun WooPosOrdersSearchErrorStatePreview() {
                 ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                dialogState = WooPosBookingsState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
-            onOrderSelected = {},
-            onEndOfOrdersListReached = {},
+            onBookingSelected = {},
+            onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
             onSearchErrorRetry = {},
-            onOrdersEmptyActionClicked = {},
-            onOrdersLoadingErrorRetryButtonClicked = {},
+            onBookingsEmptyActionClicked = {},
+            onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
@@ -663,8 +662,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
     val details = sampleOrderDetails()
     WooPosTheme {
         WooPosBookingsScreen(
-            state = WooPosOrdersState.Content(
-                items = WooPosOrdersState.Content.Items.NothingFound(
+            state = WooPosBookingsState.Content(
+                items = WooPosBookingsState.Content.Items.NothingFound(
                     title = stringResource(R.string.woopos_search_orders_empty_title),
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
@@ -675,18 +674,18 @@ fun WooPosOrdersNothingFoundStatePreview() {
                 ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
-                dialogState = WooPosOrdersState.Content.DialogState.Hidden
+                dialogState = WooPosBookingsState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
-            onOrderSelected = {},
-            onEndOfOrdersListReached = {},
+            onBookingSelected = {},
+            onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
             onSearchErrorRetry = {},
-            onOrdersEmptyActionClicked = {},
-            onOrdersLoadingErrorRetryButtonClicked = {},
+            onBookingsEmptyActionClicked = {},
+            onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
@@ -699,20 +698,20 @@ fun WooPosOrdersNothingFoundStatePreview() {
 fun WooPosOrdersEmptyStatePreview() {
     WooPosTheme {
         WooPosBookingsScreen(
-            state = WooPosOrdersState.Empty(
+            state = WooPosBookingsState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
             onRefresh = {},
-            onOrderSelected = {},
-            onEndOfOrdersListReached = {},
+            onBookingSelected = {},
+            onEndOfBookingsListReached = {},
             onPaginationErrorTryAgain = {},
             onSearchEvent = {},
             onSearchErrorRetry = {},
-            onOrdersEmptyActionClicked = {},
-            onOrdersLoadingErrorRetryButtonClicked = {},
+            onBookingsEmptyActionClicked = {},
+            onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
             onIssueRefundDialogDismissed = {},
             onNavigationEvent = {},
@@ -724,14 +723,14 @@ fun WooPosOrdersEmptyStatePreview() {
 private fun sampleOrderDetails(
     id: Long = 1L,
     number: String = "#014"
-) = WooPosOrdersState.OrderDetailsViewState.Computed.Details(
+) = WooPosBookingsState.OrderDetailsViewState.Computed.Details(
     id = id,
     number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
     status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
     lineItems = listOf(
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 101,
             name = "Cup",
             attributesDescription = null,
@@ -739,7 +738,7 @@ private fun sampleOrderDetails(
             lineTotal = "$15.00",
             imageUrl = null
         ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 102,
             name = "Coffee Container",
             attributesDescription = "Blue, Large",
@@ -747,7 +746,7 @@ private fun sampleOrderDetails(
             lineTotal = "$8.00",
             imageUrl = null
         ),
-        WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
             id = 103,
             name = "Paper Filter",
             attributesDescription = null,
@@ -756,7 +755,7 @@ private fun sampleOrderDetails(
             imageUrl = null
         )
     ),
-    breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
+    breakdown = WooPosBookingsState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",
         discount = "-$5.00",
         discountCode = "8qew4mnq",
@@ -768,10 +767,10 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+    actionsState = WooPosBookingsState.OrderActionsState.Loaded(
         listOf(
-            WooPosOrdersState.OrderAction.IssueRefund(id),
-            WooPosOrdersState.OrderAction.EmailReceipt(id)
+            WooPosBookingsState.OrderAction.IssueRefund(id),
+            WooPosBookingsState.OrderAction.EmailReceipt(id)
         )
     )
 )
