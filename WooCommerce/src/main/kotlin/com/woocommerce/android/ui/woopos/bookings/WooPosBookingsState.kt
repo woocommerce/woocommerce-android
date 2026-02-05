@@ -14,27 +14,27 @@ sealed class WooPosBookingsState {
     abstract val searchInputState: WooPosSearchInputState
 
     @Immutable
-    sealed interface OrderAction {
+    sealed interface BookingAction {
         val orderId: Long
 
         @Immutable
-        data class IssueRefund(override val orderId: Long) : OrderAction
+        data class IssueRefund(override val orderId: Long) : BookingAction
 
         @Immutable
-        data class EmailReceipt(override val orderId: Long) : OrderAction
+        data class EmailReceipt(override val orderId: Long) : BookingAction
     }
 
     @Immutable
-    sealed class OrderActionsState {
+    sealed class BookingActionsState {
         @Immutable
-        data object Loading : OrderActionsState()
+        data object Loading : BookingActionsState()
 
         @Immutable
-        data class Loaded(val actions: List<OrderAction>) : OrderActionsState()
+        data class Loaded(val actions: List<BookingAction>) : BookingActionsState()
     }
 
     @Immutable
-    sealed class OrderDetailsViewState {
+    sealed class BookingDetailsViewState {
         abstract val orderId: Long
 
         @Immutable
@@ -42,27 +42,27 @@ sealed class WooPosBookingsState {
             override val orderId: Long,
             val order: Order,
             val refundResult: RefundsFetchResult
-        ) : OrderDetailsViewState()
+        ) : BookingDetailsViewState()
 
         @Immutable
         data class Computed(
             override val orderId: Long,
             val details: Details
-        ) : OrderDetailsViewState() {
+        ) : BookingDetailsViewState() {
             @Immutable
             data class Details(
                 val id: Long,
                 val number: String,
                 val dateTime: String,
                 val customerEmail: String?,
-                val status: PosOrderStatus,
+                val status: PosBookingStatus,
 
                 val lineItems: List<LineItemRow>,
                 val breakdown: TotalsBreakdown,
                 val total: String,
                 val totalPaid: String,
                 val paymentMethodTitle: String?,
-                val actionsState: OrderActionsState
+                val actionsState: BookingActionsState
             ) {
                 @Immutable
                 data class LineItemRow(
@@ -89,14 +89,14 @@ sealed class WooPosBookingsState {
     }
 
     @Immutable
-    data class OrderItemViewState(
+    data class BookingItemViewState(
         val id: Long,
         val title: String,
         val date: String,
         val total: String,
         val customerEmail: String?,
         val isSelected: Boolean,
-        val status: PosOrderStatus,
+        val status: PosBookingStatus,
         val statusSlug: String,
         val createdAtMillis: Long
     )
@@ -106,12 +106,12 @@ sealed class WooPosBookingsState {
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
         override val searchInputState: WooPosSearchInputState,
-        val selectedDetails: OrderDetailsViewState.Computed.Details?,
+        val selectedDetails: BookingDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
     ) : WooPosBookingsState() {
         sealed class Items {
-            data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()
+            data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
             object Searching : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
@@ -147,7 +147,7 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState()
 }
 
-enum class OrderStatusColorKey {
+enum class BookingStatusColorKey {
     COMPLETED,
     FAILED,
     PROCESSING,
@@ -155,7 +155,7 @@ enum class OrderStatusColorKey {
     OTHER;
 
     companion object {
-        fun fromStatus(status: Status): OrderStatusColorKey = when (status) {
+        fun fromStatus(status: Status): BookingStatusColorKey = when (status) {
             Status.Completed -> COMPLETED
             Status.Failed -> FAILED
             Status.Processing -> PROCESSING
@@ -165,7 +165,7 @@ enum class OrderStatusColorKey {
     }
 }
 
-data class PosOrderStatus(
+data class PosBookingStatus(
     val text: String,
-    val colorKey: OrderStatusColorKey
+    val colorKey: BookingStatusColorKey
 )

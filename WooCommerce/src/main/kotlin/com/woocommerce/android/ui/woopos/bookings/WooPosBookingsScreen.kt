@@ -65,14 +65,10 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.OrderDetailsLoadingPane
-import com.woocommerce.android.ui.woopos.orders.OrderStatusColorKey
-import com.woocommerce.android.ui.woopos.orders.PosOrderStatus
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersListLoadingPane
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersLoadingScreen
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersOrderLoadingRow
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersViewModel
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -82,13 +78,13 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
-val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
+val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 
 @Composable
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
-    val viewModel: WooPosOrdersViewModel = hiltViewModel()
+    val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     WooPosBookingsScreen(
@@ -123,7 +119,7 @@ private fun WooPosBookingsScreen(
     onSearchErrorRetry: () -> Unit,
     onBookingsEmptyActionClicked: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
 ) {
@@ -194,10 +190,10 @@ private fun BookingsContent(
     onPaginationErrorTryAgain: () -> Unit,
     onSearchEvent: (WooPosSearchUIEvent) -> Unit,
     onSearchErrorRetry: () -> Unit,
-    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListPane(
+        BookingsListPane(
             state = state,
             scrollToTopEvent = scrollToTopEvent,
             onRefresh = onRefresh,
@@ -255,7 +251,7 @@ private fun BookingsContent(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun OrdersListPane(
+private fun BookingsListPane(
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
@@ -274,7 +270,7 @@ private fun OrdersListPane(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(end = WooPosSpacing.Medium.value)
-                .heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
+                .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
         ) {
             WooPosSearchInput(
                 state = state.searchInputState,
@@ -299,7 +295,7 @@ private fun OrdersListPane(
                     enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled
                 )
         ) {
-            OrdersList(
+            BookingsList(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
@@ -323,7 +319,7 @@ private fun OrdersListPane(
 }
 
 @Composable
-private fun OrdersList(
+private fun BookingsList(
     modifier: Modifier = Modifier,
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
@@ -334,7 +330,7 @@ private fun OrdersList(
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
-            LoadedOrdersList(
+            LoadedBookingsList(
                 modifier = modifier,
                 items = items.items,
                 paginationState = state.paginationState,
@@ -385,9 +381,9 @@ private fun OrdersList(
 }
 
 @Composable
-private fun LoadedOrdersList(
+private fun LoadedBookingsList(
     modifier: Modifier = Modifier,
-    items: Map<WooPosBookingsState.OrderItemViewState, WooPosBookingsState.OrderDetailsViewState>,
+    items: Map<WooPosBookingsState.BookingItemViewState, WooPosBookingsState.BookingDetailsViewState>,
     paginationState: WooPosPaginationState,
     scrollToTopEvent: SharedFlow<Unit>,
     onBookingSelected: (Long) -> Unit,
@@ -501,7 +497,7 @@ private fun LoadedOrdersList(
 
         if (paginationState == WooPosPaginationState.Error) {
             item {
-                OrdersPaginationErrorRow(onPaginationErrorTryAgain)
+                BookingsPaginationErrorRow(onPaginationErrorTryAgain)
             }
         }
     }
@@ -540,7 +536,7 @@ private fun BookingsError(
 }
 
 @Composable
-private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
+private fun BookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     WooPosPaginationErrorIndicator(
         icon = null,
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
@@ -554,46 +550,46 @@ private fun OrdersPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
 
 @WooPosPreview
 @Composable
-fun WooPosOrdersScreenPreview() {
-    val item1 = WooPosBookingsState.OrderItemViewState(
+fun WooPosBookingsScreenPreview() {
+    val item1 = WooPosBookingsState.BookingItemViewState(
         id = 1,
         title = "#014",
         date = "Aug 28, 2025 at 10:31 AM",
         total = "$17.00",
         customerEmail = "johndoe@mail.com",
         isSelected = true,
-        status = PosOrderStatus(
+        status = PosBookingStatus(
             text = "Completed",
-            colorKey = OrderStatusColorKey.COMPLETED
+            colorKey = BookingStatusColorKey.COMPLETED
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
     )
-    val item2 = WooPosBookingsState.OrderItemViewState(
+    val item2 = WooPosBookingsState.BookingItemViewState(
         id = 2,
         title = "#013",
         date = "Jul 28, 2025 at 10:31 AM",
         total = "$43.90",
         customerEmail = "johndoe@mail.com",
         isSelected = false,
-        status = PosOrderStatus(
+        status = PosBookingStatus(
             text = "Processing",
-            colorKey = OrderStatusColorKey.PROCESSING
+            colorKey = BookingStatusColorKey.PROCESSING
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
     )
 
-    val details1 = sampleOrderDetails(id = 1L, number = "#014")
-    val details2 = sampleOrderDetails(id = 2L, number = "#013")
+    val details1 = sampleBookingDetails(id = 1L, number = "#014")
+    val details2 = sampleBookingDetails(id = 2L, number = "#013")
 
     WooPosTheme {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Content(
                 items = WooPosBookingsState.Content.Items.Loaded(
                     items = mapOf(
-                        item1 to WooPosBookingsState.OrderDetailsViewState.Computed(orderId = 1L, details = details1),
-                        item2 to WooPosBookingsState.OrderDetailsViewState.Computed(orderId = 2L, details = details2)
+                        item1 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 1L, details = details1),
+                        item2 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 2L, details = details2)
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -621,8 +617,8 @@ fun WooPosOrdersScreenPreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosOrdersSearchErrorStatePreview() {
-    val details = sampleOrderDetails()
+fun WooPosBookingsSearchErrorStatePreview() {
+    val details = sampleBookingDetails()
     WooPosTheme {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Content(
@@ -658,8 +654,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosOrdersNothingFoundStatePreview() {
-    val details = sampleOrderDetails()
+fun WooPosBookingsNothingFoundStatePreview() {
+    val details = sampleBookingDetails()
     WooPosTheme {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Content(
@@ -695,7 +691,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
 
 @WooPosPreview
 @Composable
-fun WooPosOrdersEmptyStatePreview() {
+fun WooPosBookingsEmptyStatePreview() {
     WooPosTheme {
         WooPosBookingsScreen(
             state = WooPosBookingsState.Empty(
@@ -720,17 +716,17 @@ fun WooPosOrdersEmptyStatePreview() {
 }
 
 @Suppress("MagicNumber")
-private fun sampleOrderDetails(
+private fun sampleBookingDetails(
     id: Long = 1L,
     number: String = "#014"
-) = WooPosBookingsState.OrderDetailsViewState.Computed.Details(
+) = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
     id = id,
     number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
-    status = PosOrderStatus(text = "Completed", colorKey = OrderStatusColorKey.COMPLETED),
+    status = PosBookingStatus(text = "Completed", colorKey = BookingStatusColorKey.COMPLETED),
     lineItems = listOf(
-        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
             id = 101,
             name = "Cup",
             attributesDescription = null,
@@ -738,7 +734,7 @@ private fun sampleOrderDetails(
             lineTotal = "$15.00",
             imageUrl = null
         ),
-        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
             id = 102,
             name = "Coffee Container",
             attributesDescription = "Blue, Large",
@@ -746,7 +742,7 @@ private fun sampleOrderDetails(
             lineTotal = "$8.00",
             imageUrl = null
         ),
-        WooPosBookingsState.OrderDetailsViewState.Computed.Details.LineItemRow(
+        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
             id = 103,
             name = "Paper Filter",
             attributesDescription = null,
@@ -755,7 +751,7 @@ private fun sampleOrderDetails(
             imageUrl = null
         )
     ),
-    breakdown = WooPosBookingsState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
+    breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
         products = "$23.00",
         discount = "-$5.00",
         discountCode = "8qew4mnq",
@@ -767,10 +763,10 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actionsState = WooPosBookingsState.OrderActionsState.Loaded(
+    actionsState = WooPosBookingsState.BookingActionsState.Loaded(
         listOf(
-            WooPosBookingsState.OrderAction.IssueRefund(id),
-            WooPosBookingsState.OrderAction.EmailReceipt(id)
+            WooPosBookingsState.BookingAction.IssueRefund(id),
+            WooPosBookingsState.BookingAction.EmailReceipt(id)
         )
     )
 )
