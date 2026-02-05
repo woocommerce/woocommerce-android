@@ -29,7 +29,13 @@ class WooPosCashPaymentRepository @Inject constructor(
 
     private var cachedParameters: SiteParameters? = null
 
-    suspend fun getOrderById(orderId: Long) = withContext(Dispatchers.IO) {
+    suspend fun getOrderById(orderId: Long): Order? = withContext(Dispatchers.IO) {
+        val local = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
+        if (local != null) return@withContext orderMapper.toAppModel(local)
+
+        val result = orderStore.fetchSingleOrder(selectedSite.get(), orderId)
+        if (result.isError) return@withContext null
+
         orderStore.getOrderByIdAndSite(orderId, selectedSite.get())?.let {
             orderMapper.toAppModel(it)
         }
