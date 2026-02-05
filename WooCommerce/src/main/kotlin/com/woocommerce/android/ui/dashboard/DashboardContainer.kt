@@ -55,6 +55,7 @@ import com.woocommerce.android.ui.dashboard.google.DashboardGoogleAdsCard
 import com.woocommerce.android.ui.dashboard.inbox.DashboardInboxCard
 import com.woocommerce.android.ui.dashboard.onboarding.DashboardOnboardingCard
 import com.woocommerce.android.ui.dashboard.orders.DashboardOrdersCard
+import com.woocommerce.android.ui.dashboard.pushnotifications.DashboardPushNotificationsCard
 import com.woocommerce.android.ui.dashboard.reviews.DashboardReviewsCard
 import com.woocommerce.android.ui.dashboard.stats.DashboardStatsCard
 import com.woocommerce.android.ui.dashboard.stock.DashboardProductStockCard
@@ -241,6 +242,11 @@ private fun ConfigurableWidgetCard(
     modifier: Modifier
 ) {
     when (widgetUiModel.widget.type) {
+        DashboardWidget.Type.PUSH_NOTIFICATIONS -> DashboardPushNotificationsCard(
+            onHideClicked = { dashboardViewModel.onHideWidgetClicked(DashboardWidget.Type.PUSH_NOTIFICATIONS) },
+            modifier = modifier
+        )
+
         DashboardWidget.Type.STATS -> {
             DashboardStatsCard(
                 openDatePicker = { start, end, callback ->

@@ -9,6 +9,7 @@ import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.DashboardWidget
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus
 import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.dashboard.data.DashboardRepository
 import com.woocommerce.android.ui.prefs.privacy.banner.domain.ShouldShowPrivacyBanner
@@ -18,7 +19,9 @@ import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -59,10 +62,13 @@ class DashboardViewModelTest : BaseUnitTest() {
     }
 
     private val pushNotificationRegistrationStatus: PushNotificationRegistrationStatus = mock {
-        onBlocking { invoke(any()) } doReturn Status.REGISTERED_WPCOM_ONLY
+        on { observe(any()) } doReturn flowOf(Status.REGISTERED_WPCOM_ONLY)
     }
     private val feedbackPrefs: FeedbackPrefs = mock {
         onBlocking { userFeedbackIsDueObservable } doReturn flowOf(false)
+    }
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock {
+        on { invoke() } doReturn flowOf(false)
     }
 
     private lateinit var viewModel: DashboardViewModel
@@ -81,6 +87,7 @@ class DashboardViewModelTest : BaseUnitTest() {
             shouldShowPrivacyBanner = shouldShowPrivacyBanner,
             dashboardRepository = dashboardRepository,
             pushNotificationRegistrationStatus = pushNotificationRegistrationStatus,
+            shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             feedbackPrefs = feedbackPrefs,
         )
     }
@@ -115,7 +122,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                     }
                 )
             )
-            whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.UNREGISTERED)
+            whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
         }
 
         val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -135,7 +142,7 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.UNREGISTERED)
+                whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(flowOf(Status.UNREGISTERED))
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -351,7 +358,8 @@ class DashboardViewModelTest : BaseUnitTest() {
                         }
                     )
                 )
-                whenever(pushNotificationRegistrationStatus.invoke(any())).thenReturn(Status.REGISTERED_WPCOM_ONLY)
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.REGISTERED_WPCOM_ONLY))
             }
 
             val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
@@ -359,4 +367,73 @@ class DashboardViewModelTest : BaseUnitTest() {
             assertThat(jetpackBenefitsBanner).isNotNull()
             assertThat(jetpackBenefitsBanner!!.show).isFalse()
         }
+
+    @Test
+    fun `given enable push notifications UI is available, when screen starts, then hide Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
+                )
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(true))
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isFalse()
+        }
+
+    @Test
+    fun `given enable push notifications UI is not available, when screen starts, then show Jetpack benefits banner`() =
+        testBlocking {
+            setup {
+                whenever(selectedSite.observe()).thenReturn(
+                    flowOf(
+                        SiteModel().apply {
+                            origin = SiteModel.ORIGIN_WPAPI
+                        }
+                    )
+                )
+                whenever(pushNotificationRegistrationStatus.observe(any()))
+                    .thenReturn(flowOf(Status.UNREGISTERED))
+                whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(false))
+            }
+
+            val jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+
+            assertThat(jetpackBenefitsBanner).isNotNull()
+            assertThat(jetpackBenefitsBanner!!.show).isTrue()
+        }
+
+    @Test
+    fun `given registration status changes, when observing flow, then updates occur`() = testBlocking {
+        // This test verifies the reactive nature of the banner visibility
+        val statusFlow = MutableStateFlow(Status.UNREGISTERED)
+        setup {
+            whenever(selectedSite.observe()).thenReturn(
+                flowOf(
+                    SiteModel().apply {
+                        origin = SiteModel.ORIGIN_WPAPI
+                    }
+                )
+            )
+            whenever(pushNotificationRegistrationStatus.observe(any())).thenReturn(statusFlow)
+            whenever(shouldShowEnablePushNotificationsUi.invoke()).thenReturn(flowOf(false))
+        }
+
+        // Initially Unregistered -> Banner Shown
+        var jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+        assertThat(jetpackBenefitsBanner).isNotNull()
+        assertThat(jetpackBenefitsBanner!!.show).isTrue()
+
+        // Change to Registered -> Banner Hidden
+        statusFlow.value = Status.REGISTERED_WOO_ONLY
+        jetpackBenefitsBanner = viewModel.jetpackBenefitsBannerState.getOrAwaitValue()
+        assertThat(jetpackBenefitsBanner!!.show).isFalse()
+    }
 }
