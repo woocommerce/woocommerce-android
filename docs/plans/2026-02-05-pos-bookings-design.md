@@ -298,3 +298,9 @@ The design specified using `WooPosDialogWrapper` for the cancel confirmation dia
 The toolbar height spacer uses 56dp, but `WooPosSpacing` enum does not have a 56dp value (jumps from 48dp `XXXLarge` to 80dp `Huge`). The POC suppresses the `WooPosDesignSystemSpacingUsageRule` detekt rule for these spacers.
 
 **For production:** Consider adding a 56dp spacing value to `WooPosSpacing` or using a different approach for toolbar height compensation.
+
+### 15. Bookings Without Orders
+
+It's possible to create a booking via wp-admin that has a customer, time slot, etc. but no linked order. These bookings exist in the API response but have no orderId. It's not clear how POS should handle them - payment actions require an orderId to process, so they can't be paid through POS. Currently the POC just hides the payment buttons when there's no order, but the booking still shows up in the list.
+
+**For production:** Decide whether to hide these bookings entirely, show them as read-only, or create an order on-the-fly when the merchant wants to collect payment.
