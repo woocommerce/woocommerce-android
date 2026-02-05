@@ -1,8 +1,9 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.extensions.semverCompareTo
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.days
@@ -11,11 +12,11 @@ class WooPosIsWooCommerceVersionSunsetWarningRequired @Inject constructor(
     private val getWooCoreVersion: GetWooCorePluginCachedVersion,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val dateTimeProvider: DateTimeProvider,
-    private val isLocalCatalogFileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
 ) {
     @Suppress("ReturnCount")
     suspend operator fun invoke(): Boolean {
-        if (!isLocalCatalogFileApproachEnabled()) return false
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) return false
 
         val wooCommerceVersion = getWooCoreVersion() ?: return false
         if (wooCommerceVersion.semverCompareTo(REQUIRED_WC_VERSION) >= 0) return false

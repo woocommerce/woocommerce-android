@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.localcatalog
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Failure
 import com.woocommerce.android.ui.woopos.localcatalog.PosLocalCatalogSyncResult.Success
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -12,6 +11,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventCons
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,7 +25,7 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported,
     private val wooPosLogWrapper: WooPosLogWrapper,
     private val prefsRepo: WooPosPreferencesRepository,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val analyticsTracker: WooPosAnalyticsTracker,
     @AppCoroutineScope private val appCoroutineScope: CoroutineScope
 ) {
@@ -69,7 +70,9 @@ class WooPosPerformLocalCatalogIncrementalSync @Inject constructor(
             is Failure -> {
                 wooPosLogWrapper.e("Sync $reasonDescription failed: ${syncResult.error}")
 
-                if (syncResult is Failure.CatalogTooLarge && !fileApproachEnabled()) {
+                val isFileApproachEnabled =
+                    featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)
+                if (syncResult is Failure.CatalogTooLarge && !isFileApproachEnabled) {
                     wooPosLogWrapper.e("Disabling Local Catalog periodic sync for site due to catalog size too large")
                     prefsRepo.disablePeriodicSyncForSite(site.localId())
                 }

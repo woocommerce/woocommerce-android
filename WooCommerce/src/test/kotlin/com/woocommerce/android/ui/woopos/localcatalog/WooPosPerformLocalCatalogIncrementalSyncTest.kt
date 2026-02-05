@@ -2,13 +2,14 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncSkipped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncSkipReason
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEventConstant.SyncType
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestCoroutineScheduler
@@ -31,7 +32,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
     private val wooPosLogWrapper: WooPosLogWrapper = mock()
     private val prefsRepo: WooPosPreferencesRepository = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val testScheduler = TestCoroutineScheduler()
     private val testDispatcher = StandardTestDispatcher(testScheduler)
@@ -43,7 +44,7 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
         isLocalCatalogSupported = isLocalCatalogSupported,
         wooPosLogWrapper = wooPosLogWrapper,
         prefsRepo = prefsRepo,
-        fileApproachEnabled = fileApproachEnabled,
+        featureFlagRepository = featureFlagRepository,
         analyticsTracker = analyticsTracker,
         appCoroutineScope = TestScope(testDispatcher)
     )
@@ -168,54 +169,56 @@ class WooPosPerformLocalCatalogIncrementalSyncTest {
     }
 
     @Test
-    fun `given sync fails with catalog too large and file-based flag disabled, when execute called, then disables periodic sync`() = runTest(
-        testScheduler
-    ) {
-        // GIVEN
-        val sut = createSut()
-        val site = SiteModel().apply { id = 789 }
-        val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
-            error = "Catalog exceeds limit",
-        )
+    fun `given sync fails with catalog too large and file-based flag disabled, when execute called, then disables periodic sync`() =
+        runTest(
+            testScheduler
+        ) {
+            // GIVEN
+            val sut = createSut()
+            val site = SiteModel().apply { id = 789 }
+            val syncResult = PosLocalCatalogSyncResult.Failure.CatalogTooLarge(
+                error = "Catalog exceeds limit",
+            )
 
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
-        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(selectedSite.getOrNull()).thenReturn(site)
+            whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+            whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
-        // WHEN
-        sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        testScheduler.advanceUntilIdle()
+            // WHEN
+            sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+            testScheduler.advanceUntilIdle()
 
-        // THEN
-        verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
-    }
+            // THEN
+            verify(prefsRepo).disablePeriodicSyncForSite(site.localId())
+        }
 
     @Test
-    fun `given sync fails with file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() = runTest(
-        testScheduler
-    ) {
-        // GIVEN
-        val sut = createSut()
-        val site = SiteModel().apply { id = 789 }
-        val syncResult = PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
+    fun `given sync fails with file-based flag enabled, when execute called, then logs failure but does not disable periodic sync`() =
+        runTest(
+            testScheduler
+        ) {
+            // GIVEN
+            val sut = createSut()
+            val site = SiteModel().apply { id = 789 }
+            val syncResult = PosLocalCatalogSyncResult.Failure.NetworkError("Network timeout")
 
-        whenever(fileApproachEnabled.invoke()).thenReturn(true)
-        whenever(networkStatus.isConnected()).thenReturn(true)
-        whenever(selectedSite.getOrNull()).thenReturn(site)
-        whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
-        whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(true)
+            whenever(networkStatus.isConnected()).thenReturn(true)
+            whenever(selectedSite.getOrNull()).thenReturn(site)
+            whenever(isLocalCatalogSupported(site.localId())).thenReturn(true)
+            whenever(localCatalogSyncRepository.syncLocalCatalogIncremental(site)).thenReturn(syncResult)
 
-        // WHEN
-        sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
-        testScheduler.advanceUntilIdle()
+            // WHEN
+            sut.execute(WooPosIncrementalSyncReason.PERIODIC_HOURLY)
+            testScheduler.advanceUntilIdle()
 
-        // THEN
-        verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
-        verify(wooPosLogWrapper).e("Sync periodic hourly failed: Network timeout")
-        verify(prefsRepo, never()).disablePeriodicSyncForSite(site.localId())
-    }
+            // THEN
+            verify(wooPosLogWrapper).d("Starting incremental sync periodic hourly")
+            verify(wooPosLogWrapper).e("Sync periodic hourly failed: Network timeout")
+            verify(prefsRepo, never()).disablePeriodicSyncForSite(site.localId())
+        }
 
     @Test
     fun `given different sync reasons, when execute called, then logs correct reason description`() = runTest(

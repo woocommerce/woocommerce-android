@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncCompleted
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.LocalCatalogSyncFailed
@@ -12,6 +11,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
@@ -24,7 +25,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
     private val posSyncAction: WooPosSyncAction,
     private val posFileBasedSyncAction: WooPosFileBasedSyncAction,
     private val posCheckCatalogSizeAction: WooPosCheckCatalogSizeAction,
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled,
+    private val featureFlagRepository: FeatureFlagRepository,
     private val syncTimestampManager: WooPosSyncTimestampManager,
     private val preferencesRepository: WooPosPreferencesRepository,
     private val dispatchers: CoroutineDispatchers,
@@ -50,7 +51,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
             )
         )
 
-        return@withContext if (fileApproachEnabled()) {
+        return@withContext if (featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
             performFileBasedSync(site)
         } else {
             performSync(
@@ -66,7 +67,10 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
                     trackSyncCompleted(site, SyncType.FULL, result)
                 }
                 is PosLocalCatalogSyncResult.Failure -> {
-                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge && !fileApproachEnabled()) {
+                    if (result is PosLocalCatalogSyncResult.Failure.CatalogTooLarge && !featureFlagRepository.isEnabled(
+                            FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH
+                        )
+                    ) {
                         preferencesRepository.disablePeriodicSyncForSite(site.localId())
                     }
                     trackSyncFailed(SyncType.FULL, result)
@@ -173,7 +177,7 @@ class WooPosLocalCatalogSyncRepository @Inject constructor(
 
         logger.d("Starting sync for items modified after $modifiedAfterGmt, max pages: $maxPages")
 
-        if (!fileApproachEnabled()) {
+        if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)) {
             val catalogSizeCheckResult = posCheckCatalogSizeAction.execute(
                 site = site,
                 modifiedAfterGmt = modifiedAfterGmt,

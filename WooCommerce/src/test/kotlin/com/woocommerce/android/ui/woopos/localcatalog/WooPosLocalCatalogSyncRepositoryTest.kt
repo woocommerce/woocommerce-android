@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.ConnectionType
 import com.woocommerce.android.ui.woopos.util.WooPosConnectionTypeProvider
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent
@@ -9,6 +8,8 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
 import com.woocommerce.android.util.CoroutineDispatchers
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -39,7 +40,7 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     private var logger: WooPosLogWrapper = mock()
     private var dateTimeProvider: DateTimeProvider = mock()
     private var posLocalCatalogStore: WooPosLocalCatalogStore = mock()
-    private var fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
+    private var featureFlagRepository: FeatureFlagRepository = mock()
     private var connectionTypeProvider: WooPosConnectionTypeProvider = mock()
     private var analyticsTracker: WooPosAnalyticsTracker = mock()
 
@@ -51,13 +52,13 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
             computation = UnconfinedTestDispatcher()
         )
 
-        whenever(fileApproachEnabled.invoke()).thenReturn(true)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(true)
 
         sut = WooPosLocalCatalogSyncRepository(
             posSyncAction = posSyncAction,
             posFileBasedSyncAction = posFileBasedSyncAction,
             posCheckCatalogSizeAction = posCheckCatalogSizeAction,
-            fileApproachEnabled = fileApproachEnabled,
+            featureFlagRepository = featureFlagRepository,
             syncTimestampManager = syncTimestampManager,
             dispatchers = dispatchers,
             logger = logger,
@@ -134,22 +135,23 @@ class WooPosLocalCatalogSyncRepositoryTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when full sync fails with CatalogTooLarge and file-based flag disabled, then disables periodic sync`() = testBlocking {
-        // GIVEN
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
-        givenCatalogTooLargeForPaginatedFullSync()
+    fun `when full sync fails with CatalogTooLarge and file-based flag disabled, then disables periodic sync`() =
+        testBlocking {
+            // GIVEN
+            whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
+            givenCatalogTooLargeForPaginatedFullSync()
 
-        // WHEN
-        sut.syncLocalCatalogFull(site)
+            // WHEN
+            sut.syncLocalCatalogFull(site)
 
-        // THEN
-        verify(preferencesRepository).disablePeriodicSyncForSite(any())
-    }
+            // THEN
+            verify(preferencesRepository).disablePeriodicSyncForSite(any())
+        }
 
     @Test
     fun `given file-based flag disabled, when syncing, then sync succeeds`() = testBlocking {
         // GIVEN
-        whenever(fileApproachEnabled.invoke()).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(posSyncAction.syncCatalog(any(), anyOrNull(), any(), any()))
             .thenReturn(
                 WooPosSyncResult.Success(

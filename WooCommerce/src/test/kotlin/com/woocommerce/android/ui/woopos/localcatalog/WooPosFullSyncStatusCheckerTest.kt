@@ -2,11 +2,12 @@ package com.woocommerce.android.ui.woopos.localcatalog
 
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.common.util.WooPosLogWrapper
-import com.woocommerce.android.ui.woopos.featureflags.WooPosLocalCatalogFileApproachEnabled
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosPreferencesRepository
 import com.woocommerce.android.ui.woopos.util.datastore.WooPosSyncTimestampManager
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -38,7 +39,7 @@ class WooPosFullSyncStatusCheckerTest {
     private val prefsRepo: WooPosPreferencesRepository = mock()
     private val checkCatalogSizeAction: WooPosCheckCatalogSizeAction = mock()
     private val isLocalCatalogSupported: WooPosIsLocalCatalogSupported = mock()
-    private val fileApproachEnabled: WooPosLocalCatalogFileApproachEnabled = mock()
+    private val fileApproachEnabled: FeatureFlagRepository = mock()
     private val time: DateTimeProvider = mock()
 
     private val siteModel = SiteModel().apply {
@@ -58,7 +59,7 @@ class WooPosFullSyncStatusCheckerTest {
         prefsRepo = prefsRepo,
         checkCatalogSizeAction = checkCatalogSizeAction,
         isLocalCatalogSupported = isLocalCatalogSupported,
-        fileApproachEnabled = fileApproachEnabled,
+        featureFlagRepository = fileApproachEnabled,
         wooPosLogWrapper = wooPosLogWrapper,
         time = time
     )
@@ -71,7 +72,7 @@ class WooPosFullSyncStatusCheckerTest {
         whenever(syncTimestampManager.getFullSyncLastCompletedTimestamp()).thenReturn(recentTimestamp)
         whenever(networkStatus.isConnected()).thenReturn(true)
         whenever(time.now()).thenReturn(NOW)
-        whenever(fileApproachEnabled()).thenReturn(false)
+        whenever(fileApproachEnabled.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(false)
         whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
             .thenReturn(Result.success(15))
         whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
@@ -350,7 +351,7 @@ class WooPosFullSyncStatusCheckerTest {
     fun `given file-based sync enabled, when checkSyncRequirement, then should skip catalog size check`() =
         runTest {
             // GIVEN
-            whenever(fileApproachEnabled()).thenReturn(true)
+            whenever(fileApproachEnabled.isEnabled(FeatureFlag.WOO_POS_LOCAL_CATALOG_FILE_APPROACH)).thenReturn(true)
             whenever(localCatalogStore.getProductCount(LocalOrRemoteId.LocalId(siteModel.id)))
                 .thenReturn(Result.success(0))
             whenever(localCatalogStore.getVariationCount(LocalOrRemoteId.LocalId(siteModel.id)))
