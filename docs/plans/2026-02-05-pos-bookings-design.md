@@ -339,6 +339,14 @@ The API expects `attended` or `unattended`, but the main app and POS use `booked
 
 **For production:** Investigate which WooCommerce Bookings plugin versions support which attendance status values, and handle the API error gracefully.
 
-### 18. Web Shows "Frequently Bought Together" With Services
+### 18. CardReaderPaymentCollectibilityChecker Blocks Booking Orders
+
+`CardReaderPaymentCollectibilityChecker.isCollectable()` rejects booking orders because it checks payment method against a short allow-list (`""`, `cod`, `woocommerce_payments`, `stripe`). Booking orders created on the web have a different payment method (e.g. `woocommerce_bookings_gateway`), so `isCollectable()` returns false. When that happens, the controller calls `exitWithSnackbar()` which emits an event but does NOT update `paymentState`. The card payment VM only listens to `paymentState`, so the screen stays stuck on Loading forever.
+
+The same checker also validates order status (only `pending`, `processing`, `on-hold`, `auto-draft`, `failed` are allowed) and checks `isOrderPaid`. Booking orders could fail any of these checks depending on how the booking was created.
+
+**For production:** Either bypass `CardReaderPaymentCollectibilityChecker` for POS booking payments (the bookings screen already validates payability), or extend the checker to support booking order payment methods and statuses. Also, the card payment VM should observe the controller's `event` flow to handle errors that don't update `paymentState`.
+
+### 19. Web Shows "Frequently Bought Together" With Services
 
 On the web storefront, appointment/service pages list regular products below them in a "Frequently bought together" section (e.g. a haircut service shows hair products underneath). This is an interesting observation - having a cart concept in POS bookings could enable similar cross-selling (booking a service + adding related products in one transaction). Not proposing this for implementation, just noting that the web already supports this pattern and it shows how bookings and products can be connected.
