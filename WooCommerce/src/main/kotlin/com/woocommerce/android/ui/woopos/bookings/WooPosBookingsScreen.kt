@@ -65,7 +65,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersStatusBadge
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
@@ -472,7 +471,7 @@ private fun LoadedBookingsList(
 
                         Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-                        WooPosOrdersStatusBadge(item.status)
+                        WooPosBookingsStatusBadge(item.status)
                     }
 
                     WooPosText(
