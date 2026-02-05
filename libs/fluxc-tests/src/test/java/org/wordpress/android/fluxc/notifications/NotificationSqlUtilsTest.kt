@@ -47,7 +47,7 @@ class NotificationSqlUtilsTest {
         assertEquals(6, inserted)
 
         // Test updating notifications
-        val newNote = notesList[0].copy(noteId = -1, remoteNoteId = 333)
+        val newNote = notesList[0].copy(remoteNoteId = 333)
         val dbList = notificationSqlUtils.getNotifications().toMutableList()
         dbList.add(newNote)
         val updated = dbList.sumBy { notificationSqlUtils.insertOrUpdateNotification(it) }

@@ -30,14 +30,10 @@ class NotificationSqlUtils @Inject constructor(private val formattableContentMap
 
     fun insertOrUpdateNotification(notification: NotificationModel): Int {
         val notificationResult = WellSql.select(NotificationModelBuilder::class.java)
-                .where().beginGroup()
-                .equals(NotificationModelTable.ID, notification.noteId)
-                .or()
-                .beginGroup()
+                .where()
                 .equals(NotificationModelTable.REMOTE_SITE_ID, notification.remoteSiteId)
                 .equals(NotificationModelTable.REMOTE_NOTE_ID, notification.remoteNoteId)
-                .endGroup()
-                .endGroup().endWhere()
+                .endWhere()
                 .asModel
 
         return if (notificationResult.isEmpty()) {
@@ -197,7 +193,6 @@ class NotificationSqlUtils @Inject constructor(private val formattableContentMap
 
     private fun NotificationModel.toBuilder(): NotificationModelBuilder {
         return NotificationModelBuilder(
-                mId = this.noteId,
                 remoteNoteId = this.remoteNoteId,
                 remoteSiteId = this.remoteSiteId,
                 noteHash = this.noteHash,
@@ -253,7 +248,6 @@ class NotificationSqlUtils @Inject constructor(private val formattableContentMap
                 formattableContentMapper.mapToFormattableMeta(it)
             }
             return NotificationModel(
-                    mId,
                     remoteNoteId,
                     remoteSiteId,
                     noteHash,
