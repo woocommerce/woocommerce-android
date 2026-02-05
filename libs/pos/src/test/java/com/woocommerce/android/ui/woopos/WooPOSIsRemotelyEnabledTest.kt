@@ -18,9 +18,7 @@ import kotlin.test.assertTrue
 class WooPOSIsRemotelyEnabledTest {
     private val selectedSite: SelectedSite = mock()
     private val siteModel: SiteModel = mock()
-    private val ssrModel: WCSSRModel = mock()
     private val fetcher: WCSSRModelCachingFetcher = mock()
-    private val cacheResult: WooResult<WCSSRModel> = mock()
 
     private lateinit var sut: WooPOSIsRemotelyEnabled
 
@@ -33,9 +31,8 @@ class WooPOSIsRemotelyEnabledTest {
     @Test
     fun `given feature enabled remotely, when invoked, then returns success true`() = runTest {
         val jsonSettings = """{"enabled_features": ["point_of_sale", "other_feature"]}"""
-        whenever(ssrModel.settings).thenReturn(jsonSettings)
-        whenever(cacheResult.isError).thenReturn(false)
-        whenever(cacheResult.model).thenReturn(ssrModel)
+        val ssrModel = WCSSRModel(remoteSiteId = 123L, settings = jsonSettings)
+        val cacheResult = WooResult(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
@@ -47,9 +44,8 @@ class WooPOSIsRemotelyEnabledTest {
     @Test
     fun `given feature not in list, when invoked, then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": ["something_else"]}"""
-        whenever(ssrModel.settings).thenReturn(jsonSettings)
-        whenever(cacheResult.isError).thenReturn(false)
-        whenever(cacheResult.model).thenReturn(ssrModel)
+        val ssrModel = WCSSRModel(remoteSiteId = 123L, settings = jsonSettings)
+        val cacheResult = WooResult(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
@@ -61,9 +57,8 @@ class WooPOSIsRemotelyEnabledTest {
     @Test
     fun `given empty feature list, when invoked, then returns success false`() = runTest {
         val jsonSettings = """{"enabled_features": []}"""
-        whenever(ssrModel.settings).thenReturn(jsonSettings)
-        whenever(cacheResult.isError).thenReturn(false)
-        whenever(cacheResult.model).thenReturn(ssrModel)
+        val ssrModel = WCSSRModel(remoteSiteId = 123L, settings = jsonSettings)
+        val cacheResult = WooResult(ssrModel)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
@@ -74,8 +69,7 @@ class WooPOSIsRemotelyEnabledTest {
 
     @Test
     fun `given null result, when invoked, then returns failure unknown`() = runTest {
-        whenever(cacheResult.isError).thenReturn(false)
-        whenever(cacheResult.model).thenReturn(null)
+        val cacheResult = WooResult<WCSSRModel>(model = null)
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()
@@ -86,7 +80,12 @@ class WooPOSIsRemotelyEnabledTest {
 
     @Test
     fun `given error result, when invoked, then returns failure unknown`() = runTest {
-        whenever(cacheResult.isError).thenReturn(true)
+        val cacheResult = WooResult<WCSSRModel>(model = null).apply {
+            error = org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError(
+                type = org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType.GENERIC_ERROR,
+                original = org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType.UNKNOWN
+            )
+        }
         whenever(fetcher.load(siteModel)).thenReturn(cacheResult)
 
         val result = sut.invoke()

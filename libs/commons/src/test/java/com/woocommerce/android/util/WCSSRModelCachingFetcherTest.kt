@@ -19,7 +19,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 class WCSSRModelCachingFetcherTest {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val siteModel: SiteModel = mock()
-    private val ssrModel: WCSSRModel = mock()
+    private val ssrModel = WCSSRModel(remoteSiteId = 123L)
 
     private val sut: WCSSRModelCachingFetcher = WCSSRModelCachingFetcher(wooCommerceStore)
 
