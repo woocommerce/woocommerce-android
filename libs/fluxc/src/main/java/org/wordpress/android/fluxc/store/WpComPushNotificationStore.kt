@@ -359,18 +359,25 @@ class WpComPushNotificationStore @Inject internal constructor(
             .map { notificationMapper.toDomainModel(it) }
             .associateBy { it.remoteNoteId }
 
+        // Collect IDs of notifications to delete (exist in cache but not in fetched hashes)
+        val notifsToDelete = mutableListOf<RemoteId>()
+
         // Scrub the newly fetched list against the cached db records. Remove any entries for records that
         // do not require an update from the remote API
         existingNotifsByRemoteIdMap.entries.forEach { cached ->
-            // Compare new note_hash values against cached values. Delete from db if
-            // cached notification not present in new list
+            // Compare new note_hash values against cached values
             notifsToFetch[cached.key]?.let { newNoteHash ->
                 if (cached.value.noteHash == newNoteHash) {
                     // Notifications are identical. No update needed, remove from
                     // list of notifs to fetch
                     notifsToFetch.remove(cached.key)
                 }
-            } ?: notificationDao.deleteByRemoteId(RemoteId(cached.key)) // Delete notification from the db
+            } ?: notifsToDelete.add(RemoteId(cached.key)) // Mark for deletion
+        }
+
+        // Delete notifications in a single batch operation
+        if (notifsToDelete.isNotEmpty()) {
+            notificationDao.deleteAllByRemoteIds(notifsToDelete)
         }
 
         // Fetch new and updated notifications from the remote api

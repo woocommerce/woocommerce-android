@@ -298,22 +298,47 @@ class NotificationDaoTest {
     }
     // endregion
 
-    // region deleteByRemoteId
+    // region deleteAllByRemoteIds
     @Test
-    fun `given notification exists, when delete by remote id, then removes notification`() = runTest {
+    fun `given empty list, when delete all by remote ids, then no notifications are deleted`() = runTest {
         dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1))
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1))
 
-        val deleted = dao.deleteByRemoteId(REMOTE_NOTE_ID_1)
+        dao.deleteAllByRemoteIds(emptyList())
 
-        assertThat(deleted).isEqualTo(1)
-        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_1)).isNull()
+        assertThat(dao.getNotificationsCount()).isEqualTo(2)
     }
 
     @Test
-    fun `given notification not exists, when delete by remote id, then returns zero`() = runTest {
-        val deleted = dao.deleteByRemoteId(RemoteId(999L))
+    fun `given notifications exist, when delete all by remote ids, then deletes matching notifications`() = runTest {
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1))
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1))
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_3, remoteSiteId = SITE_ID_2))
 
-        assertThat(deleted).isEqualTo(0)
+        dao.deleteAllByRemoteIds(listOf(REMOTE_NOTE_ID_1, REMOTE_NOTE_ID_3))
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(1)
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_1)).isNull()
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_2)).isNotNull
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_3)).isNull()
+    }
+
+    @Test
+    fun `given some ids not exist, when delete all by remote ids, then deletes only existing`() = runTest {
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1))
+
+        dao.deleteAllByRemoteIds(listOf(REMOTE_NOTE_ID_1, RemoteId(999L)))
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(0)
+    }
+
+    @Test
+    fun `given all ids not exist, when delete all by remote ids, then no change`() = runTest {
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1))
+
+        dao.deleteAllByRemoteIds(listOf(RemoteId(888L), RemoteId(999L)))
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(1)
     }
     // endregion
 
