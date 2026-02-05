@@ -1,10 +1,9 @@
 package com.woocommerce.android.ui.prefs.developer
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +13,13 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.TextButton
 import androidx.compose.material.TopAppBar
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Switch
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -27,21 +30,44 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.woocommerce.android.AppPrefs
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.WCSearchField
 import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository.FeatureFlagState
 
 @Composable
 fun DevFeatureFlagsScreen(
     onBackClick: () -> Unit,
-    onRestartClick: () -> Unit
+    onRestartClick: () -> Unit,
+    viewModel: DevFeatureFlagsViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    DevFeatureFlagsScreenContent(
+        uiState = uiState,
+        onBackClick = onBackClick,
+        onRestartClick = onRestartClick,
+        onOverrideChange = viewModel::setOverride
+    )
+}
+
+@Composable
+private fun DevFeatureFlagsScreenContent(
+    uiState: DevFeatureFlagsViewModel.UiState,
+    onBackClick: () -> Unit,
+    onRestartClick: () -> Unit,
+    onOverrideChange: (FeatureFlag, OverrideState) -> Unit
+) {
+    val flagStates = uiState.flagStates
+    val isLoading = uiState.isLoading
     val allFeatureFlags = remember { FeatureFlag.entries.toList() }
     var searchQuery by remember { mutableStateOf("") }
     val filteredFlags by remember(searchQuery) {
@@ -50,20 +76,6 @@ fun DevFeatureFlagsScreen(
                 allFeatureFlags
             } else {
                 allFeatureFlags.filter { it.name.contains(searchQuery, ignoreCase = true) }
-            }
-        }
-    }
-
-    val initialValues = remember {
-        allFeatureFlags.associateWith { it.isEnabled() }.toMutableMap()
-    }
-    var hasChanges by remember { mutableStateOf(false) }
-
-    fun updateHasChanges(flag: FeatureFlag, newValue: Boolean) {
-        initialValues[flag]?.let { _ ->
-            hasChanges = allFeatureFlags.any { featureFlag ->
-                val currentValue = if (featureFlag == flag) newValue else featureFlag.isEnabled()
-                currentValue != initialValues[featureFlag]
             }
         }
     }
@@ -85,11 +97,11 @@ fun DevFeatureFlagsScreen(
                 actions = {
                     TextButton(
                         onClick = onRestartClick,
-                        enabled = hasChanges,
+                        enabled = uiState.hasChanges,
                     ) {
                         Text(
                             text = stringResource(R.string.restart).uppercase(),
-                            color = if (hasChanges) {
+                            color = if (uiState.hasChanges) {
                                 MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
@@ -112,73 +124,122 @@ fun DevFeatureFlagsScreen(
                     .padding(dimensionResource(id = R.dimen.major_100))
             )
 
-            LazyColumn {
-                items(filteredFlags, key = { it.name }) { flag ->
-                    FeatureFlagItem(
-                        flag = flag,
-                        onValueChanged = { newValue ->
-                            updateHasChanges(flag, newValue)
+            if (isLoading) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else {
+                LazyColumn {
+                    items(filteredFlags, key = { it.name }) { flag ->
+                        flagStates[flag]?.let { state ->
+                            FeatureFlagItem(
+                                state = state,
+                                onOverrideChange = { overrideState ->
+                                    onOverrideChange(flag, overrideState)
+                                }
+                            )
                         }
-                    )
+                    }
                 }
             }
         }
     }
 }
 
+enum class OverrideState {
+    DEFAULT,
+    DISABLED,
+    ENABLED
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun FeatureFlagItem(
-    flag: FeatureFlag,
-    onValueChanged: (Boolean) -> Unit
+    state: FeatureFlagState,
+    onOverrideChange: (OverrideState) -> Unit
 ) {
-    var isEnabled by remember(flag) {
-        mutableStateOf(flag.isEnabled())
+    val flag = state.flag
+    val currentOverrideState = when (state.overrideValue) {
+        null -> OverrideState.DEFAULT
+        true -> OverrideState.ENABLED
+        false -> OverrideState.DISABLED
     }
-    val defaultValue = remember(flag) { flag.getDefaultValue() }
-    val defaultText = if (defaultValue) "Default: enabled" else "Default: disabled"
+
+    val segmentedButtonColors = SegmentedButtonDefaults.colors(
+        activeContainerColor = colorResource(id = R.color.color_primary),
+        activeContentColor = colorResource(id = R.color.woo_white),
+    )
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.surface)
-            .clickable {
-                isEnabled = !isEnabled
-                AppPrefs.setFeatureFlagOverride(flag, isEnabled)
-                onValueChanged(isEnabled)
-            }
     ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp)
+        // Content with padding
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = flag.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = defaultText,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(top = 4.dp)
-                )
-            }
-
-            Switch(
-                checked = isEnabled,
-                onCheckedChange = { checked ->
-                    isEnabled = checked
-                    AppPrefs.setFeatureFlagOverride(flag, checked)
-                    onValueChanged(checked)
-                }
+            Text(
+                text = flag.key,
+                style = MaterialTheme.typography.titleMedium,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
+
+            SingleChoiceSegmentedButtonRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            ) {
+                // Default button
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3),
+                    onClick = { onOverrideChange(OverrideState.DEFAULT) },
+                    selected = currentOverrideState == OverrideState.DEFAULT,
+                    colors = segmentedButtonColors,
+                    modifier = Modifier.weight(1.5f)
+                ) {
+                    Text(getDefaultButtonText(state))
+                }
+
+                // Disabled button
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3),
+                    onClick = { onOverrideChange(OverrideState.DISABLED) },
+                    selected = currentOverrideState == OverrideState.DISABLED,
+                    colors = segmentedButtonColors,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Disabled")
+                }
+
+                // Enabled button
+                SegmentedButton(
+                    shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3),
+                    onClick = { onOverrideChange(OverrideState.ENABLED) },
+                    selected = currentOverrideState == OverrideState.ENABLED,
+                    colors = segmentedButtonColors,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Enabled")
+                }
+            }
         }
 
         HorizontalDivider()
+    }
+}
+
+private fun getDefaultButtonText(state: FeatureFlagState): String {
+    fun getStateText(enabled: Boolean) = if (enabled) "Enabled" else "Disabled"
+
+    val remoteValue = state.remoteValue
+    return if (remoteValue != null) {
+        "Remote: ${getStateText(remoteValue)}"
+    } else {
+        "Default: ${getStateText(state.defaultValue)}"
     }
 }
