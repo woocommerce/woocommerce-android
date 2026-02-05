@@ -22,16 +22,15 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
     suspend fun isCollectable(order: Order): Boolean {
-        return ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments) &&
-            with(order) {
-                cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
-                    isStatusCollectable() &&
-                    !isOrderPaid &&
-                    order.total.compareTo(BigDecimal.ZERO) == 1 &&
-                    BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
-                    isPaymentMethodCollectable() &&
-                    !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
-            }
+        return with(order) {
+            cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
+                isStatusCollectable() &&
+                !isOrderPaid &&
+                order.total.compareTo(BigDecimal.ZERO) == 1 &&
+                BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
+                isPaymentMethodCollectable() &&
+                !orderDetailRepository.hasSubscriptionProducts(order.getProductIds())
+        }
     }
 
     private fun Order.isPaymentMethodCollectable() =
