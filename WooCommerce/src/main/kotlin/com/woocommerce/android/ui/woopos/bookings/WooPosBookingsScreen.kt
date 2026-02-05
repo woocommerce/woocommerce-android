@@ -51,7 +51,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyS
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -226,6 +225,7 @@ private fun CancelBookingDialog(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_bookings_cancel_dialog_background_content_description
         ),
+        onCloseClick = onDismiss,
         onDismissRequest = onDismiss,
     ) {
         Column(
@@ -249,12 +249,6 @@ private fun CancelBookingDialog(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.woopos_bookings_cancel_dialog_confirm),
                 onClick = onConfirm,
-            )
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-            WooPosOutlinedButton(
-                modifier = Modifier.fillMaxWidth(),
-                text = stringResource(R.string.woopos_bookings_cancel_dialog_dismiss),
-                onClick = onDismiss,
             )
         }
     }
