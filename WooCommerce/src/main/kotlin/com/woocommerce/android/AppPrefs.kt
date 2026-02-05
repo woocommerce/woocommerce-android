@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.Editor
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
+import androidx.core.content.edit
 import androidx.preference.PreferenceManager
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.CARD_READER_ONBOARDING_NOT_COMPLETED
 import com.woocommerce.android.AppPrefs.CardReaderOnboardingStatus.valueOf
@@ -1404,7 +1405,7 @@ object AppPrefs {
     }
 
     private fun remove(keyName: String) {
-        getPreferences().edit().remove(keyName).apply()
+        getPreferences().edit { remove(keyName) }
     }
 
     fun exists(key: PrefKey) = getPreferences().contains(key.toString())
