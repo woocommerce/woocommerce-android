@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
+@Suppress("UnusedParameter")
 fun WooPosBookingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
     WooPosText(
         modifier = Modifier,
@@ -16,6 +17,3 @@ fun WooPosBookingsScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) {
         color = MaterialTheme.colorScheme.onSurface,
     )
 }
-
-
-
