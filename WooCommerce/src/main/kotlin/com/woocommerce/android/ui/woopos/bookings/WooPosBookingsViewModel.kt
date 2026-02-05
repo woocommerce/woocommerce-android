@@ -21,33 +21,23 @@ class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
-    fun onRefresh() {
-    }
+    fun onRefresh() {}
 
-    fun onBookingSelected(bookingId: Long) {
-    }
+    fun onBookingSelected(bookingId: Long) {}
 
-    fun onEndOfBookingsListReached() {
-    }
+    fun onEndOfBookingsListReached() {}
 
-    fun onPaginationErrorTryAgain() {
-    }
+    fun onPaginationErrorTryAgain() {}
 
-    fun onSearchEvent(event: WooPosSearchUIEvent) {
-    }
+    fun onSearchEvent(event: WooPosSearchUIEvent) {}
 
-    fun onSearchErrorRetry() {
-    }
+    fun onSearchErrorRetry() {}
 
-    fun onBookingsEmptyActionClicked() {
-    }
+    fun onBookingsEmptyActionClicked() {}
 
-    fun onBookingsLoadingErrorRetryButtonClicked() {
-    }
+    fun onBookingsLoadingErrorRetryButtonClicked() {}
 
-    fun onUIEvent(event: WooPosBookingsUIEvent) {
-    }
+    fun onUIEvent(event: WooPosBookingsUIEvent) {}
 
-    fun onIssueRefundDialogDismissed() {
-    }
+    fun onIssueRefundDialogDismissed() {}
 }
