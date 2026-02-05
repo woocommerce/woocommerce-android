@@ -19,6 +19,8 @@ class WooPosBookingMapper @Inject constructor() {
     fun toListItem(
         dto: BookingDto,
         selectedId: Long?,
+        customerName: String? = null,
+        productName: String? = null,
     ): BookingListItem {
         val zone = ZoneId.systemDefault()
         val startInstant = Instant.ofEpochSecond(dto.start)
@@ -27,8 +29,8 @@ class WooPosBookingMapper @Inject constructor() {
         return BookingListItem(
             id = dto.id,
             orderId = dto.orderId,
-            customerName = "Customer #${dto.customerId}",
-            serviceName = "Product #${dto.productId}",
+            customerName = customerName ?: "Customer #${dto.customerId}",
+            serviceName = productName ?: "Product #${dto.productId}",
             startTime = timeFormatter.format(zonedStart),
             amount = formatCost(dto.cost, dto.currency),
             bookingStatus = mapBookingStatus(dto.status),
@@ -37,7 +39,11 @@ class WooPosBookingMapper @Inject constructor() {
         )
     }
 
-    fun toDetail(dto: BookingDto): BookingDetail {
+    fun toDetail(
+        dto: BookingDto,
+        customerName: String? = null,
+        productName: String? = null,
+    ): BookingDetail {
         val zone = ZoneId.systemDefault()
         val startInstant = Instant.ofEpochSecond(dto.start)
         val endInstant = Instant.ofEpochSecond(dto.end)
@@ -59,8 +65,8 @@ class WooPosBookingMapper @Inject constructor() {
         return BookingDetail(
             id = dto.id,
             orderId = dto.orderId,
-            customerName = "Customer #${dto.customerId}",
-            serviceName = "Product #${dto.productId}",
+            customerName = customerName ?: "Customer #${dto.customerId}",
+            serviceName = productName ?: "Product #${dto.productId}",
             startDate = dateFormatter.format(zonedStart),
             startTime = timeFormatter.format(zonedStart),
             endTime = timeFormatter.format(zonedEnd),

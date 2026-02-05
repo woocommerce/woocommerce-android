@@ -1,21 +1,31 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.tools.SelectedSite
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingDto
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingUpdatePayload
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 class WooPosBookingsDataSource @Inject constructor(
     private val restClient: BookingsRestClient,
+    private val customerRestClient: CustomerRestClient,
+    private val productRestClient: ProductRestClient,
     private val selectedSite: SelectedSite,
 ) {
+    private val customerNameCache = ConcurrentHashMap<Long, String>()
+    private val productNameCache = ConcurrentHashMap<Long, String>()
     companion object {
         const val PAGE_SIZE = 25
     }
@@ -99,6 +109,58 @@ class WooPosBookingsDataSource @Inject constructor(
         } else {
             response.result?.let { Result.success(it) }
                 ?: Result.failure(Throwable("Update failed"))
+        }
+    }
+
+    suspend fun resolveNames(bookings: List<BookingDto>) {
+        coroutineScope {
+            val customerIds = bookings.map { it.customerId }.distinct()
+                .filter { it != 0L && !customerNameCache.containsKey(it) }
+            val productIds = bookings.map { it.productId }.distinct()
+                .filter { it != 0L && !productNameCache.containsKey(it) }
+
+            val customerJobs = customerIds.map { id ->
+                async { fetchCustomerName(id) }
+            }
+            val productJobs = productIds.map { id ->
+                async { fetchProductName(id) }
+            }
+            customerJobs.awaitAll()
+            productJobs.awaitAll()
+        }
+    }
+
+    fun getCustomerName(customerId: Long): String? = customerNameCache[customerId]
+    fun getProductName(productId: Long): String? = productNameCache[productId]
+
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    private suspend fun fetchCustomerName(customerId: Long) {
+        try {
+            val response = customerRestClient.fetchSingleCustomer(selectedSite.get(), customerId)
+            val dto = response.result ?: return
+            val name = listOfNotNull(dto.firstName, dto.lastName)
+                .joinToString(" ")
+                .trim()
+            if (name.isNotEmpty()) {
+                customerNameCache[customerId] = name
+            }
+        } catch (e: Exception) {
+            // keep placeholder
+        }
+    }
+
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    private suspend fun fetchProductName(productId: Long) {
+        try {
+            val payload = productRestClient.fetchSingleProduct(selectedSite.get(), productId)
+            if (payload.error == null) {
+                val name = payload.productWithMetaData.product.name
+                if (name.isNotEmpty()) {
+                    productNameCache[productId] = name
+                }
+            }
+        } catch (e: Exception) {
+            // keep placeholder
         }
     }
 

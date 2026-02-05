@@ -58,7 +58,11 @@ class WooPosBookingsViewModel @Inject constructor(
             _state.value = current.copy(
                 items = current.items.map { it.copy(isSelected = it.id == bookingId) },
                 selectedDetail = bookings.find { it.id == bookingId }?.let {
-                    mapper.toDetail(it)
+                    mapper.toDetail(
+                        dto = it,
+                        customerName = dataSource.getCustomerName(it.customerId),
+                        productName = dataSource.getProductName(it.productId),
+                    )
                 },
             )
         }
@@ -81,6 +85,8 @@ class WooPosBookingsViewModel @Inject constructor(
             dataSource.fetchBookings(currentTab, currentPage).fold(
                 onSuccess = { result ->
                     bookings.addAll(result.bookings)
+                    updateContentState()
+                    dataSource.resolveNames(result.bookings)
                     updateContentState()
                 },
                 onFailure = {
@@ -229,6 +235,8 @@ class WooPosBookingsViewModel @Inject constructor(
                             selectedBookingId = bookings.first().id
                         }
                         updateContentState()
+                        dataSource.resolveNames(result.bookings)
+                        updateContentState()
                     }
                 },
                 onFailure = {
@@ -245,9 +253,20 @@ class WooPosBookingsViewModel @Inject constructor(
     ) {
         _state.value = WooPosBookingsState.Content(
             selectedTab = currentTab,
-            items = bookings.map { mapper.toListItem(it, selectedBookingId) },
+            items = bookings.map {
+                mapper.toListItem(
+                    dto = it,
+                    selectedId = selectedBookingId,
+                    customerName = dataSource.getCustomerName(it.customerId),
+                    productName = dataSource.getProductName(it.productId),
+                )
+            },
             selectedDetail = bookings.find { it.id == selectedBookingId }?.let {
-                mapper.toDetail(it)
+                mapper.toDetail(
+                    dto = it,
+                    customerName = dataSource.getCustomerName(it.customerId),
+                    productName = dataSource.getProductName(it.productId),
+                )
             },
             paginationState = paginationState,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
