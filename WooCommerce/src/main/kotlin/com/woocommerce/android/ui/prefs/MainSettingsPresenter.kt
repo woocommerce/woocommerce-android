@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -101,7 +102,7 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {
-            if (shouldShowEnablePushNotificationsUi()) {
+            if (shouldShowEnablePushNotificationsUi().first()) {
                 appSettingsFragmentView?.showEnablePushNotificationsOption()
             }
         }
