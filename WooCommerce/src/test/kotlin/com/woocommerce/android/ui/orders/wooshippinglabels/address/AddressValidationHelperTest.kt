@@ -73,25 +73,25 @@ class AddressValidationHelperTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when value is a valid US phone number validateUSCustomsPhone should return null`() {
+    fun `when value is a valid US phone number, then validateUSCustomsPhone should return null`() {
         val result = sut.validateUSCustomsPhone("12345678910")
         assertThat(result).isNull()
     }
 
     @Test
-    fun `when value is empty or blank validatePhoneNumber should return error`() {
+    fun `when value is empty or blank, then validatePhoneNumber should return error`() {
         val result = sut.validatePhoneNumber("")
         assertThat(result).isEqualTo(fieldRequiredError)
     }
 
     @Test
-    fun `when value does not contain any digits validatePhoneNumber should return error`() {
+    fun `when value does not contain any digits, then validatePhoneNumber should return error`() {
         val result = sut.validatePhoneNumber("abc")
         assertThat(result).isEqualTo(invalidPhoneError)
     }
 
     @Test
-    fun `when value contains at least one digit validatePhoneNumber should return null`() {
+    fun `when value contains at least one digit, then validatePhoneNumber should return null`() {
         val result = sut.validatePhoneNumber("123")
         assertThat(result).isNull()
     }
