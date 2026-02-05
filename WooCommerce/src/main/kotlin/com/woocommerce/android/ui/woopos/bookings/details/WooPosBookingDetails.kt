@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
+@Suppress("UnusedParameter")
 fun WooPosBookingDetails(
     modifier: Modifier = Modifier,
     details: WooPosBookingsState.BookingDetailsViewState.Computed.Details,
