@@ -18,7 +18,7 @@ class WooWellSqlConfig(context: Context) : WellSqlConfig(context) {
      * build with a DB downgrade was released, resulting in a lot of crashes.
      */
     override fun onDowngrade(db: SQLiteDatabase?, helper: WellTableManager?, oldVersion: Int, newVersion: Int) {
-        if (context != null && PackageUtils.isBetaBuild(context)) {
+        if (PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)) {
             // note: don't call super() here because it throws an exception
             AppLog.w(T.DB, "Resetting database due to downgrade from version $oldVersion to $newVersion")
 

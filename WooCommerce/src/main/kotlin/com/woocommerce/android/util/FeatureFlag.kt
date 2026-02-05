@@ -13,7 +13,6 @@ enum class FeatureFlag(
     val key: String,
     val default: Boolean = PackageUtils.isDebugBuild()
 ) {
-    DB_DOWNGRADE("db_downgrade"),
     WC_SHIPPING_BANNER("wc_shipping_banner"),
     BETTER_CUSTOMER_SEARCH_M2("better_customer_search_m2"),
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate"),
