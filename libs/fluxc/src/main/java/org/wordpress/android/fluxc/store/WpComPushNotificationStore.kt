@@ -150,7 +150,6 @@ class WpComPushNotificationStore @Inject constructor(
     class OnNotificationChanged : OnChanged<NotificationError>() {
         var causeOfChange: NotificationAction? = null
         var success: Boolean = true
-        val changedNotificationLocalIds = mutableListOf<Int>()
     }
 
     @Subscribe(threadMode = ThreadMode.ASYNC)
@@ -410,13 +409,7 @@ class WpComPushNotificationStore @Inject constructor(
         } else {
             // Save to the db
             payload.notification?.let { notificationSqlUtils.insertOrUpdateNotification(it) }
-            // Fetch inserted/updated local notification id
-            val dbNotification = payload.notification?.let {
-                notificationSqlUtils.getNotificationByRemoteId(it.remoteNoteId)
-            }
-            OnNotificationChanged().apply {
-                dbNotification?.let { changedNotificationLocalIds.add(it.noteId) }
-            }
+            OnNotificationChanged()
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATION
         }
@@ -437,7 +430,7 @@ class WpComPushNotificationStore @Inject constructor(
             }
 
             // Create and dispatch result
-            val onNotificationChanged = if (result.isError) {
+            if (result.isError) {
                 OnNotificationChanged().apply {
                     error = result.error
                     success = false
@@ -446,12 +439,7 @@ class WpComPushNotificationStore @Inject constructor(
                 OnNotificationChanged().apply {
                     success = true
                 }
-            }.apply {
-                result.notifications?.forEach {
-                    changedNotificationLocalIds.add(it.noteId)
-                }
             }
-            onNotificationChanged
         }
     }
 
@@ -459,7 +447,6 @@ class WpComPushNotificationStore @Inject constructor(
         // save notification to the db
         notificationSqlUtils.insertOrUpdateNotification(payload)
         val onNotificationChanged = OnNotificationChanged().apply {
-            changedNotificationLocalIds.add(payload.noteId)
             causeOfChange = NotificationAction.UPDATE_NOTIFICATION
         }
         emitChange(onNotificationChanged)

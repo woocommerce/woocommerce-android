@@ -396,9 +396,7 @@ class WpComPushNotificationStoreTest {
         val notifications = store.getNotificationsForSite(site)
         val payload = MarkNotificationsReadPayload(notifications)
         val errorPayload = MarkNotificationsReadResponsePayload().apply {
-            error = WpComPushNotificationStore.NotificationError(
-                WpComPushNotificationStore.NotificationErrorType.GENERIC_ERROR
-            )
+            error = NotificationError(NotificationErrorType.GENERIC_ERROR)
         }
         whenever(mockNotificationRestClient.markNotificationRead(any())).thenReturn(errorPayload)
 
@@ -408,18 +406,6 @@ class WpComPushNotificationStoreTest {
         assertThat(result.error).isNotNull()
     }
 
-    @Test
-    fun `given notifications, when mark as read, then returns changed notification ids`() = runTest {
-        insertNotificationsFromJson()
-        val notifications = store.getNotificationsForSite(site)
-        val payload = MarkNotificationsReadPayload(notifications)
-        whenever(mockNotificationRestClient.markNotificationRead(any()))
-            .thenReturn(MarkNotificationsReadResponsePayload(notifications, success = true))
-
-        val result = store.markNotificationsRead(payload)
-
-        assertThat(result.changedNotificationLocalIds).hasSize(notifications.size)
-    }
     // endregion
 
     // region updateNotificationSettingsFor
