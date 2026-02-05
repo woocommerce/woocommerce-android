@@ -651,7 +651,8 @@ class WpComPushNotificationStoreTest {
 
     private suspend fun insertNotificationsFromJson(): Int {
         val notesList = getNotificationsFromJson()
-        notesList.forEach { databaseRule.db.notificationDao().insert(notificationMapper.toEntity(it)) }
+        val entities = notesList.map { notificationMapper.toEntity(it) }
+        databaseRule.db.notificationDao().insertAll(entities)
         return notesList.size
     }
 

@@ -382,10 +382,9 @@ class WpComPushNotificationStore @Inject internal constructor(
             // Notification error
             OnNotificationChanged().also { it.error = payload.error }
         } else {
-            // Save notifications to the database
-            payload.notifs.forEach {
-                notificationDao.insert(notificationMapper.toEntity(it))
-            }
+            // Save notifications to the database in a single batch operation
+            val entities = payload.notifs.map { notificationMapper.toEntity(it) }
+            notificationDao.insertAll(entities)
             OnNotificationChanged()
         }.apply {
             causeOfChange = NotificationAction.FETCH_NOTIFICATIONS

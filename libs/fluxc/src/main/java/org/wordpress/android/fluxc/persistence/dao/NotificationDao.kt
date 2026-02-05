@@ -78,6 +78,9 @@ internal abstract class NotificationDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     abstract suspend fun insert(entity: NotificationEntity)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    abstract suspend fun insertAll(entities: List<NotificationEntity>)
+
     @Query("DELETE FROM NotificationEntity WHERE remoteNoteId = :remoteNoteId")
     abstract suspend fun deleteByRemoteId(remoteNoteId: RemoteId): Int
 }

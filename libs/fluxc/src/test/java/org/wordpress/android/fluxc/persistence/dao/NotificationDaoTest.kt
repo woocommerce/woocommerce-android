@@ -67,6 +67,61 @@ class NotificationDaoTest {
     }
     // endregion
 
+    // region insertAll
+    @Test
+    fun `given empty list, when insert all, then no notifications are inserted`() = runTest {
+        val emptyList = emptyList<NotificationEntity>()
+
+        dao.insertAll(emptyList)
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(0)
+    }
+
+    @Test
+    fun `given list of notifications, when insert all, then all are inserted`() = runTest {
+        val notifications = listOf(
+            notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1),
+            notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1),
+            notification(remoteNoteId = REMOTE_NOTE_ID_3, remoteSiteId = SITE_ID_2)
+        )
+
+        dao.insertAll(notifications)
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(3)
+    }
+
+    @Test
+    fun `given existing notifications, when insert all with same keys, then replaces all`() = runTest {
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1, title = "Original 1"))
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1, title = "Original 2"))
+        val updatedNotifications = listOf(
+            notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1, title = "Updated 1"),
+            notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1, title = "Updated 2")
+        )
+
+        dao.insertAll(updatedNotifications)
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(2)
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_1)?.title).isEqualTo("Updated 1")
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_2)?.title).isEqualTo("Updated 2")
+    }
+
+    @Test
+    fun `given mixed new and existing, when insert all, then inserts new and replaces existing`() = runTest {
+        dao.insert(notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1, title = "Original"))
+        val notifications = listOf(
+            notification(remoteNoteId = REMOTE_NOTE_ID_1, remoteSiteId = SITE_ID_1, title = "Updated"),
+            notification(remoteNoteId = REMOTE_NOTE_ID_2, remoteSiteId = SITE_ID_1, title = "New")
+        )
+
+        dao.insertAll(notifications)
+
+        assertThat(dao.getNotificationsCount()).isEqualTo(2)
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_1)?.title).isEqualTo("Updated")
+        assertThat(dao.getNotificationByRemoteId(REMOTE_NOTE_ID_2)?.title).isEqualTo("New")
+    }
+    // endregion
+
     // region getNotificationsCount
     @Test
     fun `given no notifications, when get count, then returns zero`() = runTest {
