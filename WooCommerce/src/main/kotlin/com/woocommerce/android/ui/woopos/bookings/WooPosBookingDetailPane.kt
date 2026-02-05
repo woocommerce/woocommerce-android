@@ -38,6 +38,12 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpa
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
+private val selectableAttendanceStatuses = listOf(
+    AttendanceStatusUi.Booked,
+    AttendanceStatusUi.CheckedIn,
+    AttendanceStatusUi.NoShow,
+)
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WooPosBookingDetailPane(
@@ -197,7 +203,7 @@ private fun AttendanceSection(
             horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
         ) {
-            AttendanceStatusUi.entries.forEach { status ->
+            selectableAttendanceStatuses.forEach { status ->
                 FilterChip(
                     selected = status == currentStatus,
                     onClick = { if (!isLoading) onStatusSelected(status) },
@@ -288,13 +294,15 @@ private fun CancelSection(
 private fun AttendanceBadge(status: AttendanceStatusUi) {
     val bgColor = when (status) {
         AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.infoLowest
-        AttendanceStatusUi.NoShow -> WooPosTheme.colors.errorLowest
-        else -> WooPosTheme.colors.default
+        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Cancelled -> WooPosTheme.colors.errorLowest
+        AttendanceStatusUi.Booked -> WooPosTheme.colors.default
     }
     val textColor = when (status) {
         AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.onInfoLowest
-        AttendanceStatusUi.NoShow -> WooPosTheme.colors.onErrorLowest
-        else -> WooPosTheme.colors.onDefault
+        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Cancelled -> WooPosTheme.colors.onErrorLowest
+        AttendanceStatusUi.Booked -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(

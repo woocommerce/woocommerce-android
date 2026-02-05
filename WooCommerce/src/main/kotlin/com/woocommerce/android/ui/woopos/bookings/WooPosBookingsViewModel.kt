@@ -118,7 +118,7 @@ class WooPosBookingsViewModel @Inject constructor(
             AttendanceStatusUi.Booked -> BookingEntity.AttendanceStatus.Booked
             AttendanceStatusUi.CheckedIn -> BookingEntity.AttendanceStatus.CheckedIn
             AttendanceStatusUi.NoShow -> BookingEntity.AttendanceStatus.NoShow
-            AttendanceStatusUi.Cancelled -> BookingEntity.AttendanceStatus.Cancelled
+            AttendanceStatusUi.Cancelled -> return
         }
 
         updateDetailLoadingState(attendanceUpdateInProgress = true)

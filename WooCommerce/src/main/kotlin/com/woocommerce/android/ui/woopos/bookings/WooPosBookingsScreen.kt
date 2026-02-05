@@ -44,11 +44,14 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosEmptyScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreen
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosErrorScreenButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosLazyColumn
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToolbar
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
@@ -196,53 +199,56 @@ private fun BookingsContent(
         }
     }
 
-    val dialogState = state.dialogState
-    if (dialogState is DialogState.CancelConfirmation) {
-        CancelBookingDialog(
-            onConfirm = onCancelConfirmed,
-            onDismiss = onCancelDialogDismissed,
-        )
-    }
+    CancelBookingDialog(
+        isVisible = state.dialogState is DialogState.CancelConfirmation,
+        onConfirm = onCancelConfirmed,
+        onDismiss = onCancelDialogDismissed,
+    )
 }
 
 @Composable
 private fun CancelBookingDialog(
+    isVisible: Boolean,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    androidx.compose.material3.AlertDialog(
+    WooPosDialogWrapper(
+        isVisible = isVisible,
+        dialogBackgroundContentDescription = stringResource(
+            R.string.woopos_bookings_cancel_dialog_background_content_description
+        ),
         onDismissRequest = onDismiss,
-        title = {
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_cancel_dialog_title),
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.Heading,
                 fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
             )
-        },
-        text = {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_cancel_dialog_message),
-                style = WooPosTypography.BodySmall,
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurface,
             )
-        },
-        confirmButton = {
-            androidx.compose.material3.TextButton(onClick = onConfirm) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_bookings_cancel_dialog_confirm),
-                    style = WooPosTypography.BodySmall,
-                    color = MaterialTheme.colorScheme.error,
-                )
-            }
-        },
-        dismissButton = {
-            androidx.compose.material3.TextButton(onClick = onDismiss) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_bookings_cancel_dialog_dismiss),
-                    style = WooPosTypography.BodySmall,
-                )
-            }
+            Spacer(modifier = Modifier.height(WooPosSpacing.XXLarge.value))
+            WooPosButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.woopos_bookings_cancel_dialog_confirm),
+                onClick = onConfirm,
+            )
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            WooPosOutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.woopos_bookings_cancel_dialog_dismiss),
+                onClick = onDismiss,
+            )
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -540,13 +546,15 @@ fun BookingStatusBadge(status: BookingStatusUi) {
 private fun AttendanceBadge(status: AttendanceStatusUi) {
     val bgColor = when (status) {
         AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.infoLowest
-        AttendanceStatusUi.NoShow -> WooPosTheme.colors.errorLowest
-        else -> WooPosTheme.colors.default
+        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Cancelled -> WooPosTheme.colors.errorLowest
+        AttendanceStatusUi.Booked -> WooPosTheme.colors.default
     }
     val textColor = when (status) {
         AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.onInfoLowest
-        AttendanceStatusUi.NoShow -> WooPosTheme.colors.onErrorLowest
-        else -> WooPosTheme.colors.onDefault
+        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Cancelled -> WooPosTheme.colors.onErrorLowest
+        AttendanceStatusUi.Booked -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(

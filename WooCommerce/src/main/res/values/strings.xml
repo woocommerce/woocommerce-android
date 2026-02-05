@@ -3716,6 +3716,7 @@
     <string name="woopos_bookings_cancel_dialog_message">This booking will be marked as cancelled.</string>
     <string name="woopos_bookings_cancel_dialog_confirm">Cancel booking</string>
     <string name="woopos_bookings_cancel_dialog_dismiss">Go back</string>
+    <string name="woopos_bookings_cancel_dialog_background_content_description">Cancel booking dialog background</string>
     <string name="woopos_bookings_no_booking_selected">Select a booking to view details</string>
     <string name="woopos_bookings_detail_view_order">View Order</string>
     <string name="woopos_bookings_detail_attendance">Attendance</string>
