@@ -554,16 +554,14 @@ fun BookingStatusBadge(status: BookingStatusUi) {
 @Composable
 private fun AttendanceBadge(status: AttendanceStatusUi) {
     val bgColor = when (status) {
-        AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.infoLowest
-        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Attended -> WooPosTheme.colors.infoLowest
         AttendanceStatusUi.Cancelled -> WooPosTheme.colors.errorLowest
-        AttendanceStatusUi.Booked -> WooPosTheme.colors.default
+        AttendanceStatusUi.Unattended -> WooPosTheme.colors.default
     }
     val textColor = when (status) {
-        AttendanceStatusUi.CheckedIn -> WooPosTheme.colors.onInfoLowest
-        AttendanceStatusUi.NoShow,
+        AttendanceStatusUi.Attended -> WooPosTheme.colors.onInfoLowest
         AttendanceStatusUi.Cancelled -> WooPosTheme.colors.onErrorLowest
-        AttendanceStatusUi.Booked -> WooPosTheme.colors.onDefault
+        AttendanceStatusUi.Unattended -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(

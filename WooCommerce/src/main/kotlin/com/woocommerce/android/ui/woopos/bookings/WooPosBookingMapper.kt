@@ -63,6 +63,11 @@ class WooPosBookingMapper @Inject constructor() {
             ) &&
             dto.orderId != 0L
 
+        val actions = buildList {
+            if (dto.orderId != 0L) add(BookingAction.ViewOrder)
+            if (isCancellable) add(BookingAction.CancelBooking)
+        }
+
         val bookingOrderTotals = orderTotals?.let {
             BookingOrderTotals(
                 subtotalText = formatCost(it.subtotal.toPlainString(), it.currency),
@@ -91,6 +96,7 @@ class WooPosBookingMapper @Inject constructor() {
             cancelInProgress = false,
             paymentUpdateInProgress = false,
             orderTotals = bookingOrderTotals,
+            actions = actions,
         )
     }
 
@@ -109,9 +115,9 @@ class WooPosBookingMapper @Inject constructor() {
 
     private fun mapAttendanceStatus(statusKey: String): AttendanceStatusUi? {
         return when (BookingEntity.AttendanceStatus.fromKey(statusKey)) {
-            is BookingEntity.AttendanceStatus.Booked -> AttendanceStatusUi.Booked
-            is BookingEntity.AttendanceStatus.CheckedIn -> AttendanceStatusUi.CheckedIn
-            is BookingEntity.AttendanceStatus.NoShow -> AttendanceStatusUi.NoShow
+            is BookingEntity.AttendanceStatus.Booked -> AttendanceStatusUi.Unattended
+            is BookingEntity.AttendanceStatus.CheckedIn -> AttendanceStatusUi.Attended
+            is BookingEntity.AttendanceStatus.NoShow -> AttendanceStatusUi.Unattended
             is BookingEntity.AttendanceStatus.Cancelled -> AttendanceStatusUi.Cancelled
             is BookingEntity.AttendanceStatus.Unknown -> null
         }

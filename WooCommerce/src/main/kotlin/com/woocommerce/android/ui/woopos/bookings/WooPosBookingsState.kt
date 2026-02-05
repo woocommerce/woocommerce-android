@@ -59,6 +59,7 @@ data class BookingDetail(
     val cancelInProgress: Boolean,
     val paymentUpdateInProgress: Boolean,
     val orderTotals: BookingOrderTotals? = null,
+    val actions: List<BookingAction> = emptyList(),
 )
 
 @Immutable
@@ -80,10 +81,15 @@ enum class BookingStatusUi(val label: String) {
 }
 
 enum class AttendanceStatusUi(val label: String) {
-    Booked("Booked"),
-    CheckedIn("Checked In"),
-    NoShow("No Show"),
+    Attended("Attended"),
+    Unattended("Unattended"),
     Cancelled("Cancelled"),
+}
+
+@Immutable
+sealed interface BookingAction {
+    data object ViewOrder : BookingAction
+    data object CancelBooking : BookingAction
 }
 
 sealed class DialogState {
