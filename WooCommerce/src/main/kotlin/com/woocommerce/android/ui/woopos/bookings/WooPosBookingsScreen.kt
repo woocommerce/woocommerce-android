@@ -37,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,11 +77,9 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersViewModel
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
-import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
@@ -91,23 +88,9 @@ val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    navigatedFromEmailReceiptSent: Boolean,
-    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosOrdersViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
-
-    if (navigatedFromEmailReceiptSent) {
-        viewModel.onBackFromSuccessfullySendingEmailReceipt()
-    }
-
-    val context = LocalContext.current
-
-    LaunchedEffect(Unit) {
-        viewModel.openUrlEvent.collectLatest { url ->
-            ChromeCustomTabUtils.launchUrl(context, url, enableSlideAnimation = true)
-        }
-    }
 
     WooPosBookingsScreen(
         state = state,
@@ -124,7 +107,6 @@ fun WooPosBookingsScreen(
         onUIEvent = viewModel::onUIEvent,
         onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
-        refundReasonUpdate = refundReasonResult
     )
 }
 
@@ -145,7 +127,6 @@ private fun WooPosBookingsScreen(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit,
     onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
-    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -154,7 +135,7 @@ private fun WooPosBookingsScreen(
             .fillMaxSize()
     ) {
         when (state) {
-            is WooPosOrdersState.Content -> OrdersContent(
+            is WooPosOrdersState.Content -> BookingsContent(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
@@ -166,12 +147,12 @@ private fun WooPosBookingsScreen(
                 onUIEvent = onUIEvent
             )
 
-            is WooPosOrdersState.Empty -> OrdersEmpty(
+            is WooPosOrdersState.Empty -> BookingsEmpty(
                 onActionClicked = onOrdersEmptyActionClicked,
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersState.Error -> OrdersError(
+            is WooPosOrdersState.Error -> BookingsError(
                 onRetryClicked = onOrdersLoadingErrorRetryButtonClicked,
                 modifier = Modifier.statusBarsPadding()
             )
@@ -196,7 +177,6 @@ private fun WooPosBookingsScreen(
                         orderId = dialogState.orderId,
                         onDismissRequest = onIssueRefundDialogDismissed,
                         onNavigationEvent = onNavigationEvent,
-                        refundReasonUpdate = refundReasonUpdate
                     )
                 }
                 WooPosOrdersState.Content.DialogState.Hidden -> Unit
@@ -206,7 +186,7 @@ private fun WooPosBookingsScreen(
 }
 
 @Composable
-private fun OrdersContent(
+private fun BookingsContent(
     state: WooPosOrdersState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
@@ -263,7 +243,7 @@ private fun OrdersContent(
                 else -> {
                     WooPosEmptyScreen(
                         modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
+                        icon = WooPosIcons.BookingsEmpty,
                         title = stringResource(R.string.woopos_orders_no_order_selected),
                         message = "",
                         contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
@@ -529,13 +509,13 @@ private fun LoadedOrdersList(
 }
 
 @Composable
-private fun OrdersEmpty(
+private fun BookingsEmpty(
     onActionClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooPosEmptyScreen(
         modifier = modifier.fillMaxSize(),
-        icon = WooPosIcons.OrdersEmpty,
+        icon = WooPosIcons.BookingsEmpty,
         title = stringResource(id = R.string.woopos_orders_empty_list_title),
         message = stringResource(id = R.string.woopos_orders_empty_list_message),
         contentDescription = stringResource(id = R.string.woopos_orders_empty_list_image_description),
@@ -545,7 +525,7 @@ private fun OrdersEmpty(
 }
 
 @Composable
-private fun OrdersError(
+private fun BookingsError(
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
