@@ -41,7 +41,7 @@ class WPComRemoteFeatureFlagRepository @Inject constructor(
         }
     }
 
-    suspend fun isRemoteFeatureFlagEnabled(key: String): Boolean = withContext(Dispatchers.IO) {
-        featureFlagsStore.getFeatureFlagsByKey(key).firstOrNull()?.value ?: false
+    suspend fun isRemoteFeatureFlagEnabled(key: String): Boolean? = withContext(Dispatchers.IO) {
+        featureFlagsStore.getFeatureFlagsByKey(key).firstOrNull()?.value
     }
 }
