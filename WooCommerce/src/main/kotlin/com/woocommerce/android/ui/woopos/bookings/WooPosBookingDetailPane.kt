@@ -156,10 +156,67 @@ private fun BookingSummarySection(detail: BookingDetail) {
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
 
-        WooPosText(
-            text = detail.amount,
+        if (detail.orderTotals != null) {
+            BookingTotalsGrid(detail.orderTotals)
+        } else {
+            WooPosText(
+                text = detail.amount,
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.SemiBold,
+            )
+        }
+    }
+}
+
+@Composable
+private fun BookingTotalsGrid(totals: BookingOrderTotals) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        BookingTotalsRow(
+            label = stringResource(R.string.woopos_payment_subtotal_label),
+            value = totals.subtotalText,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        BookingTotalsRow(
+            label = stringResource(R.string.woopos_payment_tax_label),
+            value = totals.taxText,
+        )
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        BookingTotalsRow(
+            label = stringResource(R.string.woopos_payment_total_label),
+            value = totals.totalText,
             style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.SemiBold,
+            fontWeight = FontWeight.Bold,
+        )
+    }
+}
+
+@Composable
+private fun BookingTotalsRow(
+    label: String,
+    value: String,
+    style: WooPosTypography = WooPosTypography.BodyMedium,
+    fontWeight: FontWeight = FontWeight.Normal,
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        WooPosText(
+            text = label,
+            style = style,
+            fontWeight = fontWeight,
+            color = if (fontWeight == FontWeight.Bold) {
+                MaterialTheme.colorScheme.onSurface
+            } else {
+                WooPosTheme.colors.onSurfaceVariantHighest
+            },
+        )
+        WooPosText(
+            text = value,
+            style = style,
+            fontWeight = fontWeight,
         )
     }
 }

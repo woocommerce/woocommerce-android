@@ -71,16 +71,25 @@ class WooPosBookingsViewModel @Inject constructor(
         selectedBookingId = bookingId
         val current = _state.value
         if (current is WooPosBookingsState.Content) {
+            val booking = bookings.find { it.id == bookingId }
             _state.value = current.copy(
                 items = current.items.map { it.copy(isSelected = it.id == bookingId) },
-                selectedDetail = bookings.find { it.id == bookingId }?.let {
+                selectedDetail = booking?.let {
                     mapper.toDetail(
                         dto = it,
                         customerName = dataSource.getCustomerName(it.customerId),
                         productName = dataSource.getProductName(it.productId),
+                        orderTotals = orderTotalsFor(it),
                     )
                 },
             )
+
+            if (booking != null && booking.orderId != 0L && dataSource.getOrderTotals(booking.orderId) == null) {
+                viewModelScope.launch {
+                    dataSource.fetchOrderTotals(booking.orderId)
+                    updateContentState()
+                }
+            }
         }
     }
 
@@ -276,6 +285,7 @@ class WooPosBookingsViewModel @Inject constructor(
                         updateContentState()
                         if (bookings.isNotEmpty()) {
                             dataSource.resolveNames(result.bookings)
+                            fetchSelectedBookingOrderTotals()
                             updateContentState()
                         }
                     }
@@ -307,12 +317,25 @@ class WooPosBookingsViewModel @Inject constructor(
                     dto = it,
                     customerName = dataSource.getCustomerName(it.customerId),
                     productName = dataSource.getProductName(it.productId),
+                    orderTotals = orderTotalsFor(it),
                 )
             },
             paginationState = paginationState,
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             dialogState = DialogState.Hidden,
         )
+    }
+
+    private fun orderTotalsFor(booking: BookingDto): OrderTotalsData? {
+        if (booking.orderId == 0L) return null
+        return dataSource.getOrderTotals(booking.orderId)
+    }
+
+    private suspend fun fetchSelectedBookingOrderTotals() {
+        val booking = bookings.find { it.id == selectedBookingId } ?: return
+        if (booking.orderId != 0L) {
+            dataSource.fetchOrderTotals(booking.orderId)
+        }
     }
 
     private fun updateDetailLoadingState(

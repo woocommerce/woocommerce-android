@@ -58,6 +58,14 @@ data class BookingDetail(
     val attendanceUpdateInProgress: Boolean,
     val cancelInProgress: Boolean,
     val paymentUpdateInProgress: Boolean,
+    val orderTotals: BookingOrderTotals? = null,
+)
+
+@Immutable
+data class BookingOrderTotals(
+    val subtotalText: String,
+    val taxText: String,
+    val totalText: String,
 )
 
 enum class BookingStatusUi(val label: String) {

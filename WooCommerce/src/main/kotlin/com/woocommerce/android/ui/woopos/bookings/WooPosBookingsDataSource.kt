@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -11,8 +12,10 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilter
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderOption
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.customer.CustomerRestClient
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.order.OrderRestClient
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.product.ProductRestClient
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.ConcurrentHashMap
@@ -22,10 +25,13 @@ class WooPosBookingsDataSource @Inject constructor(
     private val restClient: BookingsRestClient,
     private val customerRestClient: CustomerRestClient,
     private val productRestClient: ProductRestClient,
+    private val orderRestClient: OrderRestClient,
+    private val orderMapper: OrderMapper,
     private val selectedSite: SelectedSite,
 ) {
     private val customerNameCache = ConcurrentHashMap<Long, String>()
     private val productNameCache = ConcurrentHashMap<Long, String>()
+    private val orderTotalsCache = ConcurrentHashMap<Long, OrderTotalsData>()
     companion object {
         const val PAGE_SIZE = 25
     }
@@ -132,6 +138,25 @@ class WooPosBookingsDataSource @Inject constructor(
 
     fun getCustomerName(customerId: Long): String? = customerNameCache[customerId]
     fun getProductName(productId: Long): String? = productNameCache[productId]
+    fun getOrderTotals(orderId: Long): OrderTotalsData? = orderTotalsCache[orderId]
+
+    @Suppress("SwallowedException", "TooGenericExceptionCaught")
+    suspend fun fetchOrderTotals(orderId: Long) {
+        try {
+            val payload = orderRestClient.fetchSingleOrder(selectedSite.get(), orderId)
+            if (payload.error == null) {
+                val order = orderMapper.toAppModel(payload.orderWithMeta.first)
+                orderTotalsCache[orderId] = OrderTotalsData(
+                    subtotal = order.productsTotal,
+                    tax = order.totalTax,
+                    total = order.total,
+                    currency = order.currency,
+                )
+            }
+        } catch (e: Exception) {
+            // keep without totals
+        }
+    }
 
     @Suppress("SwallowedException", "TooGenericExceptionCaught")
     private suspend fun fetchCustomerName(customerId: Long) {
@@ -207,3 +232,10 @@ data class FetchBookingsResult(
 enum class BookingTab {
     Today, Upcoming, Canceled, All
 }
+
+data class OrderTotalsData(
+    val subtotal: BigDecimal,
+    val tax: BigDecimal,
+    val total: BigDecimal,
+    val currency: String,
+)

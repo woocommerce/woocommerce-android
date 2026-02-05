@@ -43,6 +43,7 @@ class WooPosBookingMapper @Inject constructor() {
         dto: BookingDto,
         customerName: String? = null,
         productName: String? = null,
+        orderTotals: OrderTotalsData? = null,
     ): BookingDetail {
         val zone = ZoneId.systemDefault()
         val startInstant = Instant.ofEpochSecond(dto.start)
@@ -61,6 +62,14 @@ class WooPosBookingMapper @Inject constructor() {
                 status is BookingEntity.Status.Confirmed
             ) &&
             dto.orderId != 0L
+
+        val bookingOrderTotals = orderTotals?.let {
+            BookingOrderTotals(
+                subtotalText = formatCost(it.subtotal.toPlainString(), it.currency),
+                taxText = formatCost(it.tax.toPlainString(), it.currency),
+                totalText = formatCost(it.total.toPlainString(), it.currency),
+            )
+        }
 
         return BookingDetail(
             id = dto.id,
@@ -81,6 +90,7 @@ class WooPosBookingMapper @Inject constructor() {
             attendanceUpdateInProgress = false,
             cancelInProgress = false,
             paymentUpdateInProgress = false,
+            orderTotals = bookingOrderTotals,
         )
     }
 
