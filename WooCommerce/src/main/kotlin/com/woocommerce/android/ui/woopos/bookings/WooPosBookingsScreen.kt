@@ -89,7 +89,7 @@ import kotlinx.coroutines.flow.filter
 val WOO_POS_ORDERS_TOOLBAR_HEIGHT = 56.dp
 
 @Composable
-fun WooPosOrdersScreen(
+fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     navigatedFromEmailReceiptSent: Boolean,
     refundReasonResult: String? = null,
@@ -109,7 +109,7 @@ fun WooPosOrdersScreen(
         }
     }
 
-    WooPosOrdersScreen(
+    WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
@@ -130,7 +130,7 @@ fun WooPosOrdersScreen(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun WooPosOrdersScreen(
+private fun WooPosBookingsScreen(
     state: WooPosOrdersState,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
@@ -609,7 +609,7 @@ fun WooPosOrdersScreenPreview() {
     val details2 = sampleOrderDetails(id = 2L, number = "#013")
 
     WooPosTheme {
-        WooPosOrdersScreen(
+        WooPosBookingsScreen(
             state = WooPosOrdersState.Content(
                 items = WooPosOrdersState.Content.Items.Loaded(
                     items = mapOf(
@@ -645,7 +645,7 @@ fun WooPosOrdersScreenPreview() {
 fun WooPosOrdersSearchErrorStatePreview() {
     val details = sampleOrderDetails()
     WooPosTheme {
-        WooPosOrdersScreen(
+        WooPosBookingsScreen(
             state = WooPosOrdersState.Content(
                 items = WooPosOrdersState.Content.Items.Error(
                     title = stringResource(R.string.woopos_search_orders_error_title),
@@ -682,7 +682,7 @@ fun WooPosOrdersSearchErrorStatePreview() {
 fun WooPosOrdersNothingFoundStatePreview() {
     val details = sampleOrderDetails()
     WooPosTheme {
-        WooPosOrdersScreen(
+        WooPosBookingsScreen(
             state = WooPosOrdersState.Content(
                 items = WooPosOrdersState.Content.Items.NothingFound(
                     title = stringResource(R.string.woopos_search_orders_empty_title),
@@ -718,7 +718,7 @@ fun WooPosOrdersNothingFoundStatePreview() {
 @Composable
 fun WooPosOrdersEmptyStatePreview() {
     WooPosTheme {
-        WooPosOrdersScreen(
+        WooPosBookingsScreen(
             state = WooPosOrdersState.Empty(
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
