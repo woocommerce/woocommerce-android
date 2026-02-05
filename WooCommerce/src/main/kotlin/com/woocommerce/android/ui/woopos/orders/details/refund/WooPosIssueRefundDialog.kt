@@ -74,7 +74,7 @@ fun WooPosIssueRefundDialog(
             factory.create(orderId)
         }
 
-    var isOpen by rememberSaveable(key = "refund_dialog_opened_$orderId") { mutableStateOf(false) }
+    var isOpen by rememberSaveable(inputs = arrayOf(orderId)) { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (!isOpen) {
             viewModel.onUIEvent(WooPosRefundUIEvent.DialogOpened)
