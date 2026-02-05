@@ -42,6 +42,7 @@ internal class TaxRateSelectorViewModelTest : BaseUnitTest() {
             getTaxRateLabel,
             getTaxRatePercentageValueText,
             prefs,
+            mock(),
             savedStateHandle
         )
     }
