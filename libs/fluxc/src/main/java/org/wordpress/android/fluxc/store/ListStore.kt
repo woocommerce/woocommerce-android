@@ -11,9 +11,6 @@ import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.ListAction
-import org.wordpress.android.fluxc.action.ListAction.FETCHED_LIST_ITEMS
-import org.wordpress.android.fluxc.action.ListAction.LIST_DATA_INVALIDATED
-import org.wordpress.android.fluxc.action.ListAction.LIST_REQUIRES_REFRESH
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.list.LIST_STATE_TIMEOUT
@@ -22,7 +19,6 @@ import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 import org.wordpress.android.fluxc.model.list.ListItemModel
 import org.wordpress.android.fluxc.model.list.ListModel
 import org.wordpress.android.fluxc.model.list.ListState
-import org.wordpress.android.fluxc.model.list.ListState.FETCHED
 import org.wordpress.android.fluxc.model.list.PagedListFactory
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource
@@ -56,10 +52,14 @@ class ListStore @Inject constructor(
         val actionType = action.type as? ListAction ?: return
 
         when (actionType) {
-            FETCHED_LIST_ITEMS -> handleFetchedListItems(action.payload as FetchedListItemsPayload)
-            LIST_REQUIRES_REFRESH -> handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
-            LIST_DATA_INVALIDATED -> handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
-            ListAction.LIST_DATA_FAILURE -> handleDataFailure(action.payload as OnListDataFailure)
+            ListAction.FETCHED_LIST_ITEMS ->
+                handleFetchedListItems(action.payload as FetchedListItemsPayload)
+            ListAction.LIST_REQUIRES_REFRESH ->
+                handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
+            ListAction.LIST_DATA_INVALIDATED ->
+                handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
+            ListAction.LIST_DATA_FAILURE ->
+                handleDataFailure(action.payload as OnListDataFailure)
         }
     }
 
@@ -141,7 +141,7 @@ class ListStore @Inject constructor(
         dataSource: ListItemDataSourceInterface<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM>
     ): PagedListFactory<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM> {
         val getRemoteItemIds = { getListItems(listDescriptor).map { RemoteId(value = it) } }
-        val getIsListFullyFetched = { getListState(listDescriptor) == FETCHED }
+        val getIsListFullyFetched = { getListState(listDescriptor) == ListState.FETCHED }
         return PagedListFactory(
                 createDataSource = {
                     InternalPagedListDataSource(
@@ -217,7 +217,7 @@ class ListStore @Inject constructor(
         val newState = when {
             payload.isError -> ListState.ERROR
             payload.canLoadMore -> ListState.CAN_LOAD_MORE
-            else -> FETCHED
+            else -> ListState.FETCHED
         }
         listSqlUtils.insertOrUpdateList(payload.listDescriptor, newState)
 
@@ -257,7 +257,7 @@ class ListStore @Inject constructor(
         remoteItemIds: List<Long>,
         canLoadMore: Boolean
     ) {
-        val newState = if (canLoadMore) ListState.CAN_LOAD_MORE else FETCHED
+        val newState = if (canLoadMore) ListState.CAN_LOAD_MORE else ListState.FETCHED
 
         listSqlUtils.insertOrUpdateList(listDescriptor, newState)
 
@@ -349,7 +349,7 @@ class ListStore @Inject constructor(
         val listDescriptors: List<ListDescriptor>,
         val causeOfChange: CauseOfListChange,
         error: ListError?
-    ) : Store.OnChanged<ListError>() {
+    ) : OnChanged<ListError>() {
         enum class CauseOfListChange {
             ERROR, FIRST_PAGE_FETCHED, LOADED_MORE
         }
@@ -366,7 +366,7 @@ class ListStore @Inject constructor(
         val listDescriptor: ListDescriptor,
         val newState: ListState,
         error: ListError?
-    ) : Store.OnChanged<ListError>() {
+    ) : OnChanged<ListError>() {
         init {
             this.error = error
         }
@@ -375,14 +375,14 @@ class ListStore @Inject constructor(
     /**
      * The event to be emitted when a list needs to be refresh for a specific [ListDescriptorTypeIdentifier].
      */
-    class OnListRequiresRefresh(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListRequiresRefresh(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
     /**
      * The event to be emitted when a list's data is invalidated for a specific [ListDescriptorTypeIdentifier].
      */
-    class OnListDataInvalidated(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListDataInvalidated(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
-    class OnListDataFailure(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
+    class OnListDataFailure(val type: ListDescriptorTypeIdentifier) : OnChanged<ListError>()
 
     /**
      * This is the payload for [ListAction.FETCHED_LIST_ITEMS].
