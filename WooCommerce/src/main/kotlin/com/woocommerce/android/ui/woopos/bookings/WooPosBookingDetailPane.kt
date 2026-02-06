@@ -1,11 +1,12 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,12 +23,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,7 +57,6 @@ private val selectableAttendanceStatuses = listOf(
     AttendanceStatusUi.Unattended,
 )
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun WooPosBookingDetailPane(
     detail: BookingDetail,
@@ -106,24 +105,6 @@ fun WooPosBookingDetailPane(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        if (detail.orderTotals != null) {
-            WooPosCard(shadowType = ShadowType.Soft) {
-                Column(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
-                    WooPosText(
-                        text = stringResource(R.string.woopos_orders_details_totals_title),
-                        style = WooPosTypography.BodyXLarge,
-                        fontWeight = FontWeight.SemiBold,
-                    )
-
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-                    BookingTotalsGrid(totals = detail.orderTotals)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-        }
-
         if (detail.isAttendanceEditable) {
             WooPosCard(shadowType = ShadowType.Soft) {
                 AttendanceSection(
@@ -139,9 +120,11 @@ fun WooPosBookingDetailPane(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
 
-        if (detail.isPayable) {
+        if (detail.orderTotals != null || detail.isPayable) {
             WooPosCard(shadowType = ShadowType.Soft) {
                 PaymentSection(
+                    orderTotals = detail.orderTotals,
+                    isPayable = detail.isPayable,
                     onPayByCardClicked = onPayByCardClicked,
                     onPayByCashClicked = onPayByCashClicked,
                     modifier = Modifier.padding(WooPosSpacing.Medium.value)
@@ -362,7 +345,6 @@ private fun BookingTotalsRow(
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun AttendanceSection(
     currentStatus: AttendanceStatusUi?,
@@ -377,46 +359,81 @@ private fun AttendanceSection(
         ) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_detail_attendance),
-                style = WooPosTypography.BodyMedium,
+                style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.SemiBold,
             )
             if (isLoading) {
                 CircularProgressIndicator(
-                    modifier = Modifier.size(16.dp),
+                    modifier = Modifier.size(20.dp),
                     strokeWidth = 2.dp,
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        FlowRow(
-            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-            verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-        ) {
-            selectableAttendanceStatuses.forEach { status ->
-                FilterChip(
-                    selected = status == currentStatus,
-                    onClick = { if (!isLoading) onStatusSelected(status) },
-                    enabled = !isLoading,
-                    label = {
-                        WooPosText(
-                            text = status.label,
-                            style = WooPosTypography.Caption,
-                            fontWeight = if (status == currentStatus) {
-                                FontWeight.Bold
-                            } else {
-                                FontWeight.Normal
-                            },
-                        )
-                    },
-                    colors = FilterChipDefaults.filterChipColors(
-                        selectedContainerColor = MaterialTheme.colorScheme.primary,
-                        selectedLabelColor = MaterialTheme.colorScheme.onPrimary,
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                        labelColor = MaterialTheme.colorScheme.onSurface,
+        AttendanceToggle(
+            currentStatus = currentStatus,
+            isLoading = isLoading,
+            onStatusSelected = onStatusSelected,
+            modifier = Modifier.fillMaxWidth(),
+        )
+    }
+}
+
+@Composable
+private fun AttendanceToggle(
+    currentStatus: AttendanceStatusUi?,
+    isLoading: Boolean,
+    onStatusSelected: (AttendanceStatusUi) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shape = RoundedCornerShape(WooPosSpacing.Medium.value)
+
+    Row(
+        modifier = modifier
+            .height(IntrinsicSize.Min)
+            .clip(shape)
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = shape,
+            ),
+    ) {
+        selectableAttendanceStatuses.forEachIndexed { index, status ->
+            val isSelected = status == currentStatus
+
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .background(
+                        if (isSelected) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainerLowest
+                        }
+                    )
+                    .clickable(enabled = !isLoading) { onStatusSelected(status) }
+                    .padding(
+                        horizontal = WooPosSpacing.Medium.value,
+                        vertical = WooPosSpacing.Small.value,
                     ),
+                contentAlignment = Alignment.Center,
+            ) {
+                WooPosText(
+                    text = status.label,
+                    style = WooPosTypography.BodyLarge,
+                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                    color = if (isSelected) {
+                        MaterialTheme.colorScheme.onPrimary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
                 )
+            }
+
+            if (index < selectableAttendanceStatuses.lastIndex) {
+                VerticalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             }
         }
     }
@@ -424,6 +441,8 @@ private fun AttendanceSection(
 
 @Composable
 private fun PaymentSection(
+    orderTotals: BookingOrderTotals?,
+    isPayable: Boolean,
     onPayByCardClicked: () -> Unit,
     onPayByCashClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -431,25 +450,33 @@ private fun PaymentSection(
     Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_bookings_detail_payment),
-            style = WooPosTypography.BodyMedium,
+            style = WooPosTypography.BodyXLarge,
             fontWeight = FontWeight.SemiBold,
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        if (orderTotals != null) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosButton(
-            text = stringResource(R.string.woopos_bookings_detail_pay_by_card),
-            onClick = onPayByCardClicked,
-            modifier = Modifier.fillMaxWidth()
-        )
+            BookingTotalsGrid(totals = orderTotals)
+        }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        if (isPayable) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_bookings_detail_pay_by_cash),
-            onClick = onPayByCashClicked,
-            modifier = Modifier.fillMaxWidth()
-        )
+            WooPosButton(
+                text = stringResource(R.string.woopos_bookings_detail_pay_by_card),
+                onClick = onPayByCardClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+            WooPosOutlinedButton(
+                text = stringResource(R.string.woopos_bookings_detail_pay_by_cash),
+                onClick = onPayByCashClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 
