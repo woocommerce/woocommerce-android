@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
@@ -168,5 +169,69 @@ class WooPosBookingsViewModel @Inject constructor(
 
     fun onIssueRefundDialogDismissed() {
         return Unit
+    }
+
+    private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
+        // TODO: create a POS-specific mapper for BookingEntity -> BookingItemViewState
+        return WooPosBookingsState.BookingItemViewState(
+            id = booking.id.value,
+            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
+            date = booking.start.toString(),
+            total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+            customerEmail = booking.order.customerInfo?.billingEmail,
+            isSelected = booking.id.value == selectedBookingId,
+            status = mapBookingStatus(booking.status),
+            statusSlug = booking.status.key,
+            createdAtMillis = booking.start.toEpochMilli()
+        )
+    }
+
+    private fun mapToDetailsViewState(
+        booking: BookingEntity
+    ): WooPosBookingsState.BookingDetailsViewState {
+        // TODO: create a POS-specific mapper for BookingEntity -> BookingDetailsViewState
+        return WooPosBookingsState.BookingDetailsViewState.Computed(
+            orderId = booking.orderId,
+            details = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
+                id = booking.id.value,
+                number = "#${booking.id.value}",
+                dateTime = booking.start.toString(),
+                customerEmail = booking.order.customerInfo?.billingEmail,
+                status = mapBookingStatus(booking.status),
+                lineItems = emptyList(),
+                breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+                    products = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "",
+                    discount = null,
+                    discountCode = null,
+                    taxes = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "",
+                    shipping = null,
+                    refunds = emptyList(),
+                    netPayment = null
+                ),
+                total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+                totalPaid = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+                paymentMethodTitle = booking.order.paymentInfo?.paymentMethodTitle,
+                actionsState = WooPosBookingsState.BookingActionsState.Loaded(
+                    listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                )
+            )
+        )
+    }
+
+    private fun mapBookingStatus(status: BookingEntity.Status): PosBookingStatus {
+        val colorKey = when (status) {
+            BookingEntity.Status.Complete -> BookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Paid -> BookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Confirmed -> BookingStatusColorKey.PROCESSING
+            BookingEntity.Status.PendingConfirmation -> BookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Unpaid -> BookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Cancelled -> BookingStatusColorKey.FAILED
+            BookingEntity.Status.InCart -> BookingStatusColorKey.OTHER
+            is BookingEntity.Status.Unknown -> BookingStatusColorKey.OTHER
+        }
+        return PosBookingStatus(
+            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
+            colorKey = colorKey
+        )
     }
 }
