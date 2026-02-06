@@ -193,12 +193,14 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
-    fun onBookingsEmptyActionClicked() {
-        return Unit
+    fun onBookingsLoadingErrorRetryButtonClicked() {
+        _state.value = WooPosBookingsState.Loading
+        fetchBookings()
     }
 
-    fun onBookingsLoadingErrorRetryButtonClicked() {
-        return Unit
+    fun onBookingsEmptyActionClicked() {
+        _state.value = WooPosBookingsState.Loading
+        fetchBookings()
     }
 
     @Suppress("UnusedParameter")
