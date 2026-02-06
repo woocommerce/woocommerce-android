@@ -3,10 +3,7 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -14,7 +11,6 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
-import com.woocommerce.android.ui.woopos.orders.SearchOrdersResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
@@ -28,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -64,21 +59,9 @@ class WooPosBookingsViewModel @Inject constructor(
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
-    private var searchJob: Job? = null
     private var loadingJob: Job? = null
     private var loadingMoreOrdersJob: Job? = null
     private var sideLoadActionsJob: Job? = null
-
-    private val currentSearchQuery: String?
-        get() = (
-            (
-                _state.value.searchInputState as? WooPosSearchInputState.Open
-                )?.input as? WooPosSearchInputState.Open.Input.Query
-            )?.query
-
-    companion object {
-        private const val SEARCH_DEBOUNCE_DELAY_MS = 300L
-    }
 
     init {
         loadOrders()
@@ -279,12 +262,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         ordersDataSource.clearCache()
 
-        val query = currentSearchQuery
-        if (query.isNullOrEmpty()) {
-            loadOrders(isRefreshing = true)
-        } else {
-            performSearch(query, isRefreshing = true)
-        }
+        loadOrders(isRefreshing = true)
     }
 
     fun onEndOfOrdersListReached() {
@@ -336,17 +314,8 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onOrdersLoadingErrorRetryButtonClicked() {
-        _state.value = WooPosBookingsState.Loading(
-            searchInputState = WooPosSearchInputState.Closed
-        )
+        _state.value = WooPosBookingsState.Loading
         loadOrders()
-    }
-
-    fun onSearchErrorRetry() {
-        val query = currentSearchQuery
-        if (!query.isNullOrEmpty()) {
-            performSearch(query)
-        }
     }
 
     fun loadMoreIfPossible() {
@@ -362,70 +331,13 @@ class WooPosBookingsViewModel @Inject constructor(
 
         loadingMoreOrdersJob?.cancel()
         loadingMoreOrdersJob = viewModelScope.launch {
-            val normalizedQuery = currentSearchQuery.takeUnless { it.isNullOrEmpty() }
-            val result = ordersDataSource.loadMore(normalizedQuery)
+            val result = ordersDataSource.loadMore()
 
             if (result.isSuccess) {
                 ordersAnalyticsTracker.trackOrdersListNextPageLoaded()
                 appendOrders(result.getOrThrow())
             } else {
                 _state.value = newState.copy(paginationState = WooPosPaginationState.Error)
-            }
-        }
-    }
-
-    fun onSearchEvent(event: WooPosSearchUIEvent) {
-        when (event) {
-            is WooPosSearchUIEvent.SearchIconClicked -> {
-                viewModelScope.launch {
-                    ordersAnalyticsTracker.trackOrdersListSearchButtonTapped()
-                }
-
-                updateSearchState(
-                    WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Hint(
-                            resourceProvider.getString(R.string.woopos_search_orders)
-                        ),
-                        isLoading = false,
-                        requestFocus = true
-                    )
-                )
-            }
-
-            is WooPosSearchUIEvent.Search -> {
-                updateSearchState(
-                    WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Query(
-                            event.query,
-                            event.cursorPosition
-                        ),
-                        isLoading = false,
-                    )
-                )
-
-                if (event.query.isEmpty()) {
-                    loadOrders()
-                } else {
-                    performSearch(event.query)
-                }
-            }
-
-            is WooPosSearchUIEvent.Clear -> {
-                updateSearchState(
-                    WooPosSearchInputState.Open(
-                        input = WooPosSearchInputState.Open.Input.Hint(
-                            resourceProvider.getString(R.string.woopos_search_orders)
-                        ),
-                        isLoading = false,
-                        requestFocus = true
-                    )
-                )
-                loadOrders()
-            }
-
-            is WooPosSearchUIEvent.Close -> {
-                updateSearchState(WooPosSearchInputState.Closed)
-                loadOrders()
             }
         }
     }
@@ -472,72 +384,6 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
-    private fun updateSearchState(searchState: WooPosSearchInputState) {
-        _state.value = when (val currentState = _state.value) {
-            is WooPosBookingsState.Content -> currentState.copy(searchInputState = searchState)
-            is WooPosBookingsState.Empty -> currentState.copy(searchInputState = searchState)
-            is WooPosBookingsState.Error -> currentState.copy(searchInputState = searchState)
-            is WooPosBookingsState.Loading -> currentState.copy(searchInputState = searchState)
-        }
-    }
-
-    private fun performSearch(query: String, isRefreshing: Boolean = false) {
-        cancelJobs()
-
-        val currentSelectedDetails = (_state.value as? WooPosBookingsState.Content)?.selectedDetails
-        searchJob = viewModelScope.launch {
-            delay(SEARCH_DEBOUNCE_DELAY_MS)
-            if (!isRefreshing) {
-                _state.value = WooPosBookingsState.Content(
-                    items = WooPosBookingsState.Content.Items.Searching,
-                    pullToRefreshState = WooPosPullToRefreshState.Disabled,
-                    searchInputState = _state.value.searchInputState,
-                    selectedDetails = currentSelectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
-                )
-            }
-
-            val mark = Monotonic.markNow()
-            val result = ordersDataSource.searchOrders(query, forceRefreshRefunds = isRefreshing)
-            val elapsedMs = mark.elapsedNow().inWholeMilliseconds
-            ordersAnalyticsTracker.trackOrdersListSearchResultsFetched(elapsedMs)
-            when (result) {
-                is SearchOrdersResult.Error -> {
-                    _state.value = WooPosBookingsState.Content(
-                        items = WooPosBookingsState.Content.Items.Error(
-                            title = resourceProvider.getString(R.string.woopos_search_orders_error_title),
-                            message = resourceProvider.getString(R.string.woopos_search_orders_error_description)
-                        ),
-                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                        searchInputState = _state.value.searchInputState,
-                        selectedDetails = null,
-                        paginationState = WooPosPaginationState.None,
-                        dialogState = WooPosBookingsState.Content.DialogState.Hidden
-                    )
-                }
-
-                is SearchOrdersResult.Success -> {
-                    if (result.ordersWithRefunds.isEmpty()) {
-                        _state.value = WooPosBookingsState.Content(
-                            items = WooPosBookingsState.Content.Items.NothingFound(
-                                title = resourceProvider.getString(R.string.woopos_search_orders_empty_title),
-                                message = resourceProvider.getString(R.string.woopos_search_orders_empty_description)
-                            ),
-                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-                            searchInputState = _state.value.searchInputState,
-                            selectedDetails = null,
-                            paginationState = WooPosPaginationState.None,
-                            dialogState = WooPosBookingsState.Content.DialogState.Hidden
-                        )
-                    } else {
-                        replaceOrders(result.ordersWithRefunds)
-                    }
-                }
-            }
-        }
-    }
-
     private fun loadOrders(isRefreshing: Boolean = false) {
         cancelJobs()
         val mark = Monotonic.markNow()
@@ -550,15 +396,12 @@ class WooPosBookingsViewModel @Inject constructor(
 
                         _state.value = WooPosBookingsState.Error(
                             message = result.message,
-                            searchInputState = WooPosSearchInputState.Closed
                         )
                     }
 
                     is LoadOrdersResult.SuccessCache -> {
                         if (result.ordersWithRefunds.isEmpty()) {
-                            _state.value = WooPosBookingsState.Loading(
-                                searchInputState = WooPosSearchInputState.Closed
-                            )
+                            _state.value = WooPosBookingsState.Loading
                         } else {
                             replaceOrders(result.ordersWithRefunds)
                         }
@@ -569,9 +412,7 @@ class WooPosBookingsViewModel @Inject constructor(
                         ordersAnalyticsTracker.trackOrdersListFetched(elapsedMs)
 
                         if (result.ordersWithRefunds.isEmpty()) {
-                            _state.value = WooPosBookingsState.Empty(
-                                searchInputState = WooPosSearchInputState.Closed
-                            )
+                            _state.value = WooPosBookingsState.Empty()
                         } else {
                             replaceOrders(result.ordersWithRefunds)
                         }
@@ -582,7 +423,6 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun cancelJobs() {
-        searchJob?.cancel()
         loadingJob?.cancel()
         loadingMoreOrdersJob?.cancel()
         sideLoadActionsJob?.cancel()
@@ -664,7 +504,6 @@ class WooPosBookingsViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState,
             dialogState = (currentState as? WooPosBookingsState.Content)?.dialogState
                 ?: WooPosBookingsState.Content.DialogState.Hidden
         )
@@ -691,7 +530,6 @@ class WooPosBookingsViewModel @Inject constructor(
             pullToRefreshState = WooPosPullToRefreshState.Enabled,
             selectedDetails = current.selectedDetails,
             paginationState = paginationState,
-            searchInputState = _state.value.searchInputState,
             dialogState = current.dialogState
         )
     }
