@@ -99,6 +99,25 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    fun onBookingSelected(bookingId: Long) {
+        selectedBookingId = bookingId
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
+
+        val updatedItems = items.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == bookingId)
+        }
+        val selectedDetails = updatedItems.entries
+            .find { it.key.id == bookingId }
+            ?.value
+            ?.let { (it as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(updatedItems),
+            selectedDetails = selectedDetails
+        )
+    }
+
     fun onRefresh() {
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
@@ -123,25 +142,6 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
         }
-    }
-
-    fun onBookingSelected(bookingId: Long) {
-        selectedBookingId = bookingId
-        val currentState = _state.value as? WooPosBookingsState.Content ?: return
-        val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
-
-        val updatedItems = items.items.mapKeys { (item, _) ->
-            item.copy(isSelected = item.id == bookingId)
-        }
-        val selectedDetails = updatedItems.entries
-            .find { it.key.id == bookingId }
-            ?.value
-            ?.let { (it as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details }
-
-        _state.value = currentState.copy(
-            items = WooPosBookingsState.Content.Items.Loaded(updatedItems),
-            selectedDetails = selectedDetails
-        )
     }
 
     fun onEndOfBookingsListReached() {
@@ -219,13 +219,13 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                // TODO: handle email receipt
+                // TBD: handle email receipt
             }
         }
     }
 
     private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
-        // TODO: create a POS-specific mapper for BookingEntity -> BookingItemViewState
+        // TBD: create a POS-specific mapper for BookingEntity -> BookingItemViewState
         return WooPosBookingsState.BookingItemViewState(
             id = booking.id.value,
             title = booking.order.productInfo?.name ?: "#${booking.id.value}",
@@ -242,7 +242,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun mapToDetailsViewState(
         booking: BookingEntity
     ): WooPosBookingsState.BookingDetailsViewState {
-        // TODO: create a POS-specific mapper for BookingEntity -> BookingDetailsViewState
+        // TBD: create a POS-specific mapper for BookingEntity -> BookingDetailsViewState
         return WooPosBookingsState.BookingDetailsViewState.Computed(
             orderId = booking.orderId,
             details = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
