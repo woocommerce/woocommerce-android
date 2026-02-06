@@ -1,1 +1,1 @@
-Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
+- [Internal] Require a phone number in shipping address  [https://github.com/woocommerce/woocommerce-android/pull/15208]
