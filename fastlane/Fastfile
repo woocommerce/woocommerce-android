@@ -1385,6 +1385,7 @@ platform :android do
 
     comment_on_pr_with_prototype_build_install_link(
       app_display_name: "#{app} Android",
+      app_icon: app == WEAR_APP ? ':amazon-s3:' : nil,
       download_url: install_url,
       metadata: {
         Platform: platform_name,
@@ -1737,21 +1738,25 @@ def comment_on_pr_with_prototype_build_install_link(
   download_url:,
   metadata:,
   fold:,
-  reuse_identifier:
+  reuse_identifier:,
+  app_icon: nil
 )
   pr_number = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
   return unless pr_number && pr_number != 'false'
+
+  comment_args = {
+    app_display_name: app_display_name,
+    download_url: download_url,
+    metadata: metadata,
+    fold: fold
+  }
+  comment_args[:app_icon] = app_icon if app_icon
 
   comment_on_pr(
     project: GITHUB_REPO,
     pr_number: Integer(pr_number),
     reuse_identifier: reuse_identifier,
-    body: prototype_build_details_comment(
-      app_display_name: app_display_name,
-      download_url: download_url,
-      metadata: metadata,
-      fold: fold
-    )
+    body: prototype_build_details_comment(**comment_args)
   )
 end
 
