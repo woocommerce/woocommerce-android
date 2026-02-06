@@ -22,7 +22,7 @@ fun WooPosBookingDetails(
         contentAlignment = Alignment.Center
     ) {
         WooPosText(
-            text = "Booking Detail",
+            text = "Booking Detail ${details.id}",
             style = WooPosTypography.Heading
         )
     }

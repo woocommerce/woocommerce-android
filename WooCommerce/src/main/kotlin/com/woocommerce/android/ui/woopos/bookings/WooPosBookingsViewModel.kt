@@ -78,7 +78,7 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
-    fun onOrderSelected(orderId: Long) {
+    fun onBookingSelected(orderId: Long) {
         val current = _state.value as? WooPosBookingsState.Content ?: return
         val loadedItems = current.items as? WooPosBookingsState.Content.Items.Loaded ?: return
 
@@ -272,7 +272,7 @@ class WooPosBookingsViewModel @Inject constructor(
         loadOrders(isRefreshing = true)
     }
 
-    fun onEndOfOrdersListReached() {
+    fun onEndOfBookingsListReached() {
         val currentState = _state.value
         if (currentState !is WooPosBookingsState.Content ||
             currentState.paginationState != WooPosPaginationState.None ||
@@ -314,13 +314,13 @@ class WooPosBookingsViewModel @Inject constructor(
         refreshSelectedOrder()
     }
 
-    fun onOrdersEmptyActionClicked() {
+    fun onBookingsEmptyActionClicked() {
         viewModelScope.launch {
             _openUrlEvent.emit(AppUrls.URL_LEARN_MORE_ORDERS)
         }
     }
 
-    fun onOrdersLoadingErrorRetryButtonClicked() {
+    fun onBookingsLoadingErrorRetryButtonClicked() {
         _state.value = WooPosBookingsState.Loading
         loadOrders()
     }
