@@ -65,7 +65,7 @@ steps:
           - "**/build/reports/diff_manifest/**/**/*"
 
   ########################################
-  - group: ":rocket: Prototype Build"
+  - group: "🚀 Prototype Build"
     steps:
       - input: Build Prototype?
         prompt: Select which app to build and distribute via Firebase App Distribution
