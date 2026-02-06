@@ -80,6 +80,7 @@ class AccountRepository @Inject constructor(
             }
         } else {
             // Application passwords logout
+            pushNotificationRepository.unregisterWooCoreTokensFromServer()
             deleteApplicationPassword(selectedSite.get())
             AnalyticsTracker.track(AnalyticsEvent.ACCOUNT_LOGOUT)
             cleanup()
@@ -146,7 +147,7 @@ class AccountRepository @Inject constructor(
                         "${result.error.errorCode} > ${result.error.message}"
                 )
             } else {
-                WooLog.i(LOGIN, "Application password deleted${siteId?.let { " for site Id: $it" }.orEmpty()}" )
+                WooLog.i(LOGIN, "Application password deleted${siteId?.let { " for site Id: $it" }.orEmpty()}")
             }
         }
     }

@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -32,6 +33,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
     private val analyticsTracker: AnalyticsTrackerWrapper = mock()
     private val getWooVersion: GetWooCorePluginCachedVersion = mock()
     private val appPrefs: AppPrefsWrapper = mock()
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi = mock()
 
     private val view: MainSettingsContract.View = mock()
     private lateinit var presenter: MainSettingsPresenter
@@ -43,6 +45,7 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             accountStore = accountStore,
             wooCommerceStore = wooCommerceStore,
             featureAnnouncementRepository = featureAnnouncementRepository,
+            shouldShowEnablePushNotificationsUi = shouldShowEnablePushNotificationsUi,
             buildConfigWrapper = buildConfigWrapper,
             accountRepository = accountRepository,
             notificationChannelsHandler = notificationChannelsHandler,

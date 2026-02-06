@@ -19,4 +19,5 @@ sealed class WooPosNavigationEvent {
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
+    data object OpenBookings : WooPosNavigationEvent()
 }

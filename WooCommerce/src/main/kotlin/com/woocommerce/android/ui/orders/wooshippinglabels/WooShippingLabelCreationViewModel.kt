@@ -986,6 +986,14 @@ class WooShippingLabelCreationViewModel @Inject constructor(
 
         if (selectedPackage == null || selectedAddress == null || shippingRate == null || weight == null) return
 
+        if (!addressValidationHelper.isPhoneValidForShippingLabel(selectedAddress.shipTo.address.phone)) {
+            snackbarData = ShippingLabelsSnackbarData(
+                message = R.string.woo_shipping_labels_purchase_phone_error,
+                actionLabel = R.string.edit,
+            ) { onEditDestinationAddress(selectedAddress.shipTo) }
+            return
+        }
+
         val orderId = navArgs.orderId
         val lastOrderComplete = uiState.value.markOrderComplete
         val shippableItemsIdList = shipmentItems.value[selectedShipmentIndex].map { it.productId }
@@ -1022,24 +1030,47 @@ class WooShippingLabelCreationViewModel @Inject constructor(
                     updateShipment(selectedShipmentIndex, updatedShipment)
                 },
                 onFailure = { exception ->
-                    updateShipment(
-                        selectedShipmentIndex,
-                        shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
-                    )
-                    if (exception is WooException && exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE) {
-                        triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
-                    } else {
-                        analyticsTracker.track(
-                            AnalyticsEvent.WCS_PURCHASE_STEP,
-                            mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to exception.message)
-                        )
-                        snackbarData = ShippingLabelsSnackbarData(
-                            message = R.string.woo_shipping_labels_purchase_error,
-                            actionLabel = R.string.retry,
-                        ) { onPurchaseShippingLabel() }
-                    }
+                    handlePurchaseFailure(exception, selectedShipmentIndex, selectedAddress)
                 }
             )
+        }
+    }
+
+    private fun handlePurchaseFailure(
+        exception: Throwable,
+        selectedShipmentIndex: Int,
+        selectedAddress: WooShippingAddresses
+    ) {
+        updateShipment(
+            selectedShipmentIndex,
+            shipments.value[selectedShipmentIndex].copy(isPurchaseAPILoading = false)
+        )
+        when {
+            exception is WooException &&
+                exception.error.apiErrorCode == UPSDAP_MISSING_TOS_ERROR_CODE -> {
+                triggerEvent(NavigateToUPSDAPTermsOfService(selectedAddress.shipFrom))
+            }
+            exception is WooException &&
+                exception.error.message?.contains("phone", ignoreCase = true) == true -> {
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_PURCHASE_STEP,
+                    mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to "invalid_phone")
+                )
+                snackbarData = ShippingLabelsSnackbarData(
+                    message = R.string.woo_shipping_labels_purchase_phone_error,
+                    actionLabel = R.string.edit,
+                ) { onEditDestinationAddress(selectedAddress.shipTo) }
+            }
+            else -> {
+                analyticsTracker.track(
+                    AnalyticsEvent.WCS_PURCHASE_STEP,
+                    mapOf(KEY_STATE to "purchase_failed", KEY_ERROR to exception.message)
+                )
+                snackbarData = ShippingLabelsSnackbarData(
+                    message = R.string.woo_shipping_labels_purchase_error,
+                    actionLabel = R.string.retry,
+                ) { onPurchaseShippingLabel() }
+            }
         }
     }
 
