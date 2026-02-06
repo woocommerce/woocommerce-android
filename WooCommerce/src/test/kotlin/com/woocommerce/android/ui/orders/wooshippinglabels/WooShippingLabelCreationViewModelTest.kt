@@ -1164,7 +1164,7 @@ class WooShippingLabelCreationViewModelTest : BaseUnitTest() {
     @Test
     fun `when there are notices then display the notices`() = testBlocking {
         val notice = NoticeBannerUiState(
-            message = R.string.woo_shipping_address_notification_destination_missing,
+            message = R.string.woo_shipping_address_notification_destination_missing_or_invalid,
             type = NoticeType.MISSING_DESTINATION_ADDRESS,
             error = true,
         )
