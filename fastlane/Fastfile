@@ -1376,7 +1376,7 @@ platform :android do
 
     # Upload to appropriate service based on app type
     install_url = if app == MOBILE_APP
-                    upload_prototype_to_fad(app: app, platform_name: platform_name)
+                    upload_prototype_to_fad(platform_name: platform_name)
                   else
                     upload_prototype_to_s3(app: app)
                   end
