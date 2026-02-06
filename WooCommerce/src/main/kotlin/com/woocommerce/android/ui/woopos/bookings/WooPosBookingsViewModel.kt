@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetailsMapper
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -11,11 +12,9 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
-import com.woocommerce.android.ui.woopos.orders.WooPosBookingActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
-import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -43,7 +42,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
     private val orderItemMapper: WooPosOrderItemMapper,
-    private val orderDetailsMapper: WooPosOrderDetailsMapper,
+    private val bookingDetailsMapper: WooPosBookingDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosBookingActionsProvider,
 ) : ViewModel() {
@@ -368,7 +367,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
-        val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
+        val newDetailsViewState = bookingDetailsMapper.mapBookingDetails(updated, historicalRefundsResult)
         val newDetails = WooPosBookingsState.BookingDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
@@ -435,7 +434,7 @@ class WooPosBookingsViewModel @Inject constructor(
         val orderDetails = loadedItems.items.values.firstOrNull { it.orderId == orderId }
             ?: error("Order $orderId not found in state")
 
-        return orderDetailsMapper.mapOrderDetails(
+        return bookingDetailsMapper.mapBookingDetails(
             when (orderDetails) {
                 is WooPosBookingsState.BookingDetailsViewState.Lazy -> orderDetails.order
                 is WooPosBookingsState.BookingDetailsViewState.Computed -> {
@@ -462,7 +461,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         return when (orderDetails) {
             is WooPosBookingsState.BookingDetailsViewState.Lazy ->
-                orderDetailsMapper.mapOrderDetailsWithoutActions(orderDetails.order)
+                bookingDetailsMapper.mapBookingDetailsWithoutActions(orderDetails.order)
 
             is WooPosBookingsState.BookingDetailsViewState.Computed -> {
                 orderDetails.details
@@ -542,7 +541,7 @@ class WooPosBookingsViewModel @Inject constructor(
             async {
                 val item = orderItemMapper.mapOrderItem(order, selectedId)
                 val details: WooPosBookingsState.BookingDetailsViewState = if (order.id == selectedId) {
-                    val fullDetails = orderDetailsMapper.mapOrderDetails(order, refundResult)
+                    val fullDetails = bookingDetailsMapper.mapBookingDetails(order, refundResult)
                     WooPosBookingsState.BookingDetailsViewState.Computed(orderId = order.id, details = fullDetails)
                 } else {
                     WooPosBookingsState.BookingDetailsViewState.Lazy(
