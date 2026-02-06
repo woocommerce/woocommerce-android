@@ -2,8 +2,7 @@ package com.woocommerce.android.ui.woopos.orders.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
-import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingStatusMapper
+import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -12,12 +11,12 @@ import javax.inject.Inject
 class WooPosOrderItemMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
-    private val bookingStatusMapper: WooPosBookingStatusMapper,
+    private val orderStatusMapper: WooPosOrderStatusMapper,
 ) {
-    fun mapOrderItem(order: Order, selectedId: Long?): WooPosBookingsState.BookingItemViewState {
-        val status = bookingStatusMapper.mapBookingStatus(order.status)
+    fun mapOrderItem(order: Order, selectedId: Long?): WooPosOrdersState.OrderItemViewState {
+        val status = orderStatusMapper.mapOrderStatus(order.status)
 
-        return WooPosBookingsState.BookingItemViewState(
+        return WooPosOrdersState.OrderItemViewState(
             id = order.id,
             title = "#${order.number}",
             date = order.dateCreated.formatToMMMddYYYYAtHHmm(
