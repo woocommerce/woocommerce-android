@@ -2,9 +2,12 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,9 +18,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Suppress("LargeClass", "MagicNumber")
 @HiltViewModel
-class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
+class WooPosBookingsViewModel @Inject constructor(
+    private val bookingListHandler: BookingListHandler,
+    private val dateTimeProvider: DateTimeProvider,
+) : ViewModel() {
+
+    companion object {
+        private const val MIN_LOADING_DURATION_MS = 300L
+    }
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
     val state: StateFlow<WooPosBookingsState> = _state.asStateFlow()
@@ -25,10 +34,15 @@ class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
+    private var selectedBookingId: Long? = null
+    private var fetchJob: Job? = null
+    private var loadMoreJob: Job? = null
+
     init {
         loadBookings()
     }
 
+    @Suppress("MagicNumber")
     private fun loadBookings() {
         viewModelScope.launch {
             delay(3000L)
