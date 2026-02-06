@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -169,7 +170,27 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onPaginationErrorTryAgain() {
-        return Unit
+        loadMoreJob = viewModelScope.launch {
+            val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
+            val startTime = dateTimeProvider.now()
+            val result = bookingListHandler.loadMore()
+            val elapsed = dateTimeProvider.now() - startTime
+            if (elapsed < MIN_LOADING_DURATION_MS) {
+                delay(MIN_LOADING_DURATION_MS - elapsed)
+            }
+
+            result
+                .onSuccess {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
+                }
+                .onFailure {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
+                }
+        }
     }
 
     fun onBookingsEmptyActionClicked() {
