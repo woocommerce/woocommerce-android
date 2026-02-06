@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/usr/bin/env bash
+
+set -eu
 
 # Check if we can skip this job based on PR changes
 if .buildkite/commands/should-skip-job.sh --job-type build; then
