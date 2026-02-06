@@ -2,12 +2,11 @@ package com.woocommerce.android.ui.woopos.bookings.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.bookings.WooPosBookingActionsProvider
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
 import com.woocommerce.android.ui.woopos.common.data.WooPosGetProductById
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
-import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
 import com.woocommerce.android.ui.woopos.orders.details.refund.RefundInfo
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -22,8 +21,7 @@ class WooPosBookingDetailsMapper @Inject constructor(
     private val getProductById: WooPosGetProductById,
     private val formatPrice: WooPosFormatPrice,
     private val bookingStatusMapper: WooPosBookingStatusMapper,
-    private val refundInfoBuilder: WooPosRefundInfoBuilder,
-    private val orderActionsProvider: WooPosOrderActionsProvider,
+    private val bookingActionsProvider: WooPosBookingActionsProvider,
 ) {
     suspend fun mapBookingDetails(
         order: Order,
@@ -31,9 +29,21 @@ class WooPosBookingDetailsMapper @Inject constructor(
     ): WooPosBookingsState.BookingDetailsViewState.Computed.Details = coroutineScope {
         val status = bookingStatusMapper.mapBookingStatus(order.status)
         val lineItems = buildLineItems(order)
-        val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
-        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
-        val actions = orderActionsProvider.getAvailableActions(order, historicalRefundsResult)
+
+        // val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
+        val refundInfo = RefundInfo(listOf("99999"), BigDecimal(999999))
+        // val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+        val breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+            products = "$999999",
+            discount = "-$999999",
+            taxes = "999999",
+            shipping = null,
+            refunds = listOf("-$999999"),
+            netPayment = "$999999",
+            discountCode = null
+        )
+
+        val actions = bookingActionsProvider.getAvailableActions(order, historicalRefundsResult)
 
         WooPosBookingsState.BookingDetailsViewState.Computed.Details(
             id = order.id,
@@ -58,7 +68,16 @@ class WooPosBookingDetailsMapper @Inject constructor(
         val status = bookingStatusMapper.mapBookingStatus(order.status)
         val lineItems = buildLineItems(order)
         val refundInfo = RefundInfo(emptyList(), BigDecimal.ZERO)
-        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+//        val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+        val breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+            products = "$999999",
+            discount = "-$999999",
+            taxes = "999999",
+            shipping = null,
+            refunds = listOf("-$999999"),
+            netPayment = "$999999",
+            discountCode = null
+        )
 
         WooPosBookingsState.BookingDetailsViewState.Computed.Details(
             id = order.id,
