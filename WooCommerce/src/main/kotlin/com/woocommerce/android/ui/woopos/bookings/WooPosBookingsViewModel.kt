@@ -16,7 +16,6 @@ import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
-import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -36,7 +35,6 @@ import kotlin.time.TimeSource.Monotonic
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val ordersDataSource: WooPosOrdersDataSource,
-    private val resourceProvider: ResourceProvider,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
@@ -198,9 +196,9 @@ class WooPosBookingsViewModel @Inject constructor(
             }
 
             val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
-            val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
+//            val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
 //            val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
-            val updatedBreakdown =  WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+            val updatedBreakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
                 products = "9999999",
                 shipping = "9999999",
                 discount = "9999999",
@@ -435,7 +433,9 @@ class WooPosBookingsViewModel @Inject constructor(
         sideLoadActionsJob?.cancel()
     }
 
-    private suspend fun getOrComputeDetails(orderId: Long): WooPosBookingsState.BookingDetailsViewState.Computed.Details {
+    private suspend fun getOrComputeDetails(
+        orderId: Long
+    ): WooPosBookingsState.BookingDetailsViewState.Computed.Details {
         val current = _state.value as? WooPosBookingsState.Content ?: error("State is not Content")
         val loadedItems = current.items as? WooPosBookingsState.Content.Items.Loaded ?: error("Items not loaded")
 
