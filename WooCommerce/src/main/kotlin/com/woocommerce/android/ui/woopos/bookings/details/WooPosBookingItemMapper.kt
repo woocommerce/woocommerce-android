@@ -13,7 +13,7 @@ class WooPosBookingItemMapper @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val bookingStatusMapper: WooPosBookingStatusMapper,
 ) {
-    fun mapOrderItem(order: Order, selectedId: Long?): WooPosBookingsState.BookingItemViewState {
+    fun mapBookingItem(order: Order, selectedId: Long?): WooPosBookingsState.BookingItemViewState {
         val status = bookingStatusMapper.mapBookingStatus(order.status)
 
         return WooPosBookingsState.BookingItemViewState(
