@@ -11,7 +11,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
-import com.woocommerce.android.ui.woopos.orders.WooPosOrderActionsProvider
+import com.woocommerce.android.ui.woopos.orders.WooPosBookingActionsProvider
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
@@ -45,7 +45,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val orderItemMapper: WooPosOrderItemMapper,
     private val orderDetailsMapper: WooPosOrderDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
-    private val orderActionsProvider: WooPosOrderActionsProvider,
+    private val orderActionsProvider: WooPosBookingActionsProvider,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosBookingsState>(
@@ -69,14 +69,14 @@ class WooPosBookingsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosOrdersUIEvent) {
         when (event) {
-            is WooPosOrdersUIEvent.OrderActionClicked -> handleActionClicked(event.action)
+            is WooPosOrdersUIEvent.BookingActionClicked -> handleActionClicked(event.action)
         }
     }
 
-    private fun handleActionClicked(action: WooPosBookingsState.OrderAction) {
+    private fun handleActionClicked(action: WooPosBookingsState.BookingAction) {
         when (action) {
-            is WooPosBookingsState.OrderAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
-            is WooPosBookingsState.OrderAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
+            is WooPosBookingsState.BookingAction.EmailReceipt -> onEmailReceiptButtonClicked(action.orderId)
+            is WooPosBookingsState.BookingAction.IssueRefund -> onIssueRefundButtonClicked(action.orderId)
         }
     }
 
@@ -104,7 +104,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun isAlreadySelectedWithActions(current: WooPosBookingsState.Content, orderId: Long): Boolean {
         return current.selectedDetails?.id == orderId &&
-            current.selectedDetails.actionsState is WooPosBookingsState.OrderActionsState.Loaded
+            current.selectedDetails.actionsState is WooPosBookingsState.BookingActionsState.Loaded
     }
 
     private fun trackOrderSelectionAnalytics(
@@ -132,9 +132,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private suspend fun computeOrderDetails(
         orderId: Long,
-        orderDetailsViewState: WooPosBookingsState.OrderDetailsViewState?
-    ): WooPosBookingsState.OrderDetailsViewState.Computed.Details {
-        return if (orderDetailsViewState is WooPosBookingsState.OrderDetailsViewState.Lazy) {
+        orderDetailsViewState: WooPosBookingsState.BookingDetailsViewState?
+    ): WooPosBookingsState.BookingDetailsViewState.Computed.Details {
+        return if (orderDetailsViewState is WooPosBookingsState.BookingDetailsViewState.Lazy) {
             getOrComputeDetailsWithoutActions(orderId)
         } else {
             getOrComputeDetails(orderId)
@@ -144,13 +144,13 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun updateItemsSelection(
         loadedItems: WooPosBookingsState.Content.Items.Loaded,
         orderId: Long,
-        details: WooPosBookingsState.OrderDetailsViewState.Computed.Details
-    ): Map<WooPosBookingsState.OrderItemViewState, WooPosBookingsState.OrderDetailsViewState> {
+        details: WooPosBookingsState.BookingDetailsViewState.Computed.Details
+    ): Map<WooPosBookingsState.BookingItemViewState, WooPosBookingsState.BookingDetailsViewState> {
         return loadedItems.items.mapKeys { (item, _) ->
             item.copy(isSelected = item.id == orderId)
         }.mapValues { (item, orderDetails) ->
-            if (item.id == orderId && orderDetails is WooPosBookingsState.OrderDetailsViewState.Lazy) {
-                WooPosBookingsState.OrderDetailsViewState.Computed(orderId = orderId, details = details)
+            if (item.id == orderId && orderDetails is WooPosBookingsState.BookingDetailsViewState.Lazy) {
+                WooPosBookingsState.BookingDetailsViewState.Computed(orderId = orderId, details = details)
             } else {
                 orderDetails
             }
@@ -159,11 +159,11 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private suspend fun startSideLoadActionsIfNeeded(
         orderId: Long,
-        details: WooPosBookingsState.OrderDetailsViewState.Computed.Details,
-        orderDetailsViewState: WooPosBookingsState.OrderDetailsViewState?,
+        details: WooPosBookingsState.BookingDetailsViewState.Computed.Details,
+        orderDetailsViewState: WooPosBookingsState.BookingDetailsViewState?,
         loadedItems: WooPosBookingsState.Content.Items.Loaded
     ) {
-        if (details.actionsState !is WooPosBookingsState.OrderActionsState.Loading) return
+        if (details.actionsState !is WooPosBookingsState.BookingActionsState.Loading) return
 
         val order = getOrderForSideLoading(orderId, orderDetailsViewState, loadedItems) ?: return
         sideLoadActions(orderId, order)
@@ -171,12 +171,12 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private suspend fun getOrderForSideLoading(
         orderId: Long,
-        orderDetailsViewState: WooPosBookingsState.OrderDetailsViewState?,
+        orderDetailsViewState: WooPosBookingsState.BookingDetailsViewState?,
         loadedItems: WooPosBookingsState.Content.Items.Loaded
     ): Order? {
         return when (orderDetailsViewState) {
-            is WooPosBookingsState.OrderDetailsViewState.Lazy -> orderDetailsViewState.order
-            is WooPosBookingsState.OrderDetailsViewState.Computed -> {
+            is WooPosBookingsState.BookingDetailsViewState.Lazy -> orderDetailsViewState.order
+            is WooPosBookingsState.BookingDetailsViewState.Computed -> {
                 loadedItems.items.keys.firstOrNull { it.id == orderId }?.let { item ->
                     ordersDataSource.getOrderById(item.id).getOrNull()
                 }
@@ -207,16 +207,16 @@ class WooPosBookingsViewModel @Inject constructor(
             val updatedSelectedDetails = updatedState.selectedDetails
 
             if (updatedSelectedDetails?.id == orderId &&
-                updatedSelectedDetails.actionsState is WooPosBookingsState.OrderActionsState.Loading
+                updatedSelectedDetails.actionsState is WooPosBookingsState.BookingActionsState.Loading
             ) {
                 val loadedItems = updatedState.items as? WooPosBookingsState.Content.Items.Loaded
                 val updatedItems = loadedItems?.items?.map { (item, details) ->
                     val updatedDetails =
-                        if (item.id == orderId && details is WooPosBookingsState.OrderDetailsViewState.Computed) {
-                            WooPosBookingsState.OrderDetailsViewState.Computed(
+                        if (item.id == orderId && details is WooPosBookingsState.BookingDetailsViewState.Computed) {
+                            WooPosBookingsState.BookingDetailsViewState.Computed(
                                 orderId = orderId,
                                 details = details.details.copy(
-                                    actionsState = WooPosBookingsState.OrderActionsState.Loaded(actions),
+                                    actionsState = WooPosBookingsState.BookingActionsState.Loaded(actions),
                                     breakdown = updatedBreakdown
                                 )
                             )
@@ -233,7 +233,7 @@ class WooPosBookingsViewModel @Inject constructor(
                         updatedState.items
                     },
                     selectedDetails = updatedSelectedDetails.copy(
-                        actionsState = WooPosBookingsState.OrderActionsState.Loaded(actions),
+                        actionsState = WooPosBookingsState.BookingActionsState.Loaded(actions),
                         breakdown = updatedBreakdown
                     )
                 )
@@ -369,7 +369,7 @@ class WooPosBookingsViewModel @Inject constructor(
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
         val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
         val newDetailsViewState = orderDetailsMapper.mapOrderDetails(updated, historicalRefundsResult)
-        val newDetails = WooPosBookingsState.OrderDetailsViewState.Computed(
+        val newDetails = WooPosBookingsState.BookingDetailsViewState.Computed(
             orderId = updated.id,
             details = newDetailsViewState
         )
@@ -428,7 +428,7 @@ class WooPosBookingsViewModel @Inject constructor(
         sideLoadActionsJob?.cancel()
     }
 
-    private suspend fun getOrComputeDetails(orderId: Long): WooPosBookingsState.OrderDetailsViewState.Computed.Details {
+    private suspend fun getOrComputeDetails(orderId: Long): WooPosBookingsState.BookingDetailsViewState.Computed.Details {
         val current = _state.value as? WooPosBookingsState.Content ?: error("State is not Content")
         val loadedItems = current.items as? WooPosBookingsState.Content.Items.Loaded ?: error("Items not loaded")
 
@@ -437,23 +437,23 @@ class WooPosBookingsViewModel @Inject constructor(
 
         return orderDetailsMapper.mapOrderDetails(
             when (orderDetails) {
-                is WooPosBookingsState.OrderDetailsViewState.Lazy -> orderDetails.order
-                is WooPosBookingsState.OrderDetailsViewState.Computed -> {
+                is WooPosBookingsState.BookingDetailsViewState.Lazy -> orderDetails.order
+                is WooPosBookingsState.BookingDetailsViewState.Computed -> {
                     loadedItems.items.keys.firstOrNull { it.id == orderId }?.let {
                         ordersDataSource.getOrderById(it.id).getOrNull()
                     } ?: error("Order $orderId not found")
                 }
             },
             when (orderDetails) {
-                is WooPosBookingsState.OrderDetailsViewState.Lazy -> orderDetails.refundResult
-                is WooPosBookingsState.OrderDetailsViewState.Computed -> RefundsFetchResult.Error
+                is WooPosBookingsState.BookingDetailsViewState.Lazy -> orderDetails.refundResult
+                is WooPosBookingsState.BookingDetailsViewState.Computed -> RefundsFetchResult.Error
             }
         )
     }
 
     private suspend fun getOrComputeDetailsWithoutActions(
         orderId: Long
-    ): WooPosBookingsState.OrderDetailsViewState.Computed.Details {
+    ): WooPosBookingsState.BookingDetailsViewState.Computed.Details {
         val current = _state.value as? WooPosBookingsState.Content ?: error("State is not Content")
         val loadedItems = current.items as? WooPosBookingsState.Content.Items.Loaded ?: error("Items not loaded")
 
@@ -461,10 +461,10 @@ class WooPosBookingsViewModel @Inject constructor(
             ?: error("Order $orderId not found in state")
 
         return when (orderDetails) {
-            is WooPosBookingsState.OrderDetailsViewState.Lazy ->
+            is WooPosBookingsState.BookingDetailsViewState.Lazy ->
                 orderDetailsMapper.mapOrderDetailsWithoutActions(orderDetails.order)
 
-            is WooPosBookingsState.OrderDetailsViewState.Computed -> {
+            is WooPosBookingsState.BookingDetailsViewState.Computed -> {
                 orderDetails.details
             }
         }
@@ -493,8 +493,8 @@ class WooPosBookingsViewModel @Inject constructor(
         val items = buildItemsMap(ordersWithRefunds, newSelectedId)
         val selectedEntry = items.entries.first { (item, _) -> item.isSelected }
         val selectedDetails = when (val details = selectedEntry.value) {
-            is WooPosBookingsState.OrderDetailsViewState.Computed -> details.details
-            is WooPosBookingsState.OrderDetailsViewState.Lazy -> error("Selected order should have computed details")
+            is WooPosBookingsState.BookingDetailsViewState.Computed -> details.details
+            is WooPosBookingsState.BookingDetailsViewState.Lazy -> error("Selected order should have computed details")
         }
 
         _state.value = WooPosBookingsState.Content(
@@ -537,15 +537,15 @@ class WooPosBookingsViewModel @Inject constructor(
     private suspend fun buildItemsMap(
         ordersWithRefunds: Map<Order, RefundsFetchResult>,
         selectedId: Long?
-    ): Map<WooPosBookingsState.OrderItemViewState, WooPosBookingsState.OrderDetailsViewState> = coroutineScope {
+    ): Map<WooPosBookingsState.BookingItemViewState, WooPosBookingsState.BookingDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
             async {
                 val item = orderItemMapper.mapOrderItem(order, selectedId)
-                val details: WooPosBookingsState.OrderDetailsViewState = if (order.id == selectedId) {
+                val details: WooPosBookingsState.BookingDetailsViewState = if (order.id == selectedId) {
                     val fullDetails = orderDetailsMapper.mapOrderDetails(order, refundResult)
-                    WooPosBookingsState.OrderDetailsViewState.Computed(orderId = order.id, details = fullDetails)
+                    WooPosBookingsState.BookingDetailsViewState.Computed(orderId = order.id, details = fullDetails)
                 } else {
-                    WooPosBookingsState.OrderDetailsViewState.Lazy(
+                    WooPosBookingsState.BookingDetailsViewState.Lazy(
                         orderId = order.id,
                         order = order,
                         refundResult = refundResult
