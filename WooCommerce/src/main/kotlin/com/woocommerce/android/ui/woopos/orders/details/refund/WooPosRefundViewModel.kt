@@ -58,6 +58,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     private var loadingJob: Job? = null
     private var cachedNumberOfDecimalPoints: Int? = null
     private var cachedTaxRoundAtSubtotal: Boolean? = null
+    private var contentStateBeforeRefund: WooPosRefundState.Content? = null
 
     private suspend fun fetchSiteSettings(): Result<Int> {
         val siteSettingsResult = wooCommerceStore.fetchSiteGeneralSettings(selectedSite.get())
@@ -112,14 +113,16 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
             if (fetchSiteSettings().isFailure) {
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Loading
                 )
                 return@launch
             }
 
             if (fetchTaxRoundAtSubtotal().isFailure) {
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Loading
                 )
                 return@launch
             }
@@ -127,7 +130,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
             val orderAndRefundsResult = fetchOrderAndRefunds()
             if (orderAndRefundsResult.isFailure) {
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Loading
                 )
                 return@launch
             }
@@ -140,6 +144,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
+            val paymentMethodResult = getPaymentMethod(order)
+            if (paymentMethodResult.isFailure) {
+                WooLog.e(
+                    WooLog.T.POS,
+                    "${paymentMethodResult.exceptionOrNull()?.message}"
+                )
+                _state.value = WooPosRefundState.Error(
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Loading
+                )
+                return@launch
+            }
+
             _state.value = buildContentState(
                 order = order,
                 refundableItems = refundableItems,
@@ -149,7 +166,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 taxRoundAtSubtotal = checkNotNull(cachedTaxRoundAtSubtotal) {
                     "cachedTaxRoundAtSubtotal should not be null when building content state"
                 },
-                paymentMethod = getPaymentMethod(order)
+                paymentMethod = paymentMethodResult.getOrThrow()
             )
         }
     }
@@ -200,6 +217,19 @@ class WooPosRefundViewModel @AssistedInject constructor(
         when (event) {
             WooPosRefundUIEvent.DialogOpened -> loadRefundableItems()
             WooPosRefundUIEvent.DialogDismissed -> handleDialogDismissed()
+            WooPosRefundUIEvent.RetryLoadRefundableItems -> loadRefundableItems()
+            WooPosRefundUIEvent.RetryCreateRefund -> {
+                val contentState = contentStateBeforeRefund
+                if (contentState != null) {
+                    processRefund(contentState)
+                } else {
+                    WooLog.w(
+                        WooLog.T.POS,
+                        "WooPosRefund: RetryCreateRefund triggered but contentStateBeforeRefund is null"
+                    )
+                }
+            }
+            WooPosRefundUIEvent.CancelRefund -> Unit
             else -> {
                 val currentState = _state.value as? WooPosRefundState.Content ?: return
                 handleContentStateEvent(event, currentState)
@@ -231,7 +261,10 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 _state.value = currentState.copy(step = WooPosRefundState.Content.RefundStep.ReviewRefund)
             WooPosRefundUIEvent.OnRefundConfirmed -> processRefund(currentState)
             WooPosRefundUIEvent.DialogDismissed,
-            WooPosRefundUIEvent.DialogOpened -> Unit
+            WooPosRefundUIEvent.DialogOpened,
+            WooPosRefundUIEvent.RetryLoadRefundableItems,
+            WooPosRefundUIEvent.RetryCreateRefund,
+            WooPosRefundUIEvent.CancelRefund -> Unit
         }
     }
 
@@ -282,6 +315,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 return@launch
             }
 
+            contentStateBeforeRefund = contentState
             _state.value = contentState.copy(step = WooPosRefundState.Content.RefundStep.Processing)
 
             val order = currentOrder ?: run {
@@ -290,7 +324,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     "WooPosRefund: currentOrder is null during processRefund"
                 )
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.error_generic)
+                    message = resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
                 return@launch
             }
@@ -302,7 +337,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                         "WooPosRefund: failed to read site settings currencyDecimalNumber from DB"
                     )
                     _state.value = WooPosRefundState.Error(
-                        message = resourceProvider.getString(R.string.error_generic)
+                        message = resourceProvider.getString(R.string.error_generic),
+                        errorType = WooPosRefundState.Error.ErrorType.Processing
                     )
                     return@launch
                 }
@@ -316,7 +352,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
                     "${paymentGatewayResult.exceptionOrNull()?.message}"
                 )
                 _state.value = WooPosRefundState.Error(
-                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found)
+                    message = resourceProvider.getString(R.string.woopos_refund_error_gateway_not_found),
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
                 return@launch
             }
@@ -335,7 +372,8 @@ class WooPosRefundViewModel @AssistedInject constructor(
 
             if (result.isError) {
                 _state.value = WooPosRefundState.Error(
-                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic)
+                    message = result.error.message ?: resourceProvider.getString(R.string.error_generic),
+                    errorType = WooPosRefundState.Error.ErrorType.Processing
                 )
             } else {
                 _state.value = WooPosRefundState.RefundSuccess(

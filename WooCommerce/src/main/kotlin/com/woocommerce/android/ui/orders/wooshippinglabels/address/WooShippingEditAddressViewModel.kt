@@ -63,7 +63,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private var postalCode by mutableStateOf(InputValue(value = "", isRequired = true))
     private var email by mutableStateOf(InputValue(value = "", isRequired = true))
     private var country = MutableStateFlow(Location.EMPTY)
-    private var phone by mutableStateOf(InputValue(value = "", isRequired = shouldRequirePhone()))
+    private var phone by mutableStateOf(InputValue(value = "", isRequired = true))
 
     private var rawState by mutableStateOf("")
     private val selectedState = MutableStateFlow(Location.EMPTY)
@@ -154,7 +154,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
     private val phoneValidatedFlow = snapshotFlow { phone }
         .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
             if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validateFieldRequired(inputValue.value))
+                inputValue.copy(error = addressValidator.validatePhoneNumber(inputValue.value))
             } else {
                 inputValue
             }
@@ -265,7 +265,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
         country.mapLatest { country ->
             getStatesByCountryCode(country.code)
         }.collectLatest { states ->
-            phone = phone.copy(isRequired = shouldRequirePhone())
             statesState.value = LocationState.Loaded(states)
             val stateCode = if (country.value.code == currentAddress.value.country.code) {
                 currentAddress.value.state.codeOrRaw
@@ -290,8 +289,6 @@ class WooShippingEditAddressViewModel @Inject constructor(
             }
         }
     }
-
-    private fun shouldRequirePhone() = navArgs.flow is EditAddressFlow.EditOriginAddress || country.value.code != "US"
 
     fun handleBackPress(): Boolean {
         if (allowBackNavigation()) {
