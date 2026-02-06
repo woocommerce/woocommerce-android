@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetailsMapper
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingItemMapper
 import com.woocommerce.android.ui.woopos.common.data.WooPosRetrieveOrderRefunds
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent.ToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
@@ -14,8 +15,6 @@ import com.woocommerce.android.ui.woopos.orders.LoadOrdersResult
 import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersAnalyticsTracker
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersDataSource
-import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
-import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -41,7 +40,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val retrieveOrderRefunds: WooPosRetrieveOrderRefunds,
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker,
-    private val orderItemMapper: WooPosOrderItemMapper,
+    private val bookingItemMapper: WooPosBookingItemMapper,
     private val bookingDetailsMapper: WooPosBookingDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosBookingActionsProvider,
@@ -66,9 +65,9 @@ class WooPosBookingsViewModel @Inject constructor(
         loadOrders()
     }
 
-    fun onUIEvent(event: WooPosOrdersUIEvent) {
+    fun onUIEvent(event: WooPosBookingsUIEvent) {
         when (event) {
-            is WooPosOrdersUIEvent.BookingActionClicked -> handleActionClicked(event.action)
+            is WooPosBookingsUIEvent.BookingActionClicked -> handleActionClicked(event.action)
         }
     }
 
@@ -200,7 +199,16 @@ class WooPosBookingsViewModel @Inject constructor(
 
             val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
-            val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+//            val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
+            val updatedBreakdown =  WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+                products = "9999999",
+                shipping = "9999999",
+                discount = "9999999",
+                taxes = "9999999",
+                refunds = listOf("9999999"),
+                discountCode = "9999999",
+                netPayment = "9999999"
+            )
 
             val updatedState = _state.value as? WooPosBookingsState.Content ?: return@launch
             val updatedSelectedDetails = updatedState.selectedDetails
@@ -366,7 +374,7 @@ class WooPosBookingsViewModel @Inject constructor(
         )
 
         val selectedId = loaded.items.keys.firstOrNull { it.isSelected }?.id
-        val newItem = orderItemMapper.mapOrderItem(updated, selectedId)
+        val newItem = bookingItemMapper.mapOrderItem(updated, selectedId)
         val newDetailsViewState = bookingDetailsMapper.mapBookingDetails(updated, historicalRefundsResult)
         val newDetails = WooPosBookingsState.BookingDetailsViewState.Computed(
             orderId = updated.id,
@@ -539,7 +547,7 @@ class WooPosBookingsViewModel @Inject constructor(
     ): Map<WooPosBookingsState.BookingItemViewState, WooPosBookingsState.BookingDetailsViewState> = coroutineScope {
         ordersWithRefunds.map { (order, refundResult) ->
             async {
-                val item = orderItemMapper.mapOrderItem(order, selectedId)
+                val item = bookingItemMapper.mapOrderItem(order, selectedId)
                 val details: WooPosBookingsState.BookingDetailsViewState = if (order.id == selectedId) {
                     val fullDetails = bookingDetailsMapper.mapBookingDetails(order, refundResult)
                     WooPosBookingsState.BookingDetailsViewState.Computed(orderId = order.id, details = fullDetails)

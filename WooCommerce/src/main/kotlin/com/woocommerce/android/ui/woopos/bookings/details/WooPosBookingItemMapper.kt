@@ -1,15 +1,14 @@
-package com.woocommerce.android.ui.woopos.orders.details
+package com.woocommerce.android.ui.woopos.bookings.details
 
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
-import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingStatusMapper
 import com.woocommerce.android.ui.woopos.util.ext.formatToMMMddYYYYAtHHmm
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
-class WooPosOrderItemMapper @Inject constructor(
+class WooPosBookingItemMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val bookingStatusMapper: WooPosBookingStatusMapper,
