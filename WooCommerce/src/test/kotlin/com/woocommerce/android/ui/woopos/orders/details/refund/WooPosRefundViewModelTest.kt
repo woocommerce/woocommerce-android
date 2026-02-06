@@ -142,7 +142,7 @@ class WooPosRefundViewModelTest {
             supportsRefunds = false
         )
         whenever(loadPaymentGateway.invoke(any())).thenReturn(Result.success(defaultGateway))
-        whenever(loadPaymentMethod.invoke(any())).thenReturn("Manual refund")
+        whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
     }
 
     private fun createViewModel(triggerDialogOpened: Boolean = true): WooPosRefundViewModel {
