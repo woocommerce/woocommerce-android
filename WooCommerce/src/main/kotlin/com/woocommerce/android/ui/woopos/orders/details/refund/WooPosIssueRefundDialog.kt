@@ -400,6 +400,7 @@ private fun RefundDialogHeader() {
         style = WooPosTypography.Heading,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(WooPosSpacing.XLarge.value)
@@ -622,6 +623,7 @@ private fun ReviewRefundHeader() {
         style = WooPosTypography.Heading,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(WooPosSpacing.XLarge.value)
@@ -722,6 +724,7 @@ private fun ConfirmRefundHeader(title: String) {
         style = WooPosTypography.Heading,
         fontWeight = FontWeight.Bold,
         color = MaterialTheme.colorScheme.onSurface,
+        textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
             .padding(WooPosSpacing.XLarge.value)
