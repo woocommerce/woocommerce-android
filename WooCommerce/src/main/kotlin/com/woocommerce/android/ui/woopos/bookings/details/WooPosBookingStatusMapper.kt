@@ -12,7 +12,7 @@ class WooPosBookingStatusMapper @Inject constructor(
     private val resourceProvider: ResourceProvider,
     private val locale: Locale,
 ) {
-    fun mapOrderStatus(status: Order.Status): PosBookingStatus {
+    fun mapBookingStatus(status: Order.Status): PosBookingStatus {
         val statusText = localizedLabel(status)
         return PosBookingStatus(
             text = statusText,
