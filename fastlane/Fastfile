@@ -81,9 +81,6 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 FIREBASE_APP_ID = '1:124902176124:android:4046dc320bf1825b1620f9'
 FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 
-########################################################################
-# S3 Prototype Builds
-########################################################################
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 
 ########################################################################
