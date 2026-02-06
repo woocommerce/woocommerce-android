@@ -309,35 +309,33 @@ The Payments button in the main app's More Menu is gated by `CIABSiteGateKeeper.
 
 **For production:** POS has its own eligibility checks, but this is worth noting for QA and documentation.
 
-### 17. Attendance Status API Inconsistency
+### 17. Attendance Status API - Root Cause Found and Fixed
 
-The attendance status API rejects values even that the main app uses. When sending `{"attendance_status": "checked-in"}`, return:
+The attendance status API was rejecting our requests because we were sending wrong values. After checking the WooCommerce Bookings plugin source code (v3.1.0, released Jan 28, 2026), here is what the backend actually supports:
 
-```json
-{
-  "code": "rest_invalid_param",
-  "message": "Invalid parameter(s): attendance_status",
-  "data": {
-    "status": 400,
-    "params": {
-      "attendance_status": "attendance_status is not one of attended and unattended."
-    },
-    "details": {
-      "attendance_status": {
-        "code": "rest_not_in_enum",
-        "message": "attendance_status is not one of attended and unattended.",
-        "data": null
-      }
-    }
-  }
-}
+**Backend API (plugin source of truth):**
+- Stores attendance in `wp_postmeta` with meta key `_booking_attendance_status`
+- Only accepts two values: `"attended"` and `"unattended"`
+- Default value for new bookings: `"unattended"`
+- REST endpoint: `PUT /wp-json/wc-bookings/v2/bookings/{id}` with body `{"attendance_status": "attended"}`
+- Schema validation rejects any other value via `rest_not_in_enum`
 
-So it either we use the API wrongly or the API doesn't work yet. Needs to be checked properly
-```
+**What the Android app was sending (wrong):**
+- `BookingEntity.AttendanceStatus.CheckedIn` -> `"checked-in"` (should be `"attended"`)
+- `BookingEntity.AttendanceStatus.Booked` -> `"booked"` (should be `"unattended"`)
+- `BookingEntity.AttendanceStatus.NoShow` -> `"no-show"` (does not exist in the API)
+- `BookingEntity.AttendanceStatus.Cancelled` -> `"cancelled"` (does not exist in the API)
 
-The API expects `attended` or `unattended`, but the main app and POS use `booked`, `checked-in`, `no-show`. This may be a plugin version mismatch or site configuration issue.
+**Reading was also broken:** When the API returned `"attended"` or `"unattended"`, `fromKey()` didn't recognize them and created `Unknown(...)`, which the mapper converted to `null`. So attendance status was never shown in the UI even though the backend was returning it.
 
-**For production:** Investigate which WooCommerce Bookings plugin versions support which attendance status values, and handle the API error gracefully.
+**Fix applied:**
+- Added `Attended` (key: `"attended"`) and `Unattended` (key: `"unattended"`) to `BookingEntity.AttendanceStatus`
+- Deprecated old values (`Booked`, `CheckedIn`, `NoShow`, `Cancelled`) with `@Deprecated` annotations
+- Updated WooPos ViewModel to map `AttendanceStatusUi.Attended -> Attended` and `AttendanceStatusUi.Unattended -> Unattended`
+- Updated both WooPos and main app mappers to handle the new values
+- Added `@Suppress("DEPRECATION")` to non-WooPos code that still uses the old values
+
+**For production:** The non-WooPos booking code (main app's booking details, filters) still uses the deprecated values. It should be migrated to use the correct `Attended`/`Unattended` values. The `BookingAttendanceStatus` UI model in the main app (with Booked, CheckedIn, NoShow, Cancelled) should be simplified to match what the API actually supports.
 
 ### 18. CardReaderPaymentCollectibilityChecker Blocks Booking Orders
 

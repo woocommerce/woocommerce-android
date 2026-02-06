@@ -214,6 +214,7 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun BookingAttendanceStatus.toDataModel(): BookingEntity.AttendanceStatus? = when (this) {
         BookingAttendanceStatus.Booked -> BookingEntity.AttendanceStatus.Booked
         BookingAttendanceStatus.CheckedIn -> BookingEntity.AttendanceStatus.CheckedIn

@@ -130,8 +130,8 @@ class WooPosBookingsViewModel @Inject constructor(
     fun onAttendanceStatusSelected(status: AttendanceStatusUi) {
         val bookingId = selectedBookingId ?: return
         val entityStatus = when (status) {
-            AttendanceStatusUi.Attended -> BookingEntity.AttendanceStatus.CheckedIn
-            AttendanceStatusUi.Unattended -> BookingEntity.AttendanceStatus.Booked
+            AttendanceStatusUi.Attended -> BookingEntity.AttendanceStatus.Attended
+            AttendanceStatusUi.Unattended -> BookingEntity.AttendanceStatus.Unattended
             AttendanceStatusUi.Cancelled -> return
         }
 

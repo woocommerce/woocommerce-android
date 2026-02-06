@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.bookings.filter.BookingFilterListItem
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.AttendanceStatuses
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity.AttendanceStatus
 
+@Suppress("DEPRECATION")
 data class BookingAttendanceStatusFilterUiState(
     val selectedStatuses: AttendanceStatuses = AttendanceStatuses.DEFAULT,
     val onStatusSelected: (AttendanceStatus?) -> Unit = {},
@@ -35,6 +36,7 @@ data class BookingAttendanceStatusFilterUiState(
     }
 }
 
+@Suppress("DEPRECATION")
 val AttendanceStatus?.titleRes: Int
     @StringRes get() = when (this) {
         AttendanceStatus.Booked -> R.string.booking_attendance_status_booked

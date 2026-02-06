@@ -92,18 +92,30 @@ data class BookingEntity(
     sealed interface AttendanceStatus {
         val key: String
 
+        data object Attended : AttendanceStatus {
+            override val key = "attended"
+        }
+
+        data object Unattended : AttendanceStatus {
+            override val key = "unattended"
+        }
+
+        @Deprecated("Use Unattended instead", replaceWith = ReplaceWith("Unattended"))
         data object Booked : AttendanceStatus {
             override val key = "booked"
         }
 
+        @Deprecated("Use Attended instead", replaceWith = ReplaceWith("Attended"))
         data object CheckedIn : AttendanceStatus {
             override val key = "checked-in"
         }
 
+        @Deprecated("Not supported by the backend API")
         data object NoShow : AttendanceStatus {
             override val key = "no-show"
         }
 
+        @Deprecated("Not supported by the backend API")
         data object Cancelled : AttendanceStatus {
             override val key = "cancelled"
         }
@@ -113,6 +125,8 @@ data class BookingEntity(
         companion object {
             fun fromKey(key: String): AttendanceStatus {
                 return when (key) {
+                    Attended.key -> Attended
+                    Unattended.key -> Unattended
                     Booked.key -> Booked
                     CheckedIn.key -> CheckedIn
                     NoShow.key -> NoShow

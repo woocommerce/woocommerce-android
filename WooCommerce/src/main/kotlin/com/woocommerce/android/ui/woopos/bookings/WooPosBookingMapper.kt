@@ -113,8 +113,11 @@ class WooPosBookingMapper @Inject constructor() {
         }
     }
 
+    @Suppress("DEPRECATION")
     private fun mapAttendanceStatus(statusKey: String): AttendanceStatusUi? {
         return when (BookingEntity.AttendanceStatus.fromKey(statusKey)) {
+            is BookingEntity.AttendanceStatus.Attended -> AttendanceStatusUi.Attended
+            is BookingEntity.AttendanceStatus.Unattended -> AttendanceStatusUi.Unattended
             is BookingEntity.AttendanceStatus.Booked -> AttendanceStatusUi.Unattended
             is BookingEntity.AttendanceStatus.CheckedIn -> AttendanceStatusUi.Attended
             is BookingEntity.AttendanceStatus.NoShow -> AttendanceStatusUi.Unattended
