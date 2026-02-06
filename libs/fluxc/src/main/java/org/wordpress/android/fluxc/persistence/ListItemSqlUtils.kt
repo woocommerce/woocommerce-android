@@ -5,7 +5,6 @@ import com.wellsql.generated.ListModelTable
 import com.yarolegovich.wellsql.SelectQuery
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.list.ListItemModel
-import org.wordpress.android.fluxc.persistence.WellSqlConfig.Companion.SQLITE_MAX_VARIABLE_NUMBER
 import org.wordpress.android.util.AppLog
 import org.wordpress.android.util.AppLog.T
 import javax.inject.Inject
@@ -56,18 +55,6 @@ class ListItemSqlUtils @Inject constructor() {
                     .orderBy(ListModelTable.ID, SelectQuery.ORDER_ASCENDING)
 
     /**
-     * This function deletes [ListItemModel] records for the [listIds].
-     */
-    fun deleteItem(listIds: List<Int>, remoteItemId: Long) {
-        WellSql.delete(ListItemModel::class.java)
-                .where()
-                .isIn(ListItemModelTable.LIST_ID, listIds)
-                .equals(ListItemModelTable.REMOTE_ITEM_ID, remoteItemId)
-                .endWhere()
-                .execute()
-    }
-
-    /**
      * This function deletes all [ListItemModel]s for a specific [listId].
      */
     fun deleteItems(listId: Int) {
@@ -76,25 +63,5 @@ class ListItemSqlUtils @Inject constructor() {
                 .equals(ListItemModelTable.LIST_ID, listId)
                 .endWhere()
                 .execute()
-    }
-
-    /**
-     * This function deletes [ListItemModel]s for [remoteItemIds] in every lists with [listIds]
-     */
-    fun deleteItemsFromLists(listIds: List<Int>, remoteItemIds: List<Long>) {
-        // Prevent a crash caused by either of these lists being empty
-        if (listIds.isEmpty() || remoteItemIds.isEmpty()) {
-            return
-        }
-
-        val batches = listIds.chunked(SQLITE_MAX_VARIABLE_NUMBER - remoteItemIds.count())
-        batches.forEach {
-            WellSql.delete(ListItemModel::class.java)
-                .where()
-                .isIn(ListItemModelTable.LIST_ID, it)
-                .isIn(ListItemModelTable.REMOTE_ITEM_ID, remoteItemIds)
-                .endWhere()
-                .execute()
-        }
     }
 }

@@ -4,7 +4,6 @@ import android.content.ContentValues
 import com.wellsql.generated.ListModelTable
 import com.yarolegovich.wellsql.WellSql
 import org.wordpress.android.fluxc.model.list.ListDescriptor
-import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 import org.wordpress.android.fluxc.model.list.ListModel
 import org.wordpress.android.fluxc.model.list.ListState
 import org.wordpress.android.util.DateTimeUtils
@@ -60,52 +59,5 @@ class ListSqlUtils @Inject constructor() {
                 .endWhere()
                 .asModel
                 .firstOrNull()
-    }
-
-    /**
-     * This function returns all [ListModel] records that matches the given [ListDescriptorTypeIdentifier].
-     */
-    fun getListsWithTypeIdentifier(descriptorTypeIdentifier: ListDescriptorTypeIdentifier): List<ListModel> {
-        return WellSql.select(ListModel::class.java)
-                .where()
-                .equals(ListModelTable.DESCRIPTOR_TYPE_IDENTIFIER_DB_VALUE, descriptorTypeIdentifier.value)
-                .endWhere()
-                .asModel
-    }
-
-    /**
-     * This function deletes the [ListModel] record for the given [listDescriptor] if there is one.
-     *
-     * To ensure that we have the same `where` queries for both `select` and `delete` queries, [getList] is utilized.
-     */
-    fun deleteList(listDescriptor: ListDescriptor) {
-        val existing = getList(listDescriptor)
-        existing?.let {
-            WellSql.delete(ListModel::class.java).whereId(it.id)
-        }
-    }
-
-    /**
-     * This function deletes [ListModel] records that hasn't been updated for the given [expirationDuration].
-     */
-    fun deleteExpiredLists(expirationDuration: Long) {
-        val allLists = WellSql.select(ListModel::class.java).asModel
-        val cutOffDate = Date(System.currentTimeMillis() - expirationDuration)
-        // Find the ids of lists that are expired
-        val listIdsToDelete = allLists.asSequence().filter {
-            DateTimeUtils.dateFromIso8601(it.lastModified).before(cutOffDate)
-        }.map { it.id }.toList()
-        if (listIdsToDelete.isNotEmpty()) {
-            WellSql.delete(ListModel::class.java)
-                    .where().isIn(ListModelTable.ID, listIdsToDelete).endWhere()
-                    .execute()
-        }
-    }
-
-    /**
-     * This function deletes all [ListModel] records from the DB.
-     */
-    fun deleteAllLists() {
-        WellSql.delete(ListModel::class.java).execute()
     }
 }

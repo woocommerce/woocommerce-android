@@ -13,10 +13,7 @@ import org.wordpress.android.fluxc.Payload
 import org.wordpress.android.fluxc.action.ListAction
 import org.wordpress.android.fluxc.action.ListAction.FETCHED_LIST_ITEMS
 import org.wordpress.android.fluxc.action.ListAction.LIST_DATA_INVALIDATED
-import org.wordpress.android.fluxc.action.ListAction.LIST_ITEMS_REMOVED
 import org.wordpress.android.fluxc.action.ListAction.LIST_REQUIRES_REFRESH
-import org.wordpress.android.fluxc.action.ListAction.REMOVE_ALL_LISTS
-import org.wordpress.android.fluxc.action.ListAction.REMOVE_EXPIRED_LISTS
 import org.wordpress.android.fluxc.annotations.action.Action
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.model.list.LIST_STATE_TIMEOUT
@@ -41,9 +38,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.coroutines.CoroutineContext
 
-// How long a list should stay in DB if it hasn't been updated
-const val DEFAULT_EXPIRATION_DURATION = 1000L * 60 * 60 * 24 * 7
-
 /**
  * This Store is responsible for managing lists and their metadata. One of the designs goals for this Store is expose
  * as little as possible to the consumers and make sure the exposed parts are immutable. This not only moves the
@@ -63,11 +57,8 @@ class ListStore @Inject constructor(
 
         when (actionType) {
             FETCHED_LIST_ITEMS -> handleFetchedListItems(action.payload as FetchedListItemsPayload)
-            LIST_ITEMS_REMOVED -> handleListItemsRemoved(action.payload as ListItemsRemovedPayload)
             LIST_REQUIRES_REFRESH -> handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
             LIST_DATA_INVALIDATED -> handleListDataInvalidated(action.payload as ListDescriptorTypeIdentifier)
-            REMOVE_EXPIRED_LISTS -> handleRemoveExpiredLists(action.payload as RemoveExpiredListsPayload)
-            REMOVE_ALL_LISTS -> handleRemoveAllLists()
             ListAction.LIST_DATA_FAILURE -> handleDataFailure(action.payload as OnListDataFailure)
         }
     }
@@ -286,18 +277,6 @@ class ListStore @Inject constructor(
     }
 
     /**
-     * Handles the [ListAction.LIST_ITEMS_REMOVED] action.
-     *
-     * Items in [ListItemsRemovedPayload.remoteItemIds] will be removed from lists with
-     * [ListDescriptorTypeIdentifier] after which [OnListDataInvalidated] event will be emitted.
-     */
-    private fun handleListItemsRemoved(payload: ListItemsRemovedPayload) {
-        val lists = listSqlUtils.getListsWithTypeIdentifier(payload.type)
-        listItemSqlUtils.deleteItemsFromLists(lists.map { it.id }, payload.remoteItemIds)
-        emitChange(OnListDataInvalidated(payload.type))
-    }
-
-    /**
      * Handles the [ListAction.LIST_REQUIRES_REFRESH] action.
      *
      * Whenever a type of list needs to be refreshed, [OnListRequiresRefresh] event will be emitted so the listening
@@ -315,24 +294,6 @@ class ListStore @Inject constructor(
      */
     private fun handleListDataInvalidated(typeIdentifier: ListDescriptorTypeIdentifier) {
         emitChange(OnListDataInvalidated(type = typeIdentifier))
-    }
-
-    /**
-     * Handles the [ListAction.REMOVE_EXPIRED_LISTS] action.
-     *
-     * It deletes [ListModel]s that hasn't been updated for the given [RemoveExpiredListsPayload.expirationDuration].
-     */
-    private fun handleRemoveExpiredLists(payload: RemoveExpiredListsPayload) {
-        listSqlUtils.deleteExpiredLists(payload.expirationDuration)
-    }
-
-    /**
-     * Handles the [ListAction.REMOVE_ALL_LISTS] action.
-     *
-     * It simply deletes every [ListModel] in the DB.
-     */
-    private fun handleRemoveAllLists() {
-        listSqlUtils.deleteAllLists()
     }
 
     private fun handleDataFailure(event: OnListDataFailure) {
@@ -421,15 +382,6 @@ class ListStore @Inject constructor(
      */
     class OnListDataInvalidated(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
 
-    /**
-     * This is the payload for [ListAction.LIST_ITEMS_REMOVED].
-     *
-     * @property type [ListDescriptorTypeIdentifier] which will tell [ListStore] and the clients which
-     * [ListDescriptor]s are updated.
-     * @property remoteItemIds Remote item ids to be removed from the lists matching the [ListDescriptorTypeIdentifier].
-     */
-    class ListItemsRemovedPayload(val type: ListDescriptorTypeIdentifier, val remoteItemIds: List<Long>)
-
     class OnListDataFailure(val type: ListDescriptorTypeIdentifier) : Store.OnChanged<ListError>()
 
     /**
@@ -453,13 +405,6 @@ class ListStore @Inject constructor(
             this.error = error
         }
     }
-
-    /**
-     * This is the payload for [ListAction.REMOVE_EXPIRED_LISTS].
-     *
-     * @property expirationDuration Tells how long a list should be kept in the DB if it hasn't been updated
-     */
-    class RemoveExpiredListsPayload(val expirationDuration: Long = DEFAULT_EXPIRATION_DURATION)
 
     class ListError(
         val type: ListErrorType,
