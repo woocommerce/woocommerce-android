@@ -3864,6 +3864,7 @@
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
+    <string name="woopos_bookings_pay_by_card">Pay by card</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
