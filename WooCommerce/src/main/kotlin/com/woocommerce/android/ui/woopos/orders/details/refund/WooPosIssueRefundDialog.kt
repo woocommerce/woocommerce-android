@@ -194,9 +194,7 @@ private fun ContentStateHandler(
 private fun LoadingContent() {
     val loadingDescription = stringResource(R.string.woopos_orders_loading_refund_items)
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         WooPosCircularLoadingIndicator(
@@ -227,9 +225,7 @@ private fun ErrorContent(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -283,9 +279,7 @@ private fun ErrorContent(
 @Composable
 private fun NoItemsContent(onDismissRequest: () -> Unit) {
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -327,9 +321,7 @@ private fun RefundSuccessContent(
         verticalArrangement = Arrangement.Center
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.XLarge.value),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -365,9 +357,7 @@ private fun RefundSuccessContent(
         Spacer(modifier = Modifier.height(marginBetweenButtonAndText))
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(WooPosSpacing.XLarge.value),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
             WooPosButton(
@@ -402,13 +392,12 @@ private fun SelectItemsContent(
             onSelectAllToggled = { onEvent(WooPosRefundUIEvent.SelectAllToggled) }
         )
 
-        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
+        Divider()
 
         LazyColumn(
             modifier = Modifier
                 .weight(1f, fill = false)
                 .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value)
                 .padding(vertical = WooPosSpacing.Medium.value),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
@@ -424,7 +413,7 @@ private fun SelectItemsContent(
             }
         }
 
-        Divider(modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value))
+        Divider()
 
         WooPosButton(
             text = stringResource(R.string.continue_button),
@@ -436,7 +425,7 @@ private fun SelectItemsContent(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(WooPosSpacing.XLarge.value)
+                .padding(top = WooPosSpacing.XLarge.value)
         )
     }
 }
@@ -451,7 +440,7 @@ private fun RefundDialogHeader() {
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value)
+            .padding(bottom = WooPosSpacing.XLarge.value)
     )
 }
 
@@ -465,7 +454,6 @@ private fun ItemsHeaderRow(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.XLarge.value)
             .padding(bottom = WooPosSpacing.Medium.value),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -575,9 +563,7 @@ private fun ReviewRefundContent(
         ReviewRefundHeader()
 
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = WooPosSpacing.XLarge.value),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
         ) {
             ReviewSummaryRow(
@@ -674,7 +660,7 @@ private fun ReviewRefundHeader() {
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value)
+            .padding(bottom = WooPosSpacing.XLarge.value)
     )
 }
 
@@ -712,7 +698,7 @@ private fun ReviewActionButtons(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
+            .padding(top = WooPosSpacing.XLarge.value),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         WooPosButton(
@@ -775,7 +761,7 @@ private fun ConfirmRefundHeader(title: String) {
         textAlign = TextAlign.Center,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value)
+            .padding(bottom = WooPosSpacing.XLarge.value)
     )
 }
 
@@ -788,7 +774,6 @@ private fun ConfirmRefundMessage(message: String) {
         color = MaterialTheme.colorScheme.onSurface,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = WooPosSpacing.XLarge.value)
             .padding(bottom = WooPosSpacing.XLarge.value)
     )
 }
@@ -800,9 +785,7 @@ private fun ConfirmRefundButtons(
     onBack: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(WooPosSpacing.XLarge.value),
+        modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
     ) {
         if (isProcessing) {
