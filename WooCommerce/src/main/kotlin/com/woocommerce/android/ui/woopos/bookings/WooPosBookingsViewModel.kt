@@ -72,14 +72,16 @@ class WooPosBookingsViewModel @Inject constructor(
         val current = _state.value
         if (current is WooPosBookingsState.Content) {
             val booking = bookings.find { it.id == bookingId }
+            val totals = booking?.let { orderTotalsFor(it) }
             _state.value = current.copy(
                 items = current.items.map { it.copy(isSelected = it.id == bookingId) },
                 selectedDetail = booking?.let {
                     mapper.toDetail(
                         dto = it,
-                        customerName = dataSource.getCustomerName(it.customerId),
+                        customerName = dataSource.getCustomerName(it.customerId)
+                            ?: totals?.customerName,
                         productName = dataSource.getProductName(it.productId),
-                        orderTotals = orderTotalsFor(it),
+                        orderTotals = totals,
                     )
                 },
             )
@@ -304,19 +306,23 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = WooPosBookingsState.Content(
             selectedTab = currentTab,
             items = bookings.map {
+                val totals = orderTotalsFor(it)
                 mapper.toListItem(
                     dto = it,
                     selectedId = selectedBookingId,
-                    customerName = dataSource.getCustomerName(it.customerId),
+                    customerName = dataSource.getCustomerName(it.customerId)
+                        ?: totals?.customerName,
                     productName = dataSource.getProductName(it.productId),
                 )
             },
             selectedDetail = bookings.find { it.id == selectedBookingId }?.let {
+                val totals = orderTotalsFor(it)
                 mapper.toDetail(
                     dto = it,
-                    customerName = dataSource.getCustomerName(it.customerId),
+                    customerName = dataSource.getCustomerName(it.customerId)
+                        ?: totals?.customerName,
                     productName = dataSource.getProductName(it.productId),
-                    orderTotals = orderTotalsFor(it),
+                    orderTotals = totals,
                 )
             },
             paginationState = paginationState,

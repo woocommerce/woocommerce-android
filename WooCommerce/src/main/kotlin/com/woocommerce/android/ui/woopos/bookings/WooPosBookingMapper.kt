@@ -96,6 +96,7 @@ class WooPosBookingMapper @Inject constructor() {
             cancelInProgress = false,
             paymentUpdateInProgress = false,
             orderTotals = bookingOrderTotals,
+            orderTotalsLoading = dto.orderId != 0L && orderTotals == null,
             actions = actions,
         )
     }

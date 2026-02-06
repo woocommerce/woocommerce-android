@@ -146,11 +146,14 @@ class WooPosBookingsDataSource @Inject constructor(
             val payload = orderRestClient.fetchSingleOrder(selectedSite.get(), orderId)
             if (payload.error == null) {
                 val order = orderMapper.toAppModel(payload.orderWithMeta.first)
+                val billingName = order.getBillingName("").ifEmpty { null }
+                val billingEmail = order.billingAddress.email.ifEmpty { null }
                 orderTotalsCache[orderId] = OrderTotalsData(
                     subtotal = order.productsTotal,
                     tax = order.totalTax,
                     total = order.total,
                     currency = order.currency,
+                    customerName = billingName ?: billingEmail,
                 )
             }
         } catch (e: Exception) {
@@ -238,4 +241,5 @@ data class OrderTotalsData(
     val tax: BigDecimal,
     val total: BigDecimal,
     val currency: String,
+    val customerName: String? = null,
 )

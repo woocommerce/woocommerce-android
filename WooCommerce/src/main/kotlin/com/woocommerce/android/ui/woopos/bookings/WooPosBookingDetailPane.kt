@@ -120,10 +120,11 @@ fun WooPosBookingDetailPane(
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         }
 
-        if (detail.orderTotals != null || detail.isPayable) {
+        if (detail.orderTotals != null || detail.isPayable || detail.orderTotalsLoading) {
             WooPosCard(shadowType = ShadowType.Soft) {
                 PaymentSection(
                     orderTotals = detail.orderTotals,
+                    orderTotalsLoading = detail.orderTotalsLoading,
                     isPayable = detail.isPayable,
                     onPayByCardClicked = onPayByCardClicked,
                     onPayByCashClicked = onPayByCashClicked,
@@ -442,6 +443,7 @@ private fun AttendanceToggle(
 @Composable
 private fun PaymentSection(
     orderTotals: BookingOrderTotals?,
+    orderTotalsLoading: Boolean,
     isPayable: Boolean,
     onPayByCardClicked: () -> Unit,
     onPayByCashClicked: () -> Unit,
@@ -454,7 +456,19 @@ private fun PaymentSection(
             fontWeight = FontWeight.SemiBold,
         )
 
-        if (orderTotals != null) {
+        if (orderTotalsLoading) {
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center,
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    strokeWidth = 2.dp,
+                )
+            }
+        } else if (orderTotals != null) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
             BookingTotalsGrid(totals = orderTotals)

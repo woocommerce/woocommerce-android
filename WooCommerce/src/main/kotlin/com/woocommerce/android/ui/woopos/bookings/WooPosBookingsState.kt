@@ -59,6 +59,7 @@ data class BookingDetail(
     val cancelInProgress: Boolean,
     val paymentUpdateInProgress: Boolean,
     val orderTotals: BookingOrderTotals? = null,
+    val orderTotalsLoading: Boolean = false,
     val actions: List<BookingAction> = emptyList(),
 )
 
