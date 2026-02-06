@@ -2,6 +2,8 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +19,9 @@ import javax.inject.Inject
 
 @Suppress("LargeClass", "MagicNumber")
 @HiltViewModel
-class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
+class WooPosBookingsViewModel @Inject constructor(
+    private val cardReaderFacade: WooPosCardReaderFacade
+) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
     val state: StateFlow<WooPosBookingsState> = _state.asStateFlow()
@@ -147,12 +151,20 @@ class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
         return Unit
     }
 
-    @Suppress("UnusedParameter")
     fun onUIEvent(event: WooPosBookingsUIEvent) {
-        return Unit
+        when (event) {
+            is WooPosBookingsUIEvent.BookingActionClicked -> Unit
+            is WooPosBookingsUIEvent.PayByCardClicked -> onPayByCardClicked()
+        }
     }
 
-    fun onIssueRefundDialogDismissed() {
-        return Unit
+    private fun onPayByCardClicked() {
+        when (cardReaderFacade.readerStatus.value) {
+            is CardReaderStatus.Connected -> TODO()
+            is CardReaderStatus.Connecting -> {
+                // no-op
+            }
+            is CardReaderStatus.NotConnected -> cardReaderFacade.connectToReader()
+        }
     }
 }
