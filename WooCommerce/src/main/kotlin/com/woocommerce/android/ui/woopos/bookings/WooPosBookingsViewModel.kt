@@ -203,13 +203,25 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchBookings()
     }
 
-    @Suppress("UnusedParameter")
     fun onUIEvent(event: WooPosBookingsUIEvent) {
-        return Unit
+        when (event) {
+            is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
+        }
     }
 
     fun onIssueRefundDialogDismissed() {
-        return Unit
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        _state.value = currentState.copy(
+            dialogState = WooPosBookingsState.Content.DialogState.Hidden
+        )
+    }
+
+    private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
+        when (action) {
+            is WooPosBookingsState.BookingAction.EmailReceipt -> {
+                // TODO: handle email receipt
+            }
+        }
     }
 
     private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
