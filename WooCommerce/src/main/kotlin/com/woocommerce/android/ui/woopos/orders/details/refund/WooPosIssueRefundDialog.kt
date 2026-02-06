@@ -20,7 +20,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +47,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -199,10 +199,12 @@ private fun LoadingContent() {
             .padding(WooPosSpacing.XLarge.value),
         contentAlignment = Alignment.Center
     ) {
-        CircularProgressIndicator(
-            modifier = Modifier.semantics {
-                contentDescription = loadingDescription
-            }
+        WooPosCircularLoadingIndicator(
+            modifier = Modifier
+                .size(48.dp)
+                .semantics {
+                    contentDescription = loadingDescription
+                }
         )
     }
 }
@@ -810,7 +812,7 @@ private fun ConfirmRefundButtons(
                     .padding(vertical = WooPosSpacing.Medium.value),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(
+                WooPosCircularLoadingIndicator(
                     modifier = Modifier.size(48.dp)
                 )
             }
