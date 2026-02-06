@@ -4,7 +4,7 @@
 
 24.1
 -----
-- [Internal] Providing a phone number in shipping address  [https://github.com/woocommerce/woocommerce-android/pull/15208]
+- [Internal] Require a phone number in shipping address  [https://github.com/woocommerce/woocommerce-android/pull/15208]
 
 
 24.0
