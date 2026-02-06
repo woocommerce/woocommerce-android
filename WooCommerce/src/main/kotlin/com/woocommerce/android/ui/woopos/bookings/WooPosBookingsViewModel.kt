@@ -144,7 +144,28 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onEndOfBookingsListReached() {
-        return Unit
+        if (loadMoreJob?.isActive == true) return
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        if (currentState.paginationState is WooPosPaginationState.Error) return
+
+        loadMoreJob = viewModelScope.launch {
+            fetchJob?.join()
+
+            val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
+            bookingListHandler.loadMore()
+                .onSuccess {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
+                }
+                .onFailure {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(
+                        paginationState = WooPosPaginationState.Error
+                    )
+                }
+        }
     }
 
     fun onPaginationErrorTryAgain() {
