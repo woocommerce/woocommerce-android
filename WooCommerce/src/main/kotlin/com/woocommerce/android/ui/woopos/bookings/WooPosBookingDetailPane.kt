@@ -359,7 +359,7 @@ private fun AttendanceSection(
         ) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_detail_attendance),
-                style = WooPosTypography.BodyXLarge,
+                style = WooPosTypography.BodyLarge,
                 fontWeight = FontWeight.SemiBold,
             )
             if (isLoading) {
@@ -450,7 +450,7 @@ private fun PaymentSection(
     Column(modifier = modifier) {
         WooPosText(
             text = stringResource(R.string.woopos_bookings_detail_payment),
-            style = WooPosTypography.BodyXLarge,
+            style = WooPosTypography.BodyLarge,
             fontWeight = FontWeight.SemiBold,
         )
 
