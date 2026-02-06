@@ -2,6 +2,10 @@
 *** Use [*****] to indicate smoke tests of all critical flows should be run on the final APK before release (e.g. major library or targetSdk updates).
 *** For entries which are touching the Android Wear app's, start entry with `[WEAR]` too.
 
+24.2
+-----
+
+
 24.1
 -----
 - [Internal] Require a phone number in shipping address  [https://github.com/woocommerce/woocommerce-android/pull/15208]
