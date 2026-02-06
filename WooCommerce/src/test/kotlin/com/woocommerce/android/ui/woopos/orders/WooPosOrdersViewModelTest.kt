@@ -15,9 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosGetRefundableItems
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundableItem
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
