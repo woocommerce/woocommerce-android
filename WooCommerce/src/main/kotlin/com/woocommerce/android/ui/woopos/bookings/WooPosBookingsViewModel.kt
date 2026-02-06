@@ -102,9 +102,23 @@ class WooPosBookingsViewModel @Inject constructor(
         return Unit
     }
 
-    @Suppress("UnusedParameter")
     fun onBookingSelected(bookingId: Long) {
-        return Unit
+        selectedBookingId = bookingId
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
+
+        val updatedItems = items.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == bookingId)
+        }
+        val selectedDetails = updatedItems.entries
+            .find { it.key.id == bookingId }
+            ?.value
+            ?.let { (it as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(updatedItems),
+            selectedDetails = selectedDetails
+        )
     }
 
     fun onEndOfBookingsListReached() {
