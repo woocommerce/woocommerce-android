@@ -1375,17 +1375,16 @@ platform :android do
     )
 
     # Upload to appropriate service based on app type
-    if app == MOBILE_APP
-      install_url = upload_prototype_to_fad(app: app, platform_name: platform_name)
-    else
-      install_url = upload_prototype_to_s3(app: app)
-    end
+    install_url = if app == MOBILE_APP
+                    upload_prototype_to_fad(app: app, platform_name: platform_name)
+                  else
+                    upload_prototype_to_s3(app: app)
+                  end
 
     next unless is_ci
 
     comment_on_pr_with_prototype_build_install_link(
       app_display_name: "#{app} Android",
-      project: GITHUB_REPO,
       download_url: install_url,
       metadata: {
         Platform: platform_name,
@@ -1403,7 +1402,7 @@ platform :android do
   #
   # @return [String] The install URL for the uploaded build
   #
-  private_lane :upload_prototype_to_fad do |app:, platform_name:|
+  private_lane :upload_prototype_to_fad do |platform_name:|
     UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
 
     release_notes = <<~NOTES
@@ -1735,7 +1734,6 @@ end
 #
 def comment_on_pr_with_prototype_build_install_link(
   app_display_name:,
-  project:,
   download_url:,
   metadata:,
   fold:,
@@ -1745,7 +1743,7 @@ def comment_on_pr_with_prototype_build_install_link(
   return unless pr_number && pr_number != 'false'
 
   comment_on_pr(
-    project: project,
+    project: GITHUB_REPO,
     pr_number: Integer(pr_number),
     reuse_identifier: reuse_identifier,
     body: prototype_build_details_comment(
