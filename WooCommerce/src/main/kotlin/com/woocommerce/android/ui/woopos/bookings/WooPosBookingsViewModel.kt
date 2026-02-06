@@ -99,7 +99,29 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onRefresh() {
-        return Unit
+        _state.value = when (val current = _state.value) {
+            is WooPosBookingsState.Content -> current.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing
+            )
+            else -> WooPosBookingsState.Loading
+        }
+
+        fetchJob?.cancel()
+        loadMoreJob?.cancel()
+        fetchJob = viewModelScope.launch {
+            bookingListHandler.loadBookings(
+                sortBy = BookingListSortOption.NewestToOldest
+            ).onFailure {
+                _state.value = when (val current = _state.value) {
+                    is WooPosBookingsState.Content -> current.copy(
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled
+                    )
+                    else -> WooPosBookingsState.Error(
+                        message = it.message ?: "Failed to load bookings"
+                    )
+                }
+            }
+        }
     }
 
     fun onBookingSelected(bookingId: Long) {
