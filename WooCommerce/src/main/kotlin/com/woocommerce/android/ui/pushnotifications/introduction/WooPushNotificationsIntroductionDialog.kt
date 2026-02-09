@@ -10,7 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
@@ -36,14 +36,12 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent {
-                WooThemeWithBackground {
-                    WooPushNotificationsIntroductionScreen(
-                        onContinueClick = viewModel::onContinueClick,
-                        onNotNowClick = viewModel::onNotNowClick,
-                        onWhatIsWPComClick = viewModel::onWhatIsWPComClick
-                    )
-                }
+            composeView {
+                WooPushNotificationsIntroductionScreen(
+                    onContinueClick = viewModel::onContinueClick,
+                    onNotNowClick = viewModel::onNotNowClick,
+                    onWhatIsWPComClick = viewModel::onWhatIsWPComClick
+                )
             }
         }
     }

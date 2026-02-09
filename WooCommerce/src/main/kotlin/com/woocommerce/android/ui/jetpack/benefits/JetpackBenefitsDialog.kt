@@ -12,7 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.R.style
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.UIMessageResolver
-import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -42,10 +42,8 @@ class JetpackBenefitsDialog : DialogFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
 
-            setContent {
-                WooThemeWithBackground {
-                    JetpackBenefitsScreen(viewModel = viewModel)
-                }
+            composeView {
+                JetpackBenefitsScreen(viewModel = viewModel)
             }
         }
     }
