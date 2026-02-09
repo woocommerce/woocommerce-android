@@ -1,11 +1,9 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.RefundsFetchResult
 
 @Immutable
 sealed class WooPosBookingsState {
@@ -29,59 +27,56 @@ sealed class WooPosBookingsState {
     }
 
     @Immutable
-    sealed class BookingDetailsViewState {
-        abstract val orderId: Long
-
-        @Immutable
-        data class Lazy(
-            override val orderId: Long,
-            val order: Order,
-            val refundResult: RefundsFetchResult
-        ) : BookingDetailsViewState()
-
-        @Immutable
-        data class Computed(
-            override val orderId: Long,
-            val details: Details
-        ) : BookingDetailsViewState() {
-            @Immutable
-            data class Details(
-                val id: Long,
-                val number: String,
-                val dateTime: String,
-                val customerEmail: String?,
-                val status: WooPosBookingStatus,
-
-                val lineItems: List<LineItemRow>,
-                val breakdown: TotalsBreakdown,
-                val total: String,
-                val totalPaid: String,
-                val paymentMethodTitle: String?,
-                val actionsState: BookingActionsState
-            ) {
-                @Immutable
-                data class LineItemRow(
-                    val id: Long,
-                    val name: String,
-                    val attributesDescription: String?,
-                    val qtyAndUnitPrice: String,
-                    val lineTotal: String,
-                    val imageUrl: String?,
-                )
-
-                @Immutable
-                data class TotalsBreakdown(
-                    val products: String,
-                    val discount: String?,
-                    val discountCode: String?,
-                    val taxes: String,
-                    val shipping: String?,
-                    val refunds: List<String>,
-                    val netPayment: String?
-                )
-            }
-        }
+    enum class AttendanceState {
+        ATTENDED,
+        UNATTENDED,
     }
+
+    @Immutable
+    data class CustomerSection(
+        val name: String?,
+        val email: String?,
+        val phone: String?,
+        val billingAddress: String?,
+        val note: String?,
+    )
+
+    @Immutable
+    data class AttendanceSection(
+        val isAttendedSelected: Boolean,
+        val isUnattendedSelected: Boolean,
+    )
+
+    @Immutable
+    data class PaymentSection(
+        val serviceAmount: String,
+        val taxAmount: String,
+        val discountAmount: String,
+        val totalAmount: String,
+        val paidWithLabel: String?,
+        val showPayButtons: Boolean,
+    )
+
+    @Immutable
+    data class BookingDetailsViewState(
+        val id: Long,
+        val number: String,
+        val status: WooPosBookingStatus,
+        val actionsState: BookingActionsState,
+        val headerTitle: String,
+        val headerSubtitle: String,
+        val attendanceBadge: AttendanceState?,
+        val bookingName: String,
+        val appointmentDate: String,
+        val appointmentTime: String,
+        val duration: String,
+        val teamMember: String?,
+        val location: String?,
+        val customerSection: CustomerSection?,
+        val attendanceSection: AttendanceSection?,
+        val paymentSection: PaymentSection,
+        val bookingNote: String?,
+    )
 
     @Immutable
     data class BookingItemViewState(
@@ -100,7 +95,7 @@ sealed class WooPosBookingsState {
     data class Content(
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
-        val selectedDetails: BookingDetailsViewState.Computed.Details?,
+        val selectedDetails: BookingDetailsViewState?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
     ) : WooPosBookingsState() {
