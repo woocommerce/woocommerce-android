@@ -301,10 +301,12 @@ class WooPosBookingsViewModel @Inject constructor(
         booking: BookingEntity
     ): WooPosBookingsState.AttendanceSection? {
         if (!booking.isAttendanceStatusEditable) return null
-        return WooPosBookingsState.AttendanceSection(
-            isAttendedSelected = booking.attendanceStatus == BookingEntity.AttendanceStatus.CheckedIn,
-            isUnattendedSelected = booking.attendanceStatus == BookingEntity.AttendanceStatus.NoShow,
-        )
+        val selection = when (booking.attendanceStatus) {
+            BookingEntity.AttendanceStatus.CheckedIn -> WooPosBookingsState.AttendanceState.ATTENDED
+            BookingEntity.AttendanceStatus.NoShow -> WooPosBookingsState.AttendanceState.UNATTENDED
+            else -> null
+        }
+        return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
     private fun buildPaymentSection(
