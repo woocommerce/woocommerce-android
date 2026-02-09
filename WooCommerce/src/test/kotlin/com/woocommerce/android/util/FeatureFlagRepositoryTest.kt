@@ -54,7 +54,7 @@ class FeatureFlagRepositoryTest {
     @Test
     fun `given flag with default false, when getFlagState called, then defaultValue is false`() = runTest {
         // GIVEN
-        val flag = FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM // explicit default = false
+        val flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1 // explicit default = false
         whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.key)).thenReturn(null)
 
         // WHEN
@@ -86,7 +86,7 @@ class FeatureFlagRepositoryTest {
 
         // Default used when no override and no remote
         val stateWithDefault = FeatureFlagRepository.FeatureFlagState(
-            flag = FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM,
+            flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1,
             defaultValue = false,
             remoteValue = null,
             overrideValue = null

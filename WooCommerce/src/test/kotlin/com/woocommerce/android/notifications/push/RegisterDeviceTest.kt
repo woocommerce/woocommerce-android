@@ -44,7 +44,7 @@ class RegisterDeviceTest : BaseUnitTest() {
         whenever(accountStore.hasAccessToken()).thenReturn(true)
         whenever(siteModel.siteId).thenReturn(TEST_SITE_ID)
         whenever(selectedSite.getIfExists()).thenReturn(siteModel)
-        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM)).thenReturn(false)
+        whenever(featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)).thenReturn(false)
     }
 
     private fun createSut() {

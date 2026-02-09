@@ -27,7 +27,9 @@ class RegisterDevice @Inject constructor(
                 when (pushRegistrationStatus) {
                     Status.UNREGISTERED -> sendToken()
                     Status.REGISTERED_WPCOM_ONLY -> {
-                        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM)) sendToken()
+                        if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
+                            sendToken()
+                        }
                     }
 
                     Status.REGISTERED_WOO_ONLY,
@@ -43,7 +45,7 @@ class RegisterDevice @Inject constructor(
     private suspend fun sendToken() {
         val token = appPrefsWrapper.getFCMToken()
         if (token.isNotEmpty()) {
-            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM)) {
+            if (featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1)) {
                 selectedSite.getIfExists()?.let { site ->
                     pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site)
                 }
