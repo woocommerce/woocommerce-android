@@ -208,6 +208,11 @@ class WooPosBookingsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosBookingsUIEvent) {
         when (event) {
             is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
+            is WooPosBookingsUIEvent.AttendanceToggled -> { }
+            is WooPosBookingsUIEvent.PayByCardClicked -> { }
+            is WooPosBookingsUIEvent.PayByCashClicked -> { }
+            is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
+            is WooPosBookingsUIEvent.CopyEmailClicked -> { }
         }
     }
 
