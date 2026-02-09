@@ -18,7 +18,14 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
+import java.math.BigDecimal
+import java.time.Duration
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,6 +36,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
     companion object {
         private const val MIN_LOADING_DURATION_MS = 300L
+        private const val MINUTES_PER_HOUR = 60
     }
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
@@ -248,6 +256,24 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun mapToDetailsViewState(
         booking: BookingEntity
     ): WooPosBookingsState.BookingDetailsViewState {
+        val zone = ZoneId.systemDefault()
+        val dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withZone(zone)
+        val timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT).withZone(zone)
+
+        val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
+        val appointmentTime = "${timeFormatter.format(booking.start)} - ${timeFormatter.format(booking.end)}"
+
+        val customerInfo = booking.order.customerInfo
+        val customerName = listOfNotNull(
+            customerInfo?.billingFirstName,
+            customerInfo?.billingLastName
+        ).joinToString(" ").ifBlank { null }
+
+        val headerSubtitle = buildString {
+            append(bookingName)
+            customerName?.let { append(" \u00B7 $it") }
+        }
+
         return WooPosBookingsState.BookingDetailsViewState(
             id = booking.id.value,
             number = "#${booking.id.value}",
@@ -255,27 +281,109 @@ class WooPosBookingsViewModel @Inject constructor(
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
             ),
-            headerTitle = "",
-            headerSubtitle = "",
-            attendanceBadge = null,
-            bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            appointmentDate = "",
-            appointmentTime = "",
-            duration = "",
+            headerTitle = appointmentTime,
+            headerSubtitle = headerSubtitle,
+            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            bookingName = bookingName,
+            appointmentDate = dateFormatter.format(booking.start),
+            appointmentTime = appointmentTime,
+            duration = formatDuration(Duration.between(booking.start, booking.end)),
             teamMember = null,
             location = null,
-            customerSection = null,
-            attendanceSection = null,
-            paymentSection = WooPosBookingsState.PaymentSection(
-                serviceAmount = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "-",
-                taxAmount = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "-",
-                discountAmount = "-",
-                totalAmount = booking.order.paymentInfo?.total?.toPlainString() ?: "-",
-                paidWithLabel = booking.order.paymentInfo?.paymentMethodTitle,
-                showPayButtons = false,
-            ),
-            bookingNote = null,
+            customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
+            attendanceSection = buildAttendanceSection(booking),
+            paymentSection = buildPaymentSection(booking),
+            bookingNote = booking.note.ifBlank { null },
         )
+    }
+
+    private fun buildAttendanceSection(
+        booking: BookingEntity
+    ): WooPosBookingsState.AttendanceSection? {
+        if (!booking.isAttendanceStatusEditable) return null
+        return WooPosBookingsState.AttendanceSection(
+            isAttendedSelected = booking.attendanceStatus == BookingEntity.AttendanceStatus.CheckedIn,
+            isUnattendedSelected = booking.attendanceStatus == BookingEntity.AttendanceStatus.NoShow,
+        )
+    }
+
+    private fun buildPaymentSection(
+        booking: BookingEntity
+    ): WooPosBookingsState.PaymentSection {
+        val paymentInfo = booking.order.paymentInfo
+        val discount = paymentInfo?.let { it.total - it.subtotal } ?: BigDecimal.ZERO
+        val paymentTotal = paymentInfo?.let { it.total + it.totalTax } ?: BigDecimal.ZERO
+        val isPaid = booking.status == BookingEntity.Status.Paid ||
+            booking.status == BookingEntity.Status.Complete
+
+        return WooPosBookingsState.PaymentSection(
+            serviceAmount = paymentInfo?.subtotal?.toPlainString() ?: "-",
+            taxAmount = paymentInfo?.totalTax?.toPlainString() ?: "-",
+            discountAmount = if (discount.compareTo(BigDecimal.ZERO) != 0) {
+                "-${discount.abs().toPlainString()}"
+            } else {
+                "-"
+            },
+            totalAmount = paymentTotal.toPlainString(),
+            paidWithLabel = if (isPaid) paymentInfo?.paymentMethodTitle else null,
+            showPayButtons = !isPaid,
+        )
+    }
+
+    private fun buildCustomerSection(
+        customerInfo: BookingCustomerInfo?,
+        customerName: String?,
+        customerNote: String?,
+    ): WooPosBookingsState.CustomerSection? {
+        val email = customerInfo?.billingEmail?.ifBlank { null }
+        val phone = customerInfo?.billingPhone?.ifBlank { null }
+        val billingAddress = buildBillingAddress(customerInfo)
+        val note = customerNote?.ifBlank { null }
+
+        val hasContent = customerName != null || email != null || phone != null ||
+            billingAddress != null || note != null
+        if (!hasContent) return null
+
+        return WooPosBookingsState.CustomerSection(
+            name = customerName,
+            email = email,
+            phone = phone,
+            billingAddress = billingAddress,
+            note = note,
+        )
+    }
+
+    private fun formatDuration(duration: Duration): String {
+        val hours = duration.toHours()
+        val minutes = duration.toMinutes() % MINUTES_PER_HOUR
+        return when {
+            hours > 0 && minutes > 0 -> "$hours hr $minutes min"
+            hours > 0 -> "$hours hr"
+            else -> "$minutes min"
+        }
+    }
+
+    private fun buildBillingAddress(customerInfo: BookingCustomerInfo?): String? {
+        if (customerInfo == null) return null
+        val parts = listOfNotNull(
+            customerInfo.billingAddress1,
+            customerInfo.billingAddress2,
+            customerInfo.billingCity,
+            customerInfo.billingState,
+            customerInfo.billingPostcode,
+            customerInfo.billingCountry,
+        ).filter { it.isNotBlank() }
+        return parts.joinToString(", ").ifBlank { null }
+    }
+
+    private fun mapAttendanceBadge(
+        status: BookingEntity.AttendanceStatus
+    ): WooPosBookingsState.AttendanceState? {
+        return when (status) {
+            BookingEntity.AttendanceStatus.CheckedIn -> WooPosBookingsState.AttendanceState.ATTENDED
+            BookingEntity.AttendanceStatus.NoShow -> WooPosBookingsState.AttendanceState.UNATTENDED
+            else -> null
+        }
     }
 
     private fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
