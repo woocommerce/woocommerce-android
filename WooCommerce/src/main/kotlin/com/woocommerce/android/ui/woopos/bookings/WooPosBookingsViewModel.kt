@@ -88,8 +88,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
-                    val details = items.entries.find { it.key.id == id }?.value
-                    (details as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details
+                    items.entries.find { it.key.id == id }?.value
                 }
 
                 _state.value = WooPosBookingsState.Content(
@@ -114,7 +113,6 @@ class WooPosBookingsViewModel @Inject constructor(
         val selectedDetails = updatedItems.entries
             .find { it.key.id == bookingId }
             ?.value
-            ?.let { (it as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details }
 
         _state.value = currentState.copy(
             items = WooPosBookingsState.Content.Items.Loaded(updatedItems),
@@ -229,13 +227,12 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
-        // TBD: create a POS-specific mapper for BookingEntity -> BookingItemViewState
         return WooPosBookingsState.BookingItemViewState(
             id = booking.id.value,
             title = booking.order.productInfo?.name ?: "#${booking.id.value}",
             date = booking.start.toString(),
             total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
-            customerEmail = booking.order.customerInfo?.billingEmail,
+            customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
             isSelected = booking.id.value == selectedBookingId,
             status = mapBookingStatus(booking.status),
             statusSlug = booking.status.key,
@@ -246,32 +243,33 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun mapToDetailsViewState(
         booking: BookingEntity
     ): WooPosBookingsState.BookingDetailsViewState {
-        // TBD: create a POS-specific mapper for BookingEntity -> BookingDetailsViewState
-        return WooPosBookingsState.BookingDetailsViewState.Computed(
-            orderId = booking.orderId,
-            details = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
-                id = booking.id.value,
-                number = "#${booking.id.value}",
-                dateTime = booking.start.toString(),
-                customerEmail = booking.order.customerInfo?.billingEmail,
-                status = mapBookingStatus(booking.status),
-                lineItems = emptyList(),
-                breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
-                    products = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "",
-                    discount = null,
-                    discountCode = null,
-                    taxes = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "",
-                    shipping = null,
-                    refunds = emptyList(),
-                    netPayment = null
-                ),
-                total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
-                totalPaid = booking.order.paymentInfo?.total?.toPlainString() ?: "",
-                paymentMethodTitle = booking.order.paymentInfo?.paymentMethodTitle,
-                actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                    listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-                )
-            )
+        return WooPosBookingsState.BookingDetailsViewState(
+            id = booking.id.value,
+            number = "#${booking.id.value}",
+            status = mapBookingStatus(booking.status),
+            actionsState = WooPosBookingsState.BookingActionsState.Loaded(
+                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+            ),
+            headerTitle = "",
+            headerSubtitle = "",
+            attendanceBadge = null,
+            bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}",
+            appointmentDate = "",
+            appointmentTime = "",
+            duration = "",
+            teamMember = null,
+            location = null,
+            customerSection = null,
+            attendanceSection = null,
+            paymentSection = WooPosBookingsState.PaymentSection(
+                serviceAmount = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "-",
+                taxAmount = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "-",
+                discountAmount = "-",
+                totalAmount = booking.order.paymentInfo?.total?.toPlainString() ?: "-",
+                paidWithLabel = booking.order.paymentInfo?.paymentMethodTitle,
+                showPayButtons = false,
+            ),
+            bookingNote = null,
         )
     }
 
