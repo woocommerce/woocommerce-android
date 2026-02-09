@@ -60,7 +60,10 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
             UNVERIFIED_ORIGIN_ADDRESS
         }
 
-        addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) &&
+        (
+            addressValidationHelper.isMissingDestinationAddress(addresses.shipTo.address) ||
+                !addressValidationHelper.isPhoneValidForShippingLabel(addresses.shipTo.address.phone)
+            ) &&
             isDismissed[MISSING_DESTINATION_ADDRESS] == false -> {
             MISSING_DESTINATION_ADDRESS
         }
@@ -97,7 +100,7 @@ class ObserveShippingLabelNotice @Inject constructor(private val addressValidati
         )
 
         MISSING_DESTINATION_ADDRESS -> NoticeBannerUiState(
-            message = R.string.woo_shipping_address_notification_destination_missing,
+            message = R.string.woo_shipping_address_notification_destination_missing_or_invalid,
             type = MISSING_DESTINATION_ADDRESS,
             autoDismiss = false,
             error = true,

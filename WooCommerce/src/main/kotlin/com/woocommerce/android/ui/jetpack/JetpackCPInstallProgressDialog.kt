@@ -217,7 +217,7 @@ class JetpackCPInstallProgressDialog : DialogFragment(R.layout.dialog_jetpack_in
                             ctx.getString(R.string.jetpack_install_progress_failed_alternative_activate)
                         )
                     }
-                    else -> ""
+                    CONNECTION -> ""
                 }
             )
         }

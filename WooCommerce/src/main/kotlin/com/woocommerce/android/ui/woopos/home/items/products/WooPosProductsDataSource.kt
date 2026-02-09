@@ -22,6 +22,7 @@ import com.woocommerce.android.ui.woopos.localcatalog.VariationsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncRequirement
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosFullSyncStatusChecker
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWithFts
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncProductResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosSyncVariationResult
@@ -189,6 +190,7 @@ class WooPosProductsInDbDataSource @Inject constructor(
     private val performInstantCatalogFullSync: WooPosPerformInstantCatalogFullSync,
     private val localCatalogSyncRepository: WooPosLocalCatalogSyncRepository,
     private val localCatalogSearchDataSource: WooPosProductsSearchInDbDataSource,
+    private val syncWithFts: WooPosLocalCatalogSyncWithFts,
 ) : WooPosProductsDataSourceInterface {
 
     private fun getProductsFromDatabaseFlow(): Flow<List<WooPosProductModel>> {
@@ -229,7 +231,15 @@ class WooPosProductsInDbDataSource @Inject constructor(
 
     override suspend fun resetVariationsListHandler() = Unit
 
-    override suspend fun prepopulateCache(): Result<Unit> = performInstantCatalogFullSync()
+    override suspend fun prepopulateCache(): Result<Unit> {
+        val result = performInstantCatalogFullSync()
+        if (result.isSuccess) {
+            selectedSite.getOrNull()?.let { site ->
+                syncWithFts.ensureFtsPopulated(site)
+            }
+        }
+        return result
+    }
 
     override fun fetchFirstVariationsPage(
         productId: Long,

@@ -449,7 +449,8 @@ class WooShippingNetworkingMapper @Inject constructor(
             country = address.country,
             name = "${address.firstName} ${address.lastName}",
             company = address.company,
-            phone = address.phone
+            phone = address.phone,
+            email = address.email
         )
     }
 

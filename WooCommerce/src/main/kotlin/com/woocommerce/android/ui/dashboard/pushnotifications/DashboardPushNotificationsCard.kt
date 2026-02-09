@@ -29,9 +29,9 @@ import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
 
 @Composable
 fun DashboardPushNotificationsCard(
+    onHideClicked: () -> Unit,
     modifier: Modifier = Modifier,
     onClick: () -> Unit = {},
-    onHideClicked: () -> Unit,
 ) {
     val menu = DashboardWidgetMenu(
         items = listOf(

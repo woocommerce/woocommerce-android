@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.common.data.models.WooPosProductModelMa
 import com.woocommerce.android.ui.woopos.home.items.search.WooPosProductsSearchInDbDataSource
 import com.woocommerce.android.ui.woopos.localcatalog.ProductsResult
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncRepository
+import com.woocommerce.android.ui.woopos.localcatalog.WooPosLocalCatalogSyncWithFts
 import com.woocommerce.android.ui.woopos.localcatalog.WooPosPerformInstantCatalogFullSync
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -76,6 +77,7 @@ class WooPosProductsInDbDataSourceTest {
             variationMapper = mock<WooPosVariationMapper>(),
             localCatalogSyncRepository = mock<WooPosLocalCatalogSyncRepository>(),
             localCatalogSearchDataSource = mock<WooPosProductsSearchInDbDataSource>(),
+            syncWithFts = mock<WooPosLocalCatalogSyncWithFts>(),
         )
     }
 

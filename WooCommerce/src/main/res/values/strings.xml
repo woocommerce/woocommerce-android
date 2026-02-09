@@ -3609,6 +3609,10 @@
     <string name="woopos_refresh_catalog_banner_message">The catalog hasn\'t been synced in the last 7 days. Either connect your device to WiFi or enable syncing over cellular network in POS settings.</string>
     <string name="woopos_refresh_catalog_banner_dismiss">Dismiss banner</string>
 
+    <string name="woopos_wc_version_sunset_banner_title">Update WooCommerce soon</string>
+    <string name="woopos_wc_version_sunset_banner_message">Starting August 1, 2026, Point of Sale will require WooCommerce 10.5.0 or later. Update WooCommerce on your store or ask your store administrator.</string>
+    <string name="woopos_wc_version_sunset_banner_dismiss">Dismiss WooCommerce update warning</string>
+
     <string name="woopos_reader_connected">Reader connected</string>
     <string name="woopos_reader_disconnected">Connect your reader</string>
     <string name="woopos_checkout_button">Check out</string>
@@ -3832,6 +3836,7 @@
         <item quantity="other">Items subtotal (%d items)</item>
     </plurals>
     <string name="woopos_orders_refund_total">Refund total</string>
+    <string name="woopos_orders_via_payment_method">Via %1$s</string>
     <string name="woopos_orders_refund_reason">Refund reason</string>
     <string name="woopos_orders_refund_reason_placeholder">Reason for refunding order</string>
     <string name="woopos_orders_edit_reason">Edit reason</string>
@@ -3841,6 +3846,11 @@
     <string name="woopos_orders_confirm_refund_title">Refund %1$s</string>
     <string name="woopos_orders_confirm_refund_message">Are you sure you wish to process the refund %1$s via %2$s?\n\nThis action cannot be undone.</string>
     <string name="woopos_orders_yes_proceed">Yes, proceed</string>
+    <string name="woopos_refund_loading_error_title">Failed to load refund items</string>
+    <string name="woopos_refund_creating_error_title">Failed to create refund</string>
+    <string name="woopos_refund_error_subtitle">Please try again</string>
+    <string name="woopos_orders_refund_complete">Refund complete</string>
+    <string name="woopos_orders_refund_success_message">You refunded %1$s via %2$s.</string>
     <string name="woopos_orders_details_placeholder_title">Select an order</string>
     <string name="woopos_orders_details_placeholder_message">Choose an order from the list to view details.</string>
     <string name="woopos_orders_details_products_title">Products</string>
@@ -3855,6 +3865,7 @@
     <string name="woopos_orders_details_total_paid_label">Total paid</string>
     <string name="woopos_orders_details_refunded_label">Refunded</string>
     <string name="woopos_orders_details_refund_error">Unable to load refund</string>
+    <string name="woopos_refund_error_gateway_not_found">Unable to process refund.</string>
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
@@ -3867,6 +3878,8 @@
     <string name="woopos_orders_status_cancelled">Cancelled</string>
     <string name="woopos_orders_status_completed">Completed</string>
     <string name="woopos_orders_status_refunded">Refunded</string>
+
+    <string name="woopos_bookings_title">Bookings</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4137,7 +4150,7 @@
 
     <string name="woo_shipping_address_notification_destination_unverified">Destination address unverified</string>
     <string name="woo_shipping_address_notification_origin_unverified">Origin address unverified</string>
-    <string name="woo_shipping_address_notification_destination_missing">Destination address missing</string>
+    <string name="woo_shipping_address_notification_destination_missing_or_invalid">Destination address missing or invalid</string>
 
     <string name="woo_shipping_address_notification_destination_verified">Verified destination address</string>
     <string name="woo_shipping_address_notification_origin_verified">Verified origin address</string>
@@ -4149,6 +4162,7 @@
     <string name="woo_shipping_labels_package_removing_error">Unable to remove the package</string>
     <string name="woo_shipping_labels_package_saving_error">Unable to save the package</string>
     <string name="woo_shipping_labels_purchase_error">We are unable to purchase the shipping label. Please try again.</string>
+    <string name="woo_shipping_labels_purchase_phone_error">Unable to purchase shipping label. Please add a valid phone number to the shipping address.</string>
     <string name="woo_shipping_labels_order_completion_error">Couldn\'t mark the order as complete</string>
     <string name="woo_shipping_split_shipment_error">We were unable to split the shipments. Please try again.</string>
     <string name="woo_shipping_labels_loading_error">Unable to load data</string>

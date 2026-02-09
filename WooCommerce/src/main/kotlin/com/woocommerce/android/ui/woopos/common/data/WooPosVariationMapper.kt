@@ -26,6 +26,7 @@ class WooPosVariationMapper @Inject constructor(
             remoteVariationId = productVariation.remoteVariationId,
             remoteProductId = productVariation.remoteProductId,
             globalUniqueId = productVariation.globalUniqueId,
+            type = WooPosVariation.WooPosVariationType.VARIATION,
             price = productVariation.price,
             image = productVariation.image?.let { WooPosVariation.WooPosVariationImage(it.source) },
             attributes = productVariation.attributes.map {
@@ -65,6 +66,7 @@ class WooPosVariationMapper @Inject constructor(
             remoteVariationId = model.remoteVariationId.value,
             remoteProductId = model.remoteProductId.value,
             globalUniqueId = model.globalUniqueId,
+            type = WooPosVariation.WooPosVariationType.VARIATION,
             price = model.price.toBigDecimalOrNull(),
             image = imageModel?.src?.let { WooPosVariation.WooPosVariationImage(it) },
             attributes = attributesList,
@@ -81,6 +83,7 @@ class WooPosVariationMapper @Inject constructor(
             remoteVariationId = model.remoteVariationId.value,
             remoteProductId = model.remoteProductId.value,
             globalUniqueId = model.globalUniqueId,
+            type = WooPosVariation.WooPosVariationType.fromValue(model.type),
             price = model.price.toBigDecimalOrNull(),
             image = if (model.imageUrl.isNotEmpty()) WooPosVariation.WooPosVariationImage(model.imageUrl) else null,
             attributes = attributesList,

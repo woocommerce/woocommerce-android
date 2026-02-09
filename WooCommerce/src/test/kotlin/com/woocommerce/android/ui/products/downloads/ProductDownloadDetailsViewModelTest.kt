@@ -44,7 +44,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft).isEqualTo(file)
-        assertThat(state!!.showDoneButton).isEqualTo(false)
+        assertThat(state.showDoneButton).isEqualTo(false)
     }
 
     @Test
@@ -76,7 +76,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.name).isEqualTo(newName)
-        assertThat(state!!.showDoneButton).isEqualTo(true)
+        assertThat(state.showDoneButton).isEqualTo(true)
     }
 
     @Test
@@ -93,7 +93,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.fileDraft.url).isEqualTo(newUrl)
-        assertThat(state!!.showDoneButton).isEqualTo(true)
+        assertThat(state.showDoneButton).isEqualTo(true)
     }
 
     @Test
@@ -168,7 +168,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
-        assertThat(state!!.nameErrorMessage).isNull()
+        assertThat(state.nameErrorMessage).isNull()
     }
 
     @Test
@@ -184,7 +184,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isEqualTo(R.string.product_downloadable_files_url_invalid)
-        assertThat(state!!.nameErrorMessage).isNull()
+        assertThat(state.nameErrorMessage).isNull()
     }
 
     @Test
@@ -201,7 +201,7 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isNull()
-        assertThat(state!!.nameErrorMessage).isEqualTo(R.string.product_downloadable_files_name_invalid)
+        assertThat(state.nameErrorMessage).isEqualTo(R.string.product_downloadable_files_name_invalid)
     }
 
     @Test
@@ -218,6 +218,6 @@ class ProductDownloadDetailsViewModelTest : BaseUnitTest() {
         viewModel.productDownloadDetailsViewStateData.observeForever { _, new -> state = new }
 
         assertThat(state!!.urlErrorMessage).isNull()
-        assertThat(state!!.nameErrorMessage).isNull()
+        assertThat(state.nameErrorMessage).isNull()
     }
 }

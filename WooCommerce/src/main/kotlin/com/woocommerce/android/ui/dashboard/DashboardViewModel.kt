@@ -93,7 +93,7 @@ class DashboardViewModel @Inject constructor(
 
     val storeName = selectedSite.observe().map { site ->
         if (!site?.displayName.isNullOrBlank()) {
-            site?.displayName
+            site.displayName
         } else {
             site?.name
         } ?: resourceProvider.getString(R.string.store_name_default)
@@ -294,27 +294,30 @@ class DashboardViewModel @Inject constructor(
         }
 
         val dismissTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+        val siteId = selectedSite.getIfExists()?.siteId
 
-        return dismissTrigger.onStart { emit(Unit) }
-            .map {
-                val durationSinceDismissal =
-                    (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
-                val enablePnUiAvailable = shouldShowEnablePushNotificationsUi()
-                val showBanner = !enablePnUiAvailable &&
-                    pushNotificationRegistrationStatus(selectedSite.getIfExists()?.siteId) == Status.UNREGISTERED &&
-                    durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
-                JetpackBenefitsBannerUiModel(
-                    show = showBanner,
-                    onDismiss = {
-                        appPrefsWrapper.recordJetpackBenefitsDismissal()
-                        analyticsTrackerWrapper.track(
-                            stat = FEATURE_JETPACK_BENEFITS_BANNER,
-                            properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
-                        )
-                        dismissTrigger.tryEmit(Unit)
-                    }
-                )
-            }
+        return combine(
+            dismissTrigger.onStart { emit(Unit) },
+            pushNotificationRegistrationStatus.observe(siteId),
+            shouldShowEnablePushNotificationsUi()
+        ) { _, registrationStatus, enablePnUiAvailable ->
+            val durationSinceDismissal =
+                (System.currentTimeMillis() - appPrefsWrapper.getJetpackBenefitsDismissalDate()).milliseconds
+            val showBanner = !enablePnUiAvailable &&
+                registrationStatus == Status.UNREGISTERED &&
+                durationSinceDismissal >= DAYS_TO_REDISPLAY_JP_BENEFITS_BANNER.days
+            JetpackBenefitsBannerUiModel(
+                show = showBanner,
+                onDismiss = {
+                    appPrefsWrapper.recordJetpackBenefitsDismissal()
+                    analyticsTrackerWrapper.track(
+                        stat = FEATURE_JETPACK_BENEFITS_BANNER,
+                        properties = mapOf(AnalyticsTracker.KEY_JETPACK_BENEFITS_BANNER_ACTION to "dismissed")
+                    )
+                    dismissTrigger.tryEmit(Unit)
+                }
+            )
+        }
     }
 
     sealed interface DashboardWidgetUiModel {
