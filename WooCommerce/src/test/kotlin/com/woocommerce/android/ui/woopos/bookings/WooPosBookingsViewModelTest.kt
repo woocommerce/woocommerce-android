@@ -73,6 +73,7 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
+            mapper = WooPosBookingViewStateMapper(),
         )
     }
 
