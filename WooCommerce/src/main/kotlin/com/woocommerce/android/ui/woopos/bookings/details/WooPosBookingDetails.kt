@@ -14,7 +14,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTyp
 @Suppress("UnusedParameter")
 fun WooPosBookingDetails(
     modifier: Modifier = Modifier,
-    details: WooPosBookingsState.BookingDetailsViewState.Computed.Details,
+    details: WooPosBookingsState.BookingDetailsViewState,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Box(

@@ -417,8 +417,7 @@ private fun WooPosLoadedBookingsList(
 
                         Spacer(Modifier.height(WooPosSpacing.XSmall.value))
 
-                        val email = item.customerEmail.orEmpty()
-                        if (email.isNotBlank()) {
+                        item.customerEmail?.let { email ->
                             WooPosText(
                                 email,
                                 style = WooPosTypography.BodySmall,
@@ -542,8 +541,8 @@ fun WooPosBookingsScreenPreview() {
             state = WooPosBookingsState.Content(
                 items = WooPosBookingsState.Content.Items.Loaded(
                     items = mapOf(
-                        item1 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 1L, details = details1),
-                        item2 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 2L, details = details2)
+                        item1 to details1,
+                        item2 to details2
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
@@ -621,53 +620,39 @@ fun WooPosBookingsEmptyStatePreview() {
 private fun sampleBookingDetails(
     id: Long = 1L,
     number: String = "#014"
-) = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
+) = WooPosBookingsState.BookingDetailsViewState(
     id = id,
     number = number,
-    dateTime = "Aug 28, 2025 at 10:31 AM",
-    customerEmail = "johndoe@mail.com",
-    status = WooPosBookingStatus(text = "Completed", colorKey = WooPosBookingStatusColorKey.COMPLETED),
-    lineItems = listOf(
-        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
-            id = 101,
-            name = "Cup",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $8.50",
-            lineTotal = "$15.00",
-            imageUrl = null
-        ),
-        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
-            id = 102,
-            name = "Coffee Container",
-            attributesDescription = "Blue, Large",
-            qtyAndUnitPrice = "1 x $10.00",
-            lineTotal = "$8.00",
-            imageUrl = null
-        ),
-        WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
-            id = 103,
-            name = "Paper Filter",
-            attributesDescription = null,
-            qtyAndUnitPrice = "1 x $4.50",
-            lineTotal = "$8.00",
-            imageUrl = null
-        )
-    ),
-    breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
-        products = "$23.00",
-        discount = "-$5.00",
-        discountCode = "8qew4mnq",
-        taxes = "$0.00",
-        shipping = null,
-        refunds = listOf("-$3.00", "-$2.00"),
-        netPayment = "$12.00"
-    ),
-    total = "$17.00",
-    totalPaid = "$17.00",
-    paymentMethodTitle = "WooCommerce In-Person Payments",
+    status = WooPosBookingStatus(text = "Paid", colorKey = WooPosBookingStatusColorKey.COMPLETED),
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-        listOf(
-            WooPosBookingsState.BookingAction.EmailReceipt(id)
-        )
-    )
+        listOf(WooPosBookingsState.BookingAction.EmailReceipt(id))
+    ),
+    headerTitle = "10:30 AM - 11:30 AM",
+    headerSubtitle = "Women's Haircut \u00B7 John Doe",
+    attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
+    bookingName = "Women's Haircut",
+    appointmentDate = "Thursday, August 28, 2025",
+    appointmentTime = "10:30 AM - 11:30 AM",
+    duration = "1 hr",
+    teamMember = null,
+    location = null,
+    customerSection = WooPosBookingsState.CustomerSection(
+        name = "John Doe",
+        email = "johndoe@mail.com",
+        phone = "+1 555-123-4567",
+        billingAddress = null,
+        note = null,
+    ),
+    attendanceSection = WooPosBookingsState.AttendanceSection(
+        selection = WooPosBookingsState.AttendanceState.ATTENDED,
+    ),
+    paymentSection = WooPosBookingsState.PaymentSection(
+        serviceAmount = "$55.00",
+        taxAmount = "$4.50",
+        discountAmount = "-",
+        totalAmount = "$59.50",
+        paidWithLabel = "WooCommerce In-Person Payments",
+        showPayButtons = false,
+    ),
+    bookingNote = null,
 )
