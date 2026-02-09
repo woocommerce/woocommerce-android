@@ -28,7 +28,7 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
     operator fun invoke(): Flow<Boolean> = selectedSite.observe()
         .flatMapLatest { site ->
             flow {
-                if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM_M2)) {
+                if (!featureFlagRepository.isEnabled(FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M2)) {
                     emit(false)
                     return@flow
                 }
