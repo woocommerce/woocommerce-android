@@ -50,7 +50,7 @@ sealed class WooPosBookingsState {
                 val number: String,
                 val dateTime: String,
                 val customerEmail: String?,
-                val status: PosBookingStatus,
+                val status: WooPosBookingStatus,
 
                 val lineItems: List<LineItemRow>,
                 val breakdown: TotalsBreakdown,
@@ -91,7 +91,7 @@ sealed class WooPosBookingsState {
         val total: String,
         val customerEmail: String?,
         val isSelected: Boolean,
-        val status: PosBookingStatus,
+        val status: WooPosBookingStatus,
         val statusSlug: String,
         val createdAtMillis: Long
     )
@@ -137,7 +137,7 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState()
 }
 
-enum class BookingStatusColorKey {
+enum class WooPosBookingStatusColorKey {
     COMPLETED,
     FAILED,
     PROCESSING,
@@ -145,7 +145,7 @@ enum class BookingStatusColorKey {
     OTHER;
 
     companion object {
-        fun fromStatus(status: Status): BookingStatusColorKey = when (status) {
+        fun fromStatus(status: Status): WooPosBookingStatusColorKey = when (status) {
             Status.Completed -> COMPLETED
             Status.Failed -> FAILED
             Status.Processing -> PROCESSING
@@ -155,7 +155,7 @@ enum class BookingStatusColorKey {
     }
 }
 
-data class PosBookingStatus(
+data class WooPosBookingStatus(
     val text: String,
-    val colorKey: BookingStatusColorKey
+    val colorKey: WooPosBookingStatusColorKey
 )

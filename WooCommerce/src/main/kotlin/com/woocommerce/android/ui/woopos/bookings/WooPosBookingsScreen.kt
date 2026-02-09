@@ -512,9 +512,9 @@ fun WooPosBookingsScreenPreview() {
         total = "$17.00",
         customerEmail = "johndoe@mail.com",
         isSelected = true,
-        status = PosBookingStatus(
+        status = WooPosBookingStatus(
             text = "Completed",
-            colorKey = BookingStatusColorKey.COMPLETED
+            colorKey = WooPosBookingStatusColorKey.COMPLETED
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
@@ -526,9 +526,9 @@ fun WooPosBookingsScreenPreview() {
         total = "$43.90",
         customerEmail = "johndoe@mail.com",
         isSelected = false,
-        status = PosBookingStatus(
+        status = WooPosBookingStatus(
             text = "Processing",
-            colorKey = BookingStatusColorKey.PROCESSING
+            colorKey = WooPosBookingStatusColorKey.PROCESSING
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
@@ -626,7 +626,7 @@ private fun sampleBookingDetails(
     number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
-    status = PosBookingStatus(text = "Completed", colorKey = BookingStatusColorKey.COMPLETED),
+    status = WooPosBookingStatus(text = "Completed", colorKey = WooPosBookingStatusColorKey.COMPLETED),
     lineItems = listOf(
         WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
             id = 101,

@@ -271,18 +271,18 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
-    private fun mapBookingStatus(status: BookingEntity.Status): PosBookingStatus {
+    private fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
         val colorKey = when (status) {
-            BookingEntity.Status.Complete -> BookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Paid -> BookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Confirmed -> BookingStatusColorKey.PROCESSING
-            BookingEntity.Status.PendingConfirmation -> BookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Unpaid -> BookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Cancelled -> BookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> BookingStatusColorKey.OTHER
-            is BookingEntity.Status.Unknown -> BookingStatusColorKey.OTHER
+            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
+            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
+            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
+            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
         }
-        return PosBookingStatus(
+        return WooPosBookingStatus(
             text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
             colorKey = colorKey
         )
