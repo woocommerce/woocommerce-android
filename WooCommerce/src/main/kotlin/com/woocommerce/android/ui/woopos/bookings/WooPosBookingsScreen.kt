@@ -644,8 +644,7 @@ private fun sampleBookingDetails(
         note = null,
     ),
     attendanceSection = WooPosBookingsState.AttendanceSection(
-        isAttendedSelected = true,
-        isUnattendedSelected = false,
+        selection = WooPosBookingsState.AttendanceState.ATTENDED,
     ),
     paymentSection = WooPosBookingsState.PaymentSection(
         serviceAmount = "$55.00",

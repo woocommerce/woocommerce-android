@@ -43,8 +43,7 @@ sealed class WooPosBookingsState {
 
     @Immutable
     data class AttendanceSection(
-        val isAttendedSelected: Boolean,
-        val isUnattendedSelected: Boolean,
+        val selection: AttendanceState?,
     )
 
     @Immutable
