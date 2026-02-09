@@ -2,9 +2,13 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.ui.bookings.list.BookingListHandler
+import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,12 +16,20 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
-@Suppress("LargeClass", "MagicNumber")
 @HiltViewModel
-class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
+class WooPosBookingsViewModel @Inject constructor(
+    private val bookingListHandler: BookingListHandler,
+    private val dateTimeProvider: DateTimeProvider,
+) : ViewModel() {
+
+    companion object {
+        private const val MIN_LOADING_DURATION_MS = 300L
+    }
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
     val state: StateFlow<WooPosBookingsState> = _state.asStateFlow()
@@ -25,134 +37,258 @@ class WooPosBookingsViewModel @Inject constructor() : ViewModel() {
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
 
+    private var selectedBookingId: Long? = null
+    private var fetchJob: Job? = null
+    private var loadMoreJob: Job? = null
+
     init {
-        loadBookings()
+        observeBookings()
+        fetchBookings()
     }
 
-    private fun loadBookings() {
-        viewModelScope.launch {
-            delay(3000L)
-            _state.value = createDummyContentState()
+    private fun fetchBookings() {
+        fetchJob?.cancel()
+        loadMoreJob?.cancel()
+        fetchJob = viewModelScope.launch {
+            val result = bookingListHandler.loadBookings(
+                sortBy = BookingListSortOption.NewestToOldest
+            )
+            result.onFailure {
+                if (_state.value is WooPosBookingsState.Loading) {
+                    _state.value = WooPosBookingsState.Error(
+                        message = it.message ?: "Failed to load bookings"
+                    )
+                }
+            }.onSuccess {
+                if (_state.value is WooPosBookingsState.Loading) {
+                    _state.value = WooPosBookingsState.Empty()
+                }
+            }
         }
     }
 
-    private fun createDummyContentState(): WooPosBookingsState.Content {
-        val details1 = createDummyDetails(1L, "#001")
-        val details2 = createDummyDetails(2L, "#002")
+    private fun observeBookings() {
+        viewModelScope.launch {
+            bookingListHandler.bookingsFlow.collectLatest { bookings ->
+                if (bookings.isEmpty() && _state.value is WooPosBookingsState.Loading) {
+                    return@collectLatest
+                }
 
-        val item1 = WooPosBookingsState.BookingItemViewState(
-            id = 1L,
-            title = "#001",
-            date = "Feb 5, 2026 at 10:00 AM",
-            total = "$50.00",
-            customerEmail = "john@example.com",
-            isSelected = true,
-            status = PosBookingStatus("Completed", BookingStatusColorKey.COMPLETED),
-            statusSlug = "completed",
-            createdAtMillis = System.currentTimeMillis()
-        )
+                if (bookings.isEmpty()) {
+                    _state.value = WooPosBookingsState.Empty()
+                    return@collectLatest
+                }
 
-        val item2 = WooPosBookingsState.BookingItemViewState(
-            id = 2L,
-            title = "#002",
-            date = "Feb 4, 2026 at 2:30 PM",
-            total = "$75.00",
-            customerEmail = "jane@example.com",
-            isSelected = false,
-            status = PosBookingStatus("Processing", BookingStatusColorKey.PROCESSING),
-            statusSlug = "processing",
-            createdAtMillis = System.currentTimeMillis() - 86400000
-        )
+                if (selectedBookingId == null) {
+                    selectedBookingId = bookings.first().id.value
+                }
 
-        return WooPosBookingsState.Content(
-            items = WooPosBookingsState.Content.Items.Loaded(
-                items = mapOf(
-                    item1 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 1L, details = details1),
-                    item2 to WooPosBookingsState.BookingDetailsViewState.Computed(orderId = 2L, details = details2)
+                val items = bookings.associate { booking ->
+                    mapToItemViewState(booking) to mapToDetailsViewState(booking)
+                }
+
+                val selectedDetails = selectedBookingId?.let { id ->
+                    val details = items.entries.find { it.key.id == id }?.value
+                    (details as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details
+                }
+
+                _state.value = WooPosBookingsState.Content(
+                    items = WooPosBookingsState.Content.Items.Loaded(items),
+                    pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                    selectedDetails = selectedDetails,
+                    paginationState = WooPosPaginationState.None,
+                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
                 )
-            ),
-            pullToRefreshState = WooPosPullToRefreshState.Enabled,
-            selectedDetails = details1,
-            paginationState = WooPosPaginationState.None,
+            }
+        }
+    }
+
+    fun onBookingSelected(bookingId: Long) {
+        selectedBookingId = bookingId
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
+
+        val updatedItems = items.items.mapKeys { (item, _) ->
+            item.copy(isSelected = item.id == bookingId)
+        }
+        val selectedDetails = updatedItems.entries
+            .find { it.key.id == bookingId }
+            ?.value
+            ?.let { (it as? WooPosBookingsState.BookingDetailsViewState.Computed)?.details }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(updatedItems),
+            selectedDetails = selectedDetails
+        )
+    }
+
+    fun onRefresh() {
+        _state.value = when (val current = _state.value) {
+            is WooPosBookingsState.Content -> current.copy(
+                pullToRefreshState = WooPosPullToRefreshState.Refreshing
+            )
+            else -> WooPosBookingsState.Loading
+        }
+
+        fetchJob?.cancel()
+        loadMoreJob?.cancel()
+        fetchJob = viewModelScope.launch {
+            bookingListHandler.loadBookings(
+                sortBy = BookingListSortOption.NewestToOldest
+            ).onFailure {
+                _state.value = when (val current = _state.value) {
+                    is WooPosBookingsState.Content -> current.copy(
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled
+                    )
+                    else -> WooPosBookingsState.Error(
+                        message = it.message ?: "Failed to load bookings"
+                    )
+                }
+            }
+        }
+    }
+
+    fun onEndOfBookingsListReached() {
+        if (loadMoreJob?.isActive == true) return
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        if (currentState.paginationState is WooPosPaginationState.Error) return
+
+        loadMoreJob = viewModelScope.launch {
+            fetchJob?.join()
+
+            val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
+            bookingListHandler.loadMore()
+                .onSuccess {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
+                }
+                .onFailure {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(
+                        paginationState = WooPosPaginationState.Error
+                    )
+                }
+        }
+    }
+
+    fun onPaginationErrorTryAgain() {
+        loadMoreJob = viewModelScope.launch {
+            val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
+
+            val startTime = dateTimeProvider.now()
+            val result = bookingListHandler.loadMore()
+            val elapsed = dateTimeProvider.now() - startTime
+            if (elapsed < MIN_LOADING_DURATION_MS) {
+                delay(MIN_LOADING_DURATION_MS - elapsed)
+            }
+
+            result
+                .onSuccess {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
+                }
+                .onFailure {
+                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
+                    _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
+                }
+        }
+    }
+
+    fun onBookingsLoadingErrorRetryButtonClicked() {
+        _state.value = WooPosBookingsState.Loading
+        fetchBookings()
+    }
+
+    fun onBookingsEmptyActionClicked() {
+        _state.value = WooPosBookingsState.Loading
+        fetchBookings()
+    }
+
+    fun onUIEvent(event: WooPosBookingsUIEvent) {
+        when (event) {
+            is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
+        }
+    }
+
+    fun onIssueRefundDialogDismissed() {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
     }
 
-    private fun createDummyDetails(
-        id: Long,
-        number: String
-    ) = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
-        id = id,
-        number = number,
-        dateTime = "Feb 5, 2026 at 10:00 AM",
-        customerEmail = "customer@example.com",
-        status = PosBookingStatus("Completed", BookingStatusColorKey.COMPLETED),
-        lineItems = listOf(
-            WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
-                id = 1L,
-                name = "Haircut",
-                attributesDescription = "30 min",
-                qtyAndUnitPrice = "1 x $30.00",
-                lineTotal = "$30.00",
-                imageUrl = null
-            ),
-            WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
-                id = 2L,
-                name = "Beard Trim",
-                attributesDescription = "15 min",
-                qtyAndUnitPrice = "1 x $20.00",
-                lineTotal = "$20.00",
-                imageUrl = null
-            )
-        ),
-        breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
-            products = "$50.00",
-            discount = null,
-            discountCode = null,
-            taxes = "$0.00",
-            shipping = null,
-            refunds = emptyList(),
-            netPayment = null
-        ),
-        total = "$50.00",
-        totalPaid = "$50.00",
-        paymentMethodTitle = "Cash",
-        actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-            listOf(WooPosBookingsState.BookingAction.EmailReceipt(id))
+    private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
+        when (action) {
+            is WooPosBookingsState.BookingAction.EmailReceipt -> {
+                // TBD: handle email receipt
+            }
+        }
+    }
+
+    private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
+        // TBD: create a POS-specific mapper for BookingEntity -> BookingItemViewState
+        return WooPosBookingsState.BookingItemViewState(
+            id = booking.id.value,
+            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
+            date = booking.start.toString(),
+            total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+            customerEmail = booking.order.customerInfo?.billingEmail,
+            isSelected = booking.id.value == selectedBookingId,
+            status = mapBookingStatus(booking.status),
+            statusSlug = booking.status.key,
+            createdAtMillis = booking.start.toEpochMilli()
         )
-    )
-
-    fun onRefresh() {
-        return Unit
     }
 
-    @Suppress("UnusedParameter")
-    fun onBookingSelected(bookingId: Long) {
-        return Unit
+    private fun mapToDetailsViewState(
+        booking: BookingEntity
+    ): WooPosBookingsState.BookingDetailsViewState {
+        // TBD: create a POS-specific mapper for BookingEntity -> BookingDetailsViewState
+        return WooPosBookingsState.BookingDetailsViewState.Computed(
+            orderId = booking.orderId,
+            details = WooPosBookingsState.BookingDetailsViewState.Computed.Details(
+                id = booking.id.value,
+                number = "#${booking.id.value}",
+                dateTime = booking.start.toString(),
+                customerEmail = booking.order.customerInfo?.billingEmail,
+                status = mapBookingStatus(booking.status),
+                lineItems = emptyList(),
+                breakdown = WooPosBookingsState.BookingDetailsViewState.Computed.Details.TotalsBreakdown(
+                    products = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "",
+                    discount = null,
+                    discountCode = null,
+                    taxes = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "",
+                    shipping = null,
+                    refunds = emptyList(),
+                    netPayment = null
+                ),
+                total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+                totalPaid = booking.order.paymentInfo?.total?.toPlainString() ?: "",
+                paymentMethodTitle = booking.order.paymentInfo?.paymentMethodTitle,
+                actionsState = WooPosBookingsState.BookingActionsState.Loaded(
+                    listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                )
+            )
+        )
     }
 
-    fun onEndOfBookingsListReached() {
-        return Unit
-    }
-
-    fun onPaginationErrorTryAgain() {
-        return Unit
-    }
-
-    fun onBookingsEmptyActionClicked() {
-        return Unit
-    }
-
-    fun onBookingsLoadingErrorRetryButtonClicked() {
-        return Unit
-    }
-
-    @Suppress("UnusedParameter")
-    fun onUIEvent(event: WooPosBookingsUIEvent) {
-        return Unit
-    }
-
-    fun onIssueRefundDialogDismissed() {
-        return Unit
+    private fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
+        val colorKey = when (status) {
+            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
+            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
+            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
+            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
+            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
+            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
+        }
+        return WooPosBookingStatus(
+            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
+            colorKey = colorKey
+        )
     }
 }

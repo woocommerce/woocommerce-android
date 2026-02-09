@@ -3872,6 +3872,9 @@
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
+    <string name="woopos_bookings_empty_list_title">No bookings found</string>
+    <string name="woopos_bookings_empty_list_image_description">No bookings</string>
+    <string name="woopos_bookings_empty_action_label">Refresh</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

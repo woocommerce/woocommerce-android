@@ -116,7 +116,7 @@ private fun WooPosBookingsScreen(
             .fillMaxSize()
     ) {
         when (state) {
-            is WooPosBookingsState.Content -> BookingsContent(
+            is WooPosBookingsState.Content -> WooPosBookingsContent(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
@@ -126,12 +126,12 @@ private fun WooPosBookingsScreen(
                 onUIEvent = onUIEvent
             )
 
-            is WooPosBookingsState.Empty -> BookingsEmpty(
+            is WooPosBookingsState.Empty -> WooPosBookingsEmpty(
                 onActionClicked = onBookingsEmptyActionClicked,
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosBookingsState.Error -> BookingsError(
+            is WooPosBookingsState.Error -> WooPosBookingsError(
                 onRetryClicked = onBookingsLoadingErrorRetryButtonClicked,
                 modifier = Modifier.statusBarsPadding()
             )
@@ -150,7 +150,7 @@ private fun WooPosBookingsScreen(
 }
 
 @Composable
-private fun BookingsContent(
+private fun WooPosBookingsContent(
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
@@ -160,7 +160,7 @@ private fun BookingsContent(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        BookingsListPane(
+        WooPosBookingsListPane(
             state = state,
             scrollToTopEvent = scrollToTopEvent,
             onRefresh = onRefresh,
@@ -216,7 +216,7 @@ private fun BookingsContent(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun BookingsListPane(
+private fun WooPosBookingsListPane(
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
@@ -251,7 +251,7 @@ private fun BookingsListPane(
                     enabled = state.pullToRefreshState != WooPosPullToRefreshState.Disabled
                 )
         ) {
-            BookingsList(
+            WooPosBookingsList(
                 modifier = Modifier.fillMaxSize(),
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
@@ -274,7 +274,7 @@ private fun BookingsListPane(
 }
 
 @Composable
-private fun BookingsList(
+private fun WooPosBookingsList(
     modifier: Modifier = Modifier,
     state: WooPosBookingsState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
@@ -284,7 +284,7 @@ private fun BookingsList(
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
-            LoadedBookingsList(
+            WooPosLoadedBookingsList(
                 modifier = modifier,
                 items = items.items,
                 paginationState = state.paginationState,
@@ -335,7 +335,7 @@ private fun BookingsList(
 }
 
 @Composable
-private fun LoadedBookingsList(
+private fun WooPosLoadedBookingsList(
     modifier: Modifier = Modifier,
     items: Map<WooPosBookingsState.BookingItemViewState, WooPosBookingsState.BookingDetailsViewState>,
     paginationState: WooPosPaginationState,
@@ -451,30 +451,30 @@ private fun LoadedBookingsList(
 
         if (paginationState == WooPosPaginationState.Error) {
             item {
-                BookingsPaginationErrorRow(onPaginationErrorTryAgain)
+                WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain)
             }
         }
     }
 }
 
 @Composable
-private fun BookingsEmpty(
+private fun WooPosBookingsEmpty(
     onActionClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     WooPosEmptyScreen(
         modifier = modifier.fillMaxSize(),
         icon = WooPosIcons.OrdersEmpty,
-        title = stringResource(id = R.string.woopos_orders_empty_list_title),
-        message = stringResource(id = R.string.woopos_orders_empty_list_message),
-        contentDescription = stringResource(id = R.string.woopos_orders_empty_list_image_description),
-        actionLabel = stringResource(id = R.string.woopos_orders_empty_action_label),
+        title = stringResource(id = R.string.woopos_bookings_empty_list_title),
+        message = "",
+        contentDescription = stringResource(id = R.string.woopos_bookings_empty_list_image_description),
+        actionLabel = stringResource(id = R.string.woopos_bookings_empty_action_label),
         onActionClicked = onActionClicked
     )
 }
 
 @Composable
-private fun BookingsError(
+private fun WooPosBookingsError(
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -490,7 +490,7 @@ private fun BookingsError(
 }
 
 @Composable
-private fun BookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
+private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Unit) {
     WooPosPaginationErrorIndicator(
         icon = null,
         message = stringResource(id = R.string.woopos_orders_pagination_error_title),
@@ -512,9 +512,9 @@ fun WooPosBookingsScreenPreview() {
         total = "$17.00",
         customerEmail = "johndoe@mail.com",
         isSelected = true,
-        status = PosBookingStatus(
+        status = WooPosBookingStatus(
             text = "Completed",
-            colorKey = BookingStatusColorKey.COMPLETED
+            colorKey = WooPosBookingStatusColorKey.COMPLETED
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
@@ -526,9 +526,9 @@ fun WooPosBookingsScreenPreview() {
         total = "$43.90",
         customerEmail = "johndoe@mail.com",
         isSelected = false,
-        status = PosBookingStatus(
+        status = WooPosBookingStatus(
             text = "Processing",
-            colorKey = BookingStatusColorKey.PROCESSING
+            colorKey = WooPosBookingStatusColorKey.PROCESSING
         ),
         statusSlug = "Completed",
         createdAtMillis = 1
@@ -626,7 +626,7 @@ private fun sampleBookingDetails(
     number = number,
     dateTime = "Aug 28, 2025 at 10:31 AM",
     customerEmail = "johndoe@mail.com",
-    status = PosBookingStatus(text = "Completed", colorKey = BookingStatusColorKey.COMPLETED),
+    status = WooPosBookingStatus(text = "Completed", colorKey = WooPosBookingStatusColorKey.COMPLETED),
     lineItems = listOf(
         WooPosBookingsState.BookingDetailsViewState.Computed.Details.LineItemRow(
             id = 101,

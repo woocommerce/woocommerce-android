@@ -13,21 +13,21 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosBookingsStatusBadge(status: PosBookingStatus) {
+fun WooPosBookingsStatusBadge(status: WooPosBookingStatus) {
     val bgColor = when (status.colorKey) {
-        BookingStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
-        BookingStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
-        BookingStatusColorKey.PROCESSING,
-        BookingStatusColorKey.ON_HOLD,
-        BookingStatusColorKey.OTHER -> WooPosTheme.colors.default
+        WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
+        WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
+        WooPosBookingStatusColorKey.PROCESSING,
+        WooPosBookingStatusColorKey.ON_HOLD,
+        WooPosBookingStatusColorKey.OTHER -> WooPosTheme.colors.default
     }
 
     val textColor = when (status.colorKey) {
-        BookingStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
-        BookingStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
-        BookingStatusColorKey.PROCESSING,
-        BookingStatusColorKey.ON_HOLD,
-        BookingStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
+        WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
+        WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
+        WooPosBookingStatusColorKey.PROCESSING,
+        WooPosBookingStatusColorKey.ON_HOLD,
+        WooPosBookingStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(
