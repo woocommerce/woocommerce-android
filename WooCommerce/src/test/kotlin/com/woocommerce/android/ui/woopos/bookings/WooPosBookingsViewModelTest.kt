@@ -127,6 +127,21 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
+    fun `given no bookings exist, when init completes, then state is Empty`() = runTest {
+        // GIVEN
+        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
+        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            .thenReturn(Result.success(Unit))
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
+    }
+
+    @Test
     fun `given empty bookings after content was shown, when flow emits empty, then state is Empty`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()

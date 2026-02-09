@@ -42,8 +42,8 @@ class WooPosBookingsViewModel @Inject constructor(
     private var loadMoreJob: Job? = null
 
     init {
-        fetchBookings()
         observeBookings()
+        fetchBookings()
     }
 
     private fun fetchBookings() {
@@ -58,6 +58,10 @@ class WooPosBookingsViewModel @Inject constructor(
                     _state.value = WooPosBookingsState.Error(
                         message = it.message ?: "Failed to load bookings"
                     )
+                }
+            }.onSuccess {
+                if (_state.value is WooPosBookingsState.Loading) {
+                    _state.value = WooPosBookingsState.Empty()
                 }
             }
         }
