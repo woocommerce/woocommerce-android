@@ -54,7 +54,7 @@ fun BookingAttendanceStatusTag(
                 WCTag(
                     text = state.text(),
                     backgroundColor = state.backgroundColor(),
-                    textColor = colorResource(R.color.tagView_text),
+                    textColor = state.textColor(),
                     fontWeight = FontWeight.Normal,
                     modifier = Modifier
                         .onSizeChanged {
@@ -90,7 +90,16 @@ fun BookingAttendanceStatus?.text(): String {
 fun BookingAttendanceStatus.backgroundColor(): Color {
     return when (this) {
         BookingAttendanceStatus.NoShow -> R.color.tag_bg_booking_yellow
+        BookingAttendanceStatus.Cancelled -> R.color.tag_bg_booking_cancelled
         else -> R.color.tagView_bg
+    }.let { colorResource(it) }
+}
+
+@Composable
+fun BookingAttendanceStatus.textColor(): Color {
+    return when (this) {
+        BookingAttendanceStatus.Cancelled -> R.color.tag_text_booking_cancelled
+        else -> R.color.tagView_text
     }.let { colorResource(it) }
 }
 
@@ -122,6 +131,18 @@ private fun AttendanceStatusTagNoShowPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
             state = BookingAttendanceStatus.NoShow,
+            attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
+            modifier = Modifier.padding(10.dp)
+        )
+    }
+}
+
+@LightDarkThemePreviews
+@Composable
+private fun AttendanceStatusTagCancelledPreview() {
+    WooThemeWithBackground {
+        BookingAttendanceStatusTag(
+            state = BookingAttendanceStatus.Cancelled,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             modifier = Modifier.padding(10.dp)
         )
