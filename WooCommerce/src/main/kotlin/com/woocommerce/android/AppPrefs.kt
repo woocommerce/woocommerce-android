@@ -46,6 +46,7 @@ import com.woocommerce.android.ui.prefs.domain.DomainFlowSource
 import com.woocommerce.android.ui.products.ProductType
 import com.woocommerce.android.ui.products.ai.AiTone
 import com.woocommerce.android.ui.promobanner.PromoBannerType
+import com.woocommerce.android.util.FeatureFlag
 import com.woocommerce.android.util.ThemeOption
 import com.woocommerce.android.util.ThemeOption.DEFAULT
 import com.woocommerce.commons.prefs.PreferenceUtils
@@ -221,7 +222,9 @@ object AppPrefs {
 
         WOO_POS_SURVEY_NOTIFICATION_CURRENT_USER_SHOWN,
 
-        WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN
+        WOO_POS_SURVEY_NOTIFICATION_POTENTIAL_USER_SHOWN,
+
+        IS_USER_AGE_ELIGIBLE_FOR_APP_USE
     }
 
     fun init(context: Context) {
@@ -329,6 +332,23 @@ object AppPrefs {
     var wooCorePushDeviceUUID: String
         get() = getString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, "")
         set(value) = setString(DeletablePrefKey.WOO_CORE_PUSH_DEVICE_UUID, value)
+
+    var isUserAgeEligibleForAppUse: Boolean
+        get() = getBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, default = true)
+        set(value) = setBoolean(key = UndeletablePrefKey.IS_USER_AGE_ELIGIBLE_FOR_APP_USE, value = value)
+
+    private const val FEATURE_FLAG_OVERRIDE_PREFIX = "feature_flag_override"
+
+    fun isFeatureFlagOverrideEnabled(flag: FeatureFlag, defaultValue: Boolean): Boolean {
+        return getBoolean(getFeatureFlagKey(flag), defaultValue)
+    }
+
+    fun setFeatureFlagOverride(flag: FeatureFlag, enabled: Boolean) {
+        setBoolean(getFeatureFlagKey(flag), enabled)
+    }
+
+    private fun getFeatureFlagKey(flag: FeatureFlag) =
+        PrefKeyString("$FEATURE_FLAG_OVERRIDE_PREFIX:${flag.name}")
 
     fun getProductSortingChoice(currentSiteId: Int) = getString(getProductSortingKey(currentSiteId)).orNullIfEmpty()
 

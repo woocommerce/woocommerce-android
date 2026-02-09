@@ -111,6 +111,17 @@
                 tools:visibility="visible" />
 
             <!--
+                Enable Push Notifications
+            -->
+            <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView
+                android:id="@+id/option_enable_push_notifications"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:optionTitle="@string/settings_enable_push_notifications"
+                tools:visibility="visible" />
+
+            <!--
                 Install Jetpack
             -->
             <com.woocommerce.android.ui.prefs.WCSettingsOptionValueView

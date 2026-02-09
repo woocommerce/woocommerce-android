@@ -457,7 +457,7 @@ class MainActivity :
         setIntent(intent)
         initFragment(null)
 
-        viewModel.handleIncomingAppLink(intent?.data)
+        viewModel.handleIncomingAppLink(intent.data)
         handleIncomingImages()
     }
 
@@ -885,6 +885,7 @@ class MainActivity :
         observeMoreMenuBadgeStateEvent()
         observeTrialStatus()
         observeBottomBarState()
+        observeUserAgeEligibilityState()
     }
 
     private fun showBlazeCampaignList(campaignId: String?) {
@@ -953,6 +954,14 @@ class MainActivity :
                     binding.trialBar.movementMethod = LinkMovementMethod.getInstance()
                     animateBottomBar(binding.trialBar, show = true)
                 }
+            }
+        }
+    }
+
+    private fun observeUserAgeEligibilityState() {
+        viewModel.isUserAgeRangeEligible.observe(this) { ageEligibilityState ->
+            if (ageEligibilityState.isUserAgeRangeEligible.not()) {
+                showLoginScreen()
             }
         }
     }

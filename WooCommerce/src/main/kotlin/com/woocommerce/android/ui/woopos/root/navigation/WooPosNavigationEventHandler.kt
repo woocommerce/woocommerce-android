@@ -2,17 +2,19 @@ package com.woocommerce.android.ui.woopos.root.navigation
 
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
+import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
+import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToRefundReason
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
-import com.woocommerce.android.ui.woopos.orders.navigateToRefundReason
 import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
 import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
 
+@Suppress("CyclomaticComplexMethod")
 fun NavHostController.handleNavigationEvent(
     event: WooPosNavigationEvent,
     activity: ComponentActivity,
@@ -54,5 +56,8 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenOrders ->
             navigateToOrdersScreen()
+
+        is WooPosNavigationEvent.OpenBookings ->
+            navigateToBookingsScreen()
     }
 }

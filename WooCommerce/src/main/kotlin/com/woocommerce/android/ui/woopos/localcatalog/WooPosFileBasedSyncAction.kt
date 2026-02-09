@@ -13,6 +13,7 @@ class WooPosFileBasedSyncAction @Inject constructor(
     private val posLocalCatalogStore: WooPosLocalCatalogStore,
     private val catalogFileDownloader: WooPosCatalogFileDownloader,
     private val catalogFileParser: WooPosCatalogFileParser,
+    private val syncWithFts: WooPosLocalCatalogSyncWithFts,
     private val logger: WooPosLogWrapper,
 ) {
     companion object {
@@ -151,6 +152,12 @@ class WooPosFileBasedSyncAction @Inject constructor(
                     )
                 )
             }
+
+        syncWithFts.syncFtsForFullSync(
+            siteIdString = site.localId().value.toString(),
+            products = parsedData.products,
+            variations = parsedData.variations
+        )
 
         catalogFileDownloader.cleanupOldCatalogFiles(keepLatest = downloadedFile)
 

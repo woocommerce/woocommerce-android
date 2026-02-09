@@ -90,15 +90,10 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
 
     fun trackConfigurableItem(flow: ProductSelectorFlow) {
         if (flow == ProductSelectorFlow.OrderCreation || flow == ProductSelectorFlow.OrderEditing) {
-            val flowValue = when (flow) {
-                ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
-                ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
-                else -> AnalyticsTracker.VALUE_OTHER
-            }
             tracker.track(
                 AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_SHOWN,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to flowValue,
+                    AnalyticsTracker.KEY_FLOW to flow.toAnalyticsTrackerValue(),
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
                 )
             )
@@ -107,20 +102,24 @@ class ProductSelectorTracker @Inject constructor(private val tracker: AnalyticsT
 
     fun trackConfigurableTapped(flow: ProductSelectorFlow) {
         if (flow == ProductSelectorFlow.OrderCreation || flow == ProductSelectorFlow.OrderEditing) {
-            val flowValue = when (flow) {
-                ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
-                ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
-                else -> AnalyticsTracker.VALUE_OTHER
-            }
             tracker.track(
                 AnalyticsEvent.ORDER_FORM_BUNDLE_PRODUCT_CONFIGURE_CTA_TAPPED,
                 mapOf(
-                    AnalyticsTracker.KEY_FLOW to flowValue,
+                    AnalyticsTracker.KEY_FLOW to flow.toAnalyticsTrackerValue(),
                     AnalyticsTracker.KEY_SOURCE to AnalyticsTracker.VALUE_PRODUCT_SELECTOR
                 )
             )
         }
     }
+
+    private fun ProductSelectorFlow.toAnalyticsTrackerValue() =
+        when (this) {
+            ProductSelectorFlow.OrderCreation -> AnalyticsTracker.VALUE_FLOW_CREATION
+            ProductSelectorFlow.OrderEditing -> AnalyticsTracker.VALUE_FLOW_EDITING
+            ProductSelectorFlow.CouponEdition,
+            ProductSelectorFlow.OrderListFilter,
+            ProductSelectorFlow.Undefined -> AnalyticsTracker.VALUE_OTHER
+        }
 
     enum class ProductSelectorSource {
         ProductSelector,

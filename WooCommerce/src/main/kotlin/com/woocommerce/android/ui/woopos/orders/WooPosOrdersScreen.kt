@@ -65,6 +65,8 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetails
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import kotlinx.coroutines.delay
@@ -608,7 +610,8 @@ fun WooPosOrdersScreenPreview() {
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 searchInputState = WooPosSearchInputState.Closed,
                 selectedDetails = details1,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -644,7 +647,8 @@ fun WooPosOrdersSearchErrorStatePreview() {
                     isLoading = false
                 ),
                 selectedDetails = details,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -680,7 +684,8 @@ fun WooPosOrdersNothingFoundStatePreview() {
                     isLoading = false
                 ),
                 selectedDetails = details,
-                paginationState = WooPosPaginationState.None
+                paginationState = WooPosPaginationState.None,
+                dialogState = WooPosOrdersState.Content.DialogState.Hidden
             ),
             scrollToTopEvent = MutableSharedFlow(),
             onBackClicked = {},
@@ -773,8 +778,10 @@ private fun sampleOrderDetails(
     total = "$17.00",
     totalPaid = "$17.00",
     paymentMethodTitle = "WooCommerce In-Person Payments",
-    actions = listOf(
-        WooPosOrdersState.OrderAction.IssueRefund(id),
-        WooPosOrdersState.OrderAction.EmailReceipt(id)
+    actionsState = WooPosOrdersState.OrderActionsState.Loaded(
+        listOf(
+            WooPosOrdersState.OrderAction.IssueRefund(id),
+            WooPosOrdersState.OrderAction.EmailReceipt(id)
+        )
     )
 )

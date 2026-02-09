@@ -19,6 +19,7 @@ import com.woocommerce.android.util.NotificationsParser
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.util.WooLog.T.NOTIFICATIONS
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.EventBus
 import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
@@ -34,6 +35,7 @@ class NotificationMessageHandler @Inject constructor(
     private val analyticsTracker: NotificationAnalyticsTracker,
     private val notificationsParser: NotificationsParser,
     private val accountStore: AccountStore,
+    private val registrationStatus: PushNotificationRegistrationStatus,
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
@@ -80,13 +82,6 @@ class NotificationMessageHandler @Inject constructor(
             return
         }
 
-        val pushUserId = messageData[PUSH_ARG_USER]
-        // pushUserId is always set server side, but better to double check it here.
-        if (accountStore.account.userId.toString() != pushUserId) {
-            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
-            return
-        }
-
         val notificationModel = notificationsParser.buildNotificationModelFromPayloadMap(messageData)
         if (notificationModel == null) {
             wooLog.e(NOTIFICATIONS, "Notification data is empty!")
@@ -94,9 +89,25 @@ class NotificationMessageHandler @Inject constructor(
         }
 
         val notification = notificationModel.toAppModel(resourceProvider)
-        if (notification.remoteNoteId == 0L) {
+        val registrationStatusResult = runBlocking { registrationStatus(notification.remoteSiteId) }
+        val isRegisteredForWooPush =
+            registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY ||
+                registrationStatusResult == PushNotificationRegistrationStatus.Status.REGISTERED_BOTH
+        val pushUserId = messageData[PUSH_ARG_USER]
+
+        // We need to filter out duplicate notifications from the WPCOM system
+        if (isRegisteredForWooPush) {
+            if (notification.remoteNoteId > 0L) {
+                wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
+                return
+            }
+        } else if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
             wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")
+            return
+        } else if (accountStore.account.userId.toString() != pushUserId) {
+            // At this point, pushUserId is always set server side, but better to double check it here.
+            wooLog.e(NOTIFICATIONS, "WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
             return
         }
 
@@ -130,7 +141,12 @@ class NotificationMessageHandler @Inject constructor(
         val localPushId = getLocalPushIdForNoteId(notification.remoteNoteId)
         with(notificationBuilder) {
             if (isNotificationsEnabled()) {
-                analyticsTracker.trackNotificationAnalytics(PUSH_NOTIFICATION_RECEIVED, notification)
+                analyticsTracker.trackNotificationAnalytics(
+                    stat = PUSH_NOTIFICATION_RECEIVED,
+                    siteId = notification.remoteSiteId,
+                    remoteNoteId = notification.remoteNoteId,
+                    noteTypeTrackingValue = notification.noteType.trackingValue
+                )
                 analyticsTracker.flush()
             }
 
@@ -174,7 +190,7 @@ class NotificationMessageHandler @Inject constructor(
             // We always generate new id for NewOrder.
             activeNotifications
                 .firstOrNull {
-                    it.remoteNoteId == noteId &&
+                    noteId != 0L && it.remoteNoteId == noteId &&
                         it.noteTypeTrackingValue != WooNotificationType.NewOrder.trackingValue
                 }
                 ?.let { return it.id }
@@ -195,8 +211,8 @@ class NotificationMessageHandler @Inject constructor(
                 ?.let {
                     analyticsTracker.trackNotificationAnalytics(
                         stat = PUSH_NOTIFICATION_TAPPED,
+                        siteId = it.remoteSiteId,
                         remoteNoteId = it.remoteNoteId,
-                        remoteSiteId = it.remoteSiteId,
                         noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
                     )
                     analyticsTracker.flush()
@@ -213,8 +229,8 @@ class NotificationMessageHandler @Inject constructor(
             .forEach {
                 analyticsTracker.trackNotificationAnalytics(
                     stat = PUSH_NOTIFICATION_TAPPED,
+                    siteId = it.remoteSiteId,
                     remoteNoteId = it.remoteNoteId,
-                    remoteSiteId = it.remoteSiteId,
                     noteTypeTrackingValue = it.noteTypeTrackingValue.orEmpty()
                 )
                 analyticsTracker.flush()

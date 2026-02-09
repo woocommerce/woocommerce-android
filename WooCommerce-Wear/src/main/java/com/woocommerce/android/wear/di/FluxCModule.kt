@@ -4,6 +4,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import org.wordpress.android.fluxc.di.WCDatabaseModule
+import org.wordpress.android.fluxc.module.MediaModule
 import org.wordpress.android.fluxc.module.OkHttpClientModule
 import org.wordpress.android.fluxc.module.ReleaseNetworkModule
 
@@ -12,7 +13,8 @@ import org.wordpress.android.fluxc.module.ReleaseNetworkModule
     includes = [
         ReleaseNetworkModule::class,
         OkHttpClientModule::class,
-        WCDatabaseModule::class
+        WCDatabaseModule::class,
+        MediaModule::class
     ]
 )
 abstract class FluxCModule

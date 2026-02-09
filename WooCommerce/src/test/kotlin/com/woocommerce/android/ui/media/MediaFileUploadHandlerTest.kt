@@ -29,9 +29,7 @@ import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
-import org.wordpress.android.fluxc.model.MediaModel
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.FAILED
-import org.wordpress.android.fluxc.model.MediaModel.MediaUploadState.UPLOADED
+import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.NULL_MEDIA_ARG
 import org.wordpress.android.util.DateTimeUtils
@@ -80,7 +78,7 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `when media is fetched, then start uploading it`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val fetchedMedia = MediaModel(0, 0)
+        val fetchedMedia = MediaTestUtils.createRemoteTestMedia().build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.FetchSucceeded(
                 REMOTE_PRODUCT_ID,
@@ -125,14 +123,12 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
         launch {
-            val successfulUpload = mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).first()
-            assertThat(successfulUpload.uploadState).isEqualTo(UPLOADED.toString())
+            mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).first()
         }
 
-        val mediaModel = MediaModel(0, 0).apply {
-            postId = REMOTE_PRODUCT_ID
-            setUploadState(UPLOADED)
-        }
+        val mediaModel = MediaTestUtils.createRemoteTestMedia()
+            .postId(REMOTE_PRODUCT_ID)
+            .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadSucceeded(
                 REMOTE_PRODUCT_ID,
@@ -146,13 +142,12 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `given there is no external observer, when uploads finish, then start product update`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val mediaModel = MediaModel(0, 0).apply {
-            postId = REMOTE_PRODUCT_ID
-            fileName = "test"
-            url = "url"
-            uploadDate = DateTimeUtils.iso8601FromDate(Date())
-            setUploadState(UPLOADED)
-        }
+        val mediaModel = MediaTestUtils.createRemoteTestMedia()
+            .fileName("test")
+            .url("url")
+            .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
+            .postId(REMOTE_PRODUCT_ID)
+            .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadSucceeded(
                 REMOTE_PRODUCT_ID,
@@ -170,13 +165,12 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
             val testUri2 = "file:///test2"
             mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI, testUri2))
 
-            val mediaModel = MediaModel(0, 0).apply {
-                postId = REMOTE_PRODUCT_ID
-                fileName = "test"
-                url = "url"
-                uploadDate = DateTimeUtils.iso8601FromDate(Date())
-                setUploadState(UPLOADED)
-            }
+            val mediaModel = MediaTestUtils.createRemoteTestMedia()
+                .fileName("test")
+                .url("url")
+                .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
+                .postId(REMOTE_PRODUCT_ID)
+                .build()
             eventsFlow.tryEmit(
                 Event.MediaUploadEvent.UploadSucceeded(
                     REMOTE_PRODUCT_ID,
@@ -203,10 +197,9 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
 
         val job = launch { mediaFileUploadHandler.observeSuccessfulUploads(REMOTE_PRODUCT_ID).collect() }
 
-        val mediaModel = MediaModel(0, 0).apply {
-            postId = REMOTE_PRODUCT_ID
-            setUploadState(FAILED)
-        }
+        val mediaModel = MediaTestUtils.createRemoteTestMedia()
+            .postId(REMOTE_PRODUCT_ID)
+            .build()
 
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadFailed(
@@ -229,10 +222,9 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     fun `given there is no external observer, when an upload fails, then show notification`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(REMOTE_PRODUCT_ID, listOf(TEST_URI))
 
-        val mediaModel = MediaModel(0, 0).apply {
-            postId = REMOTE_PRODUCT_ID
-            setUploadState(FAILED)
-        }
+        val mediaModel = MediaTestUtils.createRemoteTestMedia()
+            .postId(REMOTE_PRODUCT_ID)
+            .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadFailed(
                 REMOTE_PRODUCT_ID,
@@ -261,12 +253,11 @@ class MediaFileUploadHandlerTest : BaseUnitTest() {
     @Test
     fun `when assigning uploads to created product, then update the id for the successful ones`() = testBlocking {
         mediaFileUploadHandler.enqueueUpload(ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID, listOf(TEST_URI))
-        val mediaModel = MediaModel(0, 0).apply {
-            fileName = "test"
-            url = "url"
-            uploadDate = DateTimeUtils.iso8601FromDate(Date())
-            setUploadState(UPLOADED)
-        }
+        val mediaModel = MediaTestUtils.createRemoteTestMedia()
+            .fileName("test")
+            .url("url")
+            .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
+            .build()
         eventsFlow.tryEmit(
             Event.MediaUploadEvent.UploadSucceeded(
                 ProductDetailViewModel.DEFAULT_ADD_NEW_PRODUCT_ID,

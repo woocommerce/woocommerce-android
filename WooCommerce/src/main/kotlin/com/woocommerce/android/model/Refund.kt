@@ -159,7 +159,7 @@ fun List<Refund>.getMaxRefundQuantities(
         val quantityLeftToRefund = product.quantity - refundedQuantity
 
         if (quantityLeftToRefund > 0) {
-            product.itemId to quantityLeftToRefund.toFloat()
+            product.itemId to quantityLeftToRefund
         } else {
             null
         }

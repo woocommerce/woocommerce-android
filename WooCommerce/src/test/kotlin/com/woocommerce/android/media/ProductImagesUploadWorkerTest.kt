@@ -35,7 +35,7 @@ import org.mockito.kotlin.never
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.MediaModel
+import org.wordpress.android.fluxc.media.MediaTestUtils
 import org.wordpress.android.fluxc.store.MediaStore.MediaErrorType.GENERIC_ERROR
 import org.wordpress.android.util.DateTimeUtils
 import java.util.Date
@@ -45,20 +45,19 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     companion object {
         private const val REMOTE_PRODUCT_ID = 1L
         private const val TEST_URI = "test"
-        private val FETCHED_MEDIA = MediaModel(0, 0)
-        private val UPLOADED_MEDIA = MediaModel(0, 0).apply {
-            fileName = ""
-            filePath = ""
-            url = ""
-            uploadDate = DateTimeUtils.iso8601FromDate(Date())
-        }
+        private val FETCHED_MEDIA = MediaTestUtils.createRemoteTestMedia().build()
+        private val UPLOADED_MEDIA = MediaTestUtils.createRemoteTestMedia()
+            .fileName("")
+            .url("")
+            .uploadDate(DateTimeUtils.iso8601FromDate(Date()))
+            .build()
     }
 
     private val notificationHandler: ProductImagesNotificationHandler = mock()
     private val productImagesServiceWrapper: ProductImagesServiceWrapper = mock()
     private lateinit var worker: ProductImagesUploadWorker
     private val mediaFilesRepository: MediaFilesRepository = mock {
-        onBlocking { fetchMedia(TEST_URI) } doReturn FETCHED_MEDIA
+        onBlocking { getLocalMedia(TEST_URI) } doReturn FETCHED_MEDIA
         onBlocking { uploadMedia(any(), any()) } doReturn flowOf(UploadResult.UploadSuccess(UPLOADED_MEDIA))
     }
     private val productDetailRepository: ProductDetailRepository = mock()
@@ -111,7 +110,7 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         }
         worker.enqueueWork(Work.FetchMedia(REMOTE_PRODUCT_ID, TEST_URI))
 
-        verify(mediaFilesRepository).fetchMedia(TEST_URI)
+        verify(mediaFilesRepository).getLocalMedia(TEST_URI)
         assertThat(eventsList[0]).isEqualTo(FetchSucceeded(REMOTE_PRODUCT_ID, TEST_URI, FETCHED_MEDIA))
         job.cancel()
     }
@@ -122,7 +121,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
+        worker.enqueueWork(
+            Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaTestUtils.createRemoteTestMedia().build())
+        )
 
         advanceUntilIdle()
         verify(mediaFilesRepository).uploadMedia(any(), any())
@@ -133,9 +134,11 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
     @Test
     fun `when media upload progress changes, then update notification`() = testBlocking {
         whenever(mediaFilesRepository.uploadMedia(any(), any()))
-            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaModel(0, 0))))
+            .thenReturn(flowOf(UploadProgress(0.5f), UploadSuccess(MediaTestUtils.createRemoteTestMedia().build())))
 
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
+        worker.enqueueWork(
+            Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaTestUtils.createRemoteTestMedia().build())
+        )
         advanceUntilIdle()
 
         verify(notificationHandler).setProgress(0.5f)
@@ -153,7 +156,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
+        worker.enqueueWork(
+            Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaTestUtils.createRemoteTestMedia().build())
+        )
 
         advanceUntilIdle()
         assertThat(eventsList).contains(UploadFailed(REMOTE_PRODUCT_ID, TEST_URI, error))
@@ -166,7 +171,9 @@ class ProductImagesUploadWorkerTest : BaseUnitTest() {
         val job = launch {
             worker.events.toList(eventsList)
         }
-        worker.enqueueWork(Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaModel(0, 0)))
+        worker.enqueueWork(
+            Work.UploadMedia(REMOTE_PRODUCT_ID, TEST_URI, MediaTestUtils.createRemoteTestMedia().build())
+        )
 
         advanceUntilIdle()
         assertThat(eventsList).contains(ProductUploadsCompleted(REMOTE_PRODUCT_ID))

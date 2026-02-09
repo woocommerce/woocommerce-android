@@ -2,9 +2,7 @@ package com.woocommerce.android.media
 
 import com.woocommerce.android.di.AppCoroutineScope
 import com.woocommerce.android.media.MediaFilesRepository.UploadResult.*
-import com.woocommerce.android.media.ProductImagesUploadWorker.Event
 import com.woocommerce.android.media.ProductImagesUploadWorker.Event.MediaUploadEvent
-import com.woocommerce.android.media.ProductImagesUploadWorker.Work
 import com.woocommerce.android.model.Product
 import com.woocommerce.android.model.toAppModel
 import com.woocommerce.android.ui.products.details.ProductDetailRepository
@@ -172,7 +170,7 @@ class ProductImagesUploadWorker @Inject constructor(
     private suspend fun fetchMedia(work: Work.FetchMedia) {
         WooLog.d(T.MEDIA, "ProductImagesUploadWorker -> fetch media ${work.localUri}")
 
-        val fetchedMedia = mediaFilesRepository.fetchMedia(work.localUri)
+        val fetchedMedia = mediaFilesRepository.getLocalMedia(work.localUri)
         if (fetchedMedia == null) {
             WooLog.w(T.MEDIA, "ProductImagesUploadWorker -> fetching media failed")
 

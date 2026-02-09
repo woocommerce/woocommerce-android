@@ -119,7 +119,7 @@ val Context.physicalScreenHeightInPx: Int
             windowMetrics.bounds.height()
         } else {
             val size = Point()
-            display?.getSize(size)
+            display.getSize(size)
             size.y
         }
     }

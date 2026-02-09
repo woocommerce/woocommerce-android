@@ -245,7 +245,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         val address = Address.EMPTY.copy(phone = "", country = AmbiguousLocation.Raw("CA").asLocation())
         whenever(getAllCountries.invoke()).doReturn(Result.success(countries))
         whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
-        whenever(addressValidator.validateFieldRequired("")).doReturn("error")
+        whenever(addressValidator.validatePhoneNumber("")).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
             createViewModel(savedState)
@@ -265,6 +265,7 @@ class WooShippingEditDestinationViewModelTest : WooShippingEditAddressViewModelT
         val address = Address.EMPTY
         whenever(addressValidator.validateAtLeastOneOf(eq(""), eq(""))).doReturn("error")
         whenever(addressValidator.validateFieldRequired("")).doReturn("error")
+        whenever(addressValidator.validateEmail(any())).doReturn("error")
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
             createViewModel(savedState)

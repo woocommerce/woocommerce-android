@@ -1,28 +1,19 @@
 package com.woocommerce.android.ui.woopos.emailreceipt
 
-import com.woocommerce.android.model.Order
-import com.woocommerce.android.model.OrderMapper
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.orders.OrderTestUtils
-import com.woocommerce.android.ui.orders.creation.OrderCreateEditRepository
-import com.woocommerce.android.ui.orders.creation.OrderCreationSource
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
-import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.LocalOrRemoteId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.regex.Pattern
 
@@ -32,8 +23,6 @@ class WooPosEmailReceiptRepositoryTest {
         on { get() }.thenReturn(siteModel)
     }
     private val orderStore: WCOrderStore = mock()
-    private val orderCreateEditRepository: OrderCreateEditRepository = mock()
-    private val orderMapper: OrderMapper = mock()
     private val getWooCoreVersion: GetWooCorePluginCachedVersion = mock()
     private val provideEmailPattern: WooPosEmailReceiptRepository.WooPosProvideEmailPattern = mock {
         on { invoke() }.thenReturn(
@@ -52,8 +41,6 @@ class WooPosEmailReceiptRepositoryTest {
     private val repository = WooPosEmailReceiptRepository(
         selectedSite,
         orderStore,
-        orderCreateEditRepository,
-        orderMapper,
         provideEmailPattern,
         getWooCoreVersion
     )
@@ -87,67 +74,48 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = OrderTestUtils.generateTestOrder()
 
         whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
-        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(
-            orderCreateEditRepository.createOrUpdateOrder(
-                any(),
-                eq(OrderCreationSource.POINT_OF_SALE),
-                eq("")
-            )
-        ).thenReturn(Result.success(mockOrder))
-        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
-        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+        whenever(orderStore.updateOrderBillingEmail(siteModel, orderId, email)).thenReturn(WooPayload(Unit))
+        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(WooPayload(Unit))
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
+        verify(orderStore).updateOrderBillingEmail(siteModel, orderId, email)
+        verify(orderStore).sendOrderReceipt(siteModel, orderId)
     }
 
     @Test
-    fun `given valid order id and email, when sendReceiptByEmail and WC version is 10 or higher, it calls for POS receipts then return success`() = runTest {
+    fun `given WC version 10 or higher, when sendReceiptByEmail, then sends POS receipt with email directly`() = runTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = OrderTestUtils.generateTestOrder()
 
         whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
-        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(
-            orderCreateEditRepository.createOrUpdateOrder(
-                any(),
-                eq(OrderCreationSource.POINT_OF_SALE),
-                eq("")
-            )
-        ).thenReturn(Result.success(mockOrder))
-        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
-        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(WooPayload(Unit))
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isSuccess).isTrue()
+        verify(orderStore).sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)
+        verify(orderStore, never()).updateOrderBillingEmail(siteModel, orderId, email)
     }
 
     @Test
-    fun `given invalid order id, when sendReceiptByEmail, then return failure`() = runTest {
+    fun `given legacy WC version and email update fails, when sendReceiptByEmail, then return failure`() = runTest {
         // GIVEN
-        val orderId = 999L
         val email = "test@example.com"
-        whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
+        val orderId = 1L
 
-        val onOrderChangedError = WCOrderStore.OnOrderChanged(
-            orderError = WCOrderStore.OrderError()
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+        whenever(orderStore.updateOrderBillingEmail(siteModel, orderId, email)).thenReturn(
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.NETWORK_ERROR))
         )
-        whenever(orderStore.fetchSingleOrder(siteModel, orderId)).thenReturn(onOrderChangedError)
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
@@ -157,23 +125,14 @@ class WooPosEmailReceiptRepositoryTest {
     }
 
     @Test
-    fun `given email update fails, when sendReceiptByEmail, then return failure`() = runTest {
+    fun `given WC 10 or higher and POS receipt fails, when sendReceiptByEmail, then return failure`() = runTest {
         // GIVEN
-        val email = "test@example.com"
         val orderId = 1L
-        val mockOrder: Order = OrderTestUtils.generateTestOrder()
+        val email = "test@example.com"
 
-        whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
-        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(
-            orderCreateEditRepository.createOrUpdateOrder(
-                anyOrNull(),
-                eq(OrderCreationSource.POINT_OF_SALE),
-                eq("")
-            )
-        ).thenReturn(
-            Result.failure(Exception("Update failed"))
+        whenever(getWooCoreVersion.invoke()).thenReturn("10.0.0")
+        whenever(orderStore.sendOrderPOSSpecificReceipt(siteModel, orderId, email, true)).thenReturn(
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.TIMEOUT))
         )
 
         // WHEN
@@ -188,77 +147,17 @@ class WooPosEmailReceiptRepositoryTest {
         // GIVEN
         val orderId = 1L
         val email = "test@example.com"
-        val mockOrder: Order = OrderTestUtils.generateTestOrder()
-        whenever(selectedSite.get()).thenReturn(siteModel)
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(mock())
-        whenever(orderMapper.toAppModel(any())).thenReturn(mockOrder)
-        whenever(
-            orderCreateEditRepository.createOrUpdateOrder(
-                any(),
-                eq(OrderCreationSource.POINT_OF_SALE),
-                eq("")
-            )
-        ).thenReturn(
-            Result.success(mockOrder)
+
+        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
+        whenever(orderStore.updateOrderBillingEmail(siteModel, orderId, email)).thenReturn(WooPayload(Unit))
+        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(
+            WooPayload(WooError(WooErrorType.GENERIC_ERROR, GenericErrorType.TIMEOUT))
         )
-        val sendOrderReceiptResult = WooPayload<Unit>(
-            WooError(
-                WooErrorType.GENERIC_ERROR,
-                GenericErrorType.TIMEOUT,
-            )
-        )
-        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
 
         // WHEN
         val result = repository.sendReceiptByEmail(orderId, email)
 
         // THEN
         assertThat(result.isFailure).isTrue()
-    }
-
-    @Test
-    fun `given order not in DB, when sendReceiptByEmail, then fetches remotely and succeeds`() = runTest {
-        // GIVEN
-        val orderId = 123L
-        val email = "test@example.com"
-
-        val mockOrder: Order = OrderTestUtils.generateTestOrder()
-
-        whenever(selectedSite.get()).thenReturn(siteModel)
-
-        val dbEntity = OrderEntity(LocalOrRemoteId.LocalId(1), orderId = orderId)
-        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel))
-            .thenReturn(null, dbEntity)
-
-        val onOrderChangedSuccess = WCOrderStore.OnOrderChanged()
-
-        whenever(orderStore.fetchSingleOrder(siteModel, orderId)).thenReturn(onOrderChangedSuccess)
-
-        whenever(orderMapper.toAppModel(dbEntity)).thenReturn(mockOrder)
-
-        whenever(
-            orderCreateEditRepository.createOrUpdateOrder(
-                any(),
-                eq(OrderCreationSource.POINT_OF_SALE),
-                eq("")
-            )
-        ).thenReturn(
-            Result.success(mockOrder)
-        )
-
-        whenever(getWooCoreVersion.invoke()).thenReturn("9.9.0")
-
-        val sendOrderReceiptResult = WooPayload<Unit>(Unit)
-        whenever(orderStore.sendOrderReceipt(siteModel, orderId)).thenReturn(sendOrderReceiptResult)
-
-        // WHEN
-        val result = repository.sendReceiptByEmail(orderId, email)
-
-        // THEN
-        assertThat(result.isSuccess).isTrue()
-
-        verify(orderStore).fetchSingleOrder(siteModel, orderId)
-        verify(orderStore, org.mockito.kotlin.times(2)).getOrderByIdAndSite(orderId, siteModel)
-        verify(orderStore).sendOrderReceipt(siteModel, orderId)
     }
 }

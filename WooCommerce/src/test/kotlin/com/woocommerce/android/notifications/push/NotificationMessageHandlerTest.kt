@@ -52,6 +52,7 @@ class NotificationMessageHandlerTest {
     private val accountStore: AccountStore = mock {
         on { account } doReturn accountModel
     }
+    private val registrationStatus: PushNotificationRegistrationStatus = mock()
     private val dispatcher: Dispatcher = mock()
     private val actionCaptor: KArgumentCaptor<Action<*>> = argumentCaptor()
     private val wooLog: WooLog = mock()
@@ -91,13 +92,14 @@ class NotificationMessageHandlerTest {
     @Before
     fun setUp() {
         notificationMessageHandler = NotificationMessageHandler(
+            notificationBuilder = notificationBuilder,
+            analyticsTracker = notificationAnalyticsTracker,
+            notificationsParser = notificationsParser,
+            registrationStatus = registrationStatus,
             accountStore = accountStore,
             wooLog = wooLog,
             dispatcher = dispatcher,
             resourceProvider = resourceProvider,
-            notificationBuilder = notificationBuilder,
-            analyticsTracker = notificationAnalyticsTracker,
-            notificationsParser = notificationsParser,
             selectedSite = selectedSite,
             workManagerScheduler = workManagerScheduler,
         )
@@ -138,10 +140,13 @@ class NotificationMessageHandlerTest {
     }
 
     @Test
-    fun `when the user id does not match, then do not process the notification`() {
-        notificationMessageHandler.onNewMessageReceived(mapOf("type" to "new_order", "user" to "67890"))
+    fun `when the user id does not match, then do not process the notification`() = runTest {
+        whenever(registrationStatus.invoke(any())).thenReturn(PushNotificationRegistrationStatus.Status.UNREGISTERED)
+        val payload = NotificationTestUtils.generateTestNewOrderNotificationPayload(userId = 67890)
+
+        notificationMessageHandler.onNewMessageReceived(payload)
         verify(accountStore, atLeastOnce()).hasAccessToken()
-        verify(wooLog, only()).e(
+        verify(wooLog).e(
             eq(WooLog.T.NOTIFICATIONS),
             eq("WP.com userId found in the app doesn't match with the ID in the PN. Aborting.")
         )
@@ -157,6 +162,21 @@ class NotificationMessageHandlerTest {
         )
 
         verify(wooLog, only()).e(eq(WooLog.T.NOTIFICATIONS), eq("Notification data is empty!"))
+    }
+
+    @Test
+    fun `given woo push registered, when wpcom notification received, then skip notification`() = runTest {
+        whenever(registrationStatus.invoke(any()))
+            .thenReturn(PushNotificationRegistrationStatus.Status.REGISTERED_WOO_ONLY)
+
+        // WPCOM notifications have remoteNoteId > 0
+        notificationMessageHandler.onNewMessageReceived(orderNotificationPayload)
+
+        verify(wooLog).d(
+            eq(WooLog.T.NOTIFICATIONS),
+            eq("Skipping WPCOM notification, already registered with Woo Core")
+        )
+        verifyNoInteractions(dispatcher)
     }
 
     @Test
@@ -460,8 +480,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }
@@ -475,8 +495,8 @@ class NotificationMessageHandlerTest {
 
         verify(notificationAnalyticsTracker, atLeastOnce()).trackNotificationAnalytics(
             stat = eq(AnalyticsEvent.PUSH_NOTIFICATION_TAPPED),
+            siteId = eq(orderNotification.remoteSiteId),
             remoteNoteId = eq(orderNotification.remoteNoteId),
-            remoteSiteId = eq(orderNotification.remoteSiteId),
             noteTypeTrackingValue = eq(orderNotification.noteType.trackingValue)
         )
     }

@@ -1,36 +1,46 @@
 package com.woocommerce.android.notifications.push
 
 import com.woocommerce.android.extensions.isNotNullOrEmpty
-import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.util.FeatureFlag
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.utils.PreferenceUtils
 import javax.inject.Inject
 
 class PushNotificationRegistrationStatus @Inject constructor(
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
-    private val pushNotificationRepository: PushNotificationRepository,
-    private val selectedSite: SelectedSite
+    private val pushNotificationRepository: PushNotificationRepository
 ) {
-    suspend operator fun invoke(): Status =
-        if (FeatureFlag.WOO_PUSH_NOTIFICATIONS_SYSTEM.isEnabled()) {
-            val siteId = selectedSite.getIfExists()?.siteId
-            if (siteId != null && pushNotificationRepository.isWooPushTokenRegisteredForSite(siteId)) {
-                Status.REGISTERED
-            } else {
-                Status.UNREGISTERED
-            }
+    suspend operator fun invoke(siteId: Long?): Status = observe(siteId).first()
+
+    fun observe(siteId: Long?): Flow<Status> {
+        val wpComPushServerIdFlow = flowOf(
+            prefsWrapper.getFluxCPreferences().getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
+        )
+
+        val isWooRegisteredFlow = if (siteId != null) {
+            pushNotificationRepository.observeWooPushTokenRegisteredForSite(siteId)
         } else {
-            val deviceId = prefsWrapper.getFluxCPreferences()
-                .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
-            if (deviceId.isNotNullOrEmpty()) {
-                Status.REGISTERED
-            } else {
-                Status.UNREGISTERED
-            }
+            flowOf(false)
         }
 
+        return combine(wpComPushServerIdFlow, isWooRegisteredFlow) { wpComPushServerId, isWooRegistered ->
+            val isWpComRegistered = wpComPushServerId.isNotNullOrEmpty()
+            when {
+                isWooRegistered && isWpComRegistered -> Status.REGISTERED_BOTH
+                isWooRegistered -> Status.REGISTERED_WOO_ONLY
+                isWpComRegistered -> Status.REGISTERED_WPCOM_ONLY
+                else -> Status.UNREGISTERED
+            }
+        }
+    }
+
     enum class Status {
-        REGISTERED, UNREGISTERED
+        REGISTERED_WOO_ONLY,
+        REGISTERED_WPCOM_ONLY,
+        REGISTERED_BOTH, // Registered in both WP.com and Woo Core PN systems
+        UNREGISTERED
     }
 }

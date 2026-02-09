@@ -308,9 +308,9 @@ private val Colors.toggleBackgroundColor: Color
     get() = if (isLight) MaterialTheme.colors.background else Color.DarkGray
 
 private val DpSize.Companion.Saver by lazy {
-    listSaver(
+    listSaver<DpSize, Float>(
         save = { listOf(it.width.value, it.height.value) },
-        restore = { DpSize((it[0] as Float).dp, (it[1] as Float).dp) }
+        restore = { DpSize(it[0].dp, it[1].dp) }
     )
 }
 
