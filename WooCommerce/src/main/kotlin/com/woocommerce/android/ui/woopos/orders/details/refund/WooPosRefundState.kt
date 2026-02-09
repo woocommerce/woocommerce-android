@@ -52,9 +52,16 @@ sealed class WooPosRefundState {
 
     @Immutable
     data class Error(
-        val message: String
+        val message: String,
+        val errorType: ErrorType
     ) : WooPosRefundState() {
         override val showCloseButton: Boolean = true
+
+        @Immutable
+        enum class ErrorType {
+            Loading,
+            Processing
+        }
     }
 
     @Immutable

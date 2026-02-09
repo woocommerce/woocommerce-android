@@ -15,7 +15,9 @@ import com.woocommerce.android.util.WooLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.pushnotifications.WooPushNotificationsStore
@@ -134,6 +136,11 @@ class PushNotificationRepository @Inject constructor(
         return preferences[tokenKey] != null
     }
 
+    fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
+        val tokenKey = getPushTokenKeyForSite(siteId)
+        return pushNotificationsDataStore.data.map { preferences -> preferences[tokenKey] != null }
+    }
+
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
         val preferences = pushNotificationsDataStore.data.first()
         return preferences.asMap().keys
@@ -151,7 +158,7 @@ class PushNotificationRepository @Inject constructor(
         unregisterWooCoreTokens.await()
     }
 
-    private suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
+    suspend fun unregisterWooCoreTokensFromServer() = coroutineScope {
         val preferences = pushNotificationsDataStore.data.first()
         val sites = wooCommerceStore.getWooCommerceSites()
 
