@@ -345,14 +345,14 @@ private fun BookingAttendanceSection(
                 ) {
                     WooPosToggleButton(
                         text = stringResource(R.string.woopos_bookings_details_attendance_attended),
-                        isSelected = attendanceSection.isAttendedSelected,
+                        isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.ATTENDED,
                         onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true)) },
                         modifier = Modifier.weight(1f)
                     )
 
                     WooPosToggleButton(
                         text = stringResource(R.string.woopos_bookings_details_attendance_unattended),
-                        isSelected = attendanceSection.isUnattendedSelected,
+                        isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.UNATTENDED,
                         onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false)) },
                         modifier = Modifier.weight(1f)
                     )
@@ -600,8 +600,7 @@ fun WooPosBookingDetailsPreview() {
             note = "Prefers eco-friendly products, shorter length cuts",
         ),
         attendanceSection = WooPosBookingsState.AttendanceSection(
-            isAttendedSelected = false,
-            isUnattendedSelected = true,
+            selection = WooPosBookingsState.AttendanceState.UNATTENDED,
         ),
         paymentSection = WooPosBookingsState.PaymentSection(
             serviceAmount = "$55.00",
