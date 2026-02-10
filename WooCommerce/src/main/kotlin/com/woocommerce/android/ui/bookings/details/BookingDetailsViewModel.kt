@@ -278,7 +278,8 @@ class BookingDetailsViewModel @Inject constructor(
                     resource = resource,
                     loadingState = loadingState
                 ),
-                cancelStatus = cancelStatus
+                cancelStatus = cancelStatus,
+                attendanceUpdateStatus = attendanceUpdate,
             ),
             bookingCustomerDetails = booking.order.customerInfo.toCustomerDetailsModel(booking.customerNote),
             bookingPaymentDetails = booking.order.paymentInfo?.toPaymentDetailsModel(booking.currency),

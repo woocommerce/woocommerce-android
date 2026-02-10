@@ -25,6 +25,7 @@ import kotlinx.coroutines.withContext
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
@@ -63,6 +64,7 @@ class BookingMapper @Inject constructor(
     fun Booking.toAppointmentDetailsModel(
         staffMemberStatus: BookingStaffMemberStatus?,
         cancelStatus: CancelStatus,
+        attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
     ): BookingAppointmentDetailsModel {
         val duration = Duration.between(start, end)
             .normalizeDuration()
@@ -76,6 +78,9 @@ class BookingMapper @Inject constructor(
             cancelStatus = cancelStatus,
             cancelButtonVisible = isCancellable,
             duration = duration,
+            attendanceStatus = attendanceStatus.toUiModel(),
+            isAttendanceStatusEditable = isAttendanceStatusEditable,
+            attendanceUpdateStatus = attendanceUpdateStatus,
         )
     }
 
