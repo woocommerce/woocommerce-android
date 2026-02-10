@@ -6,6 +6,7 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.PagedList.BoundaryCallback
 import com.yarolegovich.wellsql.WellSql
+import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.wordpress.android.fluxc.Dispatcher
@@ -53,7 +54,9 @@ class ListStore @Inject constructor(
 
         when (actionType) {
             ListAction.FETCHED_LIST_ITEMS ->
-                handleFetchedListItems(action.payload as FetchedListItemsPayload)
+                coroutineEngine.launch(AppLog.T.API, this, "handleFetchedListItems") {
+                    handleFetchedListItems(action.payload as FetchedListItemsPayload)
+                }
             ListAction.LIST_REQUIRES_REFRESH ->
                 handleListRequiresRefresh(action.payload as ListDescriptorTypeIdentifier)
             ListAction.LIST_DATA_INVALIDATED ->
@@ -95,8 +98,10 @@ class ListStore @Inject constructor(
                 listDescriptor = listDescriptor,
                 lifecycle = lifecycle,
                 refresh = {
-                    handleFetchList(listDescriptor, loadMore = false) { offset ->
-                        dataSource.fetchList(listDescriptor, offset)
+                    coroutineEngine.launch(AppLog.T.API, this, "ListStore: Refreshing first page") {
+                        handleFetchList(listDescriptor, loadMore = false) { offset ->
+                            dataSource.fetchList(listDescriptor, offset)
+                        }
                     }
                 },
                 invalidate = factory::invalidate,
@@ -140,23 +145,25 @@ class ListStore @Inject constructor(
         listDescriptor: LIST_DESCRIPTOR,
         dataSource: ListItemDataSourceInterface<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM>
     ): PagedListFactory<LIST_DESCRIPTOR, ITEM_IDENTIFIER, LIST_ITEM> {
-        val getRemoteItemIds = { getListItems(listDescriptor).map { RemoteId(value = it) } }
-        val getIsListFullyFetched = { getListState(listDescriptor) == ListState.FETCHED }
         return PagedListFactory(
                 createDataSource = {
-                    InternalPagedListDataSource(
-                            listDescriptor = listDescriptor,
-                            remoteItemIds = getRemoteItemIds(),
-                            isListFullyFetched = getIsListFullyFetched(),
-                            itemDataSource = dataSource
-                    )
+                    runBlocking {
+                        val remoteItemIds = getListItems(listDescriptor).map { RemoteId(value = it) }
+                        val isListFullyFetched = getListState(listDescriptor) == ListState.FETCHED
+                        InternalPagedListDataSource(
+                                listDescriptor = listDescriptor,
+                                remoteItemIds = remoteItemIds,
+                                isListFullyFetched = isListFullyFetched,
+                                itemDataSource = dataSource
+                        )
+                    }
                 })
     }
 
     /**
      * A helper function that returns the list items for the given [ListDescriptor].
      */
-    private fun getListItems(listDescriptor: ListDescriptor): List<Long> {
+    private suspend fun getListItems(listDescriptor: ListDescriptor): List<Long> {
         val listModel = listSqlUtils.getList(listDescriptor)
         return if (listModel != null) {
             listItemSqlUtils.getListItems(listModel.id).map { it.remoteItemId }
@@ -170,7 +177,7 @@ class ListStore @Inject constructor(
      * update the list's state and emit that change. Finally, it'll calculate the offset and initiate the fetch with
      * the given [fetchList] function.
      */
-    private fun handleFetchList(
+    private suspend fun handleFetchList(
         listDescriptor: ListDescriptor,
         loadMore: Boolean,
         fetchList: (Long) -> Unit
@@ -213,7 +220,7 @@ class ListStore @Inject constructor(
      *
      * See [handleFetchList] to see how items are fetched.
      */
-    private fun handleFetchedListItems(payload: FetchedListItemsPayload) {
+    private suspend fun handleFetchedListItems(payload: FetchedListItemsPayload) {
         val newState = when {
             payload.isError -> ListState.ERROR
             payload.canLoadMore -> ListState.CAN_LOAD_MORE
@@ -303,7 +310,7 @@ class ListStore @Inject constructor(
     /**
      * Deletes all the items for the given [ListDescriptor].
      */
-    private fun deleteListItems(listDescriptor: ListDescriptor) {
+    private suspend fun deleteListItems(listDescriptor: ListDescriptor) {
         listSqlUtils.getList(listDescriptor)?.let {
             listItemSqlUtils.deleteItems(it.id)
         }
@@ -312,7 +319,7 @@ class ListStore @Inject constructor(
     /**
      * A helper function that returns the [ListState] for the given [ListDescriptor].
      */
-     fun getListState(listDescriptor: ListDescriptor): ListState {
+    suspend fun getListState(listDescriptor: ListDescriptor): ListState {
         val listModel = listSqlUtils.getList(listDescriptor)
         val currentState = listModel?.let {
             requireNotNull(ListState.entries.firstOrNull { it.value == listModel.stateDbValue }) {
