@@ -81,6 +81,8 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 FIREBASE_APP_ID = '1:124902176124:android:4046dc320bf1825b1620f9'
 FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 
+# NOTE: Only Wear apps are uploaded to S3 and exposed via CDN.
+# FAD doesn't support Android Wear apps (yet?)
 PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 
 ########################################################################
