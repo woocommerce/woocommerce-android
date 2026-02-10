@@ -79,15 +79,20 @@ class BookingListViewModel @Inject constructor(
     private var bookingsLoadMoreJob: Job? = null
 
     private val contentState = combine(
-        bookingListHandler.bookingsFlow.map { bookings ->
-            openFirstLoadedBookingOnTablet(bookings)
-            with(bookingMapper) { bookings.map { it.toListItem() } }
-        },
+        bookingListHandler.bookingsFlow,
         loadingState,
         selectedBookingIdFlow,
-    ) { bookings, loadingState, selectedBookingId ->
+        selectedTab,
+    ) { bookings, loadingState, selectedBookingId, tab ->
+        val filtered = if (tab != BookingListTab.All) {
+            bookings.filter { it.status != BookingEntity.Status.Cancelled }
+        } else {
+            bookings
+        }
+        openFirstLoadedBookingOnTablet(filtered)
+        val listItems = with(bookingMapper) { filtered.map { it.toListItem() } }
         BookingListContentState(
-            bookings = bookings,
+            bookings = listItems,
             loadingState = loadingState,
             selectedBooking = selectedBookingId,
             onRefresh = { refreshTrigger.tryEmit(Unit) },
