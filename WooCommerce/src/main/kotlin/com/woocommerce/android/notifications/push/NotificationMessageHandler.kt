@@ -25,6 +25,7 @@ import org.wordpress.android.fluxc.Dispatcher
 import org.wordpress.android.fluxc.generated.NotificationActionBuilder
 import org.wordpress.android.fluxc.model.notification.NotificationModel
 import org.wordpress.android.fluxc.store.AccountStore
+import org.wordpress.android.fluxc.store.SiteStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.FetchNotificationPayload
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,6 +40,7 @@ class NotificationMessageHandler @Inject constructor(
     private val wooLog: WooLog,
     private val dispatcher: Dispatcher,
     private val resourceProvider: ResourceProvider,
+    private val siteStore: SiteStore,
     private val selectedSite: SelectedSite,
     private val workManagerScheduler: WorkManagerScheduler
 ) {
@@ -67,11 +69,6 @@ class NotificationMessageHandler @Inject constructor(
 
     @Suppress("ReturnCount", "ComplexMethod")
     fun onNewMessageReceived(messageData: Map<String, String>) {
-        if (!accountStore.hasAccessToken()) {
-            wooLog.e(NOTIFICATIONS, "User is not logged in!")
-            return
-        }
-
         if (!selectedSite.exists()) {
             wooLog.e(NOTIFICATIONS, "User has no site selected!")
             return
@@ -101,6 +98,13 @@ class NotificationMessageHandler @Inject constructor(
                 wooLog.d(NOTIFICATIONS, "Skipping WPCOM notification, already registered with Woo Core")
                 return
             }
+            if (siteStore.visibleSites.none { it.siteId == notification.remoteSiteId }) {
+                wooLog.w(NOTIFICATIONS, "Skipping notification, site ${notification.remoteSiteId} is not visible")
+                return
+            }
+        } else if (!accountStore.hasAccessToken()) {
+            wooLog.e(NOTIFICATIONS, "User is not logged in!")
+            return
         } else if (notification.remoteNoteId == 0L) {
             // At this point 'note_id' is always available in the notification bundle.
             wooLog.e(NOTIFICATIONS, "Push notification received without a valid note_id in the payload!")

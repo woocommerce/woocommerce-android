@@ -1,6 +1,10 @@
 <!--
 Contains editorialized release notes. Raw release notes should go into `RELEASE-NOTES.txt`.
 -->
+## 24.1
+We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.
+Thanks for selling with WooCommerce! 🚀
+
 ## 24.0
 Woo POS Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
 

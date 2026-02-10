@@ -9,6 +9,7 @@ import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
@@ -34,6 +36,9 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val featureFlagRepository: FeatureFlagRepository = mock {
+        onBlocking { isEnabled(any()) }.thenReturn(false)
+    }
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -258,6 +263,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         childrenToParentEventSender,
         networkStatus,
         resourceProvider,
-        analyticsTracker
+        analyticsTracker,
+        featureFlagRepository,
     )
 }

@@ -210,7 +210,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 return@launch
             }
 
-            val actions = orderActionsProvider.getAvailableActions(order, refundsResult)
+            val actions = orderActionsProvider.getAvailableActions(order)
             val refundInfo = refundInfoBuilder.buildRefundInfo(order, refundsResult)
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 

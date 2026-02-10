@@ -205,7 +205,9 @@ class MainSettingsFragment : Fragment(R.layout.fragment_settings_main), MainSett
         presenter.setupApplicationPasswordsSettings()
 
         binding.optionEnablePushNotifications.setOnClickListener {
-            // TODO: Implement push notification connection flow
+            findNavController().navigateSafely(
+                MainSettingsFragmentDirections.actionMainSettingsFragmentToWooPushNotificationsIntroductionDialog()
+            )
         }
 
         updateStoreSettingsContainerVisibility()

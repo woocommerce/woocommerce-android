@@ -18,6 +18,7 @@ enum class FeatureFlag(
     ORDER_CREATION_AUTO_TAX_RATE("order_creation_auto_tax_rate"),
     BOOKINGS_MVP("bookings_mvp"),
     POS_REFUNDS("pos_refunds"),
+    POS_BOOKINGS("pos_bookings"),
     POS_PRODUCTS_FTS("pos_products_fts"),
     WOO_POS_LOCAL_CATALOG_FILE_APPROACH("woo_pos_local_catalog_file_approach"),
     WOO_PUSH_NOTIFICATIONS_SYSTEM("woo_push_notifications_system", default = false),

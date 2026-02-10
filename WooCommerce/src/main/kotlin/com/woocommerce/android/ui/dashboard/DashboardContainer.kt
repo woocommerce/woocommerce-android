@@ -243,6 +243,11 @@ private fun ConfigurableWidgetCard(
 ) {
     when (widgetUiModel.widget.type) {
         DashboardWidget.Type.PUSH_NOTIFICATIONS -> DashboardPushNotificationsCard(
+            onClick = {
+                dashboardViewModel.onDashboardWidgetEvent(
+                    DashboardViewModel.DashboardEvent.OpenWooPushNotificationsIntroduction
+                )
+            },
             onHideClicked = { dashboardViewModel.onHideWidgetClicked(DashboardWidget.Type.PUSH_NOTIFICATIONS) },
             modifier = modifier
         )
