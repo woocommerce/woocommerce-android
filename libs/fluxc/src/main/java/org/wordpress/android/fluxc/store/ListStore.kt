@@ -329,7 +329,7 @@ class ListStore @Inject constructor(
         }
         val isListStateValid = currentState != null
                 && (isListStateOutdated(listModel).not() || (currentState in ListState.notExpiredStates))
-        return if (isListStateValid) currentState!! else ListState.defaultState
+        return if (isListStateValid) currentState else ListState.defaultState
     }
 
     /**
