@@ -2627,6 +2627,14 @@
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
 
+    <!-- Woo Push Notifications Introduction Screen -->
+    <string name="woo_push_notifications_introduction_title">Unlock push notifications with WordPress.com</string>
+    <string name="woo_push_notifications_introduction_body">Connect your store to a WordPress.com account to get access to push notifications for new orders, reviews and more.</string>
+    <string name="woo_push_notifications_introduction_body2">It only takes a minute.</string>
+    <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
+    <string name="woo_push_notifications_introduction_continue">Continue</string>
+    <string name="woo_push_notifications_introduction_not_now">Not now</string>
+
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
     <string name="jetpack_install_start_default_name">your site</string>
@@ -3875,6 +3883,31 @@
     <string name="woopos_bookings_empty_list_title">No bookings found</string>
     <string name="woopos_bookings_empty_list_image_description">No bookings</string>
     <string name="woopos_bookings_empty_action_label">Refresh</string>
+    <string name="woopos_bookings_details_attendance_attended">Attended</string>
+    <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
+    <string name="woopos_bookings_details_title">Booking #%s details</string>
+    <string name="woopos_bookings_details_service_name_label">Service name</string>
+    <string name="woopos_bookings_details_date_label">Date</string>
+    <string name="woopos_bookings_details_time_label">Time</string>
+    <string name="woopos_bookings_details_team_member_label">Team member</string>
+    <string name="woopos_bookings_details_location_label">Location</string>
+    <string name="woopos_bookings_details_duration_label">Duration</string>
+    <string name="woopos_bookings_details_customer_title">Customer</string>
+    <string name="woopos_bookings_details_billing_address_label">Billing address</string>
+    <string name="woopos_bookings_details_customer_note_label">Note</string>
+    <string name="woopos_bookings_details_attendance_title">Attendance status</string>
+    <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
+    <string name="woopos_bookings_details_payment_title">Payment</string>
+    <string name="woopos_bookings_details_service_label">Service</string>
+    <string name="woopos_bookings_details_tax_label">Taxes</string>
+    <string name="woopos_bookings_details_discount_label">Discount</string>
+    <string name="woopos_bookings_details_total_label">Total</string>
+    <string name="woopos_bookings_details_pay_by_card">Pay by card</string>
+    <string name="woopos_bookings_details_pay_by_cash">Pay by cash</string>
+    <string name="woopos_bookings_details_booking_note_title">Booking note</string>
+    <string name="woopos_bookings_details_add_note">Add note</string>
+    <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
+    <string name="woopos_bookings_details_copy_email">Copy email</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

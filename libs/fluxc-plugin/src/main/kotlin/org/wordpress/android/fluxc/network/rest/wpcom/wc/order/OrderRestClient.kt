@@ -191,7 +191,7 @@ class OrderRestClient @Inject constructor(
             "status" to statusFilter,
             "created_via" to createdVia,
             "search" to searchQuery,
-            "dp" to decimalPoints.toString(),
+            "dp" to decimalPoints?.toString(),
         )
 
         val response = wooNetwork.executeGetGsonRequest(
@@ -491,7 +491,7 @@ class OrderRestClient @Inject constructor(
     ): RemoteOrderPayload.Fetching {
         val url = WOOCOMMERCE.orders.id(orderId).pathV3
         val params = mutableMapOf("_fields" to ORDER_FIELDS)
-            .putIfNotEmpty("dp" to decimalPoints.toString())
+            .putIfNotEmpty("dp" to decimalPoints?.toString())
 
         val response = wooNetwork.executeGetGsonRequest(
             site = site,
