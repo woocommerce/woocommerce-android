@@ -203,7 +203,7 @@ class BookingDetailsViewModel @Inject constructor(
                 return@launch
             }
             attendanceUpdateStatus.value = AttendanceUpdateStatus.InProgress
-            val attendanceStatus = status.toDataModel() ?: return@launch
+            val attendanceStatus = status.toDataModel()
             bookingsRepository.updateAttendanceStatus(
                 bookingId = bookingId,
                 attendanceStatus = attendanceStatus
@@ -214,11 +214,9 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun BookingAttendanceStatus.toDataModel(): BookingEntity.AttendanceStatus? = when (this) {
-        BookingAttendanceStatus.Booked -> BookingEntity.AttendanceStatus.Booked
-        BookingAttendanceStatus.CheckedIn -> BookingEntity.AttendanceStatus.CheckedIn
-        BookingAttendanceStatus.NoShow -> BookingEntity.AttendanceStatus.NoShow
-        BookingAttendanceStatus.Cancelled -> null
+    private fun BookingAttendanceStatus.toDataModel(): BookingEntity.AttendanceStatus = when (this) {
+        BookingAttendanceStatus.Attended -> BookingEntity.AttendanceStatus.Attended
+        BookingAttendanceStatus.Unattended -> BookingEntity.AttendanceStatus.Unattended
     }
 
     private fun onCancelBooking() {

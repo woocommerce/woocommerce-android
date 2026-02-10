@@ -126,7 +126,7 @@ private fun AttendanceRow(
 private fun BookingAttendanceSectionPreview() {
     WooThemeWithBackground {
         BookingAttendanceSection(
-            status = BookingAttendanceStatus.Booked,
+            status = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             onClick = {},
             modifier = Modifier.fillMaxWidth()
@@ -139,7 +139,7 @@ private fun BookingAttendanceSectionPreview() {
 private fun BookingAttendanceSectionInProgressPreview() {
     WooThemeWithBackground {
         BookingAttendanceSection(
-            status = BookingAttendanceStatus.Booked,
+            status = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             onClick = {},
             modifier = Modifier.fillMaxWidth()

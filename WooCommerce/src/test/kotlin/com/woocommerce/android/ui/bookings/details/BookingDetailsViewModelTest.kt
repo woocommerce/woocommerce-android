@@ -101,12 +101,12 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.NoShow)
+        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.Attended)
 
         // Then
         verify(bookingsRepository, times(1)).updateAttendanceStatus(
             bookingId = initialBooking.id.value,
-            attendanceStatus = BookingEntity.AttendanceStatus.NoShow
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended
         )
     }
 
@@ -412,7 +412,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
             order = BookingOrderInfo(),
             customerNote = "Customer note"
         )

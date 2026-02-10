@@ -276,7 +276,7 @@ private fun BookingDetailsPreview() {
                         date = "05/07/2025, 11:00 AM",
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
-                        attendanceStatus = BookingAttendanceStatus.CheckedIn,
+                        attendanceStatus = BookingAttendanceStatus.Attended,
                         status = BookingStatus.Paid,
                         attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),

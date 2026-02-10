@@ -213,8 +213,8 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         initial.openPage(BookingFilterPage.AttendanceStatus)
         val onPage = viewModel.uiState.getOrAwaitValue()
 
-        // Select one attendance status (Booked)
-        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked)))
+        // Select one attendance status (Attended)
+        onPage.onUpdateFilterOption(BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended)))
 
         // WHEN: leave the page (go back to root list)
         viewModel.uiState.getOrAwaitValue().onClose()
@@ -226,7 +226,7 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
             root.items.first { (it.title as UiStringRes).stringRes == R.string.bookings_filter_title_attendance_status }
         val value = (attendanceItem.value as UiStringRes).stringRes
 
-        assertThat(value).isEqualTo(R.string.booking_attendance_status_booked)
+        assertThat(value).isEqualTo(R.string.booking_attendance_status_attended)
     }
 
     @Test
@@ -236,9 +236,9 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
         initial.openPage(BookingFilterPage.AttendanceStatus)
         val onPage = viewModel.uiState.getOrAwaitValue()
 
-        // Select two attendance statuses (Booked and Cancelled)
+        // Select two attendance statuses (Attended and Unattended)
         onPage.onUpdateFilterOption(
-            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Booked, AttendanceStatus.Cancelled))
+            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended, AttendanceStatus.Unattended))
         )
 
         // WHEN: leave the page (go back to root list)

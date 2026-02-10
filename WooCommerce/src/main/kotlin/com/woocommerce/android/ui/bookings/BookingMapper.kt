@@ -126,10 +126,8 @@ class BookingMapper @Inject constructor(
     }
 
     private fun BookingEntity.AttendanceStatus.toUiModel(): BookingAttendanceStatus? = when (this) {
-        BookingEntity.AttendanceStatus.Booked -> BookingAttendanceStatus.Booked
-        BookingEntity.AttendanceStatus.CheckedIn -> BookingAttendanceStatus.CheckedIn
-        BookingEntity.AttendanceStatus.NoShow -> BookingAttendanceStatus.NoShow
-        BookingEntity.AttendanceStatus.Cancelled -> BookingAttendanceStatus.Cancelled
+        BookingEntity.AttendanceStatus.Attended -> BookingAttendanceStatus.Attended
+        BookingEntity.AttendanceStatus.Unattended -> BookingAttendanceStatus.Unattended
         is BookingEntity.AttendanceStatus.Unknown -> null
     }
 
