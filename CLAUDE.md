@@ -30,8 +30,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - **libs/pos** - Point of sale functionality (POS)
 - **libs/commons** - Shared Compose components, utilities, and test fixtures
 - **libs/apifaker** - API mocking library for testing
-- **libs/iap** - In-app purchases
-- **libs/barcode** - Barcode scanning
 - **libs/detektrules** - Custom detekt rules for this project
 
 ## Testing Patterns
