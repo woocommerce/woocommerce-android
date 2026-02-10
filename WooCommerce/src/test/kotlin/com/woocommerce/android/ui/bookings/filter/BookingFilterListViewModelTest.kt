@@ -238,7 +238,9 @@ class BookingFilterListViewModelTest : BaseUnitTest() {
 
         // Select two attendance statuses (Attended and Unattended)
         onPage.onUpdateFilterOption(
-            BookingsFilterOption.AttendanceStatuses(values = setOf(AttendanceStatus.Attended, AttendanceStatus.Unattended))
+            BookingsFilterOption.AttendanceStatuses(
+                values = setOf(AttendanceStatus.Attended, AttendanceStatus.Unattended)
+            )
         )
 
         // WHEN: leave the page (go back to root list)
