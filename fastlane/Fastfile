@@ -1391,8 +1391,7 @@ platform :android do
         Flavor: prototype_flavor,
         'Build Type': prototype_build_type
       },
-      # Fold for Wear app, as it's modified less often
-      fold: app == WEAR_APP,
+      fold: false,
       reuse_identifier: "#{app.downcase}-prototype-build-link"
     )
 
