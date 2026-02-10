@@ -55,12 +55,23 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
+    val onOrderComplete = {
+        when (viewModel.source) {
+            CashPaymentSource.BOOKINGS -> onNavigationEvent(
+                WooPosNavigationEvent.GoBackWithResult(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
+            )
+            CashPaymentSource.CHECKOUT -> onNavigationEvent(
+                WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
+            )
+        }
+    }
+
     WooPosCashPaymentScreen(
         state = state,
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
         onBackClicked = onBackClicked,
-        onOrderComplete = { onNavigationEvent(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment) },
+        onOrderComplete = onOrderComplete,
     )
     BackHandler {
         onBackClicked()

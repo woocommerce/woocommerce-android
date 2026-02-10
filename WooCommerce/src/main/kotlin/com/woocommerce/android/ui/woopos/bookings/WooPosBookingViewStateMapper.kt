@@ -55,6 +55,7 @@ class WooPosBookingViewStateMapper @Inject constructor() {
 
         return WooPosBookingsState.BookingDetailsViewState(
             id = booking.id.value,
+            orderId = booking.orderId,
             number = "#${booking.id.value}",
             status = mapBookingStatus(booking.status),
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(

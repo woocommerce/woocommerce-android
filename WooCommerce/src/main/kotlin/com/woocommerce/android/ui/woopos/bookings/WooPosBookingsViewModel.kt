@@ -4,9 +4,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -36,6 +38,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
     private var fetchJob: Job? = null
@@ -211,7 +216,7 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
             is WooPosBookingsUIEvent.AttendanceToggled -> { }
             is WooPosBookingsUIEvent.PayByCardClicked -> { }
-            is WooPosBookingsUIEvent.PayByCashClicked -> { }
+            is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
         }
@@ -222,6 +227,18 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
+    }
+
+    private fun handlePayByCash() {
+        val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(
+                WooPosNavigationEvent.OpenCashPayment(
+                    orderId = details.orderId,
+                    source = CashPaymentSource.BOOKINGS,
+                )
+            )
+        }
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {

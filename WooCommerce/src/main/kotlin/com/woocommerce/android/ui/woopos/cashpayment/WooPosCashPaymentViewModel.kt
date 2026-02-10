@@ -29,6 +29,9 @@ class WooPosCashPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
+    val source: CashPaymentSource = savedState.get<String>(CASH_ROUTE_SOURCE_KEY)
+        ?.let { runCatching { CashPaymentSource.valueOf(it) }.getOrNull() }
+        ?: CashPaymentSource.CHECKOUT
 
     private val _state = savedState.getStateFlow<WooPosCashPaymentState>(
         scope = viewModelScope,
