@@ -44,12 +44,13 @@ class BookingMapper @Inject constructor(
         .withZone(ZoneOffset.UTC)
 
     fun Booking.toBookingSummaryModel(attendanceUpdateStatus: AttendanceUpdateStatus): BookingSummaryModel {
+        val isCancelled = status == BookingEntity.Status.Cancelled
         return BookingSummaryModel(
             date = dateFormatter.formatDateTime(start),
             name = order.productInfo?.name ?: "-",
             customerName = order.customerInfo?.fullName(),
             status = status.toUiModel(order.status, order.paymentInfo?.paymentMethodId),
-            attendanceStatus = attendanceStatus.toUiModel(),
+            attendanceStatus = if (isCancelled) null else attendanceStatus.toUiModel(),
             attendanceUpdateStatus = attendanceUpdateStatus,
         )
     }
@@ -113,7 +114,7 @@ class BookingMapper @Inject constructor(
     private fun BookingEntity.Status.toUiModel(
         orderStatus: String?,
         paymentMethod: String?,
-    ): BookingStatus {
+    ): BookingStatus? {
         return if (orderStatus == "on-hold" && paymentMethod == "cod") {
             BookingStatus.PayOnSite
         } else {
@@ -121,7 +122,7 @@ class BookingMapper @Inject constructor(
                 BookingEntity.Status.Paid -> BookingStatus.Paid
                 BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
                 BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-                BookingEntity.Status.Complete -> BookingStatus.Complete
+                BookingEntity.Status.Complete -> null
                 BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
                 BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
                 BookingEntity.Status.InCart -> BookingStatus.InCart

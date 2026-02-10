@@ -29,7 +29,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
-    status: BookingStatus,
+    status: BookingStatus?,
     onMarkAsPaid: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,

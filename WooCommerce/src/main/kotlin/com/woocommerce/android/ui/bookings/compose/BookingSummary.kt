@@ -58,9 +58,11 @@ fun BookingSummary(
                     attendanceUpdateStatus = model.attendanceUpdateStatus,
                 )
             }
-            BookingStatusTag(
-                state = model.status
-            )
+            model.status?.let {
+                BookingStatusTag(
+                    state = it
+                )
+            }
         }
     }
 }
@@ -87,7 +89,7 @@ data class BookingSummaryModel(
     val name: String,
     val customerName: String?,
     val attendanceStatus: BookingAttendanceStatus?,
-    val status: BookingStatus,
+    val status: BookingStatus?,
     val attendanceUpdateStatus: AttendanceUpdateStatus,
 )
 
