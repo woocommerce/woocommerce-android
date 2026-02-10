@@ -105,6 +105,15 @@ dependencies {
     implementation libs.kotlinx.coroutines.core
     runtimeOnly libs.kotlinx.coroutines.android
 
+    // Test fixtures
+    testFixturesCompileOnly(libs.wordpress.utils) {
+        exclude group: "com.mcxiaoke.volley"
+        exclude group: "com.android.support"
+    }
+    testFixturesCompileOnly libs.mockito.kotlin
+    testFixturesCompileOnly libs.kotlinx.coroutines.core
+    testFixturesCompileOnly libs.wellsql
+
     // Unit tests
     testImplementation libs.junit
     testImplementation libs.kotlin.test.junit
