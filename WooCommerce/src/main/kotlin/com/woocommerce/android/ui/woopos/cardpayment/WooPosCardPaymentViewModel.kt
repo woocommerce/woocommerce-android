@@ -43,9 +43,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
-    val source: CardPaymentSource = CardPaymentSource.valueOf(
-        savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] ?: CardPaymentSource.CHECKOUT.name
-    )
+    private val source: CardPaymentSource = (savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] as? String)
+        ?.let { runCatching { CardPaymentSource.valueOf(it) }.getOrNull() }
+        ?: CardPaymentSource.CHECKOUT
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
