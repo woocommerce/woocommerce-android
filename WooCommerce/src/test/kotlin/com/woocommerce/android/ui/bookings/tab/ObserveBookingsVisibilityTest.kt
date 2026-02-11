@@ -23,7 +23,7 @@ import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
+class ObserveBookingsVisibilityTest : BaseUnitTest() {
     private val testScope = TestScope(coroutinesTestRule.testDispatcher)
     private val selectedSite: SelectedSite = mock()
     private val selectedSiteFlow = MutableStateFlow<SiteModel?>(null)
@@ -49,12 +49,12 @@ class ObserveBookingsTabVisibilityTest : BaseUnitTest() {
         }.thenReturn(bookingsCountFlow)
     }
 
-    private lateinit var sut: ObserveBookingsTabVisibility
+    private lateinit var sut: ObserveBookingsVisibility
 
     suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
         prepareMocks()
         whenever(selectedSite.observe()).thenReturn(selectedSiteFlow)
-        sut = ObserveBookingsTabVisibility(
+        sut = ObserveBookingsVisibility(
             productListRepository = productListRepository,
             bookingsRepository = bookingsRepository,
             selectedSite = selectedSite,

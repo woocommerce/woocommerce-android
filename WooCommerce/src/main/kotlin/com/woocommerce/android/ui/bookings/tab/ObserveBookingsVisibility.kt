@@ -27,7 +27,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsOrderO
 import org.wordpress.android.fluxc.store.WCProductStore.ProductFilterOption
 import javax.inject.Inject
 
-class ObserveBookingsTabVisibility @Inject constructor(
+class ObserveBookingsVisibility @Inject constructor(
     private val productListRepository: ProductListRepository,
     private val bookingsRepository: BookingsRepository,
     private val selectedSite: SelectedSite,
@@ -39,10 +39,10 @@ class ObserveBookingsTabVisibility @Inject constructor(
         selectedSite.observe()
             .filterNotNull()
             .flatMapLatest { siteModel ->
-                observeBookingTabVisibility(siteModel)
+                observeBookingsVisibilityForSite(siteModel)
             }
 
-    private fun observeBookingTabVisibility(siteModel: SiteModel): Flow<Boolean> = flow {
+    private fun observeBookingsVisibilityForSite(siteModel: SiteModel): Flow<Boolean> = flow {
         val isCIABSite = FeatureFlag.BOOKINGS_MVP.isEnabled() && siteModel.isCIABSite()
         if (!isCIABSite) {
             emit(false)
