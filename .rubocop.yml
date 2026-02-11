@@ -10,6 +10,9 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Max: 30
 
+Metrics/ParameterLists:
+  Max: 8
+
 Layout/LineLength:
   Max: 180
 

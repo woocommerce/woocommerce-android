@@ -373,6 +373,8 @@ class DashboardViewModel @Inject constructor(
         data object FeedbackNegativeAction : DashboardEvent()
 
         data object RefreshJitm : DashboardEvent()
+
+        data object OpenWooPushNotificationsIntroduction : DashboardEvent()
     }
 
     data class RefreshEvent(val isForced: Boolean = false)

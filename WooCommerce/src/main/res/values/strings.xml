@@ -2627,6 +2627,14 @@
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
 
+    <!-- Woo Push Notifications Introduction Screen -->
+    <string name="woo_push_notifications_introduction_title">Unlock push notifications with WordPress.com</string>
+    <string name="woo_push_notifications_introduction_body">Connect your store to a WordPress.com account to get access to push notifications for new orders, reviews and more.</string>
+    <string name="woo_push_notifications_introduction_body2">It only takes a minute.</string>
+    <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
+    <string name="woo_push_notifications_introduction_continue">Continue</string>
+    <string name="woo_push_notifications_introduction_not_now">Not now</string>
+
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
     <string name="jetpack_install_start_default_name">your site</string>
