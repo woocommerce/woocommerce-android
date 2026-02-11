@@ -75,6 +75,23 @@ internal abstract class ListDao {
     )
     abstract suspend fun getListItems(listId: Int): List<ListItemModel>
 
+    suspend fun getListItems(descriptor: ListDescriptor): List<ListItemModel> =
+        getListItems(descriptor.uniqueIdentifier.value, descriptor.typeIdentifier.value)
+
+    @Query(
+        """
+        SELECT i.* FROM ListItemEntity i
+        INNER JOIN ListEntity l ON i.listId = l.id
+        WHERE l.descriptorUniqueIdentifierDbValue = :uniqueIdentifier
+        AND l.descriptorTypeIdentifierDbValue = :typeIdentifier
+        ORDER BY i.rowid ASC
+        """
+    )
+    protected abstract suspend fun getListItems(
+        uniqueIdentifier: Int,
+        typeIdentifier: Int
+    ): List<ListItemModel>
+
     @Query(
         """
         SELECT COUNT(*) FROM ListItemEntity

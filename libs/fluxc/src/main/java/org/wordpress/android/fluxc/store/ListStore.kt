@@ -145,26 +145,16 @@ class ListStore @Inject internal constructor(
         return PagedListFactory(
                 createDataSource = {
                     runBlocking {
-                        val remoteItemIds = getListItems(listDescriptor).map { RemoteId(value = it) }
+                        val remoteItemIds = listDao.getListItems(listDescriptor)
                         val isListFullyFetched = getListState(listDescriptor) == ListState.FETCHED
                         InternalPagedListDataSource(
                                 listDescriptor = listDescriptor,
-                                remoteItemIds = remoteItemIds,
+                                remoteItemIds = remoteItemIds.map { RemoteId(value = it.remoteItemId) },
                                 isListFullyFetched = isListFullyFetched,
                                 itemDataSource = dataSource
                         )
                     }
                 })
-    }
-
-    /**
-     * A helper function that returns the list items for the given [ListDescriptor].
-     */
-    private suspend fun getListItems(listDescriptor: ListDescriptor): List<Long> {
-        val listModel = listDao.getList(listDescriptor)
-        return if (listModel != null) {
-            listDao.getListItems(listModel.id).map { it.remoteItemId }
-        } else emptyList()
     }
 
     /**

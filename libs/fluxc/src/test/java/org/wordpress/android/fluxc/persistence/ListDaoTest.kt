@@ -119,6 +119,29 @@ class ListDaoTest {
 
     // endregion
 
+    // region getListItemsByDescriptor
+    @Test
+    fun `given items exist, when get list items, then returns items`() = runTest {
+        val list = dao.insertOrUpdateList(testDescriptor, ListState.CAN_LOAD_MORE, lastModified = LAST_MODIFIED)
+        dao.insertItems(listOf(
+            ListItemModel(listId = list.id, remoteItemId = 10L),
+            ListItemModel(listId = list.id, remoteItemId = 20L)
+        ))
+
+        val result = dao.getListItems(testDescriptor)
+
+        assertThat(result).hasSize(2)
+        assertThat(result.map { it.remoteItemId }).containsExactly(10L, 20L)
+    }
+
+    @Test
+    fun `given no list exists, when get list items, then returns empty`() = runTest {
+        val result = dao.getListItems(testDescriptor)
+
+        assertThat(result).isEmpty()
+    }
+    // endregion
+
     // region getListItemsCount
     @Test
     fun `given items exist, when get items count, then returns correct count`() = runTest {
