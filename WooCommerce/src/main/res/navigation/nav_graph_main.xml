@@ -325,6 +325,14 @@
         <action
             android:id="@+id/action_moreMenu_to_customerListFragment"
             app:destination="@id/menuCustomerListFragment" />
+        <action
+            android:id="@+id/action_moreMenu_to_bookings"
+            app:destination="@id/bookings">
+            <argument
+                android:name="launchedFromMoreMenu"
+                android:defaultValue="true"
+                app:argType="boolean" />
+        </action>
     </fragment>
     <fragment
         android:id="@+id/feedbackSurveyFragment"

@@ -3146,6 +3146,8 @@
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
 
+    <string name="more_menu_button_bookings_description">Manage your client appointments</string>
+
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
 

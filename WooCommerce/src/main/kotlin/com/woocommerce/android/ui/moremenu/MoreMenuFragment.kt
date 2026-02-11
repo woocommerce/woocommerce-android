@@ -28,6 +28,7 @@ import com.woocommerce.android.ui.moremenu.MoreMenuEvent.NavigateToSubscriptions
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignCreationEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.OpenBlazeCampaignListEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.StartSitePickerEvent
+import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewBookingsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCouponsEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewCustomersEvent
 import com.woocommerce.android.ui.moremenu.MoreMenuEvent.ViewGoogleForWooEvent
@@ -99,6 +100,7 @@ class MoreMenuFragment : TopLevelFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is NavigateToSettingsEvent -> navigateToSettings()
+                is ViewBookingsEvent -> navigateToBookings()
                 is NavigateToSubscriptionsEvent -> navigateToSubscriptions()
                 is StartSitePickerEvent -> startSitePicker()
                 is ViewGoogleForWooEvent -> openGoogleAdsWebview(event.url, event.isCreationFlow)
@@ -183,6 +185,12 @@ class MoreMenuFragment : TopLevelFragment() {
     private fun navigateToCustomers() {
         findNavController().navigateSafely(
             MoreMenuFragmentDirections.actionMoreMenuToCustomerListFragment()
+        )
+    }
+
+    private fun navigateToBookings() {
+        findNavController().navigateSafely(
+            MoreMenuFragmentDirections.actionMoreMenuToBookings()
         )
     }
 
