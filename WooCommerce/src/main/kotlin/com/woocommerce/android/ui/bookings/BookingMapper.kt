@@ -114,7 +114,7 @@ class BookingMapper @Inject constructor(
     private fun BookingEntity.Status.toUiModel(
         orderStatus: String?,
         paymentMethod: String?,
-    ): BookingStatus? {
+    ): BookingStatus {
         return if (orderStatus == "on-hold" && paymentMethod == "cod") {
             BookingStatus.PayOnSite
         } else {
@@ -122,7 +122,7 @@ class BookingMapper @Inject constructor(
                 BookingEntity.Status.Paid -> BookingStatus.Paid
                 BookingEntity.Status.PendingConfirmation -> BookingStatus.PendingConfirmation
                 BookingEntity.Status.Cancelled -> BookingStatus.Cancelled
-                BookingEntity.Status.Complete -> null
+                BookingEntity.Status.Complete -> BookingStatus.Complete
                 BookingEntity.Status.Confirmed -> BookingStatus.Confirmed
                 BookingEntity.Status.Unpaid -> BookingStatus.Unpaid
                 BookingEntity.Status.InCart -> BookingStatus.InCart
