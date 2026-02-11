@@ -309,6 +309,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        cardReaderPaymentController?.stop()
+        cancelPayment()
     }
 }
