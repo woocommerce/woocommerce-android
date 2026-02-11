@@ -6,12 +6,14 @@ import javax.inject.Inject
 
 class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedSite) {
     fun isFeatureSupported(
-        @Suppress("unused")
         feature: CIABAffectedFeature
     ): Boolean {
-        // For now, all affected features are unsupported in CIAB.
-        // If there are exceptions in the future, we can handle them here.
-        return !isCurrentSiteCIAB()
+        if (!isCurrentSiteCIAB()) return true
+
+        return when (feature) {
+            CIABAffectedFeature.WooPayments -> true
+            else -> false
+        }
     }
 
     fun isFeatureUnsupported(feature: CIABAffectedFeature): Boolean {
