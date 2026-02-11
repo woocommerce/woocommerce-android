@@ -8,12 +8,12 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 
-class BookingListFilterBuilderTest {
+class BookingListDateFilterBuilderTest {
     private val testZoneId = ZoneId.ofOffset("UTC", ZoneOffset.ofHours(2))
     private val mockedNow = Instant.parse("2025-01-01T12:00:00+02:00")
 
     private val clock = Clock.fixed(mockedNow, testZoneId)
-    private val filterBuilder = BookingListFiltersBuilder(clock)
+    private val filterBuilder = BookingListDateFilterBuilder(clock)
 
     @Test
     fun `when tab is Today, then returns correct date range filter`() {
