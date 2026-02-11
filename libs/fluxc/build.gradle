@@ -113,6 +113,8 @@ dependencies {
     testFixturesCompileOnly libs.mockito.kotlin
     testFixturesCompileOnly libs.kotlinx.coroutines.core
     testFixturesCompileOnly libs.wellsql
+    testFixturesCompileOnly libs.junit
+    testFixturesCompileOnly libs.androidx.room.runtime
 
     // Unit tests
     testImplementation libs.junit

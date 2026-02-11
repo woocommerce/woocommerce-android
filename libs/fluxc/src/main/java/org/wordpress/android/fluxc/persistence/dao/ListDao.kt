@@ -1,0 +1,103 @@
+package org.wordpress.android.fluxc.persistence.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Transaction
+import org.wordpress.android.fluxc.model.list.ListDescriptor
+import org.wordpress.android.fluxc.model.list.ListItemModel
+import org.wordpress.android.fluxc.model.list.ListModel
+import org.wordpress.android.fluxc.model.list.ListState
+import org.wordpress.android.util.DateTimeUtils
+import java.util.Date
+
+@Dao
+internal abstract class ListDao {
+    suspend fun getList(descriptor: ListDescriptor): ListModel? =
+        getList(descriptor.uniqueIdentifier.value, descriptor.typeIdentifier.value)
+
+    @Query(
+        """
+        SELECT * FROM ListEntity
+        WHERE descriptorUniqueIdentifierDbValue = :uniqueIdentifier
+        AND descriptorTypeIdentifierDbValue = :typeIdentifier
+        LIMIT 1
+        """
+    )
+    protected abstract suspend fun getList(uniqueIdentifier: Int, typeIdentifier: Int): ListModel?
+
+    suspend fun insertOrUpdateList(
+        descriptor: ListDescriptor,
+        state: ListState,
+        lastModified: String = DateTimeUtils.iso8601FromDate(Date())
+    ): ListModel {
+        val existing = getList(descriptor)
+        return if (existing != null) {
+            updateList(existing.id, lastModified, state.value)
+            existing.copy(
+                lastModified = lastModified,
+                stateDbValue = state.value
+            )
+        } else {
+            val new = ListModel(
+                lastModified = lastModified,
+                descriptorUniqueIdentifierDbValue = descriptor.uniqueIdentifier.value,
+                descriptorTypeIdentifierDbValue = descriptor.typeIdentifier.value,
+                stateDbValue = state.value
+            )
+            val rowId = insertList(new)
+            new.copy(id = rowId.toInt())
+        }
+    }
+
+    @Insert
+    protected abstract suspend fun insertList(list: ListModel): Long
+
+    @Query(
+        """
+        UPDATE ListEntity
+        SET lastModified = :lastModified, stateDbValue = :stateDbValue
+        WHERE id = :id
+        """
+    )
+    protected abstract suspend fun updateList(id: Int, lastModified: String, stateDbValue: Int)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    abstract suspend fun insertItems(items: List<ListItemModel>)
+
+    @Query(
+        """
+        SELECT * FROM ListItemEntity
+        WHERE listId = :listId
+        ORDER BY rowid ASC
+        """
+    )
+    abstract suspend fun getListItems(listId: Int): List<ListItemModel>
+
+    @Query(
+        """
+        SELECT COUNT(*) FROM ListItemEntity
+        WHERE listId = :listId
+        """
+    )
+    abstract suspend fun getListItemsCount(listId: Int): Long
+
+    @Query(
+        """
+        DELETE FROM ListItemEntity
+        WHERE listId = :listId
+        """
+    )
+    protected abstract suspend fun deleteItems(listId: Int)
+
+    @Transaction
+    open suspend fun deleteAndInsertItems(
+        listId: Int,
+        shouldDelete: Boolean,
+        items: List<ListItemModel>
+    ) {
+        if (shouldDelete) deleteItems(listId)
+        insertItems(items)
+    }
+}

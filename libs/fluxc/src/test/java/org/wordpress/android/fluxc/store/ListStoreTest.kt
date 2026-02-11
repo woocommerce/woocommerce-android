@@ -1,30 +1,26 @@
 package org.wordpress.android.fluxc.store
 
-import com.yarolegovich.wellsql.WellSql
+import androidx.test.platform.app.InstrumentationRegistry
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.spy
 import org.mockito.kotlin.verify
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import org.wordpress.android.fluxc.Dispatcher
-import org.wordpress.android.fluxc.SingleStoreWellSqlConfigForTests
 import org.wordpress.android.fluxc.TEST_SCOPE
 import org.wordpress.android.fluxc.generated.ListActionBuilder
 import org.wordpress.android.fluxc.model.list.ListConfig
 import org.wordpress.android.fluxc.model.list.ListDescriptor
 import org.wordpress.android.fluxc.model.list.ListDescriptorTypeIdentifier
 import org.wordpress.android.fluxc.model.list.ListDescriptorUniqueIdentifier
-import org.wordpress.android.fluxc.model.list.ListItemModel
-import org.wordpress.android.fluxc.model.list.ListModel
 import org.wordpress.android.fluxc.model.list.ListState
-import org.wordpress.android.fluxc.persistence.ListItemSqlUtils
-import org.wordpress.android.fluxc.persistence.ListSqlUtils
+import org.wordpress.android.fluxc.persistence.WPDatabaseTestRule
 import org.wordpress.android.fluxc.store.ListStore.FetchedListItemsPayload
 import org.wordpress.android.fluxc.store.ListStore.ListError
 import org.wordpress.android.fluxc.store.ListStore.ListErrorType
@@ -35,8 +31,9 @@ import org.wordpress.android.fluxc.tools.initCoroutineEngine
 @RunWith(RobolectricTestRunner::class)
 @Suppress("UnitTestNamingRule")
 class ListStoreTest {
-    private val listSqlUtils = ListSqlUtils()
-    private val listItemSqlUtils = ListItemSqlUtils()
+    @get:Rule
+    val databaseRule = WPDatabaseTestRule(InstrumentationRegistry.getInstrumentation().context)
+
     private val dispatcher = spy(Dispatcher())
     private lateinit var store: ListStore
 
@@ -54,17 +51,8 @@ class ListStoreTest {
 
     @Before
     fun setUp() {
-        val appContext = RuntimeEnvironment.application.applicationContext
-        val wellSqlConfig = SingleStoreWellSqlConfigForTests(
-            appContext,
-            listOf(ListModel::class.java, ListItemModel::class.java)
-        )
-        WellSql.init(wellSqlConfig)
-        wellSqlConfig.reset()
-
         store = ListStore(
-            listSqlUtils = listSqlUtils,
-            listItemSqlUtils = listItemSqlUtils,
+            listDao = databaseRule.db.listDao(),
             coroutineContext = TEST_SCOPE.coroutineContext,
             coroutineEngine = initCoroutineEngine(),
             dispatcher = dispatcher
@@ -81,7 +69,7 @@ class ListStoreTest {
 
     @Test
     fun `given list with can load more state, when get list state, then returns can load more`() = runTest {
-        listSqlUtils.insertOrUpdateList(testListDescriptor, ListState.CAN_LOAD_MORE)
+        databaseRule.db.listDao().insertOrUpdateList(testListDescriptor, ListState.CAN_LOAD_MORE)
 
         val state = store.getListState(testListDescriptor)
 
@@ -90,7 +78,7 @@ class ListStoreTest {
 
     @Test
     fun `given list with fetched state, when get list state, then returns fetched`() = runTest {
-        listSqlUtils.insertOrUpdateList(testListDescriptor, ListState.FETCHED)
+        databaseRule.db.listDao().insertOrUpdateList(testListDescriptor, ListState.FETCHED)
 
         val state = store.getListState(testListDescriptor)
 
@@ -99,7 +87,7 @@ class ListStoreTest {
 
     @Test
     fun `given different descriptor, when get list state, then returns default state`() = runTest {
-        listSqlUtils.insertOrUpdateList(testListDescriptor, ListState.CAN_LOAD_MORE)
+        databaseRule.db.listDao().insertOrUpdateList(testListDescriptor, ListState.CAN_LOAD_MORE)
 
         val state = store.getListState(otherListDescriptor)
 
@@ -128,8 +116,8 @@ class ListStoreTest {
     fun `given remote item ids, when save list fetched, then items are persisted`() = runTest {
         store.saveListFetched(testListDescriptor, listOf(10L, 20L, 30L), canLoadMore = false)
 
-        val listModel = listSqlUtils.getList(testListDescriptor)!!
-        val items = listItemSqlUtils.getListItems(listModel.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items).hasSize(3)
         assertThat(items.map { it.remoteItemId }).containsExactly(10L, 20L, 30L)
     }
@@ -138,8 +126,8 @@ class ListStoreTest {
     fun `given empty list, when save list fetched, then no items are persisted`() = runTest {
         store.saveListFetched(testListDescriptor, emptyList(), canLoadMore = false)
 
-        val listModel = listSqlUtils.getList(testListDescriptor)!!
-        val items = listItemSqlUtils.getListItems(listModel.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items).isEmpty()
     }
     // endregion
@@ -155,8 +143,8 @@ class ListStoreTest {
 
         store.onAction(ListActionBuilder.newFetchedListItemsAction(payload))
 
-        val listModel = listSqlUtils.getList(testListDescriptor)!!
-        val items = listItemSqlUtils.getListItems(listModel.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items.map { it.remoteItemId }).containsExactly(1L, 2L, 3L)
     }
 
@@ -199,8 +187,8 @@ class ListStoreTest {
 
         store.onAction(ListActionBuilder.newFetchedListItemsAction(payload))
 
-        val listModel = listSqlUtils.getList(testListDescriptor)!!
-        val items = listItemSqlUtils.getListItems(listModel.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items.map { it.remoteItemId }).containsExactly(100L, 200L, 300L)
     }
     // endregion
@@ -217,8 +205,8 @@ class ListStoreTest {
 
         store.onAction(ListActionBuilder.newFetchedListItemsAction(payload))
 
-        val listModel = listSqlUtils.getList(testListDescriptor)!!
-        val items = listItemSqlUtils.getListItems(listModel.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)!!
+        val items = databaseRule.db.listDao().getListItems(listModel.id)
         assertThat(items.map { it.remoteItemId }).containsExactly(1L, 2L, 3L, 4L)
     }
     // endregion
@@ -250,8 +238,8 @@ class ListStoreTest {
 
         store.onAction(ListActionBuilder.newFetchedListItemsAction(payload))
 
-        val listModel = listSqlUtils.getList(testListDescriptor)
-        val items = listItemSqlUtils.getListItems(listModel!!.id)
+        val listModel = databaseRule.db.listDao().getList(testListDescriptor)
+        val items = databaseRule.db.listDao().getListItems(listModel!!.id)
         assertThat(items).isEmpty()
     }
     // endregion

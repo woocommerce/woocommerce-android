@@ -11,6 +11,8 @@ import androidx.room.migration.AutoMigrationSpec
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import org.wordpress.android.fluxc.model.ThemeModel
+import org.wordpress.android.fluxc.model.list.ListItemModel
+import org.wordpress.android.fluxc.model.list.ListModel
 import org.wordpress.android.fluxc.model.plugin.SitePluginModel
 import org.wordpress.android.fluxc.persistence.FeatureFlagConfigDao.FeatureFlag
 import org.wordpress.android.fluxc.persistence.blaze.BlazeCampaignsDao
@@ -25,6 +27,7 @@ import org.wordpress.android.fluxc.persistence.converters.AppVersionTargetsConve
 import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
+import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
@@ -33,7 +36,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
 @Database(
-        version = 33,
+        version = 34,
         entities = [
             FeatureFlag::class,
             DomainEntity::class,
@@ -46,6 +49,8 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             WhatsNewAnnouncementEntity::class,
             WhatsNewAnnouncementFeatureEntity::class,
             SitePluginModel::class,
+            ListModel::class,
+            ListItemModel::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -63,6 +68,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             AutoMigration(from = 30, to = 31),
             AutoMigration(from = 31, to = 32),
             AutoMigration(from = 32, to = 33),
+            AutoMigration(from = 33, to = 34),
         ]
 )
 @TypeConverters(
@@ -83,6 +89,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     abstract fun blazeTargetingDao(): BlazeTargetingDao
 
     abstract fun blazeObjectivesDao(): BlazeObjectivesDao
+
+    internal abstract fun listDao(): ListDao
 
     internal abstract fun themeDao(): ThemeDao
 

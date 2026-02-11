@@ -5,7 +5,6 @@ import androidx.lifecycle.LiveData
 import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import androidx.paging.PagedList.BoundaryCallback
-import com.yarolegovich.wellsql.WellSql
 import kotlinx.coroutines.runBlocking
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -24,8 +23,7 @@ import org.wordpress.android.fluxc.model.list.PagedListFactory
 import org.wordpress.android.fluxc.model.list.PagedListWrapper
 import org.wordpress.android.fluxc.model.list.datasource.InternalPagedListDataSource
 import org.wordpress.android.fluxc.model.list.datasource.ListItemDataSourceInterface
-import org.wordpress.android.fluxc.persistence.ListItemSqlUtils
-import org.wordpress.android.fluxc.persistence.ListSqlUtils
+import org.wordpress.android.fluxc.persistence.dao.ListDao
 import org.wordpress.android.fluxc.store.ListStore.OnListChanged.CauseOfListChange
 import org.wordpress.android.fluxc.tools.CoroutineEngine
 import org.wordpress.android.util.AppLog
@@ -41,9 +39,8 @@ import kotlin.coroutines.CoroutineContext
  * responsibility of mutation to the Store but also makes it much easier to use the exposed data.
  */
 @Singleton
-class ListStore @Inject constructor(
-    private val listSqlUtils: ListSqlUtils,
-    private val listItemSqlUtils: ListItemSqlUtils,
+class ListStore @Inject internal constructor(
+    private val listDao: ListDao,
     private val coroutineContext: CoroutineContext,
     private val coroutineEngine: CoroutineEngine,
     dispatcher: Dispatcher
@@ -164,9 +161,9 @@ class ListStore @Inject constructor(
      * A helper function that returns the list items for the given [ListDescriptor].
      */
     private suspend fun getListItems(listDescriptor: ListDescriptor): List<Long> {
-        val listModel = listSqlUtils.getList(listDescriptor)
+        val listModel = listDao.getList(listDescriptor)
         return if (listModel != null) {
-            listItemSqlUtils.getListItems(listModel.id).map { it.remoteItemId }
+            listDao.getListItems(listModel.id).map { it.remoteItemId }
         } else emptyList()
     }
 
@@ -192,13 +189,10 @@ class ListStore @Inject constructor(
         }
 
         val newState = if (loadMore) ListState.LOADING_MORE else ListState.FETCHING_FIRST_PAGE
-        listSqlUtils.insertOrUpdateList(listDescriptor, newState)
+        val listModel = listDao.insertOrUpdateList(listDescriptor, newState)
         handleListStateChange(listDescriptor, newState)
 
-        val listModel = requireNotNull(listSqlUtils.getList(listDescriptor)) {
-            "The `ListModel` can never be `null` here since either a new list is inserted or existing one updated"
-        }
-        val offset = if (loadMore) listItemSqlUtils.getListItemsCount(listModel.id) else 0L
+        val offset = if (loadMore) listDao.getListItemsCount(listModel.id) else 0L
         fetchList(offset)
     }
 
@@ -226,29 +220,13 @@ class ListStore @Inject constructor(
             payload.canLoadMore -> ListState.CAN_LOAD_MORE
             else -> ListState.FETCHED
         }
-        listSqlUtils.insertOrUpdateList(payload.listDescriptor, newState)
+        val listModel = listDao.insertOrUpdateList(payload.listDescriptor, newState)
 
         if (!payload.isError) {
-            val db = WellSql.giveMeWritableDb()
-            db.beginTransaction()
-            try {
-                if (!payload.loadedMore) {
-                    deleteListItems(payload.listDescriptor)
-                }
-                val listModel = requireNotNull(listSqlUtils.getList(payload.listDescriptor)) {
-                    "The `ListModel` can never be `null` here since either a new list is inserted or existing one " +
-                            "updated"
-                }
-                listItemSqlUtils.insertItemList(payload.remoteItemIds.map { remoteItemId ->
-                    val listItemModel = ListItemModel()
-                    listItemModel.listId = listModel.id
-                    listItemModel.remoteItemId = remoteItemId
-                    return@map listItemModel
-                })
-                db.setTransactionSuccessful()
-            } finally {
-                db.endTransaction()
+            val listItems = payload.remoteItemIds.map { remoteItemId ->
+                ListItemModel(listModel.id, remoteItemId)
             }
+            listDao.deleteAndInsertItems(listModel.id, !payload.loadedMore, listItems)
         }
         val causeOfChange = if (payload.isError) {
             CauseOfListChange.ERROR
@@ -265,21 +243,12 @@ class ListStore @Inject constructor(
         canLoadMore: Boolean
     ) {
         val newState = if (canLoadMore) ListState.CAN_LOAD_MORE else ListState.FETCHED
-
-        listSqlUtils.insertOrUpdateList(listDescriptor, newState)
-
-        val listModel = requireNotNull(listSqlUtils.getList(listDescriptor)) {
-            "The `ListModel` can never be `null` here since either a new list is inserted or existing one " +
-                    "updated"
-        }
+        val listModel = listDao.insertOrUpdateList(listDescriptor, newState)
 
         val listItems = remoteItemIds.map { remoteItemId ->
-            val listItemModel = ListItemModel()
-            listItemModel.listId = listModel.id
-            listItemModel.remoteItemId = remoteItemId
-            listItemModel
+            ListItemModel(listModel.id, remoteItemId)
         }
-        listItemSqlUtils.insertItemList(listItems)
+        listDao.insertItems(listItems)
         emitChange(OnListRequiresRefresh(listDescriptor.typeIdentifier))
     }
 
@@ -308,19 +277,10 @@ class ListStore @Inject constructor(
     }
 
     /**
-     * Deletes all the items for the given [ListDescriptor].
-     */
-    private suspend fun deleteListItems(listDescriptor: ListDescriptor) {
-        listSqlUtils.getList(listDescriptor)?.let {
-            listItemSqlUtils.deleteItems(it.id)
-        }
-    }
-
-    /**
      * A helper function that returns the [ListState] for the given [ListDescriptor].
      */
     suspend fun getListState(listDescriptor: ListDescriptor): ListState {
-        val listModel = listSqlUtils.getList(listDescriptor)
+        val listModel = listDao.getList(listDescriptor)
         val currentState = listModel?.let {
             requireNotNull(ListState.entries.firstOrNull { it.value == listModel.stateDbValue }) {
                 "The stateDbValue of the ListModel didn't match any of the `ListState`s. This likely happened " +
