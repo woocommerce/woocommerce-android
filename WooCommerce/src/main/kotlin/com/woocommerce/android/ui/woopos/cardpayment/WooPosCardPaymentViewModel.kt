@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -56,7 +57,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
-    private var isTTPPaymentInProgress: Boolean = false
+    private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
 
     init {
         observeCardReaderStatus()
