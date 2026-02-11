@@ -482,7 +482,9 @@ class MoreMenuViewModel @Inject constructor(
     private fun checkFeaturesAvailability(): Flow<Map<MoreMenuItemButton.Type, MoreMenuItemButton.State>> {
         val initialState = MoreMenuItemButton.Type.entries.associateWith {
             MoreMenuItemButton.State.Loading
-        }.toMutableMap()
+        }.toMutableMap().apply {
+            this[MoreMenuItemButton.Type.Bookings] = MoreMenuItemButton.State.Hidden
+        }
 
         return listOf(
             bookingsVisibilityFlow.map { isVisible ->
