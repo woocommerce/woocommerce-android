@@ -391,13 +391,13 @@ private fun EmptyListView(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = when (selectedTab) {
-                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
-                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
-                BookingListTab.All -> if (areFiltersActive) {
-                    stringResource(R.string.bookings_empty_state_title_default)
-                } else {
-                    stringResource(R.string.bookings_empty_state_title_all)
+            text = if (areFiltersActive) {
+                stringResource(R.string.bookings_empty_state_title_default)
+            } else {
+                when (selectedTab) {
+                    BookingListTab.Today -> stringResource(R.string.bookings_empty_state_title_today)
+                    BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_title_upcoming)
+                    BookingListTab.All -> stringResource(R.string.bookings_empty_state_title_all)
                 }
             },
             style = MaterialTheme.typography.titleLarge,
@@ -407,15 +407,13 @@ private fun EmptyListView(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = when (selectedTab) {
-                BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
-                BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
-                else -> {
-                    if (areFiltersActive) {
-                        stringResource(R.string.bookings_filtered_empty_state_description)
-                    } else {
-                        stringResource(R.string.bookings_empty_state_description_all)
-                    }
+            text = if (areFiltersActive) {
+                stringResource(R.string.bookings_filtered_empty_state_description)
+            } else {
+                when (selectedTab) {
+                    BookingListTab.Today -> stringResource(R.string.bookings_empty_state_description_today_v2)
+                    BookingListTab.Upcoming -> stringResource(R.string.bookings_empty_state_description_upcoming_v2)
+                    BookingListTab.All -> stringResource(R.string.bookings_empty_state_description_all)
                 }
             },
             style = MaterialTheme.typography.titleMedium,
