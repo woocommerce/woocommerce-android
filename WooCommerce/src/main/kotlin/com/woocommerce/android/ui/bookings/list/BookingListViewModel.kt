@@ -116,7 +116,6 @@ class BookingListViewModel @Inject constructor(
     ) { tab, sort, filters ->
         BookingListControlsState(
             selectedSortOption = sort,
-            isFilterButtonVisible = tab == BookingListTab.All,
             enabledFiltersCount = filters.enabledFiltersCount,
             onSortClick = ::onSortClicked,
             onFilterClick = ::onFilterClicked,
