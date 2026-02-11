@@ -16,13 +16,23 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
     private val ciabSiteGateKeeper = CIABSiteGateKeeper(selectedSite)
 
     @Test
-    fun `given current site is CIAB, when checking feature support, then feature is unsupported`() {
+    fun `given current site is CIAB, when checking POS support, then feature is supported`() {
         val site = createSite(isCIAB = true)
         given(selectedSite.getOrNull()).willReturn(site)
 
-        CIABAffectedFeature.entries.forEach {
-            assertFalse(ciabSiteGateKeeper.isFeatureSupported(it))
-        }
+        assertTrue(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.POS))
+    }
+
+    @Test
+    fun `given current site is CIAB, when checking non POS feature support, then feature is unsupported`() {
+        val site = createSite(isCIAB = true)
+        given(selectedSite.getOrNull()).willReturn(site)
+
+        CIABAffectedFeature.entries
+            .filterNot { it == CIABAffectedFeature.POS }
+            .forEach {
+                assertFalse(ciabSiteGateKeeper.isFeatureSupported(it))
+            }
     }
 
     @Test
