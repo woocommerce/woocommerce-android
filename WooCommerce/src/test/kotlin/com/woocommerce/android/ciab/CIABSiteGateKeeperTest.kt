@@ -16,13 +16,20 @@ class CIABSiteGateKeeperTest : BaseUnitTest() {
     private val ciabSiteGateKeeper = CIABSiteGateKeeper(selectedSite)
 
     @Test
-    fun `given current site is CIAB, when checking feature support, then feature is unsupported`() {
+    fun `given current site is CIAB, when checking non-WooPayments feature support, then feature is unsupported`() {
         val site = createSite(isCIAB = true)
         given(selectedSite.getOrNull()).willReturn(site)
 
-        CIABAffectedFeature.entries.forEach {
-            assertFalse(ciabSiteGateKeeper.isFeatureSupported(it))
-        }
+        CIABAffectedFeature.entries
+            .filter { it != CIABAffectedFeature.WooPayments }
+            .forEach {
+                assertFalse(ciabSiteGateKeeper.isFeatureSupported(it))
+            }
+    }
+
+    @Test
+    fun `given current site is CIAB, when checking WooPayments support, then feature is supported`() {
+        assertTrue(ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments))
     }
 
     @Test
