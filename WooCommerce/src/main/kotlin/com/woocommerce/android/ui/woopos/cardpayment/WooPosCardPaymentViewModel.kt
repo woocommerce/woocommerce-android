@@ -10,6 +10,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
@@ -159,7 +160,12 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
                     CardReaderPaymentState.ReFetchingOrder -> Unit
 
-                    else -> Unit
+                    is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
+                    is CardReaderPaymentState.PrintingReceipt,
+                    CardReaderPaymentState.SharingReceipt -> {
+                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                    }
                 }
             }
         }
