@@ -48,7 +48,8 @@ class LogEntry(
 
             val logDate = formatter.parse(parts[0] + " " + parts[1])
                 ?: Date()
-            val tag = WooLog.T.valueOf(parts[2])
+            val tagName = migrateDeprecatedTagNames(parts[2])
+            val tag = WooLog.T.valueOf(tagName)
             val level = WooLog.LogLevel.valueOf(parts[3])
 
             val text = log.substringAfter("] ").takeIf { it.isNotEmpty() }?.trim()
@@ -59,6 +60,14 @@ class LogEntry(
                 text = text,
                 logDate = logDate
             )
+        }
+
+        private val deprecatedTagNames = mapOf(
+            "NOTIFS" to WooLog.T.NOTIFICATIONS.name
+        )
+
+        private fun migrateDeprecatedTagNames(tagName: String): String {
+            return deprecatedTagNames[tagName] ?: tagName
         }
     }
 }
