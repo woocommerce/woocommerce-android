@@ -42,8 +42,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
+import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -74,9 +76,25 @@ val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 @Composable
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    backStackEntry: NavBackStackEntry,
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { onNavigationEvent(it) }
+    }
+
+    val cashPaymentResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_CASH_PAYMENT_SUCCESS_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(cashPaymentResult.value) {
+        if (cashPaymentResult.value) {
+            viewModel.onRefresh()
+            backStackEntry.savedStateHandle[BOOKING_CASH_PAYMENT_SUCCESS_KEY] = false
+        }
+    }
 
     WooPosBookingsScreen(
         state = state,
@@ -622,6 +640,7 @@ private fun sampleBookingDetails(
     number: String = "#014"
 ) = WooPosBookingsState.BookingDetailsViewState(
     id = id,
+    orderId = id * 10,
     number = number,
     status = WooPosBookingStatus(text = "Paid", colorKey = WooPosBookingStatusColorKey.COMPLETED),
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(

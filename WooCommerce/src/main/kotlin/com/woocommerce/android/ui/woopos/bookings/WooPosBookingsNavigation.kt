@@ -40,9 +40,10 @@ fun NavGraphBuilder.bookingsScreen(
                 targetOffsetX = { fullWidth -> fullWidth },
             )
         },
-    ) {
+    ) { backStackEntry ->
         WooPosBookingsScreen(
-            onNavigationEvent = onNavigationEvent
+            onNavigationEvent = onNavigationEvent,
+            backStackEntry = backStackEntry,
         )
     }
 }
