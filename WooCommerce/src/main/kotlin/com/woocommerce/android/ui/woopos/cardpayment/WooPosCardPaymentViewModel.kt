@@ -57,6 +57,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
+    private var analyticsTrackerJob: Job? = null
     private var isTTPPaymentInProgress: Boolean = false
 
     init {
@@ -163,7 +164,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 }
             }
         }
-        viewModelScope.launch { analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = viewModelScope.launch {
+            analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState)
+        }
     }
 
     private fun listenToControllerEvents() {
@@ -295,6 +299,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
         paymentListenerJob = null
         controllerEventJob?.cancel()
         controllerEventJob = null
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
     }
