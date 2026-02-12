@@ -329,8 +329,8 @@
             android:id="@+id/action_moreMenu_to_bookings"
             app:destination="@id/bookings">
             <argument
-                android:name="launchedFromMoreMenu"
-                android:defaultValue="true"
+                android:name="showBottomNavigation"
+                android:defaultValue="false"
                 app:argType="boolean" />
         </action>
     </fragment>

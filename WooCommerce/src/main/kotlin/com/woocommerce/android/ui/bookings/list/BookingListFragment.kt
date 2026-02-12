@@ -56,13 +56,13 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
             ).toBundle()
         )
     override val activityAppBarStatus: AppBarStatus
-        get() = if (navArgs.launchedFromMoreMenu) {
-            AppBarStatus.Visible(hasShadow = false, hasDivider = true)
-        } else {
+        get() = if (navArgs.showBottomNavigation) {
             AppBarStatus.Hidden
+        } else {
+            AppBarStatus.Visible(hasShadow = false, hasDivider = true)
         }
     override val shouldShowBottomNavigation: Boolean
-        get() = !navArgs.launchedFromMoreMenu
+        get() = navArgs.showBottomNavigation
 
     private val viewModel: BookingListViewModel by viewModels()
     private val navArgs: BookingsArgs by navArgs()
@@ -155,7 +155,7 @@ class BookingListFragment : TopLevelFragment(), TabletLayoutSetupHelper.Screen {
 
     private fun handleBottomNavigationVisibility() {
         viewModel.bottomNavigationVisible.observe(viewLifecycleOwner) { isVisible ->
-            if (navArgs.launchedFromMoreMenu || !isVisible) {
+            if (!navArgs.showBottomNavigation || !isVisible) {
                 (activity as? MainActivity)?.hideBottomNav()
             } else {
                 (activity as? MainActivity)?.showBottomNav()
