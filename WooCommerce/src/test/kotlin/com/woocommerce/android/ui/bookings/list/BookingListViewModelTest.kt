@@ -242,8 +242,11 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(bookingListHandler).loadBookings(
             searchQuery = eq(null),
             filters = eq(
-                BookingFilters().copy(
-                    dateRange = with(filtersBuilder) { BookingListTab.Upcoming.asDateRangeFilter() }
+                BookingFilters(
+                    dateRange = with(filtersBuilder) { BookingListTab.Upcoming.asDateRangeFilter() },
+                    excludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses(
+                        setOf(BookingEntity.Status.Cancelled, BookingEntity.Status.Complete)
+                    )
                 )
             ),
             sortBy = any()
