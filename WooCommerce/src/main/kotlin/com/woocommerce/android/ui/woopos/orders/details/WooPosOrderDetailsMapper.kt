@@ -33,7 +33,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
         val lineItems = buildLineItems(order)
         val refundInfo = refundInfoBuilder.buildRefundInfo(order, historicalRefundsResult)
         val breakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
-        val actions = orderActionsProvider.getAvailableActions(order, historicalRefundsResult)
+        val actions = orderActionsProvider.getAvailableActions(order)
 
         WooPosOrdersState.OrderDetailsViewState.Computed.Details(
             id = order.id,

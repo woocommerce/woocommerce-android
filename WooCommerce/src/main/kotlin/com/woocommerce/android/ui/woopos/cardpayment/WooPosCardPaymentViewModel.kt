@@ -10,8 +10,10 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnect
 import com.woocommerce.android.ui.payments.cardreader.onboarding.CardReaderFlowParam.PaymentOrRefund
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
+import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -44,9 +46,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
-    val source: CardPaymentSource = CardPaymentSource.valueOf(
-        savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] ?: CardPaymentSource.CHECKOUT.name
-    )
+    private val source: CardPaymentSource = (savedState[CARD_PAYMENT_ROUTE_SOURCE_KEY] as? String)
+        ?.let { runCatching { CardPaymentSource.valueOf(it) }.getOrNull() }
+        ?: CardPaymentSource.CHECKOUT
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
@@ -57,8 +59,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var cardReaderPaymentController: CardReaderPaymentController? = null
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
+    private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
     private var analyticsTrackerJob: Job? = null
-    private var isTTPPaymentInProgress: Boolean = false
 
     init {
         observeCardReaderStatus()
@@ -160,7 +162,12 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
                     CardReaderPaymentState.ReFetchingOrder -> Unit
 
-                    else -> Unit
+                    is CardReaderPaymentOrRefundState.CardReaderInteracRefundState,
+                    is CardReaderPaymentState.PaymentFailed.BuiltInReaderFailedPayment,
+                    is CardReaderPaymentState.PrintingReceipt,
+                    CardReaderPaymentState.SharingReceipt -> {
+                        throw IllegalArgumentException("Payment state: $paymentState not compatible with POS")
+                    }
                 }
             }
         }
@@ -239,10 +246,15 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onRetryClicked() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
-        if (paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment &&
-            paymentState.onRetry != null
-        ) {
-            paymentState.onRetry!!()
+        check(paymentState != null) {
+            "Retry clicked but payment controller is null"
+        }
+        check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+            "Retry clicked but payment state is not PaymentFailed"
+        }
+        val onRetry = paymentState.onRetry
+        if (onRetry != null) {
+            onRetry()
         } else {
             collectPayment()
         }
@@ -306,6 +318,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     override fun onCleared() {
-        cardReaderPaymentController?.stop()
+        cancelPayment()
     }
 }

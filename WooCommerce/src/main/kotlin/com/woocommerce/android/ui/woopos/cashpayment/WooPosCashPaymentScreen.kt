@@ -55,15 +55,8 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onNavigationEvent(WooPosNavigationEvent.GoBack)
     }
 
-    val onOrderComplete = {
-        when (viewModel.source) {
-            CashPaymentSource.BOOKINGS -> onNavigationEvent(
-                WooPosNavigationEvent.GoBackWithResult(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
-            )
-            CashPaymentSource.CHECKOUT -> onNavigationEvent(
-                WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
-            )
-        }
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { onNavigationEvent(it) }
     }
 
     WooPosCashPaymentScreen(
@@ -71,7 +64,6 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
         onAmountChanged = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.AmountChanged(it)) },
         onCompleteOrderClicked = { viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked) },
         onBackClicked = onBackClicked,
-        onOrderComplete = onOrderComplete,
     )
     BackHandler {
         onBackClicked()
@@ -84,7 +76,6 @@ fun WooPosCashPaymentScreen(
     onAmountChanged: (BigDecimal?) -> Unit,
     onCompleteOrderClicked: () -> Unit,
     onBackClicked: () -> Unit,
-    onOrderComplete: () -> Unit,
 ) {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -103,10 +94,8 @@ fun WooPosCashPaymentScreen(
                 )
             }
 
-            WooPosCashPaymentState.Complete -> onOrderComplete()
-            WooPosCashPaymentState.Initiating -> {
-                // show nothing
-            }
+            WooPosCashPaymentState.Complete,
+            WooPosCashPaymentState.Initiating -> Unit
         }
     }
 }
@@ -237,7 +226,6 @@ fun WooPosTotalsPaymentCashScreenPreview() {
             onAmountChanged = {},
             onCompleteOrderClicked = {},
             onBackClicked = {},
-            onOrderComplete = {},
         )
     }
 }
@@ -266,7 +254,6 @@ fun WooPosTotalsPaymentCashWithLabelScreenPreview() {
             onAmountChanged = {},
             onCompleteOrderClicked = {},
             onBackClicked = {},
-            onOrderComplete = {},
         )
     }
 }
@@ -295,7 +282,6 @@ fun WooPosTotalsPaymentCashWithErrorScreenPreview() {
             onAmountChanged = {},
             onCompleteOrderClicked = {},
             onBackClicked = {},
-            onOrderComplete = {},
         )
     }
 }
