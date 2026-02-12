@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
+import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
@@ -607,6 +608,47 @@ class WooPosBookingsViewModelTest {
             viewModel.navigationEvent.test {
                 // WHEN
                 viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCashClicked)
+
+                // THEN
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `given selected booking, when PayByCardClicked, then navigation event emitted with correct orderId and BOOKINGS source`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCardClicked)
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenCardPayment::class.java)
+                val cardEvent = event as WooPosNavigationEvent.OpenCardPayment
+                assertThat(cardEvent.orderId).isEqualTo(10L)
+                assertThat(cardEvent.source).isEqualTo(CardPaymentSource.BOOKINGS)
+            }
+        }
+
+    @Test
+    fun `given no selected booking, when PayByCardClicked, then no navigation event emitted`() =
+        runTest {
+            // GIVEN
+            whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .thenReturn(Result.failure(RuntimeException("error")))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCardClicked)
 
                 // THEN
                 expectNoEvents()

@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.root.navigation
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
+import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
@@ -26,6 +27,9 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenHomeFromSplash -> navigateToHomeScreen()
         is WooPosNavigationEvent.OpenCashPayment -> navigateToCashPaymentScreen(event.orderId, event.source)
+
+        is WooPosNavigationEvent.OpenCardPayment ->
+            navigateToCardPaymentScreen(event.orderId, event.source)
 
         is WooPosNavigationEvent.GoBackWithResult -> {
             previousBackStackEntry
