@@ -31,7 +31,10 @@ import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.withIndex
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption.ExcludedBookingStatuses
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.Status.Cancelled
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity.Status.Complete
 import javax.inject.Inject
 
 @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -82,15 +85,9 @@ class BookingListViewModel @Inject constructor(
         bookingListHandler.bookingsFlow,
         loadingState,
         selectedBookingIdFlow,
-        selectedTab,
-    ) { bookings, loadingState, selectedBookingId, tab ->
-        val filtered = if (tab != BookingListTab.All) {
-            bookings.filter { it.status != BookingEntity.Status.Cancelled }
-        } else {
-            bookings
-        }
-        openFirstLoadedBookingOnTablet(filtered)
-        val listItems = with(bookingMapper) { filtered.map { it.toListItem() } }
+    ) { bookings, loadingState, selectedBookingId ->
+        openFirstLoadedBookingOnTablet(bookings)
+        val listItems = with(bookingMapper) { bookings.map { it.toListItem() } }
         BookingListContentState(
             bookings = listItems,
             loadingState = loadingState,
@@ -292,7 +289,10 @@ class BookingListViewModel @Inject constructor(
     private fun FetchParams.prepareFilters(): BookingFilters = with(filtersBuilder) {
         when (selectedTab) {
             BookingListTab.Today,
-            BookingListTab.Upcoming -> BookingFilters(dateRange = selectedTab.asDateRangeFilter())
+            BookingListTab.Upcoming -> BookingFilters(
+                dateRange = selectedTab.asDateRangeFilter(),
+                excludedBookingStatuses = ExcludedBookingStatuses(setOf(Cancelled, Complete))
+            )
 
             BookingListTab.All -> filters
         }
