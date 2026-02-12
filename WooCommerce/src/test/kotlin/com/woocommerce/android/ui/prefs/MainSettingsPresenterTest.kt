@@ -14,8 +14,11 @@ import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
@@ -107,4 +110,48 @@ class MainSettingsPresenterTest : BaseUnitTest() {
 
         verify(view).handleJetpackInstallOption(supportsJetpackInstallation = false)
     }
+
+    @Test
+    fun `given push notifications option should be shown, when setup is called, then show option`() = testBlocking {
+        val shouldShowPushNotificationOption = MutableStateFlow(true)
+        setup {
+            whenever(shouldShowEnablePushNotificationsUi()).thenReturn(shouldShowPushNotificationOption)
+        }
+
+        presenter.setupEnablePushNotificationsOption()
+        advanceUntilIdle()
+
+        verify(view).setEnablePushNotificationsOptionVisible(true)
+    }
+
+    @Test
+    fun `given push notifications option should be hidden, when setup is called, then hide option`() = testBlocking {
+        val shouldShowPushNotificationOption = MutableStateFlow(false)
+        setup {
+            whenever(shouldShowEnablePushNotificationsUi()).thenReturn(shouldShowPushNotificationOption)
+        }
+
+        presenter.setupEnablePushNotificationsOption()
+        advanceUntilIdle()
+
+        verify(view).setEnablePushNotificationsOptionVisible(false)
+    }
+
+    @Test
+    fun `given push notifications option visibility changes, when setup is called, then update option reactively`() =
+        testBlocking {
+            val shouldShowPushNotificationOption = MutableStateFlow(true)
+            setup {
+                whenever(shouldShowEnablePushNotificationsUi()).thenReturn(shouldShowPushNotificationOption)
+            }
+
+            presenter.setupEnablePushNotificationsOption()
+            advanceUntilIdle()
+
+            shouldShowPushNotificationOption.value = false
+            advanceUntilIdle()
+
+            verify(view, times(1)).setEnablePushNotificationsOptionVisible(true)
+            verify(view, times(1)).setEnablePushNotificationsOptionVisible(false)
+        }
 }
