@@ -8,11 +8,11 @@ class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedS
     fun isFeatureSupported(
         feature: CIABAffectedFeature
     ): Boolean {
-        if (!isCurrentSiteCIAB()) return true
-
         return when (feature) {
-            CIABAffectedFeature.POS -> true
-            else -> false
+            CIABAffectedFeature.POS,
+            CIABAffectedFeature.WooPayments -> true
+
+            else -> !isCurrentSiteCIAB()
         }
     }
 

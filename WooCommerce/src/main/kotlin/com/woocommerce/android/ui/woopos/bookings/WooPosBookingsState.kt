@@ -59,6 +59,7 @@ sealed class WooPosBookingsState {
     @Immutable
     data class BookingDetailsViewState(
         val id: Long,
+        val orderId: Long,
         val number: String,
         val status: WooPosBookingStatus,
         val actionsState: BookingActionsState,
