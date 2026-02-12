@@ -1,5 +1,6 @@
 package com.woocommerce.android.util.logs
 
+import android.os.StatFs
 import com.woocommerce.android.util.CoroutineDispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -18,7 +19,10 @@ import java.util.Locale
 class LogFileWriter(
     private val logsDirectory: File,
     private val maxLogFiles: Int,
-    private val dispatchers: CoroutineDispatchers
+    private val dispatchers: CoroutineDispatchers,
+    private val availableDiskBytes: () -> Long = {
+        runCatching { StatFs(logsDirectory.absolutePath).availableBytes }.getOrDefault(Long.MAX_VALUE)
+    }
 ) {
     private var lastUsedFile: File? = null
     private val dateFormatter
@@ -27,6 +31,19 @@ class LogFileWriter(
 
     suspend fun writeLogs(logs: String) {
         val logFile = getLogFile()
+
+        val exceedsMaxSize = withContext(dispatchers.io) {
+            logFile.length() >= MAX_LOG_FILE_SIZE_BYTES
+        }
+
+        if (exceedsMaxSize) {
+            return
+        }
+
+        if (!hasEnoughDiskSpace()) {
+            deleteOldestLogFiles()
+            return
+        }
 
         mutex.withLock {
             withContext(dispatchers.io) {
@@ -103,8 +120,30 @@ class LogFileWriter(
         }
     }
 
+    private suspend fun hasEnoughDiskSpace(): Boolean {
+        return withContext(dispatchers.io) {
+            availableDiskBytes() >= MIN_DISK_SPACE_BYTES
+        }
+    }
+
+    private suspend fun deleteOldestLogFiles() {
+        withContext(dispatchers.io) {
+            mutex.withLock {
+                val logFiles = logsDirectory
+                    .listFiles { file -> file.isFile && file.name.startsWith(LOG_FILE_NAME_PREFIX) }
+                    ?.sortedByDescending { it.lastModified() }
+                    ?: return@withLock
+
+                logFiles.drop(1).forEach { it.delete() }
+            }
+        }
+    }
+
     companion object {
         const val LOG_FILE_NAME_PREFIX = "log_"
         const val DATE_FORMAT_PATTERN = "yyyy-MM-dd"
+
+        private const val MAX_LOG_FILE_SIZE_BYTES = 2L * 1024 * 1024 // 2 MB per file
+        private const val MIN_DISK_SPACE_BYTES = 50L * 1024 * 1024 // 50 MB
     }
 }
