@@ -7,7 +7,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -95,13 +94,13 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onAttendanceStatusSelected called, then updateAttendanceStatus called`() = testBlocking {
+    fun `when onAttendanceToggle called, then updateAttendanceStatus called`() = testBlocking {
         // Given
         val viewModel = createViewModel()
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.Attended)
+        state.bookingUiState?.onAttendanceToggle()
 
         // Then
         verify(bookingsRepository, times(1)).updateAttendanceStatus(

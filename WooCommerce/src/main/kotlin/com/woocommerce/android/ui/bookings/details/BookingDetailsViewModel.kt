@@ -286,10 +286,12 @@ class BookingDetailsViewModel @Inject constructor(
             note = booking.note,
             isAttendanceStatusEditable = booking.isAttendanceStatusEditable,
             onCancelBooking = ::onCancelBooking,
-            onAttendanceStatusSelected = { attendanceStatus ->
-                if (attendanceStatus.toDataModel() != booking.attendanceStatus) {
-                    onAttendanceStatusSelected(bookingId, attendanceStatus)
+            onAttendanceToggle = {
+                val targetStatus = when (booking.attendanceStatus) {
+                    BookingEntity.AttendanceStatus.Attended -> BookingAttendanceStatus.Unattended
+                    else -> BookingAttendanceStatus.Attended
                 }
+                onAttendanceStatusSelected(bookingId, targetStatus)
             },
             onMarkAsPaid = { onMarkAsPaid(bookingId) },
             paymentUpdateStatus = paymentUpdateStatus,

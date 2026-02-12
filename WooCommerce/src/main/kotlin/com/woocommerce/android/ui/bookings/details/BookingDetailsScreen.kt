@@ -148,13 +148,7 @@ private fun BookingDetailsContent(
     BookingAppointmentDetails(
         model = booking.bookingsAppointmentDetails,
         onCancelBooking = onCancelBooking,
-        onAttendanceToggle = {
-            val targetStatus = when (booking.bookingSummary.attendanceStatus) {
-                BookingAttendanceStatus.Attended -> BookingAttendanceStatus.Unattended
-                else -> BookingAttendanceStatus.Attended
-            }
-            booking.onAttendanceStatusSelected(targetStatus)
-        },
+        onAttendanceToggle = booking.onAttendanceToggle,
         modifier = Modifier.fillMaxWidth()
     )
     BookingCustomerDetails(
