@@ -294,6 +294,72 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given US country, when phone is too short, then phone error is not null`() = testBlocking {
+        val address = Address.EMPTY.copy(
+            phone = "12345",
+            country = AmbiguousLocation.Raw("US").asLocation()
+        )
+        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result.editableAddress.phone.error).isNotEmpty()
+    }
+
+    @Test
+    fun `given US country, when phone has 10 digits, then phone error is null`() = testBlocking {
+        val address = Address.EMPTY.copy(
+            phone = "1234567890",
+            country = AmbiguousLocation.Raw("US").asLocation()
+        )
+        whenever(addressValidator.validateUSCustomsPhone("1234567890")).doReturn(null)
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result.editableAddress.phone.error).isNull()
+    }
+
+    @Test
+    fun `given non-US country, when phone has digits, then phone error is null`() = testBlocking {
+        val address = Address.EMPTY.copy(
+            phone = "12345",
+            country = AmbiguousLocation.Raw("AR").asLocation()
+        )
+        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
+        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
+        mockCountries(Result.success(countries))
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(emptyList())
+        Snapshot.withMutableSnapshot {
+            val savedState = createSavedStateHandle(address)
+            createViewModel(savedState)
+        }
+
+        advanceUntilIdle()
+
+        val result = sut.viewState.value
+
+        assertThat(result.editableAddress.phone.error).isNull()
+    }
+
+    @Test
     fun `when company is NOT empty, then company control is expanded`() = testBlocking {
         val company = "company"
         val address = Address.EMPTY.copy(
