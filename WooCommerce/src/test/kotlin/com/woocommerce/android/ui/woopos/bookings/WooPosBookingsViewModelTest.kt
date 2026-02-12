@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
@@ -9,6 +10,8 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.util.DateFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -21,6 +24,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -42,6 +48,30 @@ class WooPosBookingsViewModelTest {
 
     private val bookingListHandler: BookingListHandler = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
+    private val dateFormatter: DateFormatter = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
+            val quantity = invocation.arguments[0] as Int
+            val default = invocation.arguments[1] as Int
+            val one = invocation.arguments[3] as Int?
+            when (quantity) {
+                1 -> when (one) {
+                    R.string.booking_duration_second -> "1 second"
+                    R.string.booking_duration_minute -> "1 minute"
+                    R.string.booking_duration_hour -> "1 hour"
+                    R.string.booking_duration_day -> "1 day"
+                    else -> ""
+                }
+                else -> when (default) {
+                    R.string.booking_duration_seconds -> "$quantity seconds"
+                    R.string.booking_duration_minutes -> "$quantity minutes"
+                    R.string.booking_duration_hours -> "$quantity hours"
+                    R.string.booking_duration_days -> "$quantity days"
+                    else -> ""
+                }
+            }
+        }
+    }
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -76,12 +106,14 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(),
+            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider),
         )
     }
 
     @Before
     fun setUp() = runTest {
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Nov 14, 2023, 10:13 AM")
+        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn("10:13 AM")
         whenever(bookingListHandler.bookingsFlow).thenReturn(
             flowOf(listOf(booking(1), booking(2)))
         )
