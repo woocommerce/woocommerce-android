@@ -125,7 +125,7 @@ private fun AttendanceStatusTagUnattendedDarkPreview() {
 private fun AttendanceStatusTagCancelledPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.Cancelled,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             modifier = Modifier.padding(10.dp)
         )
