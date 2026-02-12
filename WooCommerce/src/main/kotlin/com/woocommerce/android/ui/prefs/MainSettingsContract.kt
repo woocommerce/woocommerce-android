@@ -26,7 +26,7 @@ interface MainSettingsContract {
         fun showDeviceAppNotificationSettings()
         fun showNotificationsSettingsScreen()
         fun showLatestAnnouncementOption(announcement: FeatureAnnouncement)
-        fun showEnablePushNotificationsOption()
+        fun setEnablePushNotificationsOptionVisible(isVisible: Boolean)
         fun handleJetpackInstallOption(supportsJetpackInstallation: Boolean)
         fun handleApplicationPasswordsSettings()
     }
