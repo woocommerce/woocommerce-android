@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 34,
-    "identityHash": "7cbfe532b79cedd20b76a009d0a8afd0",
+    "identityHash": "d16c4c4702c07120df89e0fb072c3827",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -548,7 +548,19 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue",
+            "unique": true,
+            "columnNames": [
+              "descriptorUniqueIdentifierDbValue",
+              "descriptorTypeIdentifierDbValue"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue` ON `${TABLE_NAME}` (`descriptorUniqueIdentifierDbValue`, `descriptorTypeIdentifierDbValue`)"
+          }
+        ]
       },
       {
         "tableName": "ListItemEntity",
@@ -591,7 +603,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7cbfe532b79cedd20b76a009d0a8afd0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd16c4c4702c07120df89e0fb072c3827')"
     ]
   }
 }

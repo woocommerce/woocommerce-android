@@ -22,12 +22,12 @@ internal abstract class ListDao {
         SELECT * FROM ListEntity
         WHERE descriptorUniqueIdentifierDbValue = :uniqueIdentifier
         AND descriptorTypeIdentifierDbValue = :typeIdentifier
-        LIMIT 1
         """
     )
     protected abstract suspend fun getList(uniqueIdentifier: Int, typeIdentifier: Int): ListModel?
 
-    suspend fun insertOrUpdateList(
+    @Transaction
+    open suspend fun insertOrUpdateList(
         descriptor: ListDescriptor,
         state: ListState,
         lastModified: String = DateTimeUtils.iso8601FromDate(Date())
