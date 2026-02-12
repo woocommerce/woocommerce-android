@@ -40,6 +40,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val priceFormat: WooPosFormatPrice,
     private val totalsRepository: WooPosTotalsRepository,
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -162,6 +163,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch { analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState) }
     }
 
     private fun listenToControllerEvents() {
@@ -283,6 +285,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onEmailReceiptClicked() {
         viewModelScope.launch {
+            analyticsTracker.trackEmailReceiptTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
         }
     }

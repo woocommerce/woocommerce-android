@@ -66,6 +66,7 @@ class WooPosCardPaymentViewModelTest {
     }
     private val priceFormat: WooPosFormatPrice = mock()
     private val totalsRepository: WooPosTotalsRepository = mock()
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
 
@@ -97,6 +98,7 @@ class WooPosCardPaymentViewModelTest {
             uiStringParser = uiStringParser,
             priceFormat = priceFormat,
             totalsRepository = totalsRepository,
+            analyticsTracker = analyticsTracker,
         )
     }
 
@@ -319,5 +321,24 @@ class WooPosCardPaymentViewModelTest {
 
         assertThat(viewModel.state.value)
             .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        verify(analyticsTracker).trackPaymentStates(any())
+    }
+
+    @Test
+    fun `when onEmailReceiptClicked, then trackEmailReceiptTapped called`() = runTest {
+        viewModel = createViewModel(orderId = 42L)
+        advanceUntilIdle()
+
+        viewModel.onEmailReceiptClicked()
+        advanceUntilIdle()
+
+        verify(analyticsTracker).trackEmailReceiptTapped()
     }
 }
