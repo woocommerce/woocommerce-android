@@ -253,13 +253,14 @@ class MainActivity :
         private fun updateAppBarAndBottomNav(f: Fragment) {
             if (f is DialogFragment) return
             lastFragment = WeakReference(f)
+            val shouldShowBottomNavigation = (f as? TopLevelFragment)?.shouldShowBottomNavigation ?: false
 
             when (val appBarStatus = (f as? BaseFragment)?.activityAppBarStatus ?: AppBarStatus.Visible()) {
                 is AppBarStatus.Visible -> {
                     showToolbar()
                     // re-expand the AppBar when returning to top level fragment,
                     // collapse it when entering a child fragment
-                    if (f is TopLevelFragment) {
+                    if (f is TopLevelFragment && shouldShowBottomNavigation) {
                         // Post this to the view handler to make sure shouldExpandToolbar returns the correct value
                         f.view?.post {
                             if (f.view != null) {
@@ -289,7 +290,7 @@ class MainActivity :
                 }
             }
 
-            if (f is TopLevelFragment) {
+            if (shouldShowBottomNavigation) {
                 showBottomNav()
             } else {
                 hideBottomNav()
