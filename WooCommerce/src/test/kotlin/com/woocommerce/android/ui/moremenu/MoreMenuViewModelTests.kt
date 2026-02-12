@@ -457,14 +457,18 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     }
 
     @Test
-    fun `given bookings is visible and not on tablet, when building state, then bookings button is not displayed`() =
+    fun `given bookings is visible, when switching to non tablet, then bookings button is not displayed`() =
         testBlocking {
             // GIVEN
-            setup()
-            viewModel.onWindowClassChanged(false)
+            setup {
+                whenever(observeBookingsVisibility.invoke()).thenReturn(flowOf(true))
+            }
+            viewModel.onWindowClassChanged(true)
 
             // WHEN
             val states = viewModel.moreMenuViewState.captureValues()
+            advanceUntilIdle()
+            viewModel.onWindowClassChanged(false)
             advanceUntilIdle()
 
             // THEN
