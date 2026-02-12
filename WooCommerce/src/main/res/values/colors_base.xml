@@ -127,6 +127,8 @@
     <color name="tag_bg_main">@color/woo_purple_0</color>
     <color name="tag_bg_pos">@color/woo_purple_5</color>
     <color name="tag_bg_booking_yellow">#FFE365</color>
+    <color name="tag_bg_booking_cancelled">#E1ECF8</color>
+    <color name="tag_text_booking_cancelled">#001758</color>
     <color name="tag_text_main">@color/color_primary</color>
     <color name="tag_text_pos">@color/woo_purple_60</color>
     <color name="tag_icon">@color/color_primary</color>
