@@ -1,6 +1,8 @@
 package org.wordpress.android.fluxc.di
 
 import android.content.Context
+import android.database.sqlite.SQLiteDiskIOException
+import android.util.Log
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -15,6 +17,7 @@ import org.wordpress.android.fluxc.persistence.dao.CouponsDao
 import org.wordpress.android.fluxc.persistence.dao.CustomerFromAnalyticsDao
 import org.wordpress.android.fluxc.persistence.dao.OrdersDao
 import org.wordpress.android.fluxc.persistence.dao.ShippingMethodDao
+import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,11 +35,30 @@ interface WCDatabaseModule {
             currencyPositionConverter: CurrencyPositionConverter,
             statsGranularityConverter: StatsGranularityConverter,
         ): WCAndroidDatabase {
-            return WCAndroidDatabase.buildDb(
-                context,
-                currencyPositionConverter,
-                statsGranularityConverter,
-            )
+            return try {
+                WCAndroidDatabase.buildDb(
+                    context,
+                    currencyPositionConverter,
+                    statsGranularityConverter,
+                )
+            } catch (e: SQLiteDiskIOException) {
+                Log.e(
+                    "WCDatabaseModule",
+                    "Database open failed due to disk I/O error, freeing space and retrying",
+                    e
+                )
+                clearLogFiles(context)
+                WCAndroidDatabase.buildDb(
+                    context,
+                    currencyPositionConverter,
+                    statsGranularityConverter,
+                )
+            }
+        }
+
+        private fun clearLogFiles(context: Context) {
+            val logsDir = File(context.filesDir, "logs")
+            logsDir.listFiles()?.forEach { it.delete() }
         }
 
         @Provides internal fun provideAddonsDao(database: WCAndroidDatabase): AddonsDao {
