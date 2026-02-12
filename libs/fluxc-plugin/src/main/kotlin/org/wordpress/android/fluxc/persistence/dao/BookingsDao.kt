@@ -23,7 +23,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
-            AND ((:excludedBookingStatusesSize = 0) OR status NOT IN (:excludedBookingStatuses))
+            AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
@@ -46,7 +46,6 @@ interface BookingsDao {
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         excludedBookingStatuses: List<String>,
-        excludedBookingStatusesSize: Int,
         productIds: List<Long>,
         productIdsSize: Int,
         order: BookingsOrderOption
@@ -82,7 +81,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
-            AND ((:excludedBookingStatusesSize = 0) OR status NOT IN (:excludedBookingStatuses))
+            AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             AND ((:keepIdsSize = 0) OR id NOT IN (:keepIds))
@@ -98,7 +97,6 @@ interface BookingsDao {
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
         excludedBookingStatuses: List<String>,
-        excludedBookingStatusesSize: Int,
         productIds: List<Long>,
         productIdsSize: Int,
         keepIds: List<Long>,
@@ -125,7 +123,6 @@ interface BookingsDao {
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
-            excludedBookingStatusesSize = excludedBookingStatusKeySet.size,
             productIds = productIds,
             productIdsSize = productIds.size,
             keepIds = keepIds,
@@ -172,7 +169,6 @@ interface BookingsDao {
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
             excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
-            excludedBookingStatusesSize = excludedBookingStatusKeySet.size,
             productIds = productIds,
             productIdsSize = productIds.size,
             order = order
