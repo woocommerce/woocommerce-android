@@ -448,32 +448,36 @@ private fun BookingNoteSection(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         WooPosCard(shadowType = ShadowType.Soft) {
-            Row(
-                modifier = Modifier.padding(WooPosSpacing.Medium.value),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_bookings_details_booking_note_title),
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.weight(1f)
-                )
-                WooPosOutlinedButtonSmall(
-                    text = stringResource(R.string.woopos_bookings_details_add_note),
-                    onClick = { onUIEvent(WooPosBookingsUIEvent.AddBookingNoteClicked) }
-                )
+            Column(modifier = Modifier.padding(WooPosSpacing.Medium.value)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_bookings_details_booking_note_title),
+                        style = WooPosTypography.BodyLarge,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
+                    WooPosOutlinedButtonSmall(
+                        text = stringResource(
+                            if (bookingNote.isNullOrBlank()) {
+                                R.string.woopos_bookings_details_add_note
+                            } else {
+                                R.string.woopos_bookings_details_edit_note
+                            }
+                        ),
+                        onClick = { onUIEvent(WooPosBookingsUIEvent.AddBookingNoteClicked) }
+                    )
+                }
+                bookingNote?.let {
+                    Spacer(Modifier.height(WooPosSpacing.Small.value))
+                    WooPosText(
+                        text = it,
+                        style = WooPosTypography.BodyMedium,
+                    )
+                }
             }
         }
 
         Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-        bookingNote?.let {
-            WooPosText(
-                text = it,
-                style = WooPosTypography.BodyMedium,
-            )
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
-        }
 
         WooPosText(
             text = stringResource(R.string.woopos_bookings_details_booking_note_hint),
