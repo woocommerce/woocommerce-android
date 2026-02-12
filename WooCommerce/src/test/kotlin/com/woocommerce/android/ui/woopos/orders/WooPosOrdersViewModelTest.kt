@@ -15,9 +15,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosGetRefundableItems
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundableItem
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -56,7 +54,6 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
-    private val getRefundableItems: WooPosGetRefundableItems = mock()
     private lateinit var orderItemMapper: WooPosOrderItemMapper
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
@@ -122,13 +119,12 @@ class WooPosOrdersViewModelTest {
         }
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
     }
 
     private fun setupMappers() {
         orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
         refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
-        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems).apply {
+        orderActionsProvider = WooPosOrderActionsProvider().apply {
             isPosRefundsEnabled = { true }
         }
         orderDetailsMapper = WooPosOrderDetailsMapper(
@@ -1234,25 +1230,13 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order with refundable items, when order details loaded, then Issue Refund action is available`() = runTest {
+    fun `given completed order, when order details loaded, then Issue Refund action is available`() = runTest {
         // GIVEN
-        val testOrder = order(1)
-        val refundableItem = WooPosRefundableItem(
-            orderItemId = 1L,
-            productId = 100L,
-            variationId = 0L,
-            name = "Test Product",
-            unitPrice = BigDecimal("10.00"),
-            unitTax = BigDecimal("1.00"),
-            formattedUnitPrice = "$10.00",
-            formattedUnitTax = "$1.00",
-            rowIndex = 0
-        )
+        val testOrder = order(1).copy(status = Order.Status.Completed)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
 
         // WHEN
         viewModel = createViewModel()
@@ -1267,9 +1251,9 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order with no refundable items, when order details loaded, then Issue Refund action is absent`() = runTest {
+    fun `given non-completed order, when order details loaded, then Issue Refund action is absent`() = runTest {
         // GIVEN
-        val testOrder = order(2)
+        val testOrder = order(2).copy(status = Order.Status.Pending)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
