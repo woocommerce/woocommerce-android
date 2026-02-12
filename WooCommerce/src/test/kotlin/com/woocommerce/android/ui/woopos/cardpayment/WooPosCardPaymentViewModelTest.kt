@@ -32,6 +32,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import java.math.BigDecimal
+import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardPaymentViewModelTest {
@@ -72,10 +73,8 @@ class WooPosCardPaymentViewModelTest {
 
     @Before
     fun setUp() = runTest {
-        val mockOrder = mock<Order> {
-            on { total }.thenReturn(BigDecimal("50.00"))
-        }
-        whenever(totalsRepository.getOrderById(any())).thenReturn(mockOrder)
+        val order = Order.getEmptyOrder(Date(), Date()).copy(total = BigDecimal("50.00"))
+        whenever(totalsRepository.getOrderById(any())).thenReturn(order)
         whenever(priceFormat(any<BigDecimal>())).thenReturn("$50.00")
     }
 
