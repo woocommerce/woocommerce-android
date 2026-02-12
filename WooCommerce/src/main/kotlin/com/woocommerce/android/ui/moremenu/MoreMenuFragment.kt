@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.handleNotice
+import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.base.TopLevelFragment
@@ -92,6 +93,7 @@ class MoreMenuFragment : TopLevelFragment() {
     override fun onResume() {
         super.onResume()
 
+        viewModel.onWindowClassChanged(requireContext().isTwoPanesShouldBeUsed)
         viewModel.onViewResumed()
     }
 

@@ -15,7 +15,6 @@ import com.woocommerce.android.ui.moremenu.domain.MoreMenuRepository
 import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.captureValues
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -91,10 +90,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         on { invoke() } doReturn flowOf(false)
     }
 
-    private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock {
-        on { invoke() } doReturn false
-    }
-
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private val blazeCampaignsStore: BlazeCampaignsStore = mock()
@@ -123,7 +118,6 @@ class MoreMenuViewModelTests : BaseUnitTest() {
             isGoogleForWooEnabled = isGoogleForWooEnabled,
             hasGoogleAdsCampaigns = hasGoogleAdsCampaigns,
             observeBookingsVisibility = observeBookingsVisibility,
-            isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
             analyticsTrackerWrapper = analyticsTrackerWrapper,
             ciabSiteGateKeeper = ciabSiteGateKeeper
         )
@@ -449,8 +443,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
         // GIVEN
         setup {
             whenever(observeBookingsVisibility.invoke()).thenReturn(flowOf(true))
-            whenever(isWindowClassLargeThanCompact.invoke()).thenReturn(true)
         }
+        viewModel.onWindowClassChanged(true)
 
         // WHEN
         val states = viewModel.moreMenuViewState.captureValues()
@@ -466,9 +460,8 @@ class MoreMenuViewModelTests : BaseUnitTest() {
     fun `given bookings is visible and not on tablet, when building state, then bookings button is not displayed`() =
         testBlocking {
             // GIVEN
-            setup {
-                whenever(isWindowClassLargeThanCompact.invoke()).thenReturn(false)
-            }
+            setup()
+            viewModel.onWindowClassChanged(false)
 
             // WHEN
             val states = viewModel.moreMenuViewState.captureValues()

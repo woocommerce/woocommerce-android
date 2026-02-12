@@ -38,15 +38,17 @@ import com.woocommerce.android.ui.payments.taptopay.TapToPayAvailabilityStatus
 import com.woocommerce.android.ui.payments.taptopay.isAvailable
 import com.woocommerce.android.ui.plans.domain.SitePlan
 import com.woocommerce.android.ui.plans.repository.SitePlanRepository
-import com.woocommerce.android.util.IsWindowClassLargeThanCompact
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -77,16 +79,19 @@ class MoreMenuViewModel @Inject constructor(
     private val isGoogleForWooEnabled: IsGoogleForWooEnabled,
     private val hasGoogleAdsCampaigns: HasGoogleAdsCampaigns,
     observeBookingsVisibility: ObserveBookingsVisibility,
-    isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper,
 ) : ScopedViewModel(savedState) {
     private var storeHasGoogleAdsCampaigns = false
-    private val shouldShowBookingsInMenu = isWindowClassLargeThanCompact()
-    private val bookingsVisibilityFlow = if (shouldShowBookingsInMenu) {
-        observeBookingsVisibility()
-    } else {
-        flowOf(false)
+    private val shouldShowBookingsInMenu = MutableStateFlow(false)
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val bookingsVisibilityFlow = shouldShowBookingsInMenu.flatMapLatest { shouldShow ->
+        if (shouldShow) {
+            observeBookingsVisibility()
+        } else {
+            flowOf(false)
+        }
     }
 
     val moreMenuViewState =
@@ -147,6 +152,10 @@ class MoreMenuViewModel @Inject constructor(
             trackBlazeDisplayed()
             trackGoogleAdsDisplayed()
         }
+    }
+
+    fun onWindowClassChanged(isLargeThanCompact: Boolean) {
+        shouldShowBookingsInMenu.value = isLargeThanCompact
     }
 
     @Suppress("LongMethod")
