@@ -18,13 +18,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val dateTimeProvider: DateTimeProvider,
+    private val mapper: WooPosBookingViewStateMapper,
 ) : ViewModel() {
 
     companion object {
@@ -84,7 +84,8 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val items = bookings.associate { booking ->
-                    mapToItemViewState(booking) to mapToDetailsViewState(booking)
+                    mapper.mapToItemViewState(booking, selectedBookingId) to
+                        mapper.mapToDetailsViewState(booking)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -229,69 +230,5 @@ class WooPosBookingsViewModel @Inject constructor(
                 // TBD: handle email receipt
             }
         }
-    }
-
-    private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
-        return WooPosBookingsState.BookingItemViewState(
-            id = booking.id.value,
-            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            date = booking.start.toString(),
-            total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
-            customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
-            isSelected = booking.id.value == selectedBookingId,
-            status = mapBookingStatus(booking.status),
-            statusSlug = booking.status.key,
-            createdAtMillis = booking.start.toEpochMilli()
-        )
-    }
-
-    private fun mapToDetailsViewState(
-        booking: BookingEntity
-    ): WooPosBookingsState.BookingDetailsViewState {
-        return WooPosBookingsState.BookingDetailsViewState(
-            id = booking.id.value,
-            number = "#${booking.id.value}",
-            status = mapBookingStatus(booking.status),
-            actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-            ),
-            headerTitle = "",
-            headerSubtitle = "",
-            attendanceBadge = null,
-            bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            appointmentDate = "",
-            appointmentTime = "",
-            duration = "",
-            teamMember = null,
-            location = null,
-            customerSection = null,
-            attendanceSection = null,
-            paymentSection = WooPosBookingsState.PaymentSection(
-                serviceAmount = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "-",
-                taxAmount = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "-",
-                discountAmount = "-",
-                totalAmount = booking.order.paymentInfo?.total?.toPlainString() ?: "-",
-                paidWithLabel = booking.order.paymentInfo?.paymentMethodTitle,
-                showPayButtons = false,
-            ),
-            bookingNote = null,
-        )
-    }
-
-    private fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
-        val colorKey = when (status) {
-            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
-            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
-            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
-        }
-        return WooPosBookingStatus(
-            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
-            colorKey = colorKey
-        )
     }
 }
