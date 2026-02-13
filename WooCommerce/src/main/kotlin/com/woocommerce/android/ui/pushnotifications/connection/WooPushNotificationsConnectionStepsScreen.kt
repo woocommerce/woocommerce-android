@@ -34,6 +34,7 @@ import com.woocommerce.android.ui.compose.component.IdleCircle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WooPushNotificationsConnectionStepsScreen(
@@ -85,11 +86,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.wp_woo),
-                    contentDescription = null,
-                    modifier = Modifier.size(width = 86.dp, height = 48.dp)
-                )
+                WordPressWooBadge()
 
                 Text(
                     text = stringResource(id = R.string.woo_push_notifications_connection_steps_title),
