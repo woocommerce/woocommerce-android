@@ -4,10 +4,21 @@
     android:id="@+id/nav_graph_push_notifications"
     app:startDestination="@id/wooPushNotificationsIntroductionDialog">
 
+    <include app:graph="@navigation/nav_graph_wpcom_login" />
+
     <dialog
         android:id="@+id/wooPushNotificationsIntroductionDialog"
         android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
         android:label="WooPushNotificationsIntroductionDialog">
+        <action
+            android:id="@+id/action_wooPushNotificationsIntroductionDialog_to_wpcom_login"
+            app:destination="@id/nav_graph_wpcom_login"
+            app:popUpTo="@id/wooPushNotificationsIntroductionDialog"
+            app:popUpToInclusive="true" >
+            <argument
+                android:name="wpComLoginMode"
+                app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+        </action>
         <action
             android:id="@+id/action_wooPushNotificationsIntroductionDialog_to_wooPushNotificationsConnectionStepsFragment"
             app:destination="@id/wooPushNotificationsConnectionStepsFragment"
