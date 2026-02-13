@@ -14,33 +14,40 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WordPressWooBadgeHeader(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-    ) {
+fun WordPressWooBadgeHeader(
+    modifier: Modifier = Modifier,
+    iconSize: Dp = 48.dp
+) {
+    val borderWidth = iconSize * (2f / 48f)
+    val wooIconSize = iconSize * (52f / 48f)
+    val overlapStart = iconSize * (38f / 48f)
+
+    Box(modifier = modifier) {
         Icon(
             painter = painterResource(id = R.drawable.ic_wordpress),
             contentDescription = null,
             tint = colorResource(R.color.wp_blue_50),
-            modifier = Modifier.size(48.dp)
+            modifier = Modifier
+                .size(iconSize)
                 .align(Alignment.CenterStart)
         )
         Image(
             painter = painterResource(id = R.drawable.ic_woo),
             contentDescription = null,
             modifier = Modifier
-                .padding(start = 38.dp)
+                .padding(start = overlapStart)
                 .border(
-                    width = 2.dp,
+                    width = borderWidth,
                     color = MaterialTheme.colorScheme.surface,
                     shape = CircleShape
                 )
-                .size(52.dp)
+                .size(wooIconSize)
                 .align(Alignment.CenterEnd)
         )
     }
@@ -51,5 +58,13 @@ fun WordPressWooBadgeHeader(modifier: Modifier = Modifier) {
 private fun WordPressWooBadgeHeaderPreview() {
     WooThemeWithBackground {
         WordPressWooBadgeHeader()
+    }
+}
+
+@Preview
+@Composable
+private fun WordPressWooBadgeHeaderSmallPreview() {
+    WooThemeWithBackground {
+        WordPressWooBadgeHeader(iconSize = 24.dp)
     }
 }
