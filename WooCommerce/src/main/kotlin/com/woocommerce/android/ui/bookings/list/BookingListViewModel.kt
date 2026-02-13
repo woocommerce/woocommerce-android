@@ -285,20 +285,16 @@ class BookingListViewModel @Inject constructor(
         }
     }
 
-//        private fun FetchParams.prepareFilters(): BookingFilters = filters.copy(
-//        dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange)
-//    )
+    private fun FetchParams.prepareFilters(): BookingFilters = when (selectedTab) {
+        BookingListTab.Today,
+        BookingListTab.Upcoming -> BookingFilters(
+            dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange),
+            excludedBookingStatuses = ExcludedBookingStatuses(setOf(Cancelled, Complete))
+        )
 
-    private fun FetchParams.prepareFilters(): BookingFilters = with(filtersBuilder) {
-        when (selectedTab) {
-            BookingListTab.Today,
-            BookingListTab.Upcoming -> BookingFilters(
-                dateRange = selectedTab.asDateRangeFilter(),
-                excludedBookingStatuses = ExcludedBookingStatuses(setOf(Cancelled, Complete))
-            )
-
-            BookingListTab.All -> filters
-        }
+        BookingListTab.All -> filters.copy(
+            dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange)
+        )
     }
 
     private data class FetchParams(
