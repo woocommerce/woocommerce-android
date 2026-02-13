@@ -293,70 +293,84 @@ abstract class WooShippingEditAddressViewModelTest : BaseUnitTest() {
         assertThat(result.editableAddress.phone.error).isNull()
     }
 
-    @Test
-    fun `given US country, when phone is too short, then phone error is not null`() = testBlocking {
+    private suspend fun initViewModelWithPhone(
+        phone: String,
+        countryCode: String,
+        hasStates: Boolean = countryCode == "US"
+    ) {
         val address = Address.EMPTY.copy(
-            phone = "12345",
-            country = AmbiguousLocation.Raw("US").asLocation()
+            phone = phone,
+            country = AmbiguousLocation.Raw(countryCode).asLocation()
         )
-        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
         whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
         mockCountries(Result.success(countries))
-        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
+        whenever(getStatesByCountryCode.invoke(any())).doReturn(if (hasStates) states else emptyList())
         Snapshot.withMutableSnapshot {
             val savedState = createSavedStateHandle(address)
             createViewModel(savedState)
         }
+    }
+
+    @Test
+    fun `given US country, when phone is too short, then phone error is not null`() = testBlocking {
+        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        initViewModelWithPhone(phone = "12345", countryCode = "US")
 
         advanceUntilIdle()
 
-        val result = sut.viewState.value
-
-        assertThat(result.editableAddress.phone.error).isNotEmpty()
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNotEmpty()
     }
 
     @Test
     fun `given US country, when phone has 10 digits, then phone error is null`() = testBlocking {
-        val address = Address.EMPTY.copy(
-            phone = "1234567890",
-            country = AmbiguousLocation.Raw("US").asLocation()
-        )
         whenever(addressValidator.validateUSCustomsPhone("1234567890")).doReturn(null)
-        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        mockCountries(Result.success(countries))
-        whenever(getStatesByCountryCode.invoke(any())).doReturn(states)
-        Snapshot.withMutableSnapshot {
-            val savedState = createSavedStateHandle(address)
-            createViewModel(savedState)
-        }
+        initViewModelWithPhone(phone = "1234567890", countryCode = "US")
 
         advanceUntilIdle()
 
-        val result = sut.viewState.value
-
-        assertThat(result.editableAddress.phone.error).isNull()
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNull()
     }
 
     @Test
     fun `given non-US country, when phone has digits, then phone error is null`() = testBlocking {
-        val address = Address.EMPTY.copy(
-            phone = "12345",
-            country = AmbiguousLocation.Raw("AR").asLocation()
-        )
         whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
-        whenever(addressValidator.validateFieldRequired(any())).doReturn(null)
-        mockCountries(Result.success(countries))
-        whenever(getStatesByCountryCode.invoke(any())).doReturn(emptyList())
-        Snapshot.withMutableSnapshot {
-            val savedState = createSavedStateHandle(address)
-            createViewModel(savedState)
-        }
+        initViewModelWithPhone(phone = "12345", countryCode = "AR")
 
         advanceUntilIdle()
 
-        val result = sut.viewState.value
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNull()
+    }
 
-        assertThat(result.editableAddress.phone.error).isNull()
+    @Test
+    fun `given US phone error, when country changes to non-US, then phone error is cleared`() = testBlocking {
+        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
+        initViewModelWithPhone(phone = "12345", countryCode = "US")
+
+        advanceUntilIdle()
+
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNotEmpty()
+
+        sut.onCountryChanged("AR")
+        advanceUntilIdle()
+
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNull()
+    }
+
+    @Test
+    fun `given non-US valid phone, when country changes to US, then phone error is set`() = testBlocking {
+        whenever(addressValidator.validatePhoneNumber("12345")).doReturn(null)
+        whenever(addressValidator.validateUSCustomsPhone("12345")).doReturn("error")
+        initViewModelWithPhone(phone = "12345", countryCode = "AR")
+
+        advanceUntilIdle()
+
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNull()
+
+        sut.onCountryChanged("US")
+        advanceUntilIdle()
+
+        assertThat(sut.viewState.value.editableAddress.phone.error).isNotEmpty()
     }
 
     @Test
