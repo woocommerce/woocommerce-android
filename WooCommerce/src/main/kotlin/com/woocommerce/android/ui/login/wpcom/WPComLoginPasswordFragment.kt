@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
@@ -18,6 +17,7 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.GoToStore
+import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainFragmentArgs
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.Show2FAScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
@@ -87,10 +87,10 @@ class WPComLoginPasswordFragment : BaseFragment() {
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
             R.id.action_global_to_jetpackActivationMainFragment,
-            bundleOf(
-                "siteUrl" to event.siteUrl,
-                "jetpackStatus" to event.jetpackStatus
-            )
+            JetpackActivationMainFragmentArgs(
+                siteUrl = event.siteUrl,
+                jetpackStatus = event.jetpackStatus
+            ).toBundle()
         )
     }
 
