@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
@@ -18,7 +18,7 @@ import org.mockito.kotlin.verify
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
+class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
     companion object {
         private const val EMAIL = "email@example.com"
         private val JetpackStatus = JetpackStatus(
@@ -34,14 +34,14 @@ class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
     private val wpComLoginRepository: WPComLoginRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
 
-    private lateinit var viewModel: JetpackActivationMagicLinkRequestViewModel
+    private lateinit var viewModel: WPComLoginMagicLinkRequestViewModel
 
     fun setup(
         fallbackButton: MagicLinkFallbackButton,
         requestEmailAtStart: Boolean = true
     ) {
-        viewModel = JetpackActivationMagicLinkRequestViewModel(
-            JetpackActivationMagicLinkRequestFragmentArgs(
+        viewModel = WPComLoginMagicLinkRequestViewModel(
+            WPComLoginMagicLinkRequestFragmentArgs(
                 jetpackStatus = JetpackStatus,
                 emailOrUsername = EMAIL,
                 fallbackButton = fallbackButton,
@@ -100,7 +100,7 @@ class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
             viewModel.onOpenEmailClientClick()
         }.last()
 
-        assertThat(event).isEqualTo(JetpackActivationMagicLinkRequestViewModel.OpenEmailClient)
+        assertThat(event).isEqualTo(WPComLoginMagicLinkRequestViewModel.OpenEmailClient)
     }
 
     @Test
@@ -112,7 +112,7 @@ class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(
-            JetpackActivationMagicLinkRequestViewModel.ShowPasswordScreen(
+            WPComLoginMagicLinkRequestViewModel.ShowPasswordScreen(
                 emailOrUsername = EMAIL,
                 jetpackStatus = JetpackStatus
             )
@@ -128,7 +128,7 @@ class JetpackActivationMagicLinkRequestViewModelTest : BaseUnitTest() {
         }.last()
 
         assertThat(event).isEqualTo(
-            JetpackActivationMagicLinkRequestViewModel.ShowUsernameScreen(
+            WPComLoginMagicLinkRequestViewModel.ShowUsernameScreen(
                 jetpackStatus = JetpackStatus
             )
         )

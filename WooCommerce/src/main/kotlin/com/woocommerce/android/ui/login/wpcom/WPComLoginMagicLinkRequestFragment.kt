@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +12,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkRequestViewModel.OpenEmailClient
+import com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkRequestViewModel.OpenEmailClient
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.util.ActivityUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -21,8 +21,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackActivationMagicLinkRequestFragment : BaseFragment() {
-    private val viewModel: JetpackActivationMagicLinkRequestViewModel by viewModels()
+class WPComLoginMagicLinkRequestFragment : BaseFragment() {
+    private val viewModel: WPComLoginMagicLinkRequestViewModel by viewModels()
 
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
@@ -36,7 +36,7 @@ class JetpackActivationMagicLinkRequestFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationMagicLinkRequestScreen(viewModel = viewModel)
+                    WPComLoginMagicLinkRequestScreen(viewModel = viewModel)
                 }
             }
         }
@@ -50,8 +50,8 @@ class JetpackActivationMagicLinkRequestFragment : BaseFragment() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
                 is OpenEmailClient -> openEmailClient()
-                is JetpackActivationMagicLinkRequestViewModel.ShowPasswordScreen -> openPasswordScreen(event)
-                is JetpackActivationMagicLinkRequestViewModel.ShowUsernameScreen -> openUsernameScreen(event)
+                is WPComLoginMagicLinkRequestViewModel.ShowPasswordScreen -> openPasswordScreen(event)
+                is WPComLoginMagicLinkRequestViewModel.ShowUsernameScreen -> openUsernameScreen(event)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is Exit -> findNavController().navigateUp()
             }
@@ -66,20 +66,20 @@ class JetpackActivationMagicLinkRequestFragment : BaseFragment() {
         }
     }
 
-    private fun openPasswordScreen(event: JetpackActivationMagicLinkRequestViewModel.ShowPasswordScreen) {
+    private fun openPasswordScreen(event: WPComLoginMagicLinkRequestViewModel.ShowPasswordScreen) {
         findNavController().navigate(
-            JetpackActivationMagicLinkRequestFragmentDirections
-                .actionJetpackActivationMagicLinkRequestFragmentToJetpackActivationWPComPasswordFragment(
+            WPComLoginMagicLinkRequestFragmentDirections
+                .actionWPComLoginMagicLinkRequestFragmentToWPComLoginPasswordFragment(
                     emailOrUsername = event.emailOrUsername,
                     jetpackStatus = event.jetpackStatus
                 )
         )
     }
 
-    private fun openUsernameScreen(event: JetpackActivationMagicLinkRequestViewModel.ShowUsernameScreen) {
+    private fun openUsernameScreen(event: WPComLoginMagicLinkRequestViewModel.ShowUsernameScreen) {
         findNavController().navigate(
-            JetpackActivationMagicLinkRequestFragmentDirections
-                .actionJetpackActivationMagicLinkRequestFragmentToJetpackActivationWPComEmailFragment(
+            WPComLoginMagicLinkRequestFragmentDirections
+                .actionWPComLoginMagicLinkRequestFragmentToWPComLoginEmailFragment(
                     usernameOnly = true,
                     jetpackStatus = event.jetpackStatus
                 )

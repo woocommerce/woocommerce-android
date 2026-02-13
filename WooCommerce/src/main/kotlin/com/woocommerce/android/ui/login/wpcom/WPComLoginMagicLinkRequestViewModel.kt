@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import android.os.Parcelable
 import androidx.core.util.PatternsCompat
@@ -31,14 +31,14 @@ import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackActivationMagicLinkRequestViewModel @Inject constructor(
+class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val resourceProvider: ResourceProvider,
     private val wpComLoginRepository: WPComLoginRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
 
-    private val navArgs: JetpackActivationMagicLinkRequestFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: WPComLoginMagicLinkRequestFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(
         scope = viewModelScope,

@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import android.content.Intent
 import android.os.Bundle
@@ -17,8 +17,8 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.GoToStore
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackCPInstallationScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -27,11 +27,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
+class WPComLoginMagicLinkHandlerFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: JetpackActivationMagicLinkHandlerViewModel by viewModels()
+    private val viewModel: WPComLoginMagicLinkHandlerViewModel by viewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -42,7 +42,7 @@ class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationMagicLinkHandlerScreen(viewModel)
+                    WPComLoginMagicLinkHandlerScreen(viewModel)
                 }
             }
         }
@@ -62,8 +62,8 @@ class JetpackActivationMagicLinkHandlerFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            JetpackActivationMagicLinkHandlerFragmentDirections
-                .actionJetpackActivationMagicLinkHandlerFragmentToJetpackActivationMainFragment(
+            WPComLoginMagicLinkHandlerFragmentDirections
+                .actionWPComLoginMagicLinkHandlerFragmentToJetpackActivationMainFragment(
                     jetpackStatus = event.jetpackStatus,
                     siteUrl = event.siteUrl
                 )
