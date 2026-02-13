@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_settings"
     app:startDestination="@id/mainSettingsFragment">
+    <include app:graph="@navigation/nav_graph_push_notifications" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_domain_change" />
     <include app:graph="@navigation/nav_graph_themes" />
@@ -64,7 +65,7 @@
             app:destination="@id/pluginsFragment" />
         <action
             android:id="@+id/action_mainSettingsFragment_to_wooPushNotificationsIntroductionDialog"
-            app:destination="@id/wooPushNotificationsIntroductionDialog" />
+            app:destination="@id/nav_graph_push_notifications" />
     </fragment>
     <fragment
         android:id="@+id/privacySettingsFragment"
@@ -217,8 +218,4 @@
         android:id="@+id/apiFakerHostFragment"
         android:name="com.woocommerce.android.apifaker.ApiFakerHostFragment"
         android:label="ApiFakerHostFragment" />
-    <dialog
-        android:id="@+id/wooPushNotificationsIntroductionDialog"
-        android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
-        android:label="WooPushNotificationsIntroductionDialog" />
 </navigation>

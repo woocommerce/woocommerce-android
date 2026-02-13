@@ -14,7 +14,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
 
     fun onContinueClick() {
-        // TODO Implement connection flow navigation when available
+        triggerEvent(OpenConnectionSteps)
     }
 
     fun onNotNowClick() {
@@ -24,6 +24,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     fun onWhatIsWPComClick() {
         triggerEvent(OpenUrlEvent(AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT))
     }
+
+    data object OpenConnectionSteps : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
 }

@@ -11,6 +11,7 @@
     <include app:graph="@navigation/nav_graph_product_filters" />
     <include app:graph="@navigation/nav_graph_order_creations" />
     <include app:graph="@navigation/nav_graph_payment_flow" />
+    <include app:graph="@navigation/nav_graph_push_notifications" />
     <include app:graph="@navigation/nav_graph_jetpack_install" />
     <include app:graph="@navigation/nav_graph_coupons" />
     <include app:graph="@navigation/nav_graph_site_picker" />
@@ -88,7 +89,7 @@
             app:destination="@id/inboxFragment" />
         <action
             android:id="@+id/action_dashboard_to_wooPushNotificationsIntroductionDialog"
-            app:destination="@id/wooPushNotificationsIntroductionDialog" />
+            app:destination="@id/nav_graph_push_notifications" />
     </fragment>
     <fragment
         android:id="@+id/orders"
@@ -876,8 +877,4 @@
             android:name="positiveButtonLabel"
             app:argType="integer" />
     </dialog>
-    <dialog
-        android:id="@+id/wooPushNotificationsIntroductionDialog"
-        android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
-        android:label="WooPushNotificationsIntroductionDialog" />
 </navigation>
