@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
@@ -7,8 +7,8 @@ import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.login.WPComLoginRepository
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowMagicLinkScreen
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowPasswordScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginEmailViewModel.ShowMagicLinkScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginEmailViewModel.ShowPasswordScreen
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.runAndCaptureValues
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -26,7 +26,7 @@ import kotlin.test.Test
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
+class WPComLoginEmailViewModelTest : BaseUnitTest() {
     companion object {
         const val WPCOM_EMAIL = "wpcomUser@gmail.com"
         const val UNKNOWN_EMAIL = "newUser@example.com"
@@ -40,17 +40,17 @@ class JetpackActivationWPComEmailViewModelTest : BaseUnitTest() {
         )
     }
 
-    private val saveStateHandle = JetpackActivationWPComEmailFragmentArgs(
+    private val saveStateHandle = WPComLoginEmailFragmentArgs(
         jetpackStatus = JETPACK_STATUS,
     ).toSavedStateHandle()
     private val wpComLoginRepository: WPComLoginRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
     private val stringUtils: StringUtils = mock()
-    private lateinit var viewModel: JetpackActivationWPComEmailViewModel
+    private lateinit var viewModel: WPComLoginEmailViewModel
 
     fun setup(wpComEmail: String) {
         saveStateHandle["email"] = wpComEmail
-        viewModel = JetpackActivationWPComEmailViewModel(
+        viewModel = WPComLoginEmailViewModel(
             savedStateHandle = saveStateHandle,
             wpComLoginRepository = wpComLoginRepository,
             analyticsTrackerWrapper = analyticsTrackerWrapper,

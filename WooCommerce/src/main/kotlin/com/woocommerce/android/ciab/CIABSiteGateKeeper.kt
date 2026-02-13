@@ -6,11 +6,12 @@ import javax.inject.Inject
 
 class CIABSiteGateKeeper @Inject constructor(private val selectedSite: SelectedSite) {
     fun isFeatureSupported(
-        @Suppress("unused")
         feature: CIABAffectedFeature
     ): Boolean {
         return when (feature) {
+            CIABAffectedFeature.POS,
             CIABAffectedFeature.WooPayments -> true
+
             else -> !isCurrentSiteCIAB()
         }
     }

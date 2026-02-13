@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -27,21 +27,21 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType.NO
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackActivationWPCom2FAViewModel @Inject constructor(
+class WPComLogin2FAViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     jetpackAccountRepository: JetpackActivationRepository,
     private val wpComLoginRepository: WPComLoginRepository,
     private val accountRepository: AccountRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : JetpackActivationWPComPostLoginViewModel(
+) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackAccountRepository,
     analyticsTrackerWrapper
 ) {
 
-    private val navArgs: JetpackActivationWPCom2FAFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: WPComLogin2FAFragmentArgs by savedStateHandle.navArgs()
 
     private val otp = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "otp")
     private val loadingMessage =

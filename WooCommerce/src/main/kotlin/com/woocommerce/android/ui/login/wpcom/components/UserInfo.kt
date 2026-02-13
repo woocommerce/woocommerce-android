@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.components
+package com.woocommerce.android.ui.login.wpcom.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement

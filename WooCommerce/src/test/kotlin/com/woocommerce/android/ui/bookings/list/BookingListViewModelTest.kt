@@ -55,7 +55,7 @@ class BookingListViewModelTest : BaseUnitTest() {
         onBlocking { loadMore() } doReturn Result.success(Unit)
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
-    private val filtersBuilder = BookingListFiltersBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
+    private val filtersBuilder = BookingListDateFilterBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
     private val dateFormatter = mock<DateFormatter>()
 
     private val currencyFormatter = mock<CurrencyFormatter>()
@@ -84,7 +84,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             bookingFilterRepository = bookingFilterRepository,
             savedStateHandle = savedStateHandle,
             bookingListHandler = bookingListHandler,
-            filtersBuilder = filtersBuilder,
+            dateFilterBuilder = filtersBuilder,
             bookingMapper = bookingMapper,
             isWindowClassLargeThanCompact = isWindowClassLargeThanCompact,
         )
@@ -242,8 +242,11 @@ class BookingListViewModelTest : BaseUnitTest() {
         verify(bookingListHandler).loadBookings(
             searchQuery = eq(null),
             filters = eq(
-                BookingFilters(
-                    dateRange = with(filtersBuilder) { BookingListTab.Upcoming.asDateRangeFilter() },
+                BookingFilters().copy(
+                    dateRange = filtersBuilder.prepareDateFilter(
+                        BookingListTab.Upcoming,
+                        BookingsFilterOption.DateRange.DEFAULT
+                    ),
                     excludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses(
                         setOf(BookingEntity.Status.Cancelled, BookingEntity.Status.Complete)
                     )

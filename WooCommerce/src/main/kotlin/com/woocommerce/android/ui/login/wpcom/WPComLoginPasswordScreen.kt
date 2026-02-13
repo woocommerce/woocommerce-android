@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -29,29 +30,36 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
+import com.woocommerce.android.ui.compose.component.WCOutlinedButton
+import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.login.wpcom.components.UserInfo
 
 @Composable
-fun JetpackActivationWPComEmailScreen(viewModel: JetpackActivationWPComEmailViewModel) {
+fun WPComLoginPasswordScreen(viewModel: WPComLoginPasswordViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationWPComEmailScreen(
+        WPComLoginPasswordScreen(
             viewState = it,
-            onEmailChanged = viewModel::onEmailOrUsernameChanged,
+            onPasswordChanged = viewModel::onPasswordChanged,
             onCloseClick = viewModel::onCloseClick,
-            onContinueClick = viewModel::onContinueClick
+            onContinueClick = viewModel::onContinueClick,
+            onMagicLinkClick = viewModel::onMagicLinkClick,
+            onResetPasswordClick = viewModel::onResetPasswordClick
         )
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun JetpackActivationWPComEmailScreen(
-    viewState: JetpackActivationWPComEmailViewModel.ViewState,
-    onEmailChanged: (String) -> Unit = {},
+fun WPComLoginPasswordScreen(
+    viewState: WPComLoginPasswordViewModel.ViewState,
+    onPasswordChanged: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {}
+    onContinueClick: () -> Unit = {},
+    onMagicLinkClick: () -> Unit = {},
+    onResetPasswordClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -68,7 +76,7 @@ fun JetpackActivationWPComEmailScreen(
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
+                .verticalScroll(rememberScrollState()),
         ) {
             Column(
                 modifier = Modifier
@@ -87,44 +95,41 @@ fun JetpackActivationWPComEmailScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                UserInfo(
+                    emailOrUsername = viewState.emailOrUsername,
+                    avatarUrl = viewState.avatarUrl,
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = stringResource(
                         id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connection_enter_wpcom_email
+                            R.string.login_jetpack_connection_enter_wpcom_password
                         } else {
-                            R.string.login_jetpack_installation_enter_wpcom_email
+                            R.string.login_jetpack_installation_enter_wpcom_password
                         }
                     )
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-                WCOutlinedTextField(
-                    value = viewState.emailOrUsername,
-                    onValueChange = onEmailChanged,
-                    label = if (viewState.usernameOnly) {
-                        stringResource(R.string.username)
-                    } else {
-                        stringResource(id = R.string.email_or_username)
-                    },
+                WCPasswordField(
+                    value = viewState.password,
+                    onValueChange = onPasswordChanged,
+                    label = stringResource(id = R.string.password),
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            keyboardController?.hide()
-                            onContinueClick()
+                            if (viewState.enableSubmit) {
+                                keyboardController?.hide()
+                                onContinueClick()
+                            }
                         }
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-
-                if (!viewState.usernameOnly) {
-                    Text(
-                        style = MaterialTheme.typography.body2,
-                        text = stringResource(id = R.string.login_jetpack_connection_create_account)
-                    )
+                WCTextButton(onClick = onResetPasswordClick) {
+                    Text(text = stringResource(id = R.string.reset_your_password))
                 }
             }
 
@@ -150,28 +155,34 @@ fun JetpackActivationWPComEmailScreen(
                     )
                 )
             }
-            JetpackConsent(
+            WCOutlinedButton(
+                onClick = onMagicLinkClick,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            )
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login_jetpack_installation_continue_magic_link)
+                )
+            }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
 
     if (viewState.isLoadingDialogShown) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.checking_email))
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
     }
 }
 
-@Preview(heightDp = 130)
+@Preview
 @Composable
 private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
-        JetpackActivationWPComEmailScreen(
-            viewState = JetpackActivationWPComEmailViewModel.ViewState(
-                usernameOnly = false,
-                emailOrUsername = "",
+        WPComLoginPasswordScreen(
+            viewState = WPComLoginPasswordViewModel.ViewState(
+                emailOrUsername = "test@email.com",
+                password = "",
+                avatarUrl = "",
                 isJetpackInstalled = false
             )
         )

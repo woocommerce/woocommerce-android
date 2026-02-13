@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,8 +12,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowMagicLinkScreen
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailViewModel.ShowPasswordScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginEmailViewModel.ShowMagicLinkScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginEmailViewModel.ShowPasswordScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -21,11 +21,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackActivationWPComEmailFragment : BaseFragment() {
+class WPComLoginEmailFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: JetpackActivationWPComEmailViewModel by viewModels()
+    private val viewModel: WPComLoginEmailViewModel by viewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -36,7 +36,7 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationWPComEmailScreen(viewModel = viewModel)
+                    WPComLoginEmailScreen(viewModel = viewModel)
                 }
             }
         }
@@ -65,8 +65,8 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
 
     private fun navigateToPasswordScreen(event: ShowPasswordScreen) {
         findNavController().navigateSafely(
-            JetpackActivationWPComEmailFragmentDirections
-                .actionJetpackActivationWPComEmailFragmentToJetpackActivationWPComPasswordFragment(
+            WPComLoginEmailFragmentDirections
+                .actionWPComLoginEmailFragmentToWPComLoginPasswordFragment(
                     jetpackStatus = event.jetpackStatus,
                     emailOrUsername = event.emailOrUsername
                 )
@@ -75,8 +75,8 @@ class JetpackActivationWPComEmailFragment : BaseFragment() {
 
     private fun navigateToMagicLinkScreen(event: ShowMagicLinkScreen) {
         findNavController().navigateSafely(
-            JetpackActivationWPComEmailFragmentDirections
-                .actionJetpackActivationWPComEmailFragmentToJetpackActivationMagicLinkRequestFragment(
+            WPComLoginEmailFragmentDirections
+                .actionWPComLoginEmailFragmentToWPComLoginMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
                     jetpackStatus = event.jetpackStatus,
                     fallbackButton = event.magicLinkFallbackButton,

@@ -4,8 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -33,16 +31,12 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         dialog?.window?.attributes?.windowAnimations = R.style.Woo_Animations_Dialog
 
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-
-            composeView {
-                WooPushNotificationsIntroductionScreen(
-                    onContinueClick = viewModel::onContinueClick,
-                    onNotNowClick = viewModel::onNotNowClick,
-                    onWhatIsWPComClick = viewModel::onWhatIsWPComClick
-                )
-            }
+        return composeView {
+            WooPushNotificationsIntroductionScreen(
+                onContinueClick = viewModel::onContinueClick,
+                onNotNowClick = viewModel::onNotNowClick,
+                onWhatIsWPComClick = viewModel::onWhatIsWPComClick
+            )
         }
     }
 

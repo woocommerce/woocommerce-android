@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -34,7 +34,7 @@ import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackActivationWPComPasswordViewModel @Inject constructor(
+class WPComLoginPasswordViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     jetpackAccountRepository: JetpackActivationRepository,
@@ -42,7 +42,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
     private val accountRepository: AccountRepository,
     private val resourceProvider: ResourceProvider,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : JetpackActivationWPComPostLoginViewModel(
+) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackAccountRepository,
@@ -52,7 +52,7 @@ class JetpackActivationWPComPasswordViewModel @Inject constructor(
         private const val RESET_PASSWORD_URL = "https://wordpress.com/wp-login.php?action=lostpassword"
     }
 
-    private val navArgs: JetpackActivationWPComPasswordFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: WPComLoginPasswordFragmentArgs by savedStateHandle.navArgs()
 
     private val password = savedStateHandle.getStateFlow(scope = viewModelScope, initialValue = "", key = "password")
     private val errorMessage =
