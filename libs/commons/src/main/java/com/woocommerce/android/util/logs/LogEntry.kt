@@ -62,7 +62,7 @@ class LogEntry(
             )
         }
 
-        // TODO: WOOMOB-2212 remove this migration code after a couple of releases,
+        // TODO WOOMOB-2212 remove this migration code after a couple of releases,
         //  logs are only kept for one week so the issue should fix itself by then.
         private val deprecatedTagNames = mapOf(
             "NOTIFS" to WooLog.T.NOTIFICATIONS.name
