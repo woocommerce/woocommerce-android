@@ -16,6 +16,7 @@ sealed class WooPosNavigationEvent {
     data class OpenCardPayment(
         val orderId: Long,
         val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
+        val showPayByCashButton: Boolean = false,
     ) : WooPosNavigationEvent()
     data class OpenEmailReceipt(val orderId: Long) : WooPosNavigationEvent()
     data class OpenRefundReason(val orderId: Long, val initialReason: String = "") : WooPosNavigationEvent()
@@ -29,4 +30,5 @@ sealed class WooPosNavigationEvent {
     data object OpenSettings : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
     data object OpenBookings : WooPosNavigationEvent()
+    data class SwitchToCashPayment(val orderId: Long) : WooPosNavigationEvent()
 }

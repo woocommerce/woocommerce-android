@@ -13,9 +13,11 @@ import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val CARD_PAYMENT_ROUTE_ORDER_ID_KEY = "orderId"
 const val CARD_PAYMENT_ROUTE_SOURCE_KEY = "source"
+const val CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY = "showPayByCash"
 const val CARD_PAYMENT_ROUTE =
     "$HOME_ROUTE/card_payment/{$CARD_PAYMENT_ROUTE_ORDER_ID_KEY}" +
-        "?$CARD_PAYMENT_ROUTE_SOURCE_KEY={$CARD_PAYMENT_ROUTE_SOURCE_KEY}"
+        "?$CARD_PAYMENT_ROUTE_SOURCE_KEY={$CARD_PAYMENT_ROUTE_SOURCE_KEY}" +
+        "&$CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY={$CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY}"
 
 const val BOOKING_CARD_PAYMENT_SUCCESS_KEY = "booking_card_payment_success"
 
@@ -27,11 +29,13 @@ enum class CardPaymentSource {
 fun NavController.navigateToCardPaymentScreen(
     orderId: Long,
     source: CardPaymentSource = CardPaymentSource.CHECKOUT,
+    showPayByCashButton: Boolean = false,
 ) {
     navigateOnce(
         CARD_PAYMENT_ROUTE
             .replace("{$CARD_PAYMENT_ROUTE_ORDER_ID_KEY}", orderId.toString())
             .replace("{$CARD_PAYMENT_ROUTE_SOURCE_KEY}", source.name)
+            .replace("{$CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY}", showPayByCashButton.toString())
     )
 }
 
@@ -45,6 +49,10 @@ fun NavGraphBuilder.cardPaymentScreen(
             navArgument(CARD_PAYMENT_ROUTE_SOURCE_KEY) {
                 type = NavType.StringType
                 defaultValue = CardPaymentSource.CHECKOUT.name
+            },
+            navArgument(CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY) {
+                type = NavType.BoolType
+                defaultValue = false
             }
         ),
         enterTransition = {

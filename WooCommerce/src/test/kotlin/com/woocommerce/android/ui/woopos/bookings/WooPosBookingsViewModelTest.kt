@@ -595,6 +595,7 @@ class WooPosBookingsViewModelTest {
                 val cardEvent = event as WooPosNavigationEvent.OpenCardPayment
                 assertThat(cardEvent.orderId).isEqualTo(10L)
                 assertThat(cardEvent.source).isEqualTo(CardPaymentSource.BOOKINGS)
+                assertThat(cardEvent.showPayByCashButton).isTrue()
             }
         }
 

@@ -53,6 +53,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
 
+    val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY] ?: false
+
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
@@ -303,6 +305,13 @@ class WooPosCardPaymentViewModel @Inject constructor(
         viewModelScope.launch {
             analyticsTracker.trackEmailReceiptTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
+        }
+    }
+
+    fun onCashPaymentClicked() {
+        cancelPayment()
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.SwitchToCashPayment(orderId))
         }
     }
 
