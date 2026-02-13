@@ -96,7 +96,7 @@ class WooPosBookingsViewModelTest {
         personCounts = null,
         localTimezone = "UTC",
         customerNote = null,
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         note = "",
         order = BookingOrderInfo(
             productInfo = BookingProductInfo(name = "Service $id"),

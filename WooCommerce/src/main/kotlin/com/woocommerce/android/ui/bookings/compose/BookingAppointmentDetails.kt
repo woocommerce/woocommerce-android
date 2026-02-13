@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.details.AttendanceUpdateStatus
 import com.woocommerce.android.ui.bookings.details.CancelStatus
 import com.woocommerce.android.ui.compose.animations.SkeletonView
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -30,6 +31,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 fun BookingAppointmentDetails(
     model: BookingAppointmentDetailsModel,
     onCancelBooking: () -> Unit,
+    onAttendanceToggle: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -77,13 +79,31 @@ fun BookingAppointmentDetails(
             AppointmentDetailsRow(
                 label = R.string.booking_appointment_label_duration,
                 value = model.duration,
-                withDivider = model.cancelButtonVisible,
+                withDivider = model.attendanceButtonVisible || model.cancelButtonVisible,
             )
+            AnimatedVisibility(model.attendanceButtonVisible) {
+                val text = when (model.attendanceStatus) {
+                    BookingAttendanceStatus.Attended -> stringResource(R.string.booking_mark_as_unattended)
+                    else -> stringResource(R.string.booking_mark_as_attended)
+                }
+                WCOutlinedButton(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    onClick = onAttendanceToggle,
+                    enabled = model.attendanceButtonEnabled,
+                    text = text,
+                    loading = model.attendanceInProgressShown,
+                )
+            }
             AnimatedVisibility(model.cancelButtonVisible) {
                 WCOutlinedButton(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
                     colors = ButtonDefaults.outlinedButtonColors(
                         contentColor = MaterialTheme.colorScheme.onSurface
                     ),
@@ -150,9 +170,15 @@ data class BookingAppointmentDetailsModel(
     val duration: String,
     val cancelButtonVisible: Boolean,
     val cancelStatus: CancelStatus,
+    val attendanceStatus: BookingAttendanceStatus? = null,
+    val isAttendanceStatusEditable: Boolean = false,
+    val attendanceUpdateStatus: AttendanceUpdateStatus = AttendanceUpdateStatus.Idle,
 ) {
     val cancelButtonEnabled: Boolean = cancelButtonVisible && cancelStatus != CancelStatus.InProgress
     val cancelInProgressShown: Boolean = cancelButtonVisible && cancelStatus == CancelStatus.InProgress
+    val attendanceButtonVisible: Boolean = isAttendanceStatusEditable
+    val attendanceButtonEnabled: Boolean = attendanceUpdateStatus != AttendanceUpdateStatus.InProgress
+    val attendanceInProgressShown: Boolean = attendanceUpdateStatus == AttendanceUpdateStatus.InProgress
 }
 
 sealed interface BookingStaffMemberStatus {
@@ -174,8 +200,11 @@ private fun BookingAppointmentDetailsPreview() {
                 duration = "60 min",
                 cancelButtonVisible = true,
                 cancelStatus = CancelStatus.Idle,
+                attendanceStatus = BookingAttendanceStatus.Unattended,
+                isAttendanceStatusEditable = true,
             ),
             onCancelBooking = {},
+            onAttendanceToggle = {},
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -196,6 +225,7 @@ private fun BookingAppointmentDetailsCancelHiddenPreview() {
                 cancelStatus = CancelStatus.Idle,
             ),
             onCancelBooking = {},
+            onAttendanceToggle = {},
             modifier = Modifier.fillMaxWidth()
         )
     }

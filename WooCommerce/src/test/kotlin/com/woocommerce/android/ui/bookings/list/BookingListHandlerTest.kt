@@ -305,7 +305,7 @@ class BookingListHandlerTest : BaseUnitTest() {
         parentId = 0L,
         personCounts = listOf(1L),
         localTimezone = "",
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         order = BookingOrderInfo(),
         customerNote = ""
     )

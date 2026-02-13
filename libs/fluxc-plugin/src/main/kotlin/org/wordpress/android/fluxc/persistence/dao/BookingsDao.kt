@@ -23,6 +23,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
@@ -44,6 +45,7 @@ interface BookingsDao {
         resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
         order: BookingsOrderOption
@@ -79,6 +81,7 @@ interface BookingsDao {
             AND (:startDateAfter IS NULL OR start >= :startDateAfter)
             AND (:customerId IS NULL OR customerId = :customerId)
             AND ((:attendanceStatusesSize = 0) OR attendanceStatus IN (:attendanceStatuses))
+            AND status NOT IN (:excludedBookingStatuses)
             AND ((:resourceIdsSize = 0) OR resourceId IN (:resourceIds))
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             AND ((:keepIdsSize = 0) OR id NOT IN (:keepIds))
@@ -93,6 +96,7 @@ interface BookingsDao {
         resourceIdsSize: Int,
         attendanceStatuses: List<String>,
         attendanceStatusesSize: Int,
+        excludedBookingStatuses: List<String>,
         productIds: List<Long>,
         productIdsSize: Int,
         keepIds: List<Long>,
@@ -106,6 +110,7 @@ interface BookingsDao {
     ) {
         val resourceIdsKeySet = filters.teamMembers.values.map { it.value }
         val attendanceStatusKeySet = filters.attendanceStatuses.values.map { it.key }
+        val excludedBookingStatusKeySet = filters.excludedBookingStatuses.values.map { it.key }
         val productIds = filters.serviceEvents.values.map { it.productId }
 
         deleteStaleBookings(
@@ -117,6 +122,7 @@ interface BookingsDao {
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
             keepIds = keepIds,
@@ -150,6 +156,7 @@ interface BookingsDao {
     ): Flow<List<BookingEntity>> {
         val resourceIdsKeySet = filters?.teamMembers?.values?.map { it.value }.orEmpty()
         val attendanceStatusKeySet = filters?.attendanceStatuses?.values?.map { it.key }.orEmpty()
+        val excludedBookingStatusKeySet = filters?.excludedBookingStatuses?.values?.map { it.key }.orEmpty()
         val productIds = filters?.serviceEvents?.values?.map { it.productId }.orEmpty()
         return observeBookings(
             localSiteId = localSiteId,
@@ -161,6 +168,7 @@ interface BookingsDao {
             resourceIdsSize = resourceIdsKeySet.size,
             attendanceStatuses = attendanceStatusKeySet.toList(),
             attendanceStatusesSize = attendanceStatusKeySet.size,
+            excludedBookingStatuses = excludedBookingStatusKeySet.toList(),
             productIds = productIds,
             productIdsSize = productIds.size,
             order = order

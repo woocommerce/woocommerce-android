@@ -7,7 +7,6 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -95,18 +94,18 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when onAttendanceStatusSelected called, then updateAttendanceStatus called`() = testBlocking {
+    fun `when onAttendanceToggle called, then updateAttendanceStatus called`() = testBlocking {
         // Given
         val viewModel = createViewModel()
 
         // When
         val state = viewModel.state.getOrAwaitValue()
-        state.bookingUiState?.onAttendanceStatusSelected(BookingAttendanceStatus.NoShow)
+        state.bookingUiState?.onAttendanceToggle()
 
         // Then
         verify(bookingsRepository, times(1)).updateAttendanceStatus(
             bookingId = initialBooking.id.value,
-            attendanceStatus = BookingEntity.AttendanceStatus.NoShow
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended
         )
     }
 
@@ -412,7 +411,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
             order = BookingOrderInfo(),
             customerNote = "Customer note"
         )

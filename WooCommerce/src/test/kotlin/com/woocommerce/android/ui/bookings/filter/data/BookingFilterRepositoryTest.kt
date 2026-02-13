@@ -136,8 +136,8 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
         setSite(5)
         val repository = BookingFilterRepository(dataStore, selectedSite)
         val statuses = setOf(
-            BookingEntity.AttendanceStatus.CheckedIn,
-            BookingEntity.AttendanceStatus.NoShow
+            BookingEntity.AttendanceStatus.Attended,
+            BookingEntity.AttendanceStatus.Unattended
         )
 
         repository.save(
@@ -173,7 +173,7 @@ class BookingFilterRepositoryTest : BaseUnitTest() {
     fun `when saving empty attendance and service events, then values are cleared`() = testBlocking {
         setSite(7)
         val repository = BookingFilterRepository(dataStore, selectedSite)
-        val initialStatuses = setOf(BookingEntity.AttendanceStatus.Booked)
+        val initialStatuses = setOf(BookingEntity.AttendanceStatus.Attended)
         val initialProducts = setOf(
             BookingsFilterOption.ProductInfo(productId = 33L, productName = "Pilates")
         )

@@ -246,6 +246,9 @@ class BookingListViewModelTest : BaseUnitTest() {
                     dateRange = filtersBuilder.prepareDateFilter(
                         BookingListTab.Upcoming,
                         BookingsFilterOption.DateRange.DEFAULT
+                    ),
+                    excludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses(
+                        setOf(BookingEntity.Status.Cancelled, BookingEntity.Status.Complete)
                     )
                 )
             ),
@@ -464,7 +467,7 @@ class BookingListViewModelTest : BaseUnitTest() {
             parentId = 0L,
             personCounts = listOf(1L),
             localTimezone = "",
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended,
             order = BookingOrderInfo(),
             customerNote = ""
         )

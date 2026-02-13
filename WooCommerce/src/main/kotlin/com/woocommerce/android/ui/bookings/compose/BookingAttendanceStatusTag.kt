@@ -69,19 +69,15 @@ fun BookingAttendanceStatusTag(
 }
 
 sealed interface BookingAttendanceStatus {
-    data object Booked : BookingAttendanceStatus
-    data object CheckedIn : BookingAttendanceStatus
-    data object NoShow : BookingAttendanceStatus
-    data object Cancelled : BookingAttendanceStatus
+    data object Attended : BookingAttendanceStatus
+    data object Unattended : BookingAttendanceStatus
 }
 
 @Composable
 fun BookingAttendanceStatus?.text(): String {
     return when (this) {
-        BookingAttendanceStatus.Booked -> stringResource(R.string.booking_attendance_status_booked)
-        BookingAttendanceStatus.CheckedIn -> stringResource(R.string.booking_attendance_status_checked_in)
-        BookingAttendanceStatus.Cancelled -> stringResource(R.string.booking_attendance_status_cancelled)
-        BookingAttendanceStatus.NoShow -> stringResource(R.string.booking_attendance_status_no_show)
+        BookingAttendanceStatus.Attended -> stringResource(R.string.booking_attendance_status_attended)
+        BookingAttendanceStatus.Unattended -> stringResource(R.string.booking_attendance_status_unattended)
         else -> ""
     }
 }
@@ -89,8 +85,7 @@ fun BookingAttendanceStatus?.text(): String {
 @Composable
 fun BookingAttendanceStatus.backgroundColor(): Color {
     return when (this) {
-        BookingAttendanceStatus.NoShow -> R.color.tag_bg_booking_yellow
-        BookingAttendanceStatus.Cancelled -> R.color.tag_bg_booking_cancelled
+        BookingStatus.Cancelled -> R.color.tag_bg_booking_cancelled
         else -> R.color.tagView_bg
     }.let { colorResource(it) }
 }
@@ -98,17 +93,17 @@ fun BookingAttendanceStatus.backgroundColor(): Color {
 @Composable
 fun BookingAttendanceStatus.textColor(): Color {
     return when (this) {
-        BookingAttendanceStatus.Cancelled -> R.color.tag_text_booking_cancelled
+        BookingStatus.Cancelled -> R.color.tag_text_booking_cancelled
         else -> R.color.tagView_text
     }.let { colorResource(it) }
 }
 
 @Preview
 @Composable
-private fun AttendanceStatusTagPreview() {
+private fun AttendanceStatusTagAttendedPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.Booked,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
         )
     }
@@ -116,23 +111,11 @@ private fun AttendanceStatusTagPreview() {
 
 @Preview(uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
-private fun AttendanceStatusTagDarkPreview() {
+private fun AttendanceStatusTagUnattendedDarkPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.CheckedIn,
+            state = BookingAttendanceStatus.Unattended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
-        )
-    }
-}
-
-@LightDarkThemePreviews
-@Composable
-private fun AttendanceStatusTagNoShowPreview() {
-    WooThemeWithBackground {
-        BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.NoShow,
-            attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
-            modifier = Modifier.padding(10.dp)
         )
     }
 }
@@ -142,7 +125,7 @@ private fun AttendanceStatusTagNoShowPreview() {
 private fun AttendanceStatusTagCancelledPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.Cancelled,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             modifier = Modifier.padding(10.dp)
         )
@@ -154,7 +137,7 @@ private fun AttendanceStatusTagCancelledPreview() {
 private fun AttendanceStatusTagInProgressPreview() {
     WooThemeWithBackground {
         BookingAttendanceStatusTag(
-            state = BookingAttendanceStatus.NoShow,
+            state = BookingAttendanceStatus.Attended,
             attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             modifier = Modifier.padding(10.dp)
         )
