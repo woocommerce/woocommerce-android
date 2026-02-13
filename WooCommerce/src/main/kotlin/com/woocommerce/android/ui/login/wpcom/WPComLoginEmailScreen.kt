@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -16,7 +16,6 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -25,38 +24,34 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.jetpack.components.JetpackConsent
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 
 @Composable
-fun JetpackActivationWPCom2FAScreen(viewModel: JetpackActivationWPCom2FAViewModel) {
+fun WPComLoginEmailScreen(viewModel: WPComLoginEmailViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationWPCom2FAScreen(
+        WPComLoginEmailScreen(
             viewState = it,
+            onEmailChanged = viewModel::onEmailOrUsernameChanged,
             onCloseClick = viewModel::onCloseClick,
-            onSMSLinkClick = viewModel::onSMSLinkClick,
-            onContinueClick = viewModel::onContinueClick,
-            onOTPChanged = viewModel::onOTPChanged
+            onContinueClick = viewModel::onContinueClick
         )
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun JetpackActivationWPCom2FAScreen(
-    viewState: JetpackActivationWPCom2FAViewModel.ViewState,
+fun WPComLoginEmailScreen(
+    viewState: WPComLoginEmailViewModel.ViewState,
+    onEmailChanged: (String) -> Unit = {},
     onCloseClick: () -> Unit = {},
-    onSMSLinkClick: () -> Unit = {},
-    onContinueClick: () -> Unit = {},
-    onOTPChanged: (String) -> Unit = {}
+    onContinueClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -73,7 +68,7 @@ fun JetpackActivationWPCom2FAScreen(
                 .background(MaterialTheme.colors.surface)
                 .padding(paddingValues)
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
         ) {
             Column(
                 modifier = Modifier
@@ -92,35 +87,45 @@ fun JetpackActivationWPCom2FAScreen(
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 Text(
                     text = stringResource(
-                        id = R.string.enter_verification_code
+                        id = if (viewState.isJetpackInstalled) {
+                            R.string.login_jetpack_connection_enter_wpcom_email
+                        } else {
+                            R.string.login_jetpack_installation_enter_wpcom_email
+                        }
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
                 WCOutlinedTextField(
-                    value = viewState.otp,
-                    onValueChange = onOTPChanged,
-                    label = stringResource(id = R.string.verification_code),
+                    value = viewState.emailOrUsername,
+                    onValueChange = onEmailChanged,
+                    label = if (viewState.usernameOnly) {
+                        stringResource(R.string.username)
+                    } else {
+                        stringResource(id = R.string.email_or_username)
+                    },
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Number,
-                        imeAction = ImeAction.Done
-                    ),
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions(
                         onDone = {
                             keyboardController?.hide()
                             onContinueClick()
                         }
-                    ),
-                    singleLine = true
+                    )
                 )
-                WCTextButton(onClick = onSMSLinkClick) {
-                    Text(text = stringResource(id = R.string.login_text_otp))
-                }
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+
+                if (!viewState.usernameOnly) {
+                    Text(
+                        style = MaterialTheme.typography.body2,
+                        text = stringResource(id = R.string.login_jetpack_connection_create_account)
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -145,23 +150,28 @@ fun JetpackActivationWPCom2FAScreen(
                     )
                 )
             }
+            JetpackConsent(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
+            )
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
 
-    viewState.loadingMessage?.let {
-        ProgressDialog(title = "", subtitle = stringResource(id = it))
+    if (viewState.isLoadingDialogShown) {
+        ProgressDialog(title = "", subtitle = stringResource(id = R.string.checking_email))
     }
 }
 
-@Preview
+@Preview(heightDp = 130)
 @Composable
-private fun JetpackActivationWPCom2FAScreenPreview() {
+private fun JetpackActivationWPComScreenPreview() {
     WooThemeWithBackground {
-        JetpackActivationWPCom2FAScreen(
-            viewState = JetpackActivationWPCom2FAViewModel.ViewState(
-                emailOrUsername = "test@email.com",
-                password = "",
-                otp = "123456",
+        WPComLoginEmailScreen(
+            viewState = WPComLoginEmailViewModel.ViewState(
+                usernameOnly = false,
+                emailOrUsername = "",
                 isJetpackInstalled = false
             )
         )

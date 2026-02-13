@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,8 +15,8 @@ import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackActivationScreen
-import com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPostLoginViewModel.ShowJetpackCPInstallationScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
@@ -24,11 +24,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class JetpackActivationWPCom2FAFragment : BaseFragment() {
+class WPComLogin2FAFragment : BaseFragment() {
     override val activityAppBarStatus: AppBarStatus
         get() = AppBarStatus.Hidden
 
-    private val viewModel: JetpackActivationWPCom2FAViewModel by viewModels()
+    private val viewModel: WPComLogin2FAViewModel by viewModels()
 
     @Inject
     lateinit var uiMessageResolver: UIMessageResolver
@@ -39,7 +39,7 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
 
             setContent {
                 WooThemeWithBackground {
-                    JetpackActivationWPCom2FAScreen(viewModel = viewModel)
+                    WPComLogin2FAScreen(viewModel = viewModel)
                 }
             }
         }
@@ -62,8 +62,8 @@ class JetpackActivationWPCom2FAFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            JetpackActivationWPCom2FAFragmentDirections
-                .actionJetpackActivationWPCom2FAFragmentToJetpackActivationMainFragment(
+            WPComLogin2FAFragmentDirections
+                .actionWPComLogin2FAFragmentToJetpackActivationMainFragment(
                     jetpackStatus = event.jetpackStatus,
                     siteUrl = event.siteUrl
                 )

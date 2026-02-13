@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -30,13 +30,13 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
-import com.woocommerce.android.ui.login.jetpack.components.UserInfo
+import com.woocommerce.android.ui.login.wpcom.components.UserInfo
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @Composable
-fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLinkRequestViewModel) {
+fun WPComLoginMagicLinkRequestScreen(viewModel: WPComLoginMagicLinkRequestViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationMagicLinkRequestScreen(
+        WPComLoginMagicLinkRequestScreen(
             viewState = it,
             onCloseClick = viewModel::onCloseClick,
             onRequestMagicLinkClick = viewModel::onRequestMagicLinkClick,
@@ -47,8 +47,8 @@ fun JetpackActivationMagicLinkRequestScreen(viewModel: JetpackActivationMagicLin
 }
 
 @Composable
-fun JetpackActivationMagicLinkRequestScreen(
-    viewState: JetpackActivationMagicLinkRequestViewModel.ViewState,
+fun WPComLoginMagicLinkRequestScreen(
+    viewState: WPComLoginMagicLinkRequestViewModel.ViewState,
     onCloseClick: () -> Unit = {},
     onRequestMagicLinkClick: () -> Unit = {},
     onOpenEmailClientClick: () -> Unit = {},
@@ -84,11 +84,11 @@ fun JetpackActivationMagicLinkRequestScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
 
             when (viewState) {
-                is JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState -> {
+                is WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState -> {
                     MagicLinkRequestContent(viewState, onRequestMagicLinkClick, Modifier.weight(1f))
                 }
 
-                is JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState -> {
+                is WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState -> {
                     MagicLinkSentContent(viewState, onOpenEmailClientClick, Modifier.weight(1f))
                 }
             }
@@ -112,7 +112,7 @@ fun JetpackActivationMagicLinkRequestScreen(
 
 @Composable
 private fun MagicLinkRequestContent(
-    viewState: JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState,
+    viewState: WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState,
     onRequestMagicLinkClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -144,7 +144,7 @@ private fun MagicLinkRequestContent(
 
 @Composable
 private fun MagicLinkSentContent(
-    viewState: JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState,
+    viewState: WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState,
     onOpenEmailClientClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -216,8 +216,8 @@ private fun MagicLinkSentContent(
 @Composable
 private fun MagicLinkRequestPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkRequestScreen(
-            viewState = JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
+        WPComLoginMagicLinkRequestScreen(
+            viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 isJetpackInstalled = false,
@@ -232,8 +232,8 @@ private fun MagicLinkRequestPreview() {
 @Composable
 private fun MagicLinkSentPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkRequestScreen(
-            viewState = JetpackActivationMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
+        WPComLoginMagicLinkRequestScreen(
+            viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
                 email = null,
                 isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,

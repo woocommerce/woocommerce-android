@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -27,13 +27,13 @@ import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackActivationWPComEmailViewModel @Inject constructor(
+class WPComLoginEmailViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val wpComLoginRepository: WPComLoginRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper,
     private val stringUtils: StringUtils,
 ) : ScopedViewModel(savedStateHandle) {
-    private val navArgs: JetpackActivationWPComEmailFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: WPComLoginEmailFragmentArgs by savedStateHandle.navArgs()
 
     private val emailOrUsername = savedStateHandle.getStateFlow(
         scope = viewModelScope,

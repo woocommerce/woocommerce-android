@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -25,41 +25,38 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
-import com.woocommerce.android.ui.compose.component.WCOutlinedButton
-import com.woocommerce.android.ui.compose.component.WCPasswordField
+import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
-import com.woocommerce.android.ui.login.jetpack.components.UserInfo
 
 @Composable
-fun JetpackActivationWPComPasswordScreen(viewModel: JetpackActivationWPComPasswordViewModel) {
+fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationWPComPasswordScreen(
+        WPComLogin2FAScreen(
             viewState = it,
-            onPasswordChanged = viewModel::onPasswordChanged,
             onCloseClick = viewModel::onCloseClick,
+            onSMSLinkClick = viewModel::onSMSLinkClick,
             onContinueClick = viewModel::onContinueClick,
-            onMagicLinkClick = viewModel::onMagicLinkClick,
-            onResetPasswordClick = viewModel::onResetPasswordClick
+            onOTPChanged = viewModel::onOTPChanged
         )
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun JetpackActivationWPComPasswordScreen(
-    viewState: JetpackActivationWPComPasswordViewModel.ViewState,
-    onPasswordChanged: (String) -> Unit = {},
+fun WPComLogin2FAScreen(
+    viewState: WPComLogin2FAViewModel.ViewState,
     onCloseClick: () -> Unit = {},
+    onSMSLinkClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
-    onMagicLinkClick: () -> Unit = {},
-    onResetPasswordClick: () -> Unit = {}
+    onOTPChanged: (String) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
 
@@ -96,41 +93,34 @@ fun JetpackActivationWPComPasswordScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                UserInfo(
-                    emailOrUsername = viewState.emailOrUsername,
-                    avatarUrl = viewState.avatarUrl,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
                     text = stringResource(
-                        id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connection_enter_wpcom_password
-                        } else {
-                            R.string.login_jetpack_installation_enter_wpcom_password
-                        }
+                        id = R.string.enter_verification_code
                     )
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
-                WCPasswordField(
-                    value = viewState.password,
-                    onValueChange = onPasswordChanged,
-                    label = stringResource(id = R.string.password),
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
+                WCOutlinedTextField(
+                    value = viewState.otp,
+                    onValueChange = onOTPChanged,
+                    label = stringResource(id = R.string.verification_code),
                     isError = viewState.errorMessage != null,
                     helperText = viewState.errorMessage?.let { stringResource(id = it) },
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Number,
+                        imeAction = ImeAction.Done
+                    ),
                     keyboardActions = KeyboardActions(
                         onDone = {
-                            if (viewState.enableSubmit) {
-                                keyboardController?.hide()
-                                onContinueClick()
-                            }
+                            keyboardController?.hide()
+                            onContinueClick()
                         }
-                    )
+                    ),
+                    singleLine = true
                 )
-                WCTextButton(onClick = onResetPasswordClick) {
-                    Text(text = stringResource(id = R.string.reset_your_password))
+                WCTextButton(onClick = onSMSLinkClick) {
+                    Text(text = stringResource(id = R.string.login_text_otp))
                 }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
             }
 
             Spacer(modifier = Modifier.weight(1f))
@@ -155,34 +145,23 @@ fun JetpackActivationWPComPasswordScreen(
                     )
                 )
             }
-            WCOutlinedButton(
-                onClick = onMagicLinkClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.major_100))
-            ) {
-                Text(
-                    text = stringResource(id = R.string.login_jetpack_installation_continue_magic_link)
-                )
-            }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
         }
     }
 
-    if (viewState.isLoadingDialogShown) {
-        ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
+    viewState.loadingMessage?.let {
+        ProgressDialog(title = "", subtitle = stringResource(id = it))
     }
 }
 
 @Preview
 @Composable
-private fun JetpackActivationWPComScreenPreview() {
+private fun WPComLogin2FAScreenPreview() {
     WooThemeWithBackground {
-        JetpackActivationWPComPasswordScreen(
-            viewState = JetpackActivationWPComPasswordViewModel.ViewState(
+        WPComLogin2FAScreen(
+            viewState = WPComLogin2FAViewModel.ViewState(
                 emailOrUsername = "test@email.com",
                 password = "",
-                avatarUrl = "",
+                otp = "123456",
                 isJetpackInstalled = false
             )
         )

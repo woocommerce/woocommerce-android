@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
@@ -15,18 +15,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class JetpackActivationMagicLinkHandlerViewModel @Inject constructor(
+class WPComLoginMagicLinkHandlerViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     selectedSite: SelectedSite,
     jetpackActivationRepository: JetpackActivationRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
-) : JetpackActivationWPComPostLoginViewModel(
+) : WPComLoginPostLoginViewModel(
     savedStateHandle,
     selectedSite,
     jetpackActivationRepository,
     analyticsTrackerWrapper
 ) {
-    private val navArgs: JetpackActivationMagicLinkHandlerFragmentArgs by savedStateHandle.navArgs()
+    private val navArgs: WPComLoginMagicLinkHandlerFragmentArgs by savedStateHandle.navArgs()
 
     private val _viewState = MutableStateFlow(ViewState.Loading)
     val viewState = _viewState.asLiveData()

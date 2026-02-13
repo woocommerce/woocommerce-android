@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
@@ -12,7 +12,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import com.woocommerce.android.viewmodel.ScopedViewModel
 
-open class JetpackActivationWPComPostLoginViewModel(
+open class WPComLoginPostLoginViewModel(
     savedStateHandle: SavedStateHandle,
     private val selectedSite: SelectedSite,
     private val jetpackActivationRepository: JetpackActivationRepository,

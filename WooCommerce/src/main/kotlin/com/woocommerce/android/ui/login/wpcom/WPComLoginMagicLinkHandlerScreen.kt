@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.jetpack.wpcom
+package com.woocommerce.android.ui.login.wpcom
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -27,9 +27,9 @@ import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun JetpackActivationMagicLinkHandlerScreen(viewModel: JetpackActivationMagicLinkHandlerViewModel) {
+fun WPComLoginMagicLinkHandlerScreen(viewModel: WPComLoginMagicLinkHandlerViewModel) {
     viewModel.viewState.observeAsState().value?.let {
-        JetpackActivationMagicLinkHandlerScreen(
+        WPComLoginMagicLinkHandlerScreen(
             viewState = it,
             onRetryClick = viewModel::continueLogin,
             onCloseClick = viewModel::onCloseClick
@@ -38,15 +38,15 @@ fun JetpackActivationMagicLinkHandlerScreen(viewModel: JetpackActivationMagicLin
 }
 
 @Composable
-fun JetpackActivationMagicLinkHandlerScreen(
-    viewState: JetpackActivationMagicLinkHandlerViewModel.ViewState,
+fun WPComLoginMagicLinkHandlerScreen(
+    viewState: WPComLoginMagicLinkHandlerViewModel.ViewState,
     onRetryClick: () -> Unit = {},
     onCloseClick: () -> Unit = {}
 ) {
     BackHandler(onBack = onCloseClick)
 
     when (viewState) {
-        JetpackActivationMagicLinkHandlerViewModel.ViewState.Loading -> Box(
+        WPComLoginMagicLinkHandlerViewModel.ViewState.Loading -> Box(
             modifier = Modifier
                 .background(MaterialTheme.colors.surface)
                 .fillMaxSize()
@@ -54,7 +54,7 @@ fun JetpackActivationMagicLinkHandlerScreen(
             CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
         }
 
-        JetpackActivationMagicLinkHandlerViewModel.ViewState.Error ->
+        WPComLoginMagicLinkHandlerViewModel.ViewState.Error ->
             Scaffold(
                 topBar = {
                     Toolbar(
@@ -90,8 +90,8 @@ fun JetpackActivationMagicLinkHandlerScreen(
 @Composable
 private fun ErrorPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkHandlerScreen(
-            viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Error
+        WPComLoginMagicLinkHandlerScreen(
+            viewState = WPComLoginMagicLinkHandlerViewModel.ViewState.Error
         )
     }
 }
@@ -100,8 +100,8 @@ private fun ErrorPreview() {
 @Composable
 private fun LoadingPreview() {
     WooThemeWithBackground {
-        JetpackActivationMagicLinkHandlerScreen(
-            viewState = JetpackActivationMagicLinkHandlerViewModel.ViewState.Loading
+        WPComLoginMagicLinkHandlerScreen(
+            viewState = WPComLoginMagicLinkHandlerViewModel.ViewState.Loading
         )
     }
 }
