@@ -14,6 +14,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
 
     fun onContinueClick() {
+        // Temporary flow: skip WordPress.com login and open steps screen directly.
         triggerEvent(OpenConnectionSteps)
     }
 
