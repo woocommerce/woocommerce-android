@@ -1,4 +1,4 @@
-package com.woocommerce.android.ui.login.wpcom.components
+package com.woocommerce.android.ui.pushnotifications
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -20,7 +20,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 
 @Composable
-fun WordPressWooBadgeHeader(
+fun WordPressWooBadge(
     modifier: Modifier = Modifier,
     iconSize: Dp = 48.dp
 ) {
@@ -35,7 +35,7 @@ fun WordPressWooBadgeHeader(
             tint = colorResource(R.color.wp_blue_50),
             modifier = Modifier
                 .size(iconSize)
-                .align(Alignment.CenterStart)
+                .align(Alignment.Companion.CenterStart)
         )
         Image(
             painter = painterResource(id = R.drawable.ic_woo),
@@ -55,16 +55,16 @@ fun WordPressWooBadgeHeader(
 
 @Preview
 @Composable
-private fun WordPressWooBadgeHeaderPreview() {
+private fun WordPressWooBadgePreview() {
     WooThemeWithBackground {
-        WordPressWooBadgeHeader()
+        WordPressWooBadge()
     }
 }
 
 @Preview
 @Composable
-private fun WordPressWooBadgeHeaderSmallPreview() {
+private fun WordPressWooBadgeSmallPreview() {
     WooThemeWithBackground {
-        WordPressWooBadgeHeader(iconSize = 24.dp)
+        WordPressWooBadge(iconSize = 24.dp)
     }
 }

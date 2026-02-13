@@ -38,7 +38,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
-import com.woocommerce.android.ui.login.wpcom.components.WordPressWooBadgeHeader
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLoginEmailScreen(viewModel: WPComLoginEmailViewModel) {
@@ -83,7 +83,7 @@ fun WPComLoginEmailScreen(
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
                 if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                    WordPressWooBadgeHeader()
+                    WordPressWooBadge()
                 } else {
                     JetpackToWooHeader()
                 }
