@@ -18,7 +18,14 @@ open class WPComLoginPostLoginViewModel(
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+    protected suspend fun onLoginSuccess(wpComLoginMode: WPComLoginMode): Result<Unit> {
+        return when (wpComLoginMode) {
+            is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
+            WPComLoginMode.PushNotificationsSetup -> TODO()
+        }
+    }
+
+    private suspend fun handleJetpackSetupPostLogin(jetpackStatus: JetpackStatus): Result<Unit> {
         analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
 
         val siteUrl = selectedSite.get().url

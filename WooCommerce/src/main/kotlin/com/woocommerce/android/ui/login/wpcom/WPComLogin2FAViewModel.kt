@@ -60,7 +60,8 @@ class WPComLogin2FAViewModel @Inject constructor(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
+            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
+                ?.jetpackStatus?.isJetpackInstalled ?: false,
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 }
         )
@@ -138,7 +139,7 @@ class WPComLogin2FAViewModel @Inject constructor(
     private suspend fun fetchAccount() {
         accountRepository.fetchUserAccount().fold(
             onSuccess = {
-                onLoginSuccess(navArgs.jetpackStatus)
+                onLoginSuccess(navArgs.wpComLoginMode)
             },
             onFailure = {
                 triggerEvent(ShowSnackbar(R.string.error_fetch_my_profile))
