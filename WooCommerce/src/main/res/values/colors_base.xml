@@ -198,6 +198,11 @@
     <color name="jetpack_install_progressbar">@color/jetpack_green_40</color>
 
     <!--
+        Woo Push notifications steps
+    -->
+    <color name="woo_push_notifications_connection_steps_progressbar">#70B954</color>
+
+    <!--
     More menu button
     -->
     <color name="more_menu_button_background">@color/color_surface</color>
