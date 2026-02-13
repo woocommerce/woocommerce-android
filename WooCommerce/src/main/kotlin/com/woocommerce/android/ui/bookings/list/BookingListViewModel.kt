@@ -40,7 +40,7 @@ class BookingListViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val bookingFilterRepository: BookingFilterRepository,
     private val bookingListHandler: BookingListHandler,
-    private val filtersBuilder: BookingListFiltersBuilder,
+    private val dateFilterBuilder: BookingListDateFilterBuilder,
     private val bookingMapper: BookingMapper,
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact,
 ) : ScopedViewModel(savedStateHandle) {
@@ -116,7 +116,6 @@ class BookingListViewModel @Inject constructor(
     ) { tab, sort, filters ->
         BookingListControlsState(
             selectedSortOption = sort,
-            isFilterButtonVisible = tab == BookingListTab.All,
             enabledFiltersCount = filters.enabledFiltersCount,
             onSortClick = ::onSortClicked,
             onFilterClick = ::onFilterClicked,
@@ -284,14 +283,9 @@ class BookingListViewModel @Inject constructor(
         }
     }
 
-    private fun FetchParams.prepareFilters(): BookingFilters = with(filtersBuilder) {
-        when (selectedTab) {
-            BookingListTab.Today,
-            BookingListTab.Upcoming -> BookingFilters(dateRange = selectedTab.asDateRangeFilter())
-
-            BookingListTab.All -> filters
-        }
-    }
+    private fun FetchParams.prepareFilters(): BookingFilters = filters.copy(
+        dateRange = dateFilterBuilder.prepareDateFilter(selectedTab, filters.dateRange)
+    )
 
     private data class FetchParams(
         val searchQuery: String?,
