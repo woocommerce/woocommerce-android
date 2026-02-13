@@ -53,7 +53,7 @@ sealed class WooPosBookingsState {
         val discountAmount: String,
         val totalAmount: String,
         val paidWithLabel: String?,
-        val showPayButtons: Boolean,
+        val collectPaymentLabel: String?,
     )
 
     @Immutable
