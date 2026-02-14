@@ -60,7 +60,7 @@ fun WPComLoginEmailScreen(
     onContinueClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val branding = resolveBranding(viewState)
+    val branding = viewState.resolveBranding()
 
     Scaffold(
         topBar = {
@@ -163,8 +163,8 @@ private data class EmailScreenBranding(
     @StringRes val buttonText: Int,
 )
 
-private fun resolveBranding(viewState: WPComLoginEmailViewModel.ViewState): EmailScreenBranding {
-    return when (viewState.wpComLoginMode) {
+private fun WPComLoginEmailViewModel.ViewState.resolveBranding(): EmailScreenBranding {
+    return when (wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> EmailScreenBranding(
             navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
@@ -175,18 +175,18 @@ private fun resolveBranding(viewState: WPComLoginEmailViewModel.ViewState): Emai
 
         is WPComLoginMode.JetpackSetup -> EmailScreenBranding(
             navIcon = R.drawable.ic_close_24dp,
-            title = if (viewState.isJetpackInstalled) {
+            title = if (isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
             },
-            subtitle = if (viewState.isJetpackInstalled) {
+            subtitle = if (isJetpackInstalled) {
                 R.string.login_jetpack_connection_enter_wpcom_email
             } else {
                 R.string.login_jetpack_installation_enter_wpcom_email
             },
             helperText = R.string.login_jetpack_connection_create_account,
-            buttonText = if (viewState.isJetpackInstalled) {
+            buttonText = if (isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
