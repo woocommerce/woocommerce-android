@@ -42,6 +42,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val priceFormat: WooPosFormatPrice,
     private val totalsRepository: WooPosTotalsRepository,
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -59,6 +60,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
+    private var analyticsTrackerJob: Job? = null
 
     init {
         observeCardReaderStatus()
@@ -168,6 +170,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     }
                 }
             }
+        }
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = viewModelScope.launch {
+            analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState)
         }
     }
 
@@ -295,6 +301,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onEmailReceiptClicked() {
         viewModelScope.launch {
+            analyticsTracker.trackEmailReceiptTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
         }
     }
@@ -304,6 +311,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
         paymentListenerJob = null
         controllerEventJob?.cancel()
         controllerEventJob = null
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
     }
