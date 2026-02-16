@@ -311,7 +311,7 @@ private fun BookingCustomerCard(
                 WooPosText(
                     text = stringResource(R.string.woopos_bookings_details_customer_note_label),
                     style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    color = WooPosTheme.colors.onSurfaceVariantLowest,
                 )
                 Spacer(Modifier.height(WooPosSpacing.Small.value))
                 WooPosText(
