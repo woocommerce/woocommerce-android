@@ -73,6 +73,7 @@ class WooPosBookingsViewModelTest {
                 }
             }
         }
+        on { getString(any()) } doAnswer { "" }
         on { getString(any(), any(), any(), any(), any(), any()) } doAnswer {
             "Cancel dialog message"
         }

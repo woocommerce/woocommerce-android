@@ -3929,6 +3929,7 @@
     <string name="woopos_bookings_cancel_dialog_confirm">Yes, cancel booking</string>
     <string name="woopos_bookings_cancel_dialog_keep">No, keep it</string>
     <string name="woopos_bookings_cancel_dialog_background">Cancel booking dialog background</string>
+    <string name="woopos_bookings_cancel_dialog_unknown_customer">unknown customer</string>
     <string name="woopos_bookings_cancel_error">Failed to cancel booking. Please try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>

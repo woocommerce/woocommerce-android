@@ -276,13 +276,19 @@ class WooPosBookingsViewModel @Inject constructor(
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val details = currentState.selectedDetails ?: return
 
+        val customerLabel = details.customerSection?.let {
+            it.name?.takeIf(String::isNotBlank)
+                ?: it.email?.takeIf(String::isNotBlank)
+                ?: it.phone?.takeIf(String::isNotBlank)
+        } ?: resourceProvider.getString(R.string.woopos_bookings_cancel_dialog_unknown_customer)
+
         val message = resourceProvider.getString(
             R.string.woopos_bookings_cancel_dialog_message,
             details.number.removePrefix("#"),
             details.bookingName,
             details.appointmentDate,
             details.appointmentTime,
-            details.customerSection?.name.orEmpty()
+            customerLabel
         )
 
         _state.value = currentState.copy(
