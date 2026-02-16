@@ -12,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
+import com.woocommerce.android.NavGraphPushNotificationsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -22,6 +23,7 @@ import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.Show2F
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordViewModel.ShowMagicLinkScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
+import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowPushNotificationsConnectionSteps
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.util.ChromeCustomTabUtils
@@ -65,6 +67,7 @@ class WPComLoginPasswordFragment : BaseFragment() {
                 is ShowMagicLinkScreen -> navigateToMagicLinkScreen(event)
                 is ShowJetpackActivationScreen -> navigateToJetpackActivationScreen(event)
                 is ShowJetpackCPInstallationScreen -> navigateToJetpackCPInstallationScreen()
+                is ShowPushNotificationsConnectionSteps -> navigateToPushNotificationsConnectionSteps()
                 is GoToStore -> goToStore()
                 is LaunchUrlInChromeTab -> ChromeCustomTabUtils.launchUrl(requireContext(), event.url)
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
@@ -103,6 +106,12 @@ class WPComLoginPasswordFragment : BaseFragment() {
                     requestAtStart = true,
                     isNewWpComAccount = false
                 )
+        )
+    }
+
+    private fun navigateToPushNotificationsConnectionSteps() {
+        findNavController().navigateSafely(
+            NavGraphPushNotificationsDirections.actionGlobalToWooPushNotificationsConnectionStepsFragment()
         )
     }
 
