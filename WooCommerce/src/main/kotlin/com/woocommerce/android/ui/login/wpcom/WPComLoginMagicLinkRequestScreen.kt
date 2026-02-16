@@ -23,6 +23,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
@@ -31,6 +33,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @Composable
@@ -54,11 +57,13 @@ fun WPComLoginMagicLinkRequestScreen(
     onOpenEmailClientClick: () -> Unit = {},
     onFallbackButtonClick: () -> Unit = {}
 ) {
+    val branding = viewState.resolveBranding()
+
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(branding.navIcon)
             )
         },
         backgroundColor = MaterialTheme.colors.surface
@@ -69,15 +74,14 @@ fun WPComLoginMagicLinkRequestScreen(
                 .padding(paddingValues)
                 .padding(dimensionResource(id = R.dimen.major_100))
         ) {
-            JetpackToWooHeader()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-            val title = if (viewState.isJetpackInstalled) {
-                R.string.login_jetpack_connect
+            if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
+                WordPressWooBadge()
             } else {
-                R.string.login_jetpack_install
+                JetpackToWooHeader()
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
             Text(
-                text = stringResource(id = title),
+                text = stringResource(id = branding.title),
                 style = MaterialTheme.typography.h4,
                 fontWeight = FontWeight.Bold
             )
@@ -148,7 +152,6 @@ private fun MagicLinkSentContent(
     onOpenEmailClientClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    viewState.toString()
     Column(
         modifier = modifier
     ) {
@@ -212,12 +215,63 @@ private fun MagicLinkSentContent(
     }
 }
 
+private data class MagicLinkScreenBranding(
+    @DrawableRes val navIcon: Int,
+    @StringRes val title: Int,
+)
+
+private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): MagicLinkScreenBranding {
+    return when (wpComLoginMode) {
+        WPComLoginMode.PushNotificationsSetup -> MagicLinkScreenBranding(
+            navIcon = R.drawable.ic_back_24dp,
+            title = R.string.login_wpcom_connect_title,
+        )
+
+        is WPComLoginMode.JetpackSetup -> MagicLinkScreenBranding(
+            navIcon = R.drawable.ic_close_24dp,
+            title = if (isJetpackInstalled) {
+                R.string.login_jetpack_connect
+            } else {
+                R.string.login_jetpack_install
+            },
+        )
+    }
+}
+
 @Preview
 @Composable
-private fun MagicLinkRequestPreview() {
+private fun JetpackModeRequestPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
+                wpComLoginMode = WPComLoginMode.JetpackSetup(
+                    com.woocommerce.android.model.JetpackStatus(
+                        isJetpackInstalled = false,
+                        jetpackConnectionStatus = com.woocommerce.android.model.JetpackConnectionStatus
+                            .AccountNotConnected(
+                                siteRegistrationStatus = com.woocommerce.android.model
+                                    .JetpackSiteRegistrationStatus.UNKNOWN,
+                                blogId = null
+                            )
+                    )
+                ),
+                emailOrUsername = "test@email.com",
+                avatarUrl = "avatar",
+                isJetpackInstalled = false,
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
+                isLoadingDialogShown = false
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NotificationSetupModeRequestPreview() {
+    WooThemeWithBackground {
+        WPComLoginMagicLinkRequestScreen(
+            viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 isJetpackInstalled = false,
@@ -234,6 +288,7 @@ private fun MagicLinkSentPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 email = null,
                 isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
