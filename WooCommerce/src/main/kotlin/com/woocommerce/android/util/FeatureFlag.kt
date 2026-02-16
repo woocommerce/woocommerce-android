@@ -4,13 +4,13 @@ package com.woocommerce.android.util
  * Feature flags control feature availability.
  *
  * - If overridden (debug builds) → use override value
- * - If remote has value for [key] → use remote value
+ * - If remote has value for [remoteFlagKey] → use remote value
  * - Otherwise → use [default] value
  *
  * Access via [FeatureFlagRepository.isEnabled].
  */
 enum class FeatureFlag(
-    val key: String,
+    val remoteFlagKey: String,
     val default: Boolean = PackageUtils.isDebugBuild()
 ) {
     WC_SHIPPING_BANNER("wc_shipping_banner"),

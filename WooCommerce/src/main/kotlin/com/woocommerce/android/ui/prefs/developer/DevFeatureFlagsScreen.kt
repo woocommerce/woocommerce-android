@@ -183,7 +183,7 @@ private fun FeatureFlagItem(
             modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = flag.key,
+                text = flag.remoteFlagKey,
                 style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
