@@ -874,6 +874,62 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
                 )
             }
         }
+
+        data object RefundFlowStarted : Event() {
+            override val name: String = "refund_flow_started"
+        }
+
+        data class RefundConfirmTapped(
+            val refundType: String,
+            val hasReason: Boolean
+        ) : Event() {
+            override val name: String = "refund_confirm_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "refund_type" to refundType,
+                        "has_reason" to hasReason.toString()
+                    )
+                )
+            }
+        }
+
+        data object RefundProcessingStarted : Event() {
+            override val name: String = "refund_processing_started"
+        }
+
+        data object RefundProcessingSuccess : Event() {
+            override val name: String = "refund_processing_success"
+        }
+
+        data object RefundProcessingFailed : Event() {
+            override val name: String = "refund_processing_failed"
+        }
+
+        data class RefundFlowAborted(val refundStep: String) : Event() {
+            override val name: String = "refund_flow_aborted"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "refund_step" to refundStep
+                    )
+                )
+            }
+        }
+
+        data class RefundSelectAllTapped(val action: String) : Event() {
+            override val name: String = "refund_select_all_tapped"
+
+            init {
+                addProperties(
+                    mapOf(
+                        "action" to action
+                    )
+                )
+            }
+        }
     }
 
     sealed class PaymentFlowTrackerEvent : WooPosAnalyticsEvent() {
