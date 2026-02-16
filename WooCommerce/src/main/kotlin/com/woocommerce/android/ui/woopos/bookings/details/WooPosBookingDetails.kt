@@ -178,48 +178,27 @@ private fun BookingDetailsCard(
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_title, details.number.removePrefix("#")),
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.Bold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
-            DetailRowLine(
-                label = stringResource(R.string.woopos_bookings_details_service_name_label),
-                value = details.bookingName,
-            )
-
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-            DetailRowLine(
-                label = stringResource(R.string.woopos_bookings_details_date_label),
-                value = details.appointmentDate,
-            )
-
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-            DetailRowLine(
-                label = stringResource(R.string.woopos_bookings_details_time_label),
-                value = details.appointmentTime,
-            )
-
             details.teamMember?.let {
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
                 DetailRowLine(
                     label = stringResource(R.string.woopos_bookings_details_team_member_label),
                     value = it,
                 )
+                DividerWithSpacing()
             }
 
             details.location?.let {
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
                 DetailRowLine(
                     label = stringResource(R.string.woopos_bookings_details_location_label),
                     value = it,
                 )
+                DividerWithSpacing()
             }
-
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
 
             DetailRowLine(
                 label = stringResource(R.string.woopos_bookings_details_duration_label),
