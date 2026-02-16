@@ -3913,8 +3913,7 @@
     <string name="woopos_bookings_details_copy_email">Copy email</string>
     <string name="woopos_bookings_note_screen_title">Add note</string>
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
-    <string name="woopos_bookings_note_screen_button_add">Add</string>
-    <string name="woopos_bookings_note_screen_button_send">Send</string>
+    <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>

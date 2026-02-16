@@ -53,7 +53,7 @@ fun WooPosBookingNoteScreen(
     WooPosBookingNoteScreen(
         state = state,
         onNoteChanged = viewModel::onNoteChanged,
-        onSendClicked = viewModel::onSendClicked,
+        onSaveClicked = viewModel::onSaveClicked,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
     )
 }
@@ -62,7 +62,7 @@ fun WooPosBookingNoteScreen(
 private fun WooPosBookingNoteScreen(
     state: WooPosBookingNoteState,
     onNoteChanged: (String) -> Unit,
-    onSendClicked: () -> Boolean,
+    onSaveClicked: () -> Unit,
     onBackClicked: () -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
@@ -71,11 +71,6 @@ private fun WooPosBookingNoteScreen(
     LaunchedEffect(Unit) {
         focusRequester.requestFocus()
         keyboardController?.show()
-    }
-
-    val buttonText = when (state.sendButtonText) {
-        SendButtonText.ADD -> stringResource(R.string.woopos_bookings_note_screen_button_add)
-        SendButtonText.SEND -> stringResource(R.string.woopos_bookings_note_screen_button_send)
     }
 
     WooPosFullScreenInputLayout(
@@ -99,8 +94,8 @@ private fun WooPosBookingNoteScreen(
                 )
             }
         },
-        buttonText = buttonText,
-        buttonState = state.sendButtonState,
-        onButtonClicked = { onSendClicked() },
+        buttonText = stringResource(R.string.woopos_bookings_note_screen_button_save),
+        buttonState = state.saveButtonState,
+        onButtonClicked = { onSaveClicked() },
     )
 }

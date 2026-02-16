@@ -55,10 +55,10 @@ class WooPosBookingNoteViewModel @Inject constructor(
         _state.update { it.copy(noteText = text) }
     }
 
-    fun onSendClicked(): Boolean {
+    fun onSaveClicked() {
         val currentState = _state.value
         if (currentState.noteText.isBlank() || currentState.buttonState == WooPosButtonState.LOADING) {
-            return false
+            return
         }
 
         _state.update { it.copy(buttonState = WooPosButtonState.LOADING) }
@@ -82,9 +82,7 @@ class WooPosBookingNoteViewModel @Inject constructor(
                 )
             }
         }
-        return true
     }
-
 }
 
 data class WooPosBookingNoteState(
@@ -92,17 +90,10 @@ data class WooPosBookingNoteState(
     val noteText: String = "",
     val buttonState: WooPosButtonState = WooPosButtonState.DISABLED,
 ) {
-    val sendButtonState: WooPosButtonState
+    val saveButtonState: WooPosButtonState
         get() = when {
             buttonState == WooPosButtonState.LOADING -> WooPosButtonState.LOADING
             noteText.isBlank() -> WooPosButtonState.DISABLED
             else -> WooPosButtonState.ENABLED
         }
-
-    val sendButtonText: SendButtonText
-        get() = if (noteText.isBlank()) SendButtonText.ADD else SendButtonText.SEND
-}
-
-enum class SendButtonText {
-    ADD, SEND
 }

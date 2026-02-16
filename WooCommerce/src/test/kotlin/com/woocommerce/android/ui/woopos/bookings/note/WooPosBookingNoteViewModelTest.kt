@@ -89,28 +89,26 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `given empty note, when ViewModel created, then button shows Add and is disabled`() = runTest {
+    fun `given empty note, when ViewModel created, then save button is disabled`() = runTest {
         whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.state.value
-        assertThat(state.sendButtonText).isEqualTo(SendButtonText.ADD)
-        assertThat(state.sendButtonState).isEqualTo(WooPosButtonState.DISABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
     }
 
     @Test
-    fun `given existing note loaded, when ViewModel created, then button shows Send and is enabled`() = runTest {
+    fun `given existing note loaded, when ViewModel created, then save button is enabled`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.state.value
-        assertThat(state.sendButtonText).isEqualTo(SendButtonText.SEND)
-        assertThat(state.sendButtonState).isEqualTo(WooPosButtonState.ENABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.ENABLED)
     }
 
     @Test
-    fun `when note text changed to non-empty, then button shows Send and is enabled`() = runTest {
+    fun `when note text changed to non-empty, then save button is enabled`() = runTest {
         whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -119,42 +117,40 @@ class WooPosBookingNoteViewModelTest {
 
         val state = viewModel.state.value
         assertThat(state.noteText).isEqualTo("New note")
-        assertThat(state.sendButtonText).isEqualTo(SendButtonText.SEND)
-        assertThat(state.sendButtonState).isEqualTo(WooPosButtonState.ENABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.ENABLED)
     }
 
     @Test
-    fun `when note text changed to blank, then button shows Add and is disabled`() = runTest {
+    fun `when note text changed to blank, then save button is disabled`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onNoteChanged("   ")
 
         val state = viewModel.state.value
-        assertThat(state.sendButtonText).isEqualTo(SendButtonText.ADD)
-        assertThat(state.sendButtonState).isEqualTo(WooPosButtonState.DISABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
     }
 
     @Test
-    fun `when send clicked, then note saved via repository with trimmed text`() = runTest {
+    fun `when save clicked, then note saved via repository with trimmed text`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.onNoteChanged("  New note  ")
-        viewModel.onSendClicked()
+        viewModel.onSaveClicked()
         advanceUntilIdle()
 
         verify(bookingsRepository).updateNote(eq(bookingId), eq("New note"))
     }
 
     @Test
-    fun `when send clicked and succeeds, then navigation event emitted`() = runTest {
+    fun `when save clicked and succeeds, then navigation event emitted`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
             viewModel.onNoteChanged("New note")
-            viewModel.onSendClicked()
+            viewModel.onSaveClicked()
 
             val event = awaitItem()
             assertThat(event).isEqualTo(
@@ -167,14 +163,14 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `when send clicked and fails, then error event emitted`() = runTest {
+    fun `when save clicked and fails, then error event emitted`() = runTest {
         whenever(bookingsRepository.updateNote(any(), any())).thenReturn(Result.failure(Exception("fail")))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         viewModel.errorEvent.test {
             viewModel.onNoteChanged("New note")
-            viewModel.onSendClicked()
+            viewModel.onSaveClicked()
 
             awaitItem()
         }
@@ -190,20 +186,18 @@ class WooPosBookingNoteViewModelTest {
         advanceUntilIdle()
 
         viewModel.onNoteChanged("New note")
-        viewModel.onSendClicked()
+        viewModel.onSaveClicked()
 
-        assertThat(viewModel.state.value.sendButtonState).isEqualTo(WooPosButtonState.LOADING)
+        assertThat(viewModel.state.value.saveButtonState).isEqualTo(WooPosButtonState.LOADING)
     }
 
     @Test
-    fun `when send clicked with blank note, then returns false and does not save`() = runTest {
+    fun `when save clicked with blank note, then does not save`() = runTest {
         whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        val result = viewModel.onSendClicked()
-
-        assertThat(result).isFalse()
+        viewModel.onSaveClicked()
     }
 
     @Test
