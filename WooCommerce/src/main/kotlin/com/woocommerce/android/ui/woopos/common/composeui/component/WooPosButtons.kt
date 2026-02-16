@@ -152,6 +152,48 @@ fun WooPosOutlinedButtonSmall(
 }
 
 @Composable
+fun WooPosToggleButton(
+    modifier: Modifier = Modifier,
+    text: String,
+    isSelected: Boolean,
+    state: WooPosButtonState = WooPosButtonState.ENABLED,
+    onClick: () -> Unit,
+) {
+    val borderColor = when {
+        state == WooPosButtonState.DISABLED -> WooPosTheme.colors.disabledContainer
+        else -> MaterialTheme.colorScheme.inverseSurface
+    }
+    Button(
+        modifier = modifier,
+        height = 80.dp,
+        loadingIndicatorSize = 32.dp,
+        textStyle = WooPosTypography.BodyLarge,
+        text = text,
+        border = BorderStroke(2.dp, borderColor),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = if (isSelected) {
+                MaterialTheme.colorScheme.inverseSurface
+            } else {
+                WooPosTheme.colors.transparent
+            },
+            contentColor = if (isSelected) {
+                MaterialTheme.colorScheme.inverseOnSurface
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+            disabledContainerColor = if (isSelected) {
+                WooPosTheme.colors.disabledContainer
+            } else {
+                WooPosTheme.colors.transparent
+            },
+            disabledContentColor = WooPosTheme.colors.onDisabledContainer,
+        ),
+        state = state,
+        onClick = onClick,
+    )
+}
+
+@Composable
 fun WooPosCircularIconButton(
     modifier: Modifier = Modifier,
     icon: ImageVector,
@@ -316,6 +358,28 @@ fun WooPosButtonsPreview() {
             WooPosOutlinedButton(
                 text = "Button Outlined",
                 state = WooPosButtonState.LOADING,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            WooPosToggleButton(
+                text = "Toggle Selected",
+                isSelected = true,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            )
+            WooPosToggleButton(
+                text = "Toggle Unselected",
+                isSelected = false,
+                modifier = Modifier.fillMaxWidth(),
+                onClick = {}
+            )
+            WooPosToggleButton(
+                text = "Toggle Disabled",
+                isSelected = false,
+                state = WooPosButtonState.DISABLED,
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {}
             )

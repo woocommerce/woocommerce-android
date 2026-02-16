@@ -61,7 +61,7 @@ class WooPosRefundViewModelTest {
     private val wooCommerceStore: WooCommerceStore = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
     private val loadPaymentGateway: WooPosLoadPaymentGateway = mock()
-    private val getPaymentMethod: WooPosGetPaymentMethod = mock()
+    private val loadPaymentMethod: WooPosGetPaymentMethod = mock()
 
     private val testOrderId = 123L
     private val testOrder = OrderTestUtils.generateTestOrder(orderId = testOrderId).copy(
@@ -148,7 +148,7 @@ class WooPosRefundViewModelTest {
             supportsRefunds = false
         )
         whenever(loadPaymentGateway.invoke(any())).thenReturn(Result.success(defaultGateway))
-        whenever(getPaymentMethod.invoke(any())).thenReturn("Manual refund")
+        whenever(loadPaymentMethod.invoke(any())).thenReturn(Result.success("Manual refund"))
     }
 
     private fun createViewModel(): WooPosRefundViewModel {
@@ -166,7 +166,7 @@ class WooPosRefundViewModelTest {
             selectedSite = selectedSite,
             wooCommerceStore = wooCommerceStore,
             loadPaymentGateway = loadPaymentGateway,
-            getPaymentMethod = getPaymentMethod,
+            getPaymentMethod = loadPaymentMethod,
             analyticsTracker = analyticsTracker
         )
     }

@@ -58,9 +58,11 @@ fun BookingSummary(
                     attendanceUpdateStatus = model.attendanceUpdateStatus,
                 )
             }
-            BookingStatusTag(
-                state = model.status
-            )
+            if (model.status != BookingStatus.Complete) {
+                BookingStatusTag(
+                    state = model.status
+                )
+            }
         }
     }
 }
@@ -100,7 +102,7 @@ private fun BookingSummaryPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.CheckedIn,
+                attendanceStatus = BookingAttendanceStatus.Attended,
                 status = BookingStatus.Paid,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
@@ -118,7 +120,7 @@ private fun BookingSummaryDarkPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.Booked,
+                attendanceStatus = BookingAttendanceStatus.Unattended,
                 status = BookingStatus.PendingConfirmation,
                 attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
             ),
@@ -136,7 +138,7 @@ private fun BookingSummaryAttendanceUpdatingPreview() {
                 date = "05/07/2025, 11:00 AM",
                 name = "Women’s Haircut",
                 customerName = "Margarita Nikolaevna",
-                attendanceStatus = BookingAttendanceStatus.CheckedIn,
+                attendanceStatus = BookingAttendanceStatus.Attended,
                 status = BookingStatus.Paid,
                 attendanceUpdateStatus = AttendanceUpdateStatus.InProgress,
             ),

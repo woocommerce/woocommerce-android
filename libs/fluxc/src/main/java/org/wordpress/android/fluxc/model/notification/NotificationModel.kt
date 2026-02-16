@@ -4,8 +4,13 @@ import org.wordpress.android.fluxc.tools.FormattableContent
 import org.wordpress.android.fluxc.tools.FormattableMeta
 import java.util.Locale
 
+/**
+ * Represents a notification from the WordPress.com API.
+ *
+ * Notifications are uniquely identified by [remoteNoteId] (the server-side ID).
+ * The combination of [remoteSiteId] and [remoteNoteId] forms a unique key for storage.
+ */
 data class NotificationModel(
-    val noteId: Int = 0,
     val remoteNoteId: Long = 0L,
 
     // Note: this could be 0 in the db if the notification is not for one of the users sites
@@ -66,10 +71,5 @@ data class NotificationModel(
                 }
             }
         }
-    }
-
-    fun toLogString(): String {
-        return "[id=$noteId, remoteNoteId=$remoteNoteId, read=$read, " +
-                "siteId=$remoteSiteId, type=${type.name}, subtype=${subtype?.name}, title=$title]"
     }
 }

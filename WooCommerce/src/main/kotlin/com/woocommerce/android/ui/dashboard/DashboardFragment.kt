@@ -187,6 +187,12 @@ class DashboardFragment :
 
                 is RefreshJitm -> refreshJitm()
 
+                is DashboardViewModel.DashboardEvent.OpenWooPushNotificationsIntroduction -> {
+                    findNavController().navigateSafely(
+                        DashboardFragmentDirections.actionDashboardToWooPushNotificationsIntroductionDialog()
+                    )
+                }
+
                 else -> event.isHandled = false
             }
         }

@@ -5,6 +5,7 @@ import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.NotificationChannelsHandler
 import com.woocommerce.android.notifications.NotificationChannelsHandler.NewOrderNotificationSoundStatus
+import com.woocommerce.android.notifications.push.ShouldShowEnablePushNotificationsUi
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.login.AccountRepository
@@ -12,6 +13,7 @@ import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -22,6 +24,7 @@ class MainSettingsPresenter @Inject constructor(
     private val accountStore: AccountStore,
     private val wooCommerceStore: WooCommerceStore,
     private val featureAnnouncementRepository: FeatureAnnouncementRepository,
+    private val shouldShowEnablePushNotificationsUi: ShouldShowEnablePushNotificationsUi,
     private val buildConfigWrapper: BuildConfigWrapper,
     private val accountRepository: AccountRepository,
     private val notificationChannelsHandler: NotificationChannelsHandler,
@@ -96,6 +99,14 @@ class MainSettingsPresenter @Inject constructor(
 
     override val isThemePickerOptionVisible: Boolean
         get() = selectedSite.get().isWPComAtomic
+
+    override fun setupEnablePushNotificationsOption() {
+        coroutineScope.launch {
+            if (shouldShowEnablePushNotificationsUi().first()) {
+                appSettingsFragmentView?.showEnablePushNotificationsOption()
+            }
+        }
+    }
 
     override val wooPluginVersion: String
         get() = getWooVersion() ?: ""

@@ -1,1 +1,2 @@
-Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.
+We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.
+Thanks for selling with WooCommerce! 🚀
