@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
@@ -310,8 +311,12 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onCashPaymentClicked() {
         cancelPayment()
+        val cashSource = when (source) {
+            CardPaymentSource.CHECKOUT -> CashPaymentSource.CHECKOUT
+            CardPaymentSource.BOOKINGS -> CashPaymentSource.BOOKINGS
+        }
         viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.SwitchToCashPayment(orderId))
+            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId, cashSource))
         }
     }
 

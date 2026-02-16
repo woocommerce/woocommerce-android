@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -384,7 +385,7 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given BOOKINGS source, when onCashPaymentClicked, then SwitchToCashPayment emitted`() = runTest {
+    fun `given BOOKINGS source, when onCashPaymentClicked, then NavigateToCashPayment emitted with BOOKINGS source`() = runTest {
         viewModel = createViewModel(orderId = 42L, source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()
 
@@ -392,8 +393,26 @@ class WooPosCardPaymentViewModelTest {
             viewModel.onCashPaymentClicked()
 
             val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.SwitchToCashPayment::class.java)
-            assertThat((event as WooPosNavigationEvent.SwitchToCashPayment).orderId).isEqualTo(42L)
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateToCashPayment::class.java)
+            val cashEvent = event as WooPosNavigationEvent.NavigateToCashPayment
+            assertThat(cashEvent.orderId).isEqualTo(42L)
+            assertThat(cashEvent.source).isEqualTo(CashPaymentSource.BOOKINGS)
+        }
+    }
+
+    @Test
+    fun `given CHECKOUT source, when onCashPaymentClicked, then NavigateToCashPayment emitted with CHECKOUT source`() = runTest {
+        viewModel = createViewModel(orderId = 42L, source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onCashPaymentClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateToCashPayment::class.java)
+            val cashEvent = event as WooPosNavigationEvent.NavigateToCashPayment
+            assertThat(cashEvent.orderId).isEqualTo(42L)
+            assertThat(cashEvent.source).isEqualTo(CashPaymentSource.CHECKOUT)
         }
     }
 

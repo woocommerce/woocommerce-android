@@ -5,7 +5,6 @@ import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
 import com.woocommerce.android.ui.woopos.bookings.note.navigateToBookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
-import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
 import com.woocommerce.android.ui.woopos.emailreceipt.navigateToEmailReceipt
 import com.woocommerce.android.ui.woopos.home.navigateToEligibilityScreen
@@ -66,9 +65,9 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenBookings ->
             navigateToBookingsScreen()
 
-        is WooPosNavigationEvent.SwitchToCashPayment -> {
+        is WooPosNavigationEvent.NavigateToCashPayment -> {
             popBackStack()
-            navigateToCashPaymentScreen(event.orderId, CashPaymentSource.BOOKINGS)
+            navigateToCashPaymentScreen(event.orderId, event.source)
         }
 
         is WooPosNavigationEvent.OpenBookingNote ->
