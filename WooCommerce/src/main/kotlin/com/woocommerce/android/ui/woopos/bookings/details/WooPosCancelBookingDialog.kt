@@ -35,7 +35,6 @@ fun WooPosCancelBookingDialog(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_bookings_cancel_dialog_background
         ),
-        onCloseClick = onDismiss,
         onDismissRequest = onDismiss,
     ) {
         Column(
