@@ -235,7 +235,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 WooPosNavigationEvent.OpenCardPayment(
                     orderId = details.orderId,
                     source = CardPaymentSource.BOOKINGS,
-                    showPayByCashButton = true,
+                    showCashPaymentButton = true,
                 )
             )
         }

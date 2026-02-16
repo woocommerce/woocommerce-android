@@ -81,13 +81,13 @@ class WooPosCardPaymentViewModelTest {
     private fun createViewModel(
         orderId: Long = 100L,
         source: CardPaymentSource = CardPaymentSource.BOOKINGS,
-        showPayByCashButton: Boolean = false,
+        showCashPaymentButton: Boolean = false,
     ): WooPosCardPaymentViewModel {
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 CARD_PAYMENT_ROUTE_ORDER_ID_KEY to orderId,
                 CARD_PAYMENT_ROUTE_SOURCE_KEY to source.name,
-                CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY to showPayByCashButton,
+                CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY to showCashPaymentButton,
             )
         )
         return WooPosCardPaymentViewModel(
@@ -344,23 +344,23 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given showPayByCashButton is true, when created, then showCashPaymentButton is true`() = runTest {
-        viewModel = createViewModel(showPayByCashButton = true)
+    fun `given showCashPaymentButton is true, when created, then showCashPaymentButton is true`() = runTest {
+        viewModel = createViewModel(showCashPaymentButton = true)
         advanceUntilIdle()
 
         assertThat(viewModel.showCashPaymentButton).isTrue()
     }
 
     @Test
-    fun `given showPayByCashButton is false, when created, then showCashPaymentButton is false`() = runTest {
-        viewModel = createViewModel(showPayByCashButton = false)
+    fun `given showCashPaymentButton is false, when created, then showCashPaymentButton is false`() = runTest {
+        viewModel = createViewModel(showCashPaymentButton = false)
         advanceUntilIdle()
 
         assertThat(viewModel.showCashPaymentButton).isFalse()
     }
 
     @Test
-    fun `given showPayByCashButton not provided, when created, then showCashPaymentButton is false`() = runTest {
+    fun `given showCashPaymentButton not provided, when created, then showCashPaymentButton is false`() = runTest {
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 CARD_PAYMENT_ROUTE_ORDER_ID_KEY to 100L,

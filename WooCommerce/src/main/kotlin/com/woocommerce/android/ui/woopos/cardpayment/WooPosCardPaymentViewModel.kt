@@ -53,7 +53,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
 
-    val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_PAY_BY_CASH_KEY] ?: false
+    val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY] ?: false
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
