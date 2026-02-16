@@ -216,7 +216,7 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
             is WooPosBookingsUIEvent.AttendanceToggled -> { }
             is WooPosBookingsUIEvent.CollectPaymentClicked -> handleCollectPayment()
-            is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
+            is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
         }
     }
@@ -239,6 +239,17 @@ class WooPosBookingsViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun handleAddBookingNote() {
+        val bookingId = selectedBookingId ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.OpenBookingNote(bookingId))
+        }
+    }
+
+    fun onBookingNoteSaved() {
+        onRefresh()
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {

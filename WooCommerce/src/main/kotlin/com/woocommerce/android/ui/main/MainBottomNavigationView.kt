@@ -116,7 +116,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
      */
     fun restoreSelectedItemState(itemId: Int) {
         assignNavigationListeners(false)
-        selectedItemId = itemId
+        selectedItemId = if (menu.findItem(itemId) != null) itemId else BottomNavigationPosition.MY_STORE.id
         assignNavigationListeners(true)
     }
 
@@ -162,9 +162,7 @@ class MainBottomNavigationView @JvmOverloads constructor(
      * adding or removing tabs based on the user's site type/configuration. However, there shouldn't be any
      * scenario where we end up displaying more than 5 tabs at once.
      */
-    override fun getMaxItemCount(): Int {
-        return OVERRIDEN_MAX_ITEM_COUNT
-    }
+    override fun getMaxItemCount(): Int = OVERRIDDEN_MAX_ITEM_COUNT
 
     private fun assignNavigationListeners(assign: Boolean) {
         setOnItemSelectedListener(if (assign) this else null)
@@ -176,6 +174,6 @@ class MainBottomNavigationView @JvmOverloads constructor(
 
     companion object {
         private const val MAX_CHARACTERS_IN_BADGE = 4
-        private const val OVERRIDEN_MAX_ITEM_COUNT = 6
+        private const val OVERRIDDEN_MAX_ITEM_COUNT = 6
     }
 }

@@ -136,6 +136,11 @@ class BookingsRestClient @Inject constructor(
                 "attendance_status",
                 attendanceStatuses.values.joinToString(FILTER_QUERY_PARAMETER_SEPERATOR) { it.key })
         }
+        if (excludedBookingStatuses != BookingsFilterOption.ExcludedBookingStatuses.DEFAULT) {
+            excludedBookingStatuses.values.forEachIndexed { index, status ->
+                set("booking_status_exclude[$index]", status.key)
+            }
+        }
         if (paymentStatus != null) TODO()
         if (customer != null) set("customer", customer.customerId.toString())
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {

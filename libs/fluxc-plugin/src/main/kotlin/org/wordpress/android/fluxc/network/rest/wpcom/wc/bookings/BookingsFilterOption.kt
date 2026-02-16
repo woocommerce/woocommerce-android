@@ -26,6 +26,12 @@ sealed interface BookingsFilterOption {
         }
     }
 
+    data class ExcludedBookingStatuses(val values: Set<BookingEntity.Status>) : BookingsFilterOption {
+        companion object {
+            val DEFAULT = ExcludedBookingStatuses(emptySet())
+        }
+    }
+
     object PaymentStatus : BookingsFilterOption
 
     data class Customer(val customerId: Long, val customerName: String) : BookingsFilterOption
@@ -58,6 +64,7 @@ data class BookingFilters(
     val bookingType: BookingsFilterOption.BookingType? = null,
     val serviceEvents: BookingsFilterOption.ServiceEvents = BookingsFilterOption.ServiceEvents.DEFAULT,
     val attendanceStatuses: BookingsFilterOption.AttendanceStatuses = BookingsFilterOption.AttendanceStatuses.DEFAULT,
+    val excludedBookingStatuses: BookingsFilterOption.ExcludedBookingStatuses = BookingsFilterOption.ExcludedBookingStatuses.DEFAULT,
     val paymentStatus: BookingsFilterOption.PaymentStatus? = null,
     val customer: BookingsFilterOption.Customer? = null,
     val dateRange: BookingsFilterOption.DateRange = BookingsFilterOption.DateRange.DEFAULT,

@@ -25,7 +25,6 @@ class NotificationsScreen(private val wooNotificationBuilder: WooNotificationBui
         wooNotificationBuilder.buildAndDisplayWooNotification(
             0,
             notification = Notification(
-                noteId = 1,
                 uniqueId = 1L,
                 remoteNoteId = 1L,
                 remoteSiteId = 1L,

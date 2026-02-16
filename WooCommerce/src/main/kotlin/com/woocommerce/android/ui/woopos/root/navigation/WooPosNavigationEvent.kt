@@ -31,4 +31,5 @@ sealed class WooPosNavigationEvent {
     data object OpenOrders : WooPosNavigationEvent()
     data object OpenBookings : WooPosNavigationEvent()
     data class SwitchToCashPayment(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenBookingNote(val bookingId: Long) : WooPosNavigationEvent()
 }

@@ -46,7 +46,7 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
     private fun navigateToWPComEmailScreen(event: StartWPComLoginForJetpackActivation) {
         findNavController().navigate(
             JetpackActivationDispatcherFragmentDirections
-                .actionJetpackActivationDispatcherFragmentToJetpackActivationWPComEmailFragment(
+                .actionJetpackActivationDispatcherFragmentToWPComLoginEmailFragment(
                     jetpackStatus = event.jetpackStatus
                 )
         )
@@ -55,7 +55,7 @@ class JetpackActivationDispatcherFragment : BaseFragment() {
     private fun navigateToWPComPasswordScreen(event: StartWPComAuthenticationForEmail) {
         findNavController().navigate(
             JetpackActivationDispatcherFragmentDirections
-                .actionJetpackActivationDispatcherFragmentToJetpackActivationWPComPasswordFragment(
+                .actionJetpackActivationDispatcherFragmentToWPComLoginPasswordFragment(
                     emailOrUsername = event.wpComEmail,
                     jetpackStatus = event.jetpackStatus
                 )

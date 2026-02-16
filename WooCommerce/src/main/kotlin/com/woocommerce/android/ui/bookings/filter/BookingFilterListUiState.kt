@@ -156,4 +156,5 @@ fun BookingFilters.updateFilterOption(bookingsFilterOption: BookingsFilterOption
         is BookingsFilterOption.BookingType -> copy(bookingType = bookingsFilterOption)
         is BookingsFilterOption.Location -> copy(location = bookingsFilterOption)
         is BookingsFilterOption.ServiceEvents -> copy(serviceEvents = bookingsFilterOption)
+        is BookingsFilterOption.ExcludedBookingStatuses -> copy(excludedBookingStatuses = bookingsFilterOption)
     }

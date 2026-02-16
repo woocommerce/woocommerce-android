@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.root.navigation
 import androidx.activity.ComponentActivity
 import androidx.navigation.NavHostController
 import com.woocommerce.android.ui.woopos.bookings.navigateToBookingsScreen
+import com.woocommerce.android.ui.woopos.bookings.note.navigateToBookingNoteScreen
 import com.woocommerce.android.ui.woopos.cardpayment.navigateToCardPaymentScreen
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.cashpayment.navigateToCashPaymentScreen
@@ -69,5 +70,8 @@ fun NavHostController.handleNavigationEvent(
             popBackStack()
             navigateToCashPaymentScreen(event.orderId, CashPaymentSource.BOOKINGS)
         }
+
+        is WooPosNavigationEvent.OpenBookingNote ->
+            navigateToBookingNoteScreen(event.bookingId)
     }
 }

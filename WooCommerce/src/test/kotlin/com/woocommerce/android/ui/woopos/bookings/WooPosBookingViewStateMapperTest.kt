@@ -137,7 +137,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() = runTest {
         val booking = sampleBooking(
             status = BookingEntity.Status.Confirmed,
-            attendanceStatus = BookingEntity.AttendanceStatus.CheckedIn,
+            attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         )
 
         val result = mapper.mapToDetailsViewState(booking)
@@ -150,7 +150,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
         val booking = sampleBooking(
             status = BookingEntity.Status.Cancelled,
-            attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+            attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
         )
 
         val result = mapper.mapToDetailsViewState(booking)
@@ -187,7 +187,7 @@ class WooPosBookingViewStateMapperTest {
         status: BookingEntity.Status = BookingEntity.Status.Confirmed,
         start: Instant = Instant.parse("2025-07-05T11:00:00Z"),
         end: Instant = start.plus(Duration.ofHours(1)),
-        attendanceStatus: BookingEntity.AttendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus: BookingEntity.AttendanceStatus = BookingEntity.AttendanceStatus.Unattended,
         customerInfo: BookingCustomerInfo? = BookingCustomerInfo(
             billingFirstName = "Margarita",
             billingLastName = "Nikolaevna",

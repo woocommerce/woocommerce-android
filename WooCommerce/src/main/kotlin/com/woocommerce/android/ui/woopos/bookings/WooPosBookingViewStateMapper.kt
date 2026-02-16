@@ -92,8 +92,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
     ): WooPosBookingsState.AttendanceSection? {
         if (!booking.isAttendanceStatusEditable) return null
         val selection = when (booking.attendanceStatus) {
-            BookingEntity.AttendanceStatus.CheckedIn -> WooPosBookingsState.AttendanceState.ATTENDED
-            BookingEntity.AttendanceStatus.NoShow -> WooPosBookingsState.AttendanceState.UNATTENDED
+            BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
+            BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
             else -> null
         }
         return WooPosBookingsState.AttendanceSection(selection = selection)
@@ -165,8 +165,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
         status: BookingEntity.AttendanceStatus
     ): WooPosBookingsState.AttendanceState? {
         return when (status) {
-            BookingEntity.AttendanceStatus.CheckedIn -> WooPosBookingsState.AttendanceState.ATTENDED
-            BookingEntity.AttendanceStatus.NoShow -> WooPosBookingsState.AttendanceState.UNATTENDED
+            BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
+            BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
             else -> null
         }
     }

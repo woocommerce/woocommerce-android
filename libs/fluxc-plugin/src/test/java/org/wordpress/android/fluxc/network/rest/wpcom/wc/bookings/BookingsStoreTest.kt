@@ -147,7 +147,7 @@ class BookingsStoreTest {
                 bookingsRestClient.updateBooking(
                     site,
                     dto.id,
-                    BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn)
+                    BookingUpdatePayload(attendanceStatus = AttendanceStatus.Attended)
                 )
             ).thenReturn(WooPayload(dto))
 
@@ -162,7 +162,7 @@ class BookingsStoreTest {
             val result = sut.updateBooking(
                 site = site,
                 bookingId = dto.id,
-                bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = AttendanceStatus.CheckedIn),
+                bookingUpdatePayload = BookingUpdatePayload(attendanceStatus = AttendanceStatus.Attended),
                 refreshOrder = true
             )
 
@@ -441,7 +441,7 @@ class BookingsStoreTest {
         parentId = 0L,
         personCounts = null,
         localTimezone = "UTC",
-        attendanceStatus = AttendanceStatus.Booked.key,
+        attendanceStatus = AttendanceStatus.Attended.key,
         note = null
     )
 
@@ -465,7 +465,7 @@ class BookingsStoreTest {
         parentId = 0L,
         personCounts = null,
         localTimezone = "UTC",
-        attendanceStatus = AttendanceStatus.Booked,
+        attendanceStatus = AttendanceStatus.Attended,
         note = "",
         order = order,
         customerNote = "Customer Note"
