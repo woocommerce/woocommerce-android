@@ -223,7 +223,7 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.AttendanceToggled -> { }
             is WooPosBookingsUIEvent.PayByCardClicked -> handlePayByCard()
             is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
-            is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
+            is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
             is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
             is WooPosBookingsUIEvent.CancelBookingDismissed -> handleCancelDismissed()
@@ -259,6 +259,17 @@ class WooPosBookingsViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun handleAddBookingNote() {
+        val bookingId = selectedBookingId ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.OpenBookingNote(bookingId))
+        }
+    }
+
+    fun onBookingNoteSaved() {
+        onRefresh()
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
