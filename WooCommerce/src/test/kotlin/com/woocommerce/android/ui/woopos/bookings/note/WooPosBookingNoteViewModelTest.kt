@@ -222,4 +222,9 @@ class WooPosBookingNoteViewModelTest {
 
         assertThat(viewModel.state.value.noteText).isEmpty()
     }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun `given missing bookingId, when ViewModel created, then throws`() {
+        createViewModel(savedStateHandle = SavedStateHandle())
+    }
 }

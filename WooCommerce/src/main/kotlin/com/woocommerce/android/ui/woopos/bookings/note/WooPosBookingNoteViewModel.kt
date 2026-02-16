@@ -19,7 +19,7 @@ class WooPosBookingNoteViewModel @Inject constructor(
     private val bookingsRepository: BookingsRepository,
 ) : ViewModel() {
 
-    private val bookingId: Long = savedStateHandle[BOOKING_NOTE_ROUTE_BOOKING_ID_KEY] ?: -1L
+    private val bookingId: Long = requireNotNull(savedStateHandle[BOOKING_NOTE_ROUTE_BOOKING_ID_KEY])
 
     private val _state = MutableStateFlow(WooPosBookingNoteState())
     val state: StateFlow<WooPosBookingNoteState> = _state.asStateFlow()
