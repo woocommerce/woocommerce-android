@@ -132,7 +132,7 @@ private fun BookingHeader(
     WooPosText(
         text = details.headerSubtitle,
         style = WooPosTypography.BodyMedium,
-        color = WooPosTheme.colors.onSurfaceVariantHighest
+        color = WooPosTheme.colors.onSurfaceVariantLowest
     )
 
     Spacer(Modifier.height(WooPosSpacing.Small.value))
