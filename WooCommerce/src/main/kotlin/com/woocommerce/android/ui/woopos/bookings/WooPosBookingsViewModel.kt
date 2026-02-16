@@ -312,7 +312,7 @@ class WooPosBookingsViewModel @Inject constructor(
         val loaded = items as? WooPosBookingsState.Content.Items.Loaded ?: return items
         val updatedMap = loaded.items.map { (item, details) ->
             if (item.id == updatedDetails.id) {
-                item to updatedDetails
+                item.copy(attendanceBadge = updatedDetails.attendanceBadge) to updatedDetails
             } else {
                 item to details
             }
