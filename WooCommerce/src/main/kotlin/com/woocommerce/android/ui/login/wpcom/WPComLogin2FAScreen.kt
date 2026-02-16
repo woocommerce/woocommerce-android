@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +37,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
@@ -59,12 +62,13 @@ fun WPComLogin2FAScreen(
     onOTPChanged: (String) -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
+    val branding = viewState.resolveBranding()
 
     Scaffold(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
+                navigationIcon = ImageVector.vectorResource(branding.navIcon)
             )
         }
     ) { paddingValues ->
@@ -80,23 +84,20 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.major_100)),
             ) {
-                JetpackToWooHeader()
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-                val title = if (viewState.isJetpackInstalled) {
-                    R.string.login_jetpack_connect
+                if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
+                    WordPressWooBadge()
                 } else {
-                    R.string.login_jetpack_install
+                    JetpackToWooHeader()
                 }
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
                 Text(
-                    text = stringResource(id = title),
+                    text = stringResource(id = branding.title),
                     style = MaterialTheme.typography.h4,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
                 Text(
-                    text = stringResource(
-                        id = R.string.enter_verification_code
-                    )
+                    text = stringResource(id = R.string.enter_verification_code)
                 )
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_100)))
                 WCOutlinedTextField(
@@ -135,15 +136,7 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.major_100))
             ) {
-                Text(
-                    text = stringResource(
-                        id = if (viewState.isJetpackInstalled) {
-                            R.string.login_jetpack_connect
-                        } else {
-                            R.string.login_jetpack_install
-                        }
-                    )
-                )
+                Text(text = stringResource(id = branding.buttonText))
             }
         }
     }
@@ -153,12 +146,69 @@ fun WPComLogin2FAScreen(
     }
 }
 
+private data class TwoFAScreenBranding(
+    @DrawableRes val navIcon: Int,
+    @StringRes val title: Int,
+    @StringRes val buttonText: Int,
+)
+
+private fun WPComLogin2FAViewModel.ViewState.resolveBranding(): TwoFAScreenBranding {
+    return when (wpComLoginMode) {
+        WPComLoginMode.PushNotificationsSetup -> TwoFAScreenBranding(
+            navIcon = R.drawable.ic_back_24dp,
+            title = R.string.login_wpcom_connect_title,
+            buttonText = R.string.login_wpcom_connect_title,
+        )
+
+        is WPComLoginMode.JetpackSetup -> TwoFAScreenBranding(
+            navIcon = R.drawable.ic_close_24dp,
+            title = if (isJetpackInstalled) {
+                R.string.login_jetpack_connect
+            } else {
+                R.string.login_jetpack_install
+            },
+            buttonText = if (isJetpackInstalled) {
+                R.string.login_jetpack_connect
+            } else {
+                R.string.login_jetpack_install
+            },
+        )
+    }
+}
+
 @Preview
 @Composable
-private fun WPComLogin2FAScreenPreview() {
+private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLogin2FAScreen(
             viewState = WPComLogin2FAViewModel.ViewState(
+                wpComLoginMode = WPComLoginMode.JetpackSetup(
+                    com.woocommerce.android.model.JetpackStatus(
+                        isJetpackInstalled = false,
+                        jetpackConnectionStatus = com.woocommerce.android.model.JetpackConnectionStatus
+                            .AccountNotConnected(
+                                siteRegistrationStatus = com.woocommerce.android.model
+                                    .JetpackSiteRegistrationStatus.UNKNOWN,
+                                blogId = null
+                            )
+                    )
+                ),
+                emailOrUsername = "test@email.com",
+                password = "",
+                otp = "123456",
+                isJetpackInstalled = false
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NotificationSetupModePreview() {
+    WooThemeWithBackground {
+        WPComLogin2FAScreen(
+            viewState = WPComLogin2FAViewModel.ViewState(
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 emailOrUsername = "test@email.com",
                 password = "",
                 otp = "123456",
