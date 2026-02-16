@@ -46,14 +46,13 @@ data class BookingListTabState(
 
 data class BookingListControlsState(
     val selectedSortOption: BookingListSortOption,
-    val isFilterButtonVisible: Boolean,
     val enabledFiltersCount: Int,
     val onSortClick: () -> Unit,
     val onFilterClick: () -> Unit,
     val onClearFiltersClick: () -> Unit
 ) {
     val areFiltersActive: Boolean
-        get() = enabledFiltersCount > 0 && isFilterButtonVisible
+        get() = enabledFiltersCount > 0
 }
 
 data class BookingListItem(

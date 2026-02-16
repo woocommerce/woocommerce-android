@@ -19,6 +19,9 @@ abstract class TopLevelFragment : BaseFragment, TopLevelFragmentView {
             hasShadow = false,
         )
 
+    open val shouldShowBottomNavigation: Boolean
+        get() = true
+
     /**
      * Called when the fragment shows or hides a search view so we can properly disable the collapsing
      * toolbar when a search is active

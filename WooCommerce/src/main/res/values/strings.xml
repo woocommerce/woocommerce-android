@@ -2634,6 +2634,16 @@
     <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
     <string name="woo_push_notifications_introduction_continue">Continue</string>
     <string name="woo_push_notifications_introduction_not_now">Not now</string>
+    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b>%1$s&lt;/b> to your WordPress.com account.</string>
+    <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
+    <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
+    <string name="woo_push_notifications_connection_steps_complete">Complete</string>
+    <string name="woo_push_notifications_connection_steps_in_progress">In progress</string>
+    <string name="woo_push_notifications_connection_steps_not_started">Not started</string>
+    <string name="woo_push_notifications_connection_steps_error">Error</string>
+    <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3145,6 +3155,8 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
+
+    <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -3788,6 +3800,8 @@
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
 
+    <string name="woopos_card_payment_done_button">Done</string>
+
     <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
     <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
     <string name="woopos_floating_toolbar_card_reader_not_connected_status_content_description">Card reader not connected. Double tap to connect</string>
@@ -4341,24 +4355,18 @@
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
-    <string name="booking_attendance_status_booked">Booked</string>
-    <string name="booking_attendance_status_checked_in">Checked-in</string>
-    <string name="booking_attendance_status_cancelled">Cancelled</string>
-    <string name="booking_attendance_status_no_show">No-show</string>
+    <string name="booking_attendance_status_attended">Attended</string>
+    <string name="booking_attendance_status_unattended">Unattended</string>
+    <string name="booking_mark_as_attended">Mark as attended</string>
+    <string name="booking_mark_as_unattended">Mark as unattended</string>
+    <string name="booking_attendance_status_cancelled">Canceled</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
-    <string name="booking_attendance_header">ATTENDANCE</string>
-    <string name="booking_attendance_label_status">Status</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>
     <string name="booking_customer_label_phone">Phone</string>
     <string name="booking_billing_address_label">Billing address</string>
     <string name="booking_customer_note_label">Note</string>
-    <string name="booking_attendance_change_status_description">Mark attendance to keep your reports accurate and spot booking trends.</string>
-    <string name="booking_attendance_update_title">Update attendance status</string>
-    <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
-    <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
-    <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
     <string name="booking_payment_header">PAYMENT</string>
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>

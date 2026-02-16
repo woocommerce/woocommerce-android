@@ -578,6 +578,7 @@ private fun BookingOverflowMenu(
 fun WooPosBookingDetailsPreview() {
     val bookingDetails = WooPosBookingsState.BookingDetailsViewState(
         id = 333L,
+        orderId = 3330L,
         number = "#333",
         status = WooPosBookingStatus(text = "Unpaid", colorKey = WooPosBookingStatusColorKey.FAILED),
         actionsState = WooPosBookingsState.BookingActionsState.Loaded(

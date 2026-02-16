@@ -4,9 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
+import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -18,13 +21,13 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val dateTimeProvider: DateTimeProvider,
+    private val mapper: WooPosBookingViewStateMapper,
 ) : ViewModel() {
 
     companion object {
@@ -36,6 +39,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
     val scrollToTopEvent: SharedFlow<Unit> = _scrollToTopEvent.asSharedFlow()
+
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
     private var fetchJob: Job? = null
@@ -84,7 +90,8 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val items = bookings.associate { booking ->
-                    mapToItemViewState(booking) to mapToDetailsViewState(booking)
+                    mapper.mapToItemViewState(booking, selectedBookingId) to
+                        mapper.mapToDetailsViewState(booking)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -209,8 +216,8 @@ class WooPosBookingsViewModel @Inject constructor(
         when (event) {
             is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
             is WooPosBookingsUIEvent.AttendanceToggled -> { }
-            is WooPosBookingsUIEvent.PayByCardClicked -> { }
-            is WooPosBookingsUIEvent.PayByCashClicked -> { }
+            is WooPosBookingsUIEvent.PayByCardClicked -> handlePayByCard()
+            is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
         }
@@ -223,75 +230,35 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
+    private fun handlePayByCard() {
+        val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(
+                WooPosNavigationEvent.OpenCardPayment(
+                    orderId = details.orderId,
+                    source = CardPaymentSource.BOOKINGS,
+                )
+            )
+        }
+    }
+
+    private fun handlePayByCash() {
+        val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(
+                WooPosNavigationEvent.OpenCashPayment(
+                    orderId = details.orderId,
+                    source = CashPaymentSource.BOOKINGS,
+                )
+            )
+        }
+    }
+
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
             }
         }
-    }
-
-    private fun mapToItemViewState(booking: BookingEntity): WooPosBookingsState.BookingItemViewState {
-        return WooPosBookingsState.BookingItemViewState(
-            id = booking.id.value,
-            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            date = booking.start.toString(),
-            total = booking.order.paymentInfo?.total?.toPlainString() ?: "",
-            customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
-            isSelected = booking.id.value == selectedBookingId,
-            status = mapBookingStatus(booking.status),
-            statusSlug = booking.status.key,
-            createdAtMillis = booking.start.toEpochMilli()
-        )
-    }
-
-    private fun mapToDetailsViewState(
-        booking: BookingEntity
-    ): WooPosBookingsState.BookingDetailsViewState {
-        return WooPosBookingsState.BookingDetailsViewState(
-            id = booking.id.value,
-            number = "#${booking.id.value}",
-            status = mapBookingStatus(booking.status),
-            actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-            ),
-            headerTitle = "",
-            headerSubtitle = "",
-            attendanceBadge = null,
-            bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            appointmentDate = "",
-            appointmentTime = "",
-            duration = "",
-            teamMember = null,
-            location = null,
-            customerSection = null,
-            attendanceSection = null,
-            paymentSection = WooPosBookingsState.PaymentSection(
-                serviceAmount = booking.order.paymentInfo?.subtotal?.toPlainString() ?: "-",
-                taxAmount = booking.order.paymentInfo?.totalTax?.toPlainString() ?: "-",
-                discountAmount = "-",
-                totalAmount = booking.order.paymentInfo?.total?.toPlainString() ?: "-",
-                paidWithLabel = booking.order.paymentInfo?.paymentMethodTitle,
-                showPayButtons = false,
-            ),
-            bookingNote = null,
-        )
-    }
-
-    private fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
-        val colorKey = when (status) {
-            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
-            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
-            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
-        }
-        return WooPosBookingStatus(
-            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
-            colorKey = colorKey
-        )
     }
 }
