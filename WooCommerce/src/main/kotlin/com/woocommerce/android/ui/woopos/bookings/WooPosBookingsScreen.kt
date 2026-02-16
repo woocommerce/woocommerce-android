@@ -45,6 +45,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
 import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -189,58 +190,69 @@ private fun WooPosBookingsContent(
     onPaginationErrorTryAgain: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        WooPosBookingsListPane(
-            state = state,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onBookingSelected = onBookingSelected,
-            onEndOfBookingsListReached = onEndOfBookingsListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            WooPosBookingsListPane(
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            )
 
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when {
-                state.selectedDetails != null -> {
-                    WooPosBookingDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = state.selectedDetails,
-                        onUIEvent = onUIEvent
-                    )
-                }
-                state.items is WooPosBookingsState.Content.Items.Searching -> {
-                    BookingDetailsLoadingPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(
-                                start = WooPosSpacing.Medium.value,
-                                end = WooPosSpacing.Medium.value,
-                                top = WooPosSpacing.XLarge.value,
-                                bottom = WooPosSpacing.XLarge.value
-                            )
-                    )
-                }
-                else -> {
-                    WooPosEmptyScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
-                        title = stringResource(R.string.woopos_orders_no_order_selected),
-                        message = "",
-                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                    )
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                when {
+                    state.selectedDetails != null -> {
+                        WooPosBookingDetails(
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                            details = state.selectedDetails,
+                            onUIEvent = onUIEvent
+                        )
+                    }
+                    state.items is WooPosBookingsState.Content.Items.Searching -> {
+                        BookingDetailsLoadingPane(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(
+                                    start = WooPosSpacing.Medium.value,
+                                    end = WooPosSpacing.Medium.value,
+                                    top = WooPosSpacing.XLarge.value,
+                                    bottom = WooPosSpacing.XLarge.value
+                                )
+                        )
+                    }
+                    else -> {
+                        WooPosEmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            icon = WooPosIcons.OrdersEmpty,
+                            title = stringResource(R.string.woopos_orders_no_order_selected),
+                            message = "",
+                            contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                        )
+                    }
                 }
             }
         }
+
+        val cancelDialog =
+            state.dialogState as? WooPosBookingsState.Content.DialogState.CancelConfirmation
+        WooPosCancelBookingDialog(
+            isVisible = cancelDialog != null,
+            message = cancelDialog?.message.orEmpty(),
+            onConfirm = { onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed) },
+            onDismiss = { onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed) },
+        )
     }
 }
 

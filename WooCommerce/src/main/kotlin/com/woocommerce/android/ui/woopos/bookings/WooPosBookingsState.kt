@@ -114,6 +114,11 @@ sealed class WooPosBookingsState {
             data class IssueRefund(
                 val orderId: Long
             ) : DialogState()
+
+            data class CancelConfirmation(
+                val bookingId: Long,
+                val message: String,
+            ) : DialogState()
         }
     }
 
