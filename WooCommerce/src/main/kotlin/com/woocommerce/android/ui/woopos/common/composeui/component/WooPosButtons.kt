@@ -160,38 +160,21 @@ fun WooPosToggleButton(
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     onClick: () -> Unit,
 ) {
-    val borderColor = when {
-        state == WooPosButtonState.DISABLED -> WooPosTheme.colors.disabledContainer
-        else -> MaterialTheme.colorScheme.inverseSurface
+    if (isSelected) {
+        WooPosButtonSmall(
+            modifier = modifier,
+            text = text,
+            state = state,
+            onClick = onClick,
+        )
+    } else {
+        WooPosOutlinedButtonSmall(
+            modifier = modifier,
+            text = text,
+            state = state,
+            onClick = onClick,
+        )
     }
-    Button(
-        modifier = modifier,
-        height = 40.dp,
-        loadingIndicatorSize = 20.dp,
-        textStyle = WooPosTypography.BodySmall,
-        text = text,
-        border = BorderStroke(2.dp, borderColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.inverseSurface
-            } else {
-                WooPosTheme.colors.transparent
-            },
-            contentColor = if (isSelected) {
-                MaterialTheme.colorScheme.inverseOnSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            },
-            disabledContainerColor = if (isSelected) {
-                WooPosTheme.colors.disabledContainer
-            } else {
-                WooPosTheme.colors.transparent
-            },
-            disabledContentColor = WooPosTheme.colors.onDisabledContainer,
-        ),
-        state = state,
-        onClick = onClick,
-    )
 }
 
 @Composable
