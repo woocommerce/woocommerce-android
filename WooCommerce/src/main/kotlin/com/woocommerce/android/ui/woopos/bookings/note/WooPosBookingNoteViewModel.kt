@@ -5,9 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,6 +27,12 @@ class WooPosBookingNoteViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(WooPosBookingNoteState())
     val state: StateFlow<WooPosBookingNoteState> = _state.asStateFlow()
+
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
+
+    private val _errorEvent = MutableSharedFlow<Unit>()
+    val errorEvent: SharedFlow<Unit> = _errorEvent.asSharedFlow()
 
     init {
         loadExistingNote()
@@ -59,30 +69,28 @@ class WooPosBookingNoteViewModel @Inject constructor(
             )
             result.onFailure {
                 _state.update {
-                    it.copy(
-                        buttonState = WooPosButtonState.ENABLED,
-                        saveError = true,
-                    )
+                    it.copy(buttonState = WooPosButtonState.ENABLED)
                 }
+                _errorEvent.emit(Unit)
             }
             result.onSuccess {
-                _state.update { it.copy(savedSuccessfully = true) }
+                _navigationEvent.emit(
+                    WooPosNavigationEvent.GoBackWithResult(
+                        key = BOOKING_NOTE_RESULT_KEY,
+                        value = true
+                    )
+                )
             }
         }
         return true
     }
 
-    fun onErrorShown() {
-        _state.update { it.copy(saveError = false) }
-    }
 }
 
 data class WooPosBookingNoteState(
     val initialNote: String = "",
     val noteText: String = "",
     val buttonState: WooPosButtonState = WooPosButtonState.DISABLED,
-    val savedSuccessfully: Boolean = false,
-    val saveError: Boolean = false,
 ) {
     val sendButtonState: WooPosButtonState
         get() = when {

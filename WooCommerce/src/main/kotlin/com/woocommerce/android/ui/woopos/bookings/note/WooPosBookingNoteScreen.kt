@@ -34,25 +34,19 @@ fun WooPosBookingNoteScreen(
 
     val context = LocalContext.current
 
-    LaunchedEffect(state.savedSuccessfully) {
-        if (state.savedSuccessfully) {
-            onNavigationEvent(
-                WooPosNavigationEvent.GoBackWithResult(
-                    key = BOOKING_NOTE_RESULT_KEY,
-                    value = true
-                )
-            )
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            onNavigationEvent(event)
         }
     }
 
-    LaunchedEffect(state.saveError) {
-        if (state.saveError) {
+    LaunchedEffect(Unit) {
+        viewModel.errorEvent.collect {
             Toast.makeText(
                 context,
                 context.getString(R.string.woopos_bookings_note_screen_save_error),
                 Toast.LENGTH_SHORT
             ).show()
-            viewModel.onErrorShown()
         }
     }
 

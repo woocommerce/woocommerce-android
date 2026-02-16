@@ -1,8 +1,10 @@
 package com.woocommerce.android.ui.woopos.bookings.note
 
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -146,29 +148,36 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `when send clicked and succeeds, then savedSuccessfully is true`() = runTest {
+    fun `when send clicked and succeeds, then navigation event emitted`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onNoteChanged("New note")
-        viewModel.onSendClicked()
-        advanceUntilIdle()
+        viewModel.navigationEvent.test {
+            viewModel.onNoteChanged("New note")
+            viewModel.onSendClicked()
 
-        assertThat(viewModel.state.value.savedSuccessfully).isTrue()
+            val event = awaitItem()
+            assertThat(event).isEqualTo(
+                WooPosNavigationEvent.GoBackWithResult(
+                    key = BOOKING_NOTE_RESULT_KEY,
+                    value = true
+                )
+            )
+        }
     }
 
     @Test
-    fun `when send clicked and fails, then saveError is true`() = runTest {
+    fun `when send clicked and fails, then error event emitted`() = runTest {
         whenever(bookingsRepository.updateNote(any(), any())).thenReturn(Result.failure(Exception("fail")))
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onNoteChanged("New note")
-        viewModel.onSendClicked()
-        advanceUntilIdle()
+        viewModel.errorEvent.test {
+            viewModel.onNoteChanged("New note")
+            viewModel.onSendClicked()
 
-        assertThat(viewModel.state.value.saveError).isTrue()
-        assertThat(viewModel.state.value.savedSuccessfully).isFalse()
+            awaitItem()
+        }
     }
 
     @Test
@@ -195,23 +204,6 @@ class WooPosBookingNoteViewModelTest {
         val result = viewModel.onSendClicked()
 
         assertThat(result).isFalse()
-    }
-
-    @Test
-    fun `when error shown, then saveError is cleared`() = runTest {
-        whenever(bookingsRepository.updateNote(any(), any())).thenReturn(Result.failure(Exception("fail")))
-        val viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.onNoteChanged("New note")
-        viewModel.onSendClicked()
-        advanceUntilIdle()
-
-        assertThat(viewModel.state.value.saveError).isTrue()
-
-        viewModel.onErrorShown()
-
-        assertThat(viewModel.state.value.saveError).isFalse()
     }
 
     @Test
