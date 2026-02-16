@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.bookings.details
 
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingPaymentDetailsModel
 import com.woocommerce.android.ui.bookings.compose.BookingSummaryModel
@@ -34,7 +33,7 @@ data class BookingUiState(
     val note: String,
     val isAttendanceStatusEditable: Boolean,
     val onCancelBooking: () -> Unit = {},
-    val onAttendanceStatusSelected: (BookingAttendanceStatus) -> Unit = { _ -> },
+    val onAttendanceToggle: () -> Unit = {},
     val onMarkAsPaid: () -> Unit = {},
     val paymentUpdateStatus: PaymentUpdateStatus = PaymentUpdateStatus.Idle,
     val onNoteClicked: () -> Unit = {},

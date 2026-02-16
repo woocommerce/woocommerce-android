@@ -20,18 +20,18 @@
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationWPComEmailFragment"
-            app:destination="@id/jetpackActivationWPComEmailFragment"
+            android:id="@+id/action_jetpackActivationDispatcherFragment_to_wPComLoginEmailFragment"
+            app:destination="@id/wPComLoginEmailFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationWPComPasswordFragment"
-            app:destination="@id/jetpackActivationWPComPasswordFragment"
+            android:id="@+id/action_jetpackActivationDispatcherFragment_to_wPComLoginPasswordFragment"
+            app:destination="@id/wPComLoginPasswordFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_jetpackActivationDispatcherFragment_to_jetpackActivationMagicLinkHandlerFragment"
-            app:destination="@id/jetpackActivationMagicLinkHandlerFragment"
+            android:id="@+id/action_jetpackActivationDispatcherFragment_to_wPComLoginMagicLinkHandlerFragment"
+            app:destination="@id/wPComLoginMagicLinkHandlerFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -83,27 +83,27 @@
             app:destination="@id/jetpackActivationWebViewFragment" />
     </fragment>
     <fragment
-        android:id="@+id/jetpackActivationWPComEmailFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComEmailFragment"
-        android:label="JetpackActivationWPComEmailFragment">
+        android:id="@+id/wPComLoginEmailFragment"
+        android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginEmailFragment"
+        android:label="WPComLoginEmailFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
         <action
-            android:id="@+id/action_jetpackActivationWPComEmailFragment_to_jetpackActivationWPComPasswordFragment"
-            app:destination="@id/jetpackActivationWPComPasswordFragment" />
+            android:id="@+id/action_wPComLoginEmailFragment_to_wPComLoginPasswordFragment"
+            app:destination="@id/wPComLoginPasswordFragment" />
         <action
-            android:id="@+id/action_jetpackActivationWPComEmailFragment_to_jetpackActivationMagicLinkRequestFragment"
-            app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
+            android:id="@+id/action_wPComLoginEmailFragment_to_wPComLoginMagicLinkRequestFragment"
+            app:destination="@id/wPComLoginMagicLinkRequestFragment" />
         <argument
             android:name="usernameOnly"
             app:argType="boolean"
             android:defaultValue="false" />
     </fragment>
     <fragment
-        android:id="@+id/jetpackActivationWPComPasswordFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPComPasswordFragment"
-        android:label="JetpackActivationWPComPasswordFragment">
+        android:id="@+id/wPComLoginPasswordFragment"
+        android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordFragment"
+        android:label="WPComLoginPasswordFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
@@ -111,19 +111,19 @@
             android:name="emailOrUsername"
             app:argType="string" />
         <action
-            android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationMainFragment"
+            android:id="@+id/action_wPComLoginPasswordFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment" />
         <action
-            android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationWPCom2FAFragment"
-            app:destination="@id/jetpackActivationWPCom2FAFragment" />
+            android:id="@+id/action_wPComLoginPasswordFragment_to_wPComLogin2FAFragment"
+            app:destination="@id/wPComLogin2FAFragment" />
         <action
-            android:id="@+id/action_jetpackActivationWPComPasswordFragment_to_jetpackActivationMagicLinkRequestFragment"
-            app:destination="@id/jetpackActivationMagicLinkRequestFragment" />
+            android:id="@+id/action_wPComLoginPasswordFragment_to_wPComLoginMagicLinkRequestFragment"
+            app:destination="@id/wPComLoginMagicLinkRequestFragment" />
     </fragment>
     <fragment
-        android:id="@+id/jetpackActivationWPCom2FAFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationWPCom2FAFragment"
-        android:label="JetpackActivationWPCom2FAFragment">
+        android:id="@+id/wPComLogin2FAFragment"
+        android:name="com.woocommerce.android.ui.login.wpcom.WPComLogin2FAFragment"
+        android:label="WPComLogin2FAFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
@@ -134,13 +134,13 @@
             android:name="password"
             app:argType="string" />
         <action
-            android:id="@+id/action_jetpackActivationWPCom2FAFragment_to_jetpackActivationMainFragment"
+            android:id="@+id/action_wPComLogin2FAFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment" />
     </fragment>
     <fragment
-        android:id="@+id/jetpackActivationMagicLinkRequestFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkRequestFragment"
-        android:label="JetpackActivationMagicLinkRequestFragment">
+        android:id="@+id/wPComLoginMagicLinkRequestFragment"
+        android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkRequestFragment"
+        android:label="WPComLoginMagicLinkRequestFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
@@ -157,27 +157,27 @@
             android:name="isNewWpComAccount"
             app:argType="boolean" />
         <action
-            android:id="@+id/action_jetpackActivationMagicLinkRequestFragment_to_jetpackActivationWPComPasswordFragment"
-            app:destination="@id/jetpackActivationWPComPasswordFragment"
+            android:id="@+id/action_wPComLoginMagicLinkRequestFragment_to_wPComLoginPasswordFragment"
+            app:destination="@id/wPComLoginPasswordFragment"
             app:launchSingleTop="true"
-            app:popUpTo="@id/jetpackActivationMagicLinkRequestFragment"
+            app:popUpTo="@id/wPComLoginMagicLinkRequestFragment"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_jetpackActivationMagicLinkRequestFragment_to_jetpackActivationWPComEmailFragment"
-            app:destination="@id/jetpackActivationWPComEmailFragment"
+            android:id="@+id/action_wPComLoginMagicLinkRequestFragment_to_wPComLoginEmailFragment"
+            app:destination="@id/wPComLoginEmailFragment"
             app:launchSingleTop="true"
-            app:popUpTo="@id/jetpackActivationMagicLinkRequestFragment"
+            app:popUpTo="@id/wPComLoginMagicLinkRequestFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
-        android:id="@+id/jetpackActivationMagicLinkHandlerFragment"
-        android:name="com.woocommerce.android.ui.login.jetpack.wpcom.JetpackActivationMagicLinkHandlerFragment"
-        android:label="JetpackActivationMagicLinkHandlerFragment">
+        android:id="@+id/wPComLoginMagicLinkHandlerFragment"
+        android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkHandlerFragment"
+        android:label="WPComLoginMagicLinkHandlerFragment">
         <argument
             android:name="jetpackStatus"
             app:argType="com.woocommerce.android.model.JetpackStatus" />
         <action
-            android:id="@+id/action_jetpackActivationMagicLinkHandlerFragment_to_jetpackActivationMainFragment"
+            android:id="@+id/action_wPComLoginMagicLinkHandlerFragment_to_jetpackActivationMainFragment"
             app:destination="@id/jetpackActivationMainFragment"
             app:popUpTo="@id/jetpackActivationDispatcherFragment"
             app:popUpToInclusive="true" />
