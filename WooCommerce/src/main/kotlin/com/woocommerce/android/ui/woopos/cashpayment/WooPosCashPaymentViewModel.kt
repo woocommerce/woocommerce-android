@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentFailed
@@ -14,7 +15,10 @@ import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
 import javax.inject.Inject
@@ -29,6 +33,12 @@ class WooPosCashPaymentViewModel @Inject constructor(
     savedState: SavedStateHandle,
 ) : ViewModel() {
     private val orderId = savedState.get<Long>(CASH_ROUTE_ORDER_ID_KEY)!!
+    private val source: CashPaymentSource = savedState.get<String>(CASH_ROUTE_SOURCE_KEY)
+        ?.let { runCatching { CashPaymentSource.valueOf(it) }.getOrNull() }
+        ?: CashPaymentSource.CHECKOUT
+
+    private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
+    val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private val _state = savedState.getStateFlow<WooPosCashPaymentState>(
         scope = viewModelScope,
@@ -122,6 +132,14 @@ class WooPosCashPaymentViewModel @Inject constructor(
             if (result.isSuccess) {
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
+                when (source) {
+                    CashPaymentSource.BOOKINGS -> _navigationEvent.emit(
+                        WooPosNavigationEvent.GoBackWithResult(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
+                    )
+                    CashPaymentSource.CHECKOUT -> _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
+                    )
+                }
             } else {
                 val currentState = _state.value as? WooPosCashPaymentState.Collecting ?: return@launch
                 _state.value = currentState.copy(

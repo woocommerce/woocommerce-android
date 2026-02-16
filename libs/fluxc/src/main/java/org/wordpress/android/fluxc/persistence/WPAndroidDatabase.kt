@@ -28,10 +28,12 @@ import org.wordpress.android.fluxc.persistence.converters.LocalIdConverter
 import org.wordpress.android.fluxc.persistence.converters.RemoteIdConverter
 import org.wordpress.android.fluxc.persistence.coverters.StringListConverter
 import org.wordpress.android.fluxc.persistence.dao.ListDao
+import org.wordpress.android.fluxc.persistence.dao.NotificationDao
 import org.wordpress.android.fluxc.persistence.dao.ThemeDao
 import org.wordpress.android.fluxc.persistence.dao.WhatsNewDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao
 import org.wordpress.android.fluxc.persistence.domains.DomainDao.DomainEntity
+import org.wordpress.android.fluxc.persistence.entity.NotificationEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementEntity
 import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatureEntity
 
@@ -51,6 +53,7 @@ import org.wordpress.android.fluxc.persistence.entity.WhatsNewAnnouncementFeatur
             SitePluginModel::class,
             ListModel::class,
             ListItemModel::class,
+            NotificationEntity::class,
         ],
         autoMigrations = [
             AutoMigration(from = 11, to = 12),
@@ -95,6 +98,8 @@ abstract class WPAndroidDatabase : RoomDatabase() {
     internal abstract fun themeDao(): ThemeDao
 
     internal abstract fun whatsNewDao(): WhatsNewDao
+
+    internal abstract fun notificationDao(): NotificationDao
 
     abstract fun sitePluginDao(): SitePluginDao
 

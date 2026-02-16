@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.bookings.details
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -24,8 +23,6 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -41,9 +38,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.isTwoPanesShouldBeUsed
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetails
 import com.woocommerce.android.ui.bookings.compose.BookingAppointmentDetailsModel
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceSection
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
-import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatusBottomSheet
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetails
 import com.woocommerce.android.ui.bookings.compose.BookingCustomerDetailsUiModel
 import com.woocommerce.android.ui.bookings.compose.BookingNoteSection
@@ -85,7 +80,6 @@ fun BookingDetailsScreen(
     onBack: () -> Unit,
 ) {
     val context = LocalContext.current
-    val showAttendanceSheet = remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
             Toolbar(
@@ -126,18 +120,8 @@ fun BookingDetailsScreen(
                                     BookingDetailsContent(
                                         booking = viewState.bookingUiState,
                                         onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                        onAttendanceStatusClicked = { showAttendanceSheet.value = true },
                                         onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                     )
-                                    if (showAttendanceSheet.value) {
-                                        BookingAttendanceStatusBottomSheet(
-                                            onSelect = { status ->
-                                                viewState.bookingUiState.onAttendanceStatusSelected(status)
-                                            },
-                                            onDismiss = { showAttendanceSheet.value = false },
-                                            selected = viewState.bookingUiState.bookingSummary.attendanceStatus
-                                        )
-                                    }
                                 }
                             }
                         }
@@ -153,7 +137,6 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onAttendanceStatusClicked: () -> Unit,
     onMarkAsPaid: () -> Unit,
 ) {
     BookingSummary(
@@ -165,20 +148,13 @@ private fun BookingDetailsContent(
     BookingAppointmentDetails(
         model = booking.bookingsAppointmentDetails,
         onCancelBooking = onCancelBooking,
+        onAttendanceToggle = booking.onAttendanceToggle,
         modifier = Modifier.fillMaxWidth()
     )
     BookingCustomerDetails(
         model = booking.bookingCustomerDetails,
         modifier = Modifier.fillMaxWidth()
     )
-    AnimatedVisibility(booking.isAttendanceStatusEditable) {
-        BookingAttendanceSection(
-            status = booking.bookingSummary.attendanceStatus,
-            attendanceUpdateStatus = booking.bookingSummary.attendanceUpdateStatus,
-            onClick = onAttendanceStatusClicked,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
@@ -276,7 +252,7 @@ private fun BookingDetailsPreview() {
                         date = "05/07/2025, 11:00 AM",
                         name = "Women’s Haircut",
                         customerName = "Margarita Nikolaevna",
-                        attendanceStatus = BookingAttendanceStatus.CheckedIn,
+                        attendanceStatus = BookingAttendanceStatus.Attended,
                         status = BookingStatus.Paid,
                         attendanceUpdateStatus = AttendanceUpdateStatus.Idle,
                     ),

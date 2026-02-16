@@ -2291,6 +2291,10 @@ open class WellSqlConfig : DefaultWellConfig {
                 }
 
                 240 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS NotificationModel")
+                }
+
+                240 -> migrate(version) {
                     db.execSQL("DROP TABLE IF EXISTS ListItemModel")
                     db.execSQL("DROP TABLE IF EXISTS ListModel")
                 }

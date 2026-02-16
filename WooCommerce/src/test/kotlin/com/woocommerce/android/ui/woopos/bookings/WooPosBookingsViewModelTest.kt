@@ -1,11 +1,18 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
+import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
+import com.woocommerce.android.util.DateFormatter
+import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,6 +25,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -39,6 +49,30 @@ class WooPosBookingsViewModelTest {
 
     private val bookingListHandler: BookingListHandler = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
+    private val dateFormatter: DateFormatter = mock()
+    private val resourceProvider: ResourceProvider = mock {
+        on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
+            val quantity = invocation.arguments[0] as Int
+            val default = invocation.arguments[1] as Int
+            val one = invocation.arguments[3] as Int?
+            when (quantity) {
+                1 -> when (one) {
+                    R.string.booking_duration_second -> "1 second"
+                    R.string.booking_duration_minute -> "1 minute"
+                    R.string.booking_duration_hour -> "1 hour"
+                    R.string.booking_duration_day -> "1 day"
+                    else -> ""
+                }
+                else -> when (default) {
+                    R.string.booking_duration_seconds -> "$quantity seconds"
+                    R.string.booking_duration_minutes -> "$quantity minutes"
+                    R.string.booking_duration_hours -> "$quantity hours"
+                    R.string.booking_duration_days -> "$quantity days"
+                    else -> ""
+                }
+            }
+        }
+    }
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -62,7 +96,7 @@ class WooPosBookingsViewModelTest {
         personCounts = null,
         localTimezone = "UTC",
         customerNote = null,
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         note = "",
         order = BookingOrderInfo(
             productInfo = BookingProductInfo(name = "Service $id"),
@@ -73,11 +107,14 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
+            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider),
         )
     }
 
     @Before
     fun setUp() = runTest {
+        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Nov 14, 2023, 10:13 AM")
+        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn("10:13 AM")
         whenever(bookingListHandler.bookingsFlow).thenReturn(
             flowOf(listOf(booking(1), booking(2)))
         )
@@ -534,5 +571,87 @@ class WooPosBookingsViewModelTest {
             // THEN
             val content = viewModel.state.value as WooPosBookingsState.Content
             assertThat(content.selectedDetails?.id).isEqualTo(2L)
+        }
+
+    @Test
+    fun `given selected booking, when PayByCashClicked, then navigation event emitted with correct orderId and BOOKINGS source`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCashClicked)
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenCashPayment::class.java)
+                val cashEvent = event as WooPosNavigationEvent.OpenCashPayment
+                assertThat(cashEvent.orderId).isEqualTo(10L)
+                assertThat(cashEvent.source).isEqualTo(CashPaymentSource.BOOKINGS)
+            }
+        }
+
+    @Test
+    fun `given no selected booking, when PayByCashClicked, then no navigation event emitted`() =
+        runTest {
+            // GIVEN
+            whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .thenReturn(Result.failure(RuntimeException("error")))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCashClicked)
+
+                // THEN
+                expectNoEvents()
+            }
+        }
+
+    @Test
+    fun `given selected booking, when PayByCardClicked, then navigation event emitted with correct orderId and BOOKINGS source`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCardClicked)
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenCardPayment::class.java)
+                val cardEvent = event as WooPosNavigationEvent.OpenCardPayment
+                assertThat(cardEvent.orderId).isEqualTo(10L)
+                assertThat(cardEvent.source).isEqualTo(CardPaymentSource.BOOKINGS)
+            }
+        }
+
+    @Test
+    fun `given no selected booking, when PayByCardClicked, then no navigation event emitted`() =
+        runTest {
+            // GIVEN
+            whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .thenReturn(Result.failure(RuntimeException("error")))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(WooPosBookingsUIEvent.PayByCardClicked)
+
+                // THEN
+                expectNoEvents()
+            }
         }
 }

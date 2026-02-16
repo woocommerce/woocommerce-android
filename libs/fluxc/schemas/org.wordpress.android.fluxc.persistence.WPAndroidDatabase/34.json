@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 34,
-    "identityHash": "d16c4c4702c07120df89e0fb072c3827",
+    "identityHash": "7715b72b8bb92d5c420708c2dc10abfe",
     "entities": [
       {
         "tableName": "FeatureFlagConfigurations",
@@ -510,100 +510,97 @@
         }
       },
       {
-        "tableName": "ListEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `lastModified` TEXT, `descriptorUniqueIdentifierDbValue` INTEGER NOT NULL, `descriptorTypeIdentifierDbValue` INTEGER NOT NULL, `stateDbValue` INTEGER NOT NULL)",
+        "tableName": "NotificationEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`remoteSiteId` INTEGER NOT NULL, `remoteNoteId` INTEGER NOT NULL, `noteHash` INTEGER NOT NULL, `type` TEXT NOT NULL, `subtype` TEXT, `read` INTEGER NOT NULL, `icon` TEXT, `noticon` TEXT, `timestamp` TEXT, `url` TEXT, `title` TEXT, `formattableBody` TEXT, `formattableSubject` TEXT, `formattableMeta` TEXT, PRIMARY KEY(`remoteSiteId`, `remoteNoteId`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
+            "fieldPath": "remoteSiteId",
+            "columnName": "remoteSiteId",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "lastModified",
-            "columnName": "lastModified",
+            "fieldPath": "remoteNoteId",
+            "columnName": "remoteNoteId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noteHash",
+            "columnName": "noteHash",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "type",
+            "columnName": "type",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "subtype",
+            "columnName": "subtype",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "descriptorUniqueIdentifierDbValue",
-            "columnName": "descriptorUniqueIdentifierDbValue",
+            "fieldPath": "read",
+            "columnName": "read",
             "affinity": "INTEGER",
             "notNull": true
           },
           {
-            "fieldPath": "descriptorTypeIdentifierDbValue",
-            "columnName": "descriptorTypeIdentifierDbValue",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "icon",
+            "columnName": "icon",
+            "affinity": "TEXT"
           },
           {
-            "fieldPath": "stateDbValue",
-            "columnName": "stateDbValue",
-            "affinity": "INTEGER",
-            "notNull": true
-          }
-        ],
-        "primaryKey": {
-          "autoGenerate": true,
-          "columnNames": [
-            "id"
-          ]
-        },
-        "indices": [
-          {
-            "name": "index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue",
-            "unique": true,
-            "columnNames": [
-              "descriptorUniqueIdentifierDbValue",
-              "descriptorTypeIdentifierDbValue"
-            ],
-            "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_ListEntity_descriptorUniqueIdentifierDbValue_descriptorTypeIdentifierDbValue` ON `${TABLE_NAME}` (`descriptorUniqueIdentifierDbValue`, `descriptorTypeIdentifierDbValue`)"
-          }
-        ]
-      },
-      {
-        "tableName": "ListItemEntity",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`listId` INTEGER NOT NULL, `remoteItemId` INTEGER NOT NULL, PRIMARY KEY(`listId`, `remoteItemId`), FOREIGN KEY(`listId`) REFERENCES `ListEntity`(`id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
-        "fields": [
-          {
-            "fieldPath": "listId",
-            "columnName": "listId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "noticon",
+            "columnName": "noticon",
+            "affinity": "TEXT"
           },
           {
-            "fieldPath": "remoteItemId",
-            "columnName": "remoteItemId",
-            "affinity": "INTEGER",
-            "notNull": true
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "url",
+            "columnName": "url",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "title",
+            "columnName": "title",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableBody",
+            "columnName": "formattableBody",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableSubject",
+            "columnName": "formattableSubject",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "formattableMeta",
+            "columnName": "formattableMeta",
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "listId",
-            "remoteItemId"
+            "remoteSiteId",
+            "remoteNoteId"
           ]
-        },
-        "foreignKeys": [
-          {
-            "table": "ListEntity",
-            "onDelete": "CASCADE",
-            "onUpdate": "NO ACTION",
-            "columns": [
-              "listId"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          }
-        ]
+        }
       }
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'd16c4c4702c07120df89e0fb072c3827')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7715b72b8bb92d5c420708c2dc10abfe')"
     ]
   }
 }
