@@ -7,4 +7,5 @@ sealed interface WooPosBookingsUIEvent {
     data object PayByCashClicked : WooPosBookingsUIEvent
     data object AddBookingNoteClicked : WooPosBookingsUIEvent
     data class CopyEmailClicked(val email: String) : WooPosBookingsUIEvent
+    data class CopyPhoneClicked(val phone: String) : WooPosBookingsUIEvent
 }

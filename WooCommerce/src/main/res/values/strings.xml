@@ -3923,6 +3923,7 @@
     <string name="woopos_bookings_details_edit_note">Edit note</string>
     <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
     <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_details_copy_phone">Copy phone</string>
     <string name="woopos_bookings_note_screen_title_add">Add note</string>
     <string name="woopos_bookings_note_screen_title_edit">Edit note</string>
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>

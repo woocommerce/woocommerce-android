@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
+import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -28,6 +29,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
     private val dateTimeProvider: DateTimeProvider,
     private val mapper: WooPosBookingViewStateMapper,
+    private val clipboardHelper: WooPosClipboardHelper,
 ) : ViewModel() {
 
     companion object {
@@ -219,8 +221,13 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.PayByCardClicked -> handlePayByCard()
             is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
-            is WooPosBookingsUIEvent.CopyEmailClicked -> { }
+            is WooPosBookingsUIEvent.CopyEmailClicked -> handleCopyToClipboard(event.email)
+            is WooPosBookingsUIEvent.CopyPhoneClicked -> handleCopyToClipboard(event.phone)
         }
+    }
+
+    private fun handleCopyToClipboard(text: String) {
+        clipboardHelper.copyToClipboard(text)
     }
 
     fun onIssueRefundDialogDismissed() {
