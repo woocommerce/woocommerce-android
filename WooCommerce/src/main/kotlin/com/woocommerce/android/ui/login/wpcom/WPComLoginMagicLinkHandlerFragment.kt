@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -17,7 +18,6 @@ import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.base.UIMessageResolver
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.GoToStore
-import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainFragmentArgs
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
 import com.woocommerce.android.ui.main.AppBarStatus
@@ -63,11 +63,10 @@ class WPComLoginMagicLinkHandlerFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            R.id.action_global_to_jetpackActivationMainFragment,
-            JetpackActivationMainFragmentArgs(
+            NavGraphJetpackActivationDirections.actionGlobalToJetpackActivationMainFragment(
                 siteUrl = event.siteUrl,
                 jetpackStatus = event.jetpackStatus
-            ).toBundle()
+            )
         )
     }
 
