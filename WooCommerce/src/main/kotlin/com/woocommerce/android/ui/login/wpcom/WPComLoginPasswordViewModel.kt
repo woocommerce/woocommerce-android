@@ -65,6 +65,7 @@ class WPComLoginPasswordViewModel @Inject constructor(
         flowOf(Pair(navArgs.emailOrUsername, avatarUrlFromEmail(navArgs.emailOrUsername)))
     ) { password, isLoadingDialogShown, errorMessage, (emailOrUsername, avatarUrl) ->
         ViewState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = emailOrUsername,
             password = password,
             avatarUrl = avatarUrl,
@@ -174,6 +175,7 @@ class WPComLoginPasswordViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val wpComLoginMode: WPComLoginMode,
         val emailOrUsername: String,
         val password: String,
         val avatarUrl: String,
