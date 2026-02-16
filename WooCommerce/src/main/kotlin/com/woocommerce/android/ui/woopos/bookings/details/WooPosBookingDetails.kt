@@ -329,34 +329,31 @@ private fun BookingAttendanceSection(
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        WooPosCard(shadowType = ShadowType.Soft) {
-            Column(Modifier.padding(WooPosSpacing.Medium.value)) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_bookings_details_attendance_title),
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold,
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            WooPosText(
+                text = stringResource(R.string.woopos_bookings_details_attendance_title),
+                style = WooPosTypography.BodyLarge,
+                fontWeight = FontWeight.Bold,
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)
+            ) {
+                WooPosToggleButton(
+                    text = stringResource(R.string.woopos_bookings_details_attendance_attended),
+                    isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.ATTENDED,
+                    onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true)) },
                 )
 
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value)
-                ) {
-                    WooPosToggleButton(
-                        text = stringResource(R.string.woopos_bookings_details_attendance_attended),
-                        isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.ATTENDED,
-                        onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true)) },
-                        modifier = Modifier.weight(1f)
-                    )
-
-                    WooPosToggleButton(
-                        text = stringResource(R.string.woopos_bookings_details_attendance_unattended),
-                        isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.UNATTENDED,
-                        onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false)) },
-                        modifier = Modifier.weight(1f)
-                    )
-                }
+                WooPosToggleButton(
+                    text = stringResource(R.string.woopos_bookings_details_attendance_unattended),
+                    isSelected = attendanceSection.selection == WooPosBookingsState.AttendanceState.UNATTENDED,
+                    onClick = { onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false)) },
+                )
             }
         }
 
