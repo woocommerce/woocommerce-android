@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.root.navigation
 
+import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.tab.WooPosLaunchability
 
 sealed class WooPosNavigationEvent {
@@ -7,7 +9,14 @@ sealed class WooPosNavigationEvent {
     data object ExitPosClicked : WooPosNavigationEvent()
     data object BackFromSplashClicked : WooPosNavigationEvent()
     data object OpenHomeFromSplash : WooPosNavigationEvent()
-    data class OpenCashPayment(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenCashPayment(
+        val orderId: Long,
+        val source: CashPaymentSource = CashPaymentSource.CHECKOUT,
+    ) : WooPosNavigationEvent()
+    data class OpenCardPayment(
+        val orderId: Long,
+        val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
+    ) : WooPosNavigationEvent()
     data class OpenEmailReceipt(val orderId: Long) : WooPosNavigationEvent()
     data class OpenRefundReason(val orderId: Long, val initialReason: String = "") : WooPosNavigationEvent()
     data object GoBack : WooPosNavigationEvent()
@@ -19,4 +28,5 @@ sealed class WooPosNavigationEvent {
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
+    data object OpenBookings : WooPosNavigationEvent()
 }

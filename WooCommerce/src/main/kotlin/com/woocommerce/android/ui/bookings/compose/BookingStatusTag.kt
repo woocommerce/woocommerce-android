@@ -19,7 +19,7 @@ fun BookingStatusTag(
     WCTag(
         text = state.text(),
         backgroundColor = state.backgroundColor(),
-        textColor = colorResource(R.color.tagView_text),
+        textColor = state.textColor(),
         fontWeight = FontWeight.Normal,
         modifier = modifier
     )
@@ -44,7 +44,7 @@ private fun BookingStatus.text(): String {
         BookingStatus.PendingConfirmation -> stringResource(R.string.booking_payment_status_pending_confirmation)
         BookingStatus.Confirmed -> stringResource(R.string.booking_payment_status_confirmed)
         BookingStatus.Paid -> stringResource(R.string.booking_payment_status_paid)
-        BookingStatus.Cancelled -> stringResource(R.string.booking_payment_status_cancelled)
+        BookingStatus.Cancelled -> stringResource(R.string.booking_attendance_status_cancelled)
         BookingStatus.Complete -> stringResource(R.string.booking_payment_status_complete)
         BookingStatus.PayOnSite -> stringResource(R.string.booking_payment_status_pay_on_site)
         BookingStatus.InCart -> stringResource(R.string.booking_payment_status_in_cart)
@@ -56,7 +56,16 @@ private fun BookingStatus.text(): String {
 fun BookingStatus.backgroundColor(): Color {
     return when (this) {
         BookingStatus.PayOnSite -> R.color.tag_bg_booking_yellow
+        BookingStatus.Cancelled -> R.color.tag_bg_booking_cancelled
         else -> R.color.tagView_bg
+    }.let { colorResource(it) }
+}
+
+@Composable
+fun BookingStatus.textColor(): Color {
+    return when (this) {
+        BookingStatus.Cancelled -> R.color.tag_text_booking_cancelled
+        else -> R.color.tagView_text
     }.let { colorResource(it) }
 }
 

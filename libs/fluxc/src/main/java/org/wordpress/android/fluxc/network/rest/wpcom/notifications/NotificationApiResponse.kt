@@ -34,7 +34,6 @@ class NotificationApiResponse : Response {
             val isRead = response.read?.let { it == 1 } ?: false
 
             return NotificationModel(
-                    noteId = 0,
                     remoteNoteId = response.id ?: 0,
                     remoteSiteId = response.meta?.ids?.site ?: 0L,
                     noteHash = response.note_hash ?: 0L,

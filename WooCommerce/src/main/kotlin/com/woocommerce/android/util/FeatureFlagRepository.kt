@@ -31,7 +31,7 @@ class FeatureFlagRepository @Inject constructor(
     suspend fun getFlagState(flag: FeatureFlag) = FeatureFlagState(
         flag = flag,
         defaultValue = flag.default,
-        remoteValue = getRemoteValue(flag.key),
+        remoteValue = getRemoteValue(flag.remoteFlagKey),
         overrideValue = getOverrideValue(flag)
     )
 

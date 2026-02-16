@@ -16,7 +16,7 @@ class FeatureFlagRepositoryTest {
     fun `given remote is true, when getFlagState called, then remoteValue is true`() = runTest {
         // GIVEN
         val flag = FeatureFlag.POS_REFUNDS
-        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.key)).thenReturn(true)
+        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.remoteFlagKey)).thenReturn(true)
 
         // WHEN
         val state = sut.getFlagState(flag)
@@ -29,7 +29,7 @@ class FeatureFlagRepositoryTest {
     fun `given remote is false, when getFlagState called, then remoteValue is false`() = runTest {
         // GIVEN
         val flag = FeatureFlag.POS_REFUNDS
-        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.key)).thenReturn(false)
+        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.remoteFlagKey)).thenReturn(false)
 
         // WHEN
         val state = sut.getFlagState(flag)
@@ -42,7 +42,7 @@ class FeatureFlagRepositoryTest {
     fun `given remote is null, when getFlagState called, then remoteValue is null`() = runTest {
         // GIVEN
         val flag = FeatureFlag.POS_REFUNDS
-        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.key)).thenReturn(null)
+        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.remoteFlagKey)).thenReturn(null)
 
         // WHEN
         val state = sut.getFlagState(flag)
@@ -55,7 +55,7 @@ class FeatureFlagRepositoryTest {
     fun `given flag with default false, when getFlagState called, then defaultValue is false`() = runTest {
         // GIVEN
         val flag = FeatureFlag.WOO_SELF_DRIVEN_PUSH_NOTIFICATIONS_M1 // explicit default = false
-        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.key)).thenReturn(null)
+        whenever(remoteFeatureFlagRepository.isRemoteFeatureFlagEnabled(flag.remoteFlagKey)).thenReturn(null)
 
         // WHEN
         val state = sut.getFlagState(flag)

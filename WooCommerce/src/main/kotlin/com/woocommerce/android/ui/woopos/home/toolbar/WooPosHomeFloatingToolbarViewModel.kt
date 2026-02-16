@@ -18,11 +18,14 @@ import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.ExitTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.GoToOrdersTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import com.woocommerce.android.util.FeatureFlag
+import com.woocommerce.android.util.FeatureFlagRepository
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +34,8 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val featureFlagRepository: FeatureFlagRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
@@ -86,6 +90,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                 }
             }
 
+            R.string.woopos_bookings_title -> {
+                viewModelScope.launch {
+                    childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToBookings)
+                }
+            }
+
             R.string.woopos_settings_title -> {
                 viewModelScope.launch {
                     childrenToParentEventSender.sendToParent(ChildToParentEvent.NavigationEvent.ToSettings)
@@ -135,20 +145,30 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems by lazy {
         buildList {
-            addAll(
-                listOf(
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_orders_title,
+                    icon = R.drawable.ic_description_filled_24dp,
+                )
+            )
+            if (runBlocking { featureFlagRepository.isEnabled(FeatureFlag.WOO_POS) }) {
+                add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_orders_title,
-                        icon = R.drawable.ic_description_filled_24dp,
-                    ),
-                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_settings_title,
-                        icon = R.drawable.ic_settings_filled_24dp,
-                    ),
-                    WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                        title = R.string.woopos_exit_confirmation_title,
-                        icon = R.drawable.ic_exit_to_app_24dp,
-                    ),
+                        title = R.string.woopos_bookings_title,
+                        icon = R.drawable.ic_analytics_calendar,
+                    )
+                )
+            }
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_settings_title,
+                    icon = R.drawable.ic_settings_filled_24dp,
+                )
+            )
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_exit_confirmation_title,
+                    icon = R.drawable.ic_exit_to_app_24dp,
                 )
             )
         }

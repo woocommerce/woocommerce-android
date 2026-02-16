@@ -12,7 +12,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,9 +43,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -58,6 +54,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.annotatedStringRes
+import com.woocommerce.android.ui.compose.component.IdleCircle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
@@ -340,7 +337,7 @@ private fun JetpackActivationStep(
         val indicatorModifier = Modifier.size(dimensionResource(id = R.dimen.image_minor_60))
         when (step.state) {
             JetpackActivationMainViewModel.StepState.Idle -> {
-                IdleCircle(indicatorModifier)
+                IdleCircle()
             }
 
             JetpackActivationMainViewModel.StepState.Ongoing -> {
@@ -420,21 +417,6 @@ private fun ConnectionStepHint(connectionStep: JetpackActivationMainViewModel.Co
             color = colorResource(id = color),
             style = MaterialTheme.typography.caption,
             fontWeight = FontWeight.SemiBold
-        )
-    }
-}
-
-@Composable
-private fun IdleCircle(modifier: Modifier = Modifier) {
-    val color = colorResource(id = R.color.color_on_surface_medium)
-    val stroke = with(LocalDensity.current) {
-        Stroke(width = dimensionResource(id = R.dimen.minor_25).toPx(), cap = StrokeCap.Round)
-    }
-    Canvas(modifier = modifier) {
-        drawCircle(
-            color = color,
-            radius = (size.minDimension - stroke.width) / 2,
-            style = stroke
         )
     }
 }
