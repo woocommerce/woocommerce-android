@@ -328,10 +328,12 @@ private fun BookingAttendanceSection(
     attendanceSection: WooPosBookingsState.AttendanceSection,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
-    WooPosCard(shadowType = ShadowType.Soft) {
-        Column(Modifier.padding(WooPosSpacing.Medium.value)) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        WooPosCard(shadowType = ShadowType.Soft) {
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(WooPosSpacing.Medium.value),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -357,15 +359,15 @@ private fun BookingAttendanceSection(
                     )
                 }
             }
-
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-            WooPosText(
-                text = stringResource(R.string.woopos_bookings_details_attendance_hint),
-                style = WooPosTypography.BodySmall,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-            )
         }
+
+        Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+        WooPosText(
+            text = stringResource(R.string.woopos_bookings_details_attendance_hint),
+            style = WooPosTypography.BodySmall,
+            color = WooPosTheme.colors.onSurfaceVariantHighest,
+        )
     }
 }
 
