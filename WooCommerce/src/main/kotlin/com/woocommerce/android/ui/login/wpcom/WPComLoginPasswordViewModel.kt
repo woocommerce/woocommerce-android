@@ -69,8 +69,6 @@ class WPComLoginPasswordViewModel @Inject constructor(
             emailOrUsername = emailOrUsername,
             password = password,
             avatarUrl = avatarUrl,
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
@@ -179,7 +177,6 @@ class WPComLoginPasswordViewModel @Inject constructor(
         val emailOrUsername: String,
         val password: String,
         val avatarUrl: String,
-        val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {

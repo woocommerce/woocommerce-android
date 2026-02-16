@@ -45,8 +45,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
             wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = false
         )
@@ -106,8 +104,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
             wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = true
         )
@@ -120,8 +116,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
                 _viewState.value = ViewState.MagicLinkSentState(
                     wpComLoginMode = navArgs.wpComLoginMode,
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
-                    isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                        ?.jetpackStatus?.isJetpackInstalled ?: false,
                     magicLinkFallbackButton = navArgs.fallbackButton,
                 )
             },
@@ -156,7 +150,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
     sealed interface ViewState : Parcelable {
         val wpComLoginMode: WPComLoginMode
-        val isJetpackInstalled: Boolean
         val magicLinkFallbackButton: MagicLinkFallbackButton
 
         @Parcelize
@@ -164,7 +157,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
             override val wpComLoginMode: WPComLoginMode,
             val emailOrUsername: String,
             val avatarUrl: String,
-            override val isJetpackInstalled: Boolean,
             override val magicLinkFallbackButton: MagicLinkFallbackButton,
             val isLoadingDialogShown: Boolean
         ) : ViewState
@@ -173,7 +165,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         data class MagicLinkSentState(
             override val wpComLoginMode: WPComLoginMode,
             val email: String?,
-            override val isJetpackInstalled: Boolean,
             override val magicLinkFallbackButton: MagicLinkFallbackButton
         ) : ViewState
     }

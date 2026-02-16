@@ -61,8 +61,6 @@ class WPComLogin2FAViewModel @Inject constructor(
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 }
         )
@@ -158,7 +156,6 @@ class WPComLogin2FAViewModel @Inject constructor(
         val emailOrUsername: String,
         val password: String,
         val otp: String,
-        val isJetpackInstalled: Boolean,
         val errorMessage: Int? = null,
         val loadingMessage: Int? = null
     ) {

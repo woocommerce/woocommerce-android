@@ -221,7 +221,7 @@ private data class MagicLinkScreenBranding(
 )
 
 private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): MagicLinkScreenBranding {
-    return when (wpComLoginMode) {
+    return when (val wpComLoginMode = this.wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> MagicLinkScreenBranding(
             navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
@@ -229,7 +229,7 @@ private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): Mag
 
         is WPComLoginMode.JetpackSetup -> MagicLinkScreenBranding(
             navIcon = R.drawable.ic_close_24dp,
-            title = if (isJetpackInstalled) {
+            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
@@ -257,7 +257,6 @@ private fun JetpackModeRequestPreview() {
                 ),
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
-                isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
                 isLoadingDialogShown = false
             )
@@ -274,7 +273,6 @@ private fun NotificationSetupModeRequestPreview() {
                 wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
-                isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
                 isLoadingDialogShown = false
             )
@@ -290,7 +288,6 @@ private fun MagicLinkSentPreview() {
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
                 wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 email = null,
-                isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
             )
         )

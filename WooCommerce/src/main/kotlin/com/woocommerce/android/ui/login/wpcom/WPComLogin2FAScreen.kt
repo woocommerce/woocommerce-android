@@ -160,12 +160,12 @@ private fun WPComLogin2FAViewModel.ViewState.resolveBranding(): TwoFAScreenBrand
 
         is WPComLoginMode.JetpackSetup -> TwoFAScreenBranding(
             navIcon = R.drawable.ic_close_24dp,
-            title = if (isJetpackInstalled) {
+            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
             },
-            buttonText = if (isJetpackInstalled) {
+            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
@@ -193,8 +193,7 @@ private fun JetpackModePreview() {
                 ),
                 emailOrUsername = "test@email.com",
                 password = "",
-                otp = "123456",
-                isJetpackInstalled = false
+                otp = "123456"
             )
         )
     }
@@ -209,8 +208,7 @@ private fun NotificationSetupModePreview() {
                 wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 emailOrUsername = "test@email.com",
                 password = "",
-                otp = "123456",
-                isJetpackInstalled = false
+                otp = "123456"
             )
         )
     }

@@ -179,17 +179,17 @@ private fun WPComLoginPasswordViewModel.ViewState.resolveBranding(): PasswordScr
 
         is WPComLoginMode.JetpackSetup -> PasswordScreenBranding(
             navIcon = R.drawable.ic_close_24dp,
-            title = if (isJetpackInstalled) {
+            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
             },
-            subtitle = if (isJetpackInstalled) {
+            subtitle = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connection_enter_wpcom_password
             } else {
                 R.string.login_jetpack_installation_enter_wpcom_password
             },
-            buttonText = if (isJetpackInstalled) {
+            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
@@ -217,8 +217,7 @@ private fun JetpackModePreview() {
                 ),
                 emailOrUsername = "test@email.com",
                 password = "",
-                avatarUrl = "",
-                isJetpackInstalled = false
+                avatarUrl = ""
             )
         )
     }
@@ -233,8 +232,7 @@ private fun NotificationSetupModePreview() {
                 wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 emailOrUsername = "test@email.com",
                 password = "",
-                avatarUrl = "",
-                isJetpackInstalled = false
+                avatarUrl = ""
             )
         )
     }
