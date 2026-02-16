@@ -57,7 +57,7 @@ class WooPosBookingNoteViewModel @Inject constructor(
 
     fun onSaveClicked() {
         val currentState = _state.value
-        if (currentState.noteText.isBlank() || currentState.buttonState == WooPosButtonState.LOADING) {
+        if (currentState.buttonState == WooPosButtonState.LOADING) {
             return
         }
 
@@ -93,7 +93,7 @@ data class WooPosBookingNoteState(
     val saveButtonState: WooPosButtonState
         get() = when {
             buttonState == WooPosButtonState.LOADING -> WooPosButtonState.LOADING
-            noteText.isBlank() -> WooPosButtonState.DISABLED
-            else -> WooPosButtonState.ENABLED
+            initialNote.trim() != noteText.trim() -> WooPosButtonState.ENABLED
+            else -> WooPosButtonState.DISABLED
         }
 }

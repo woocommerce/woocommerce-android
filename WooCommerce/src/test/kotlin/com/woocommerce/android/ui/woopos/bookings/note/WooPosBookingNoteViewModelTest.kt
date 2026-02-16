@@ -99,16 +99,16 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `given existing note loaded, when ViewModel created, then save button is enabled`() = runTest {
+    fun `given existing note loaded, when ViewModel created, then save button is disabled`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
         val state = viewModel.state.value
-        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.ENABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
     }
 
     @Test
-    fun `when note text changed to non-empty, then save button is enabled`() = runTest {
+    fun `when note text changed to different value, then save button is enabled`() = runTest {
         whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
         val viewModel = createViewModel()
         advanceUntilIdle()
@@ -121,14 +121,34 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `when note text changed to blank, then save button is disabled`() = runTest {
+    fun `given existing note, when note text cleared, then save button is enabled`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
-        viewModel.onNoteChanged("   ")
+        viewModel.onNoteChanged("")
 
         val state = viewModel.state.value
-        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
+        assertThat(state.saveButtonState).isEqualTo(WooPosButtonState.ENABLED)
+    }
+
+    @Test
+    fun `given existing note, when note text unchanged, then save button is disabled`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onNoteChanged("Existing note")
+
+        assertThat(viewModel.state.value.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
+    }
+
+    @Test
+    fun `given existing note, when only whitespace differs, then save button is disabled`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onNoteChanged("Existing note  ")
+
+        assertThat(viewModel.state.value.saveButtonState).isEqualTo(WooPosButtonState.DISABLED)
     }
 
     @Test
@@ -192,12 +212,15 @@ class WooPosBookingNoteViewModelTest {
     }
 
     @Test
-    fun `when save clicked with blank note, then does not save`() = runTest {
-        whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
+    fun `when save clicked with blank note, then repository called with empty trimmed text`() = runTest {
         val viewModel = createViewModel()
         advanceUntilIdle()
 
+        viewModel.onNoteChanged("   ")
         viewModel.onSaveClicked()
+        advanceUntilIdle()
+
+        verify(bookingsRepository).updateNote(eq(bookingId), eq(""))
     }
 
     @Test
