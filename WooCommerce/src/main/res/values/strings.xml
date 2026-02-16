@@ -3922,6 +3922,7 @@
     <string name="woopos_bookings_details_add_note">Add note</string>
     <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
     <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

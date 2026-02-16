@@ -553,14 +553,20 @@ private fun BookingOverflowMenu(
             actions.forEach { action ->
                 DropdownMenuItem(
                     text = {
-                        val text = when (action) {
-                            is WooPosBookingsState.BookingAction.EmailReceipt -> stringResource(
-                                R.string.woopos_orders_email_receipt
-                            )
+                        val (text, textColor) = when (action) {
+                            is WooPosBookingsState.BookingAction.EmailReceipt -> {
+                                stringResource(R.string.woopos_orders_email_receipt) to
+                                    MaterialTheme.colorScheme.onSurface
+                            }
+                            is WooPosBookingsState.BookingAction.CancelBooking -> {
+                                stringResource(R.string.woopos_bookings_cancel_menu_item) to
+                                    MaterialTheme.colorScheme.error
+                            }
                         }
                         WooPosText(
                             text = text,
-                            style = WooPosTypography.BodyMedium
+                            style = WooPosTypography.BodyMedium,
+                            color = textColor
                         )
                     },
                     onClick = {
@@ -582,7 +588,10 @@ fun WooPosBookingDetailsPreview() {
         number = "#333",
         status = WooPosBookingStatus(text = "Unpaid", colorKey = WooPosBookingStatusColorKey.FAILED),
         actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-            listOf(WooPosBookingsState.BookingAction.EmailReceipt(1L))
+            listOf(
+                WooPosBookingsState.BookingAction.EmailReceipt(3330L),
+                WooPosBookingsState.BookingAction.CancelBooking(bookingId = 333L, orderId = 3330L)
+            )
         ),
         headerTitle = "10:30-11:30 AM",
         headerSubtitle = "Women's Haircut \u00B7 Margarita Nikolaevna",
