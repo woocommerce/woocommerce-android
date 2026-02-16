@@ -45,8 +45,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
-import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
+import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
