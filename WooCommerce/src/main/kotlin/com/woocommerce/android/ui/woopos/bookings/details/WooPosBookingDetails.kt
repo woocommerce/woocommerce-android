@@ -240,14 +240,6 @@ private fun BookingCustomerCard(
                 fontWeight = FontWeight.Bold,
             )
 
-            customerSection.name?.let {
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
-                WooPosText(
-                    text = it,
-                    style = WooPosTypography.BodyMedium,
-                )
-            }
-
             customerSection.email?.let { email ->
                 Spacer(Modifier.height(WooPosSpacing.Medium.value))
                 CopyableRow(
