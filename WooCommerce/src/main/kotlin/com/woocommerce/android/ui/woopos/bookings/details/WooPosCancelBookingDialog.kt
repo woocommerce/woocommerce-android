@@ -14,6 +14,7 @@ import androidx.compose.ui.text.style.TextAlign
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosDialogWrapper
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -26,6 +27,8 @@ fun WooPosCancelBookingDialog(
     modifier: Modifier = Modifier,
     isVisible: Boolean,
     message: String,
+    isProcessing: Boolean = false,
+    errorMessage: String? = null,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -35,7 +38,7 @@ fun WooPosCancelBookingDialog(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_bookings_cancel_dialog_background
         ),
-        onDismissRequest = onDismiss,
+        onDismissRequest = { if (!isProcessing) onDismiss() },
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -67,10 +70,22 @@ fun WooPosCancelBookingDialog(
                 textAlign = TextAlign.Center,
             )
 
+            if (errorMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+                WooPosText(
+                    text = errorMessage,
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.error,
+                    textAlign = TextAlign.Center,
+                )
+            }
+
             Spacer(modifier = Modifier.height(WooPosSpacing.XXXLarge.value))
 
             WooPosButton(
                 text = stringResource(R.string.woopos_bookings_cancel_dialog_confirm),
+                state = if (isProcessing) WooPosButtonState.LOADING else WooPosButtonState.ENABLED,
                 onClick = onConfirm,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -79,6 +94,7 @@ fun WooPosCancelBookingDialog(
 
             WooPosOutlinedButton(
                 text = stringResource(R.string.woopos_bookings_cancel_dialog_keep),
+                state = if (isProcessing) WooPosButtonState.DISABLED else WooPosButtonState.ENABLED,
                 onClick = onDismiss,
                 modifier = Modifier.fillMaxWidth()
             )

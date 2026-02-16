@@ -114,10 +114,26 @@ sealed class WooPosBookingsState {
                 val orderId: Long
             ) : DialogState()
 
-            data class CancelConfirmation(
-                val bookingId: Long,
-                val message: String,
-            ) : DialogState()
+            sealed class CancelBooking : DialogState() {
+                abstract val bookingId: Long
+                abstract val message: String
+
+                data class Confirmation(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Processing(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Error(
+                    override val bookingId: Long,
+                    override val message: String,
+                    val errorMessage: String,
+                ) : CancelBooking()
+            }
         }
     }
 
@@ -144,7 +160,7 @@ enum class WooPosBookingStatusColorKey {
     FAILED,
     PROCESSING,
     ON_HOLD,
-    OTHER;
+    OTHER
 }
 
 data class WooPosBookingStatus(

@@ -664,7 +664,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given cancel action clicked, when handling event, then dialog state is CancelConfirmation`() =
+    fun `given cancel action clicked, when handling event, then dialog state is Confirmation`() =
         runTest {
             // GIVEN
             viewModel = createViewModel()
@@ -687,12 +687,12 @@ class WooPosBookingsViewModelTest {
             val updatedContent = viewModel.state.value as WooPosBookingsState.Content
             assertThat(updatedContent.dialogState)
                 .isInstanceOf(
-                    WooPosBookingsState.Content.DialogState.CancelConfirmation::class.java
+                    WooPosBookingsState.Content.DialogState.CancelBooking.Confirmation::class.java
                 )
         }
 
     @Test
-    fun `given cancel confirmed, when handling event, then calls cancelBooking and hides dialog`() =
+    fun `given cancel confirmed successfully, when handling event, then hides dialog`() =
         runTest {
             // GIVEN
             whenever(bookingsRepository.cancelBooking(any()))
@@ -727,6 +727,40 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given cancel confirmed with failure, when handling event, then dialog state is Error`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.failure(RuntimeException("Network error")))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val updatedContent =
+                viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedContent.dialogState)
+                .isInstanceOf(
+                    WooPosBookingsState.Content.DialogState.CancelBooking.Error::class.java
+                )
+        }
+
+    @Test
     fun `given cancel dismissed, when handling event, then hides dialog`() =
         runTest {
             // GIVEN
@@ -755,6 +789,41 @@ class WooPosBookingsViewModelTest {
             assertThat(updatedContent.dialogState)
                 .isInstanceOf(
                     WooPosBookingsState.Content.DialogState.Hidden::class.java
+                )
+        }
+
+    @Test
+    fun `given processing state, when dismiss event, then dialog stays open`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed)
+
+            // THEN
+            val updatedContent =
+                viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedContent.dialogState)
+                .isInstanceOf(
+                    WooPosBookingsState.Content.DialogState.CancelBooking.Processing::class.java
                 )
         }
 }

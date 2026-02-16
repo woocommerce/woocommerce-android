@@ -292,7 +292,7 @@ class WooPosBookingsViewModel @Inject constructor(
         )
 
         _state.value = currentState.copy(
-            dialogState = WooPosBookingsState.Content.DialogState.CancelConfirmation(
+            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Confirmation(
                 bookingId = bookingId,
                 message = message,
             )
@@ -302,20 +302,40 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleCancelConfirmed() {
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val dialog = currentState.dialogState
-            as? WooPosBookingsState.Content.DialogState.CancelConfirmation ?: return
+            as? WooPosBookingsState.Content.DialogState.CancelBooking ?: return
         val bookingId = dialog.bookingId
 
         _state.value = currentState.copy(
-            dialogState = WooPosBookingsState.Content.DialogState.Hidden
+            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Processing(
+                bookingId = dialog.bookingId,
+                message = dialog.message,
+            )
         )
 
         viewModelScope.launch {
-            bookingsRepository.cancelBooking(bookingId)
+            val result = bookingsRepository.cancelBooking(bookingId)
+            val state = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = if (result.isSuccess) {
+                state.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                )
+            } else {
+                state.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(
+                        bookingId = dialog.bookingId,
+                        message = dialog.message,
+                        errorMessage = resourceProvider.getString(
+                            R.string.woopos_bookings_cancel_error
+                        ),
+                    )
+                )
+            }
         }
     }
 
     private fun handleCancelDismissed() {
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        if (currentState.dialogState is WooPosBookingsState.Content.DialogState.CancelBooking.Processing) return
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )

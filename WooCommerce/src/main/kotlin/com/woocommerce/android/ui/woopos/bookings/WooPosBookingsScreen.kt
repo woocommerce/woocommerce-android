@@ -246,10 +246,13 @@ private fun WooPosBookingsContent(
         }
 
         val cancelDialog =
-            state.dialogState as? WooPosBookingsState.Content.DialogState.CancelConfirmation
+            state.dialogState as? WooPosBookingsState.Content.DialogState.CancelBooking
         WooPosCancelBookingDialog(
             isVisible = cancelDialog != null,
             message = cancelDialog?.message.orEmpty(),
+            isProcessing = cancelDialog is WooPosBookingsState.Content.DialogState.CancelBooking.Processing,
+            errorMessage = (cancelDialog as? WooPosBookingsState.Content.DialogState.CancelBooking.Error)
+                ?.errorMessage,
             onConfirm = { onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed) },
             onDismiss = { onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed) },
         )
