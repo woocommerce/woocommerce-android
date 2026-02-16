@@ -219,15 +219,14 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 WooPosRefundState.Content.RefundStep.SelectItems -> "select_items"
                 WooPosRefundState.Content.RefundStep.ReviewRefund -> "review_refund"
                 WooPosRefundState.Content.RefundStep.ConfirmRefund -> "confirm_refund"
-                WooPosRefundState.Content.RefundStep.Processing -> "processing"
+                WooPosRefundState.Content.RefundStep.Processing ->
+                    error("Processing step should be unreachable in handleDialogDismissed")
             }
 
-            if (refundStep.isNotEmpty()) {
-                viewModelScope.launch {
-                    analyticsTracker.track(
-                        WooPosAnalyticsEvent.Event.RefundFlowAborted(refundStep = refundStep)
-                    )
-                }
+            viewModelScope.launch {
+                analyticsTracker.track(
+                    WooPosAnalyticsEvent.Event.RefundFlowAborted(refundStep = refundStep)
+                )
             }
         }
 
