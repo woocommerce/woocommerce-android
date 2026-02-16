@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -62,7 +63,8 @@ fun WooPosPaymentSuccessScreen(
         val textsMargin = WooPosSpacing.Small.value
 
         ConstraintLayout {
-            val (icon, title, message, buttonNewOrder, buttonEmailReceipts) = createRefs()
+            val (icon, title, message, receiptSent, buttonNewOrder) = createRefs()
+            val buttonEmailReceipts = createRef()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -97,9 +99,33 @@ fun WooPosPaymentSuccessScreen(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    bottom.linkTo(receiptSent.top, margin = textsMargin)
                 }
             )
+
+            if (state.receiptSentMessage != null) {
+                WooPosText(
+                    text = state.receiptSentMessage,
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .constrainAs(receiptSent) {
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                            bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                        }
+                        .padding(horizontal = WooPosSpacing.XLarge.value)
+                )
+            } else {
+                Box(
+                    modifier = Modifier.constrainAs(receiptSent) {
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                        bottom.linkTo(buttonNewOrder.top, margin = marginBetweenButtonAndText)
+                    }
+                )
+            }
 
             val marginBetweenButtons = WooPosSpacing.Medium.value
             WooPosButton(
@@ -135,6 +161,21 @@ fun WooPosPaymentSuccessScreen(
 @WooPosPreview
 @Composable
 fun WooPosPaymentSuccessScreenPreview() {
+    WooPosTheme {
+        WooPosPaymentSuccessScreen(
+            state = WooPosTotalsViewState.PaymentSuccess(
+                orderTotalText = "A payment of 13.18 was successfully made",
+                receiptSentMessage = "Receipt sent to customer@example.com",
+            ),
+            onReceiptClicked = {},
+            onNewTransactionClicked = {}
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun WooPosPaymentSuccessScreenWithoutReceiptPreview() {
     WooPosTheme {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsViewState.PaymentSuccess(

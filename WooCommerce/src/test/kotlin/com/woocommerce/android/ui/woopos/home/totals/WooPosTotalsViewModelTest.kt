@@ -11,6 +11,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.event.BluetoothCardReaderMessages
 import com.woocommerce.android.cardreader.connection.event.CardReaderBatteryStatus
 import com.woocommerce.android.cardreader.payments.CardPaymentStatus
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Order.CouponLine
 import com.woocommerce.android.tools.SelectedSite
@@ -1145,6 +1146,64 @@ class WooPosTotalsViewModelTest {
         }
 
     @Test
+    fun `given order has billing email, when payment succeeds, then receiptSentMessage is set`() =
+        runTest {
+            // GIVEN
+            val billingEmail = "customer@example.com"
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            whenever(resourceProvider.getString(R.string.woopos_receipt_sent_message, billingEmail))
+                .thenReturn("Receipt sent to customer@example.com")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+                billingEmail = billingEmail,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+
+            // THEN
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
+            val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+            assertThat(successState.receiptSentMessage).isEqualTo("Receipt sent to customer@example.com")
+        }
+
+    @Test
+    fun `given order has no billing email, when payment succeeds, then receiptSentMessage is null`() =
+        runTest {
+            // GIVEN
+            whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
+                .thenReturn("Paid 5.00$ in Card")
+            val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
+                ParentToChildrenEvent.CheckoutClicked(
+                    listOf(
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 1L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 2L),
+                        WooPosItemsViewModel.ItemClickedData.Product.Simple(id = 3L),
+                    )
+                )
+            )
+
+            val viewModel = createViewModelAndSetupForSuccessfulOrderCreation(
+                parentToChildrenEventFlow = parentToChildrenEventFlow,
+            )
+            parentToChildrenEventFlow.value = ParentToChildrenEvent.OrderSuccessfullyPaid(PaymentMethod.CARD)
+
+            // THEN
+            assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
+            val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
+            assertThat(successState.receiptSentMessage).isNull()
+        }
+
+    @Test
     fun `given checkout started and order contains only free products, when vm created, then totals state correctly calculated`() =
         runTest {
             // GIVEN
@@ -1997,6 +2056,7 @@ class WooPosTotalsViewModelTest {
             MutableStateFlow(ParentToChildrenEvent.CheckoutClicked(itemClickedData)),
         discountTotal: BigDecimal = BigDecimal.ZERO,
         couponLines: List<CouponLine> = emptyList(),
+        billingEmail: String = "",
     ): WooPosTotalsViewModel {
         whenever(resourceProvider.getString(R.string.woopos_success_totals_error_reader_not_connected_title))
             .thenReturn("Reader not connected")
@@ -2023,6 +2083,14 @@ class WooPosTotalsViewModelTest {
         whenever(uiStringParser.asString(any())).thenReturn("Unfortunately, this payment has been declined.")
 
         val orderId = 23L
+        val customer = if (billingEmail.isNotEmpty()) {
+            Order.Customer(
+                billingAddress = Address.EMPTY.copy(email = billingEmail),
+                shippingAddress = Address.EMPTY,
+            )
+        } else {
+            null
+        }
         val order = Order.getEmptyOrder(
             dateCreated = Date(),
             dateModified = Date()
@@ -2047,6 +2115,7 @@ class WooPosTotalsViewModelTest {
             discountTotal = discountTotal,
             total = BigDecimal("5.00"),
             couponLines = couponLines,
+            customer = customer,
         )
         val totalsRepository: WooPosTotalsRepository = mock {
             onBlocking {

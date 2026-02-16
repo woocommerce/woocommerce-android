@@ -683,10 +683,19 @@ class WooPosTotalsViewModel @Inject constructor(
                 template,
                 priceFormat(dataState.orderTotal)
             )
+            val receiptSentMessage = buildReceiptSentMessage(dataState.orderId)
             uiState.value = WooPosTotalsViewState.PaymentSuccess(
-                orderTotalText = orderTotalText
+                orderTotalText = orderTotalText,
+                receiptSentMessage = receiptSentMessage,
             )
         }
+    }
+
+    private suspend fun buildReceiptSentMessage(orderId: Long): String? {
+        val order = totalsRepository.getOrderById(orderId) ?: return null
+        val billingEmail = order.billingAddress.email
+        if (billingEmail.isBlank()) return null
+        return resourceProvider.getString(R.string.woopos_receipt_sent_message, billingEmail)
     }
 
     private suspend fun buildWooPosTotalsViewState(order: Order): WooPosTotalsViewState.Checkout {
