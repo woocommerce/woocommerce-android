@@ -35,6 +35,7 @@ open class WPComLoginPostLoginViewModel(
 
         val siteUrl = selectedSite.get().url
         if (jetpackStatus.isCurrentUserConnected) {
+            // Attempt returning the site from the DB if it exists, otherwise fetch it from API
             val jetpackSite = jetpackActivationRepository.getJetpackSiteByUrl(siteUrl)
                 .takeIf { it?.hasWooCommerce == true }
                 ?: jetpackActivationRepository.fetchJetpackSite(siteUrl)
