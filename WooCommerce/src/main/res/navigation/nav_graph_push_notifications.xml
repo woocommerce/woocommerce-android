@@ -8,7 +8,9 @@
 
     <action
         android:id="@+id/action_global_to_wooPushNotificationsConnectionStepsFragment"
-        app:destination="@id/wooPushNotificationsConnectionStepsFragment" />
+        app:destination="@id/wooPushNotificationsConnectionStepsFragment"
+        app:popUpTo="@id/nav_graph_wpcom_login"
+        app:popUpToInclusive="true" />
 
     <dialog
         android:id="@+id/wooPushNotificationsIntroductionDialog"
