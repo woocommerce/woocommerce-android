@@ -232,6 +232,23 @@ class WooPosBookingNoteViewModelTest {
         assertThat(viewModel.state.value.noteText).isEmpty()
     }
 
+    @Test
+    fun `given existing note, when ViewModel created, then isEditMode is true`() = runTest {
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isEditMode).isTrue()
+    }
+
+    @Test
+    fun `given empty note, when ViewModel created, then isEditMode is false`() = runTest {
+        whenever(bookingsRepository.getBooking(any())).thenReturn(booking.copy(note = ""))
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value.isEditMode).isFalse()
+    }
+
     @Test(expected = IllegalArgumentException::class)
     fun `given missing bookingId, when ViewModel created, then throws`() {
         createViewModel(savedStateHandle = SavedStateHandle())

@@ -96,4 +96,7 @@ data class WooPosBookingNoteState(
             initialNote.trim() != noteText.trim() -> WooPosButtonState.ENABLED
             else -> WooPosButtonState.DISABLED
         }
+
+    val isEditMode: Boolean
+        get() = initialNote.isNotBlank()
 }

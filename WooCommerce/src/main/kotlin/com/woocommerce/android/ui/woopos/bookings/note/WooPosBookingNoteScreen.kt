@@ -73,8 +73,14 @@ private fun WooPosBookingNoteScreen(
         keyboardController?.show()
     }
 
+    val titleText = if (state.isEditMode) {
+        stringResource(R.string.woopos_bookings_note_screen_title_edit)
+    } else {
+        stringResource(R.string.woopos_bookings_note_screen_title_add)
+    }
+
     WooPosFullScreenInputLayout(
-        titleText = stringResource(R.string.woopos_bookings_note_screen_title),
+        titleText = titleText,
         onBackClicked = onBackClicked,
         centerContent = {
             Column(
