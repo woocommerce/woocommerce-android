@@ -71,7 +71,7 @@ class WPComLoginMagicLinkRequestFragment : BaseFragment() {
             WPComLoginMagicLinkRequestFragmentDirections
                 .actionWPComLoginMagicLinkRequestFragmentToWPComLoginPasswordFragment(
                     emailOrUsername = event.emailOrUsername,
-                    jetpackStatus = event.jetpackStatus
+                    wpComLoginMode = event.wpComLoginMode
                 )
         )
     }
@@ -81,7 +81,7 @@ class WPComLoginMagicLinkRequestFragment : BaseFragment() {
             WPComLoginMagicLinkRequestFragmentDirections
                 .actionWPComLoginMagicLinkRequestFragmentToWPComLoginEmailFragment(
                     usernameOnly = true,
-                    jetpackStatus = event.jetpackStatus
+                    wpComLoginMode = event.wpComLoginMode
                 )
         )
     }
