@@ -339,8 +339,8 @@ private fun BookingAttendanceSection(
             ) {
                 WooPosText(
                     text = stringResource(R.string.woopos_bookings_details_attendance_title),
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Bold,
+                    style = WooPosTypography.BodyXLarge,
+                    fontWeight = FontWeight.SemiBold,
                 )
 
                 Row(
