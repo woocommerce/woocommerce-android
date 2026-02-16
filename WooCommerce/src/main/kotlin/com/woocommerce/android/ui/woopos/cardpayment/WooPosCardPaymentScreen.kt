@@ -121,6 +121,8 @@ private fun WooPosCardPaymentScreenContent(
                 CardPaymentReaderDisconnected(
                     state = state,
                     onConnectReaderClicked = onConnectReaderClicked,
+                    showCashPaymentButton = showCashPaymentButton,
+                    onCashPaymentClicked = onCashPaymentClicked,
                 )
             }
         }
@@ -283,6 +285,8 @@ private fun BoxScope.CashPaymentButton(
 private fun CardPaymentReaderDisconnected(
     state: WooPosCardPaymentState.Collecting.ReaderDisconnected,
     onConnectReaderClicked: () -> Unit,
+    showCashPaymentButton: Boolean,
+    onCashPaymentClicked: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -328,6 +332,10 @@ private fun CardPaymentReaderDisconnected(
                     .height(80.dp)
             )
         }
+        CashPaymentButton(
+            showCashPaymentButton = showCashPaymentButton,
+            onCashPaymentClicked = onCashPaymentClicked,
+        )
     }
 }
 
