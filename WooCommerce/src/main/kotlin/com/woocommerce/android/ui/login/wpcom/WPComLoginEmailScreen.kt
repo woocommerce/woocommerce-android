@@ -175,18 +175,18 @@ private fun WPComLoginEmailViewModel.ViewState.resolveBranding(): EmailScreenBra
 
         is WPComLoginMode.JetpackSetup -> EmailScreenBranding(
             navIcon = R.drawable.ic_close_24dp,
-            title = if (isJetpackInstalled) {
+            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
             },
-            subtitle = if (isJetpackInstalled) {
+            subtitle = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connection_enter_wpcom_email
             } else {
                 R.string.login_jetpack_installation_enter_wpcom_email
             },
             helperText = R.string.login_jetpack_connection_create_account,
-            buttonText = if (isJetpackInstalled) {
+            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
                 R.string.login_jetpack_install
@@ -212,7 +212,6 @@ private fun JetpackModePreview() {
                 ),
                 usernameOnly = false,
                 emailOrUsername = "",
-                isJetpackInstalled = false
             )
         )
     }
@@ -227,7 +226,6 @@ private fun NotificationSetupModePreview() {
                 wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 usernameOnly = false,
                 emailOrUsername = "",
-                isJetpackInstalled = false
             )
         )
     }
