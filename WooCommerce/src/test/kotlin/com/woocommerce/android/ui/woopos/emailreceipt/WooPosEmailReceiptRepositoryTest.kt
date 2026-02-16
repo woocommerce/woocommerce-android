@@ -9,11 +9,13 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.regex.Pattern
 
@@ -159,5 +161,54 @@ class WooPosEmailReceiptRepositoryTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given order with billing email, when getOrderBillingEmail, then return email`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val order = OrderEntity(
+            localSiteId = LocalId(0),
+            orderId = orderId,
+            billingEmail = "customer@example.com"
+        )
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(order)
+
+        // WHEN
+        val result = repository.getOrderBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isEqualTo("customer@example.com")
+    }
+
+    @Test
+    fun `given order without billing email, when getOrderBillingEmail, then return empty string`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val order = OrderEntity(
+            localSiteId = LocalId(0),
+            orderId = orderId,
+            billingEmail = ""
+        )
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(order)
+
+        // WHEN
+        val result = repository.getOrderBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isEmpty()
+    }
+
+    @Test
+    fun `given no order found, when getOrderBillingEmail, then return empty string`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
+
+        // WHEN
+        val result = repository.getOrderBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isEmpty()
     }
 }

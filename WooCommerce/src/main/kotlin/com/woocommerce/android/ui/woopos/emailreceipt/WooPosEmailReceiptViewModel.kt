@@ -40,6 +40,10 @@ class WooPosEmailReceiptViewModel @Inject constructor(
 
     val state: StateFlow<WooPosEmailReceiptState> = _state
 
+    init {
+        prefillBillingEmail()
+    }
+
     fun onUIEvent(event: WooPosEmailReceiptUIEvent) {
         when (event) {
             WooPosEmailReceiptUIEvent.SendEmailClicked -> handleSendEmailClicked()
@@ -91,6 +95,30 @@ class WooPosEmailReceiptViewModel @Inject constructor(
                 email = email,
                 button = currentState.button.copy(
                     status = WooPosEmailReceiptState.Email.Button.Status.DISABLED
+                )
+            )
+        }
+    }
+
+    private fun prefillBillingEmail() {
+        viewModelScope.launch {
+            val currentState = _state.value as? WooPosEmailReceiptState.Email ?: return@launch
+            if (currentState.email.isNotEmpty()) return@launch
+
+            val billingEmail = repository.getOrderBillingEmail(orderId)
+            if (billingEmail.isBlank()) return@launch
+
+            val updatedState = _state.value as? WooPosEmailReceiptState.Email ?: return@launch
+            if (updatedState.email.isNotEmpty()) return@launch
+
+            _state.value = updatedState.copy(
+                email = billingEmail,
+                button = updatedState.button.copy(
+                    status = if (repository.isEmailValid(billingEmail)) {
+                        WooPosEmailReceiptState.Email.Button.Status.ENABLED
+                    } else {
+                        WooPosEmailReceiptState.Email.Button.Status.DISABLED
+                    }
                 )
             )
         }

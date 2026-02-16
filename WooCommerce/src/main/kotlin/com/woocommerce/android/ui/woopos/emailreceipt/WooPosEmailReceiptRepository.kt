@@ -23,6 +23,11 @@ class WooPosEmailReceiptRepository @Inject constructor(
         }
     }
 
+    suspend fun getOrderBillingEmail(orderId: Long): String {
+        val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
+        return order?.billingEmail.orEmpty()
+    }
+
     fun isEmailValid(email: String): Boolean = provideEmailPattern().matcher(email).matches()
 
     fun posReceiptsAreEnabled(): Boolean = isWooCoreSupportsPOSReceipts()

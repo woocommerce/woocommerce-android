@@ -48,6 +48,7 @@ class WooPosEmailReceiptViewModelTest {
             .thenReturn("Error sending email")
 
         whenever(repository.isEmailValid(any())).thenReturn(false)
+        whenever(repository.getOrderBillingEmail(any())).thenReturn("")
 
         viewModel = WooPosEmailReceiptViewModel(
             repository = repository,
@@ -190,5 +191,70 @@ class WooPosEmailReceiptViewModelTest {
 
         // THEN
         verify(tracker).track(EmailReceiptSendSuccess(posReceiptsAreEnabled))
+    }
+
+    @Test
+    fun `given order has billing email, when view model is created, then email is prefilled and button enabled`() = runTest {
+        // GIVEN
+        whenever(repository.getOrderBillingEmail(123L)).thenReturn("customer@example.com")
+        whenever(repository.isEmailValid("customer@example.com")).thenReturn(true)
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(mapOf(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L)),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+        val state = vm.state.first()
+
+        // THEN
+        val emailState = state as WooPosEmailReceiptState.Email
+        assertThat(emailState.email).isEqualTo("customer@example.com")
+        assertThat(emailState.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.ENABLED)
+    }
+
+    @Test
+    fun `given order has no billing email, when view model is created, then email remains empty and button disabled`() = runTest {
+        // GIVEN
+        whenever(repository.getOrderBillingEmail(123L)).thenReturn("")
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(mapOf(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L)),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+        val state = vm.state.first()
+
+        // THEN
+        val emailState = state as WooPosEmailReceiptState.Email
+        assertThat(emailState.email).isEmpty()
+        assertThat(emailState.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.DISABLED)
+    }
+
+    @Test
+    fun `given order has invalid billing email, when view model is created, then email is prefilled but button disabled`() = runTest {
+        // GIVEN
+        whenever(repository.getOrderBillingEmail(123L)).thenReturn("not-an-email")
+        whenever(repository.isEmailValid("not-an-email")).thenReturn(false)
+
+        // WHEN
+        val vm = WooPosEmailReceiptViewModel(
+            repository = repository,
+            resourceProvider = resourceProvider,
+            savedState = SavedStateHandle(mapOf(EMAIL_RECEIPT_ROUTE_ORDER_ID_KEY to 123L)),
+            analyticsTracker = tracker,
+        )
+        advanceUntilIdle()
+        val state = vm.state.first()
+
+        // THEN
+        val emailState = state as WooPosEmailReceiptState.Email
+        assertThat(emailState.email).isEqualTo("not-an-email")
+        assertThat(emailState.button.status).isEqualTo(WooPosEmailReceiptState.Email.Button.Status.DISABLED)
     }
 }
