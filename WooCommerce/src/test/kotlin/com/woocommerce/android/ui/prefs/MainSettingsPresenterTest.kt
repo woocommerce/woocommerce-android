@@ -14,6 +14,7 @@ import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import org.junit.Test
@@ -23,6 +24,7 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
+import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class MainSettingsPresenterTest : BaseUnitTest() {
@@ -154,4 +156,20 @@ class MainSettingsPresenterTest : BaseUnitTest() {
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(true)
             verify(view, times(1)).setEnablePushNotificationsOptionVisible(false)
         }
+
+    @Test
+    fun `given push notifications option setup, when view is dropped, then flow collection is cancelled`() = testBlocking {
+        val shouldShowPushNotificationOption = MutableSharedFlow<Boolean>(replay = 1)
+        setup {
+            whenever(shouldShowEnablePushNotificationsUi()).thenReturn(shouldShowPushNotificationOption)
+        }
+
+        presenter.setupEnablePushNotificationsOption()
+        advanceUntilIdle()
+        assertEquals(1, shouldShowPushNotificationOption.subscriptionCount.value)
+
+        presenter.dropView()
+        advanceUntilIdle()
+        assertEquals(0, shouldShowPushNotificationOption.subscriptionCount.value)
+    }
 }
