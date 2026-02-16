@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
@@ -146,16 +145,6 @@ enum class WooPosBookingStatusColorKey {
     PROCESSING,
     ON_HOLD,
     OTHER;
-
-    companion object {
-        fun fromStatus(status: Status): WooPosBookingStatusColorKey = when (status) {
-            Status.Completed -> COMPLETED
-            Status.Failed -> FAILED
-            Status.Processing -> PROCESSING
-            Status.OnHold -> ON_HOLD
-            else -> OTHER
-        }
-    }
 }
 
 data class WooPosBookingStatus(
