@@ -467,7 +467,7 @@ private fun BookingNoteSection(
                         onClick = { onUIEvent(WooPosBookingsUIEvent.AddBookingNoteClicked) }
                     )
                 }
-                bookingNote?.let {
+                bookingNote?.takeIf { it.isNotBlank() }?.let {
                     Spacer(Modifier.height(WooPosSpacing.Small.value))
                     WooPosText(
                         text = it,
