@@ -109,7 +109,7 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         )
         wpComLoginRepository.requestMagicLink(
             emailOrUsername = navArgs.emailOrUsername,
-            flow = MagicLinkFlow.JetpackConnection,
+            flow = navArgs.wpComLoginMode.toMagicLinkFlow(),
             isSignup = navArgs.isNewWpComAccount
         ).fold(
             onSuccess = {
@@ -147,6 +147,11 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     }
 
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
+
+    private fun WPComLoginMode.toMagicLinkFlow(): MagicLinkFlow = when (this) {
+        is WPComLoginMode.JetpackSetup -> MagicLinkFlow.JetpackConnection
+        WPComLoginMode.PushNotificationsSetup -> MagicLinkFlow.PushNotificationsSetup
+    }
 
     sealed interface ViewState : Parcelable {
         val wpComLoginMode: WPComLoginMode
