@@ -106,8 +106,8 @@ fun WooPosPaymentSuccessScreen(
             if (state.receiptSentMessage != null) {
                 WooPosText(
                     text = state.receiptSentMessage,
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .constrainAs(receiptSent) {
@@ -165,7 +165,7 @@ fun WooPosPaymentSuccessScreenPreview() {
         WooPosPaymentSuccessScreen(
             state = WooPosTotalsViewState.PaymentSuccess(
                 orderTotalText = "A payment of 13.18 was successfully made",
-                receiptSentMessage = "Receipt sent to customer@example.com",
+                receiptSentMessage = "A receipt has been sent to customer@example.com.",
             ),
             onReceiptClicked = {},
             onNewTransactionClicked = {}

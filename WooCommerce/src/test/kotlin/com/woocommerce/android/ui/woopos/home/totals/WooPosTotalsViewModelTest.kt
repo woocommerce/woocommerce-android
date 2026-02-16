@@ -1153,7 +1153,7 @@ class WooPosTotalsViewModelTest {
             whenever(resourceProvider.getString(R.string.woopos_totals_success_payment_card, "5.00$"))
                 .thenReturn("Paid 5.00$ in Card")
             whenever(resourceProvider.getString(R.string.woopos_receipt_sent_message, billingEmail))
-                .thenReturn("Receipt sent to customer@example.com")
+                .thenReturn("A receipt has been sent to customer@example.com.")
             val parentToChildrenEventFlow = MutableStateFlow<ParentToChildrenEvent>(
                 ParentToChildrenEvent.CheckoutClicked(
                     listOf(
@@ -1173,7 +1173,7 @@ class WooPosTotalsViewModelTest {
             // THEN
             assertThat(viewModel.state.value).isInstanceOf(WooPosTotalsViewState.PaymentSuccess::class.java)
             val successState = viewModel.state.value as WooPosTotalsViewState.PaymentSuccess
-            assertThat(successState.receiptSentMessage).isEqualTo("Receipt sent to customer@example.com")
+            assertThat(successState.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
         }
 
     @Test
