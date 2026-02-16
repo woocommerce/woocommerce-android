@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -59,25 +58,15 @@ fun WooPosAttendanceBadge(attendanceState: WooPosBookingsState.AttendanceState) 
             stringResource(R.string.woopos_bookings_details_attendance_unattended)
     }
 
-    val bgColor = when (attendanceState) {
-        WooPosBookingsState.AttendanceState.ATTENDED -> WooPosTheme.colors.default
-        WooPosBookingsState.AttendanceState.UNATTENDED -> MaterialTheme.colorScheme.inverseSurface
-    }
-
-    val textColor = when (attendanceState) {
-        WooPosBookingsState.AttendanceState.ATTENDED -> WooPosTheme.colors.onDefault
-        WooPosBookingsState.AttendanceState.UNATTENDED -> MaterialTheme.colorScheme.inverseOnSurface
-    }
-
     WooPosText(
         text = text,
         style = WooPosTypography.Caption,
-        color = textColor,
+        color = WooPosTheme.colors.onDefault,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            .background(bgColor)
+            .background(WooPosTheme.colors.disabledContainer)
             .padding(
                 horizontal = WooPosSpacing.Small.value,
                 vertical = WooPosSpacing.XSmall.value
