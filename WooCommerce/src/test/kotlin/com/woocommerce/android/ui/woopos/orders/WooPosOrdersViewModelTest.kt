@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.orders.OrderTestUtils
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchInputState
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSearchUIEvent
@@ -12,12 +13,14 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosGetLineItemBookingIds
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
+import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -54,6 +57,9 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
+    private val getLineItemBookingIds: WooPosGetLineItemBookingIds = mock()
+    private val bookingsRepository: BookingsRepository = mock()
+    private val dateFormatter: DateFormatter = mock()
     private lateinit var orderItemMapper: WooPosOrderItemMapper
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
@@ -76,6 +82,7 @@ class WooPosOrdersViewModelTest {
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
             orderActionsProvider = orderActionsProvider,
+            bookingsRepository = bookingsRepository,
         )
     }
 
@@ -118,6 +125,7 @@ class WooPosOrdersViewModelTest {
             amount?.let { "$${it.abs()}" } ?: "$0.00"
         }
         whenever(getProductById.invoke(any())).thenReturn(null)
+        whenever(getLineItemBookingIds.invoke(any())).thenReturn(emptyMap())
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
     }
 
@@ -133,7 +141,10 @@ class WooPosOrdersViewModelTest {
             formatPrice,
             orderStatusMapper,
             refundInfoBuilder,
-            orderActionsProvider
+            orderActionsProvider,
+            getLineItemBookingIds,
+            bookingsRepository,
+            dateFormatter,
         )
         orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
     }
