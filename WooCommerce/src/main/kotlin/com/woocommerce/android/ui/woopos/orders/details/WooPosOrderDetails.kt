@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -206,7 +207,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             .fillMaxWidth()
             .padding(vertical = marginSmall)
     ) {
-        val (image, nameText, attributesText, qtyText, totalText) = createRefs()
+        val (image, nameText, attributesText, bookingInfoText, qtyText, totalText) = createRefs()
 
         WooPosText(
             text = row.name,
@@ -244,20 +245,69 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             )
         }
 
-        WooPosText(
-            text = row.qtyAndUnitPrice,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(
-                    if (hasAttributes) attributesText.bottom else nameText.bottom,
-                    margin = marginXSmall
+        val bookingInfoAnchor = if (hasAttributes) attributesText else nameText
+        val bookingInfo = row.bookingInfo
+        when (bookingInfo) {
+            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loading -> {
+                WooPosShimmerText(
+                    text = stringResource(R.string.woopos_orders_details_booking_info_shimmer_placeholder),
+                    style = WooPosTypography.BodyMedium.style,
+                    modifier = Modifier.constrainAs(bookingInfoText) {
+                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
+                        start.linkTo(nameText.start)
+                        end.linkTo(totalText.start, margin = marginSmall)
+                        width = Dimension.fillToConstraints
+                    }
                 )
-                start.linkTo(nameText.start)
-                end.linkTo(totalText.start, margin = marginSmall)
-                width = Dimension.fillToConstraints
             }
-        )
+
+            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded -> {
+                WooPosText(
+                    text = bookingInfo.text,
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.constrainAs(bookingInfoText) {
+                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
+                        start.linkTo(nameText.start)
+                        end.linkTo(totalText.start, margin = marginSmall)
+                        width = Dimension.fillToConstraints
+                    }
+                )
+            }
+
+            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Error -> {
+                WooPosText(
+                    text = bookingInfo.text,
+                    style = WooPosTypography.BodyMedium,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    modifier = Modifier.constrainAs(bookingInfoText) {
+                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
+                        start.linkTo(nameText.start)
+                        end.linkTo(totalText.start, margin = marginSmall)
+                        width = Dimension.fillToConstraints
+                    }
+                )
+            }
+
+            null -> Unit
+        }
+
+        if (bookingInfo == null) {
+            WooPosText(
+                text = row.qtyAndUnitPrice,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(qtyText) {
+                    top.linkTo(
+                        if (hasAttributes) attributesText.bottom else nameText.bottom,
+                        margin = marginXSmall
+                    )
+                    start.linkTo(nameText.start)
+                    end.linkTo(totalText.start, margin = marginSmall)
+                    width = Dimension.fillToConstraints
+                }
+            )
+        }
 
         WooPosText(
             text = row.lineTotal,
