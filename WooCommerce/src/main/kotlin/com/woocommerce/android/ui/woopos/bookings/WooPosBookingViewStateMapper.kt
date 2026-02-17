@@ -186,7 +186,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return when (status) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            else -> WooPosBookingsState.AttendanceState.UNKNOWN
+            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNKNOWN
         }
     }
 
@@ -198,8 +198,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
             BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
             BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
             BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
-            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
+            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.ON_HOLD
+            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.ON_HOLD
         }
         return WooPosBookingStatus(
             text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),

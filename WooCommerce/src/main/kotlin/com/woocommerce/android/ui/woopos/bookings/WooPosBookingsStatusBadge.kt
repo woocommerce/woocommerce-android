@@ -21,16 +21,14 @@ fun WooPosBookingsStatusBadge(status: WooPosBookingStatus) {
         WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
         WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
         WooPosBookingStatusColorKey.PROCESSING,
-        WooPosBookingStatusColorKey.ON_HOLD,
-        WooPosBookingStatusColorKey.OTHER -> WooPosTheme.colors.default
+        WooPosBookingStatusColorKey.ON_HOLD -> WooPosTheme.colors.default
     }
 
     val textColor = when (status.colorKey) {
         WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
         WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
         WooPosBookingStatusColorKey.PROCESSING,
-        WooPosBookingStatusColorKey.ON_HOLD,
-        WooPosBookingStatusColorKey.OTHER -> WooPosTheme.colors.onDefault
+        WooPosBookingStatusColorKey.ON_HOLD -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(

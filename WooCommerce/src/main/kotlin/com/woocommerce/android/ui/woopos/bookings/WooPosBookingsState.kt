@@ -158,7 +158,6 @@ enum class WooPosBookingStatusColorKey {
     FAILED,
     PROCESSING,
     ON_HOLD,
-    OTHER
 }
 
 data class WooPosBookingStatus(
