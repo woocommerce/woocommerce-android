@@ -10,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -67,24 +68,28 @@ fun WooPosCardPaymentScreen(
 
     WooPosCardPaymentScreenContent(
         state = state,
+        showCashPaymentButton = viewModel.showCashPaymentButton,
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
         onConnectReaderClicked = viewModel::onConnectReaderClicked,
         onDoneClicked = viewModel::onDoneClicked,
         onEmailReceiptClicked = viewModel::onEmailReceiptClicked,
         onBackClicked = viewModel::onBackClicked,
+        onCashPaymentClicked = viewModel::onCashPaymentClicked,
     )
 }
 
 @Composable
 private fun WooPosCardPaymentScreenContent(
     state: WooPosCardPaymentState,
+    showCashPaymentButton: Boolean,
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
     onConnectReaderClicked: () -> Unit,
     onDoneClicked: () -> Unit,
     onEmailReceiptClicked: () -> Unit,
     onBackClicked: () -> Unit,
+    onCashPaymentClicked: () -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Initiating) {
@@ -93,13 +98,21 @@ private fun WooPosCardPaymentScreenContent(
 
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Collecting.Preparing) {
             if (state is WooPosCardPaymentState.Collecting.Preparing) {
-                CardPaymentPreparingReader(state)
+                CardPaymentPreparingReader(
+                    state = state,
+                    showCashPaymentButton = showCashPaymentButton,
+                    onCashPaymentClicked = onCashPaymentClicked,
+                )
             }
         }
 
         StateChangeAnimated(visible = state is WooPosCardPaymentState.Collecting.ReadyForPayment) {
             if (state is WooPosCardPaymentState.Collecting.ReadyForPayment) {
-                CardPaymentReadyForPayment(state)
+                CardPaymentReadyForPayment(
+                    state = state,
+                    showCashPaymentButton = showCashPaymentButton,
+                    onCashPaymentClicked = onCashPaymentClicked,
+                )
             }
         }
 
@@ -108,6 +121,8 @@ private fun WooPosCardPaymentScreenContent(
                 CardPaymentReaderDisconnected(
                     state = state,
                     onConnectReaderClicked = onConnectReaderClicked,
+                    showCashPaymentButton = showCashPaymentButton,
+                    onCashPaymentClicked = onCashPaymentClicked,
                 )
             }
         }
@@ -165,7 +180,11 @@ private fun CardPaymentInitiating() {
 }
 
 @Composable
-private fun CardPaymentPreparingReader(state: WooPosCardPaymentState.Collecting.Preparing) {
+private fun CardPaymentPreparingReader(
+    state: WooPosCardPaymentState.Collecting.Preparing,
+    showCashPaymentButton: Boolean,
+    onCashPaymentClicked: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -190,11 +209,19 @@ private fun CardPaymentPreparingReader(state: WooPosCardPaymentState.Collecting.
                 fontWeight = FontWeight.Bold
             )
         }
+        CashPaymentButton(
+            showCashPaymentButton = showCashPaymentButton,
+            onCashPaymentClicked = onCashPaymentClicked,
+        )
     }
 }
 
 @Composable
-private fun CardPaymentReadyForPayment(state: WooPosCardPaymentState.Collecting.ReadyForPayment) {
+private fun CardPaymentReadyForPayment(
+    state: WooPosCardPaymentState.Collecting.ReadyForPayment,
+    showCashPaymentButton: Boolean,
+    onCashPaymentClicked: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -229,6 +256,28 @@ private fun CardPaymentReadyForPayment(state: WooPosCardPaymentState.Collecting.
                 modifier = Modifier.padding(horizontal = WooPosSpacing.XLarge.value)
             )
         }
+        CashPaymentButton(
+            showCashPaymentButton = showCashPaymentButton,
+            onCashPaymentClicked = onCashPaymentClicked,
+        )
+    }
+}
+
+@Composable
+private fun BoxScope.CashPaymentButton(
+    showCashPaymentButton: Boolean,
+    onCashPaymentClicked: () -> Unit,
+) {
+    if (showCashPaymentButton) {
+        WooPosOutlinedButton(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = WooPosSpacing.Huge.value)
+                .height(80.dp)
+                .width(604.dp),
+            text = stringResource(R.string.woopos_cash_payment_title),
+            onClick = onCashPaymentClicked,
+        )
     }
 }
 
@@ -236,6 +285,8 @@ private fun CardPaymentReadyForPayment(state: WooPosCardPaymentState.Collecting.
 private fun CardPaymentReaderDisconnected(
     state: WooPosCardPaymentState.Collecting.ReaderDisconnected,
     onConnectReaderClicked: () -> Unit,
+    showCashPaymentButton: Boolean,
+    onCashPaymentClicked: () -> Unit,
 ) {
     Box(
         modifier = Modifier
@@ -281,6 +332,10 @@ private fun CardPaymentReaderDisconnected(
                     .height(80.dp)
             )
         }
+        CashPaymentButton(
+            showCashPaymentButton = showCashPaymentButton,
+            onCashPaymentClicked = onCashPaymentClicked,
+        )
     }
 }
 

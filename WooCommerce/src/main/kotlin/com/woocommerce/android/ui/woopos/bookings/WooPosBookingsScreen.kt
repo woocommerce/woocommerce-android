@@ -713,7 +713,7 @@ private fun sampleBookingDetails(
         discountAmount = "-",
         totalAmount = "$59.50",
         paidWithLabel = "WooCommerce In-Person Payments",
-        showPayButtons = false,
+        collectPaymentLabel = null,
     ),
     bookingNote = null,
 )

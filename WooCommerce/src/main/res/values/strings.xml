@@ -3921,8 +3921,7 @@
     <string name="woopos_bookings_details_tax_label">Taxes</string>
     <string name="woopos_bookings_details_discount_label">Discount</string>
     <string name="woopos_bookings_details_total_label">Total</string>
-    <string name="woopos_bookings_details_pay_by_card">Pay by card</string>
-    <string name="woopos_bookings_details_pay_by_cash">Pay by cash</string>
+    <string name="woopos_bookings_details_collect_payment">Collect payment · %s</string>
     <string name="woopos_bookings_details_booking_note_title">Booking note</string>
     <string name="woopos_bookings_details_add_note">Add note</string>
     <string name="woopos_bookings_details_edit_note">Edit note</string>

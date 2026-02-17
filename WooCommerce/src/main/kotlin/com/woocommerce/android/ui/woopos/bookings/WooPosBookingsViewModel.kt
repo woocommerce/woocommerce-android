@@ -7,7 +7,6 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
-import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -221,8 +220,7 @@ class WooPosBookingsViewModel @Inject constructor(
         when (event) {
             is WooPosBookingsUIEvent.BookingMenuActionClicked -> handleBookingAction(event.action)
             is WooPosBookingsUIEvent.AttendanceToggled -> { }
-            is WooPosBookingsUIEvent.PayByCardClicked -> handlePayByCard()
-            is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
+            is WooPosBookingsUIEvent.CollectPaymentClicked -> handleCollectPayment()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
             is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
@@ -237,25 +235,14 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
-    private fun handlePayByCard() {
+    private fun handleCollectPayment() {
         val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
         viewModelScope.launch {
             _navigationEvent.emit(
                 WooPosNavigationEvent.OpenCardPayment(
                     orderId = details.orderId,
                     source = CardPaymentSource.BOOKINGS,
-                )
-            )
-        }
-    }
-
-    private fun handlePayByCash() {
-        val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
-        viewModelScope.launch {
-            _navigationEvent.emit(
-                WooPosNavigationEvent.OpenCashPayment(
-                    orderId = details.orderId,
-                    source = CashPaymentSource.BOOKINGS,
+                    showCashPaymentButton = true,
                 )
             )
         }
