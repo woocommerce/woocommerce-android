@@ -183,6 +183,58 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given paid booking, when mapped to details, then actions include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Paid)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given complete booking, when mapped to details, then actions include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Complete)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given unpaid booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
     fun `given cancellable booking, when mapped to details, then actions include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
