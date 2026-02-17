@@ -56,7 +56,7 @@ class WooPosBookingNoteViewModelTest {
         parentId = 0L,
         personCounts = listOf(1L),
         localTimezone = "",
-        attendanceStatus = BookingEntity.AttendanceStatus.Booked,
+        attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
         note = "Existing note",
         order = BookingOrderInfo(),
         customerNote = ""
