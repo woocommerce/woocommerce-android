@@ -5,7 +5,10 @@ import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.R
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.StringUtils
@@ -25,6 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val pushNotificationRepository: PushNotificationRepository,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -85,11 +90,10 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             .collectLatest { step ->
                 if (step.state != StepState.Ongoing) return@collectLatest
 
-                @Suppress("NoOp")
                 when (step.type) {
-                    StepType.ConnectStore -> Unit
-                    StepType.CheckPluginCompatibility -> Unit
-                    StepType.EnablePushNotifications -> Unit
+                    StepType.ConnectStore -> Unit // TODO
+                    StepType.CheckPluginCompatibility -> Unit // TODO
+                    StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
     }
@@ -104,6 +108,26 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 current.copy(state = StepState.Success)
             }
         }
+    }
+
+    private suspend fun registerPushNotifications() {
+        val token = appPrefsWrapper.getFCMToken()
+        if (token.isEmpty()) {
+            currentStep.update {
+                it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+            }
+            return
+        }
+
+        val site = selectedSite.get()
+        pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
+            onSuccess = { currentStep.update { it.copy(state = StepState.Success) } },
+            onFailure = {
+                currentStep.update {
+                    it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+                }
+            }
+        )
     }
 
     private fun getSiteAddress(): String {
