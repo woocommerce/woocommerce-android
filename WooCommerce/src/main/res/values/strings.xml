@@ -3904,6 +3904,7 @@
     <string name="woopos_bookings_empty_action_label">Refresh</string>
     <string name="woopos_bookings_details_attendance_attended">Attended</string>
     <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
+    <string name="woopos_bookings_details_attendance_unknown">Unknown</string>
     <string name="woopos_bookings_details_title">Booking #%s details</string>
     <string name="woopos_bookings_details_service_name_label">Service name</string>
     <string name="woopos_bookings_details_date_label">Date</string>

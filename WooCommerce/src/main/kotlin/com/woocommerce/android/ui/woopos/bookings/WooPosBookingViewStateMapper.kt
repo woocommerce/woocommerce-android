@@ -182,11 +182,11 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     private fun mapAttendanceBadge(
         status: BookingEntity.AttendanceStatus
-    ): WooPosBookingsState.AttendanceState? {
+    ): WooPosBookingsState.AttendanceState {
         return when (status) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            else -> null
+            else -> WooPosBookingsState.AttendanceState.UNKNOWN
         }
     }
 

@@ -502,7 +502,7 @@ private fun WooPosBookingListItem(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
             ) {
-                item.attendanceBadge?.let { WooPosAttendanceBadge(it) }
+                WooPosAttendanceBadge(item.attendanceBadge)
                 WooPosBookingsStatusBadge(item.status)
             }
         }

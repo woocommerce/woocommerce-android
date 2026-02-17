@@ -32,6 +32,7 @@ sealed class WooPosBookingsState {
     enum class AttendanceState {
         ATTENDED,
         UNATTENDED,
+        UNKNOWN,
     }
 
     @Immutable
@@ -87,7 +88,7 @@ sealed class WooPosBookingsState {
         val subtitle: String,
         val isSelected: Boolean,
         val status: WooPosBookingStatus,
-        val attendanceBadge: AttendanceState? = null,
+        val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
     )
 
     @Immutable
