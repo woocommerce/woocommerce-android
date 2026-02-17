@@ -493,7 +493,7 @@ private fun WooPosBookingListItem(
                 item.subtitle,
                 style = WooPosTypography.BodySmall,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
 
