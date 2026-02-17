@@ -87,7 +87,7 @@ class WooPosBookingViewStateMapperTest {
 
         // THEN
         assertThat(result.id).isEqualTo(1L)
-        assertThat(result.timeRange).isEqualTo("$FORMATTED_TIME - $FORMATTED_TIME")
+        assertThat(result.timeRange).isEqualTo("11:00-$FORMATTED_TIME")
         assertThat(result.subtitle).isEqualTo("Women's Haircut \u00B7 Margarita Nikolaevna")
         assertThat(result.isSelected).isFalse()
         assertThat(result.paymentStatus).isEqualTo(PaymentStatus.UNPAID)
@@ -124,7 +124,7 @@ class WooPosBookingViewStateMapperTest {
             .withZone(ZoneOffset.UTC)
             .format(start)
         assertThat(result.appointmentDate).isEqualTo(expectedDate)
-        assertThat(result.appointmentTime).isEqualTo("$FORMATTED_TIME - $FORMATTED_TIME")
+        assertThat(result.appointmentTime).isEqualTo("11:00-$FORMATTED_TIME")
         assertThat(result.duration).isEqualTo("1 hour 30 minutes")
     }
 
