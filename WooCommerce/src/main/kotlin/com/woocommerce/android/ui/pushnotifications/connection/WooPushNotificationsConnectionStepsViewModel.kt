@@ -85,7 +85,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private fun getSiteAddress(): String {
-        val site = selectedSite.getOrNull() ?: return ""
+        val site = selectedSite.get()
         return StringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
     }
 

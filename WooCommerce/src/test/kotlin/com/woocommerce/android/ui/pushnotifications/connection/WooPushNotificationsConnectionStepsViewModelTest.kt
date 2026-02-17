@@ -12,7 +12,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -22,7 +21,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private lateinit var viewModel: WooPushNotificationsConnectionStepsViewModel
 
     private val selectedSite: SelectedSite = mock {
-        on { getOrNull() } doReturn site
+        on { get() } doReturn site
     }
 
     private fun setup(prepareMocks: () -> Unit = {}) {
@@ -74,16 +73,5 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(Exit)
-    }
-
-    @Test
-    fun `when site is null, then site address is empty`() {
-        setup(prepareMocks = {
-            whenever(selectedSite.getOrNull()).thenReturn(null)
-        })
-
-        val state = viewModel.viewState.getOrAwaitValue() as ViewState.ProgressViewState
-
-        assertThat(state.siteAddress).isEmpty()
     }
 }
