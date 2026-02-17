@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
+import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.time.Duration
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -60,7 +61,17 @@ class WooPosBookingViewStateMapper @Inject constructor(
             number = "#${booking.id.value}",
             status = mapBookingStatus(booking.status),
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                buildList {
+                    add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                    if (booking.isCancellable) {
+                        add(
+                            WooPosBookingsState.BookingAction.CancelBooking(
+                                bookingId = booking.id.value,
+                                orderId = booking.orderId
+                            )
+                        )
+                    }
+                }
             ),
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,
