@@ -26,7 +26,7 @@ fun WooPosPaymentStatusBadge(paymentStatus: PaymentStatus) {
     }
 
     val bgColor = when (paymentStatus) {
-        PaymentStatus.UNPAID -> WooPosTheme.colors.alert
+        PaymentStatus.UNPAID,
         PaymentStatus.FAILED -> WooPosTheme.colors.errorLowest
         PaymentStatus.PAID,
         PaymentStatus.REFUNDED,
@@ -34,7 +34,7 @@ fun WooPosPaymentStatusBadge(paymentStatus: PaymentStatus) {
     }
 
     val textColor = when (paymentStatus) {
-        PaymentStatus.UNPAID -> WooPosTheme.colors.onAlert
+        PaymentStatus.UNPAID,
         PaymentStatus.FAILED -> WooPosTheme.colors.onErrorLowest
         PaymentStatus.PAID,
         PaymentStatus.REFUNDED,
@@ -62,12 +62,12 @@ fun WooPosCancelledBadge() {
     WooPosText(
         text = stringResource(R.string.woopos_bookings_status_cancelled),
         style = WooPosTypography.Caption,
-        color = WooPosTheme.colors.onInfoLowest,
+        color = WooPosTheme.colors.onDefault,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            .background(WooPosTheme.colors.infoLowest)
+            .background(WooPosTheme.colors.disabledContainer)
             .padding(
                 horizontal = WooPosSpacing.Small.value,
                 vertical = WooPosSpacing.XSmall.value
