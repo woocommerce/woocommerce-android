@@ -42,10 +42,9 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     private val _viewState = savedStateHandle.getStateFlow<ViewState>(
         scope = viewModelScope,
         initialValue = ViewState.MagicLinkRequestState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = false
         )
@@ -102,10 +101,9 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         )
 
         _viewState.value = ViewState.MagicLinkRequestState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = navArgs.emailOrUsername,
             avatarUrl = avatarUrlFromEmail(navArgs.emailOrUsername),
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             magicLinkFallbackButton = navArgs.fallbackButton,
             isLoadingDialogShown = true
         )
@@ -116,9 +114,8 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
         ).fold(
             onSuccess = {
                 _viewState.value = ViewState.MagicLinkSentState(
+                    wpComLoginMode = navArgs.wpComLoginMode,
                     email = navArgs.emailOrUsername.takeIf { it.isAnEmail() },
-                    isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                        ?.jetpackStatus?.isJetpackInstalled ?: false,
                     magicLinkFallbackButton = navArgs.fallbackButton,
                 )
             },
@@ -152,22 +149,22 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
     private fun String.isAnEmail() = PatternsCompat.EMAIL_ADDRESS.matcher(this).matches()
 
     sealed interface ViewState : Parcelable {
-        val isJetpackInstalled: Boolean
+        val wpComLoginMode: WPComLoginMode
         val magicLinkFallbackButton: MagicLinkFallbackButton
 
         @Parcelize
         data class MagicLinkRequestState(
+            override val wpComLoginMode: WPComLoginMode,
             val emailOrUsername: String,
             val avatarUrl: String,
-            override val isJetpackInstalled: Boolean,
             override val magicLinkFallbackButton: MagicLinkFallbackButton,
             val isLoadingDialogShown: Boolean
         ) : ViewState
 
         @Parcelize
         data class MagicLinkSentState(
+            override val wpComLoginMode: WPComLoginMode,
             val email: String?,
-            override val isJetpackInstalled: Boolean,
             override val magicLinkFallbackButton: MagicLinkFallbackButton
         ) : ViewState
     }
