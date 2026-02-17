@@ -115,7 +115,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
         val isPaid = booking.status == BookingEntity.Status.Paid ||
-            booking.status == BookingEntity.Status.Complete
+            booking.status == BookingEntity.Status.Complete ||
+            booking.status == BookingEntity.Status.Cancelled
 
         val totalAmount = paymentInfo?.let { priceFormat(it.total + it.totalTax) } ?: "-"
 
