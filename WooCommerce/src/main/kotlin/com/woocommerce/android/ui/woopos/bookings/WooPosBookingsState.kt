@@ -83,14 +83,10 @@ sealed class WooPosBookingsState {
     @Immutable
     data class BookingItemViewState(
         val id: Long,
-        val title: String,
-        val date: String,
-        val total: String,
-        val customerEmail: String?,
+        val timeRange: String,
+        val subtitle: String,
         val isSelected: Boolean,
         val status: WooPosBookingStatus,
-        val statusSlug: String,
-        val createdAtMillis: Long,
         val attendanceBadge: AttendanceState? = null,
     )
 

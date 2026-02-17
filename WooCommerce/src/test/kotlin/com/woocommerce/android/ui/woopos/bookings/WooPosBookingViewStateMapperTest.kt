@@ -75,16 +75,17 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking, when mapped to item view state, then formats date and maps fields correctly`() = runTest {
+    fun `given booking, when mapped to item view state, then maps fields correctly`() = runTest {
+        // GIVEN
         val booking = sampleBooking()
 
+        // WHEN
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
 
+        // THEN
         assertThat(result.id).isEqualTo(1L)
-        assertThat(result.title).isEqualTo("Women's Haircut")
-        assertThat(result.date).isEqualTo(FORMATTED_DATE_TIME)
-        assertThat(result.total).isEqualTo("$55")
-        assertThat(result.customerEmail).isEqualTo("margarita@example.com")
+        assertThat(result.timeRange).isEqualTo("$FORMATTED_TIME - $FORMATTED_TIME")
+        assertThat(result.subtitle).isEqualTo("Women's Haircut \u00B7 Margarita Nikolaevna")
         assertThat(result.isSelected).isFalse()
     }
 

@@ -437,74 +437,10 @@ private fun WooPosLoadedBookingsList(
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->
-            WooPosCard(
-                modifier = modifier
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                elevation = WooPosElevation.Medium,
-                shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onBookingSelected(item.id) }
-                        .padding(WooPosSpacing.Medium.value),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        WooPosText(
-                            item.title,
-                            style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        WooPosText(
-                            item.date,
-                            style = WooPosTypography.BodySmall,
-                            color = WooPosTheme.colors.onSurfaceVariantHighest,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        item.customerEmail?.let { email ->
-                            WooPosText(
-                                email,
-                                style = WooPosTypography.BodySmall,
-                                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-
-                        Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
-                        ) {
-                            item.attendanceBadge?.let { WooPosAttendanceBadge(it) }
-                            WooPosBookingsStatusBadge(item.status)
-                        }
-                    }
-
-                    WooPosText(
-                        text = item.total,
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1
-                    )
-                }
-            }
+            WooPosBookingListItem(
+                item = item,
+                onBookingSelected = onBookingSelected,
+            )
         }
 
         if (paginationState == WooPosPaginationState.Loading) {
@@ -516,6 +452,58 @@ private fun WooPosLoadedBookingsList(
         if (paginationState == WooPosPaginationState.Error) {
             item {
                 WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WooPosBookingListItem(
+    item: WooPosBookingsState.BookingItemViewState,
+    onBookingSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        isSelected = item.isSelected,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onBookingSelected(item.id) }
+                .padding(WooPosSpacing.Medium.value),
+        ) {
+            WooPosText(
+                item.timeRange,
+                style = WooPosTypography.BodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+            WooPosText(
+                item.subtitle,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+            ) {
+                item.attendanceBadge?.let { WooPosAttendanceBadge(it) }
+                WooPosBookingsStatusBadge(item.status)
             }
         }
     }
@@ -571,31 +559,25 @@ private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Un
 fun WooPosBookingsScreenPreview() {
     val item1 = WooPosBookingsState.BookingItemViewState(
         id = 1,
-        title = "#014",
-        date = "Aug 28, 2025 at 10:31 AM",
-        total = "$17.00",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:00 - 10:30 AM",
+        subtitle = "Women's Haircut \u00B7 John Doe",
         isSelected = true,
         status = WooPosBookingStatus(
-            text = "Completed",
+            text = "Paid",
             colorKey = WooPosBookingStatusColorKey.COMPLETED
         ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
+        attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
     )
     val item2 = WooPosBookingsState.BookingItemViewState(
         id = 2,
-        title = "#013",
-        date = "Jul 28, 2025 at 10:31 AM",
-        total = "$43.90",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:30 - 11:30 AM",
+        subtitle = "Women's Haircut \u00B7 Jane Smith",
         isSelected = false,
         status = WooPosBookingStatus(
-            text = "Processing",
-            colorKey = WooPosBookingStatusColorKey.PROCESSING
+            text = "Unpaid",
+            colorKey = WooPosBookingStatusColorKey.ON_HOLD
         ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
+        attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
     )
 
     val details1 = sampleBookingDetails(id = 1L, number = "#014")

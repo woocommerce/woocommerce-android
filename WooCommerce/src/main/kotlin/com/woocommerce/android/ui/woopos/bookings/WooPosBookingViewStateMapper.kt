@@ -26,16 +26,20 @@ class WooPosBookingViewStateMapper @Inject constructor(
         booking: BookingEntity,
         selectedBookingId: Long?,
     ): WooPosBookingsState.BookingItemViewState {
+        val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
+        val customerName = buildCustomerName(booking.order.customerInfo)
+        val subtitle = buildString {
+            append(bookingName)
+            customerName?.let { append(" \u00B7 $it") }
+        }
+        val timeRange = "${dateFormatter.formatTime(booking.start)} - ${dateFormatter.formatTime(booking.end)}"
+
         return WooPosBookingsState.BookingItemViewState(
             id = booking.id.value,
-            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            date = dateFormatter.formatDateTime(booking.start),
-            total = booking.order.paymentInfo?.let { formatPrice(it.total, booking.currency) } ?: "",
-            customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
+            timeRange = timeRange,
+            subtitle = subtitle,
             isSelected = booking.id.value == selectedBookingId,
             status = mapBookingStatus(booking.status),
-            statusSlug = booking.status.key,
-            createdAtMillis = booking.start.toEpochMilli(),
             attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
         )
     }
