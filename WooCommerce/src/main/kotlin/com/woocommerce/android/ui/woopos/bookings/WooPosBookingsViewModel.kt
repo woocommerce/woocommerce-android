@@ -303,7 +303,7 @@ class WooPosBookingsViewModel @Inject constructor(
         )
 
         _state.value = currentState.copy(
-            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Confirmation(
+            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.PendingConfirmation(
                 bookingId = bookingId,
                 message = message,
             )

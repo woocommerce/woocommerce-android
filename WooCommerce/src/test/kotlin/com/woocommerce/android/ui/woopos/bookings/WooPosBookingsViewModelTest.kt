@@ -687,7 +687,7 @@ class WooPosBookingsViewModelTest {
             val updatedContent = viewModel.state.value as WooPosBookingsState.Content
             assertThat(updatedContent.dialogState)
                 .isInstanceOf(
-                    WooPosBookingsState.Content.DialogState.CancelBooking.Confirmation::class.java
+                    WooPosBookingsState.Content.DialogState.CancelBooking.PendingConfirmation::class.java
                 )
         }
 

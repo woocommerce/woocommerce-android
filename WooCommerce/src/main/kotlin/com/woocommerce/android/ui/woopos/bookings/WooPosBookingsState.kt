@@ -118,7 +118,7 @@ sealed class WooPosBookingsState {
                 abstract val bookingId: Long
                 abstract val message: String
 
-                data class Confirmation(
+                data class PendingConfirmation(
                     override val bookingId: Long,
                     override val message: String,
                 ) : CancelBooking()
