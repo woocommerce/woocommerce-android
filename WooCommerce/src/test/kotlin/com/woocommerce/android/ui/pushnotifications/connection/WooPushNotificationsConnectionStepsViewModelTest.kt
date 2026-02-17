@@ -6,7 +6,9 @@ import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificati
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -73,5 +75,17 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(Exit)
+    }
+
+    @Test
+    fun `when contact support is clicked, then NavigateToHelpScreen event is triggered`() {
+        setup()
+
+        viewModel.onContactSupportClick()
+
+        val event = viewModel.event.value
+        assertThat(event).isInstanceOf(NavigateToHelpScreen::class.java)
+        assertThat((event as NavigateToHelpScreen).origin)
+            .isEqualTo(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP)
     }
 }
