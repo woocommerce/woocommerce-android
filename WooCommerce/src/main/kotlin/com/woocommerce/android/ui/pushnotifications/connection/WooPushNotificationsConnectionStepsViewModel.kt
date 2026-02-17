@@ -56,6 +56,11 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         startNextStep()
     }
 
+    fun onGoToStoreClick() {
+        // TODO
+        onCloseClick()
+    }
+
     fun onCloseClick() {
         triggerEvent(Exit)
     }

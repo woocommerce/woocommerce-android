@@ -50,18 +50,14 @@ import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificati
 
 @Composable
 fun WooPushNotificationsConnectionStepsScreen(
-    viewModel: WooPushNotificationsConnectionStepsViewModel,
-    onCancelClick: () -> Unit,
-    onContinueClick: () -> Unit,
-    modifier: Modifier = Modifier
+    viewModel: WooPushNotificationsConnectionStepsViewModel
 ) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         WooPushNotificationsConnectionStepsScreen(
             viewState = viewState,
-            onCancelClick = onCancelClick,
-            onContinueClick = onContinueClick,
-            onRetryClick = viewModel::onRetryClick,
-            modifier = modifier
+            onCloseClick = viewModel::onCloseClick,
+            onGoToStoreClick = viewModel::onGoToStoreClick,
+            onRetryClick = viewModel::onRetryClick
         )
     }
 }
@@ -69,16 +65,16 @@ fun WooPushNotificationsConnectionStepsScreen(
 @Composable
 private fun WooPushNotificationsConnectionStepsScreen(
     viewState: ViewState,
-    onCancelClick: () -> Unit,
+    onCloseClick: () -> Unit,
+    onGoToStoreClick: () -> Unit,
     onRetryClick: () -> Unit,
-    onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             Toolbar(
-                onNavigationButtonClick = onCancelClick
+                onNavigationButtonClick = onCloseClick
             )
         }
     ) { paddingValues ->
@@ -150,7 +146,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 exit = slideOutVertically { fullHeight -> fullHeight }
             ) {
                 WCColoredButton(
-                    onClick = onContinueClick,
+                    onClick = onGoToStoreClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
@@ -281,8 +277,8 @@ private fun WooPushNotificationsConnectionStepsPreview() {
                     )
                 )
             ),
-            onCancelClick = {},
-            onContinueClick = {},
+            onCloseClick = {},
+            onGoToStoreClick = {},
             onRetryClick = {}
         )
     }
@@ -310,8 +306,8 @@ private fun WooPushNotificationsConnectionStepsPreviewError() {
                     )
                 )
             ),
-            onCancelClick = {},
-            onContinueClick = {},
+            onCloseClick = {},
+            onGoToStoreClick = {},
             onRetryClick = {}
         )
     }

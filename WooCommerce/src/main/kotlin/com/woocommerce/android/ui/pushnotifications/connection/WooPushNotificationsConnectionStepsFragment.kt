@@ -21,11 +21,7 @@ class WooPushNotificationsConnectionStepsFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         return composeView {
-            WooPushNotificationsConnectionStepsScreen(
-                viewModel = viewModel,
-                onCancelClick = viewModel::onCloseClick,
-                onContinueClick = { findNavController().navigateUp() }
-            )
+            WooPushNotificationsConnectionStepsScreen(viewModel = viewModel)
         }
     }
 
