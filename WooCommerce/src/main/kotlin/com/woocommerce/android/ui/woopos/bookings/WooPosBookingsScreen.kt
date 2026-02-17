@@ -259,6 +259,9 @@ private fun WooPosBookingsContent(
 
         val cancelDialog =
             state.dialogState as? WooPosBookingsState.Content.DialogState.CancelBooking
+        BackHandler(enabled = cancelDialog != null) {
+            onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed)
+        }
         WooPosCancelBookingDialog(
             isVisible = cancelDialog != null,
             message = cancelDialog?.message.orEmpty(),
