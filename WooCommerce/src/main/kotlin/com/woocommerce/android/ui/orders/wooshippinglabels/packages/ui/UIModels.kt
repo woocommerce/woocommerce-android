@@ -39,6 +39,12 @@ data class PackageData(
         height = dimensionList.getOrNull(2).orEmpty().trim()
     }
 
+    val safeHeight: Double
+        get() {
+            val parsed = height.toDoubleOrNull() ?: return DEFAULT_HEIGHT
+            return if (parsed > 0) parsed else MIN_HEIGHT
+        }
+
     val descriptionResId: Int
         get() = when (isLetter) {
             true -> R.string.woo_shipping_labels_package_creation_envelope_type
@@ -67,6 +73,7 @@ data class PackageData(
          * TODO confirm this value when WOOSHIP-1449 is done.
          */
         const val DEFAULT_HEIGHT = 5.0
+        const val MIN_HEIGHT = 0.25
 
         fun fromPackageEntity(entity: Package, isSelected: Boolean = false) = PackageData(
             id = entity.id ?: EMPTY.id,
