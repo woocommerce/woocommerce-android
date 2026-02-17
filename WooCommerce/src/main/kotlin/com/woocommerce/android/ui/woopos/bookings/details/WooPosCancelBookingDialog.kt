@@ -38,7 +38,7 @@ fun WooPosCancelBookingDialog(
         dialogBackgroundContentDescription = stringResource(
             R.string.woopos_bookings_cancel_dialog_background
         ),
-        onDismissRequest = { if (!isProcessing) onDismiss() },
+        onDismissRequest = onDismiss,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
