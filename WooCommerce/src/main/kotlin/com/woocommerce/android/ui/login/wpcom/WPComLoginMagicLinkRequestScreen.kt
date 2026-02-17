@@ -25,6 +25,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -241,14 +244,12 @@ private fun JetpackModeRequestPreview() {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
                 wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    com.woocommerce.android.model.JetpackStatus(
+                    JetpackStatus(
                         isJetpackInstalled = false,
-                        jetpackConnectionStatus = com.woocommerce.android.model.JetpackConnectionStatus
-                            .AccountNotConnected(
-                                siteRegistrationStatus = com.woocommerce.android.model
-                                    .JetpackSiteRegistrationStatus.UNKNOWN,
-                                blogId = null
-                            )
+                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                            blogId = null
+                        )
                     )
                 ),
                 emailOrUsername = "test@email.com",
