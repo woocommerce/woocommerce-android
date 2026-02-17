@@ -206,6 +206,7 @@ private fun WooPosBookingsScreen(
                     )
                 }
                 WooPosBookingsState.Content.DialogState.Hidden -> Unit
+                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
             }
         }
     }
