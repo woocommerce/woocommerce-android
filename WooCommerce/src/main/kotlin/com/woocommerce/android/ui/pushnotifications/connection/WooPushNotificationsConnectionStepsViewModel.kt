@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
 import android.os.Parcelable
+import androidx.annotation.StringRes
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -93,6 +94,18 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             }
     }
 
+    @Suppress("unused")
+    private fun advanceToNextStep() {
+        currentStep.update { current ->
+            val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
+            if (nextType != null) {
+                Step(type = nextType, state = StepState.Ongoing)
+            } else {
+                current.copy(state = StepState.Success)
+            }
+        }
+    }
+
     private fun getSiteAddress(): String {
         val site = selectedSite.get()
         return StringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
@@ -129,6 +142,9 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         data object Success : StepState
 
         @Parcelize
-        data class Error(val errorMessage: UiString) : StepState
+        data class Error(val errorMessage: UiString) : StepState {
+            constructor(message: String) : this(UiString.UiStringText(message))
+            constructor(@StringRes messageRes: Int) : this(UiString.UiStringRes(messageRes))
+        }
     }
 }
