@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -69,7 +68,7 @@ fun WPComLoginPasswordScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(branding.navIcon)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         }
     ) { paddingValues ->
@@ -162,7 +161,6 @@ fun WPComLoginPasswordScreen(
 }
 
 private data class PasswordScreenBranding(
-    @DrawableRes val navIcon: Int,
     @StringRes val title: Int,
     @StringRes val subtitle: Int?,
     @StringRes val buttonText: Int,
@@ -171,14 +169,12 @@ private data class PasswordScreenBranding(
 private fun WPComLoginPasswordViewModel.ViewState.resolveBranding(): PasswordScreenBranding {
     return when (wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> PasswordScreenBranding(
-            navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
             subtitle = null,
             buttonText = R.string.continue_button,
         )
 
         is WPComLoginMode.JetpackSetup -> PasswordScreenBranding(
-            navIcon = R.drawable.ic_close_24dp,
             title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {

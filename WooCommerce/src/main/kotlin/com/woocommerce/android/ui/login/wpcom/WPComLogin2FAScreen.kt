@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -66,7 +65,7 @@ fun WPComLogin2FAScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(branding.navIcon)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         }
     ) { paddingValues ->
@@ -145,7 +144,6 @@ fun WPComLogin2FAScreen(
 }
 
 private data class TwoFAScreenBranding(
-    @DrawableRes val navIcon: Int,
     @StringRes val title: Int,
     @StringRes val buttonText: Int,
 )
@@ -153,13 +151,11 @@ private data class TwoFAScreenBranding(
 private fun WPComLogin2FAViewModel.ViewState.resolveBranding(): TwoFAScreenBranding {
     return when (wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> TwoFAScreenBranding(
-            navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
             buttonText = R.string.login_wpcom_connect_title,
         )
 
         is WPComLoginMode.JetpackSetup -> TwoFAScreenBranding(
-            navIcon = R.drawable.ic_close_24dp,
             title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {

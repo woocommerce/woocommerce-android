@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -63,7 +62,7 @@ fun WPComLoginMagicLinkRequestScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(branding.navIcon)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         },
         containerColor = MaterialTheme.colorScheme.surface
@@ -216,19 +215,16 @@ private fun MagicLinkSentContent(
 }
 
 private data class MagicLinkScreenBranding(
-    @DrawableRes val navIcon: Int,
     @StringRes val title: Int,
 )
 
 private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): MagicLinkScreenBranding {
     return when (val wpComLoginMode = this.wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> MagicLinkScreenBranding(
-            navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
         )
 
         is WPComLoginMode.JetpackSetup -> MagicLinkScreenBranding(
-            navIcon = R.drawable.ic_close_24dp,
             title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
