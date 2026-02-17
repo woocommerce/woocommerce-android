@@ -31,10 +31,10 @@ class PushNotificationsStoreTest {
         runBlocking {
             val site = SiteModel().apply { id = 123 }
             val tokenId = "101"
-            whenever(restClient.registerPushToken(any(), any(), any(), any()))
+            whenever(restClient.registerPushToken(any(), any()))
                 .thenReturn(WooPayload(PushTokenIdResponse(tokenId)))
 
-            val result = sut.registerPushToken(site, "token", "uuid")
+            val result = sut.registerPushToken(site, "token", "uuid", "en_US")
 
             assertThat(result.isError).isFalse()
             assertThat(result.model).isEqualTo(tokenId)
