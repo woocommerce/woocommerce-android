@@ -502,8 +502,11 @@ private fun WooPosBookingListItem(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
             ) {
+                if (item.isCancelled) {
+                    WooPosCancelledBadge()
+                }
                 WooPosAttendanceBadge(item.attendanceBadge)
-                WooPosBookingsStatusBadge(item.status)
+                WooPosPaymentStatusBadge(item.paymentStatus)
             }
         }
     }
@@ -562,10 +565,8 @@ fun WooPosBookingsScreenPreview() {
         timeRange = "10:00 - 10:30 AM",
         subtitle = "Women's Haircut \u00B7 John Doe",
         isSelected = true,
-        status = WooPosBookingStatus(
-            text = "Paid",
-            colorKey = WooPosBookingStatusColorKey.COMPLETED
-        ),
+        paymentStatus = PaymentStatus.PAID,
+        isCancelled = false,
         attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
     )
     val item2 = WooPosBookingsState.BookingItemViewState(
@@ -573,10 +574,8 @@ fun WooPosBookingsScreenPreview() {
         timeRange = "10:30 - 11:30 AM",
         subtitle = "Women's Haircut \u00B7 Jane Smith",
         isSelected = false,
-        status = WooPosBookingStatus(
-            text = "Unpaid",
-            colorKey = WooPosBookingStatusColorKey.ON_HOLD
-        ),
+        paymentStatus = PaymentStatus.UNPAID,
+        isCancelled = true,
         attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
     )
 
@@ -671,7 +670,8 @@ private fun sampleBookingDetails(
     id = id,
     orderId = id * 10,
     number = number,
-    status = WooPosBookingStatus(text = "Paid", colorKey = WooPosBookingStatusColorKey.COMPLETED),
+    paymentStatus = PaymentStatus.PAID,
+    isCancelled = false,
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(
         listOf(WooPosBookingsState.BookingAction.EmailReceipt(id))
     ),

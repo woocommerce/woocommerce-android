@@ -16,23 +16,33 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosBookingsStatusBadge(status: WooPosBookingStatus) {
-    val bgColor = when (status.colorKey) {
-        WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.infoLowest
-        WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.errorLowest
-        WooPosBookingStatusColorKey.PROCESSING,
-        WooPosBookingStatusColorKey.ON_HOLD -> WooPosTheme.colors.default
+fun WooPosPaymentStatusBadge(paymentStatus: PaymentStatus) {
+    val text = when (paymentStatus) {
+        PaymentStatus.PAID -> stringResource(R.string.woopos_bookings_payment_status_paid)
+        PaymentStatus.UNPAID -> stringResource(R.string.woopos_bookings_payment_status_unpaid)
+        PaymentStatus.FAILED -> stringResource(R.string.woopos_bookings_payment_status_failed)
+        PaymentStatus.REFUNDED -> stringResource(R.string.woopos_bookings_payment_status_refunded)
+        PaymentStatus.PARTIALLY_REFUNDED -> stringResource(R.string.woopos_bookings_payment_status_partially_refunded)
     }
 
-    val textColor = when (status.colorKey) {
-        WooPosBookingStatusColorKey.COMPLETED -> WooPosTheme.colors.onInfoLowest
-        WooPosBookingStatusColorKey.FAILED -> WooPosTheme.colors.onErrorLowest
-        WooPosBookingStatusColorKey.PROCESSING,
-        WooPosBookingStatusColorKey.ON_HOLD -> WooPosTheme.colors.onDefault
+    val bgColor = when (paymentStatus) {
+        PaymentStatus.UNPAID -> WooPosTheme.colors.alert
+        PaymentStatus.FAILED -> WooPosTheme.colors.errorLowest
+        PaymentStatus.PAID,
+        PaymentStatus.REFUNDED,
+        PaymentStatus.PARTIALLY_REFUNDED -> WooPosTheme.colors.disabledContainer
+    }
+
+    val textColor = when (paymentStatus) {
+        PaymentStatus.UNPAID -> WooPosTheme.colors.onAlert
+        PaymentStatus.FAILED -> WooPosTheme.colors.onErrorLowest
+        PaymentStatus.PAID,
+        PaymentStatus.REFUNDED,
+        PaymentStatus.PARTIALLY_REFUNDED -> WooPosTheme.colors.onDefault
     }
 
     WooPosText(
-        text = status.text,
+        text = text,
         style = WooPosTypography.Caption,
         color = textColor,
         maxLines = 1,
@@ -40,6 +50,24 @@ fun WooPosBookingsStatusBadge(status: WooPosBookingStatus) {
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
             .background(bgColor)
+            .padding(
+                horizontal = WooPosSpacing.Small.value,
+                vertical = WooPosSpacing.XSmall.value
+            )
+    )
+}
+
+@Composable
+fun WooPosCancelledBadge() {
+    WooPosText(
+        text = stringResource(R.string.woopos_bookings_status_cancelled),
+        style = WooPosTypography.Caption,
+        color = WooPosTheme.colors.onInfoLowest,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            .background(WooPosTheme.colors.infoLowest)
             .padding(
                 horizontal = WooPosSpacing.Small.value,
                 vertical = WooPosSpacing.XSmall.value

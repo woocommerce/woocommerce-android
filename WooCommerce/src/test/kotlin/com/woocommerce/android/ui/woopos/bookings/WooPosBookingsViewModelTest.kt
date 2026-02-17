@@ -85,6 +85,7 @@ class WooPosBookingsViewModelTest {
             "Cancel dialog message"
         }
     }
+    private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
     private val bookingsRepository: BookingsRepository = mock()
     private lateinit var viewModel: WooPosBookingsViewModel
 
@@ -120,7 +121,7 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice),
+            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice, paymentStatusResolver),
             bookingsRepository = bookingsRepository,
             resourceProvider = resourceProvider,
         )
@@ -142,6 +143,7 @@ class WooPosBookingsViewModelTest {
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
         whenever(dateTimeProvider.now()).thenReturn(0L)
+        whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }
 
     @Test

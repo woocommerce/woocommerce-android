@@ -94,9 +94,12 @@ class WooPosBookingsViewModel @Inject constructor(
                     selectedBookingId = bookings.first().id.value
                 }
 
-                val items = bookings.associate { booking ->
-                    mapper.mapToItemViewState(booking, selectedBookingId) to
-                        mapper.mapToDetailsViewState(booking)
+                val items = buildMap {
+                    for (booking in bookings) {
+                        val itemState = mapper.mapToItemViewState(booking, selectedBookingId)
+                        val detailsState = mapper.mapToDetailsViewState(booking)
+                        put(itemState, detailsState)
+                    }
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->

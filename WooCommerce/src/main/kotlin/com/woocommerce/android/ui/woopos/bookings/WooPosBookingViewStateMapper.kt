@@ -20,6 +20,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     private val dateFormatter: DateFormatter,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
+    private val paymentStatusResolver: WooPosPaymentStatusResolver,
 ) {
 
     suspend fun mapToItemViewState(
@@ -33,13 +34,18 @@ class WooPosBookingViewStateMapper @Inject constructor(
             customerName?.let { append(" \u00B7 $it") }
         }
         val timeRange = "${dateFormatter.formatTime(booking.start)} - ${dateFormatter.formatTime(booking.end)}"
+        val paymentStatus = paymentStatusResolver.resolve(
+            orderId = booking.orderId,
+            orderTotal = booking.order.paymentInfo?.total,
+        )
 
         return WooPosBookingsState.BookingItemViewState(
             id = booking.id.value,
             timeRange = timeRange,
             subtitle = subtitle,
             isSelected = booking.id.value == selectedBookingId,
-            status = mapBookingStatus(booking.status),
+            paymentStatus = paymentStatus,
+            isCancelled = booking.status == BookingEntity.Status.Cancelled,
             attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
         )
     }
@@ -61,11 +67,17 @@ class WooPosBookingViewStateMapper @Inject constructor(
             customerName?.let { append(" \u00B7 $it") }
         }
 
+        val paymentStatus = paymentStatusResolver.resolve(
+            orderId = booking.orderId,
+            orderTotal = booking.order.paymentInfo?.total,
+        )
+
         return WooPosBookingsState.BookingDetailsViewState(
             id = booking.id.value,
             orderId = booking.orderId,
             number = "#${booking.id.value}",
-            status = mapBookingStatus(booking.status),
+            paymentStatus = paymentStatus,
+            isCancelled = booking.status == BookingEntity.Status.Cancelled,
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 buildList {
                     add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
@@ -188,22 +200,5 @@ class WooPosBookingViewStateMapper @Inject constructor(
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
             is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
-    }
-
-    fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
-        val colorKey = when (status) {
-            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
-            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.ON_HOLD
-            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.ON_HOLD
-        }
-        return WooPosBookingStatus(
-            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
-            colorKey = colorKey
-        )
     }
 }
