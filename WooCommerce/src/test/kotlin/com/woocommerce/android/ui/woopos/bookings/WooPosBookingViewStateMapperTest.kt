@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.assertj.core.api.Assertions.assertThat
@@ -32,6 +33,12 @@ class WooPosBookingViewStateMapperTest {
         private const val FORMATTED_TIME = "11:00 AM"
     }
 
+    private val formatPrice: WooPosFormatPrice = mock {
+        on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
+            val price = invocation.arguments[0] as BigDecimal
+            "$${price.toPlainString()}"
+        }
+    }
     private val dateFormatter: DateFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
@@ -63,7 +70,7 @@ class WooPosBookingViewStateMapperTest {
     fun setup() {
         whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn(FORMATTED_DATE_TIME)
         whenever(dateFormatter.formatTime(any<Instant>())).thenReturn(FORMATTED_TIME)
-        mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider)
+        mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice)
     }
 
     @Test
@@ -75,7 +82,7 @@ class WooPosBookingViewStateMapperTest {
         assertThat(result.id).isEqualTo(1L)
         assertThat(result.title).isEqualTo("Women's Haircut")
         assertThat(result.date).isEqualTo(FORMATTED_DATE_TIME)
-        assertThat(result.total).isEqualTo("55")
+        assertThat(result.total).isEqualTo("$55")
         assertThat(result.customerEmail).isEqualTo("margarita@example.com")
         assertThat(result.isSelected).isFalse()
     }
@@ -122,8 +129,8 @@ class WooPosBookingViewStateMapperTest {
 
         val result = mapper.mapToDetailsViewState(booking)
 
-        assertThat(result.paymentSection.discountAmount).isEqualTo("-10")
-        assertThat(result.paymentSection.totalAmount).isEqualTo("99")
+        assertThat(result.paymentSection.discountAmount).isEqualTo("-$10")
+        assertThat(result.paymentSection.totalAmount).isEqualTo("$99")
     }
 
     @Test

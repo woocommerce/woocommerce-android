@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.bookings
 import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
+import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
@@ -38,6 +39,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -50,6 +52,12 @@ class WooPosBookingsViewModelTest {
     private val bookingListHandler: BookingListHandler = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
     private val dateFormatter: DateFormatter = mock()
+    private val formatPrice: WooPosFormatPrice = mock {
+        on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
+            val price = invocation.arguments[0] as BigDecimal
+            "$${price.toPlainString()}"
+        }
+    }
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -107,7 +115,7 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider),
+            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice),
         )
     }
 
