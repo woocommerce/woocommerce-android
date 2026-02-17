@@ -9,6 +9,7 @@ import androidx.navigation.fragment.findNavController
 import com.woocommerce.android.ui.base.BaseFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.ui.main.AppBarStatus
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,9 +23,21 @@ class WooPushNotificationsConnectionStepsFragment : BaseFragment() {
         return composeView {
             WooPushNotificationsConnectionStepsScreen(
                 viewModel = viewModel,
-                onCancelClick = { findNavController().navigateUp() },
+                onCancelClick = viewModel::onCloseClick,
                 onContinueClick = { findNavController().navigateUp() }
             )
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.event.observe(viewLifecycleOwner) { event ->
+            when (event) {
+                is Exit -> findNavController().navigateUp()
+            }
         }
     }
 }
