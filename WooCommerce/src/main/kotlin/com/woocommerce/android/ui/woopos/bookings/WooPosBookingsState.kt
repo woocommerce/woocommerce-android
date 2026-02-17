@@ -15,6 +15,9 @@ sealed class WooPosBookingsState {
 
         @Immutable
         data class EmailReceipt(override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class IssueRefund(override val orderId: Long) : BookingAction
     }
 
     @Immutable

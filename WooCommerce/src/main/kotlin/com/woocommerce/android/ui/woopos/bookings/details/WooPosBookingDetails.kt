@@ -545,6 +545,9 @@ private fun BookingOverflowMenu(
                             is WooPosBookingsState.BookingAction.EmailReceipt -> stringResource(
                                 R.string.woopos_orders_email_receipt
                             )
+                            is WooPosBookingsState.BookingAction.IssueRefund -> stringResource(
+                                R.string.booking_overflow_refund
+                            )
                         }
                         WooPosText(
                             text = text,

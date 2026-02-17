@@ -60,7 +60,14 @@ class WooPosBookingViewStateMapper @Inject constructor(
             number = "#${booking.id.value}",
             status = mapBookingStatus(booking.status),
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                buildList {
+                    add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                    val isPaid = booking.status == BookingEntity.Status.Paid ||
+                        booking.status == BookingEntity.Status.Complete
+                    if (isPaid) {
+                        add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
+                    }
+                }
             ),
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,
