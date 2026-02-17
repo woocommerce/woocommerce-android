@@ -5,8 +5,10 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.util.StringUtils
+import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
@@ -69,6 +71,10 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         startNextStep()
     }
 
+    fun onContactSupportClick() {
+        triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
+    }
+
     private fun startNextStep() {
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
@@ -98,6 +104,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         val steps: List<Step>
     ) {
         val isDone = steps.all { it.state == StepState.Success }
+        val failedStep = steps.firstOrNull { it.state is StepState.Error }
     }
 
     @Parcelize
