@@ -1,6 +1,13 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.AnimationConstants.DefaultDurationMillis
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,12 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.UiString
 import com.woocommerce.android.ui.compose.annotatedStringRes
 import com.woocommerce.android.ui.compose.component.IdleCircle
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
+import com.woocommerce.android.ui.compose.component.getText
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
+import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
+import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
+import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.ViewState
 
 @Composable
 fun WooPushNotificationsConnectionStepsScreen(
@@ -45,10 +57,10 @@ fun WooPushNotificationsConnectionStepsScreen(
 ) {
     viewModel.viewState.observeAsState().value?.let { viewState ->
         WooPushNotificationsConnectionStepsScreen(
-            siteAddress = viewState.siteAddress,
-            steps = viewState.steps,
+            viewState = viewState,
             onCancelClick = onCancelClick,
             onContinueClick = onContinueClick,
+            onRetryClick = viewModel::onRetryClick,
             modifier = modifier
         )
     }
@@ -56,14 +68,12 @@ fun WooPushNotificationsConnectionStepsScreen(
 
 @Composable
 private fun WooPushNotificationsConnectionStepsScreen(
-    siteAddress: String,
-    steps: List<ConnectionStepUiModel>,
+    viewState: ViewState,
     onCancelClick: () -> Unit,
+    onRetryClick: () -> Unit,
     onContinueClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasInProgressStep = steps.any { it.status == ConnectionStepStatus.IN_PROGRESS }
-
     Scaffold(
         modifier = modifier,
         topBar = {
@@ -98,7 +108,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 Text(
                     text = annotatedStringRes(
                         R.string.woo_push_notifications_connection_steps_body,
-                        siteAddress
+                        viewState.siteAddress
                     ),
                     modifier = Modifier.padding(top = 8.dp)
                 )
@@ -108,7 +118,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
                         .fillMaxWidth()
                         .padding(top = 32.dp)
                 ) {
-                    steps.forEach { step ->
+                    viewState.steps.forEach { step ->
                         ConnectionStepRow(
                             step = step,
                             modifier = Modifier.padding(vertical = 8.dp)
@@ -117,12 +127,37 @@ private fun WooPushNotificationsConnectionStepsScreen(
                 }
             }
 
-            if (!hasInProgressStep) {
+            AnimatedVisibility(
+                visible = viewState.steps.any { it.state is StepState.Error },
+                enter = fadeIn(animationSpec = tween(DefaultDurationMillis)),
+                exit = fadeOut(animationSpec = tween(DefaultDurationMillis))
+            ) {
+                WCColoredButton(
+                    onClick = onRetryClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(
+                            id = R.string.woo_push_notifications_connection_steps_retry
+                        )
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = viewState.isDone,
+                enter = slideInVertically { fullHeight -> fullHeight },
+                exit = slideOutVertically { fullHeight -> fullHeight }
+            ) {
                 WCColoredButton(
                     onClick = onContinueClick,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = stringResource(id = R.string.woo_push_notifications_connection_steps_go_to_my_store))
+                    Text(
+                        text = stringResource(
+                            id = R.string.woo_push_notifications_connection_steps_go_to_my_store
+                        )
+                    )
                 }
             }
         }
@@ -131,7 +166,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
 
 @Composable
 private fun ConnectionStepRow(
-    step: ConnectionStepUiModel,
+    step: WooPushNotificationsConnectionStepsViewModel.Step,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -141,15 +176,13 @@ private fun ConnectionStepRow(
             .fillMaxWidth()
             .defaultMinSize(minHeight = 48.dp)
     ) {
-        ConnectionStepStatusIcon(
-            status = step.status
-        )
+        ConnectionStepStatusIcon(state = step.state)
 
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = stringResource(id = step.title),
+                text = stringResource(id = step.type.title),
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = if (step.status == ConnectionStepStatus.NOT_STARTED) {
+                fontWeight = if (step.state == StepState.Idle) {
                     FontWeight.Normal
                 } else {
                     FontWeight.Bold
@@ -157,17 +190,11 @@ private fun ConnectionStepRow(
                 color = colorResource(id = R.color.color_on_surface_medium)
             )
             Text(
-                text = step.statusMessageRes?.let { stringResource(id = it) }
-                    ?: stringResource(id = step.status.defaultTextRes),
+                text = step.state.statusText,
                 style = MaterialTheme.typography.bodySmall,
-                fontWeight = if (step.status == ConnectionStepStatus.ERROR) {
-                    FontWeight.SemiBold
-                } else {
-                    FontWeight.Normal
-                },
-                color = when (step.status) {
-                    ConnectionStepStatus.COMPLETE -> colorResource(id = R.color.woo_green_50)
-                    ConnectionStepStatus.ERROR -> colorResource(id = R.color.color_error)
+                color = when (step.state) {
+                    StepState.Success -> colorResource(id = R.color.woo_green_50)
+                    is StepState.Error -> MaterialTheme.colorScheme.error
                     else -> colorResource(id = R.color.color_on_surface_medium)
                 }
             )
@@ -177,11 +204,11 @@ private fun ConnectionStepRow(
 
 @Composable
 private fun ConnectionStepStatusIcon(
-    status: ConnectionStepStatus,
+    state: StepState,
     modifier: Modifier = Modifier
 ) {
-    when (status) {
-        ConnectionStepStatus.COMPLETE -> {
+    when (state) {
+        StepState.Success -> {
             Image(
                 painter = painterResource(id = R.drawable.ic_progress_circle_complete),
                 contentDescription = null,
@@ -189,18 +216,18 @@ private fun ConnectionStepStatusIcon(
             )
         }
 
-        ConnectionStepStatus.IN_PROGRESS -> {
+        StepState.Ongoing -> {
             CircularProgressIndicator(
                 modifier = modifier.size(26.dp),
                 color = colorResource(id = R.color.woo_push_notifications_connection_steps_progressbar),
             )
         }
 
-        ConnectionStepStatus.NOT_STARTED -> {
+        StepState.Idle -> {
             IdleCircle()
         }
 
-        ConnectionStepStatus.ERROR -> {
+        is StepState.Error -> {
             Icon(
                 painter = painterResource(id = R.drawable.ic_gridicons_notice),
                 contentDescription = null,
@@ -211,49 +238,81 @@ private fun ConnectionStepStatusIcon(
     }
 }
 
-data class ConnectionStepUiModel(
-    @StringRes val title: Int,
-    val status: ConnectionStepStatus,
-    @StringRes val statusMessageRes: Int? = null
-)
-
-enum class ConnectionStepStatus {
-    COMPLETE,
-    IN_PROGRESS,
-    NOT_STARTED,
-    ERROR
-}
-
-private val ConnectionStepStatus.defaultTextRes: Int
+private val StepType.title: Int
     @StringRes get() = when (this) {
-        ConnectionStepStatus.COMPLETE -> R.string.woo_push_notifications_connection_steps_complete
-        ConnectionStepStatus.IN_PROGRESS -> R.string.woo_push_notifications_connection_steps_in_progress
-        ConnectionStepStatus.NOT_STARTED -> R.string.woo_push_notifications_connection_steps_not_started
-        ConnectionStepStatus.ERROR -> R.string.woo_push_notifications_connection_steps_error
+        StepType.ConnectStore ->
+            R.string.woo_push_notifications_connection_steps_step_connect_store
+
+        StepType.CheckPluginCompatibility ->
+            R.string.woo_push_notifications_connection_steps_step_check_plugin_compatibility
+
+        StepType.EnablePushNotifications ->
+            R.string.woo_push_notifications_connection_steps_step_enable_push_notifications
+    }
+
+private val StepState.statusText: String
+    @Composable
+    get() = when (this) {
+        StepState.Success -> stringResource(R.string.woo_push_notifications_connection_steps_complete)
+        StepState.Ongoing -> stringResource(R.string.woo_push_notifications_connection_steps_in_progress)
+        StepState.Idle -> stringResource(R.string.woo_push_notifications_connection_steps_not_started)
+        is StepState.Error -> errorMessage.getText()
     }
 
 @Composable
 @Preview
-private fun WooPushNotificationsConnectionStepsScreenPreview() {
+private fun WooPushNotificationsConnectionStepsPreview() {
     WooThemeWithBackground {
         WooPushNotificationsConnectionStepsScreen(
-            siteAddress = "coffeebeans.com",
-            steps = listOf(
-                ConnectionStepUiModel(
-                    title = R.string.woo_push_notifications_connection_steps_step_connect_store,
-                    status = ConnectionStepStatus.IN_PROGRESS
-                ),
-                ConnectionStepUiModel(
-                    title = R.string.woo_push_notifications_connection_steps_step_check_plugin_compatibility,
-                    status = ConnectionStepStatus.NOT_STARTED
-                ),
-                ConnectionStepUiModel(
-                    title = R.string.woo_push_notifications_connection_steps_step_enable_push_notifications,
-                    status = ConnectionStepStatus.NOT_STARTED
+            viewState = ViewState(
+                siteAddress = "coffeebeans.com",
+                steps = listOf(
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.ConnectStore,
+                        state = StepState.Ongoing
+                    ),
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.CheckPluginCompatibility,
+                        state = StepState.Idle
+                    ),
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.EnablePushNotifications,
+                        state = StepState.Idle
+                    )
                 )
             ),
             onCancelClick = {},
-            onContinueClick = {}
+            onContinueClick = {},
+            onRetryClick = {}
+        )
+    }
+}
+
+@Composable
+@Preview
+private fun WooPushNotificationsConnectionStepsPreviewError() {
+    WooThemeWithBackground {
+        WooPushNotificationsConnectionStepsScreen(
+            viewState = ViewState(
+                siteAddress = "coffeebeans.com",
+                steps = listOf(
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.ConnectStore,
+                        state = StepState.Success
+                    ),
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.CheckPluginCompatibility,
+                        state = StepState.Error(UiString.UiStringText("Error connecting to store"))
+                    ),
+                    WooPushNotificationsConnectionStepsViewModel.Step(
+                        type = StepType.EnablePushNotifications,
+                        state = StepState.Idle
+                    )
+                )
+            ),
+            onCancelClick = {},
+            onContinueClick = {},
+            onRetryClick = {}
         )
     }
 }
