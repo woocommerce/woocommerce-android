@@ -186,7 +186,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return when (status) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNKNOWN
+            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
     }
 

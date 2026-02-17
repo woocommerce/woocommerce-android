@@ -54,8 +54,6 @@ fun WooPosAttendanceBadge(attendanceState: WooPosBookingsState.AttendanceState) 
             stringResource(R.string.woopos_bookings_details_attendance_attended)
         WooPosBookingsState.AttendanceState.UNATTENDED ->
             stringResource(R.string.woopos_bookings_details_attendance_unattended)
-        WooPosBookingsState.AttendanceState.UNKNOWN ->
-            stringResource(R.string.woopos_bookings_details_attendance_unknown)
     }
 
     WooPosText(

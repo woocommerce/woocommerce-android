@@ -32,7 +32,6 @@ sealed class WooPosBookingsState {
     enum class AttendanceState {
         ATTENDED,
         UNATTENDED,
-        UNKNOWN,
     }
 
     @Immutable
