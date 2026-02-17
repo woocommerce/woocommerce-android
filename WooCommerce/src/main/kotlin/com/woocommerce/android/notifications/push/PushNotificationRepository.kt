@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.BuildConfig
+import com.woocommerce.android.WooException
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.datastore.DataStoreQualifier
 import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIONS_TOKENS
@@ -47,7 +48,7 @@ class PushNotificationRepository @Inject constructor(
         wpComPushNotificationStore.registerDevice(token, WpComPushNotificationStore.NotificationAppKey.WOOCOMMERCE)
     }
 
-    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel) {
+    suspend fun registerPushTokenInWooCoreSystem(token: String, selectedSite: SiteModel): Result<Unit> {
         WooLog.d(
             tag = WooLog.T.NOTIFICATIONS,
             message = "Registering FCM token in Woo Core instance${if (BuildConfig.DEBUG) ": $token" else ""}"
@@ -59,7 +60,7 @@ class PushNotificationRepository @Inject constructor(
             token = token,
             deviceUuid = uuid
         )
-        if (!result.isError) {
+        return if (!result.isError) {
             result.model?.let { pushToken ->
                 notificationAnalyticsTracker.track(
                     stat = AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS,
@@ -67,6 +68,7 @@ class PushNotificationRepository @Inject constructor(
                 )
                 savePushTokenForSite(selectedSite.siteId, pushToken)
                 disableWpComNotificationsForSite(selectedSite.siteId)
+                Result.success(Unit)
             } ?: run {
                 val errorMsg = "Push token registration in Woo Core succeeded but API returned null token"
                 WooLog.w(WooLog.T.NOTIFICATIONS, errorMsg)
@@ -76,6 +78,7 @@ class PushNotificationRepository @Inject constructor(
                     errorDescription = errorMsg,
                     errorType = WooErrorType.EMPTY_RESPONSE.name
                 )
+                Result.failure(Exception(errorMsg))
             }
         } else {
             notificationAnalyticsTracker.trackError(
@@ -92,6 +95,7 @@ class PushNotificationRepository @Inject constructor(
             if (!isWpComPushRegistered()) {
                 registerPushTokenInWpComSystem(token)
             }
+            Result.failure(WooException(result.error))
         }
     }
 
