@@ -2,7 +2,6 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
@@ -30,8 +29,7 @@ import java.time.format.FormatStyle
 class WooPosBookingViewStateMapperTest {
 
     companion object {
-        private const val FORMATTED_DATE_TIME = "Jul 5, 2025, 11:00 AM"
-        private const val FORMATTED_TIME = "11:00 AM"
+        private const val FORMATTED_TIME_RANGE = "11:00 AM – 12:00 PM"
     }
 
     private val formatPrice: WooPosFormatPrice = mock {
@@ -40,7 +38,7 @@ class WooPosBookingViewStateMapperTest {
             "$${price.toPlainString()}"
         }
     }
-    private val dateFormatter: DateFormatter = mock()
+    private val timeRangeFormatter: WooPosBookingTimeRangeFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -70,10 +68,9 @@ class WooPosBookingViewStateMapperTest {
     private lateinit var mapper: WooPosBookingViewStateMapper
 
     @Before
-    fun setup() = runTest {
-        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn(FORMATTED_DATE_TIME)
-        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn(FORMATTED_TIME)
-        mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice, paymentStatusResolver)
+    fun setup() {
+        whenever(timeRangeFormatter.format(any(), any())).thenReturn(FORMATTED_TIME_RANGE)
+        mapper = WooPosBookingViewStateMapper(resourceProvider, formatPrice, paymentStatusResolver, timeRangeFormatter)
     }
 
     @Test
@@ -87,7 +84,7 @@ class WooPosBookingViewStateMapperTest {
 
         // THEN
         assertThat(result.id).isEqualTo(1L)
-        assertThat(result.timeRange).isEqualTo("11:00-$FORMATTED_TIME")
+        assertThat(result.timeRange).isEqualTo(FORMATTED_TIME_RANGE)
         assertThat(result.subtitle).isEqualTo("Women's Haircut \u00B7 Margarita Nikolaevna")
         assertThat(result.isSelected).isFalse()
         assertThat(result.paymentStatus).isEqualTo(PaymentStatus.UNPAID)
@@ -124,7 +121,7 @@ class WooPosBookingViewStateMapperTest {
             .withZone(ZoneOffset.UTC)
             .format(start)
         assertThat(result.appointmentDate).isEqualTo(expectedDate)
-        assertThat(result.appointmentTime).isEqualTo("11:00-$FORMATTED_TIME")
+        assertThat(result.appointmentTime).isEqualTo(FORMATTED_TIME_RANGE)
         assertThat(result.duration).isEqualTo("1 hour 30 minutes")
     }
 
@@ -235,6 +232,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancellable booking, when mapped to details, then actions include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking)
@@ -248,6 +246,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking)
@@ -260,6 +259,7 @@ class WooPosBookingViewStateMapperTest {
     @Test
     fun `given cancelled booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
 
         val result = mapper.mapToDetailsViewState(booking)
 
@@ -270,6 +270,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given complete booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Complete)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking)

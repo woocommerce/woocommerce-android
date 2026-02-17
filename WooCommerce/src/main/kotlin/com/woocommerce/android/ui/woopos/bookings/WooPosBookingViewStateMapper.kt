@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.normalizeDuration
 import com.woocommerce.android.util.toHumanReadableFormat
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -17,10 +16,10 @@ import java.time.format.FormatStyle
 import javax.inject.Inject
 
 class WooPosBookingViewStateMapper @Inject constructor(
-    private val dateFormatter: DateFormatter,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
     private val paymentStatusResolver: WooPosPaymentStatusResolver,
+    private val timeRangeFormatter: WooPosBookingTimeRangeFormatter,
 ) {
 
     suspend fun mapToItemViewState(
@@ -194,16 +193,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     }
 
     private fun formatTimeRange(booking: BookingEntity): String {
-        val startTime = dateFormatter.formatTime(booking.start)
-        val endTime = dateFormatter.formatTime(booking.end)
-        val amPmPattern = Regex("\\s*([AaPp][Mm])$")
-        val startSuffix = amPmPattern.find(startTime)?.groupValues?.get(1)
-        val endSuffix = amPmPattern.find(endTime)?.groupValues?.get(1)
-        return if (startSuffix != null && startSuffix.equals(endSuffix, ignoreCase = true)) {
-            "${startTime.replace(amPmPattern, "")}-$endTime"
-        } else {
-            "$startTime-$endTime"
-        }
+        return timeRangeFormatter.format(booking.start, booking.end)
     }
 
     private fun mapAttendanceBadge(

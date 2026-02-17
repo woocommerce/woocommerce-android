@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -51,13 +50,13 @@ class WooPosBookingsViewModelTest {
 
     private val bookingListHandler: BookingListHandler = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
-    private val dateFormatter: DateFormatter = mock()
     private val formatPrice: WooPosFormatPrice = mock {
         on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
             val price = invocation.arguments[0] as BigDecimal
             "$${price.toPlainString()}"
         }
     }
+    private val timeRangeFormatter: WooPosBookingTimeRangeFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -121,7 +120,12 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice, paymentStatusResolver),
+            mapper = WooPosBookingViewStateMapper(
+                resourceProvider,
+                formatPrice,
+                paymentStatusResolver,
+                timeRangeFormatter,
+            ),
             bookingsRepository = bookingsRepository,
             resourceProvider = resourceProvider,
         )
@@ -133,8 +137,7 @@ class WooPosBookingsViewModelTest {
             val amount = invocation.arguments[0] as? java.math.BigDecimal
             amount?.let { "$${it.toPlainString()}" } ?: "$0.00"
         }
-        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Nov 14, 2023, 10:13 AM")
-        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn("10:13 AM")
+        whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:13 AM – 11:13 AM")
         whenever(bookingListHandler.bookingsFlow).thenReturn(
             flowOf(listOf(booking(1), booking(2)))
         )
