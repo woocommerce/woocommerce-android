@@ -62,12 +62,12 @@ fun WooPosCancelledBadge() {
     WooPosText(
         text = stringResource(R.string.woopos_bookings_status_cancelled),
         style = WooPosTypography.Caption,
-        color = WooPosTheme.colors.onDefault,
+        color = WooPosTheme.colors.onInfoLowest,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
         modifier = Modifier
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-            .background(WooPosTheme.colors.disabledContainer)
+            .background(WooPosTheme.colors.infoLowest)
             .padding(
                 horizontal = WooPosSpacing.Small.value,
                 vertical = WooPosSpacing.XSmall.value
