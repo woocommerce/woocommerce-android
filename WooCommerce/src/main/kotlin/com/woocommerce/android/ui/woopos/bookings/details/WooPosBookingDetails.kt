@@ -514,13 +514,13 @@ private fun TotalRowLine(
     Row(verticalAlignment = Alignment.CenterVertically) {
         WooPosText(
             text = label,
-            style = WooPosTypography.BodyLarge,
+            style = WooPosTypography.BodyMedium,
             fontWeight = FontWeight.Bold,
         )
         Spacer(Modifier.weight(1f))
         WooPosText(
             text = value,
-            style = WooPosTypography.BodyLarge,
+            style = WooPosTypography.BodyMedium,
         )
     }
 }
