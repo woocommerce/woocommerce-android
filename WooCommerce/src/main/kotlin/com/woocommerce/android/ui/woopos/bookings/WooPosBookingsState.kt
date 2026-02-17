@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.compose.runtime.Immutable
-import com.woocommerce.android.model.Order.Status
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
@@ -18,6 +17,9 @@ sealed class WooPosBookingsState {
 
         @Immutable
         data class IssueRefund(override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class CancelBooking(val bookingId: Long, override val orderId: Long) : BookingAction
     }
 
     @Immutable
@@ -114,6 +116,27 @@ sealed class WooPosBookingsState {
             data class IssueRefund(
                 val orderId: Long
             ) : DialogState()
+
+            sealed class CancelBooking : DialogState() {
+                abstract val bookingId: Long
+                abstract val message: String
+
+                data class PendingConfirmation(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Processing(
+                    override val bookingId: Long,
+                    override val message: String,
+                ) : CancelBooking()
+
+                data class Error(
+                    override val bookingId: Long,
+                    override val message: String,
+                    val errorMessage: String,
+                ) : CancelBooking()
+            }
         }
     }
 
@@ -140,17 +163,7 @@ enum class WooPosBookingStatusColorKey {
     FAILED,
     PROCESSING,
     ON_HOLD,
-    OTHER;
-
-    companion object {
-        fun fromStatus(status: Status): WooPosBookingStatusColorKey = when (status) {
-            Status.Completed -> COMPLETED
-            Status.Failed -> FAILED
-            Status.Processing -> PROCESSING
-            Status.OnHold -> ON_HOLD
-            else -> OTHER
-        }
-    }
+    OTHER
 }
 
 data class WooPosBookingStatus(

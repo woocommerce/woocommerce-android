@@ -35,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
@@ -152,13 +153,20 @@ class WooShippingEditAddressViewModel @Inject constructor(
         }
 
     private val phoneValidatedFlow = snapshotFlow { phone }
-        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { inputValue ->
-            if (inputValue.isRequired && inputValue.error == null) {
-                inputValue.copy(error = addressValidator.validatePhoneNumber(inputValue.value))
+        .combine(country) { phoneValue, countryValue -> Pair(phoneValue, countryValue) }
+        .transformLatestWithDelay(delayMillis = DELAY_TIME_MILLIS) { (inputValue, countryValue) ->
+            val validatedPhone = if (inputValue.isRequired && inputValue.error == null) {
+                val error = if (countryValue.code == US_COUNTRY_CODE) {
+                    addressValidator.validateUSCustomsPhone(inputValue.value)
+                } else {
+                    addressValidator.validatePhoneNumber(inputValue.value)
+                }
+                inputValue.copy(error = error)
             } else {
                 inputValue
             }
-        }
+            Pair(validatedPhone, countryValue)
+        }.map { it.first }
 
     private val isCompanyExpanded = MutableStateFlow(false)
 
@@ -713,6 +721,7 @@ class WooShippingEditAddressViewModel @Inject constructor(
 
     companion object {
         private const val DELAY_TIME_MILLIS = 500L
+        private const val US_COUNTRY_CODE = "US"
     }
 }
 

@@ -8,6 +8,7 @@ import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
+import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.time.Duration
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -67,6 +68,14 @@ class WooPosBookingViewStateMapper @Inject constructor(
                     if (isPaid) {
                         add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
                     }
+                    if (booking.isCancellable) {
+                        add(
+                            WooPosBookingsState.BookingAction.CancelBooking(
+                                bookingId = booking.id.value,
+                                orderId = booking.orderId
+                            )
+                        )
+                    }
                 }
             ),
             headerTitle = appointmentTime,
@@ -111,7 +120,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
         val isPaid = booking.status == BookingEntity.Status.Paid ||
-            booking.status == BookingEntity.Status.Complete
+            booking.status == BookingEntity.Status.Complete ||
+            booking.status == BookingEntity.Status.Cancelled
 
         val totalAmount = paymentInfo?.let { priceFormat(it.total + it.totalTax) } ?: "-"
 
