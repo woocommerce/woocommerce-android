@@ -674,7 +674,7 @@ class WooPosBookingsViewModelTest {
 
             // WHEN
             viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingActionClicked(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
                     WooPosBookingsState.BookingAction.CancelBooking(
                         bookingId = bookingId,
                         orderId = bookingId * 10
@@ -703,7 +703,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingActionClicked(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
                     WooPosBookingsState.BookingAction.CancelBooking(
                         bookingId = bookingId,
                         orderId = bookingId * 10
@@ -738,7 +738,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingActionClicked(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
                     WooPosBookingsState.BookingAction.CancelBooking(
                         bookingId = bookingId,
                         orderId = bookingId * 10
@@ -770,7 +770,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingActionClicked(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
                     WooPosBookingsState.BookingAction.CancelBooking(
                         bookingId = bookingId,
                         orderId = bookingId * 10
@@ -804,7 +804,7 @@ class WooPosBookingsViewModelTest {
             val bookingId = content.selectedDetails!!.id
 
             viewModel.onUIEvent(
-                WooPosBookingsUIEvent.BookingActionClicked(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
                     WooPosBookingsState.BookingAction.CancelBooking(
                         bookingId = bookingId,
                         orderId = bookingId * 10

@@ -161,7 +161,7 @@ private fun BookingActions(
         is WooPosBookingsState.BookingActionsState.Loaded -> {
             BookingOverflowMenu(
                 actions = actionsState.actions,
-                onClick = { onUIEvent(WooPosBookingsUIEvent.BookingActionClicked(it)) }
+                onClick = { onUIEvent(WooPosBookingsUIEvent.BookingMenuActionClicked(it)) }
             )
         }
     }
