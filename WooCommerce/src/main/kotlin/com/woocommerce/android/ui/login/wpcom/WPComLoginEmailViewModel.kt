@@ -52,10 +52,9 @@ class WPComLoginEmailViewModel @Inject constructor(
         errorMessage
     ) { emailOrUsername, isLoadingDialogShown, errorMessage ->
         ViewState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             usernameOnly = navArgs.usernameOnly,
             emailOrUsername = emailOrUsername,
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
@@ -171,9 +170,9 @@ class WPComLoginEmailViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val wpComLoginMode: WPComLoginMode,
         val usernameOnly: Boolean,
         val emailOrUsername: String,
-        val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {
