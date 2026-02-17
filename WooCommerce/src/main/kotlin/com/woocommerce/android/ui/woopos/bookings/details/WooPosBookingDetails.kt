@@ -378,7 +378,7 @@ private fun BookingPaymentCard(
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_payment_title),
-                style = WooPosTypography.BodyLarge,
+                style = WooPosTypography.BodyXLarge,
                 fontWeight = FontWeight.Bold,
             )
 
@@ -521,7 +521,6 @@ private fun TotalRowLine(
         WooPosText(
             text = value,
             style = WooPosTypography.BodyLarge,
-            fontWeight = FontWeight.Bold,
         )
     }
 }
