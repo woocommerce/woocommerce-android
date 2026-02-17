@@ -110,10 +110,11 @@ class WooPosBookingViewStateMapper @Inject constructor(
     }
 
     private fun buildCustomerName(customerInfo: BookingCustomerInfo?): String? {
-        return listOfNotNull(
+        val name = listOfNotNull(
             customerInfo?.billingFirstName,
             customerInfo?.billingLastName
         ).joinToString(" ").ifBlank { null }
+        return name ?: customerInfo?.billingEmail?.ifBlank { null }
     }
 
     private fun buildAttendanceSection(
