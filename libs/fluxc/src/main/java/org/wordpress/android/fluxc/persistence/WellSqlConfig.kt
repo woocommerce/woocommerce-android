@@ -40,7 +40,7 @@ open class WellSqlConfig : DefaultWellConfig {
     annotation class AddOn
 
     override fun getDbVersion(): Int {
-        return 240
+        return 241
     }
 
     override fun getDbName(): String {
@@ -2292,6 +2292,11 @@ open class WellSqlConfig : DefaultWellConfig {
 
                 240 -> migrate(version) {
                     db.execSQL("DROP TABLE IF EXISTS NotificationModel")
+                }
+
+                241 -> migrate(version) {
+                    db.execSQL("DROP TABLE IF EXISTS ListItemModel")
+                    db.execSQL("DROP TABLE IF EXISTS ListModel")
                 }
             }
         }

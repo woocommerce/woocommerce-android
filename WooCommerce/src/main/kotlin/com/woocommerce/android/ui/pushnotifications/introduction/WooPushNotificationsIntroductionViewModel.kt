@@ -14,8 +14,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 ) : ScopedViewModel(savedStateHandle) {
 
     fun onContinueClick() {
-        // Temporary flow: skip WordPress.com login and open steps screen directly.
-        triggerEvent(OpenConnectionSteps)
+        triggerEvent(StartWPComLogin)
     }
 
     fun onNotNowClick() {
@@ -26,7 +25,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         triggerEvent(OpenUrlEvent(AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT))
     }
 
-    data object OpenConnectionSteps : Event()
+    data object StartWPComLogin : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
 }

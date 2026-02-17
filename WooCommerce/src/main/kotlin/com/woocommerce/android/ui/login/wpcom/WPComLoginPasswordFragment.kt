@@ -10,6 +10,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -76,7 +77,7 @@ class WPComLoginPasswordFragment : BaseFragment() {
         findNavController().navigateSafely(
             WPComLoginPasswordFragmentDirections
                 .actionWPComLoginPasswordFragmentToWPComLogin2FAFragment(
-                    jetpackStatus = event.jetpackStatus,
+                    wpComLoginMode = event.wpComLoginMode,
                     emailOrUsername = event.emailOrUsername,
                     password = event.password
                 )
@@ -85,11 +86,10 @@ class WPComLoginPasswordFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            WPComLoginPasswordFragmentDirections
-                .actionWPComLoginPasswordFragmentToJetpackActivationMainFragment(
-                    jetpackStatus = event.jetpackStatus,
-                    siteUrl = event.siteUrl
-                )
+            NavGraphJetpackActivationDirections.actionGlobalToJetpackActivationMainFragment(
+                siteUrl = event.siteUrl,
+                jetpackStatus = event.jetpackStatus
+            )
         )
     }
 
@@ -98,7 +98,7 @@ class WPComLoginPasswordFragment : BaseFragment() {
             WPComLoginPasswordFragmentDirections
                 .actionWPComLoginPasswordFragmentToWPComLoginMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
-                    jetpackStatus = event.jetpackStatus,
+                    wpComLoginMode = event.wpComLoginMode,
                     fallbackButton = MagicLinkFallbackButton.Password,
                     requestAtStart = true,
                     isNewWpComAccount = false

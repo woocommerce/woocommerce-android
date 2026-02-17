@@ -9,6 +9,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
@@ -62,11 +63,10 @@ class WPComLogin2FAFragment : BaseFragment() {
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {
         findNavController().navigateSafely(
-            WPComLogin2FAFragmentDirections
-                .actionWPComLogin2FAFragmentToJetpackActivationMainFragment(
-                    jetpackStatus = event.jetpackStatus,
-                    siteUrl = event.siteUrl
-                )
+            NavGraphJetpackActivationDirections.actionGlobalToJetpackActivationMainFragment(
+                siteUrl = event.siteUrl,
+                jetpackStatus = event.jetpackStatus
+            )
         )
     }
 
