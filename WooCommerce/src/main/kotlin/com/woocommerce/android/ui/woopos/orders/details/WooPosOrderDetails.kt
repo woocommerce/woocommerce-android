@@ -568,6 +568,17 @@ fun WooPosOrderDetailsPreview() {
                 qtyAndUnitPrice = "1 x $5.00",
                 lineTotal = "$5.00",
                 imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 104,
+                name = "Women's Haircut",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $55.00",
+                lineTotal = "$55.00",
+                imageUrl = null,
+                bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
+                    "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+                )
             )
         ),
         breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(
