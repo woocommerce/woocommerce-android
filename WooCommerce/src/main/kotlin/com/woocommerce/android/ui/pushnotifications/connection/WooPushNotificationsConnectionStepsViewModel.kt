@@ -98,7 +98,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         return StringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
     }
 
-
     data class ViewState(
         val siteAddress: String,
         val steps: List<Step>

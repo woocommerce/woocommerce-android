@@ -1,12 +1,12 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
 import androidx.lifecycle.SavedStateHandle
+import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
-import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
