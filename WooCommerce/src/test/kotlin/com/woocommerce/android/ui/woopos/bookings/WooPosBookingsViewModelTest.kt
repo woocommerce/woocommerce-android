@@ -50,6 +50,10 @@ class WooPosBookingsViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule(StandardTestDispatcher())
 
     private val bookingListHandler: BookingListHandler = mock()
+    private val bookingsRepository: BookingsRepository = mock {
+        on { observeResources() } doAnswer { flowOf(emptyList()) }
+        onBlocking { fetchResources() } doAnswer { Result.success(Unit) }
+    }
     private val dateTimeProvider: DateTimeProvider = mock()
     private val dateFormatter: DateFormatter = mock()
     private val formatPrice: WooPosFormatPrice = mock {
@@ -85,7 +89,6 @@ class WooPosBookingsViewModelTest {
             "Cancel dialog message"
         }
     }
-    private val bookingsRepository: BookingsRepository = mock()
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -119,9 +122,9 @@ class WooPosBookingsViewModelTest {
     private fun createViewModel(): WooPosBookingsViewModel {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
+            bookingsRepository = bookingsRepository,
             dateTimeProvider = dateTimeProvider,
             mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice),
-            bookingsRepository = bookingsRepository,
             resourceProvider = resourceProvider,
         )
     }

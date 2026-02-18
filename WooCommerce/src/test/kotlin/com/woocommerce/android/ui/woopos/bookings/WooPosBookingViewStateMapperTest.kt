@@ -94,13 +94,13 @@ class WooPosBookingViewStateMapperTest {
         val end = start.plus(Duration.ofMinutes(90))
         val booking = sampleBooking(start = start, end = end)
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
             .format(start)
         assertThat(result.appointmentDate).isEqualTo(expectedDate)
-        assertThat(result.appointmentTime).isEqualTo("$FORMATTED_TIME - $FORMATTED_TIME")
+        assertThat(result.appointmentTime).isEqualTo("11:00-11:00 AM")
         assertThat(result.duration).isEqualTo("1 hour 30 minutes")
     }
 
@@ -108,7 +108,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() = runTest {
         val booking = sampleBooking(paymentInfo = null)
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.paymentSection.serviceAmount).isEqualTo("-")
         assertThat(result.paymentSection.taxAmount).isEqualTo("-")
@@ -128,7 +128,7 @@ class WooPosBookingViewStateMapperTest {
         )
         val booking = sampleBooking(paymentInfo = paymentInfo)
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.paymentSection.discountAmount).isEqualTo("-$10")
         assertThat(result.paymentSection.totalAmount).isEqualTo("$99")
@@ -141,7 +141,7 @@ class WooPosBookingViewStateMapperTest {
             attendanceStatus = BookingEntity.AttendanceStatus.Attended,
         )
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.attendanceSection).isNotNull
         assertThat(result.attendanceSection?.selection).isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
@@ -154,7 +154,7 @@ class WooPosBookingViewStateMapperTest {
             attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
         )
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.attendanceSection).isNull()
     }
@@ -163,7 +163,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given booking with null customerInfo, when mapped, then customer section is null`() = runTest {
         val booking = sampleBooking(customerInfo = null, customerNote = null)
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.customerSection).isNull()
     }
@@ -178,7 +178,7 @@ class WooPosBookingViewStateMapperTest {
         )
         val booking = sampleBooking(customerInfo = customerInfo, customerNote = "")
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.customerSection).isNull()
     }
@@ -189,7 +189,7 @@ class WooPosBookingViewStateMapperTest {
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -202,7 +202,7 @@ class WooPosBookingViewStateMapperTest {
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
@@ -213,7 +213,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
 
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         assertThat(result.paymentSection.collectPaymentLabel).isNull()
     }
@@ -224,7 +224,7 @@ class WooPosBookingViewStateMapperTest {
         val booking = sampleBooking(status = BookingEntity.Status.Complete)
 
         // WHEN
-        val result = mapper.mapToDetailsViewState(booking)
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
         // THEN
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions

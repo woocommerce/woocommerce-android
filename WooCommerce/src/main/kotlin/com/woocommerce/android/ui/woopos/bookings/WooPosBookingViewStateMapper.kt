@@ -42,12 +42,13 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     suspend fun mapToDetailsViewState(
         booking: BookingEntity,
+        resourceName: String?,
     ): WooPosBookingsState.BookingDetailsViewState {
         val detailsDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
 
         val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
-        val appointmentTime = "${dateFormatter.formatTime(booking.start)} - ${dateFormatter.formatTime(booking.end)}"
+        val appointmentTime = formatTimeRange(booking)
 
         val customerInfo = booking.order.customerInfo
         val customerName = buildCustomerName(customerInfo)
@@ -84,7 +85,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             duration = Duration.between(booking.start, booking.end)
                 .normalizeDuration()
                 .toHumanReadableFormat(resourceProvider),
-            teamMember = null,
+            teamMember = resourceName,
             location = null,
             customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
             attendanceSection = buildAttendanceSection(booking),
@@ -183,6 +184,19 @@ class WooPosBookingViewStateMapper @Inject constructor(
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
             else -> null
+        }
+    }
+
+    private fun formatTimeRange(booking: BookingEntity): String {
+        val startTime = dateFormatter.formatTime(booking.start)
+        val endTime = dateFormatter.formatTime(booking.end)
+        val amPmPattern = Regex("\\s*([AaPp][Mm])$")
+        val startSuffix = amPmPattern.find(startTime)?.groupValues?.get(1)
+        val endSuffix = amPmPattern.find(endTime)?.groupValues?.get(1)
+        return if (startSuffix != null && startSuffix.equals(endSuffix, ignoreCase = true)) {
+            "${startTime.replace(amPmPattern, "")}-$endTime"
+        } else {
+            "$startTime-$endTime"
         }
     }
 
