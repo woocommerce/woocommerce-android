@@ -57,11 +57,10 @@ class WPComLogin2FAViewModel @Inject constructor(
         loadingMessage,
     ) { (emailOrUsername, password), otp, errorMessage, loadingMessage, ->
         ViewState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = emailOrUsername,
             password = password,
             otp = otp,
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             errorMessage = errorMessage.takeIf { it != 0 },
             loadingMessage = loadingMessage.takeIf { it != 0 }
         )
@@ -153,10 +152,10 @@ class WPComLogin2FAViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val wpComLoginMode: WPComLoginMode,
         val emailOrUsername: String,
         val password: String,
         val otp: String,
-        val isJetpackInstalled: Boolean,
         val errorMessage: Int? = null,
         val loadingMessage: Int? = null
     ) {
