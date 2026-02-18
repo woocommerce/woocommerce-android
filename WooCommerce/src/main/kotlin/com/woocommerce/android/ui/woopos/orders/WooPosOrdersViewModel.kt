@@ -220,39 +220,15 @@ class WooPosOrdersViewModel @Inject constructor(
             val updatedBreakdown = refundInfoBuilder.buildTotalsBreakdown(order, refundInfo)
 
             val updatedState = _state.value as? WooPosOrdersState.Content ?: return@launch
-            val updatedSelectedDetails = updatedState.selectedDetails
-
-            if (updatedSelectedDetails?.id == orderId &&
-                updatedSelectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loading
+            if (updatedState.selectedDetails?.id == orderId &&
+                updatedState.selectedDetails.actionsState is WooPosOrdersState.OrderActionsState.Loading
             ) {
-                val loadedItems = updatedState.items as? WooPosOrdersState.Content.Items.Loaded
-                val updatedItems = loadedItems?.items?.map { (item, details) ->
-                    val updatedDetails =
-                        if (item.id == orderId && details is WooPosOrdersState.OrderDetailsViewState.Computed) {
-                            WooPosOrdersState.OrderDetailsViewState.Computed(
-                                orderId = orderId,
-                                details = details.details.copy(
-                                    actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
-                                    breakdown = updatedBreakdown
-                                )
-                            )
-                        } else {
-                            details
-                        }
-                    item to updatedDetails
-                }?.toMap()
-
-                _state.value = updatedState.copy(
-                    items = if (updatedItems != null) {
-                        WooPosOrdersState.Content.Items.Loaded(updatedItems)
-                    } else {
-                        updatedState.items
-                    },
-                    selectedDetails = updatedSelectedDetails.copy(
+                _state.value = updatedState.withUpdatedDetails(orderId) { details ->
+                    details.copy(
                         actionsState = WooPosOrdersState.OrderActionsState.Loaded(actions),
                         breakdown = updatedBreakdown
                     )
-                )
+                }
             }
         }
     }
@@ -265,51 +241,26 @@ class WooPosOrdersViewModel @Inject constructor(
         if (loadingItems.isEmpty()) return
 
         viewModelScope.launch {
-            for (item in loadingItems) {
-                val bookingId = (item.bookingInfo as BookingInfo.Loading).bookingId
-                val bookingInfo = bookingInfoLoader.fetchBookingInfo(bookingId)
+            val results = coroutineScope {
+                loadingItems.map { item ->
+                    async {
+                        val bookingId = (item.bookingInfo as BookingInfo.Loading).bookingId
+                        item.id to bookingInfoLoader.fetchBookingInfo(bookingId)
+                    }
+                }.awaitAll()
+            }.toMap()
 
-                val currentState = _state.value as? WooPosOrdersState.Content ?: return@launch
-                if (currentState.selectedDetails?.id != orderId) return@launch
+            val currentState = _state.value as? WooPosOrdersState.Content ?: return@launch
+            if (currentState.selectedDetails?.id != orderId) return@launch
 
-                updateLineItemBookingInfo(orderId, item.id, bookingInfo)
+            _state.value = currentState.withUpdatedDetails(orderId) { details ->
+                details.copy(
+                    lineItems = details.lineItems.map { lineItem ->
+                        results[lineItem.id]?.let { lineItem.copy(bookingInfo = it) } ?: lineItem
+                    }
+                )
             }
         }
-    }
-
-    private fun updateLineItemBookingInfo(orderId: Long, itemId: Long, bookingInfo: BookingInfo) {
-        val currentState = _state.value as? WooPosOrdersState.Content ?: return
-        val selectedDetails = currentState.selectedDetails ?: return
-
-        val updatedLineItems = selectedDetails.lineItems.map { lineItem ->
-            if (lineItem.id == itemId) lineItem.copy(bookingInfo = bookingInfo) else lineItem
-        }
-        val updatedSelectedDetails = selectedDetails.copy(lineItems = updatedLineItems)
-
-        val loadedItems = currentState.items as? WooPosOrdersState.Content.Items.Loaded
-        val updatedItems = loadedItems?.items?.map { (orderItem, orderDetails) ->
-            val updatedDetails =
-                if (orderItem.id == orderId &&
-                    orderDetails is WooPosOrdersState.OrderDetailsViewState.Computed
-                ) {
-                    WooPosOrdersState.OrderDetailsViewState.Computed(
-                        orderId = orderId,
-                        details = updatedSelectedDetails
-                    )
-                } else {
-                    orderDetails
-                }
-            orderItem to updatedDetails
-        }?.toMap()
-
-        _state.value = currentState.copy(
-            items = if (updatedItems != null) {
-                WooPosOrdersState.Content.Items.Loaded(updatedItems)
-            } else {
-                currentState.items
-            },
-            selectedDetails = updatedSelectedDetails
-        )
     }
 
     fun onRefresh() {
@@ -770,5 +721,30 @@ class WooPosOrdersViewModel @Inject constructor(
                 item to details
             }
         }.awaitAll().toMap()
+    }
+
+    private fun WooPosOrdersState.Content.withUpdatedDetails(
+        orderId: Long,
+        transform: (WooPosOrdersState.OrderDetailsViewState.Computed.Details) ->
+        WooPosOrdersState.OrderDetailsViewState.Computed.Details
+    ): WooPosOrdersState.Content {
+        val updatedSelectedDetails = selectedDetails?.let(transform)
+        val loadedItems = items as? WooPosOrdersState.Content.Items.Loaded
+        val updatedItems = loadedItems?.items?.map { (orderItem, orderDetails) ->
+            if (orderItem.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Computed) {
+                orderItem to orderDetails.copy(details = transform(orderDetails.details))
+            } else {
+                orderItem to orderDetails
+            }
+        }?.toMap()
+
+        return copy(
+            items = if (updatedItems != null) {
+                WooPosOrdersState.Content.Items.Loaded(updatedItems)
+            } else {
+                items
+            },
+            selectedDetails = updatedSelectedDetails
+        )
     }
 }
