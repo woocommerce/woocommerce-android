@@ -80,7 +80,7 @@ class WooPosBookingViewStateMapperTest {
         whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
 
         // THEN
         assertThat(result.id).isEqualTo(1L)
@@ -98,7 +98,7 @@ class WooPosBookingViewStateMapperTest {
         whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
-        val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
 
         // THEN
         assertThat(result.isCancelled).isTrue()
