@@ -185,24 +185,17 @@ class WooPosCardPaymentViewModel @Inject constructor(
         controllerEventJob = viewModelScope.launch {
             cardReaderPaymentController?.event?.collect { event ->
                 when (event) {
-                    is CardReaderPaymentEvent.ShowErrorMessage -> {
-                        _state.value = WooPosCardPaymentState.PaymentFailed(
-                            title = resourceProvider.getString(
-                                R.string.woopos_success_totals_payment_failed_title
-                            ),
-                            subtitle = resourceProvider.getString(event.message),
-                            retryButtonLabel = resourceProvider.getString(
-                                R.string.woo_pos_payment_failed_go_back
-                            ),
-                            isDismissButtonVisible = false
-                        )
-                    }
+                    is CardReaderPaymentEvent.ShowErrorMessage,
                     is CardReaderPaymentEvent.ShowPaymentErrorMessage -> {
+                        val messageRes = when (event) {
+                            is CardReaderPaymentEvent.ShowErrorMessage -> event.message
+                            is CardReaderPaymentEvent.ShowPaymentErrorMessage -> event.message
+                        }
                         _state.value = WooPosCardPaymentState.PaymentFailed(
                             title = resourceProvider.getString(
                                 R.string.woopos_success_totals_payment_failed_title
                             ),
-                            subtitle = resourceProvider.getString(event.message),
+                            subtitle = resourceProvider.getString(messageRes),
                             retryButtonLabel = resourceProvider.getString(
                                 R.string.woo_pos_payment_failed_go_back
                             ),
