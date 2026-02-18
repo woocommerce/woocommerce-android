@@ -400,8 +400,8 @@ private fun CardPaymentFailed(
             .fillMaxSize()
             .padding(vertical = WooPosSpacing.Huge.value),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
-        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
         Icon(
             modifier = Modifier.size(84.dp),
             imageVector = WooPosIcons.ErrorX,
@@ -435,7 +435,6 @@ private fun CardPaymentFailed(
                 onClick = onDismissClicked,
             )
         }
-        Spacer(modifier = Modifier.height(WooPosSpacing.Huge.value))
     }
 }
 
