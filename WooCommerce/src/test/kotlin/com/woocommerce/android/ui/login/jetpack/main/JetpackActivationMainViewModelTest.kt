@@ -10,6 +10,7 @@ import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.ui.common.PluginRepository
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.login.jetpack.JetpackConnectionUrlResolver
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ConnectionStep
 import com.woocommerce.android.ui.login.jetpack.main.JetpackActivationMainViewModel.ShowJetpackConnectionWebView
@@ -172,7 +173,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     @Test
     fun `given WebView connection, site using application passwords and with site-level connection , when starting Jetpack connection, then use default URL`() =
         testBlocking {
-            val connectionUrl = JetpackActivationMainViewModel.JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX
+            val connectionUrl = JetpackConnectionUrlResolver.ACCOUNT_CONNECTION_URL_PREFIX
             setup(createJetpackStatus(isJetpackInstalled = true, supportsConnectionApi = false)) {
                 whenever(selectedSite.connectionType).thenReturn(SiteConnectionType.ApplicationPasswords)
                 whenever(
@@ -195,7 +196,7 @@ class JetpackActivationMainViewModelTest : BaseUnitTest() {
     @Test
     fun `given WebView connection, site not using application passwords and using WebView connection, when starting Jetpack connection, then use default URL`() =
         testBlocking {
-            val connectionUrl = JetpackActivationMainViewModel.JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX
+            val connectionUrl = JetpackConnectionUrlResolver.ACCOUNT_CONNECTION_URL_PREFIX
             setup(createJetpackStatus(isJetpackInstalled = true, supportsConnectionApi = false)) {
                 whenever(selectedSite.connectionType).thenReturn(null)
                 whenever(
