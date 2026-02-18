@@ -13,7 +13,7 @@ import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
-import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoLoader
+import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
@@ -46,7 +46,7 @@ class WooPosOrdersViewModel @Inject constructor(
     private val orderDetailsMapper: WooPosOrderDetailsMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
-    private val bookingInfoLoader: WooPosBookingInfoLoader,
+    private val bookingInfoMapper: WooPosBookingInfoMapper,
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
@@ -245,7 +245,7 @@ class WooPosOrdersViewModel @Inject constructor(
                 loadingItems.map { item ->
                     async {
                         val bookingId = (item.bookingInfo as BookingInfo.Loading).bookingId
-                        item.id to bookingInfoLoader.fetchBookingInfo(bookingId)
+                        item.id to bookingInfoMapper.fetchBookingInfo(bookingId)
                     }
                 }.awaitAll()
             }.toMap()

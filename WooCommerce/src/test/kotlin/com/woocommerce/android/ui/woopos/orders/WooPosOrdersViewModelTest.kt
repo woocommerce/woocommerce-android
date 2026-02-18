@@ -12,7 +12,7 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
-import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoLoader
+import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
@@ -55,7 +55,7 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
-    private val bookingInfoLoader: WooPosBookingInfoLoader = mock()
+    private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
     private lateinit var orderItemMapper: WooPosOrderItemMapper
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
@@ -78,7 +78,7 @@ class WooPosOrdersViewModelTest {
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
             orderActionsProvider = orderActionsProvider,
-            bookingInfoLoader = bookingInfoLoader,
+            bookingInfoMapper = bookingInfoMapper,
         )
     }
 
@@ -137,7 +137,7 @@ class WooPosOrdersViewModelTest {
             orderStatusMapper,
             refundInfoBuilder,
             orderActionsProvider,
-            bookingInfoLoader,
+            bookingInfoMapper,
         )
         orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
     }

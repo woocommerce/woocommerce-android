@@ -9,7 +9,7 @@ import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import javax.inject.Inject
 
-class WooPosBookingInfoLoader @Inject constructor(
+class WooPosBookingInfoMapper @Inject constructor(
     private val bookingsRepository: BookingsRepository,
     private val resourceProvider: ResourceProvider,
     private val dateFormatter: DateFormatter,

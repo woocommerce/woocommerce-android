@@ -25,7 +25,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
     private val orderStatusMapper: WooPosOrderStatusMapper,
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
-    private val bookingInfoLoader: WooPosBookingInfoLoader,
+    private val bookingInfoMapper: WooPosBookingInfoMapper,
 ) {
     suspend fun mapOrderDetails(
         order: Order,
@@ -91,7 +91,7 @@ class WooPosOrderDetailsMapper @Inject constructor(
                         item.total / item.quantity.toBigDecimal()
                     }
                 val product = getProductById(item.productId)
-                val bookingInfo = item.bookingId?.let { bookingInfoLoader.resolveBookingInfo(it) }
+                val bookingInfo = item.bookingId?.let { bookingInfoMapper.resolveBookingInfo(it) }
                 LineItemRow(
                     id = item.itemId,
                     name = item.name,

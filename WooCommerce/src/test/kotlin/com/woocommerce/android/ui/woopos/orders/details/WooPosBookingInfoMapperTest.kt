@@ -18,14 +18,14 @@ import org.mockito.kotlin.whenever
 import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class WooPosBookingInfoLoaderTest : BaseUnitTest() {
+class WooPosBookingInfoMapperTest : BaseUnitTest() {
 
     private val bookingsRepository: BookingsRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val dateFormatter: DateFormatter = mock()
     private val timeRangeFormatter: WooPosBookingTimeRangeFormatter = mock()
 
-    private val sut = WooPosBookingInfoLoader(
+    private val sut = WooPosBookingInfoMapper(
         bookingsRepository = bookingsRepository,
         resourceProvider = resourceProvider,
         dateFormatter = dateFormatter,
