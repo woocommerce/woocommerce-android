@@ -489,7 +489,12 @@ private fun WooPosLoadedBookingsList(
 
                         Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-                        WooPosBookingsStatusBadge(item.status)
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+                        ) {
+                            item.attendanceBadge?.let { WooPosAttendanceBadge(it) }
+                            WooPosBookingsStatusBadge(item.status)
+                        }
                     }
 
                     WooPosText(

@@ -90,7 +90,8 @@ sealed class WooPosBookingsState {
         val isSelected: Boolean,
         val status: WooPosBookingStatus,
         val statusSlug: String,
-        val createdAtMillis: Long
+        val createdAtMillis: Long,
+        val attendanceBadge: AttendanceState? = null,
     )
 
     @Immutable

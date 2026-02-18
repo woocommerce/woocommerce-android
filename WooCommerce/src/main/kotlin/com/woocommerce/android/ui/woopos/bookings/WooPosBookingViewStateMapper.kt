@@ -35,7 +35,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
             isSelected = booking.id.value == selectedBookingId,
             status = mapBookingStatus(booking.status),
             statusSlug = booking.status.key,
-            createdAtMillis = booking.start.toEpochMilli()
+            createdAtMillis = booking.start.toEpochMilli(),
+            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
         )
     }
 

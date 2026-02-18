@@ -635,6 +635,92 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given content state, when attendance toggled to attended, then selection updates optimistically`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection)
+            .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+        assertThat(content.selectedDetails?.attendanceBadge)
+            .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+    }
+
+    @Test
+    fun `given content state, when attendance toggled to unattended, then selection updates optimistically`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection)
+            .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
+        assertThat(content.selectedDetails?.attendanceBadge)
+            .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
+    }
+
+    @Test
+    fun `given content state, when attendance toggle API fails, then selection reverts to previous value`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val contentBefore = viewModel.state.value as WooPosBookingsState.Content
+        val previousSelection = contentBefore.selectedDetails?.attendanceSection?.selection
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection).isEqualTo(previousSelection)
+    }
+
+    @Test
+    fun `given content state, when attendance toggled to attended, then repository called with correct params`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingsRepository).updateAttendanceStatus(
+                bookingId = 1L,
+                attendanceStatus = BookingEntity.AttendanceStatus.Attended
+            )
+        }
+
+    @Test
     fun `given cancel action clicked, when handling event, then dialog state is Confirmation`() =
         runTest {
             // GIVEN
