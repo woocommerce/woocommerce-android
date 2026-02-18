@@ -212,6 +212,15 @@ class WooPosDateFormatterTest {
     }
 
     @Test
+    fun `when formatShortDate called, then returns short locale date`() {
+        val instant = Instant.parse("2025-03-15T10:00:00Z")
+
+        val result = formatter.formatShortDate(instant)
+
+        assertThat(result).isEqualTo("3/15/25")
+    }
+
+    @Test
     fun `when time format changes during runtime, then formatter uses new format`() {
         // GIVEN
         val now = ZonedDateTime.ofInstant(fixedInstant, fixedClock.zone)

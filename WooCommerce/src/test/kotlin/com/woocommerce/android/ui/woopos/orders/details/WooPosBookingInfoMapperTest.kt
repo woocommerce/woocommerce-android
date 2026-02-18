@@ -5,7 +5,7 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingTimeRangeFormatter
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
-import com.woocommerce.android.util.DateFormatter
+import com.woocommerce.android.ui.woopos.util.format.WooPosDateFormatter
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -22,7 +22,7 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
 
     private val bookingsRepository: BookingsRepository = mock()
     private val resourceProvider: ResourceProvider = mock()
-    private val dateFormatter: DateFormatter = mock()
+    private val dateFormatter: WooPosDateFormatter = mock()
     private val timeRangeFormatter: WooPosBookingTimeRangeFormatter = mock()
 
     private val sut = WooPosBookingInfoMapper(
@@ -41,7 +41,7 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
     fun `given booking cached, when resolveBookingInfo, then returns Loaded`() = testBlocking {
         val booking = createBooking()
         whenever(bookingsRepository.getBooking(42L)).thenReturn(booking)
-        whenever(dateFormatter.formatDate(any<Instant>())).thenReturn("Mar 15, 2025")
+        whenever(dateFormatter.formatShortDate(any())).thenReturn("3/15/25")
         whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:00 AM-11:00 AM")
         whenever(
             resourceProvider.getString(
@@ -50,13 +50,13 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
                 any(),
                 any()
             )
-        ).thenReturn("Booking #42 · Mar 15, 2025, 10:00 AM-11:00 AM")
+        ).thenReturn("Booking #42 · 3/15/25, 10:00 AM-11:00 AM")
 
         val result = sut.resolveBookingInfo(42L)
 
         assertThat(result).isInstanceOf(BookingInfo.Loaded::class.java)
         assertThat((result as BookingInfo.Loaded).text)
-            .isEqualTo("Booking #42 · Mar 15, 2025, 10:00 AM-11:00 AM")
+            .isEqualTo("Booking #42 · 3/15/25, 10:00 AM-11:00 AM")
     }
 
     @Test
@@ -73,7 +73,7 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
     fun `given fetch succeeds, when fetchBookingInfo, then returns Loaded`() = testBlocking {
         val booking = createBooking()
         whenever(bookingsRepository.fetchBooking(42L)).thenReturn(Result.success(booking))
-        whenever(dateFormatter.formatDate(any<Instant>())).thenReturn("Mar 15, 2025")
+        whenever(dateFormatter.formatShortDate(any())).thenReturn("3/15/25")
         whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:00 AM-11:00 AM")
         whenever(
             resourceProvider.getString(
@@ -82,13 +82,13 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
                 any(),
                 any()
             )
-        ).thenReturn("Booking #42 · Mar 15, 2025, 10:00 AM-11:00 AM")
+        ).thenReturn("Booking #42 · 3/15/25, 10:00 AM-11:00 AM")
 
         val result = sut.fetchBookingInfo(42L)
 
         assertThat(result).isInstanceOf(BookingInfo.Loaded::class.java)
         assertThat((result as BookingInfo.Loaded).text)
-            .isEqualTo("Booking #42 · Mar 15, 2025, 10:00 AM-11:00 AM")
+            .isEqualTo("Booking #42 · 3/15/25, 10:00 AM-11:00 AM")
     }
 
     @Test
