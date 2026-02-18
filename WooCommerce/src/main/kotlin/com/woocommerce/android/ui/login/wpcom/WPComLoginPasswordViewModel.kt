@@ -65,11 +65,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
         flowOf(Pair(navArgs.emailOrUsername, avatarUrlFromEmail(navArgs.emailOrUsername)))
     ) { password, isLoadingDialogShown, errorMessage, (emailOrUsername, avatarUrl) ->
         ViewState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = emailOrUsername,
             password = password,
             avatarUrl = avatarUrl,
-            isJetpackInstalled = (navArgs.wpComLoginMode as? WPComLoginMode.JetpackSetup)
-                ?.jetpackStatus?.isJetpackInstalled ?: false,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
@@ -174,10 +173,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val wpComLoginMode: WPComLoginMode,
         val emailOrUsername: String,
         val password: String,
         val avatarUrl: String,
-        val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {
