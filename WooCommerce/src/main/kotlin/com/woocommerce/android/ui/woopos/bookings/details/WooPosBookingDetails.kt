@@ -522,7 +522,7 @@ private fun BookingOverflowMenu(
                     text = {
                         val (text, textColor) = when (action) {
                             is WooPosBookingsState.BookingAction.ViewOrder -> {
-                                stringResource(R.string.booking_payment_view_order)  to
+                                stringResource(R.string.booking_payment_view_order) to
                                     MaterialTheme.colorScheme.onSurface
                             }
                             is WooPosBookingsState.BookingAction.EmailReceipt -> {
