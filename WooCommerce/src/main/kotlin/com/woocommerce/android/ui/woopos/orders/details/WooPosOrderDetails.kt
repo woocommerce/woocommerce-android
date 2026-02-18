@@ -255,8 +255,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
                     modifier = Modifier.constrainAs(bookingInfoText) {
                         top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
                         start.linkTo(nameText.start)
-                        end.linkTo(totalText.start, margin = marginSmall)
-                        width = Dimension.fillToConstraints
+                        width = Dimension.wrapContent
                     }
                 )
             }

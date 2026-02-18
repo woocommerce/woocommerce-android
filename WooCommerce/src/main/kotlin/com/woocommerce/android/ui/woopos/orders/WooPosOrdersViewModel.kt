@@ -676,6 +676,8 @@ class WooPosOrdersViewModel @Inject constructor(
         if (currentFirstOrderId != null && currentFirstOrderId != newFirstOrderId) {
             _scrollToTopEvent.emit(Unit)
         }
+
+        sideLoadBookings(newSelectedId, selectedDetails)
     }
 
     private suspend fun appendOrders(
