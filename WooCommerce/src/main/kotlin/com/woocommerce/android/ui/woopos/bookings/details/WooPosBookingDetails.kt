@@ -48,7 +48,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -95,9 +94,13 @@ fun WooPosBookingDetails(
 
         BookingPaymentCard(paymentSection = details.paymentSection)
 
-        if (details.paymentSection.showPayButtons) {
+        details.paymentSection.collectPaymentLabel?.let { label ->
             Spacer(Modifier.height(WooPosSpacing.Large.value))
-            BookingPayButtons(onUIEvent = onUIEvent)
+            WooPosButton(
+                text = stringResource(R.string.woopos_bookings_details_collect_payment, label),
+                modifier = Modifier.fillMaxWidth(),
+                onClick = { onUIEvent(WooPosBookingsUIEvent.CollectPaymentClicked) }
+            )
         }
 
         Spacer(Modifier.height(WooPosSpacing.Large.value))
@@ -161,7 +164,7 @@ private fun BookingActions(
         is WooPosBookingsState.BookingActionsState.Loaded -> {
             BookingOverflowMenu(
                 actions = actionsState.actions,
-                onClick = { onUIEvent(WooPosBookingsUIEvent.BookingActionClicked(it)) }
+                onClick = { onUIEvent(WooPosBookingsUIEvent.BookingMenuActionClicked(it)) }
             )
         }
     }
@@ -423,25 +426,6 @@ private fun BookingPaymentCard(
 }
 
 @Composable
-private fun BookingPayButtons(onUIEvent: (WooPosBookingsUIEvent) -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        WooPosButton(
-            text = stringResource(R.string.woopos_bookings_details_pay_by_card),
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onUIEvent(WooPosBookingsUIEvent.PayByCardClicked) }
-        )
-
-        Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-        WooPosOutlinedButton(
-            text = stringResource(R.string.woopos_bookings_details_pay_by_cash),
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { onUIEvent(WooPosBookingsUIEvent.PayByCashClicked) }
-        )
-    }
-}
-
-@Composable
 private fun BookingNoteSection(
     bookingNote: String?,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
@@ -556,14 +540,20 @@ private fun BookingOverflowMenu(
             actions.forEach { action ->
                 DropdownMenuItem(
                     text = {
-                        val text = when (action) {
-                            is WooPosBookingsState.BookingAction.EmailReceipt -> stringResource(
-                                R.string.woopos_orders_email_receipt
-                            )
+                        val (text, textColor) = when (action) {
+                            is WooPosBookingsState.BookingAction.EmailReceipt -> {
+                                stringResource(R.string.woopos_orders_email_receipt) to
+                                    MaterialTheme.colorScheme.onSurface
+                            }
+                            is WooPosBookingsState.BookingAction.CancelBooking -> {
+                                stringResource(R.string.woopos_bookings_cancel_menu_item) to
+                                    MaterialTheme.colorScheme.error
+                            }
                         }
                         WooPosText(
                             text = text,
-                            style = WooPosTypography.BodyMedium
+                            style = WooPosTypography.BodyMedium,
+                            color = textColor
                         )
                     },
                     onClick = {
@@ -585,7 +575,10 @@ fun WooPosBookingDetailsPreview() {
         number = "#333",
         status = WooPosBookingStatus(text = "Unpaid", colorKey = WooPosBookingStatusColorKey.FAILED),
         actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-            listOf(WooPosBookingsState.BookingAction.EmailReceipt(1L))
+            listOf(
+                WooPosBookingsState.BookingAction.EmailReceipt(3330L),
+                WooPosBookingsState.BookingAction.CancelBooking(bookingId = 333L, orderId = 3330L)
+            )
         ),
         headerTitle = "10:30-11:30 AM",
         headerSubtitle = "Women's Haircut \u00B7 Margarita Nikolaevna",
@@ -612,7 +605,7 @@ fun WooPosBookingDetailsPreview() {
             discountAmount = "-",
             totalAmount = "$55.00",
             paidWithLabel = null,
-            showPayButtons = true,
+            collectPaymentLabel = "$55.00",
         ),
         bookingNote = null,
     )

@@ -4,6 +4,7 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
+import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -40,6 +41,7 @@ class WooPosBookingViewStateMapperTest {
         }
     }
     private val dateFormatter: DateFormatter = mock()
+    private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -67,14 +69,14 @@ class WooPosBookingViewStateMapperTest {
     private lateinit var mapper: WooPosBookingViewStateMapper
 
     @Before
-    fun setup() {
+    fun setup() = runTest {
         whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn(FORMATTED_DATE_TIME)
         whenever(dateFormatter.formatTime(any<Instant>())).thenReturn(FORMATTED_TIME)
         mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice)
     }
 
     @Test
-    fun `given booking, when mapped to item view state, then formats date and maps fields correctly`() {
+    fun `given booking, when mapped to item view state, then formats date and maps fields correctly`() = runTest {
         val booking = sampleBooking()
 
         val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
@@ -88,7 +90,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() {
+    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() = runTest {
         val start = Instant.parse("2025-07-05T11:00:00Z")
         val end = start.plus(Duration.ofMinutes(90))
         val booking = sampleBooking(start = start, end = end)
@@ -104,7 +106,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() {
+    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() = runTest {
         val booking = sampleBooking(paymentInfo = null)
 
         val result = mapper.mapToDetailsViewState(booking)
@@ -116,7 +118,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with discount, when mapped to details, then discount is negative formatted`() {
+    fun `given booking with discount, when mapped to details, then discount is negative formatted`() = runTest {
         val paymentInfo = BookingPaymentInfo(
             paymentMethodId = "cod",
             paymentMethodTitle = "Cash on Delivery",
@@ -134,7 +136,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() {
+    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() = runTest {
         val booking = sampleBooking(
             status = BookingEntity.Status.Confirmed,
             attendanceStatus = BookingEntity.AttendanceStatus.Attended,
@@ -147,7 +149,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with non-editable attendance, when mapped, then attendance section is null`() {
+    fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
         val booking = sampleBooking(
             status = BookingEntity.Status.Cancelled,
             attendanceStatus = BookingEntity.AttendanceStatus.Unattended,
@@ -159,7 +161,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with null customerInfo, when mapped, then customer section is null`() {
+    fun `given booking with null customerInfo, when mapped, then customer section is null`() = runTest {
         val booking = sampleBooking(customerInfo = null, customerNote = null)
 
         val result = mapper.mapToDetailsViewState(booking)
@@ -168,7 +170,7 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with blank fields, when mapped, then fields resolve to null`() {
+    fun `given booking with blank fields, when mapped, then fields resolve to null`() = runTest {
         val customerInfo = BookingCustomerInfo(
             billingFirstName = "",
             billingLastName = "",
@@ -180,6 +182,54 @@ class WooPosBookingViewStateMapperTest {
         val result = mapper.mapToDetailsViewState(booking)
 
         assertThat(result.customerSection).isNull()
+    }
+
+    @Test
+    fun `given cancellable booking, when mapped to details, then actions include CancelBooking`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.CancelBooking }
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.CancelBooking }
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+
+        val result = mapper.mapToDetailsViewState(booking)
+
+        assertThat(result.paymentSection.collectPaymentLabel).isNull()
+    }
+
+    @Test
+    fun `given complete booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Complete)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.CancelBooking }
     }
 
     private fun sampleBooking(
