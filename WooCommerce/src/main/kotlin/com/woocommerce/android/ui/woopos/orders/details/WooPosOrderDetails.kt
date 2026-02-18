@@ -292,23 +292,22 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             null -> Unit
         }
 
-        val qtyBottomAnchor = when {
-            bookingInfo != null -> bookingInfoText
-            hasAttributes -> attributesText
-            else -> nameText
+        if (bookingInfo == null) {
+            WooPosText(
+                text = row.qtyAndUnitPrice,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = Modifier.constrainAs(qtyText) {
+                    top.linkTo(
+                        if (hasAttributes) attributesText.bottom else nameText.bottom,
+                        margin = marginXSmall
+                    )
+                    start.linkTo(nameText.start)
+                    end.linkTo(totalText.start, margin = marginSmall)
+                    width = Dimension.fillToConstraints
+                }
+            )
         }
-
-        WooPosText(
-            text = row.qtyAndUnitPrice,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(qtyBottomAnchor.bottom, margin = marginXSmall)
-                start.linkTo(nameText.start)
-                end.linkTo(totalText.start, margin = marginSmall)
-                width = Dimension.fillToConstraints
-            }
-        )
 
         WooPosText(
             text = row.lineTotal,
