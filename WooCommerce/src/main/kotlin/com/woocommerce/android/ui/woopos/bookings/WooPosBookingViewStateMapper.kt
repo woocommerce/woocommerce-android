@@ -111,7 +111,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
-    private suspend fun buildPaymentSection(
+    private fun buildPaymentSection(
         booking: BookingEntity
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
@@ -120,7 +120,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             booking.status == BookingEntity.Status.Complete ||
             booking.status == BookingEntity.Status.Cancelled
 
-        val totalAmount = paymentInfo?.let { priceFormat(it.total + it.totalTax) } ?: "-"
+        val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
         return WooPosBookingsState.PaymentSection(
             serviceAmount = paymentInfo?.let { formatPrice(it.subtotal, currency) } ?: "-",
@@ -133,7 +133,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
                     "-"
                 }
             } ?: "-",
-            totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-",
+            totalAmount = totalAmount,
             paidWithLabel = if (isPaid) paymentInfo?.paymentMethodTitle else null,
             collectPaymentLabel = if (!isPaid) totalAmount else null,
         )

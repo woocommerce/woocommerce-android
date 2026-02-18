@@ -41,7 +41,6 @@ class WooPosBookingViewStateMapperTest {
         }
     }
     private val dateFormatter: DateFormatter = mock()
-    private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
