@@ -272,11 +272,11 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onRetryClicked() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
-        if (paymentState !is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
-            viewModelScope.launch {
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
-            return
+        check(paymentState != null) {
+            "Retry clicked but payment controller is null"
+        }
+        check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+            "Retry clicked but payment state is not PaymentFailed"
         }
         val onRetry = paymentState.onRetry
         if (onRetry != null) {
