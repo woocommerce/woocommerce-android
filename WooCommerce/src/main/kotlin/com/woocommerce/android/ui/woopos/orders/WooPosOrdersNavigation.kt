@@ -15,16 +15,15 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val ORDERS_ROUTE_ORDER_ID_KEY = "orderId"
-const val ORDERS_ROUTE = "$HOME_ROUTE/orders?$ORDERS_ROUTE_ORDER_ID_KEY={$ORDERS_ROUTE_ORDER_ID_KEY}"
+private const val ORDERS_BASE_ROUTE = "$HOME_ROUTE/orders"
+const val ORDERS_ROUTE = "$ORDERS_BASE_ROUTE?$ORDERS_ROUTE_ORDER_ID_KEY={$ORDERS_ROUTE_ORDER_ID_KEY}"
 
 fun NavController.navigateToOrdersScreen() {
-    navigateOnce(ORDERS_ROUTE)
+    navigateOnce(ORDERS_BASE_ROUTE)
 }
 
 fun NavController.navigateToOrderDetailsScreen(orderId: Long) {
-    navigateOnce(
-        ORDERS_ROUTE.replace("{$ORDERS_ROUTE_ORDER_ID_KEY}", orderId.toString())
-    )
+    navigateOnce("$ORDERS_BASE_ROUTE?$ORDERS_ROUTE_ORDER_ID_KEY=$orderId")
 }
 
 fun NavGraphBuilder.ordersScreen(
