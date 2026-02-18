@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -8,22 +9,25 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -31,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @Composable
@@ -54,6 +59,8 @@ fun WPComLoginMagicLinkRequestScreen(
     onOpenEmailClientClick: () -> Unit = {},
     onFallbackButtonClick: () -> Unit = {}
 ) {
+    val branding = viewState.resolveBranding()
+
     Scaffold(
         topBar = {
             Toolbar(
@@ -61,27 +68,26 @@ fun WPComLoginMagicLinkRequestScreen(
                 navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         },
-        backgroundColor = MaterialTheme.colors.surface
+        containerColor = MaterialTheme.colorScheme.surface
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(dimensionResource(id = R.dimen.major_100))
+                .padding(16.dp)
         ) {
-            JetpackToWooHeader()
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_200)))
-            val title = if (viewState.isJetpackInstalled) {
-                R.string.login_jetpack_connect
+            if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
+                WordPressWooBadge()
             } else {
-                R.string.login_jetpack_install
+                JetpackToWooHeader()
             }
+            Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = stringResource(id = title),
-                style = MaterialTheme.typography.h4,
+                text = stringResource(id = branding.title),
+                style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(16.dp))
 
             when (viewState) {
                 is WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState -> {
@@ -117,7 +123,7 @@ private fun MagicLinkRequestContent(
     modifier: Modifier = Modifier
 ) {
     Column(
-        verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.major_100)),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         modifier = modifier
     ) {
         UserInfo(
@@ -148,7 +154,6 @@ private fun MagicLinkSentContent(
     onOpenEmailClientClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    viewState.toString()
     Column(
         modifier = modifier
     ) {
@@ -165,43 +170,43 @@ private fun MagicLinkSentContent(
                 ),
                 contentDescription = null
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = R.string.login_magic_links_sent_label_short),
-                style = MaterialTheme.typography.h6,
+                style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+            Spacer(modifier = Modifier.height(16.dp))
             if (viewState.email != null) {
                 Text(
                     text = stringResource(id = R.string.login_magic_links_email_sent),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.minor_50)))
+                Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = viewState.email,
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Center
                 )
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(id = R.string.login_magic_links_email_sent_double_check_email),
-                    style = MaterialTheme.typography.body2,
+                    style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.Center
                 )
             } else {
                 Text(
                     text = stringResource(id = R.string.login_magic_links_email_sent_to_unknown_email),
-                    style = MaterialTheme.typography.subtitle1,
+                    style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.major_100)))
+        Spacer(modifier = Modifier.height(16.dp))
 
         WCColoredButton(
             onClick = onOpenEmailClientClick,
@@ -212,15 +217,59 @@ private fun MagicLinkSentContent(
     }
 }
 
+private data class MagicLinkScreenBranding(
+    @StringRes val title: Int,
+)
+
+private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): MagicLinkScreenBranding {
+    return when (val wpComLoginMode = this.wpComLoginMode) {
+        WPComLoginMode.PushNotificationsSetup -> MagicLinkScreenBranding(
+            title = R.string.login_wpcom_connect_title,
+        )
+
+        is WPComLoginMode.JetpackSetup -> MagicLinkScreenBranding(
+            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
+                R.string.login_jetpack_connect
+            } else {
+                R.string.login_jetpack_install
+            },
+        )
+    }
+}
+
 @Preview
 @Composable
-private fun MagicLinkRequestPreview() {
+private fun JetpackModeRequestPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
+                wpComLoginMode = WPComLoginMode.JetpackSetup(
+                    JetpackStatus(
+                        isJetpackInstalled = false,
+                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                            blogId = null
+                        )
+                    )
+                ),
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
-                isJetpackInstalled = false,
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
+                isLoadingDialogShown = false
+            )
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun NotificationSetupModeRequestPreview() {
+    WooThemeWithBackground {
+        WPComLoginMagicLinkRequestScreen(
+            viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
+                emailOrUsername = "test@email.com",
+                avatarUrl = "avatar",
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
                 isLoadingDialogShown = false
             )
@@ -234,8 +283,8 @@ private fun MagicLinkSentPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
                 email = null,
-                isJetpackInstalled = false,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
             )
         )

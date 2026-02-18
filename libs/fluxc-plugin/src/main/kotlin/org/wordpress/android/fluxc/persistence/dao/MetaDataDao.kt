@@ -32,9 +32,9 @@ abstract class MetaDataDao {
 
     @Query(
         """
-        SELECT * FROM MetaData 
-        WHERE parentItemId = :parentItemId 
-        AND localSiteId = :localSiteId 
+        SELECT * FROM MetaData
+        WHERE parentItemId = :parentItemId
+        AND localSiteId = :localSiteId
         AND `key` NOT LIKE '\_%'
         ESCAPE '\'
         """
@@ -60,8 +60,8 @@ abstract class MetaDataDao {
 
     @Query("""
         SELECT * FROM MetaData
-        WHERE parentItemId = :parentItemId 
-        AND localSiteId = :localSiteId 
+        WHERE parentItemId = :parentItemId
+        AND localSiteId = :localSiteId
         AND `key` NOT LIKE '\_%'
         ESCAPE '\'
         """)
@@ -70,14 +70,11 @@ abstract class MetaDataDao {
         parentItemId: Long
     ): List<MetaDataEntity>
 
-    @Query("SELECT COUNT(*) FROM MetaData WHERE parentItemId = :parentItemId AND localSiteId = :localSiteId")
-    abstract suspend fun getMetaDataCount(parentItemId: Long, localSiteId: LocalId): Int
-
     @Query(
         """
-        SELECT COUNT(*) FROM MetaData 
-        WHERE parentItemId = :parentItemId 
-        AND localSiteId = :localSiteId 
+        SELECT COUNT(*) FROM MetaData
+        WHERE parentItemId = :parentItemId
+        AND localSiteId = :localSiteId
         AND `key` NOT LIKE '\_%'
         ESCAPE '\'
         """
@@ -101,9 +98,5 @@ abstract class MetaDataDao {
     ) {
         deleteMetaData(localSiteId, parentItemId)
         insertOrUpdateMetaData(metaData)
-    }
-
-    suspend fun hasMetaData(parentItemId: Long, localSiteId: LocalId): Boolean {
-        return getMetaDataCount(parentItemId, localSiteId) > 0
     }
 }

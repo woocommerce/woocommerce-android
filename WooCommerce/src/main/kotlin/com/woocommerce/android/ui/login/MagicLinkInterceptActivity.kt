@@ -20,13 +20,14 @@ import com.google.android.material.snackbar.Snackbar
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent
 import com.woocommerce.android.analytics.AnalyticsTracker
-import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.extensions.doOnApplyWindowInsets
+import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.CancelJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.ContinueJetpackActivation
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragmentArgs
 import com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkHandlerFragmentArgs
+import com.woocommerce.android.ui.login.wpcom.WPComLoginMode
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -177,7 +178,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             .addDestination(
                 R.id.wPComLoginMagicLinkHandlerFragment,
                 WPComLoginMagicLinkHandlerFragmentArgs(
-                    jetpackStatus = event.jetpackStatus
+                    wpComLoginMode = WPComLoginMode.JetpackSetup(event.jetpackStatus)
                 ).toBundle()
             )
             .createPendingIntent()

@@ -13,7 +13,10 @@ import com.woocommerce.android.ui.whatsnew.FeatureAnnouncementRepository
 import com.woocommerce.android.util.BuildConfigWrapper
 import com.woocommerce.android.util.GetWooCorePluginCachedVersion
 import com.woocommerce.android.util.StringUtils
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore
 import org.wordpress.android.fluxc.store.WooCommerceStore
@@ -32,6 +35,7 @@ class MainSettingsPresenter @Inject constructor(
     private val getWooVersion: GetWooCorePluginCachedVersion,
     private val appPrefs: AppPrefsWrapper
 ) : MainSettingsContract.Presenter {
+    override val coroutineScope: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private var appSettingsFragmentView: MainSettingsContract.View? = null
 
     override val isChaChingSoundEnabled: Boolean
@@ -42,6 +46,7 @@ class MainSettingsPresenter @Inject constructor(
     }
 
     override fun dropView() {
+        coroutineScope.coroutineContext.cancelChildren()
         appSettingsFragmentView = null
     }
 
@@ -102,8 +107,8 @@ class MainSettingsPresenter @Inject constructor(
 
     override fun setupEnablePushNotificationsOption() {
         coroutineScope.launch {
-            if (shouldShowEnablePushNotificationsUi().first()) {
-                appSettingsFragmentView?.showEnablePushNotificationsOption()
+            shouldShowEnablePushNotificationsUi().collect { shouldShowOption ->
+                appSettingsFragmentView?.setEnablePushNotificationsOptionVisible(shouldShowOption)
             }
         }
     }

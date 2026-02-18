@@ -12,7 +12,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_FLOW
 import com.woocommerce.android.analytics.AnalyticsTracker
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.WPComLoginRepository
@@ -66,10 +65,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
         flowOf(Pair(navArgs.emailOrUsername, avatarUrlFromEmail(navArgs.emailOrUsername)))
     ) { password, isLoadingDialogShown, errorMessage, (emailOrUsername, avatarUrl) ->
         ViewState(
+            wpComLoginMode = navArgs.wpComLoginMode,
             emailOrUsername = emailOrUsername,
             password = password,
             avatarUrl = avatarUrl,
-            isJetpackInstalled = navArgs.jetpackStatus.isJetpackInstalled,
             isLoadingDialogShown = isLoadingDialogShown,
             errorMessage = errorMessage.takeIf { it != 0 }
         )
@@ -96,7 +95,7 @@ class WPComLoginPasswordViewModel @Inject constructor(
         triggerEvent(
             ShowMagicLinkScreen(
                 emailOrUsername = navArgs.emailOrUsername,
-                jetpackStatus = navArgs.jetpackStatus
+                wpComLoginMode = navArgs.wpComLoginMode
             )
         )
     }
@@ -126,7 +125,7 @@ class WPComLoginPasswordViewModel @Inject constructor(
 
                 when (failure?.type) {
                     AuthenticationErrorType.NEEDS_2FA -> {
-                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, password.value, navArgs.jetpackStatus))
+                        triggerEvent(Show2FAScreen(navArgs.emailOrUsername, password.value, navArgs.wpComLoginMode))
                     }
 
                     AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
@@ -154,7 +153,7 @@ class WPComLoginPasswordViewModel @Inject constructor(
     private suspend fun fetchAccount() {
         accountRepository.fetchUserAccount().fold(
             onSuccess = {
-                onLoginSuccess(navArgs.jetpackStatus)
+                onLoginSuccess(navArgs.wpComLoginMode)
             },
             onFailure = {
                 triggerEvent(ShowSnackbar(R.string.error_fetch_my_profile))
@@ -174,10 +173,10 @@ class WPComLoginPasswordViewModel @Inject constructor(
     }
 
     data class ViewState(
+        val wpComLoginMode: WPComLoginMode,
         val emailOrUsername: String,
         val password: String,
         val avatarUrl: String,
-        val isJetpackInstalled: Boolean,
         val isLoadingDialogShown: Boolean = false,
         val errorMessage: Int? = null
     ) {
@@ -187,11 +186,11 @@ class WPComLoginPasswordViewModel @Inject constructor(
     data class Show2FAScreen(
         val emailOrUsername: String,
         val password: String,
-        val jetpackStatus: JetpackStatus
+        val wpComLoginMode: WPComLoginMode
     ) : MultiLiveEvent.Event()
 
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
-        val jetpackStatus: JetpackStatus
+        val wpComLoginMode: WPComLoginMode
     ) : MultiLiveEvent.Event()
 }

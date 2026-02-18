@@ -257,7 +257,6 @@
     <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
-    <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
     <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
     <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
@@ -322,6 +321,12 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
+    <string name="login_wpcom_connect_title">Connect to WordPress.com</string>
+    <string name="login_wpcom_connect_subtitle">Log in with your WordPress.com account to connect your store.</string>
+    <string name="login_wpcom_connect_create_account_hint">If you don\'t have a WordPress.com account, we\'ll use this email to create one.</string>
+    <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
+    <string name="login_wpcom_connection_consent_jetpack">By tapping the Connect Jetpack button</string>
+    <string name="login_wpcom_connection_consent_generic">By continuing</string>
 
     <!--
         Site picker
@@ -3916,13 +3921,21 @@
     <string name="woopos_bookings_details_tax_label">Taxes</string>
     <string name="woopos_bookings_details_discount_label">Discount</string>
     <string name="woopos_bookings_details_total_label">Total</string>
-    <string name="woopos_bookings_details_pay_by_card">Pay by card</string>
-    <string name="woopos_bookings_details_pay_by_cash">Pay by cash</string>
+    <string name="woopos_bookings_details_collect_payment">Collect payment · %s</string>
     <string name="woopos_bookings_details_booking_note_title">Booking note</string>
     <string name="woopos_bookings_details_add_note">Add note</string>
     <string name="woopos_bookings_details_edit_note">Edit note</string>
     <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
     <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
+    <string name="woopos_bookings_cancel_dialog_title">Cancel this booking?</string>
+    <string name="woopos_bookings_cancel_dialog_message">Booking #%1$s for %2$s on %3$s at %4$s for %5$s will be canceled.</string>
+    <string name="woopos_bookings_cancel_dialog_email_notice">The customer will be notified via email.</string>
+    <string name="woopos_bookings_cancel_dialog_confirm">Yes, cancel booking</string>
+    <string name="woopos_bookings_cancel_dialog_keep">No, keep it</string>
+    <string name="woopos_bookings_cancel_dialog_background">Cancel booking dialog background</string>
+    <string name="woopos_bookings_cancel_dialog_unknown_customer">unknown customer</string>
+    <string name="woopos_bookings_cancel_error">Failed to cancel booking. Please try again.</string>
     <string name="woopos_bookings_note_screen_title_add">Add note</string>
     <string name="woopos_bookings_note_screen_title_edit">Edit note</string>
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
