@@ -82,7 +82,10 @@ class WPComLoginPasswordFragment : BaseFragment() {
                 .actionWPComLoginPasswordFragmentToWPComLogin2FAFragment(
                     wpComLoginMode = event.wpComLoginMode,
                     emailOrUsername = event.emailOrUsername,
-                    password = event.password
+                    password = event.password,
+                    userId = event.userId,
+                    webauthnNonce = event.webauthnNonce,
+                    supportedAuthTypes = event.supportedAuthTypes.toTypedArray()
                 )
         )
     }
