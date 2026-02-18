@@ -49,17 +49,37 @@ Optionally call `mobile_list_apps` first to check if the app is already installe
 Use `mobile_launch_app` with:
 - **packageName:** `com.woocommerce.android.dev`
 
-### 5. Verify Launch and Navigate
+### 5. Start Screen Recording (Optional)
+
+If the user requests a recording or demo video, start an ADB screen recording **before** navigating:
+
+```bash
+# Start recording in the background (max 180s, Android hard limit)
+adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
+```
+
+Use `--size 720x1280` to keep the file small. The recording runs in the background while you perform navigation steps. See the Screen Recording section below for full details.
+
+### 6. Verify Launch and Navigate
 
 After launching, call `mobile_list_elements_on_screen` to confirm the app has loaded. Then navigate as needed per the user's request.
 
-### 6. Save Evidence
+### 7. Stop Recording and Save Evidence
 
-Use `mobile_save_screenshot` at each verification step to save screenshots to disk for documentation.
+**If recording:** stop the recording, pull the file, and clean up:
 
-### 7. Report Results
+```bash
+adb -s <device_id> shell "pkill -l SIGINT screenrecord"
+sleep 2
+adb -s <device_id> pull /sdcard/_agent_rec.mp4 ./verification_recording.mp4
+adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
+```
 
-Summarize what was verified, include saved screenshot paths, and flag any issues found.
+**Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
+
+### 8. Report Results
+
+Summarize what was verified, include saved screenshot and recording paths, and flag any issues found.
 
 ## Available MCP Tools Reference
 
@@ -97,6 +117,57 @@ Summarize what was verified, include saved screenshot paths, and flag any issues
 |------|---------|
 | `mobile_take_screenshot` | Capture screen for visual verification (do NOT use for coordinate extraction) |
 | `mobile_save_screenshot` | Save a screenshot to a file path for documentation |
+
+## Screen Recording via ADB
+
+Use `adb shell screenrecord` to capture video of navigation flows. This is useful for demo recordings, PR evidence, or reproducing bugs.
+
+### Start Recording
+
+Run in the background so the agent can continue navigating while recording:
+
+```bash
+adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
+```
+
+| Option | Default | Notes |
+|--------|---------|-------|
+| `--size WxH` | Device native | Use `720x1280` to reduce file size |
+| `--time-limit N` | 180 | Maximum seconds (Android hard limit is 180) |
+
+### Stop Recording
+
+**CRITICAL:** Always stop with `SIGINT`. Using `SIGKILL` or just killing the process leaves the MP4 unfinalized and unplayable.
+
+```bash
+adb -s <device_id> shell "pkill -l SIGINT screenrecord"
+sleep 2
+adb -s <device_id> pull /sdcard/_agent_rec.mp4 ./recording.mp4
+adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
+```
+
+### Flows Longer Than 3 Minutes
+
+Android limits recordings to 180 seconds. For longer flows, chain recordings:
+
+```bash
+# Record in segments
+adb -s <device_id> shell "screenrecord --time-limit 180 /sdcard/_agent_rec_1.mp4"
+adb -s <device_id> pull /sdcard/_agent_rec_1.mp4 ./segment_1.mp4
+adb -s <device_id> shell rm /sdcard/_agent_rec_1.mp4
+# Start next segment...
+```
+
+Note: with `--time-limit`, the command blocks until done, so navigation must happen from a parallel process or between segments.
+
+### Recording Failure Modes
+
+| Symptom | Cause | Fix |
+|---------|-------|-----|
+| MP4 unplayable | Stopped with SIGKILL or device disconnected | Always use `pkill -l SIGINT screenrecord` |
+| Recording stops after 3 min | Hit 180s Android limit | Use chained recordings |
+| Black screen in video | DRM-protected content on screen | OS-level restriction, cannot be avoided |
+| `screenrecord: not found` | Android < 4.4 | Not supported on very old devices |
 
 ## WooCommerce Navigation Reference
 
@@ -143,3 +214,5 @@ To navigate between tabs, find the target tab element in `mobile_list_elements_o
 | **Login screen appears** | The app requires authentication. Ask the user for test credentials or to log in manually. |
 | **App crashes on launch** | Run `adb logcat -d *:E` via Bash to check crash logs. Common cause: missing FluxC database migration. |
 | **No devices found** | Run `adb devices` via Bash to check ADB connectivity. Ensure the emulator is booted or the physical device has USB debugging enabled. |
+| **Recording MP4 is unplayable** | Stopped with SIGKILL instead of SIGINT. Always use `pkill -l SIGINT screenrecord` and wait 2s before pulling. |
+| **Recording cuts off at 3 min** | Android's hard 180s limit. Use chained recordings for longer flows. |
