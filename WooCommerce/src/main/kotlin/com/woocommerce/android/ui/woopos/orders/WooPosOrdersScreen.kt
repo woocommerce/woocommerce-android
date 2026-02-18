@@ -148,6 +148,7 @@ private fun WooPosOrdersScreen(
         when (state) {
             is WooPosOrdersState.Content -> OrdersContent(
                 state = state,
+                isSingleOrderMode = isSingleOrderMode,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
                 onOrderSelected = onOrderSelected,
@@ -222,6 +223,7 @@ private fun WooPosOrdersScreen(
 @Composable
 private fun OrdersContent(
     state: WooPosOrdersState.Content,
+    isSingleOrderMode: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
@@ -232,7 +234,7 @@ private fun OrdersContent(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        if (!state.isSingleOrderMode) {
+        if (!isSingleOrderMode) {
             OrdersListPane(
                 state = state,
                 scrollToTopEvent = scrollToTopEvent,
@@ -252,7 +254,7 @@ private fun OrdersContent(
 
         Box(
             modifier = Modifier
-                .weight(if (state.isSingleOrderMode) 1f else 0.7f)
+                .weight(if (isSingleOrderMode) 1f else 0.7f)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             when {
@@ -261,7 +263,7 @@ private fun OrdersContent(
                         modifier = Modifier
                             .fillMaxHeight(),
                         details = state.selectedDetails,
-                        showOrderNumber = !state.isSingleOrderMode,
+                        showOrderNumber = !isSingleOrderMode,
                         onUIEvent = onUIEvent
                     )
                 }

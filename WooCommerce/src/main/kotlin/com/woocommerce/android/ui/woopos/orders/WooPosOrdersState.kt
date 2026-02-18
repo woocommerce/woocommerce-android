@@ -107,8 +107,7 @@ sealed class WooPosOrdersState {
         override val searchInputState: WooPosSearchInputState,
         val selectedDetails: OrderDetailsViewState.Computed.Details?,
         val paginationState: WooPosPaginationState,
-        val dialogState: DialogState,
-        val isSingleOrderMode: Boolean = false
+        val dialogState: DialogState
     ) : WooPosOrdersState() {
         sealed class Items {
             data class Loaded(val items: Map<OrderItemViewState, OrderDetailsViewState>) : Items()

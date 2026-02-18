@@ -26,11 +26,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.time.TimeSource.Monotonic
@@ -60,15 +58,7 @@ class WooPosOrdersViewModel @Inject constructor(
             searchInputState = WooPosSearchInputState.Closed
         )
     )
-    val state: StateFlow<WooPosOrdersState> = _state
-        .map { state ->
-            if (singleOrderId != null && state is WooPosOrdersState.Content) {
-                state.copy(isSingleOrderMode = true)
-            } else {
-                state
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Eagerly, _state.value)
+    val state: StateFlow<WooPosOrdersState> = _state.asStateFlow()
 
     private val _openUrlEvent = MutableSharedFlow<String>()
     val openUrlEvent: SharedFlow<String> = _openUrlEvent.asSharedFlow()

@@ -1292,7 +1292,7 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
         val content = state as WooPosOrdersState.Content
-        assertThat(content.isSingleOrderMode).isTrue()
+        assertThat(viewModel.isSingleOrderMode).isTrue()
         assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
         verify(dataSource, times(0)).loadOrders(any())
     }
@@ -1337,7 +1337,7 @@ class WooPosOrdersViewModelTest {
         val state = viewModel.state.value
         assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
         val content = state as WooPosOrdersState.Content
-        assertThat(content.isSingleOrderMode).isTrue()
+        assertThat(viewModel.isSingleOrderMode).isTrue()
         assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
         verify(dataSource, times(0)).loadOrders(any())
     }
