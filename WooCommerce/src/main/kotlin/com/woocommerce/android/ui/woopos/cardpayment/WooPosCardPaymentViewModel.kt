@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
@@ -52,6 +53,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
+
+    val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY] ?: false
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
@@ -303,6 +306,17 @@ class WooPosCardPaymentViewModel @Inject constructor(
         viewModelScope.launch {
             analyticsTracker.trackEmailReceiptTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
+        }
+    }
+
+    fun onCashPaymentClicked() {
+        cancelPayment()
+        val cashSource = when (source) {
+            CardPaymentSource.CHECKOUT -> CashPaymentSource.CHECKOUT
+            CardPaymentSource.BOOKINGS -> CashPaymentSource.BOOKINGS
+        }
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId, cashSource))
         }
     }
 

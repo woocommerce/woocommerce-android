@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.login.wpcom
 
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.analytics.AnalyticsEvent.JETPACK_SETUP_LOGIN_COMPLETED
@@ -18,7 +19,18 @@ open class WPComLoginPostLoginViewModel(
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
-    protected suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+    @VisibleForTesting
+    internal suspend fun onLoginSuccess(wpComLoginMode: WPComLoginMode): Result<Unit> {
+        return when (wpComLoginMode) {
+            is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
+            WPComLoginMode.PushNotificationsSetup -> {
+                triggerEvent(ShowPushNotificationsConnectionSteps)
+                Result.success(Unit)
+            }
+        }
+    }
+
+    private suspend fun handleJetpackSetupPostLogin(jetpackStatus: JetpackStatus): Result<Unit> {
         analyticsTrackerWrapper.track(JETPACK_SETUP_LOGIN_COMPLETED)
 
         val siteUrl = selectedSite.get().url
@@ -56,4 +68,6 @@ open class WPComLoginPostLoginViewModel(
     ) : MultiLiveEvent.Event()
 
     object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
+
+    object ShowPushNotificationsConnectionSteps : MultiLiveEvent.Event()
 }

@@ -41,7 +41,7 @@ class WPComLoginEmailViewModelTest : BaseUnitTest() {
     }
 
     private val saveStateHandle = WPComLoginEmailFragmentArgs(
-        jetpackStatus = JETPACK_STATUS,
+        wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
     ).toSavedStateHandle()
     private val wpComLoginRepository: WPComLoginRepository = mock()
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
@@ -86,7 +86,7 @@ class WPComLoginEmailViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
                     emailOrUsername = UNKNOWN_EMAIL,
-                    jetpackStatus = JETPACK_STATUS,
+                    wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
                     magicLinkFallbackButton = MagicLinkFallbackButton.None,
                     requestAtStart = true,
                     isNewWpComAccount = true
@@ -134,7 +134,7 @@ class WPComLoginEmailViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
                     emailOrUsername = suspiciousEmail,
-                    jetpackStatus = JETPACK_STATUS,
+                    wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
                     magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
                     requestAtStart = false,
                     isNewWpComAccount = false
@@ -162,7 +162,7 @@ class WPComLoginEmailViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowPasswordScreen(
                     WPCOM_EMAIL,
-                    JETPACK_STATUS
+                    WPComLoginMode.JetpackSetup(JETPACK_STATUS)
                 )
             )
         }
@@ -187,7 +187,7 @@ class WPComLoginEmailViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
                     emailOrUsername = WPCOM_EMAIL,
-                    jetpackStatus = JETPACK_STATUS,
+                    wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
                     magicLinkFallbackButton = MagicLinkFallbackButton.None,
                     requestAtStart = true,
                     isNewWpComAccount = false
