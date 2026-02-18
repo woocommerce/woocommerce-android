@@ -728,7 +728,11 @@ class WooPosOrdersViewModel @Inject constructor(
         transform: (WooPosOrdersState.OrderDetailsViewState.Computed.Details) ->
         WooPosOrdersState.OrderDetailsViewState.Computed.Details
     ): WooPosOrdersState.Content {
-        val updatedSelectedDetails = selectedDetails?.let(transform)
+        val updatedSelectedDetails = if (selectedDetails?.id == orderId) {
+            selectedDetails.let(transform)
+        } else {
+            selectedDetails
+        }
         val loadedItems = items as? WooPosOrdersState.Content.Items.Loaded
         val updatedItems = loadedItems?.items?.map { (orderItem, orderDetails) ->
             if (orderItem.id == orderId && orderDetails is WooPosOrdersState.OrderDetailsViewState.Computed) {
