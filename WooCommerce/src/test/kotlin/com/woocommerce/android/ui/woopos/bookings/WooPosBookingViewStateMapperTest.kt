@@ -34,8 +34,13 @@ class WooPosBookingViewStateMapperTest {
         private const val FORMATTED_TIME = "11:00 AM"
     }
 
+    private val formatPrice: WooPosFormatPrice = mock {
+        on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
+            val price = invocation.arguments[0] as BigDecimal
+            "$${price.toPlainString()}"
+        }
+    }
     private val dateFormatter: DateFormatter = mock()
-    private val priceFormat: WooPosFormatPrice = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -66,11 +71,7 @@ class WooPosBookingViewStateMapperTest {
     fun setup() = runTest {
         whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn(FORMATTED_DATE_TIME)
         whenever(dateFormatter.formatTime(any<Instant>())).thenReturn(FORMATTED_TIME)
-        whenever(priceFormat(anyOrNull())).doAnswer { invocation ->
-            val amount = invocation.arguments[0] as? BigDecimal
-            amount?.let { "$${it.toPlainString()}" } ?: "$0.00"
-        }
-        mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, priceFormat)
+        mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice)
     }
 
     @Test

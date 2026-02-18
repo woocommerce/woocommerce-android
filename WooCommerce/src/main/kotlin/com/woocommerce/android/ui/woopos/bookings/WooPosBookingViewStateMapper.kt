@@ -9,6 +9,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustome
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
+import java.math.BigDecimal
 import java.time.Duration
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -18,7 +19,7 @@ import javax.inject.Inject
 class WooPosBookingViewStateMapper @Inject constructor(
     private val dateFormatter: DateFormatter,
     private val resourceProvider: ResourceProvider,
-    private val priceFormat: WooPosFormatPrice,
+    private val formatPrice: WooPosFormatPrice,
 ) {
 
     suspend fun mapToItemViewState(
@@ -29,7 +30,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             id = booking.id.value,
             title = booking.order.productInfo?.name ?: "#${booking.id.value}",
             date = dateFormatter.formatDateTime(booking.start),
-            total = priceFormat(booking.order.paymentInfo?.total),
+            total = booking.order.paymentInfo?.let { formatPrice(it.total, booking.currency) } ?: "",
             customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
             isSelected = booking.id.value == selectedBookingId,
             status = mapBookingStatus(booking.status),
@@ -110,23 +111,24 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
-    private suspend fun buildPaymentSection(
+    private fun buildPaymentSection(
         booking: BookingEntity
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
+        val currency = booking.currency
         val isPaid = booking.status == BookingEntity.Status.Paid ||
             booking.status == BookingEntity.Status.Complete ||
             booking.status == BookingEntity.Status.Cancelled
 
-        val totalAmount = paymentInfo?.let { priceFormat(it.total + it.totalTax) } ?: "-"
+        val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
         return WooPosBookingsState.PaymentSection(
-            serviceAmount = paymentInfo?.subtotal?.let { priceFormat(it) } ?: "-",
-            taxAmount = paymentInfo?.totalTax?.let { priceFormat(it) } ?: "-",
+            serviceAmount = paymentInfo?.let { formatPrice(it.subtotal, currency) } ?: "-",
+            taxAmount = paymentInfo?.let { formatPrice(it.totalTax, currency) } ?: "-",
             discountAmount = paymentInfo?.let {
                 val discount = it.total - it.subtotal
-                if (discount.compareTo(java.math.BigDecimal.ZERO) != 0) {
-                    "-${priceFormat(discount.abs())}"
+                if (discount.compareTo(BigDecimal.ZERO) != 0) {
+                    "-${formatPrice(discount.abs(), currency)}"
                 } else {
                     "-"
                 }

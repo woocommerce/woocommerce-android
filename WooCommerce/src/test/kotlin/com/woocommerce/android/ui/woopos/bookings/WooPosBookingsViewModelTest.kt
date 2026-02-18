@@ -39,6 +39,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -51,7 +52,12 @@ class WooPosBookingsViewModelTest {
     private val bookingListHandler: BookingListHandler = mock()
     private val dateTimeProvider: DateTimeProvider = mock()
     private val dateFormatter: DateFormatter = mock()
-    private val priceFormat: WooPosFormatPrice = mock()
+    private val formatPrice: WooPosFormatPrice = mock {
+        on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
+            val price = invocation.arguments[0] as BigDecimal
+            "$${price.toPlainString()}"
+        }
+    }
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -114,7 +120,7 @@ class WooPosBookingsViewModelTest {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, priceFormat),
+            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, formatPrice),
             bookingsRepository = bookingsRepository,
             resourceProvider = resourceProvider,
         )
@@ -122,7 +128,7 @@ class WooPosBookingsViewModelTest {
 
     @Before
     fun setUp() = runTest {
-        whenever(priceFormat(anyOrNull())).doAnswer { invocation ->
+        whenever(formatPrice(anyOrNull())).doAnswer { invocation ->
             val amount = invocation.arguments[0] as? java.math.BigDecimal
             amount?.let { "$${it.toPlainString()}" } ?: "$0.00"
         }
