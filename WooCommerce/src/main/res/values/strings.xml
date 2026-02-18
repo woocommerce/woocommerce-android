@@ -3933,6 +3933,7 @@
     <string name="woopos_bookings_details_edit_note">Edit note</string>
     <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
     <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_details_copy_phone">Copy phone</string>
     <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
     <string name="woopos_bookings_cancel_dialog_title">Cancel this booking?</string>
     <string name="woopos_bookings_cancel_dialog_message">Booking #%1$s for %2$s on %3$s at %4$s for %5$s will be canceled.</string>

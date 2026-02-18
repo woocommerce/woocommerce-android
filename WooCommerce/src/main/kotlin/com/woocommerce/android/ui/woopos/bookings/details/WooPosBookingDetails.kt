@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings.details
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -225,70 +226,21 @@ private fun BookingCustomerCard(
                 fontWeight = FontWeight.Bold,
             )
 
-            Spacer(Modifier.height(WooPosSpacing.Medium.value))
-
-            customerSection.name?.let {
-                WooPosText(
-                    text = it,
-                    style = WooPosTypography.BodyMedium,
-                )
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
-            }
-
             customerSection.email?.let { email ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    WooPosText(
-                        text = email,
-                        style = WooPosTypography.BodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { onUIEvent(WooPosBookingsUIEvent.CopyEmailClicked(email)) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
-                            contentDescription = stringResource(R.string.woopos_bookings_details_copy_email),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
                 Spacer(Modifier.height(WooPosSpacing.Medium.value))
+                CopyableRow(
+                    text = email,
+                    contentDescription = stringResource(R.string.woopos_bookings_details_copy_email),
+                    onClick = { onUIEvent(WooPosBookingsUIEvent.CopyEmailClicked(email)) }
+                )
             }
 
             customerSection.phone?.let { phone ->
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    WooPosText(
-                        text = phone,
-                        style = WooPosTypography.BodyMedium,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
-                            contentDescription = stringResource(R.string.more_menu),
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
-            }
-
-            customerSection.billingAddress?.let {
                 DividerWithSpacing()
-                WooPosText(
-                    text = stringResource(R.string.woopos_bookings_details_billing_address_label),
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
-                )
-                Spacer(Modifier.height(WooPosSpacing.Small.value))
-                WooPosText(
-                    text = it,
-                    style = WooPosTypography.BodyMedium,
+                CopyableRow(
+                    text = phone,
+                    contentDescription = stringResource(R.string.woopos_bookings_details_copy_phone),
+                    onClick = { onUIEvent(WooPosBookingsUIEvent.CopyPhoneClicked(phone)) }
                 )
             }
 
@@ -489,6 +441,32 @@ private fun TotalRowLine(
         WooPosText(
             text = value,
             style = WooPosTypography.BodyMedium,
+        )
+    }
+}
+
+@Composable
+private fun CopyableRow(
+    text: String,
+    contentDescription: String,
+    onClick: () -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+    ) {
+        WooPosText(
+            text = text,
+            style = WooPosTypography.BodyMedium,
+            modifier = Modifier.weight(1f)
+        )
+        Icon(
+            imageVector = ImageVector.vectorResource(R.drawable.ic_copy_white_24dp),
+            contentDescription = contentDescription,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(20.dp)
         )
     }
 }
