@@ -99,17 +99,21 @@ class WooPosOrdersDataSource @Inject constructor(
     }
 
     suspend fun refreshOrderById(orderId: Long): Result<Order> {
-        val site = selectedSite.get()
-        val payload = restClient.fetchSingleOrder(site, orderId, decimalPoints = 8)
-        return if (payload.error == null) {
-            val entity = payload.orderWithMeta.first
-            val order = orderMapper.toAppModel(entity)
+        return try {
+            val site = selectedSite.get()
+            val payload = restClient.fetchSingleOrder(site, orderId, decimalPoints = 8)
+            if (payload.error == null) {
+                val entity = payload.orderWithMeta.first
+                val order = orderMapper.toAppModel(entity)
 
-            updateCachedOrderIfPresent(order)
+                updateCachedOrderIfPresent(order)
 
-            Result.success(order)
-        } else {
-            Result.failure(Throwable("[${payload.error.type}] ${payload.error.message}"))
+                Result.success(order)
+            } else {
+                Result.failure(Throwable("[${payload.error.type}] ${payload.error.message}"))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
         }
     }
 
