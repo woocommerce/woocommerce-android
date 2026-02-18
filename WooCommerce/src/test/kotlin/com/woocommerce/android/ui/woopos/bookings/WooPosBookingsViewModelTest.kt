@@ -853,6 +853,31 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given ViewOrder action, when BookingMenuActionClicked, then OpenOrderDetails event emitted with correct orderId`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val orderId = content.selectedDetails!!.orderId
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.ViewOrder(orderId = orderId)
+                    )
+                )
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenOrderDetails::class.java)
+                val orderDetailsEvent = event as WooPosNavigationEvent.OpenOrderDetails
+                assertThat(orderDetailsEvent.orderId).isEqualTo(orderId)
+            }
+        }
+
+    @Test
     fun `given processing state, when dismiss event, then dialog stays open`() =
         runTest {
             // GIVEN
