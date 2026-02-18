@@ -71,5 +71,5 @@ fun <T> LiveData<T>.runAndCaptureValues(block: () -> Unit): List<T> {
 }
 
 fun <T> LiveData<T>.runAndGetValue(block: () -> Unit): T {
-    return runAndCaptureValues(block).lastOrNull() ?: throw IllegalStateException("LiveData value was never set.")
+    return runAndCaptureValues(block).lastOrNull() ?: error("LiveData value was never set.")
 }
