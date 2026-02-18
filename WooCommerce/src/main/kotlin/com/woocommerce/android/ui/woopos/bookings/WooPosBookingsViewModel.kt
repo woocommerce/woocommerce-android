@@ -22,6 +22,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
@@ -29,9 +30,9 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
+    private val bookingsRepository: BookingsRepository,
     private val dateTimeProvider: DateTimeProvider,
     private val mapper: WooPosBookingViewStateMapper,
-    private val bookingsRepository: BookingsRepository,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
@@ -55,6 +56,7 @@ class WooPosBookingsViewModel @Inject constructor(
     init {
         observeBookings()
         fetchBookings()
+        fetchResources()
     }
 
     private fun fetchBookings() {
@@ -78,9 +80,20 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchResources() {
+        viewModelScope.launch {
+            bookingsRepository.fetchResources()
+        }
+    }
+
     private fun observeBookings() {
         viewModelScope.launch {
-            bookingListHandler.bookingsFlow.collectLatest { bookings ->
+            combine(
+                bookingListHandler.bookingsFlow,
+                bookingsRepository.observeResources()
+            ) { bookings, resources ->
+                bookings to resources.associateBy { it.id.value }
+            }.collectLatest { (bookings, resourcesMap) ->
                 if (bookings.isEmpty() && _state.value is WooPosBookingsState.Loading) {
                     return@collectLatest
                 }
@@ -94,12 +107,10 @@ class WooPosBookingsViewModel @Inject constructor(
                     selectedBookingId = bookings.first().id.value
                 }
 
-                val items = buildMap {
-                    for (booking in bookings) {
-                        val itemState = mapper.mapToItemViewState(booking, selectedBookingId)
-                        val detailsState = mapper.mapToDetailsViewState(booking)
-                        put(itemState, detailsState)
-                    }
+                val items = bookings.associate { booking ->
+                    val resourceName = resourcesMap[booking.resourceId]?.name
+                    mapper.mapToItemViewState(booking, selectedBookingId) to
+                        mapper.mapToDetailsViewState(booking, resourceName)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -145,6 +156,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         fetchJob?.cancel()
         loadMoreJob?.cancel()
+        fetchResources()
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 sortBy = BookingListSortOption.NewestToOldest

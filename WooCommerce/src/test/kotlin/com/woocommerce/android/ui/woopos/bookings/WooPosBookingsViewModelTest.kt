@@ -49,6 +49,10 @@ class WooPosBookingsViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule(StandardTestDispatcher())
 
     private val bookingListHandler: BookingListHandler = mock()
+    private val bookingsRepository: BookingsRepository = mock {
+        on { observeResources() } doAnswer { flowOf(emptyList()) }
+        onBlocking { fetchResources() } doAnswer { Result.success(Unit) }
+    }
     private val dateTimeProvider: DateTimeProvider = mock()
     private val formatPrice: WooPosFormatPrice = mock {
         on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
@@ -85,7 +89,6 @@ class WooPosBookingsViewModelTest {
         }
     }
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
-    private val bookingsRepository: BookingsRepository = mock()
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -119,6 +122,7 @@ class WooPosBookingsViewModelTest {
     private fun createViewModel(): WooPosBookingsViewModel {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
+            bookingsRepository = bookingsRepository,
             dateTimeProvider = dateTimeProvider,
             mapper = WooPosBookingViewStateMapper(
                 resourceProvider,
@@ -126,7 +130,6 @@ class WooPosBookingsViewModelTest {
                 paymentStatusResolver,
                 timeRangeFormatter,
             ),
-            bookingsRepository = bookingsRepository,
             resourceProvider = resourceProvider,
         )
     }
