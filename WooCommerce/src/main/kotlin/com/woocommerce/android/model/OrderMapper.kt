@@ -139,6 +139,9 @@ class OrderMapper @Inject constructor(
                     it.bundledBy?.toLongOrNull() ?: it.compositeParent?.toLongOrNull(),
                     configurationKey = it.configurationKey,
                     containsMetadata = it.metaData?.isNotEmpty() ?: false,
+                    bookingId = it.metaData
+                        ?.firstOrNull { meta -> meta.key == "_booking_id" }
+                        ?.value?.stringValue?.toLongOrNull(),
                     taxes = it.taxes?.mapLineTaxes() ?: emptyList()
                 )
             }
