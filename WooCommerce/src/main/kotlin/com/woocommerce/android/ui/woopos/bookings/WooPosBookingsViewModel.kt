@@ -22,15 +22,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
+    private val bookingsRepository: BookingsRepository,
     private val dateTimeProvider: DateTimeProvider,
     private val mapper: WooPosBookingViewStateMapper,
-    private val bookingsRepository: BookingsRepository,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
@@ -54,6 +56,7 @@ class WooPosBookingsViewModel @Inject constructor(
     init {
         observeBookings()
         fetchBookings()
+        fetchResources()
     }
 
     private fun fetchBookings() {
@@ -77,9 +80,20 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchResources() {
+        viewModelScope.launch {
+            bookingsRepository.fetchResources()
+        }
+    }
+
     private fun observeBookings() {
         viewModelScope.launch {
-            bookingListHandler.bookingsFlow.collectLatest { bookings ->
+            combine(
+                bookingListHandler.bookingsFlow,
+                bookingsRepository.observeResources()
+            ) { bookings, resources ->
+                bookings to resources.associateBy { it.id.value }
+            }.collectLatest { (bookings, resourcesMap) ->
                 if (bookings.isEmpty() && _state.value is WooPosBookingsState.Loading) {
                     return@collectLatest
                 }
@@ -94,8 +108,9 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val items = bookings.associate { booking ->
+                    val resourceName = resourcesMap[booking.resourceId]?.name
                     mapper.mapToItemViewState(booking, selectedBookingId) to
-                        mapper.mapToDetailsViewState(booking)
+                        mapper.mapToDetailsViewState(booking, resourceName)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -141,6 +156,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         fetchJob?.cancel()
         loadMoreJob?.cancel()
+        fetchResources()
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 sortBy = BookingListSortOption.NewestToOldest
@@ -219,7 +235,7 @@ class WooPosBookingsViewModel @Inject constructor(
     fun onUIEvent(event: WooPosBookingsUIEvent) {
         when (event) {
             is WooPosBookingsUIEvent.BookingMenuActionClicked -> handleBookingAction(event.action)
-            is WooPosBookingsUIEvent.AttendanceToggled -> { }
+            is WooPosBookingsUIEvent.AttendanceToggled -> handleAttendanceToggle(event.attended)
             is WooPosBookingsUIEvent.CollectPaymentClicked -> handleCollectPayment()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
             is WooPosBookingsUIEvent.CopyEmailClicked -> { }
@@ -246,6 +262,71 @@ class WooPosBookingsViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    private fun handleAttendanceToggle(attended: Boolean) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val details = currentState.selectedDetails ?: return
+        val attendanceSection = details.attendanceSection ?: return
+
+        val newAttendanceState = if (attended) {
+            WooPosBookingsState.AttendanceState.ATTENDED
+        } else {
+            WooPosBookingsState.AttendanceState.UNATTENDED
+        }
+
+        val previousSelection = attendanceSection.selection
+        val previousBadge = details.attendanceBadge
+
+        val updatedDetails = details.copy(
+            attendanceSection = attendanceSection.copy(selection = newAttendanceState),
+            attendanceBadge = newAttendanceState,
+        )
+        _state.value = currentState.copy(
+            selectedDetails = updatedDetails,
+            items = updateItemsWithDetails(currentState.items, updatedDetails),
+        )
+
+        viewModelScope.launch {
+            val entityStatus = if (attended) {
+                BookingEntity.AttendanceStatus.Attended
+            } else {
+                BookingEntity.AttendanceStatus.Unattended
+            }
+            bookingsRepository.updateAttendanceStatus(
+                bookingId = details.id,
+                attendanceStatus = entityStatus,
+            ).onFailure {
+                val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
+                val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
+                if (rollbackDetails.id != details.id) return@onFailure
+                val reverted = rollbackDetails.copy(
+                    attendanceSection = rollbackDetails.attendanceSection?.copy(selection = previousSelection),
+                    attendanceBadge = previousBadge,
+                )
+                _state.value = rollbackState.copy(
+                    selectedDetails = reverted,
+                    items = updateItemsWithDetails(rollbackState.items, reverted),
+                )
+            }
+        }
+    }
+
+    private fun updateItemsWithDetails(
+        items: WooPosBookingsState.Content.Items,
+        updatedDetails: WooPosBookingsState.BookingDetailsViewState
+    ): WooPosBookingsState.Content.Items {
+        val loaded = items as? WooPosBookingsState.Content.Items.Loaded ?: return items
+        val updatedMap = loaded.items.map { (item, details) ->
+            if (item.id == updatedDetails.id) {
+                item.copy(
+                    attendanceBadge = updatedDetails.attendanceBadge ?: item.attendanceBadge
+                ) to updatedDetails
+            } else {
+                item to details
+            }
+        }.toMap()
+        return WooPosBookingsState.Content.Items.Loaded(updatedMap)
     }
 
     private fun handleAddBookingNote() {
