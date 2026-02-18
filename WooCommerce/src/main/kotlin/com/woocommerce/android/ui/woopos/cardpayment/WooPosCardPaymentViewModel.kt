@@ -192,13 +192,36 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             ),
                             subtitle = resourceProvider.getString(event.message),
                             retryButtonLabel = resourceProvider.getString(
-                                R.string.woo_pos_payment_failed_try_another_payment_method
+                                R.string.woo_pos_payment_failed_go_back
+                            ),
+                            isDismissButtonVisible = false
+                        )
+                    }
+                    is CardReaderPaymentEvent.ShowPaymentErrorMessage -> {
+                        _state.value = WooPosCardPaymentState.PaymentFailed(
+                            title = resourceProvider.getString(
+                                R.string.woopos_success_totals_payment_failed_title
+                            ),
+                            subtitle = resourceProvider.getString(event.message),
+                            retryButtonLabel = resourceProvider.getString(
+                                R.string.woo_pos_payment_failed_go_back
                             ),
                             isDismissButtonVisible = false
                         )
                     }
 
-                    else -> Unit
+                    is CardReaderPaymentEvent.Exit,
+                    is CardReaderPaymentEvent.PlaySuccessfulPaymentSound -> Unit
+
+                    is CardReaderPaymentEvent.InteracRefundSuccessful,
+                    is CardReaderPaymentEvent.ContactSupportTapped,
+                    is CardReaderPaymentEvent.EnableNfcTapped,
+                    is CardReaderPaymentEvent.PurchaseCardReaderTapped,
+                    is CardReaderPaymentEvent.PrintReceiptTapped -> {
+                        throw IllegalArgumentException(
+                            "Payment event: $event not compatible with POS"
+                        )
+                    }
                 }
             }
         }
@@ -249,11 +272,11 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onRetryClicked() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
-        check(paymentState != null) {
-            "Retry clicked but payment controller is null"
-        }
-        check(paymentState is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
-            "Retry clicked but payment state is not PaymentFailed"
+        if (paymentState !is CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment) {
+            viewModelScope.launch {
+                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            }
+            return
         }
         val onRetry = paymentState.onRetry
         if (onRetry != null) {

@@ -310,20 +310,22 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        controllerEventFlow.emit(
-            CardReaderPaymentEvent.ShowErrorMessage(
-                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-    }
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            assertThat((state as WooPosCardPaymentState.PaymentFailed).isDismissButtonVisible).isFalse()
+        }
 
     @Test
     fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
