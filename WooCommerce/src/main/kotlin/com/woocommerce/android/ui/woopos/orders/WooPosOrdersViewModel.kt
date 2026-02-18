@@ -107,6 +107,11 @@ class WooPosOrdersViewModel @Inject constructor(
             paginationState = WooPosPaginationState.None,
             dialogState = WooPosOrdersState.Content.DialogState.Hidden
         )
+        ordersAnalyticsTracker.trackOrderDetailsLoaded(
+            orderId = orderId,
+            orderStatus = order.status.value,
+            createdAtMillis = order.dateCreated.time
+        )
         sideLoadActions(orderId, order)
     }
 

@@ -1343,6 +1343,25 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
+    fun `given single order mode, when order loaded, then tracks OrderDetailsLoaded`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
+            orderId = eq(targetOrderId),
+            orderStatus = any(),
+            createdAtMillis = any()
+        )
+    }
+
+    @Test
     fun `when refund dialog is dismissed, then refreshes selected order`() = runTest {
         // GIVEN
         whenever(dataSource.loadOrders(any())).thenReturn(
