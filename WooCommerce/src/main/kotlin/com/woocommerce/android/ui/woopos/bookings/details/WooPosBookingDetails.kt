@@ -37,13 +37,13 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.bookings.PaymentStatus
 import com.woocommerce.android.ui.woopos.bookings.WOO_POS_BOOKINGS_TOOLBAR_HEIGHT
 import com.woocommerce.android.ui.woopos.bookings.WooPosAttendanceBadge
-import com.woocommerce.android.ui.woopos.bookings.WooPosBookingStatus
-import com.woocommerce.android.ui.woopos.bookings.WooPosBookingStatusColorKey
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsState
-import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsStatusBadge
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingsUIEvent
+import com.woocommerce.android.ui.woopos.bookings.WooPosCancelledBadge
+import com.woocommerce.android.ui.woopos.bookings.WooPosPaymentStatusBadge
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
@@ -137,12 +137,16 @@ private fun BookingHeader(
 
     Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-    Row {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+    ) {
+        if (details.isCancelled) {
+            WooPosCancelledBadge()
+        }
         details.attendanceBadge?.let { badge ->
             WooPosAttendanceBadge(attendanceState = badge)
-            Spacer(Modifier.width(WooPosSpacing.Small.value))
         }
-        WooPosBookingsStatusBadge(status = details.status)
+        WooPosPaymentStatusBadge(paymentStatus = details.paymentStatus)
     }
 }
 
@@ -553,7 +557,8 @@ fun WooPosBookingDetailsPreview() {
         id = 333L,
         orderId = 3330L,
         number = "#333",
-        status = WooPosBookingStatus(text = "Unpaid", colorKey = WooPosBookingStatusColorKey.FAILED),
+        paymentStatus = PaymentStatus.UNPAID,
+        isCancelled = false,
         actionsState = WooPosBookingsState.BookingActionsState.Loaded(
             listOf(
                 WooPosBookingsState.BookingAction.EmailReceipt(3330L),

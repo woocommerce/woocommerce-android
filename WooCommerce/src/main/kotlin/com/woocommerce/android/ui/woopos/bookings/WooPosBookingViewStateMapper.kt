@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.util.normalizeDuration
 import com.woocommerce.android.util.toHumanReadableFormat
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -17,25 +16,35 @@ import java.time.format.FormatStyle
 import javax.inject.Inject
 
 class WooPosBookingViewStateMapper @Inject constructor(
-    private val dateFormatter: DateFormatter,
     private val resourceProvider: ResourceProvider,
     private val formatPrice: WooPosFormatPrice,
+    private val paymentStatusResolver: WooPosPaymentStatusResolver,
+    private val timeRangeFormatter: WooPosBookingTimeRangeFormatter,
 ) {
 
     suspend fun mapToItemViewState(
         booking: BookingEntity,
         selectedBookingId: Long?,
     ): WooPosBookingsState.BookingItemViewState {
+        val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
+        val customerName = buildCustomerName(booking.order.customerInfo)
+        val subtitle = buildString {
+            append(bookingName)
+            customerName?.let { append(" \u00B7 $it") }
+        }
+        val timeRange = formatTimeRange(booking)
+        val paymentStatus = paymentStatusResolver.resolve(
+            orderId = booking.orderId,
+            orderTotal = booking.order.paymentInfo?.total,
+        )
+
         return WooPosBookingsState.BookingItemViewState(
             id = booking.id.value,
-            title = booking.order.productInfo?.name ?: "#${booking.id.value}",
-            date = dateFormatter.formatDateTime(booking.start),
-            total = booking.order.paymentInfo?.let { formatPrice(it.total, booking.currency) } ?: "",
-            customerEmail = booking.order.customerInfo?.billingEmail?.ifBlank { null },
+            timeRange = timeRange,
+            subtitle = subtitle,
             isSelected = booking.id.value == selectedBookingId,
-            status = mapBookingStatus(booking.status),
-            statusSlug = booking.status.key,
-            createdAtMillis = booking.start.toEpochMilli(),
+            paymentStatus = paymentStatus,
+            isCancelled = booking.status == BookingEntity.Status.Cancelled,
             attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
         )
     }
@@ -58,11 +67,17 @@ class WooPosBookingViewStateMapper @Inject constructor(
             customerName?.let { append(" \u00B7 $it") }
         }
 
+        val paymentStatus = paymentStatusResolver.resolve(
+            orderId = booking.orderId,
+            orderTotal = booking.order.paymentInfo?.total,
+        )
+
         return WooPosBookingsState.BookingDetailsViewState(
             id = booking.id.value,
             orderId = booking.orderId,
             number = "#${booking.id.value}",
-            status = mapBookingStatus(booking.status),
+            paymentStatus = paymentStatus,
+            isCancelled = booking.status == BookingEntity.Status.Cancelled,
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 buildList {
                     add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
@@ -95,10 +110,11 @@ class WooPosBookingViewStateMapper @Inject constructor(
     }
 
     private fun buildCustomerName(customerInfo: BookingCustomerInfo?): String? {
-        return listOfNotNull(
+        val name = listOfNotNull(
             customerInfo?.billingFirstName,
             customerInfo?.billingLastName
         ).joinToString(" ").ifBlank { null }
+        return name ?: customerInfo?.billingEmail?.ifBlank { null }
     }
 
     private fun buildAttendanceSection(
@@ -177,43 +193,17 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return parts.joinToString(", ").ifBlank { null }
     }
 
+    private fun formatTimeRange(booking: BookingEntity): String {
+        return timeRangeFormatter.format(booking.start, booking.end)
+    }
+
     private fun mapAttendanceBadge(
         status: BookingEntity.AttendanceStatus
-    ): WooPosBookingsState.AttendanceState? {
+    ): WooPosBookingsState.AttendanceState {
         return when (status) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            else -> null
+            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
-    }
-
-    private fun formatTimeRange(booking: BookingEntity): String {
-        val startTime = dateFormatter.formatTime(booking.start)
-        val endTime = dateFormatter.formatTime(booking.end)
-        val amPmPattern = Regex("\\s*([AaPp][Mm])$")
-        val startSuffix = amPmPattern.find(startTime)?.groupValues?.get(1)
-        val endSuffix = amPmPattern.find(endTime)?.groupValues?.get(1)
-        return if (startSuffix != null && startSuffix.equals(endSuffix, ignoreCase = true)) {
-            "${startTime.replace(amPmPattern, "")}-$endTime"
-        } else {
-            "$startTime-$endTime"
-        }
-    }
-
-    fun mapBookingStatus(status: BookingEntity.Status): WooPosBookingStatus {
-        val colorKey = when (status) {
-            BookingEntity.Status.Complete -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Paid -> WooPosBookingStatusColorKey.COMPLETED
-            BookingEntity.Status.Confirmed -> WooPosBookingStatusColorKey.PROCESSING
-            BookingEntity.Status.PendingConfirmation -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Unpaid -> WooPosBookingStatusColorKey.ON_HOLD
-            BookingEntity.Status.Cancelled -> WooPosBookingStatusColorKey.FAILED
-            BookingEntity.Status.InCart -> WooPosBookingStatusColorKey.OTHER
-            is BookingEntity.Status.Unknown -> WooPosBookingStatusColorKey.OTHER
-        }
-        return WooPosBookingStatus(
-            text = status.key.replaceFirstChar { it.uppercase() }.replace("-", " "),
-            colorKey = colorKey
-        )
     }
 }
