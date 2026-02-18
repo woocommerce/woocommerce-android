@@ -12,7 +12,6 @@ import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
-import com.woocommerce.android.util.DateFormatter
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -39,6 +38,7 @@ import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.math.BigDecimal
 import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -49,9 +49,18 @@ class WooPosBookingsViewModelTest {
     val coroutineTestRule = WooPosCoroutineTestRule(StandardTestDispatcher())
 
     private val bookingListHandler: BookingListHandler = mock()
+    private val bookingsRepository: BookingsRepository = mock {
+        on { observeResources() } doAnswer { flowOf(emptyList()) }
+        onBlocking { fetchResources() } doAnswer { Result.success(Unit) }
+    }
     private val dateTimeProvider: DateTimeProvider = mock()
-    private val dateFormatter: DateFormatter = mock()
-    private val priceFormat: WooPosFormatPrice = mock()
+    private val formatPrice: WooPosFormatPrice = mock {
+        on { invoke(any<BigDecimal>(), any()) } doAnswer { invocation ->
+            val price = invocation.arguments[0] as BigDecimal
+            "$${price.toPlainString()}"
+        }
+    }
+    private val timeRangeFormatter: WooPosBookingTimeRangeFormatter = mock()
     private val resourceProvider: ResourceProvider = mock {
         on { getQuantityString(any(), any(), anyOrNull(), anyOrNull()) } doAnswer { invocation ->
             val quantity = invocation.arguments[0] as Int
@@ -79,7 +88,7 @@ class WooPosBookingsViewModelTest {
             "Cancel dialog message"
         }
     }
-    private val bookingsRepository: BookingsRepository = mock()
+    private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -113,21 +122,25 @@ class WooPosBookingsViewModelTest {
     private fun createViewModel(): WooPosBookingsViewModel {
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
-            dateTimeProvider = dateTimeProvider,
-            mapper = WooPosBookingViewStateMapper(dateFormatter, resourceProvider, priceFormat),
             bookingsRepository = bookingsRepository,
+            dateTimeProvider = dateTimeProvider,
+            mapper = WooPosBookingViewStateMapper(
+                resourceProvider,
+                formatPrice,
+                paymentStatusResolver,
+                timeRangeFormatter,
+            ),
             resourceProvider = resourceProvider,
         )
     }
 
     @Before
     fun setUp() = runTest {
-        whenever(priceFormat(anyOrNull())).doAnswer { invocation ->
+        whenever(formatPrice(anyOrNull())).doAnswer { invocation ->
             val amount = invocation.arguments[0] as? java.math.BigDecimal
             amount?.let { "$${it.toPlainString()}" } ?: "$0.00"
         }
-        whenever(dateFormatter.formatDateTime(any<Instant>())).thenReturn("Nov 14, 2023, 10:13 AM")
-        whenever(dateFormatter.formatTime(any<Instant>())).thenReturn("10:13 AM")
+        whenever(timeRangeFormatter.format(any(), any())).thenReturn("10:13 AM – 11:13 AM")
         whenever(bookingListHandler.bookingsFlow).thenReturn(
             flowOf(listOf(booking(1), booking(2)))
         )
@@ -136,6 +149,7 @@ class WooPosBookingsViewModelTest {
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
         whenever(dateTimeProvider.now()).thenReturn(0L)
+        whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }
 
     @Test
@@ -626,6 +640,92 @@ class WooPosBookingsViewModelTest {
                 // THEN
                 expectNoEvents()
             }
+        }
+
+    @Test
+    fun `given content state, when attendance toggled to attended, then selection updates optimistically`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection)
+            .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+        assertThat(content.selectedDetails?.attendanceBadge)
+            .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+    }
+
+    @Test
+    fun `given content state, when attendance toggled to unattended, then selection updates optimistically`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection)
+            .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
+        assertThat(content.selectedDetails?.attendanceBadge)
+            .isEqualTo(WooPosBookingsState.AttendanceState.UNATTENDED)
+    }
+
+    @Test
+    fun `given content state, when attendance toggle API fails, then selection reverts to previous value`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val contentBefore = viewModel.state.value as WooPosBookingsState.Content
+        val previousSelection = contentBefore.selectedDetails?.attendanceSection?.selection
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.selectedDetails?.attendanceSection?.selection).isEqualTo(previousSelection)
+    }
+
+    @Test
+    fun `given content state, when attendance toggled to attended, then repository called with correct params`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingsRepository).updateAttendanceStatus(
+                bookingId = 1L,
+                attendanceStatus = BookingEntity.AttendanceStatus.Attended
+            )
         }
 
     @Test

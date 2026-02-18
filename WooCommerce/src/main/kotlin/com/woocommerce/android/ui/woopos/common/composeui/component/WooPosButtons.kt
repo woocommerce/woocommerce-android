@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -159,38 +160,21 @@ fun WooPosToggleButton(
     state: WooPosButtonState = WooPosButtonState.ENABLED,
     onClick: () -> Unit,
 ) {
-    val borderColor = when {
-        state == WooPosButtonState.DISABLED -> WooPosTheme.colors.disabledContainer
-        else -> MaterialTheme.colorScheme.inverseSurface
+    if (isSelected) {
+        WooPosButtonSmall(
+            modifier = modifier,
+            text = text,
+            state = state,
+            onClick = onClick,
+        )
+    } else {
+        WooPosOutlinedButtonSmall(
+            modifier = modifier,
+            text = text,
+            state = state,
+            onClick = onClick,
+        )
     }
-    Button(
-        modifier = modifier,
-        height = 80.dp,
-        loadingIndicatorSize = 32.dp,
-        textStyle = WooPosTypography.BodyLarge,
-        text = text,
-        border = BorderStroke(2.dp, borderColor),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = if (isSelected) {
-                MaterialTheme.colorScheme.inverseSurface
-            } else {
-                WooPosTheme.colors.transparent
-            },
-            contentColor = if (isSelected) {
-                MaterialTheme.colorScheme.inverseOnSurface
-            } else {
-                MaterialTheme.colorScheme.onSurface
-            },
-            disabledContainerColor = if (isSelected) {
-                WooPosTheme.colors.disabledContainer
-            } else {
-                WooPosTheme.colors.transparent
-            },
-            disabledContentColor = WooPosTheme.colors.onDisabledContainer,
-        ),
-        state = state,
-        onClick = onClick,
-    )
 }
 
 @Composable
@@ -364,25 +348,24 @@ fun WooPosButtonsPreview() {
 
             Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-            WooPosToggleButton(
-                text = "Toggle Selected",
-                isSelected = true,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {}
-            )
-            WooPosToggleButton(
-                text = "Toggle Unselected",
-                isSelected = false,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {}
-            )
-            WooPosToggleButton(
-                text = "Toggle Disabled",
-                isSelected = false,
-                state = WooPosButtonState.DISABLED,
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {}
-            )
+            Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+                WooPosToggleButton(
+                    text = "Selected",
+                    isSelected = true,
+                    onClick = {}
+                )
+                WooPosToggleButton(
+                    text = "Unselected",
+                    isSelected = false,
+                    onClick = {}
+                )
+                WooPosToggleButton(
+                    text = "Disabled",
+                    isSelected = false,
+                    state = WooPosButtonState.DISABLED,
+                    onClick = {}
+                )
+            }
         }
     }
 }
@@ -454,6 +437,21 @@ fun WooPosSmallButtonsPreview() {
                 state = WooPosButtonState.LOADING,
                 onClick = {}
             )
+
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+            Row(horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value)) {
+                WooPosToggleButton(
+                    text = "Selected",
+                    isSelected = true,
+                    onClick = {}
+                )
+                WooPosToggleButton(
+                    text = "Unselected",
+                    isSelected = false,
+                    onClick = {}
+                )
+            }
         }
     }
 }

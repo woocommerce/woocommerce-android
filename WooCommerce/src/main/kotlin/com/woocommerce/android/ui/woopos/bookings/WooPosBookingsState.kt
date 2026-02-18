@@ -66,7 +66,8 @@ sealed class WooPosBookingsState {
         val id: Long,
         val orderId: Long,
         val number: String,
-        val status: WooPosBookingStatus,
+        val paymentStatus: PaymentStatus,
+        val isCancelled: Boolean,
         val actionsState: BookingActionsState,
         val headerTitle: String,
         val headerSubtitle: String,
@@ -86,14 +87,12 @@ sealed class WooPosBookingsState {
     @Immutable
     data class BookingItemViewState(
         val id: Long,
-        val title: String,
-        val date: String,
-        val total: String,
-        val customerEmail: String?,
+        val timeRange: String,
+        val subtitle: String,
         val isSelected: Boolean,
-        val status: WooPosBookingStatus,
-        val statusSlug: String,
-        val createdAtMillis: Long
+        val paymentStatus: PaymentStatus,
+        val isCancelled: Boolean,
+        val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
     )
 
     @Immutable
@@ -158,15 +157,10 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState()
 }
 
-enum class WooPosBookingStatusColorKey {
-    COMPLETED,
+enum class PaymentStatus {
+    PAID,
+    UNPAID,
     FAILED,
-    PROCESSING,
-    ON_HOLD,
-    OTHER
+    REFUNDED,
+    PARTIALLY_REFUNDED,
 }
-
-data class WooPosBookingStatus(
-    val text: String,
-    val colorKey: WooPosBookingStatusColorKey
-)
