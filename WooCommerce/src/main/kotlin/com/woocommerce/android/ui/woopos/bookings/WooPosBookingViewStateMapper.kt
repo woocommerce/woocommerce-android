@@ -58,7 +58,10 @@ class WooPosBookingViewStateMapper @Inject constructor(
             number = "#${booking.id.value}",
             status = mapBookingStatus(booking.status),
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
-                listOf(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                listOf(
+                    WooPosBookingsState.BookingAction.ViewOrder(booking.orderId),
+                    WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId),
+                )
             ),
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,

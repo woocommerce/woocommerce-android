@@ -28,6 +28,7 @@ sealed class WooPosNavigationEvent {
     ) : WooPosNavigationEvent()
     data object OpenSettings : WooPosNavigationEvent()
     data object OpenOrders : WooPosNavigationEvent()
+    data class OpenOrderDetails(val orderId: Long) : WooPosNavigationEvent()
     data object OpenBookings : WooPosNavigationEvent()
     data class OpenBookingNote(val bookingId: Long) : WooPosNavigationEvent()
 }
