@@ -401,12 +401,155 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                 Result.success(FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden)
             )
 
-        assertThat(state.siteAddress).isEqualTo("coffeebeans.com")
+            val viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val connectStoreStep = viewModel.viewState.getOrAwaitValue().steps.first()
+            assertThat(connectStoreStep.state).isInstanceOf(StepState.Error::class.java)
+            assertThat((connectStoreStep.state as StepState.Error).errorMessage)
+                .isEqualTo(
+                    UiString.UiStringRes(
+                        R.string.woo_push_notifications_connection_steps_error_connection_permission_message
+                    )
+                )
+        }
+
+    @Test
+    fun `given connection confirmation fails, when screen starts, then connect step shows generic error`() = testBlocking {
+        val status = JetpackConnectionStatus.AccountNotConnected(
+            siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+            blogId = 1L
+        )
+        whenever(fetchJetpackStatus(site = site, useApplicationPasswords = true)).thenReturn(
+            Result.success(
+                FetchJetpackStatus.JetpackStatusFetchResponse.Success(
+                    JetpackStatus(
+                        isJetpackInstalled = true,
+                        jetpackConnectionStatus = status
+                    )
+                )
+            )
+        )
+        whenever(
+            jetpackActivationRepository.connectJetpackAccount(
+                site = site,
+                jetpackConnectionStatus = status,
+                useApplicationPasswords = true
+            )
+        ).thenReturn(Result.success(Unit))
+        whenever(jetpackActivationRepository.fetchJetpackSite(SITE_URL))
+            .thenReturn(Result.failure(IllegalStateException("Site missing")))
+
+        val viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val connectStoreStep = viewModel.viewState.getOrAwaitValue().steps.first()
+        assertThat(connectStoreStep.state).isInstanceOf(StepState.Error::class.java)
+        assertThat((connectStoreStep.state as StepState.Error).errorMessage)
+            .isEqualTo(UiString.UiStringRes(R.string.woo_push_notifications_connection_steps_generic_error_message))
     }
 
     @Test
-    fun `when close is clicked, then Exit event is triggered`() {
-        setup()
+    fun `given connection step is already complete in saved state, when view model is recreated, then no network call is retriggered`() =
+        testBlocking {
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CURRENT_STEP to
+                        WooPushNotificationsConnectionStepsViewModel.Step(
+                            type = WooPushNotificationsConnectionStepsViewModel.StepType.ConnectStore,
+                            state = WooPushNotificationsConnectionStepsViewModel.StepState.Success
+                        ),
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CONNECT_STORE_STAGE to
+                        WooPushNotificationsConnectionStepsViewModel.ConnectStoreStage.ConfirmConnection
+                )
+            )
+
+            createViewModel(savedStateHandle)
+            advanceUntilIdle()
+
+            verifyNoInteractions(fetchJetpackStatus, jetpackActivationRepository)
+        }
+
+    @Test
+    fun `given connection step is ongoing webview stage in saved state, when view model is recreated, then it resumes from webview stage`() =
+        testBlocking {
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CURRENT_STEP to
+                        WooPushNotificationsConnectionStepsViewModel.Step(
+                            type = WooPushNotificationsConnectionStepsViewModel.StepType.ConnectStore,
+                            state = WooPushNotificationsConnectionStepsViewModel.StepState.Ongoing
+                        ),
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CONNECT_STORE_STAGE to
+                        WooPushNotificationsConnectionStepsViewModel.ConnectStoreStage.WebViewConnection
+                )
+            )
+            whenever(
+                jetpackActivationRepository.fetchJetpackConnectionUrl(
+                    site = site,
+                    useApplicationPasswords = true
+                )
+            ).thenReturn(Result.success("https://example.com/connect"))
+
+            val firstViewModel = createViewModel(savedStateHandle)
+            val firstEvent = firstViewModel.event.runAndCaptureValues {
+                advanceUntilIdle()
+            }.last()
+
+            assertThat(firstEvent).isEqualTo(
+                WooPushNotificationsConnectionStepsViewModel.ShowJetpackConnectionWebView(
+                    "$SITE_URL/wp-admin/admin.php?page=jetpack"
+                )
+            )
+
+            clearInvocations(fetchJetpackStatus, jetpackActivationRepository)
+
+            val secondViewModel = createViewModel(savedStateHandle)
+            val secondEvent = secondViewModel.event.runAndCaptureValues {
+                advanceUntilIdle()
+            }.last()
+
+            assertThat(secondEvent).isEqualTo(
+                WooPushNotificationsConnectionStepsViewModel.ShowJetpackConnectionWebView(
+                    "$SITE_URL/wp-admin/admin.php?page=jetpack"
+                )
+            )
+            verifyNoInteractions(fetchJetpackStatus)
+            verify(jetpackActivationRepository).fetchJetpackConnectionUrl(site = site, useApplicationPasswords = true)
+        }
+
+    @Test
+    fun `given connection step is ongoing confirmation in saved state, when view model is recreated, then it resumes from confirmation stage`() =
+        testBlocking {
+            val savedStateHandle = SavedStateHandle(
+                mapOf(
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CURRENT_STEP to
+                        WooPushNotificationsConnectionStepsViewModel.Step(
+                            type = WooPushNotificationsConnectionStepsViewModel.StepType.ConnectStore,
+                            state = WooPushNotificationsConnectionStepsViewModel.StepState.Ongoing
+                        ),
+                    WooPushNotificationsConnectionStepsViewModel.KEY_CONNECT_STORE_STAGE to
+                        WooPushNotificationsConnectionStepsViewModel.ConnectStoreStage.ConfirmConnection
+                )
+            )
+            whenever(jetpackActivationRepository.fetchJetpackSite(SITE_URL)).thenReturn(Result.success(site))
+
+            val viewModel = createViewModel(savedStateHandle)
+            advanceUntilIdle()
+
+            val connectStoreStep = viewModel.viewState.getOrAwaitValue().steps.first()
+            assertThat(connectStoreStep.state).isEqualTo(WooPushNotificationsConnectionStepsViewModel.StepState.Success)
+            clearInvocations(fetchJetpackStatus, jetpackActivationRepository)
+
+            createViewModel(savedStateHandle)
+            advanceUntilIdle()
+
+            verifyNoInteractions(fetchJetpackStatus, jetpackActivationRepository)
+        }
+
+    @Test
+    fun `when close is clicked, then Exit event is triggered`() = testBlocking {
+        val viewModel = createViewModel()
 
         viewModel.onCloseClick()
 
@@ -415,8 +558,8 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when contact support is clicked, then NavigateToHelpScreen event is triggered`() {
-        setup()
+    fun `when contact support is clicked, then NavigateToHelpScreen event is triggered`() = testBlocking {
+        val viewModel = createViewModel()
 
         viewModel.onContactSupportClick()
 
