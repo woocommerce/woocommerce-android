@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.woopos.bookings.WooPosBookingTimeRangeFormatter
 import com.woocommerce.android.ui.woopos.orders.WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo
@@ -15,6 +14,10 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.LocalOrRemoteId
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import java.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -32,10 +35,34 @@ class WooPosBookingInfoMapperTest : BaseUnitTest() {
         timeRangeFormatter = timeRangeFormatter,
     )
 
-    private fun createBooking(): Booking = mock<Booking>().apply {
-        whenever(start).thenReturn(Instant.parse("2025-03-15T10:00:00Z"))
-        whenever(end).thenReturn(Instant.parse("2025-03-15T11:00:00Z"))
-    }
+    private fun createBooking(): BookingEntity = BookingEntity(
+        id = LocalOrRemoteId.RemoteId(42L),
+        localSiteId = LocalOrRemoteId.LocalId(1),
+        start = Instant.parse("2025-03-15T10:00:00Z"),
+        end = Instant.parse("2025-03-15T11:00:00Z"),
+        allDay = false,
+        status = BookingEntity.Status.Confirmed,
+        cost = "0.00",
+        currency = "USD",
+        customerId = 1L,
+        productId = 1L,
+        resourceId = 1L,
+        dateCreated = Instant.parse("2025-03-15T10:00:00Z"),
+        dateModified = Instant.parse("2025-03-15T10:00:00Z"),
+        googleCalendarEventId = "",
+        orderId = 1L,
+        orderItemId = 1L,
+        parentId = 0L,
+        personCounts = listOf(1L),
+        localTimezone = "UTC",
+        attendanceStatus = BookingEntity.AttendanceStatus.Attended,
+        order = BookingOrderInfo(
+            status = "completed",
+            productInfo = BookingProductInfo(name = "Test Product"),
+            customerInfo = null,
+        ),
+        customerNote = null,
+    )
 
     @Test
     fun `given booking cached, when resolveBookingInfo, then returns Loaded`() = testBlocking {
