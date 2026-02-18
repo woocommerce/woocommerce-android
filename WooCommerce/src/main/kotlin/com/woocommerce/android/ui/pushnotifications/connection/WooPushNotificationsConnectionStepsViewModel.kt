@@ -17,6 +17,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -24,6 +25,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
@@ -91,14 +93,19 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 if (step.state != StepState.Ongoing) return@collectLatest
 
                 when (step.type) {
-                    StepType.ConnectStore -> Unit // TODO
-                    StepType.CheckPluginCompatibility -> Unit // TODO
+                    StepType.ConnectStore -> { // TODO
+                        delay(1.seconds)
+                        advanceToNextStep()
+                    }
+                    StepType.CheckPluginCompatibility -> { // TODO
+                        delay(1.seconds)
+                        advanceToNextStep()
+                    }
                     StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
     }
 
-    @Suppress("unused")
     private fun advanceToNextStep() {
         currentStep.update { current ->
             val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)

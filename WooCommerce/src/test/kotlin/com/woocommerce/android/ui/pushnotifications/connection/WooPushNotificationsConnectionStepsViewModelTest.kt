@@ -8,10 +8,12 @@ import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
 import com.woocommerce.android.util.getOrAwaitValue
+import com.woocommerce.android.util.runAndGetValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.advanceUntilIdle
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -117,7 +119,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                 .thenReturn(Result.failure(Exception("registration failed")))
         }
 
-        val state = viewModel.viewState.getOrAwaitValue()
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
 
         assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
         assertThat(state.steps[2].state).isInstanceOf(StepState.Error::class.java)
@@ -129,7 +133,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
         }
 
-        val state = viewModel.viewState.getOrAwaitValue()
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
 
         assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
         assertThat(state.steps[2].state).isInstanceOf(StepState.Error::class.java)
@@ -144,7 +150,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                     .thenReturn(Result.failure(Exception("registration failed")))
             }
 
-            val errorState = viewModel.viewState.getOrAwaitValue()
+            val errorState = viewModel.viewState.runAndGetValue {
+                advanceUntilIdle()
+            }
             assertThat(errorState.steps[2].state).isInstanceOf(StepState.Error::class.java)
 
             whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
@@ -163,7 +171,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                 .thenReturn(Result.success(Unit))
         }
 
-        val state = viewModel.viewState.getOrAwaitValue()
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
 
         assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
