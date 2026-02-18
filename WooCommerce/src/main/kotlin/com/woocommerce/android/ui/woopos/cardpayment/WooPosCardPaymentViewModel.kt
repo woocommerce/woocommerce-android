@@ -116,6 +116,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+            allowCancelledStatus = source == CardPaymentSource.BOOKINGS,
         )
         cardReaderPaymentController?.start()
         listenToPaymentState()
