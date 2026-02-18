@@ -140,8 +140,10 @@ class OrderMapper @Inject constructor(
                     configurationKey = it.configurationKey,
                     containsMetadata = it.metaData?.isNotEmpty() ?: false,
                     bookingId = it.metaData
-                        ?.firstOrNull { meta -> meta.key == "_booking_id" }
-                        ?.value?.stringValue?.toLongOrNull(),
+                        ?.firstOrNull { meta -> meta.key == WCMetaData.BookingMetadataKeys.BOOKING_ID }
+                        ?.value?.stringValue
+                        ?.trim('[', ']')
+                        ?.toLongOrNull(),
                     taxes = it.taxes?.mapLineTaxes() ?: emptyList()
                 )
             }
