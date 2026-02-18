@@ -103,6 +103,18 @@ class DateFormatterTest {
     }
 
     @Test
+    fun `when formatDate with Instant, then returns localized medium date`() {
+        // GIVEN
+        val instant = Instant.parse("2025-12-12T23:00:00Z")
+
+        // WHEN
+        val result = formatter.formatDate(instant)
+
+        // THEN
+        assertThat(result).isEqualTo("Dec 12, 2025")
+    }
+
+    @Test
     fun `when formatTime invokes, then LocalDateTime respects 24h setting`() {
         // GIVEN
         whenever(DateFormat.is24HourFormat(context)).thenReturn(true)
