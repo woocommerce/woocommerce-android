@@ -121,8 +121,8 @@ google-upload-credentials.json
 # Junie AI Assistant
 .junie/
 
-# Claude Code
+# AI Agents (shared config committed, personal config ignored)
 /CLAUDE.local.md
-.claude/
+.claude/settings.local.json
 
 .grepai/
