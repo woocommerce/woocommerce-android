@@ -27,6 +27,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
@@ -202,7 +203,7 @@ class PushNotificationRepository @Inject constructor(
     }
 
     private fun getDeviceLocale(): String {
-        val locale = localeProvider.provideLocale() ?: java.util.Locale.getDefault()
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
         return "${locale.language}_${locale.country}".ifBlank { "en_US" }
     }
 
