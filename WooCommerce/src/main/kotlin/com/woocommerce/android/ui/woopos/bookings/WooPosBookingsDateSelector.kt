@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -27,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.component.DatePickerDialog
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosIconButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
@@ -43,48 +44,60 @@ fun WooPosBookingsDateSelector(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val primaryColor = MaterialTheme.colorScheme.primary
+
     Column(modifier = modifier.fillMaxWidth()) {
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(vertical = WooPosSpacing.XSmall.value),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
         ) {
-            WooPosIconButton(
-                icon = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
-                contentDescription = stringResource(R.string.woopos_bookings_date_selector_previous_day),
+            IconButton(
                 onClick = { onUIEvent(WooPosBookingsUIEvent.PreviousDayClicked) }
-            )
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
+                    contentDescription = stringResource(R.string.woopos_bookings_date_selector_previous_day),
+                    tint = primaryColor,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
 
             Row(
                 modifier = Modifier
+                    .widthIn(min = 130.dp)
                     .clickable { showDatePicker = true }
                     .padding(horizontal = WooPosSpacing.XSmall.value),
                 verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_16),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.size(20.dp),
+                    tint = primaryColor,
+                    modifier = Modifier.size(16.dp),
                 )
                 Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
                 WooPosText(
                     text = dateSelectorState.formattedDate,
-                    style = WooPosTypography.BodyLarge,
-                    fontWeight = FontWeight.Medium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    style = WooPosTypography.BodySmall,
+                    fontWeight = FontWeight.Normal,
+                    color = primaryColor,
                 )
             }
 
-            WooPosIconButton(
-                icon = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
-                contentDescription = stringResource(R.string.woopos_bookings_date_selector_next_day),
+            IconButton(
                 onClick = { onUIEvent(WooPosBookingsUIEvent.NextDayClicked) }
-            )
+            ) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
+                    contentDescription = stringResource(R.string.woopos_bookings_date_selector_next_day),
+                    tint = primaryColor,
+                    modifier = Modifier.size(24.dp),
+                )
+            }
         }
 
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
