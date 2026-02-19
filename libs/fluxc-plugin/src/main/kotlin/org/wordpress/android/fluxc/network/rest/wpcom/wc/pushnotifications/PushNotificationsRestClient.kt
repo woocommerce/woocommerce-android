@@ -16,16 +16,14 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
         request: PushTokenRegistrationRequest
     ): WooPayload<PushTokenIdResponse> {
         val path = WOOCOMMERCE.push_tokens.pathPushNotifications
-        val body = mutableMapOf<String, Any>(
+        val body = mutableMapOf(
             "token" to request.token,
             "platform" to "android",
             "origin" to request.origin,
             "device_uuid" to request.deviceUuid,
             "device_locale" to request.deviceLocale,
+            "metadata" to request.metadata
         )
-        if (request.metadata.isNotEmpty()) {
-            body["metadata"] = request.metadata
-        }
         return wooNetwork.executePostGsonRequest(
             site = site,
             path = path,
