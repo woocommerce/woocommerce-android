@@ -11,7 +11,7 @@ Diagnose and resolve build compilation errors or test failures.
 
 ## For Build Failures
 
-1. **Run the build** to capture the full error output:
+1. **Run the build** to capture the full error output. Use `assembleWasabiDebug` (main app only — do NOT use `assemble` or `assembleDebug` which also builds the Wear OS app and is slower):
    ```
    ./gradlew assembleWasabiDebug 2>&1
    ```
