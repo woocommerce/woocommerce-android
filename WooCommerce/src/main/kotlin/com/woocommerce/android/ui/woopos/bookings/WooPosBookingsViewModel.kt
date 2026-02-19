@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -33,6 +34,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val bookingsRepository: BookingsRepository,
     private val dateTimeProvider: DateTimeProvider,
     private val mapper: WooPosBookingViewStateMapper,
+    private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
@@ -117,12 +119,20 @@ class WooPosBookingsViewModel @Inject constructor(
                     items.entries.find { it.key.id == id }?.value
                 }
 
+                val currentContentState = _state.value as? WooPosBookingsState.Content
+                val paginationState = when (currentContentState?.paginationState) {
+                    WooPosPaginationState.Loading,
+                    WooPosPaginationState.Error -> WooPosPaginationState.None
+                    else -> currentContentState?.paginationState ?: WooPosPaginationState.None
+                }
+
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
                     pullToRefreshState = WooPosPullToRefreshState.Enabled,
                     selectedDetails = selectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                    paginationState = paginationState,
+                    dialogState = currentContentState?.dialogState
+                        ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
             }
         }
@@ -177,18 +187,16 @@ class WooPosBookingsViewModel @Inject constructor(
         if (loadMoreJob?.isActive == true) return
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         if (currentState.paginationState is WooPosPaginationState.Error) return
+        if (!bookingListHandler.hasMorePages) return
 
         loadMoreJob = viewModelScope.launch {
             fetchJob?.join()
 
+            if (!bookingListHandler.hasMorePages) return@launch
             val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
             bookingListHandler.loadMore()
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(
@@ -211,10 +219,6 @@ class WooPosBookingsViewModel @Inject constructor(
             }
 
             result
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
@@ -238,10 +242,15 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.AttendanceToggled -> handleAttendanceToggle(event.attended)
             is WooPosBookingsUIEvent.CollectPaymentClicked -> handleCollectPayment()
             is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
-            is WooPosBookingsUIEvent.CopyEmailClicked -> { }
+            is WooPosBookingsUIEvent.CopyEmailClicked -> handleCopyToClipboard(event.email)
+            is WooPosBookingsUIEvent.CopyPhoneClicked -> handleCopyToClipboard(event.phone)
             is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
             is WooPosBookingsUIEvent.CancelBookingDismissed -> handleCancelDismissed()
         }
+    }
+
+    private fun handleCopyToClipboard(text: String) {
+        clipboardHelper.copyToClipboard(text)
     }
 
     fun onIssueRefundDialogDismissed() {
@@ -343,6 +352,13 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
+            is WooPosBookingsState.BookingAction.ViewOrder -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
+                    )
+                }
+            }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
             }

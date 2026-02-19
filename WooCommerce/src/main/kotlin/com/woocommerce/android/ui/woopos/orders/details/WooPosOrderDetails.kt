@@ -60,6 +60,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    showOrderNumber: Boolean = true,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
@@ -77,11 +78,13 @@ fun WooPosOrderDetails(
             modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            WooPosText(
-                text = details.number,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
+            if (showOrderNumber) {
+                WooPosText(
+                    text = details.number,
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
             Spacer(Modifier.weight(1f))
 

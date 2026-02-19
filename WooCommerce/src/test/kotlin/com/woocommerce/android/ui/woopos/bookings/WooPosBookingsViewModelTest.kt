@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
+import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -88,6 +89,7 @@ class WooPosBookingsViewModelTest {
             "Cancel dialog message"
         }
     }
+    private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
     private lateinit var viewModel: WooPosBookingsViewModel
 
@@ -130,6 +132,7 @@ class WooPosBookingsViewModelTest {
                 paymentStatusResolver,
                 timeRangeFormatter,
             ),
+            clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
         )
     }
@@ -148,6 +151,7 @@ class WooPosBookingsViewModelTest {
             bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }
@@ -371,11 +375,20 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given content state, when onEndOfBookingsListReached succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         // WHEN
         viewModel.onEndOfBookingsListReached()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
@@ -425,7 +438,13 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given pagination error, when onPaginationErrorTryAgain succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         whenever(bookingListHandler.loadMore()).thenReturn(Result.failure(RuntimeException("error")))
@@ -436,6 +455,9 @@ class WooPosBookingsViewModelTest {
 
         // WHEN
         viewModel.onPaginationErrorTryAgain()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
@@ -930,6 +952,31 @@ class WooPosBookingsViewModelTest {
                 .isInstanceOf(
                     WooPosBookingsState.Content.DialogState.Hidden::class.java
                 )
+        }
+
+    @Test
+    fun `given ViewOrder action, when BookingMenuActionClicked, then OpenOrderDetails event emitted with correct orderId`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val orderId = content.selectedDetails!!.orderId
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.ViewOrder(orderId = orderId)
+                    )
+                )
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenOrderDetails::class.java)
+                val orderDetailsEvent = event as WooPosNavigationEvent.OpenOrderDetails
+                assertThat(orderDetailsEvent.orderId).isEqualTo(orderId)
+            }
         }
 
     @Test
