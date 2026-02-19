@@ -109,7 +109,7 @@ private fun ShimmerBadge(text: String) {
     WooPosShimmerBox(
         modifier = Modifier
             .width(textWidth + WooPosSpacing.Small.value * 2)
-            .height(textHeight + WooPosSpacing.XSmall.value * 2)
+            .height(textHeight + WooPosSpacing.XXSmall.value * 2)
             .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
     )
 }
