@@ -388,6 +388,7 @@ private fun CardPaymentInProgress(
     }
 }
 
+@Suppress("DestructuringDeclarationWithTooManyEntries")
 @Composable
 private fun CardPaymentFailed(
     state: WooPosCardPaymentState.PaymentFailed,
@@ -566,7 +567,7 @@ private fun CardPaymentSuccess(
 
 @WooPosPreview
 @Composable
-private fun CardPaymentInitiatingPreview() {
+fun CardPaymentInitiatingPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Initiating,
@@ -584,7 +585,7 @@ private fun CardPaymentInitiatingPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentPreparingReaderPreview() {
+fun CardPaymentPreparingReaderPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Collecting.Preparing(
@@ -605,7 +606,7 @@ private fun CardPaymentPreparingReaderPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentReadyForPaymentPreview() {
+fun CardPaymentReadyForPaymentPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Collecting.ReadyForPayment(
@@ -626,7 +627,7 @@ private fun CardPaymentReadyForPaymentPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentReaderDisconnectedPreview() {
+fun CardPaymentReaderDisconnectedPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.Collecting.ReaderDisconnected(
@@ -648,7 +649,7 @@ private fun CardPaymentReaderDisconnectedPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentInProgressPreview() {
+fun CardPaymentInProgressPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.PaymentInProgress(
@@ -669,7 +670,7 @@ private fun CardPaymentInProgressPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentFailedWithRetryPreview() {
+fun CardPaymentFailedWithRetryPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.PaymentFailed(
@@ -692,7 +693,7 @@ private fun CardPaymentFailedWithRetryPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentFailedWithoutRetryPreview() {
+fun CardPaymentFailedWithoutRetryPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.PaymentFailed(
@@ -715,7 +716,7 @@ private fun CardPaymentFailedWithoutRetryPreview() {
 
 @WooPosPreview
 @Composable
-private fun CardPaymentSuccessPreview() {
+fun CardPaymentSuccessPreview() {
     WooPosTheme {
         WooPosCardPaymentScreenContent(
             state = WooPosCardPaymentState.PaymentSuccess(
