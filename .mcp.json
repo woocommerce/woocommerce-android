@@ -3,6 +3,10 @@
     "mobile-mcp": {
       "command": "npx",
       "args": ["-y", "@mobilenext/mobile-mcp@latest"]
+    },
+    "context-a8c": {
+      "command": "npx",
+      "args": ["-y", "@automattic/mcp-context-a8c@latest"]
     }
   }
 }
