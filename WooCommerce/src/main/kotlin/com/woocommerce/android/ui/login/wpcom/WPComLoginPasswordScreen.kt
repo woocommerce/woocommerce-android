@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -28,6 +27,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
+import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -69,7 +71,7 @@ fun WPComLoginPasswordScreen(
         topBar = {
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
-                navigationIcon = ImageVector.vectorResource(branding.navIcon)
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp)
             )
         }
     ) { paddingValues ->
@@ -162,7 +164,6 @@ fun WPComLoginPasswordScreen(
 }
 
 private data class PasswordScreenBranding(
-    @DrawableRes val navIcon: Int,
     @StringRes val title: Int,
     @StringRes val subtitle: Int?,
     @StringRes val buttonText: Int,
@@ -171,14 +172,12 @@ private data class PasswordScreenBranding(
 private fun WPComLoginPasswordViewModel.ViewState.resolveBranding(): PasswordScreenBranding {
     return when (wpComLoginMode) {
         WPComLoginMode.PushNotificationsSetup -> PasswordScreenBranding(
-            navIcon = R.drawable.ic_back_24dp,
             title = R.string.login_wpcom_connect_title,
             subtitle = null,
             buttonText = R.string.continue_button,
         )
 
         is WPComLoginMode.JetpackSetup -> PasswordScreenBranding(
-            navIcon = R.drawable.ic_close_24dp,
             title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
                 R.string.login_jetpack_connect
             } else {
@@ -205,14 +204,12 @@ private fun JetpackModePreview() {
         WPComLoginPasswordScreen(
             viewState = WPComLoginPasswordViewModel.ViewState(
                 wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    com.woocommerce.android.model.JetpackStatus(
+                    JetpackStatus(
                         isJetpackInstalled = false,
-                        jetpackConnectionStatus = com.woocommerce.android.model.JetpackConnectionStatus
-                            .AccountNotConnected(
-                                siteRegistrationStatus = com.woocommerce.android.model
-                                    .JetpackSiteRegistrationStatus.UNKNOWN,
-                                blogId = null
-                            )
+                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                            blogId = null
+                        )
                     )
                 ),
                 emailOrUsername = "test@email.com",

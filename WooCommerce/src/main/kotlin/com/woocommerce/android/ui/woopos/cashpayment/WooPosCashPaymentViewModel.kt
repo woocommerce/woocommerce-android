@@ -134,7 +134,10 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 _state.value = WooPosCashPaymentState.Complete
                 when (source) {
                     CashPaymentSource.BOOKINGS -> _navigationEvent.emit(
-                        WooPosNavigationEvent.GoBackWithResult(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
+                        WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
+                            BOOKING_CASH_PAYMENT_SUCCESS_KEY,
+                            true
+                        )
                     )
                     CashPaymentSource.CHECKOUT -> _navigationEvent.emit(
                         WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment

@@ -6,11 +6,13 @@ import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
@@ -20,6 +22,7 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -28,10 +31,13 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.JetpackStore
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
+    private val appPrefsWrapper: AppPrefsWrapper,
+    private val pushNotificationRepository: PushNotificationRepository,
     private val jetpackActivationRepository: JetpackActivationRepository,
     private val stringUtils: StringUtils,
     savedStateHandle: SavedStateHandle
@@ -111,8 +117,12 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                         }
                     }
 
-                    StepType.CheckPluginCompatibility -> Unit
-                    StepType.EnablePushNotifications -> Unit
+                    StepType.CheckPluginCompatibility -> {
+                        delay(1.seconds)
+                        advanceToNextStep()
+                    }
+
+                    StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
     }
@@ -138,6 +148,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         jetpackActivationRepository.fetchJetpackSite(siteUrl).fold(
             onSuccess = {
                 markCurrentStepAsCompleted()
+                advanceToNextStep()
             },
             onFailure = {
                 markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error_message)
@@ -146,9 +157,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private fun markCurrentStepAsCompleted() {
-        currentStep.update { current ->
-            current.copy(state = StepState.Success)
-        }
+        currentStep.update { it.copy(state = StepState.Success) }
     }
 
     private fun markCurrentStepAsFailed(@StringRes messageRes: Int) {
@@ -181,6 +190,26 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         }
     }
 
+    private suspend fun registerPushNotifications() {
+        val token = appPrefsWrapper.getFCMToken()
+        if (token.isEmpty()) {
+            currentStep.update {
+                it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+            }
+            return
+        }
+
+        val site = selectedSite.get()
+        pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
+            onSuccess = { markCurrentStepAsCompleted() },
+            onFailure = {
+                currentStep.update {
+                    it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+                }
+            }
+        )
+    }
+
     private fun getSiteAddress(): String {
         val site = selectedSite.get()
         return stringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
@@ -191,7 +220,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         val steps: List<Step>
     ) {
         val isDone = steps.all { it.state == StepState.Success }
-        val failedStep = steps.firstOrNull { it.state is StepState.Error }
+        val isError = steps.any { it.state is StepState.Error }
     }
 
     @Parcelize

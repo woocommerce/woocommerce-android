@@ -29,7 +29,8 @@ class BookingListHandler @Inject constructor(
 
     private val mutex = Mutex()
     private var page = MutableStateFlow(1)
-    private val canLoadMore = AtomicBoolean(false)
+    private val _canLoadMore = AtomicBoolean(false)
+    val hasMorePages: Boolean get() = _canLoadMore.get()
 
     private val searchQuery = MutableStateFlow<String?>(null)
     private val filters = MutableStateFlow(BookingFilters.EMPTY)
@@ -62,7 +63,7 @@ class BookingListHandler @Inject constructor(
     ): Result<Unit> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
-        canLoadMore.set(true)
+        _canLoadMore.set(true)
 
         val previousQuery = this.searchQuery.value
         this.searchQuery.value = searchQuery
@@ -87,7 +88,7 @@ class BookingListHandler @Inject constructor(
     }
 
     suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        if (!canLoadMore.get()) return@withLock Result.success(Unit)
+        if (!_canLoadMore.get()) return@withLock Result.success(Unit)
         return fetchBookings()
     }
 
@@ -102,7 +103,7 @@ class BookingListHandler @Inject constructor(
             filters = filters.value,
             order = order
         ).onSuccess { result ->
-            canLoadMore.set(result.hasMorePages)
+            _canLoadMore.set(result.hasMorePages)
             if (result.hasMorePages) {
                 page.update { it + 1 }
             }
