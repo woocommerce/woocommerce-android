@@ -80,6 +80,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             isCancelled = booking.status == BookingEntity.Status.Cancelled,
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 buildList {
+                    add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
                     add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
                     if (booking.isCancellable) {
                         add(

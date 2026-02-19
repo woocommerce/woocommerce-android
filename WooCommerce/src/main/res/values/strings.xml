@@ -2649,6 +2649,7 @@
     <string name="woo_push_notifications_connection_steps_not_started">Not started</string>
     <string name="woo_push_notifications_connection_steps_error">Error</string>
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
+    <string name="woo_push_notifications_connection_steps_retry">Try again</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3934,6 +3935,7 @@
     <string name="woopos_bookings_details_edit_note">Edit note</string>
     <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
     <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_details_copy_phone">Copy phone</string>
     <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
     <string name="woopos_bookings_cancel_dialog_title">Cancel this booking?</string>
     <string name="woopos_bookings_cancel_dialog_message">Booking #%1$s for %2$s on %3$s at %4$s for %5$s will be canceled.</string>

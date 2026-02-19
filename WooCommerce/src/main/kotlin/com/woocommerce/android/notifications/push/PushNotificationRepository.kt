@@ -1,5 +1,6 @@
 package com.woocommerce.android.notifications.push
 
+import android.os.Build
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -12,6 +13,7 @@ import com.woocommerce.android.datastore.DataStoreType.WOO_CORE_PUSH_NOTIFICATIO
 import com.woocommerce.android.extensions.isNotNullOrEmpty
 import com.woocommerce.android.extensions.orNullIfEmpty
 import com.woocommerce.android.util.WooLog
+import com.woocommerce.android.util.locale.LocaleProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -25,6 +27,7 @@ import org.wordpress.android.fluxc.store.WooCommerceStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore
 import org.wordpress.android.fluxc.store.WpComPushNotificationStore.SiteNotificationSetting
 import org.wordpress.android.fluxc.utils.PreferenceUtils
+import java.util.Locale
 import java.util.UUID
 import javax.inject.Inject
 
@@ -36,7 +39,8 @@ class PushNotificationRepository @Inject constructor(
     private val prefsWrapper: PreferenceUtils.PreferenceUtilsWrapper,
     @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>,
-    private val notificationAnalyticsTracker: NotificationAnalyticsTracker
+    private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
+    private val localeProvider: LocaleProvider
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -54,10 +58,14 @@ class PushNotificationRepository @Inject constructor(
         )
 
         val uuid = appPrefsWrapper.wooCorePushDeviceUUID.orNullIfEmpty() ?: generateAndStoreUUID()
+        val deviceLocale = getDeviceLocale()
+        val metadata = buildDeviceMetadata()
         val result = wooPushNotificationsStore.registerPushToken(
             site = selectedSite,
             token = token,
-            deviceUuid = uuid
+            deviceUuid = uuid,
+            deviceLocale = deviceLocale,
+            metadata = metadata
         )
         if (!result.isError) {
             result.model?.let { pushToken ->
@@ -193,6 +201,24 @@ class PushNotificationRepository @Inject constructor(
             .getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null)
         return wpComPushServerId.isNotNullOrEmpty()
     }
+
+    private fun getDeviceLocale(): String {
+        val locale = localeProvider.provideLocale() ?: Locale.getDefault()
+        val language = locale.language
+        val country = locale.country
+
+        return when {
+            language.isEmpty() -> "en_US"
+            country.isEmpty() -> language
+            else -> "${language}_$country"
+        }
+    }
+
+    private fun buildDeviceMetadata(): Map<String, String> = mapOf(
+        "app_version" to BuildConfig.VERSION_NAME,
+        "device_model" to "${Build.MANUFACTURER} ${Build.MODEL}",
+        "os_version" to Build.VERSION.RELEASE
+    )
 
     companion object {
         private const val PUSH_TOKEN_KEY_PREFIX = "push_token_"
