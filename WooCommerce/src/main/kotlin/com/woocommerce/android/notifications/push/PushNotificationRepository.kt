@@ -210,7 +210,7 @@ class PushNotificationRepository @Inject constructor(
         return when {
             language.isEmpty() -> "en_US"
             country.isEmpty() -> language
-            else -> "${language}_${country}"
+            else -> "${language}_$country"
         }
     }
 
