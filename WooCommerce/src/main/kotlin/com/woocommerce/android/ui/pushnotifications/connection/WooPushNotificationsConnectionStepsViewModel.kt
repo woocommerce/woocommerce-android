@@ -14,8 +14,6 @@ import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
-import com.woocommerce.android.ui.login.jetpack.JetpackConnectionUrlResolver
-import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -104,22 +102,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
     }
 
-    fun onJetpackConnectionResult(result: JetpackActivationWebViewViewModel.ConnectionResult) {
-        when (result) {
-            JetpackActivationWebViewViewModel.ConnectionResult.Success -> {
-                connectStoreStage.value = ConnectStoreStage.ConfirmConnection
-            }
-
-            JetpackActivationWebViewViewModel.ConnectionResult.Cancel -> {
-                showConnectStoreStepError(R.string.woo_push_notifications_connection_steps_generic_error_message)
-            }
-
-            is JetpackActivationWebViewViewModel.ConnectionResult.Failure -> {
-                showConnectStoreStepError(resolveConnectionErrorMessage(result.errorCode))
-            }
-        }
-    }
-
     private fun startNextStep() {
         currentStep.update { it.copy(state = StepState.Ongoing) }
     }
@@ -132,7 +114,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 when (step.type) {
                     StepType.ConnectStore -> {
                         when (stage) {
-                            ConnectStoreStage.WebViewConnection -> startWebViewConnectionStage()
                             ConnectStoreStage.ConnectAccount -> startConnectAccountStage()
                             ConnectStoreStage.ConfirmConnection -> startConfirmConnectionStage()
                         }
@@ -142,27 +123,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                     StepType.EnablePushNotifications -> Unit
                 }
             }
-    }
-
-    private suspend fun startWebViewConnectionStage() {
-        val site = selectedSite.get()
-        val siteUrl = requireNotNull(site.url?.takeIf { it.isNotBlank() }) { "Site URL missing" }
-
-        jetpackActivationRepository.fetchJetpackConnectionUrl(
-            site = site,
-            useApplicationPasswords = true
-        ).fold(
-            onSuccess = { connectionUrl ->
-                val connectionWebViewUrl = JetpackConnectionUrlResolver.resolveConnectionWebViewUrl(
-                    connectionUrl = connectionUrl,
-                    siteUrl = siteUrl
-                )
-                triggerEvent(ShowJetpackConnectionWebView(connectionWebViewUrl))
-            },
-            onFailure = { error ->
-                showConnectStoreStepError(resolveConnectionErrorMessage(error))
-            }
-        )
     }
 
     private suspend fun startConnectAccountStage() {
@@ -266,7 +226,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     enum class ConnectStoreStage {
-        WebViewConnection,
         ConnectAccount,
         ConfirmConnection
     }
@@ -287,10 +246,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             constructor(@StringRes messageRes: Int) : this(UiString.UiStringRes(messageRes))
         }
     }
-
-    data class ShowJetpackConnectionWebView(
-        val url: String
-    ) : Event()
 
     companion object {
         private const val ERROR_CODE_FORBIDDEN = 403
