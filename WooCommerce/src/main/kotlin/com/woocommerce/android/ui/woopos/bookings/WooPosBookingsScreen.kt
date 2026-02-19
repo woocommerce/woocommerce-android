@@ -325,6 +325,7 @@ private fun WooPosBookingsListPane(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onRetry = onRefresh,
             )
 
             PullRefreshIndicator(
@@ -348,6 +349,7 @@ private fun WooPosBookingsList(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
@@ -382,7 +384,7 @@ private fun WooPosBookingsList(
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
                         text = stringResource(id = R.string.retry),
-                        click = { throw NotImplementedError("Retry button clicked") }
+                        click = onRetry
                     )
                 )
             }

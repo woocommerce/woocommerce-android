@@ -933,4 +933,139 @@ class WooPosBookingsViewModelTest {
             .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
     }
 
+    @Test
+    fun `given date changed and cache empty, when fetch in progress, then state stays Searching`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        bookingsFlow.emit(emptyList())
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Searching::class.java)
+    }
+
+    @Test
+    fun `given date changed and cache has data, when observe emits, then cached data shown immediately`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(Unit)
+            }
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(5)))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Loaded::class.java)
+        val loaded = content.items as WooPosBookingsState.Content.Items.Loaded
+        assertThat(loaded.items.keys.first().id).isEqualTo(5L)
+    }
+
+    @Test
+    fun `given date changed and cache empty, when fetch succeeds with no data, then state is NothingFound`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            .thenReturn(Result.success(Unit))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
+    }
+
+    @Test
+    fun `given date changed and cache empty, when fetch fails, then state is Error`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Error::class.java)
+    }
+
+    @Test
+    fun `given rapid date changes, when multiple next day clicks, then intermediate fetches are cancelled`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val initialDate = (viewModel.state.value as WooPosBookingsState.Content)
+            .dateSelectorState?.formattedDate
+
+        // WHEN - rapid tapping next 3 times without advancing the dispatcher
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN - only 2 loadBookings calls: initial + last date change (intermediate ones cancelled)
+        verify(bookingListHandler, times(2))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.dateSelectorState?.formattedDate).isNotEqualTo(initialDate)
+    }
 }
