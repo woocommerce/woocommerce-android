@@ -18,7 +18,6 @@ import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
-import com.woocommerce.android.viewmodel.getNullableStateFlow
 import com.woocommerce.android.viewmodel.getStateFlow
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -50,13 +49,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         scope = viewModelScope,
         initialValue = ConnectStoreStage.ConnectAccount,
         key = KEY_CONNECT_STORE_STAGE
-    )
-
-    private val pendingConnectionStatus = savedStateHandle.getNullableStateFlow(
-        scope = viewModelScope,
-        initialValue = null,
-        clazz = JetpackConnectionStatus.AccountNotConnected::class.java,
-        key = KEY_PENDING_CONNECTION_STATUS
     )
 
     val viewState = combine(
@@ -126,13 +118,9 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private suspend fun startConnectAccountStage() {
-        val status = pendingConnectionStatus.value ?: DEFAULT_CONNECTION_STATUS.also {
-            pendingConnectionStatus.value = it
-        }
-
         jetpackActivationRepository.connectJetpackAccount(
             site = selectedSite.get(),
-            jetpackConnectionStatus = status,
+            jetpackConnectionStatus = DEFAULT_CONNECTION_STATUS,
             useApplicationPasswords = true
         ).fold(
             onSuccess = {
@@ -158,7 +146,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private fun showConnectStoreStepComplete() {
-        pendingConnectionStatus.value = null
         currentStep.update { current ->
             current.copy(state = StepState.Success)
         }
@@ -259,8 +246,5 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
         @VisibleForTesting
         internal const val KEY_CONNECT_STORE_STAGE = "woo-push-connection-connect-store-stage"
-
-        @VisibleForTesting
-        internal const val KEY_PENDING_CONNECTION_STATUS = "woo-push-connection-pending-status"
     }
 }
