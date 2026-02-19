@@ -36,14 +36,6 @@ class DateFormatter @Inject constructor(@ApplicationContext private val context:
     ): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).format(localDateTime)
 
     /**
-     * Formats date only using localized medium style.
-     * Example: "Dec 12, 2025"
-     */
-    fun formatDate(
-        instant: Instant
-    ): String = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withZone(ZoneOffset.UTC).format(instant)
-
-    /**
      * Formats time only respecting system 12h/24h preference.
      * Example: "10:47 PM" or "22:47"
      */
