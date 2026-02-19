@@ -421,7 +421,7 @@ private fun CardPaymentFailed(
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosButton(
-            text = state.retryButtonLabel,
+            text = state.actionButtonLabel,
             modifier = Modifier
                 .height(80.dp)
                 .width(604.dp),

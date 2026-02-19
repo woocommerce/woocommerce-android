@@ -104,7 +104,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             _state.value = WooPosCardPaymentState.PaymentFailed(
                 title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
                 subtitle = resourceProvider.getString(R.string.woopos_no_internet_message),
-                retryButtonLabel = resourceProvider.getString(R.string.woo_pos_payment_failed_try_again),
+                actionButtonLabel = resourceProvider.getString(R.string.woo_pos_payment_failed_try_again),
                 isDismissButtonVisible = true
             )
             return
@@ -196,7 +196,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                                 R.string.woopos_success_totals_payment_failed_title
                             ),
                             subtitle = resourceProvider.getString(messageRes),
-                            retryButtonLabel = resourceProvider.getString(
+                            actionButtonLabel = resourceProvider.getString(
                                 R.string.woo_pos_payment_failed_go_back
                             ),
                             isDismissButtonVisible = false
@@ -237,7 +237,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         state: CardReaderPaymentState.PaymentFailed.ExternalReaderFailedPayment
     ): WooPosCardPaymentState.PaymentFailed {
         val isRetryAvailable = state.onRetry != null
-        val retryButtonLabel = if (isRetryAvailable) {
+        val actionButtonLabel = if (isRetryAvailable) {
             resourceProvider.getString(R.string.woo_pos_payment_failed_try_again)
         } else {
             resourceProvider.getString(R.string.woo_pos_payment_failed_try_another_payment_method)
@@ -245,7 +245,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         return WooPosCardPaymentState.PaymentFailed(
             title = resourceProvider.getString(R.string.woopos_success_totals_payment_failed_title),
             subtitle = uiStringParser.asString(state.errorType.message),
-            retryButtonLabel = retryButtonLabel,
+            actionButtonLabel = actionButtonLabel,
             isDismissButtonVisible = isRetryAvailable
         )
     }
