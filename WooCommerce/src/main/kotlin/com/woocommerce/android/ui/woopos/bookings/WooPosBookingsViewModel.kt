@@ -28,6 +28,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
@@ -44,6 +45,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val mapper: WooPosBookingViewStateMapper,
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
+    private val clock: Clock,
 ) : ViewModel() {
 
     companion object {
@@ -60,7 +62,7 @@ class WooPosBookingsViewModel @Inject constructor(
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
-    private var selectedDate: LocalDate = LocalDate.now()
+    private var selectedDate: LocalDate = LocalDate.now(clock)
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
 

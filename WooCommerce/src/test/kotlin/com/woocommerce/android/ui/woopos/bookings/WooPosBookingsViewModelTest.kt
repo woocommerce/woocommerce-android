@@ -41,7 +41,9 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderIn
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.math.BigDecimal
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBookingsViewModelTest {
@@ -92,6 +94,7 @@ class WooPosBookingsViewModelTest {
     }
     private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -135,6 +138,7 @@ class WooPosBookingsViewModelTest {
             ),
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
+            clock = clock,
         )
     }
 

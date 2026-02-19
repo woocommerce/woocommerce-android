@@ -33,7 +33,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
-import java.util.Calendar
 import java.util.Date
 
 @Composable
@@ -108,9 +107,7 @@ fun WooPosBookingsDateSelector(
             currentDate = Date(dateSelectorState.selectedDateMillis),
             onDateSelected = { selectedDate ->
                 showDatePicker = false
-                val calendar = Calendar.getInstance().apply { time = selectedDate }
-                calendar.set(Calendar.HOUR_OF_DAY, 12)
-                onUIEvent(WooPosBookingsUIEvent.DateSelected(calendar.timeInMillis))
+                onUIEvent(WooPosBookingsUIEvent.DateSelected(selectedDate.time))
             },
             onDismissRequest = { showDatePicker = false },
         )
