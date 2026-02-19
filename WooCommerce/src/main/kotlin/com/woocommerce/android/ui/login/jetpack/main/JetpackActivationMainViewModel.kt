@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.login.jetpack.main
 
 import android.os.Parcelable
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
@@ -23,7 +24,6 @@ import com.woocommerce.android.ui.common.PluginRepository.PluginStatus.PluginIns
 import com.woocommerce.android.ui.login.AccountRepository
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
-import com.woocommerce.android.ui.login.jetpack.JetpackConnectionUrlResolver
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Cancel
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel.ConnectionResult.Failure
@@ -54,6 +54,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
@@ -73,6 +74,9 @@ class JetpackActivationMainViewModel @Inject constructor(
         private const val DELAY_AFTER_CONNECTION_MS = 500L
         private const val DELAY_BEFORE_SHOWING_ERROR_STATE_MS = 1000L
         private const val CONNECTED_EMAIL_KEY = "connected-email"
+
+        @VisibleForTesting
+        const val JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX = "https://jetpack.wordpress.com/jetpack.authorize"
     }
 
     private val navArgs: JetpackActivationMainFragmentArgs by savedStateHandle.navArgs()
@@ -345,7 +349,7 @@ class JetpackActivationMainViewModel @Inject constructor(
                 if (useApplicationPasswords) {
                     // Depending on the site's connection status, we should provide different URLs to the webview.
                     // If the site is already registered with WordPress.com, we can use the API-given URL as-is. We
-                    // know this is the case if the URL starts with JetpackConnectionUrlResolver.ACCOUNT_CONNECTION_URL_PREFIX.
+                    // know this is the case if the URL starts with JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX.
 
                     // If the site lacks a connection, the API-provided URL will be in the format of
                     // https://{site_url}/wp-admin/admin.php?page=jetpack&action=register&_wpnonce={nonce}.
@@ -356,10 +360,11 @@ class JetpackActivationMainViewModel @Inject constructor(
                     // As a workaround, we load the site's wp-admin Jetpack page, which will allow the user to
                     // connect the site to Jetpack using their WordPress.com account.
 
-                    val chosenUrl = JetpackConnectionUrlResolver.resolveConnectionWebViewUrl(
-                        connectionUrl = connectionUrl,
-                        siteUrl = navArgs.siteUrl
-                    )
+                    val chosenUrl = if (connectionUrl.startsWith(JETPACK_SITE_CONNECTED_AUTH_URL_PREFIX)) {
+                        connectionUrl
+                    } else {
+                        navArgs.siteUrl.slashJoin("wp-admin/admin.php?page=jetpack")
+                    }
 
                     triggerEvent(
                         ShowJetpackConnectionWebView(
