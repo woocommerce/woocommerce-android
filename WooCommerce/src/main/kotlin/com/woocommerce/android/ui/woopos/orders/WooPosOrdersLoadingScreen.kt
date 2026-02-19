@@ -127,7 +127,6 @@ fun WooPosOrdersListLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 fun OrderDetailsLoadingPane(
     modifier: Modifier = Modifier,
-    showHeader: Boolean = true
 ) {
     Column(
         modifier = modifier
@@ -135,46 +134,42 @@ fun OrderDetailsLoadingPane(
             .statusBarsPadding()
             .padding(horizontal = WooPosSpacing.Medium.value)
     ) {
-        if (showHeader) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Box(Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
-                        WooPosShimmerText(
-                            text = "Order #123",
-                            style = WooPosTypography.Heading.style,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Box(Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT), contentAlignment = Alignment.Center) {
                     WooPosShimmerText(
-                        text = "Jul 28, 2025 at 10:31 PM",
-                        style = WooPosTypography.BodyMedium.style
-                    )
-
-                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-                    WooPosShimmerText(
-                        text = "Completed",
-                        style = WooPosTypography.BodyLarge.style
+                        text = "Order #123",
+                        style = WooPosTypography.Heading.style,
+                        fontWeight = FontWeight.Bold
                     )
                 }
 
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .padding(vertical = WooPosSpacing.Small.value)
-                        .width(140.dp)
-                        .height(36.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosShimmerText(
+                    text = "Jul 28, 2025 at 10:31 PM",
+                    style = WooPosTypography.BodyMedium.style
+                )
+
+                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+
+                WooPosShimmerText(
+                    text = "Completed",
+                    style = WooPosTypography.BodyLarge.style
                 )
             }
-        } else {
-            Spacer(modifier = Modifier.height(WOO_POS_ORDERS_TOOLBAR_HEIGHT))
+
+            WooPosShimmerBox(
+                modifier = Modifier
+                    .padding(vertical = WooPosSpacing.Small.value)
+                    .width(140.dp)
+                    .height(36.dp)
+                    .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+            )
         }
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))

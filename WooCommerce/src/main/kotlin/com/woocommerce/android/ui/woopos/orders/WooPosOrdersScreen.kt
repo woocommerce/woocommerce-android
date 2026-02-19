@@ -171,7 +171,6 @@ private fun WooPosOrdersScreen(
 
             is WooPosOrdersState.Loading -> if (isSingleOrderMode) {
                 OrderDetailsLoadingPane(
-                    showHeader = false,
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.surface)
