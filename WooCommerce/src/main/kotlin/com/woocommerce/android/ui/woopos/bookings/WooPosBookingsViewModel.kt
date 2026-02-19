@@ -349,6 +349,13 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
+            is WooPosBookingsState.BookingAction.ViewOrder -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
+                    )
+                }
+            }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
             }

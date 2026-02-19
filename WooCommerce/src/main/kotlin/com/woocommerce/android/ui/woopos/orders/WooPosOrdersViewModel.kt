@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppUrls
@@ -35,6 +36,7 @@ import kotlin.time.TimeSource.Monotonic
 @Suppress("LargeClass")
 @HiltViewModel
 class WooPosOrdersViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val ordersDataSource: WooPosOrdersDataSource,
     private val resourceProvider: ResourceProvider,
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender,
@@ -45,6 +47,10 @@ class WooPosOrdersViewModel @Inject constructor(
     private val refundInfoBuilder: WooPosRefundInfoBuilder,
     private val orderActionsProvider: WooPosOrderActionsProvider,
 ) : ViewModel() {
+
+    private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
+
+    val isSingleOrderMode: Boolean = singleOrderId != null
 
     private val _state = MutableStateFlow<WooPosOrdersState>(
         WooPosOrdersState.Loading(
@@ -76,7 +82,36 @@ class WooPosOrdersViewModel @Inject constructor(
     }
 
     init {
-        loadOrders()
+        if (singleOrderId != null) {
+            viewModelScope.launch { loadSingleOrderDetail(singleOrderId) }
+        } else {
+            loadOrders()
+        }
+    }
+
+    private suspend fun loadSingleOrderDetail(orderId: Long) {
+        val order = ordersDataSource.getOrderById(orderId).getOrElse {
+            _state.value = WooPosOrdersState.Error(
+                message = resourceProvider.getString(R.string.woopos_orders_loading_error_message),
+                searchInputState = WooPosSearchInputState.Closed
+            )
+            return
+        }
+        val details = orderDetailsMapper.mapOrderDetailsWithoutActions(order)
+        _state.value = WooPosOrdersState.Content(
+            items = WooPosOrdersState.Content.Items.Loaded(emptyMap()),
+            pullToRefreshState = WooPosPullToRefreshState.Disabled,
+            searchInputState = WooPosSearchInputState.Closed,
+            selectedDetails = details,
+            paginationState = WooPosPaginationState.None,
+            dialogState = WooPosOrdersState.Content.DialogState.Hidden
+        )
+        ordersAnalyticsTracker.trackOrderDetailsLoaded(
+            orderId = orderId,
+            orderStatus = order.status.value,
+            createdAtMillis = order.dateCreated.time
+        )
+        sideLoadActions(orderId, order)
     }
 
     fun onUIEvent(event: WooPosOrdersUIEvent) {
@@ -333,7 +368,11 @@ class WooPosOrdersViewModel @Inject constructor(
         _state.value = WooPosOrdersState.Loading(
             searchInputState = WooPosSearchInputState.Closed
         )
-        loadOrders()
+        if (singleOrderId != null) {
+            viewModelScope.launch { loadSingleOrderDetail(singleOrderId) }
+        } else {
+            loadOrders()
+        }
     }
 
     fun onSearchErrorRetry() {

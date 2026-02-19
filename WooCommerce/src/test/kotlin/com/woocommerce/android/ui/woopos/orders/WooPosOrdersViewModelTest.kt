@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -65,8 +66,11 @@ class WooPosOrdersViewModelTest {
     private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
         orders.associateWith { RefundsFetchResult.Success(emptyList()) }
 
-    private fun createViewModel(): WooPosOrdersViewModel {
+    private fun createViewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle()
+    ): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
+            savedStateHandle = savedStateHandle,
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
             childrenToParentEventSender = childrenToParentEventSender,
@@ -106,6 +110,8 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
+        whenever(resourceProvider.getString(R.string.woopos_orders_loading_error_message))
+            .thenReturn("Please check your connection try again.")
     }
 
     private suspend fun setupMockBehaviors() {
@@ -1269,6 +1275,90 @@ class WooPosOrdersViewModelTest {
         val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
         assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
         assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given orderId in SavedStateHandle, when init, then single order mode with detail fetched`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(viewModel.isSingleOrderMode).isTrue()
+        assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
+        verify(dataSource, times(0)).loadOrders(any())
+    }
+
+    @Test
+    fun `given single order mode, when getOrderById fails, then state is Error`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.failure(RuntimeException("no connection")))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Error::class.java)
+        val error = state as WooPosOrdersState.Error
+        assertThat(error.message).isEqualTo("Please check your connection try again.")
+    }
+
+    @Test
+    fun `given single order mode error, when retry clicked, then retries loading single order`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.failure(RuntimeException("no connection")))
+
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosOrdersState.Error::class.java)
+
+        // GIVEN retry succeeds
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel.onOrdersLoadingErrorRetryButtonClicked()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(viewModel.isSingleOrderMode).isTrue()
+        assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
+        verify(dataSource, times(0)).loadOrders(any())
+    }
+
+    @Test
+    fun `given single order mode, when order loaded, then tracks OrderDetailsLoaded`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
+            orderId = eq(targetOrderId),
+            orderStatus = any(),
+            createdAtMillis = any()
+        )
     }
 
     @Test

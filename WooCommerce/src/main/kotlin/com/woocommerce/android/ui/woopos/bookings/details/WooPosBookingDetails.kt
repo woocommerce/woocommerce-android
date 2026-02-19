@@ -503,6 +503,10 @@ private fun BookingOverflowMenu(
                 DropdownMenuItem(
                     text = {
                         val (text, textColor) = when (action) {
+                            is WooPosBookingsState.BookingAction.ViewOrder -> {
+                                stringResource(R.string.booking_payment_view_order) to
+                                    MaterialTheme.colorScheme.onSurface
+                            }
                             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                                 stringResource(R.string.woopos_orders_email_receipt) to
                                     MaterialTheme.colorScheme.onSurface
@@ -539,6 +543,7 @@ fun WooPosBookingDetailsPreview() {
         isCancelled = false,
         actionsState = WooPosBookingsState.BookingActionsState.Loaded(
             listOf(
+                WooPosBookingsState.BookingAction.ViewOrder(1L),
                 WooPosBookingsState.BookingAction.EmailReceipt(3330L),
                 WooPosBookingsState.BookingAction.CancelBooking(bookingId = 333L, orderId = 3330L)
             )

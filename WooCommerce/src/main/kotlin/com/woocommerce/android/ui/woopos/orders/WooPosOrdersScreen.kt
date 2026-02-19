@@ -101,6 +101,7 @@ fun WooPosOrdersScreen(
 
     WooPosOrdersScreen(
         state = state,
+        isSingleOrderMode = viewModel.isSingleOrderMode,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
         onRefresh = viewModel::onRefresh,
@@ -122,6 +123,7 @@ fun WooPosOrdersScreen(
 @Composable
 private fun WooPosOrdersScreen(
     state: WooPosOrdersState,
+    isSingleOrderMode: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onBackClicked: () -> Unit,
     onRefresh: () -> Unit,
@@ -146,6 +148,7 @@ private fun WooPosOrdersScreen(
         when (state) {
             is WooPosOrdersState.Content -> OrdersContent(
                 state = state,
+                isSingleOrderMode = isSingleOrderMode,
                 scrollToTopEvent = scrollToTopEvent,
                 onRefresh = onRefresh,
                 onOrderSelected = onOrderSelected,
@@ -166,12 +169,34 @@ private fun WooPosOrdersScreen(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosOrdersState.Loading -> WooPosOrdersLoadingScreen()
+            is WooPosOrdersState.Loading -> if (isSingleOrderMode) {
+                OrderDetailsLoadingPane(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .statusBarsPadding()
+                        .background(MaterialTheme.colorScheme.surface)
+                        .padding(
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.XLarge.value,
+                            bottom = WooPosSpacing.XLarge.value
+                        )
+                )
+            } else {
+                WooPosOrdersLoadingScreen()
+            }
         }
 
         if (state.searchInputState is WooPosSearchInputState.Closed) {
+            val toolbarTitle = if (isSingleOrderMode) {
+                val orderNumber = (state as? WooPosOrdersState.Content)
+                    ?.selectedDetails?.number?.removePrefix("#").orEmpty()
+                stringResource(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+            } else {
+                stringResource(R.string.woopos_orders_title)
+            }
             WooPosToolbar(
-                titleText = stringResource(R.string.woopos_orders_title),
+                titleText = toolbarTitle,
                 onBackClicked = onBackClicked,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -198,6 +223,7 @@ private fun WooPosOrdersScreen(
 @Composable
 private fun OrdersContent(
     state: WooPosOrdersState.Content,
+    isSingleOrderMode: Boolean = false,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
@@ -208,25 +234,27 @@ private fun OrdersContent(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        OrdersListPane(
-            state = state,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onOrderSelected = onOrderSelected,
-            onEndOfOrdersListReached = onEndOfOrdersListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            onSearchEvent = onSearchEvent,
-            onSearchErrorRetry = onSearchErrorRetry,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        )
+        if (!isSingleOrderMode) {
+            OrdersListPane(
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onOrderSelected = onOrderSelected,
+                onEndOfOrdersListReached = onEndOfOrdersListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onSearchEvent = onSearchEvent,
+                onSearchErrorRetry = onSearchErrorRetry,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            )
+        }
 
         Box(
             modifier = Modifier
-                .weight(0.7f)
+                .weight(if (isSingleOrderMode) 1f else 0.7f)
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             when {
@@ -235,6 +263,7 @@ private fun OrdersContent(
                         modifier = Modifier
                             .fillMaxHeight(),
                         details = state.selectedDetails,
+                        showOrderNumber = !isSingleOrderMode,
                         onUIEvent = onUIEvent
                     )
                 }
