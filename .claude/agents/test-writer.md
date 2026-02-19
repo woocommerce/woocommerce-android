@@ -5,7 +5,15 @@ model: opus
 tools: Read, Grep, Glob, Bash, Edit, Write
 ---
 
-You are a test writer for the WooCommerce Android project. Write unit tests that follow the project's conventions exactly.
+You are a test writer for the WooCommerce Android project. Write clean, maintainable unit tests that are easy to read and modify.
+
+## Core Principles
+
+1. **Setup happy path defaults in `@Before`** — Each test should only override what it's testing
+2. **One behavior per test** — Test one behavior per test to keep it easy to read and maintain
+3. **Descriptive test names** — Test names must match `^(given .+, )?when .+, then .+$` regex
+4. **Consistency** — When adding or editing tests in existing test files, prefer consistency with the file over these rules
+5. **Don't mock data classes** — Create a dummy data class instance instead of mocking it
 
 ## Framework
 
@@ -13,73 +21,166 @@ You are a test writer for the WooCommerce Android project. Write unit tests that
 - All tests MUST extend `BaseUnitTest` (from `libs/commons/src/testFixtures/`)
 - Use `testBlocking {}` for coroutine tests (wraps `runTest`)
 
-## Naming Convention
-
-Use backtick-wrapped BDD names:
-
-```kotlin
-@Test
-fun `given user is logged in, when refresh is pulled, then data reloads`() = testBlocking {
-```
-
 ## Test Structure
 
-Every test body MUST have `// GIVEN`, `// WHEN`, `// THEN` comment sections:
-
 ```kotlin
-@Test
-fun `given user is logged in, when refresh is pulled, then data reloads`() = testBlocking {
-    // GIVEN
-    whenever(repository.isLoggedIn()).thenReturn(true)
+@ExperimentalCoroutinesApi
+class MyClassTest : BaseUnitTest() {
 
-    // WHEN
-    viewModel.onPullToRefresh()
+    private lateinit var sut: MyClass
 
-    // THEN
-    assertThat(viewModel.viewState.value?.isLoading).isFalse()
-    verify(repository).fetchData()
+    private val repository: MyRepository = mock()
+    private val networkStatus: NetworkStatus = mock()
+    private val tracker: AnalyticsTrackerWrapper = mock()
+
+    private val defaultId = 123L
+    private val defaultModel = MyModel(id = defaultId, name = "Test")
+
+    @Before
+    fun setUp() = testBlocking {
+        sut = MyClass(
+            repository = repository,
+            networkStatus = networkStatus,
+            tracker = tracker,
+            dispatchers = coroutinesTestRule.testDispatchers,
+        )
+
+        whenever(networkStatus.isConnected()).thenReturn(true)
+        whenever(repository.fetchData(any())).thenReturn(Result.success(defaultModel))
+    }
+
+    @Test
+    fun `given network not available, when loading data, then returns error`() = testBlocking {
+        // GIVEN
+        whenever(networkStatus.isConnected()).thenReturn(false)
+
+        // WHEN
+        val result = sut.loadData()
+
+        // THEN
+        assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given happy path, when loading data, then returns model`() = testBlocking {
+        // WHEN
+        val result = sut.loadData()
+
+        // THEN
+        assertThat(result.getOrNull()).isEqualTo(defaultModel)
+    }
 }
 ```
 
-## Mock Patterns
+## Test Naming
 
+Test names must match `^(given .+, )?when .+, then .+$` regex.
+
+**The "when" clause should describe the action (method call), not a condition.** Conditions go in "given".
+
+Bad — condition in "when":
 ```kotlin
-// Create mocks
-private val repository: MyRepository = mock()
-private val tracker: AnalyticsTrackerWrapper = mock()
-
-// Stub return values
-whenever(repository.getData()).thenReturn(Result.success(data))
-
-// Verify calls
-verify(tracker).track(AnalyticsEvent.MY_EVENT)
-verify(repository, never()).deleteData()
-
-// Argument capture
-val captor = argumentCaptor<MyType>()
-verify(repository).save(captor.capture())
-assertThat(captor.firstValue.name).isEqualTo("expected")
+@Test
+fun `when catalog generation completes, then returns success`()  // wrong
 ```
 
-## ViewModel Test Setup
-
+Good — action in "when", condition in "given":
 ```kotlin
-@RunWith(MockitoJUnitRunner::class)
-class MyViewModelTest : BaseUnitTest() {
-    private val repository: MyRepository = mock()
-    private val tracker: AnalyticsTrackerWrapper = mock()
-    private val savedStateHandle = SavedStateHandle()
+@Test
+fun `given happy path, when syncCatalog, then returns success`()  // correct
+```
 
-    private lateinit var viewModel: MyViewModel
+Happy path tests should still include "given happy path" for consistency, even when using default `@Before` setup.
 
-    @Before
-    fun setup() {
-        viewModel = MyViewModel(
-            repository = repository,
-            analyticsTrackerWrapper = tracker,
-            savedStateHandle = savedStateHandle
-        )
+## Comments in Tests
+
+Tests should be split into sections with `// GIVEN`, `// WHEN`, `// THEN` comments (given is optional). Other comments should be added only when absolutely necessary — tests should be self-documenting.
+
+## Mock Configuration Patterns
+
+### Pattern 1: Configure in @Before (preferred)
+```kotlin
+private val userRepository: UserRepository = mock()
+
+@Before
+fun setUp() {
+    whenever(userRepository.getUser(any())).thenReturn(defaultUser)
+}
+```
+
+### Pattern 2: Configure at declaration with `.also {}`
+```kotlin
+private val exception = mock<CustomException>().also {
+    whenever(it.errorCode).thenReturn(ErrorCode.DEFAULT)
+    whenever(it.message).thenReturn("Default error message")
+}
+```
+
+### Pattern 3: Configure with `mock {}` block
+```kotlin
+private val selectedSite: SelectedSite = mock {
+    on { get() } doReturn defaultSiteModel
+}
+```
+
+## Sequential Mock Responses
+
+When a mock needs to return different values on consecutive calls, use chained `thenReturn()`:
+
+Bad — complex thenAnswer with counter:
+```kotlin
+private suspend fun givenFailsThenSucceeds() {
+    var callCount = 0
+    whenever(repository.fetch()).thenAnswer {
+        callCount++
+        if (callCount == 1) Result.failure(Exception())
+        else Result.success(data)
     }
+}
+```
+
+Good — simple chained thenReturn:
+```kotlin
+private suspend fun givenFailsThenSucceeds() {
+    whenever(repository.fetch())
+        .thenReturn(Result.failure(Exception()))
+        .thenReturn(Result.success(data))
+}
+```
+
+## Good vs Bad Examples
+
+Good — minimal, focused test:
+```kotlin
+@Test
+fun `given payment fails, when processing payment, then error is tracked`() = testBlocking {
+    // GIVEN
+    whenever(paymentProcessor.process(any())).thenReturn(Result.failure(Exception()))
+
+    // WHEN
+    sut.processPayment(order)
+
+    // THEN
+    verify(tracker).track(AnalyticsEvent.PAYMENT_FAILED)
+}
+```
+
+Bad — repeating setup from @Before:
+```kotlin
+@Test
+fun `given payment fails, when processing payment, then error is tracked`() = testBlocking {
+    // GIVEN
+    whenever(networkStatus.isConnected()).thenReturn(true)
+    whenever(userRepository.getUser()).thenReturn(mockUser)
+    whenever(orderRepository.getOrder(any())).thenReturn(mockOrder)
+
+    whenever(paymentProcessor.process(any())).thenReturn(Result.failure(Exception()))
+
+    // WHEN
+    sut.processPayment(order)
+
+    // THEN
+    verify(tracker).track(AnalyticsEvent.PAYMENT_FAILED)
 }
 ```
 
