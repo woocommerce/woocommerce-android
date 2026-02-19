@@ -30,6 +30,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationError
 import org.wordpress.android.fluxc.store.AccountStore.AuthenticationErrorType
+import org.wordpress.android.login.MagicLinkFallbackButton
 import javax.inject.Inject
 
 @HiltViewModel
@@ -95,7 +96,9 @@ class WPComLoginPasswordViewModel @Inject constructor(
         triggerEvent(
             ShowMagicLinkScreen(
                 emailOrUsername = navArgs.emailOrUsername,
-                wpComLoginMode = navArgs.wpComLoginMode
+                wpComLoginMode = navArgs.wpComLoginMode,
+                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
+                requestAtStart = true
             )
         )
     }
@@ -131,6 +134,17 @@ class WPComLoginPasswordViewModel @Inject constructor(
                     AuthenticationErrorType.INCORRECT_USERNAME_OR_PASSWORD,
                     AuthenticationErrorType.NOT_AUTHENTICATED -> {
                         errorMessage.value = R.string.password_incorrect
+                    }
+
+                    AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED -> {
+                        triggerEvent(
+                            ShowMagicLinkScreen(
+                                emailOrUsername = navArgs.emailOrUsername,
+                                wpComLoginMode = navArgs.wpComLoginMode,
+                                magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
+                                requestAtStart = false
+                            )
+                        )
                     }
 
                     else -> {
@@ -191,6 +205,8 @@ class WPComLoginPasswordViewModel @Inject constructor(
 
     data class ShowMagicLinkScreen(
         val emailOrUsername: String,
-        val wpComLoginMode: WPComLoginMode
+        val wpComLoginMode: WPComLoginMode,
+        val magicLinkFallbackButton: MagicLinkFallbackButton,
+        val requestAtStart: Boolean
     ) : MultiLiveEvent.Event()
 }

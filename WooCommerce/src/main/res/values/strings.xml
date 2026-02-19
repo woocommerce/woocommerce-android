@@ -2650,6 +2650,7 @@
     <string name="woo_push_notifications_connection_steps_error">Error</string>
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
     <string name="woo_push_notifications_connection_steps_retry">Try again</string>
+    <string name="woo_push_notifications_connection_steps_generic_error">There was an error completing your request.\nPlease try again or contact support if this error continues.</string>
 
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
@@ -3890,6 +3891,9 @@
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
+    <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
+    <string name="woopos_orders_details_booking_info_error">Booking info unavailable</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · Jan 1, 2025, 12:00 AM - 1:00 AM</string>
 
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
@@ -4423,6 +4427,7 @@
     <string name="booking_cancel_error">Error cancelling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
     <string name="booking_not_selected">Booking not selected</string>
+    <string name="booking_overflow_refund">Issue refund</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>

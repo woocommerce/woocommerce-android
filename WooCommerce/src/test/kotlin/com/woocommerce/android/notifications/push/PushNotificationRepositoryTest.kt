@@ -87,8 +87,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isSuccess).isTrue()
             verify(wooPushNotificationsStore).registerPushToken(
                 eq(siteModel),
                 eq("token"),
@@ -118,8 +119,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = false)
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isFailure).isTrue()
             verify(wooPushNotificationsStore).registerPushToken(
                 eq(siteModel),
                 eq("token"),
@@ -142,8 +144,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = true)
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isFailure).isTrue()
             verify(wooPushNotificationsStore).registerPushToken(
                 eq(siteModel),
                 eq("token"),
@@ -162,8 +165,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 .thenReturn(PN_REGISTRATION_ERROR)
             setupWpComRegistration(isRegistered = false)
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isFailure).isTrue()
             verify(pushNotificationsDataStore, never()).updateData(any())
         }
 
@@ -274,8 +278,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
                 preferences
             }
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isSuccess).isTrue()
             verify(notificationAnalyticsTracker).track(
                 stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_SUCCESS),
                 siteId = eq(SITE_ID)
@@ -289,8 +294,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(wooPushNotificationsStore.registerPushToken(any(), any(), any(), any(), any()))
                 .thenReturn(PN_REGISTRATION_ERROR)
 
-            sut.registerPushTokenInWooCoreSystem("token", siteModel)
+            val result = sut.registerPushTokenInWooCoreSystem("token", siteModel)
 
+            assertThat(result.isFailure).isTrue()
             verify(notificationAnalyticsTracker).trackError(
                 stat = eq(AnalyticsEvent.WOO_PUSH_TOKEN_REGISTER_ERROR),
                 siteId = eq(SITE_ID),
