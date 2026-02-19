@@ -19,13 +19,11 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlinx.coroutines.test.runCurrent
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
@@ -79,8 +77,8 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             val state = viewModel.viewState.getOrAwaitValue()
 
             assertThat(state.steps).hasSize(3)
-            assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
-            assertThat(state.steps[1].type).isEqualTo(StepType.CheckPluginCompatibility)
+            assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+            assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
             assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
         }
     }
@@ -162,8 +160,8 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                 advanceUntilIdle()
             }
 
-            assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
-            assertThat(state.steps[0].state)
+            assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+            assertThat(state.steps[1].state)
                 .isEqualTo(StepState.Error(R.string.woo_push_notifications_connection_steps_error_connection_permission_message))
         }
 
@@ -178,26 +176,27 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
         }
 
-        assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
-        assertThat(state.steps[0].state)
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[1].state)
             .isEqualTo(StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error_message))
     }
 
     @Test
-    fun `when connect store succeeds, then plugin compatibility step becomes ongoing`() = testBlocking {
-        setup()
+    fun `when connect store succeeds, then flow advances to enable push notifications step`() = testBlocking {
+        setup {
+            whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
+        }
 
-        runCurrent()
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
 
-        val state = viewModel.viewState.getOrAwaitValue()
-
-        verify(jetpackActivationRepository).fetchJetpackSite("https://coffeebeans.com")
-        assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
-        assertThat(state.steps[1].type).isEqualTo(StepType.CheckPluginCompatibility)
-        assertThat(state.steps[1].state).isEqualTo(StepState.Ongoing)
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[1].state).isEqualTo(StepState.Success)
         assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
-        assertThat(state.steps[2].state).isEqualTo(StepState.Idle)
+        assertThat(state.steps[2].state).isInstanceOf(StepState.Error::class.java)
     }
 
     @Test
@@ -253,7 +252,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when all steps succeed, then ConnectStore and CheckPluginCompatibility show as Success`() = testBlocking {
+    fun `when all steps succeed, then CheckPluginCompatibility and ConnectStore show as Success`() = testBlocking {
         setup {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
             whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
@@ -264,9 +263,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
         }
 
-        assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
-        assertThat(state.steps[1].type).isEqualTo(StepType.CheckPluginCompatibility)
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[1].state).isEqualTo(StepState.Success)
     }
 }
