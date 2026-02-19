@@ -11,24 +11,26 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.rememberTextMeasurer
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
@@ -57,50 +59,59 @@ fun WooPosBookingsLoadingScreen(modifier: Modifier = Modifier) {
 
 @Composable
 fun WooPosBookingsBookingLoadingRow() {
-    WooPosCard(shadowType = ShadowType.Soft) {
-        Row(
+    WooPosCard(
+        modifier = Modifier.wrapContentHeight(),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(MaterialTheme.shapes.medium)
-                .background(MaterialTheme.colorScheme.surfaceContainerLowest)
-                .padding(
-                    horizontal = WooPosSpacing.Medium.value,
-                    vertical = WooPosSpacing.Medium.value
-                )
-                .heightIn(min = 64.dp),
-            verticalAlignment = Alignment.Top
+                .padding(WooPosSpacing.Medium.value),
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value)) {
-                WooPosShimmerText(
-                    text = "Booking #123",
-                    style = WooPosTypography.BodySmall.style,
-                    fontWeight = FontWeight.Bold
-                )
-                WooPosShimmerText(
-                    text = "January 1, 2024 at 12:00 PM",
-                    style = WooPosTypography.BodySmall.style
-                )
-                WooPosShimmerText(
-                    text = "customer@example.com",
-                    style = WooPosTypography.BodySmall.style
-                )
-                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-                WooPosShimmerBox(
-                    modifier = Modifier
-                        .fillMaxWidth(0.2f)
-                        .height(16.dp)
-                        .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
-                )
-            }
+            WooPosShimmerText(
+                text = "3:00-4:00 PM",
+                style = WooPosTypography.BodySmall.style,
+                fontWeight = FontWeight.Bold
+            )
 
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
 
             WooPosShimmerText(
-                text = "$100.00",
+                text = "Precision Haircut \u00B7 Customer",
                 style = WooPosTypography.BodySmall.style
             )
+
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+            ) {
+                ShimmerBadge("Unattended")
+                ShimmerBadge("Paid")
+            }
         }
     }
+}
+
+@Composable
+private fun ShimmerBadge(text: String) {
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val measured = textMeasurer.measure(
+        text = text,
+        style = WooPosTypography.Caption.style
+    )
+    val textWidth = with(density) { measured.size.width.toDp() }
+    val textHeight = with(density) { measured.size.height.toDp() }
+    WooPosShimmerBox(
+        modifier = Modifier
+            .width(textWidth + WooPosSpacing.Small.value * 2)
+            .height(textHeight + WooPosSpacing.XSmall.value * 2)
+            .clip(RoundedCornerShape(WooPosCornerRadius.Small.value))
+    )
 }
 
 @Composable
