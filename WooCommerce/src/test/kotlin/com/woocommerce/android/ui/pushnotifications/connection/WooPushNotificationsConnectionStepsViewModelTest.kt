@@ -10,6 +10,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -47,12 +48,16 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
 
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
+    private val stringUtils: StringUtils = mock {
+        on { getSiteDomainAndPath(site) } doReturn "example.com"
+    }
 
     private fun createViewModel(
         savedStateHandle: SavedStateHandle = SavedStateHandle()
     ) = WooPushNotificationsConnectionStepsViewModel(
         selectedSite = selectedSite,
         jetpackActivationRepository = jetpackActivationRepository,
+        stringUtils = stringUtils,
         savedStateHandle = savedStateHandle
     )
 

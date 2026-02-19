@@ -27,13 +27,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.JetpackStore
-import org.wordpress.android.util.UrlUtils
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val jetpackActivationRepository: JetpackActivationRepository,
+    private val stringUtils: StringUtils,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -183,9 +183,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private fun getSiteAddress(): String {
         val site = selectedSite.get()
-        return UrlUtils.removeScheme(site.url.orEmpty()).ifBlank {
-            StringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
-        }
+        return stringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
     }
 
     data class ViewState(
