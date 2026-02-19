@@ -7,11 +7,11 @@ user-invocable: true
 
 # Review Changes
 
-Review the current uncommitted or staged changes against the project's conventions and architecture rules.
+Review the current changes against the project's conventions and architecture rules. Works with uncommitted changes, staged changes, or the full branch diff against trunk.
 
 ## Steps
 
-1. **Determine the diff to review.** Run `git diff` for unstaged changes or `git diff --cached` for staged changes. If there are no changes, check `git diff trunk...HEAD` for branch changes.
+1. **Determine the diff to review.** First check `git diff trunk...HEAD` for branch changes (most common: pre-PR review). If empty, fall back to `git diff --cached` for staged changes, then `git diff` for unstaged changes.
 
 2. **Read the changed files** in full to understand context, not just the diff hunks.
 
