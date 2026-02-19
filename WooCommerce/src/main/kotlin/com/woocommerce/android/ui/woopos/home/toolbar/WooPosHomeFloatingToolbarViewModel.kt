@@ -143,12 +143,6 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems by lazy {
         buildList {
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_orders_title,
-                    icon = R.drawable.ic_description_filled_24dp,
-                )
-            )
             if (isPosBookingsEnabled()) {
                 add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
@@ -157,6 +151,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     )
                 )
             }
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_orders_title,
+                    icon = R.drawable.ic_description_filled_24dp,
+                )
+            )
             add(
                 WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_settings_title,
