@@ -1,6 +1,4 @@
-.buildkite/
 .configure-files/
-.github/
 .gradle/
 build/
 */build/
@@ -9,4 +7,3 @@ google-services.json
 local.properties
 secrets.properties
 sentry.properties
-fastlane/
