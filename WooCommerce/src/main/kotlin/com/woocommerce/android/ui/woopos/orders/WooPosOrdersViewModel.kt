@@ -49,7 +49,6 @@ class WooPosOrdersViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val singleOrderId: Long? = savedStateHandle.get<Long>(ORDERS_ROUTE_ORDER_ID_KEY)
-        ?.takeIf { it != 0L }
 
     val isSingleOrderMode: Boolean = singleOrderId != null
 

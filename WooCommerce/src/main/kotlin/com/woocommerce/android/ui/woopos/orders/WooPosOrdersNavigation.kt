@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.orders
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.collectAsState
+import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -15,28 +16,38 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val ORDERS_ROUTE_ORDER_ID_KEY = "orderId"
-private const val ORDERS_BASE_ROUTE = "$HOME_ROUTE/orders"
-const val ORDERS_ROUTE = "$ORDERS_BASE_ROUTE?$ORDERS_ROUTE_ORDER_ID_KEY={$ORDERS_ROUTE_ORDER_ID_KEY}"
+const val ORDERS_ROUTE = "$HOME_ROUTE/orders"
+private const val ORDER_DETAILS_ROUTE = "$ORDERS_ROUTE/{$ORDERS_ROUTE_ORDER_ID_KEY}"
 
 fun NavController.navigateToOrdersScreen() {
-    navigateOnce(ORDERS_BASE_ROUTE)
+    navigateOnce(ORDERS_ROUTE)
 }
 
 fun NavController.navigateToOrderDetailsScreen(orderId: Long) {
-    navigateOnce("$ORDERS_BASE_ROUTE?$ORDERS_ROUTE_ORDER_ID_KEY=$orderId")
+    navigateOnce("$ORDERS_ROUTE/$orderId")
 }
 
 fun NavGraphBuilder.ordersScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit
 ) {
-    composable(
-        route = ORDERS_ROUTE,
+    ordersComposable(route = ORDERS_ROUTE, onNavigationEvent = onNavigationEvent)
+    ordersComposable(
+        route = ORDER_DETAILS_ROUTE,
         arguments = listOf(
-            navArgument(ORDERS_ROUTE_ORDER_ID_KEY) {
-                type = NavType.LongType
-                defaultValue = 0L
-            }
+            navArgument(ORDERS_ROUTE_ORDER_ID_KEY) { type = NavType.LongType }
         ),
+        onNavigationEvent = onNavigationEvent,
+    )
+}
+
+private fun NavGraphBuilder.ordersComposable(
+    route: String,
+    arguments: List<NamedNavArgument> = emptyList(),
+    onNavigationEvent: (WooPosNavigationEvent) -> Unit
+) {
+    composable(
+        route = route,
+        arguments = arguments,
         enterTransition = {
             slideInHorizontally(
                 initialOffsetX = { fullWidth -> fullWidth },
