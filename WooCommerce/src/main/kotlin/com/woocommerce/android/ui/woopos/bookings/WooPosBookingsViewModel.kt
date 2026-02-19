@@ -121,7 +121,8 @@ class WooPosBookingsViewModel @Inject constructor(
 
                 val currentContentState = _state.value as? WooPosBookingsState.Content
                 val paginationState = when (currentContentState?.paginationState) {
-                    WooPosPaginationState.Loading -> WooPosPaginationState.None
+                    WooPosPaginationState.Loading,
+                    WooPosPaginationState.Error -> WooPosPaginationState.None
                     else -> currentContentState?.paginationState ?: WooPosPaginationState.None
                 }
 
