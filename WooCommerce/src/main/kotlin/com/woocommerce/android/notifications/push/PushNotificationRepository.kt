@@ -204,7 +204,14 @@ class PushNotificationRepository @Inject constructor(
 
     private fun getDeviceLocale(): String {
         val locale = localeProvider.provideLocale() ?: Locale.getDefault()
-        return "${locale.language}_${locale.country}".ifBlank { "en_US" }
+        val language = locale.language
+        val country = locale.country
+
+        return when {
+            language.isEmpty() -> "en_US"
+            country.isEmpty() -> language
+            else -> "${language}_${country}"
+        }
     }
 
     private fun buildDeviceMetadata(): Map<String, String> = mapOf(
