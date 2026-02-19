@@ -81,7 +81,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
             Toolbar(
                 onNavigationButtonClick = onCloseClick,
                 actions = {
-                    if (viewState.failedStep != null) {
+                    if (viewState.isError) {
                         IconButton(onClick = onContactSupportClick) {
                             Icon(
                                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_help_24dp),
@@ -139,7 +139,7 @@ private fun WooPushNotificationsConnectionStepsScreen(
             }
 
             AnimatedVisibility(
-                visible = viewState.steps.any { it.state is StepState.Error },
+                visible = viewState.isError,
                 enter = fadeIn(animationSpec = tween(DefaultDurationMillis)),
                 exit = fadeOut(animationSpec = tween(DefaultDurationMillis))
             ) {

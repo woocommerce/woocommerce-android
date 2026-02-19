@@ -35,7 +35,7 @@ fun WordPressWooBadge(
             tint = colorResource(R.color.wp_blue_50),
             modifier = Modifier
                 .size(iconSize)
-                .align(Alignment.Companion.CenterStart)
+                .align(Alignment.CenterStart)
         )
         Image(
             painter = painterResource(id = R.drawable.ic_woo),

@@ -278,7 +278,7 @@ class WooPosCashPaymentViewModelTest {
 
             val event = awaitItem()
             assertThat(event).isEqualTo(
-                WooPosNavigationEvent.GoBackWithResult(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
+                WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
             )
         }
     }

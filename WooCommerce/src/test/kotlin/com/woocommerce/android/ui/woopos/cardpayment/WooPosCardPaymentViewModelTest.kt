@@ -10,6 +10,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
@@ -67,6 +68,7 @@ class WooPosCardPaymentViewModelTest {
     }
     private val priceFormat: WooPosFormatPrice = mock()
     private val totalsRepository: WooPosTotalsRepository = mock()
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
 
@@ -80,11 +82,13 @@ class WooPosCardPaymentViewModelTest {
     private fun createViewModel(
         orderId: Long = 100L,
         source: CardPaymentSource = CardPaymentSource.BOOKINGS,
+        showCashPaymentButton: Boolean = false,
     ): WooPosCardPaymentViewModel {
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 CARD_PAYMENT_ROUTE_ORDER_ID_KEY to orderId,
                 CARD_PAYMENT_ROUTE_SOURCE_KEY to source.name,
+                CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY to showCashPaymentButton,
             )
         )
         return WooPosCardPaymentViewModel(
@@ -96,6 +100,7 @@ class WooPosCardPaymentViewModelTest {
             uiStringParser = uiStringParser,
             priceFormat = priceFormat,
             totalsRepository = totalsRepository,
+            analyticsTracker = analyticsTracker,
         )
     }
 
@@ -318,5 +323,108 @@ class WooPosCardPaymentViewModelTest {
 
         assertThat(viewModel.state.value)
             .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+    }
+
+    @Test
+    fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        verify(analyticsTracker).trackPaymentStates(any())
+    }
+
+    @Test
+    fun `when onEmailReceiptClicked, then trackEmailReceiptTapped called`() = runTest {
+        viewModel = createViewModel(orderId = 42L)
+        advanceUntilIdle()
+
+        viewModel.onEmailReceiptClicked()
+        advanceUntilIdle()
+
+        verify(analyticsTracker).trackEmailReceiptTapped()
+    }
+
+    @Test
+    fun `given showCashPaymentButton is true, when created, then showCashPaymentButton is true`() = runTest {
+        viewModel = createViewModel(showCashPaymentButton = true)
+        advanceUntilIdle()
+
+        assertThat(viewModel.showCashPaymentButton).isTrue()
+    }
+
+    @Test
+    fun `given showCashPaymentButton is false, when created, then showCashPaymentButton is false`() = runTest {
+        viewModel = createViewModel(showCashPaymentButton = false)
+        advanceUntilIdle()
+
+        assertThat(viewModel.showCashPaymentButton).isFalse()
+    }
+
+    @Test
+    fun `given showCashPaymentButton not provided, when created, then showCashPaymentButton is false`() = runTest {
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                CARD_PAYMENT_ROUTE_ORDER_ID_KEY to 100L,
+                CARD_PAYMENT_ROUTE_SOURCE_KEY to CardPaymentSource.CHECKOUT.name,
+            )
+        )
+        viewModel = WooPosCardPaymentViewModel(
+            savedState = savedStateHandle,
+            cardReaderPaymentControllerFactory = cardReaderPaymentControllerFactory,
+            cardReaderFacade = cardReaderFacade,
+            networkStatus = networkStatus,
+            resourceProvider = resourceProvider,
+            uiStringParser = uiStringParser,
+            priceFormat = priceFormat,
+            totalsRepository = totalsRepository,
+            analyticsTracker = analyticsTracker,
+        )
+        advanceUntilIdle()
+
+        assertThat(viewModel.showCashPaymentButton).isFalse()
+    }
+
+    @Test
+    fun `given BOOKINGS source, when onCashPaymentClicked, then NavigateToCashPayment emitted with BOOKINGS source`() = runTest {
+        viewModel = createViewModel(orderId = 42L, source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onCashPaymentClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateToCashPayment::class.java)
+            val cashEvent = event as WooPosNavigationEvent.NavigateToCashPayment
+            assertThat(cashEvent.orderId).isEqualTo(42L)
+            assertThat(cashEvent.source).isEqualTo(CashPaymentSource.BOOKINGS)
+        }
+    }
+
+    @Test
+    fun `given CHECKOUT source, when onCashPaymentClicked, then NavigateToCashPayment emitted with CHECKOUT source`() = runTest {
+        viewModel = createViewModel(orderId = 42L, source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onCashPaymentClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateToCashPayment::class.java)
+            val cashEvent = event as WooPosNavigationEvent.NavigateToCashPayment
+            assertThat(cashEvent.orderId).isEqualTo(42L)
+            assertThat(cashEvent.source).isEqualTo(CashPaymentSource.CHECKOUT)
+        }
+    }
+
+    @Test
+    fun `given BOOKINGS source, when onCashPaymentClicked, then payment is cancelled`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentClicked()
+        advanceUntilIdle()
+
+        verify(paymentController).onBackPressed()
+        verify(paymentController).stop()
     }
 }

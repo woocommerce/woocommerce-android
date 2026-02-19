@@ -45,6 +45,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
+import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
+import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
@@ -105,6 +107,17 @@ fun WooPosBookingsScreen(
         if (cardPaymentResult.value) {
             viewModel.onRefresh()
             backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
+        }
+    }
+
+    val bookingNoteResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_NOTE_RESULT_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(bookingNoteResult.value) {
+        if (bookingNoteResult.value) {
+            viewModel.onBookingNoteSaved()
+            backStackEntry.savedStateHandle[BOOKING_NOTE_RESULT_KEY] = false
         }
     }
 
@@ -189,58 +202,75 @@ private fun WooPosBookingsContent(
     onPaginationErrorTryAgain: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
-    Row(modifier = Modifier.fillMaxSize()) {
-        WooPosBookingsListPane(
-            state = state,
-            scrollToTopEvent = scrollToTopEvent,
-            onRefresh = onRefresh,
-            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-            onBookingSelected = onBookingSelected,
-            onEndOfBookingsListReached = onEndOfBookingsListReached,
-            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-            modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight()
-                .background(MaterialTheme.colorScheme.surfaceBright)
-        )
+    Box(modifier = Modifier.fillMaxSize()) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            WooPosBookingsListPane(
+                state = state,
+                scrollToTopEvent = scrollToTopEvent,
+                onRefresh = onRefresh,
+                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+                onBookingSelected = onBookingSelected,
+                onEndOfBookingsListReached = onEndOfBookingsListReached,
+                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                modifier = Modifier
+                    .weight(0.3f)
+                    .fillMaxHeight()
+                    .background(MaterialTheme.colorScheme.surfaceBright)
+            )
 
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when {
-                state.selectedDetails != null -> {
-                    WooPosBookingDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = state.selectedDetails,
-                        onUIEvent = onUIEvent
-                    )
-                }
-                state.items is WooPosBookingsState.Content.Items.Searching -> {
-                    BookingDetailsLoadingPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(
-                                start = WooPosSpacing.Medium.value,
-                                end = WooPosSpacing.Medium.value,
-                                top = WooPosSpacing.XLarge.value,
-                                bottom = WooPosSpacing.XLarge.value
-                            )
-                    )
-                }
-                else -> {
-                    WooPosEmptyScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
-                        title = stringResource(R.string.woopos_orders_no_order_selected),
-                        message = "",
-                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                    )
+            Box(
+                modifier = Modifier
+                    .weight(0.7f)
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                when {
+                    state.selectedDetails != null -> {
+                        WooPosBookingDetails(
+                            modifier = Modifier
+                                .fillMaxHeight(),
+                            details = state.selectedDetails,
+                            onUIEvent = onUIEvent
+                        )
+                    }
+                    state.items is WooPosBookingsState.Content.Items.Searching -> {
+                        BookingDetailsLoadingPane(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .padding(
+                                    start = WooPosSpacing.Medium.value,
+                                    end = WooPosSpacing.Medium.value,
+                                    top = WooPosSpacing.XLarge.value,
+                                    bottom = WooPosSpacing.XLarge.value
+                                )
+                        )
+                    }
+                    else -> {
+                        WooPosEmptyScreen(
+                            modifier = Modifier.fillMaxSize(),
+                            icon = WooPosIcons.OrdersEmpty,
+                            title = stringResource(R.string.woopos_orders_no_order_selected),
+                            message = "",
+                            contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                        )
+                    }
                 }
             }
         }
+
+        val cancelDialog =
+            state.dialogState as? WooPosBookingsState.Content.DialogState.CancelBooking
+        BackHandler(enabled = cancelDialog != null) {
+            onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed)
+        }
+        WooPosCancelBookingDialog(
+            isVisible = cancelDialog != null,
+            message = cancelDialog?.message.orEmpty(),
+            isProcessing = cancelDialog is WooPosBookingsState.Content.DialogState.CancelBooking.Processing,
+            errorMessage = (cancelDialog as? WooPosBookingsState.Content.DialogState.CancelBooking.Error)
+                ?.errorMessage,
+            onConfirm = { onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed) },
+            onDismiss = { onUIEvent(WooPosBookingsUIEvent.CancelBookingDismissed) },
+        )
     }
 }
 
@@ -407,69 +437,10 @@ private fun WooPosLoadedBookingsList(
         state = listState,
     ) {
         items(items.keys.toList(), key = { it.id }) { item ->
-            WooPosCard(
-                modifier = modifier
-                    .wrapContentHeight(),
-                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-                backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
-                elevation = WooPosElevation.Medium,
-                shadowType = ShadowType.Soft,
-                isSelected = item.isSelected,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { onBookingSelected(item.id) }
-                        .padding(WooPosSpacing.Medium.value),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        WooPosText(
-                            item.title,
-                            style = WooPosTypography.BodySmall,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            fontWeight = FontWeight.Bold,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        WooPosText(
-                            item.date,
-                            style = WooPosTypography.BodySmall,
-                            color = WooPosTheme.colors.onSurfaceVariantHighest,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-
-                        Spacer(Modifier.height(WooPosSpacing.XSmall.value))
-
-                        item.customerEmail?.let { email ->
-                            WooPosText(
-                                email,
-                                style = WooPosTypography.BodySmall,
-                                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                        }
-
-                        Spacer(Modifier.height(WooPosSpacing.Small.value))
-
-                        WooPosBookingsStatusBadge(item.status)
-                    }
-
-                    WooPosText(
-                        text = item.total,
-                        style = WooPosTypography.BodySmall,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        maxLines = 1
-                    )
-                }
-            }
+            WooPosBookingListItem(
+                item = item,
+                onBookingSelected = onBookingSelected,
+            )
         }
 
         if (paginationState == WooPosPaginationState.Loading) {
@@ -481,6 +452,61 @@ private fun WooPosLoadedBookingsList(
         if (paginationState == WooPosPaginationState.Error) {
             item {
                 WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain)
+            }
+        }
+    }
+}
+
+@Composable
+private fun WooPosBookingListItem(
+    item: WooPosBookingsState.BookingItemViewState,
+    onBookingSelected: (Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    WooPosCard(
+        modifier = modifier
+            .wrapContentHeight(),
+        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        backgroundColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+        elevation = WooPosElevation.Medium,
+        shadowType = ShadowType.Soft,
+        isSelected = item.isSelected,
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { onBookingSelected(item.id) }
+                .padding(WooPosSpacing.Medium.value),
+        ) {
+            WooPosText(
+                item.timeRange,
+                style = WooPosTypography.BodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+                fontWeight = FontWeight.Bold,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+
+            WooPosText(
+                item.subtitle,
+                style = WooPosTypography.BodySmall,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(Modifier.height(WooPosSpacing.Small.value))
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+            ) {
+                if (item.isCancelled) {
+                    WooPosCancelledBadge()
+                }
+                WooPosAttendanceBadge(item.attendanceBadge)
+                WooPosPaymentStatusBadge(item.paymentStatus)
             }
         }
     }
@@ -536,31 +562,21 @@ private fun WooPosBookingsPaginationErrorRow(onPaginationErrorTryAgain: () -> Un
 fun WooPosBookingsScreenPreview() {
     val item1 = WooPosBookingsState.BookingItemViewState(
         id = 1,
-        title = "#014",
-        date = "Aug 28, 2025 at 10:31 AM",
-        total = "$17.00",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:00 - 10:30 AM",
+        subtitle = "Women's Haircut \u00B7 John Doe",
         isSelected = true,
-        status = WooPosBookingStatus(
-            text = "Completed",
-            colorKey = WooPosBookingStatusColorKey.COMPLETED
-        ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
+        paymentStatus = PaymentStatus.PAID,
+        isCancelled = false,
+        attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
     )
     val item2 = WooPosBookingsState.BookingItemViewState(
         id = 2,
-        title = "#013",
-        date = "Jul 28, 2025 at 10:31 AM",
-        total = "$43.90",
-        customerEmail = "johndoe@mail.com",
+        timeRange = "10:30 - 11:30 AM",
+        subtitle = "Women's Haircut \u00B7 Jane Smith",
         isSelected = false,
-        status = WooPosBookingStatus(
-            text = "Processing",
-            colorKey = WooPosBookingStatusColorKey.PROCESSING
-        ),
-        statusSlug = "Completed",
-        createdAtMillis = 1
+        paymentStatus = PaymentStatus.UNPAID,
+        isCancelled = true,
+        attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
     )
 
     val details1 = sampleBookingDetails(id = 1L, number = "#014")
@@ -654,7 +670,8 @@ private fun sampleBookingDetails(
     id = id,
     orderId = id * 10,
     number = number,
-    status = WooPosBookingStatus(text = "Paid", colorKey = WooPosBookingStatusColorKey.COMPLETED),
+    paymentStatus = PaymentStatus.PAID,
+    isCancelled = false,
     actionsState = WooPosBookingsState.BookingActionsState.Loaded(
         listOf(WooPosBookingsState.BookingAction.EmailReceipt(id))
     ),
@@ -683,7 +700,7 @@ private fun sampleBookingDetails(
         discountAmount = "-",
         totalAmount = "$59.50",
         paidWithLabel = "WooCommerce In-Person Payments",
-        showPayButtons = false,
+        collectPaymentLabel = null,
     ),
     bookingNote = null,
 )

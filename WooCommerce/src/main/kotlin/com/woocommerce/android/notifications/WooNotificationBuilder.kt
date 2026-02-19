@@ -85,8 +85,18 @@ class WooNotificationBuilder @Inject constructor(
         }
     }
 
+    /**
+     * Builds and displays a local notification.
+     *
+     * @param localNotificationId The unique ID for this local notification, used for PendingIntent
+     *                            request codes and as the Android notification ID.
+     * @param notification The notification content to display.
+     * @param notificationTappedIntent The intent to fire when the notification is tapped.
+     * @param actions Optional action buttons to add to the notification.
+     */
     @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
     fun buildAndDisplayLocalNotification(
+        localNotificationId: Int,
         notification: Notification,
         notificationTappedIntent: Intent,
         actions: List<Pair<String, Intent>> = emptyList()
@@ -94,26 +104,26 @@ class WooNotificationBuilder @Inject constructor(
         val channelType = notification.channelType
         getNotificationBuilder(notification).apply {
             val notificationContentIntent =
-                buildPendingIntentForGivenIntent(notification.noteId, notificationTappedIntent)
+                buildPendingIntentForGivenIntent(localNotificationId, notificationTappedIntent)
             setContentIntent(notificationContentIntent)
             actions.forEach { action ->
                 addAction(
                     R.drawable.ic_woo_w_notification,
                     action.first,
-                    buildPendingIntentForGivenIntent(notification.noteId, action.second)
+                    buildPendingIntentForGivenIntent(localNotificationId, action.second)
                 )
             }
             setLargeIcon(getLargeIconBitmap(context, notification.icon, channelType.shouldCircularizeNoteIcon()))
             // Call processing service when notification is dismissed
             val pendingDeleteIntent = NotificationsProcessingService.getPendingIntentForLocalNotificationDismiss(
                 context,
-                notification.noteId,
+                localNotificationId,
                 notification.tag!!
             )
             setDeleteIntent(pendingDeleteIntent)
             NotificationManagerCompat.from(context).notify(
                 notification.tag,
-                notification.noteId,
+                localNotificationId,
                 build()
             )
         }

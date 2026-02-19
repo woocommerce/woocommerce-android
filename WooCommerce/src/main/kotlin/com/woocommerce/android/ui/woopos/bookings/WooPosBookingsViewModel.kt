@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
-import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
+import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
+import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -20,14 +23,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPosBookingsViewModel @Inject constructor(
     private val bookingListHandler: BookingListHandler,
+    private val bookingsRepository: BookingsRepository,
     private val dateTimeProvider: DateTimeProvider,
     private val mapper: WooPosBookingViewStateMapper,
+    private val clipboardHelper: WooPosClipboardHelper,
+    private val resourceProvider: ResourceProvider,
 ) : ViewModel() {
 
     companion object {
@@ -50,6 +58,7 @@ class WooPosBookingsViewModel @Inject constructor(
     init {
         observeBookings()
         fetchBookings()
+        fetchResources()
     }
 
     private fun fetchBookings() {
@@ -73,9 +82,20 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    private fun fetchResources() {
+        viewModelScope.launch {
+            bookingsRepository.fetchResources()
+        }
+    }
+
     private fun observeBookings() {
         viewModelScope.launch {
-            bookingListHandler.bookingsFlow.collectLatest { bookings ->
+            combine(
+                bookingListHandler.bookingsFlow,
+                bookingsRepository.observeResources()
+            ) { bookings, resources ->
+                bookings to resources.associateBy { it.id.value }
+            }.collectLatest { (bookings, resourcesMap) ->
                 if (bookings.isEmpty() && _state.value is WooPosBookingsState.Loading) {
                     return@collectLatest
                 }
@@ -90,8 +110,9 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val items = bookings.associate { booking ->
+                    val resourceName = resourcesMap[booking.resourceId]?.name
                     mapper.mapToItemViewState(booking, selectedBookingId) to
-                        mapper.mapToDetailsViewState(booking)
+                        mapper.mapToDetailsViewState(booking, resourceName)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -137,6 +158,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
         fetchJob?.cancel()
         loadMoreJob?.cancel()
+        fetchResources()
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 sortBy = BookingListSortOption.NewestToOldest
@@ -214,13 +236,19 @@ class WooPosBookingsViewModel @Inject constructor(
 
     fun onUIEvent(event: WooPosBookingsUIEvent) {
         when (event) {
-            is WooPosBookingsUIEvent.BookingActionClicked -> handleBookingAction(event.action)
-            is WooPosBookingsUIEvent.AttendanceToggled -> { }
-            is WooPosBookingsUIEvent.PayByCardClicked -> handlePayByCard()
-            is WooPosBookingsUIEvent.PayByCashClicked -> handlePayByCash()
-            is WooPosBookingsUIEvent.AddBookingNoteClicked -> { }
-            is WooPosBookingsUIEvent.CopyEmailClicked -> { }
+            is WooPosBookingsUIEvent.BookingMenuActionClicked -> handleBookingAction(event.action)
+            is WooPosBookingsUIEvent.AttendanceToggled -> handleAttendanceToggle(event.attended)
+            is WooPosBookingsUIEvent.CollectPaymentClicked -> handleCollectPayment()
+            is WooPosBookingsUIEvent.AddBookingNoteClicked -> handleAddBookingNote()
+            is WooPosBookingsUIEvent.CopyEmailClicked -> handleCopyToClipboard(event.email)
+            is WooPosBookingsUIEvent.CopyPhoneClicked -> handleCopyToClipboard(event.phone)
+            is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
+            is WooPosBookingsUIEvent.CancelBookingDismissed -> handleCancelDismissed()
         }
+    }
+
+    private fun handleCopyToClipboard(text: String) {
+        clipboardHelper.copyToClipboard(text)
     }
 
     fun onIssueRefundDialogDismissed() {
@@ -230,35 +258,179 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
-    private fun handlePayByCard() {
+    private fun handleCollectPayment() {
         val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
         viewModelScope.launch {
             _navigationEvent.emit(
                 WooPosNavigationEvent.OpenCardPayment(
                     orderId = details.orderId,
                     source = CardPaymentSource.BOOKINGS,
+                    showCashPaymentButton = true,
                 )
             )
         }
     }
 
-    private fun handlePayByCash() {
-        val details = (_state.value as? WooPosBookingsState.Content)?.selectedDetails ?: return
-        viewModelScope.launch {
-            _navigationEvent.emit(
-                WooPosNavigationEvent.OpenCashPayment(
-                    orderId = details.orderId,
-                    source = CashPaymentSource.BOOKINGS,
-                )
-            )
+    private fun handleAttendanceToggle(attended: Boolean) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val details = currentState.selectedDetails ?: return
+        val attendanceSection = details.attendanceSection ?: return
+
+        val newAttendanceState = if (attended) {
+            WooPosBookingsState.AttendanceState.ATTENDED
+        } else {
+            WooPosBookingsState.AttendanceState.UNATTENDED
         }
+
+        val previousSelection = attendanceSection.selection
+        val previousBadge = details.attendanceBadge
+
+        val updatedDetails = details.copy(
+            attendanceSection = attendanceSection.copy(selection = newAttendanceState),
+            attendanceBadge = newAttendanceState,
+        )
+        _state.value = currentState.copy(
+            selectedDetails = updatedDetails,
+            items = updateItemsWithDetails(currentState.items, updatedDetails),
+        )
+
+        viewModelScope.launch {
+            val entityStatus = if (attended) {
+                BookingEntity.AttendanceStatus.Attended
+            } else {
+                BookingEntity.AttendanceStatus.Unattended
+            }
+            bookingsRepository.updateAttendanceStatus(
+                bookingId = details.id,
+                attendanceStatus = entityStatus,
+            ).onFailure {
+                val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
+                val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
+                if (rollbackDetails.id != details.id) return@onFailure
+                val reverted = rollbackDetails.copy(
+                    attendanceSection = rollbackDetails.attendanceSection?.copy(selection = previousSelection),
+                    attendanceBadge = previousBadge,
+                )
+                _state.value = rollbackState.copy(
+                    selectedDetails = reverted,
+                    items = updateItemsWithDetails(rollbackState.items, reverted),
+                )
+            }
+        }
+    }
+
+    private fun updateItemsWithDetails(
+        items: WooPosBookingsState.Content.Items,
+        updatedDetails: WooPosBookingsState.BookingDetailsViewState
+    ): WooPosBookingsState.Content.Items {
+        val loaded = items as? WooPosBookingsState.Content.Items.Loaded ?: return items
+        val updatedMap = loaded.items.map { (item, details) ->
+            if (item.id == updatedDetails.id) {
+                item.copy(
+                    attendanceBadge = updatedDetails.attendanceBadge ?: item.attendanceBadge
+                ) to updatedDetails
+            } else {
+                item to details
+            }
+        }.toMap()
+        return WooPosBookingsState.Content.Items.Loaded(updatedMap)
+    }
+
+    private fun handleAddBookingNote() {
+        val bookingId = selectedBookingId ?: return
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.OpenBookingNote(bookingId))
+        }
+    }
+
+    fun onBookingNoteSaved() {
+        onRefresh()
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
+            is WooPosBookingsState.BookingAction.ViewOrder -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
+                    )
+                }
+            }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
             }
+            is WooPosBookingsState.BookingAction.CancelBooking -> {
+                showCancelConfirmationDialog(action.bookingId)
+            }
         }
+    }
+
+    private fun showCancelConfirmationDialog(bookingId: Long) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val details = currentState.selectedDetails ?: return
+
+        val customerLabel = details.customerSection?.let {
+            it.name?.takeIf(String::isNotBlank)
+                ?: it.email?.takeIf(String::isNotBlank)
+                ?: it.phone?.takeIf(String::isNotBlank)
+        } ?: resourceProvider.getString(R.string.woopos_bookings_cancel_dialog_unknown_customer)
+
+        val message = resourceProvider.getString(
+            R.string.woopos_bookings_cancel_dialog_message,
+            details.number.removePrefix("#"),
+            details.bookingName,
+            details.appointmentDate,
+            details.appointmentTime,
+            customerLabel
+        )
+
+        _state.value = currentState.copy(
+            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.PendingConfirmation(
+                bookingId = bookingId,
+                message = message,
+            )
+        )
+    }
+
+    private fun handleCancelConfirmed() {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        val dialog = currentState.dialogState
+            as? WooPosBookingsState.Content.DialogState.CancelBooking ?: return
+        val bookingId = dialog.bookingId
+
+        _state.value = currentState.copy(
+            dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Processing(
+                bookingId = dialog.bookingId,
+                message = dialog.message,
+            )
+        )
+
+        viewModelScope.launch {
+            val result = bookingsRepository.cancelBooking(bookingId)
+            val state = _state.value as? WooPosBookingsState.Content ?: return@launch
+            _state.value = if (result.isSuccess) {
+                state.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                )
+            } else {
+                state.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(
+                        bookingId = dialog.bookingId,
+                        message = dialog.message,
+                        errorMessage = resourceProvider.getString(
+                            R.string.woopos_bookings_cancel_error
+                        ),
+                    )
+                )
+            }
+        }
+    }
+
+    private fun handleCancelDismissed() {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+        if (currentState.dialogState is WooPosBookingsState.Content.DialogState.CancelBooking.Processing) return
+        _state.value = currentState.copy(
+            dialogState = WooPosBookingsState.Content.DialogState.Hidden
+        )
     }
 }

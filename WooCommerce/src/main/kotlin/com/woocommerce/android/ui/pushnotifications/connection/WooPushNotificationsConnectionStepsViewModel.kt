@@ -147,7 +147,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         val steps: List<Step>
     ) {
         val isDone = steps.all { it.state == StepState.Success }
-        val failedStep = steps.firstOrNull { it.state is StepState.Error }
+        val isError = steps.any { it.state is StepState.Error }
     }
 
     @Parcelize

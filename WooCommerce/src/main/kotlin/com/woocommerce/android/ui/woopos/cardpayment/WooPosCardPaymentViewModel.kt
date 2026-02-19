@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
@@ -42,6 +43,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val uiStringParser: UiStringParser,
     private val priceFormat: WooPosFormatPrice,
     private val totalsRepository: WooPosTotalsRepository,
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
 ) : ViewModel() {
 
     private val orderId: Long = requireNotNull(savedState[CARD_PAYMENT_ROUTE_ORDER_ID_KEY])
@@ -52,6 +54,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val _state = MutableStateFlow<WooPosCardPaymentState>(WooPosCardPaymentState.Initiating)
     val state: StateFlow<WooPosCardPaymentState> = _state.asStateFlow()
 
+    val showCashPaymentButton: Boolean = savedState[CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY] ?: false
+
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
 
@@ -59,6 +63,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var paymentListenerJob: Job? = null
     private var controllerEventJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
+    private var analyticsTrackerJob: Job? = null
 
     init {
         observeCardReaderStatus()
@@ -168,6 +173,10 @@ class WooPosCardPaymentViewModel @Inject constructor(
                     }
                 }
             }
+        }
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = viewModelScope.launch {
+            analyticsTracker.trackPaymentStates(cardReaderPaymentController?.paymentState)
         }
     }
 
@@ -295,7 +304,19 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onEmailReceiptClicked() {
         viewModelScope.launch {
+            analyticsTracker.trackEmailReceiptTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
+        }
+    }
+
+    fun onCashPaymentClicked() {
+        cancelPayment()
+        val cashSource = when (source) {
+            CardPaymentSource.CHECKOUT -> CashPaymentSource.CHECKOUT
+            CardPaymentSource.BOOKINGS -> CashPaymentSource.BOOKINGS
+        }
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.NavigateToCashPayment(orderId, cashSource))
         }
     }
 
@@ -304,6 +325,8 @@ class WooPosCardPaymentViewModel @Inject constructor(
         paymentListenerJob = null
         controllerEventJob?.cancel()
         controllerEventJob = null
+        analyticsTrackerJob?.cancel()
+        analyticsTrackerJob = null
         cardReaderPaymentController?.onBackPressed()
         cardReaderPaymentController?.stop()
     }

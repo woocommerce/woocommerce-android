@@ -45,8 +45,9 @@ class LocalNotificationWorker @AssistedInject constructor(
 
         @SuppressLint("MissingPermission") // We check for notification permission in PreconditionCheckWorker
         if (siteId != 0L && type != null && notificationId != -1 && title != null && description != null) {
-            val notification = buildNotification(notificationId, siteId, type, title, description, data)
+            val notification = buildNotification(siteId, type, title, description, data)
             wooNotificationBuilder.buildAndDisplayLocalNotification(
+                localNotificationId = notificationId,
                 notification = notification,
                 notificationTappedIntent = getIntent(notification),
             )
@@ -96,16 +97,13 @@ class LocalNotificationWorker @AssistedInject constructor(
         }
     }
 
-    @Suppress("LongParameterList")
     private fun buildNotification(
-        id: Int,
         siteId: Long,
         type: String,
         title: String,
         description: String,
         data: String?
     ) = Notification(
-        noteId = id,
         tag = type,
         uniqueId = 0,
         remoteNoteId = 0,
