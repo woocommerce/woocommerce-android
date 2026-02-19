@@ -395,44 +395,70 @@ private fun CardPaymentFailed(
     onBackClicked: () -> Unit,
 ) {
     BackHandler { onBackClicked() }
-    Column(
+    val xLargeSpacing = WooPosSpacing.XLarge.value
+    val largeSpacing = WooPosSpacing.Large.value
+    val mediumSpacing = WooPosSpacing.Medium.value
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .padding(vertical = WooPosSpacing.Huge.value),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
     ) {
+        val (icon, title, subtitle, actionButton, dismissButton) = createRefs()
+
         Icon(
-            modifier = Modifier.size(84.dp),
+            modifier = Modifier
+                .size(84.dp)
+                .constrainAs(icon) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(title.top, margin = xLargeSpacing)
+                },
             imageVector = WooPosIcons.ErrorX,
             contentDescription = stringResource(id = R.string.woopos_error_icon_content_description),
             tint = WooPosTheme.colors.unspecified,
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         WooPosText(
             text = state.title,
             style = WooPosTypography.BodyXLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.constrainAs(title) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(subtitle.top, margin = mediumSpacing)
+            }
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
         WooPosText(
             text = state.subtitle,
             style = WooPosTypography.BodyLarge,
+            modifier = Modifier.constrainAs(subtitle) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(actionButton.top, margin = xLargeSpacing)
+            }
         )
-        Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
         if (state.actionButtonLabel != null) {
             WooPosButton(
                 text = state.actionButtonLabel,
                 modifier = Modifier
+                    .constrainAs(actionButton) {
+                        bottom.linkTo(dismissButton.top, margin = largeSpacing)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     .height(80.dp)
                     .width(604.dp),
                 onClick = onRetryClicked,
             )
         }
         if (state.isDismissButtonVisible) {
-            Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             WooPosOutlinedButton(
-                modifier = Modifier.width(604.dp),
+                modifier = Modifier
+                    .constrainAs(dismissButton) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                    .width(604.dp),
                 text = stringResource(R.string.woo_pos_payment_failed_go_back_to_checkout),
                 onClick = onDismissClicked,
             )
