@@ -280,6 +280,22 @@ class WooPosBookingViewStateMapperTest {
         assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.CancelBooking }
     }
 
+    @Test
+    fun `given any booking, when mapped to details, then actions always include ViewOrder with correct orderId`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(id = 42L)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+            // THEN
+            val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+            val viewOrderAction = actions.filterIsInstance<WooPosBookingsState.BookingAction.ViewOrder>()
+            assertThat(viewOrderAction).hasSize(1)
+            assertThat(viewOrderAction.first().orderId).isEqualTo(420L)
+        }
+
     private fun sampleBooking(
         id: Long = 1L,
         status: BookingEntity.Status = BookingEntity.Status.Confirmed,
