@@ -28,7 +28,7 @@ Review the current uncommitted or staged changes against the project's conventio
 - Max 120 character line length (test names excepted)
 - No wildcard imports
 - No `FIXME` (use `TODO`)
-- No new comments added to code
+- Comments should be rare — only when they explain business logic not clearly captured in the code
 - Constants use `UPPER_SNAKE_CASE`
 - Companion objects at the bottom of the class
 - No `!!` force unwraps — use safe calls or `requireNotNull()`
