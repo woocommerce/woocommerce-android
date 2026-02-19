@@ -285,6 +285,7 @@ class WooPosBookingViewStateMapperTest {
         runTest {
             // GIVEN
             val booking = sampleBooking(id = 42L)
+            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
 
             // WHEN
             val result = mapper.mapToDetailsViewState(booking, resourceName = null)
