@@ -207,7 +207,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             .fillMaxWidth()
             .padding(vertical = marginSmall)
     ) {
-        val (image, nameText, attributesText, bookingInfoText, qtyText, totalText) = createRefs()
+        val (image, nameText, attributesText, subtitleText, totalText) = createRefs()
 
         WooPosText(
             text = row.name,
@@ -245,67 +245,23 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             )
         }
 
-        val bookingInfoAnchor = if (hasAttributes) attributesText else nameText
-        val bookingInfo = row.bookingInfo
-        when (bookingInfo) {
-            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loading -> {
-                WooPosShimmerText(
-                    text = stringResource(R.string.woopos_orders_details_booking_info_shimmer_placeholder),
-                    style = WooPosTypography.BodyMedium.style,
-                    modifier = Modifier.constrainAs(bookingInfoText) {
-                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
-                        start.linkTo(nameText.start)
-                        end.linkTo(totalText.start, margin = marginSmall)
-                        width = Dimension.fillToConstraints
-                    }
-                )
-            }
-
-            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded -> {
-                WooPosText(
-                    text = bookingInfo.text,
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    modifier = Modifier.constrainAs(bookingInfoText) {
-                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
-                        start.linkTo(nameText.start)
-                        end.linkTo(totalText.start, margin = marginSmall)
-                        width = Dimension.fillToConstraints
-                    }
-                )
-            }
-
-            is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Error -> {
-                WooPosText(
-                    text = bookingInfo.text,
-                    style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantHighest,
-                    modifier = Modifier.constrainAs(bookingInfoText) {
-                        top.linkTo(bookingInfoAnchor.bottom, margin = marginXSmall)
-                        start.linkTo(nameText.start)
-                        end.linkTo(totalText.start, margin = marginSmall)
-                        width = Dimension.fillToConstraints
-                    }
-                )
-            }
-
-            null -> Unit
+        val subtitleAnchor = if (hasAttributes) attributesText else nameText
+        val subtitleModifier = Modifier.constrainAs(subtitleText) {
+            top.linkTo(subtitleAnchor.bottom, margin = marginXSmall)
+            start.linkTo(nameText.start)
+            end.linkTo(totalText.start, margin = marginSmall)
+            width = Dimension.fillToConstraints
         }
 
-        if (bookingInfo == null) {
+        val bookingInfo = row.bookingInfo
+        if (bookingInfo != null) {
+            BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
+        } else {
             WooPosText(
                 text = row.qtyAndUnitPrice,
                 style = WooPosTypography.BodyMedium,
                 color = WooPosTheme.colors.onSurfaceVariantHighest,
-                modifier = Modifier.constrainAs(qtyText) {
-                    top.linkTo(
-                        if (hasAttributes) attributesText.bottom else nameText.bottom,
-                        margin = marginXSmall
-                    )
-                    start.linkTo(nameText.start)
-                    end.linkTo(totalText.start, margin = marginSmall)
-                    width = Dimension.fillToConstraints
-                }
+                modifier = subtitleModifier
             )
         }
 
@@ -317,6 +273,37 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
                 end.linkTo(parent.end)
             }
         )
+    }
+}
+
+@Composable
+private fun BookingInfoContent(
+    bookingInfo: WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo,
+    modifier: Modifier = Modifier,
+) {
+    when (bookingInfo) {
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loading ->
+            WooPosShimmerText(
+                text = stringResource(R.string.woopos_orders_details_booking_info_shimmer_placeholder),
+                style = WooPosTypography.BodyMedium.style,
+                modifier = modifier
+            )
+
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded ->
+            WooPosText(
+                text = bookingInfo.text,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = modifier
+            )
+
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Error ->
+            WooPosText(
+                text = bookingInfo.text,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = modifier
+            )
     }
 }
 
