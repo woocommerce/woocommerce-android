@@ -127,7 +127,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 connectStoreStage.value = ConnectStoreStage.ConfirmConnection
             },
             onFailure = { error ->
-                showConnectStoreStepError(resolveConnectionErrorMessage(error))
+                markCurrentStepAsFailed(resolveConnectionErrorMessage(error))
             }
         )
     }
@@ -137,21 +137,21 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
         jetpackActivationRepository.fetchJetpackSite(siteUrl).fold(
             onSuccess = {
-                showConnectStoreStepComplete()
+                markCurrentStepAsCompleted()
             },
             onFailure = {
-                showConnectStoreStepError(R.string.woo_push_notifications_connection_steps_generic_error_message)
+                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error_message)
             }
         )
     }
 
-    private fun showConnectStoreStepComplete() {
+    private fun markCurrentStepAsCompleted() {
         currentStep.update { current ->
             current.copy(state = StepState.Success)
         }
     }
 
-    private fun showConnectStoreStepError(@StringRes messageRes: Int) {
+    private fun markCurrentStepAsFailed(@StringRes messageRes: Int) {
         currentStep.update { current ->
             current.copy(state = StepState.Error(messageRes))
         }
