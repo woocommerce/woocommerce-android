@@ -122,17 +122,24 @@ class WooPosBookingsViewModel @Inject constructor(
                     items.entries.find { it.key.id == id }?.value
                 }
 
-                val currentPTRState = (_state.value as? WooPosBookingsState.Content)
+                val currentContentState = _state.value as? WooPosBookingsState.Content
+                val currentPTRState = currentContentState
                     ?.pullToRefreshState
                     ?.takeIf { it == WooPosPullToRefreshState.Refreshing }
                     ?: WooPosPullToRefreshState.Enabled
+                val paginationState = when (currentContentState?.paginationState) {
+                    WooPosPaginationState.Loading,
+                    WooPosPaginationState.Error -> WooPosPaginationState.None
+                    else -> currentContentState?.paginationState ?: WooPosPaginationState.None
+                }
 
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
                     pullToRefreshState = currentPTRState,
                     selectedDetails = selectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                    paginationState = paginationState,
+                    dialogState = currentContentState?.dialogState
+                        ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
             }
         }
@@ -201,18 +208,16 @@ class WooPosBookingsViewModel @Inject constructor(
         if (loadMoreJob?.isActive == true) return
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         if (currentState.paginationState is WooPosPaginationState.Error) return
+        if (!bookingListHandler.hasMorePages) return
 
         loadMoreJob = viewModelScope.launch {
             fetchJob?.join()
 
+            if (!bookingListHandler.hasMorePages) return@launch
             val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
             bookingListHandler.loadMore()
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(
@@ -235,10 +240,6 @@ class WooPosBookingsViewModel @Inject constructor(
             }
 
             result
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
