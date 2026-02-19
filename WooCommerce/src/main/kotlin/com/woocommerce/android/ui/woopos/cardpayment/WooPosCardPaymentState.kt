@@ -29,7 +29,7 @@ sealed class WooPosCardPaymentState {
     data class PaymentFailed(
         val title: String,
         val subtitle: String,
-        val actionButtonLabel: String,
+        val actionButtonLabel: String? = null,
         val isDismissButtonVisible: Boolean,
     ) : WooPosCardPaymentState()
 

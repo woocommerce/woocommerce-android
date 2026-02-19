@@ -420,13 +420,15 @@ private fun CardPaymentFailed(
             style = WooPosTypography.BodyLarge,
         )
         Spacer(modifier = Modifier.height(WooPosSpacing.XLarge.value))
-        WooPosButton(
-            text = state.actionButtonLabel,
-            modifier = Modifier
-                .height(80.dp)
-                .width(604.dp),
-            onClick = onRetryClicked,
-        )
+        if (state.actionButtonLabel != null) {
+            WooPosButton(
+                text = state.actionButtonLabel,
+                modifier = Modifier
+                    .height(80.dp)
+                    .width(604.dp),
+                onClick = onRetryClicked,
+            )
+        }
         if (state.isDismissButtonVisible) {
             Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
             WooPosOutlinedButton(

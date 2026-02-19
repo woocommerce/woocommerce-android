@@ -310,7 +310,7 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() =
+    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
         runTest {
             viewModel = createViewModel()
             advanceUntilIdle()
@@ -324,11 +324,13 @@ class WooPosCardPaymentViewModelTest {
 
             val state = viewModel.state.value
             assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-            assertThat((state as WooPosCardPaymentState.PaymentFailed).isDismissButtonVisible).isFalse()
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
         }
 
     @Test
-    fun `given controller emits ShowPaymentErrorMessage, when collecting, then state is PaymentFailed`() =
+    fun `given controller emits ShowPaymentErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
         runTest {
             viewModel = createViewModel()
             advanceUntilIdle()
@@ -342,7 +344,9 @@ class WooPosCardPaymentViewModelTest {
 
             val state = viewModel.state.value
             assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-            assertThat((state as WooPosCardPaymentState.PaymentFailed).isDismissButtonVisible).isFalse()
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
         }
 
     @Test
