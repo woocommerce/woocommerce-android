@@ -212,6 +212,7 @@ private fun WooPosBookingsContent(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onUIEvent = onUIEvent,
                 modifier = Modifier
                     .weight(0.3f)
                     .fillMaxHeight()
@@ -284,6 +285,7 @@ private fun WooPosBookingsListPane(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -296,7 +298,12 @@ private fun WooPosBookingsListPane(
                 .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        state.dateSelectorState?.let { dateSelectorState ->
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -592,6 +599,10 @@ fun WooPosBookingsScreenPreview() {
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -622,6 +633,10 @@ fun WooPosBookingsNothingFoundStatePreview() {
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden

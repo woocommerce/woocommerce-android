@@ -3948,6 +3948,9 @@
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
     <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
+    <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
+    <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
+    <string name="woopos_bookings_date_selector_next_day">Next day</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>

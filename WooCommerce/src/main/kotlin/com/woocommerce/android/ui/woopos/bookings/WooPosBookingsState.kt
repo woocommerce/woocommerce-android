@@ -5,8 +5,15 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
+data class DateSelectorState(
+    val formattedDate: String,
+    val selectedDateMillis: Long,
+)
+
+@Immutable
 sealed class WooPosBookingsState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
+    abstract val dateSelectorState: DateSelectorState?
 
     @Immutable
     sealed interface BookingAction {
@@ -96,6 +103,7 @@ sealed class WooPosBookingsState {
     data class Content(
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
+        override val dateSelectorState: DateSelectorState?,
         val selectedDetails: BookingDetailsViewState?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
@@ -141,16 +149,19 @@ sealed class WooPosBookingsState {
         val message: String,
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        override val dateSelectorState: DateSelectorState? = null
     }
 
     @Immutable
     data object Loading : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        override val dateSelectorState: DateSelectorState? = null
     }
 
     @Immutable
     data class Empty(
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
+        override val dateSelectorState: DateSelectorState? = null,
     ) : WooPosBookingsState()
 }
 

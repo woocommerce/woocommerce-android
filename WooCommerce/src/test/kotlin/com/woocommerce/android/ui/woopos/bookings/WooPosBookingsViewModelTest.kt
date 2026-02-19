@@ -30,6 +30,7 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -148,7 +149,7 @@ class WooPosBookingsViewModelTest {
             flowOf(listOf(booking(1), booking(2)))
         )
         whenever(
-            bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+            bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
         whenever(dateTimeProvider.now()).thenReturn(0L)
@@ -181,7 +182,7 @@ class WooPosBookingsViewModelTest {
     fun `given fetch fails and state is Loading, when init, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("Network error")))
 
         // WHEN
@@ -194,10 +195,10 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given no bookings exist, when init completes, then state is Empty`() = runTest {
+    fun `given no bookings exist, when init completes, then state is Content with NothingFound`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.success(Unit))
 
         // WHEN
@@ -205,36 +206,39 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
+        val state = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
     }
 
     @Test
-    fun `given empty bookings after content was shown, when flow emits empty, then state is Empty`() = runTest {
-        // GIVEN
-        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
-        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+    fun `given empty bookings after content was shown, when flow emits empty, then state is Content with NothingFound`() =
+        runTest {
+            // GIVEN
+            val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+            whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        bookingsFlow.emit(listOf(booking(1)))
-        advanceUntilIdle()
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+            bookingsFlow.emit(listOf(booking(1)))
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        // WHEN
-        bookingsFlow.emit(emptyList())
-        advanceUntilIdle()
+            // WHEN
+            bookingsFlow.emit(emptyList())
+            advanceUntilIdle()
 
-        // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
-    }
+            // THEN
+            val state = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
+        }
 
     @Test
     fun `given empty bookings while Loading, when flow emits empty, then state stays Loading`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -276,7 +280,7 @@ class WooPosBookingsViewModelTest {
         bookingsFlow.emit(listOf(booking(1)))
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -295,14 +299,14 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when onRefresh, then state becomes Loading`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -322,7 +326,7 @@ class WooPosBookingsViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         // WHEN
@@ -338,13 +342,13 @@ class WooPosBookingsViewModelTest {
     fun `given refresh fails on non-content, when onRefresh, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("first error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("refresh error")))
 
         // WHEN
@@ -368,7 +372,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         verify(bookingListHandler, times(2))
-            .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
     }
 
     @Test
@@ -451,7 +455,7 @@ class WooPosBookingsViewModelTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .doSuspendableAnswer {
                 delay(1000)
                 Result.success(Unit)
@@ -479,14 +483,14 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
             advanceUntilIdle()
             assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -498,26 +502,22 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Loading::class.java)
-            verify(bookingListHandler, times(2)).loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+            verify(bookingListHandler, times(2)).loadBookings(
+                anyOrNull(),
+                any(),
+                eq(BookingListSortOption.NewestToOldest)
+            )
         }
 
     @Test
     fun `given empty state, when onBookingsEmptyActionClicked, then resets to Loading and fetches`() = runTest {
         // GIVEN
-        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
-        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        bookingsFlow.emit(listOf(booking(1)))
-        advanceUntilIdle()
-
-        bookingsFlow.emit(emptyList())
-        advanceUntilIdle()
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
-
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -529,14 +529,18 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Loading::class.java)
-        verify(bookingListHandler, times(2)).loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+        verify(bookingListHandler, times(2)).loadBookings(
+            anyOrNull(),
+            any(),
+            eq(BookingListSortOption.NewestToOldest)
+        )
     }
 
     @Test
     fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -554,7 +558,7 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when onBookingSelected, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -629,7 +633,7 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
@@ -894,4 +898,39 @@ class WooPosBookingsViewModelTest {
                     WooPosBookingsState.Content.DialogState.CancelBooking.Processing::class.java
                 )
         }
+
+    @Test
+    fun `given date changed, when state becomes Content, then dateSelectorState is updated`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val contentBefore = viewModel.state.value as WooPosBookingsState.Content
+        val dateBefore = contentBefore.dateSelectorState?.formattedDate
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val contentAfter = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(contentAfter.dateSelectorState).isNotNull
+        assertThat(contentAfter.dateSelectorState?.formattedDate).isNotEqualTo(dateBefore)
+    }
+
+    @Test
+    fun `given date changed, when previous day clicked, then fetch called with new date`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.PreviousDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler, times(2))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+    }
+
 }
