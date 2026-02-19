@@ -158,15 +158,11 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private fun resolveConnectionErrorMessage(error: Throwable): Int {
-        val errorCode = (error as? OnChangedException)
-            ?.error
-            ?.let { it as? JetpackStore.JetpackError }
-            ?.errorCode
-        return resolveConnectionErrorMessage(errorCode)
-    }
-
-    private fun resolveConnectionErrorMessage(errorCode: Int?): Int {
-        return if (errorCode == ERROR_CODE_FORBIDDEN) {
+        return if ((error as? OnChangedException)
+                ?.error
+                ?.let { it as? JetpackStore.JetpackError }
+                ?.errorCode == ERROR_CODE_FORBIDDEN
+        ) {
             R.string.woo_push_notifications_connection_steps_error_connection_permission_message
         } else {
             R.string.woo_push_notifications_connection_steps_generic_error_message
