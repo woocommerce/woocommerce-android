@@ -9,6 +9,16 @@ user-invocable: true
 
 Create a pull request following the project's PR conventions and template.
 
+## PR Title Format
+
+- **Always prefix with `[WOOMOB-XYZ]`** where XYZ is the issue number
+- Extract issue number from branch name (format: `issue/woomob-XYZ-...` or `woomob-XYZ-...`)
+- If issue number not available in branch name, ask the user for it
+
+## PR Description Format
+
+- **Always start with `Fixes WOOMOB-XYZ`** on the first line of the Description section
+
 ## Steps
 
 1. **Verify branch.** Confirm you are NOT on `trunk`. If on trunk, stop and ask the user to create a feature branch first.
@@ -32,8 +42,9 @@ Create a pull request following the project's PR conventions and template.
 8. **Create the PR.** Use the template format from `.github/PULL_REQUEST_TEMPLATE.md`:
 
 ```bash
-gh pr create --draft --title "<concise title>" --body "$(cat <<'EOF'
+gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
 ### Description
+Fixes WOOMOB-XYZ
 <1-3 sentence summary of what and why>
 
 ### Test Steps
