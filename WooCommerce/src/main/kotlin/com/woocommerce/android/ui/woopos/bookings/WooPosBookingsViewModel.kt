@@ -119,12 +119,19 @@ class WooPosBookingsViewModel @Inject constructor(
                     items.entries.find { it.key.id == id }?.value
                 }
 
+                val currentContentState = _state.value as? WooPosBookingsState.Content
+                val paginationState = when (currentContentState?.paginationState) {
+                    WooPosPaginationState.Loading -> WooPosPaginationState.None
+                    else -> currentContentState?.paginationState ?: WooPosPaginationState.None
+                }
+
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
                     pullToRefreshState = WooPosPullToRefreshState.Enabled,
                     selectedDetails = selectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                    paginationState = paginationState,
+                    dialogState = currentContentState?.dialogState
+                        ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
             }
         }
@@ -187,10 +194,6 @@ class WooPosBookingsViewModel @Inject constructor(
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
             bookingListHandler.loadMore()
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(
@@ -213,10 +216,6 @@ class WooPosBookingsViewModel @Inject constructor(
             }
 
             result
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
