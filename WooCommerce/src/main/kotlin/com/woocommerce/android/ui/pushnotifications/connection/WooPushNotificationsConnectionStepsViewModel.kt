@@ -9,10 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
-import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.login.jetpack.JetpackConnectionUrlResolver
 import com.woocommerce.android.ui.login.jetpack.connection.JetpackActivationWebViewViewModel
@@ -36,7 +36,6 @@ import javax.inject.Inject
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
-    private val fetchJetpackStatus: FetchJetpackStatus,
     private val jetpackActivationRepository: JetpackActivationRepository,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
@@ -51,7 +50,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private val connectStoreStage = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = ConnectStoreStage.FetchStatus,
+        initialValue = ConnectStoreStage.ConnectAccount,
         key = KEY_CONNECT_STORE_STAGE
     )
 
@@ -133,7 +132,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 when (step.type) {
                     StepType.ConnectStore -> {
                         when (stage) {
-                            ConnectStoreStage.FetchStatus -> startFetchStatusStage()
                             ConnectStoreStage.WebViewConnection -> startWebViewConnectionStage()
                             ConnectStoreStage.ConnectAccount -> startConnectAccountStage()
                             ConnectStoreStage.ConfirmConnection -> startConfirmConnectionStage()
@@ -144,40 +142,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                     StepType.EnablePushNotifications -> Unit
                 }
             }
-    }
-
-    private suspend fun startFetchStatusStage() {
-        val site = selectedSite.get()
-
-        fetchJetpackStatus(site = site, useApplicationPasswords = true).fold(
-            onSuccess = { response ->
-                when (response) {
-                    FetchJetpackStatus.JetpackStatusFetchResponse.ConnectionForbidden -> {
-                        showConnectStoreStepError(
-                            R.string.woo_push_notifications_connection_steps_error_connection_permission_message
-                        )
-                    }
-
-                    is FetchJetpackStatus.JetpackStatusFetchResponse.Success -> {
-                        when (val status = response.status.jetpackConnectionStatus) {
-                            is JetpackConnectionStatus.AccountConnected -> showConnectStoreStepComplete()
-                            is JetpackConnectionStatus.AccountNotConnected -> {
-                                if (!status.supportsConnectionApi) {
-                                    connectStoreStage.value = ConnectStoreStage.WebViewConnection
-                                    return@fold
-                                }
-
-                                pendingConnectionStatus.value = status
-                                connectStoreStage.value = ConnectStoreStage.ConnectAccount
-                            }
-                        }
-                    }
-                }
-            },
-            onFailure = {
-                showConnectStoreStepError(R.string.woo_push_notifications_connection_steps_generic_error_message)
-            }
-        )
     }
 
     private suspend fun startWebViewConnectionStage() {
@@ -202,10 +166,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private suspend fun startConnectAccountStage() {
-        val status = pendingConnectionStatus.value
-        if (status == null) {
-            connectStoreStage.value = ConnectStoreStage.FetchStatus
-            return
+        val status = pendingConnectionStatus.value ?: DEFAULT_CONNECTION_STATUS.also {
+            pendingConnectionStatus.value = it
         }
 
         jetpackActivationRepository.connectJetpackAccount(
@@ -304,7 +266,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     enum class ConnectStoreStage {
-        FetchStatus,
         WebViewConnection,
         ConnectAccount,
         ConfirmConnection
@@ -333,6 +294,10 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     companion object {
         private const val ERROR_CODE_FORBIDDEN = 403
+        private val DEFAULT_CONNECTION_STATUS = JetpackConnectionStatus.AccountNotConnected(
+            siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+            blogId = null
+        )
 
         @VisibleForTesting
         internal const val KEY_CURRENT_STEP = "woo-push-connection-current-step"
