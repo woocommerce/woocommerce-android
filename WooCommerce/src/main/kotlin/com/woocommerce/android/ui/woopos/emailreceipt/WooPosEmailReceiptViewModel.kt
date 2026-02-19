@@ -105,7 +105,9 @@ class WooPosEmailReceiptViewModel @Inject constructor(
             val currentState = _state.value
             if (currentState is WooPosEmailReceiptState.Email && currentState.email.isBlank()) {
                 val billingEmail = repository.getBillingEmail(orderId) ?: return@launch
-                handleEmailChanged(billingEmail)
+                if (_state.value is WooPosEmailReceiptState.Email) {
+                    handleEmailChanged(billingEmail)
+                }
             }
         }
     }
