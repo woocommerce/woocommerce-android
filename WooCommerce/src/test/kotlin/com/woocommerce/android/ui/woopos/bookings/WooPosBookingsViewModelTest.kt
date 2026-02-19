@@ -151,6 +151,7 @@ class WooPosBookingsViewModelTest {
             bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }

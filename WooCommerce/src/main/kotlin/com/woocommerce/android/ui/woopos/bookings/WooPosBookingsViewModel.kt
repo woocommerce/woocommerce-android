@@ -186,10 +186,12 @@ class WooPosBookingsViewModel @Inject constructor(
         if (loadMoreJob?.isActive == true) return
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         if (currentState.paginationState is WooPosPaginationState.Error) return
+        if (!bookingListHandler.hasMorePages) return
 
         loadMoreJob = viewModelScope.launch {
             fetchJob?.join()
 
+            if (!bookingListHandler.hasMorePages) return@launch
             val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
