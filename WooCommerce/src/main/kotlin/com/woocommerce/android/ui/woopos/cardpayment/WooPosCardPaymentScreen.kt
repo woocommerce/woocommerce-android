@@ -41,6 +41,7 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -560,5 +561,174 @@ private fun CardPaymentSuccess(
                 text = stringResource(R.string.woopos_receipt_button)
             )
         }
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentInitiatingPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Initiating,
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentPreparingReaderPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.Preparing(
+                title = "Preparing reader",
+                subtitle = "$12.50",
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentReadyForPaymentPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.ReadyForPayment(
+                title = "Ready for payment",
+                subtitle = "Tap, insert, or swipe to pay $12.50",
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentReaderDisconnectedPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.Collecting.ReaderDisconnected(
+                title = "Reader disconnected",
+                subtitle = "Please reconnect your card reader",
+                actionButtonLabel = "Connect reader",
+            ),
+            showCashPaymentButton = true,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentInProgressPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentInProgress(
+                title = "Processing payment",
+                subtitle = "$12.50",
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentFailedWithRetryPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentFailed(
+                title = "Payment failed",
+                subtitle = "Please try again",
+                actionButtonLabel = "Try again",
+                isDismissButtonVisible = true,
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentFailedWithoutRetryPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentFailed(
+                title = "Payment failed",
+                subtitle = "Please try again",
+                actionButtonLabel = null,
+                isDismissButtonVisible = true,
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+private fun CardPaymentSuccessPreview() {
+    WooPosTheme {
+        WooPosCardPaymentScreenContent(
+            state = WooPosCardPaymentState.PaymentSuccess(
+                orderTotalText = "$12.50",
+            ),
+            showCashPaymentButton = false,
+            onRetryClicked = {},
+            onDismissClicked = {},
+            onConnectReaderClicked = {},
+            onDoneClicked = {},
+            onEmailReceiptClicked = {},
+            onBackClicked = {},
+            onCashPaymentClicked = {},
+        )
     }
 }
