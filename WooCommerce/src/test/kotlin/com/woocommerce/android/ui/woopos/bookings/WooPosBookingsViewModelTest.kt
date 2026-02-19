@@ -374,11 +374,20 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given content state, when onEndOfBookingsListReached succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         // WHEN
         viewModel.onEndOfBookingsListReached()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
@@ -428,7 +437,13 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given pagination error, when onPaginationErrorTryAgain succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         whenever(bookingListHandler.loadMore()).thenReturn(Result.failure(RuntimeException("error")))
@@ -439,6 +454,9 @@ class WooPosBookingsViewModelTest {
 
         // WHEN
         viewModel.onPaginationErrorTryAgain()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
