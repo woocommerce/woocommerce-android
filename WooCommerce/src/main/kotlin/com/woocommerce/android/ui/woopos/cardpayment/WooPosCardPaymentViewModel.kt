@@ -196,10 +196,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                                 R.string.woopos_success_totals_payment_failed_title
                             ),
                             subtitle = resourceProvider.getString(messageRes),
-                            actionButtonLabel = resourceProvider.getString(
-                                R.string.woo_pos_payment_failed_go_back
-                            ),
-                            isDismissButtonVisible = false
+                            isDismissButtonVisible = true
                         )
                     }
 
