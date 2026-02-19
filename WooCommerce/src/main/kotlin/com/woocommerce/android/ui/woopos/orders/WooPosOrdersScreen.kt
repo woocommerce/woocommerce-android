@@ -173,11 +173,12 @@ private fun WooPosOrdersScreen(
                 OrderDetailsLoadingPane(
                     modifier = Modifier
                         .fillMaxSize()
+                        .statusBarsPadding()
                         .background(MaterialTheme.colorScheme.surface)
                         .padding(
                             start = WooPosSpacing.Medium.value,
                             end = WooPosSpacing.Medium.value,
-                            top = WooPosSpacing.XLarge.value,
+                            top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.XLarge.value,
                             bottom = WooPosSpacing.XLarge.value
                         )
                 )
