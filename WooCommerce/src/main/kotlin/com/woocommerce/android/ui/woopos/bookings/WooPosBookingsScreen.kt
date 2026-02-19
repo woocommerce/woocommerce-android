@@ -535,8 +535,8 @@ private fun WooPosBookingsError(
 ) {
     WooPosErrorScreen(
         modifier = modifier,
-        message = stringResource(id = R.string.woopos_orders_loading_error_title),
-        reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+        message = stringResource(id = R.string.woopos_bookings_loading_error_title),
+        reason = stringResource(id = R.string.woopos_bookings_loading_error_message),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
