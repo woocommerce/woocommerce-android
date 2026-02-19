@@ -249,7 +249,7 @@ private fun WooPosBookingsContent(
                         WooPosEmptyScreen(
                             modifier = Modifier.fillMaxSize(),
                             icon = WooPosIcons.OrdersEmpty,
-                            title = stringResource(R.string.woopos_orders_no_order_selected),
+                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
                             message = "",
                             contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
                         )
