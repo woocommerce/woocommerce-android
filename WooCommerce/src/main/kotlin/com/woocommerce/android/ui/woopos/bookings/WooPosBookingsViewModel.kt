@@ -258,6 +258,7 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
+        onRefresh()
     }
 
     private fun handleCollectPayment() {
@@ -360,6 +361,14 @@ class WooPosBookingsViewModel @Inject constructor(
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
+            }
+            is WooPosBookingsState.BookingAction.IssueRefund -> {
+                val currentState = _state.value as? WooPosBookingsState.Content ?: return
+                _state.value = currentState.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(
+                        orderId = action.orderId
+                    )
+                )
             }
             is WooPosBookingsState.BookingAction.CancelBooking -> {
                 showCancelConfirmationDialog(action.bookingId)
