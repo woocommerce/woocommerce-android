@@ -196,7 +196,7 @@ private fun WooPosOrdersScreen(
         if (state.searchInputState is WooPosSearchInputState.Closed) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (state as? WooPosOrdersState.Content)
-                    ?.selectedDetails?.number?.removePrefix("#").orEmpty()
+                    ?.selectedDetails?.number.orEmpty()
                 stringResource(R.string.orderdetail_orderstatus_ordernum, orderNumber)
             } else {
                 stringResource(R.string.woopos_orders_title)

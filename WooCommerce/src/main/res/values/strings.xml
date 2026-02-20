@@ -813,7 +813,7 @@
     <string name="orderdetail_customer_header">CUSTOMER</string>
     <string name="orderdetail_customer_note">\u0022%1$s\u0022</string>
     <string name="orderdetail_customer_name_default">Guest</string>
-    <string name="orderdetail_orderstatus_ordernum">Order #%s</string>
+    <string name="orderdetail_orderstatus_ordernum">Order %s</string>
     <string name="orderdetail_shipping_method">Shipping method</string>
     <string name="orderdetail_shipping_details">Shipping details</string>
     <string name="orderdetail_billing_details">Billing details</string>
