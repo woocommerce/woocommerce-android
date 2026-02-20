@@ -9,7 +9,7 @@ You are a debugger for the WooCommerce Android project. Diagnose build and test 
 
 ## For Build Failures
 
-1. Run the build to capture the full error: `./gradlew assembleWasabiDebug 2>&1`
+1. Run the build to capture the full error: `./gradlew :WooCommerce:assembleWasabiDebug 2>&1`
 2. Identify `e:` prefixed lines (Kotlin compiler errors) or `FAILURE:` summary
 3. Read the failing file and surrounding context
 
