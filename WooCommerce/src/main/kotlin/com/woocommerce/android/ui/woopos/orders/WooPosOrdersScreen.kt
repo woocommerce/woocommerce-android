@@ -146,18 +146,24 @@ private fun WooPosOrdersScreen(
             .fillMaxSize()
     ) {
         when (state) {
-            is WooPosOrdersState.Content -> OrdersContent(
-                state = state,
-                isSingleOrderMode = isSingleOrderMode,
-                scrollToTopEvent = scrollToTopEvent,
-                onRefresh = onRefresh,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
-                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent,
-                onSearchErrorRetry = onSearchErrorRetry,
-                onUIEvent = onUIEvent
-            )
+            is WooPosOrdersState.Content -> if (isSingleOrderMode) {
+                SingleOrderDetails(
+                    state = state,
+                    onUIEvent = onUIEvent
+                )
+            } else {
+                OrdersListWithDetails(
+                    state = state,
+                    scrollToTopEvent = scrollToTopEvent,
+                    onRefresh = onRefresh,
+                    onOrderSelected = onOrderSelected,
+                    onEndOfOrdersListReached = onEndOfOrdersListReached,
+                    onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                    onSearchEvent = onSearchEvent,
+                    onSearchErrorRetry = onSearchErrorRetry,
+                    onUIEvent = onUIEvent
+                )
+            }
 
             is WooPosOrdersState.Empty -> OrdersEmpty(
                 onActionClicked = onOrdersEmptyActionClicked,
@@ -221,9 +227,50 @@ private fun WooPosOrdersScreen(
 }
 
 @Composable
-private fun OrdersContent(
+private fun OrderDetailsPane(
     state: WooPosOrdersState.Content,
-    isSingleOrderMode: Boolean = false,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    showOrderNumber: Boolean = true,
+) {
+    Box(modifier = modifier.background(MaterialTheme.colorScheme.surface)) {
+        when {
+            state.selectedDetails != null -> {
+                WooPosOrderDetails(
+                    modifier = Modifier.fillMaxHeight(),
+                    details = state.selectedDetails,
+                    showOrderNumber = showOrderNumber,
+                    onUIEvent = onUIEvent
+                )
+            }
+            state.items is WooPosOrdersState.Content.Items.Searching -> {
+                OrderDetailsLoadingPane(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .padding(
+                            start = WooPosSpacing.Medium.value,
+                            end = WooPosSpacing.Medium.value,
+                            top = WooPosSpacing.XLarge.value,
+                            bottom = WooPosSpacing.XLarge.value
+                        )
+                )
+            }
+            else -> {
+                WooPosEmptyScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    icon = WooPosIcons.OrdersEmpty,
+                    title = stringResource(R.string.woopos_orders_no_order_selected),
+                    message = "",
+                    contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun OrdersListWithDetails(
+    state: WooPosOrdersState.Content,
     scrollToTopEvent: SharedFlow<Unit>,
     onRefresh: () -> Unit,
     onOrderSelected: (Long) -> Unit,
@@ -234,63 +281,41 @@ private fun OrdersContent(
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
-        if (!isSingleOrderMode) {
-            OrdersListPane(
-                state = state,
-                scrollToTopEvent = scrollToTopEvent,
-                onRefresh = onRefresh,
-                isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
-                onOrderSelected = onOrderSelected,
-                onEndOfOrdersListReached = onEndOfOrdersListReached,
-                onPaginationErrorTryAgain = onPaginationErrorTryAgain,
-                onSearchEvent = onSearchEvent,
-                onSearchErrorRetry = onSearchErrorRetry,
-                modifier = Modifier
-                    .weight(0.3f)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceBright)
-            )
-        }
-
-        Box(
+        OrdersListPane(
+            state = state,
+            scrollToTopEvent = scrollToTopEvent,
+            onRefresh = onRefresh,
+            isRefreshing = state.pullToRefreshState == WooPosPullToRefreshState.Refreshing,
+            onOrderSelected = onOrderSelected,
+            onEndOfOrdersListReached = onEndOfOrdersListReached,
+            onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+            onSearchEvent = onSearchEvent,
+            onSearchErrorRetry = onSearchErrorRetry,
             modifier = Modifier
-                .weight(if (isSingleOrderMode) 1f else 0.7f)
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            when {
-                state.selectedDetails != null -> {
-                    WooPosOrderDetails(
-                        modifier = Modifier
-                            .fillMaxHeight(),
-                        details = state.selectedDetails,
-                        showOrderNumber = !isSingleOrderMode,
-                        onUIEvent = onUIEvent
-                    )
-                }
-                state.items is WooPosOrdersState.Content.Items.Searching -> {
-                    OrderDetailsLoadingPane(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .padding(
-                                start = WooPosSpacing.Medium.value,
-                                end = WooPosSpacing.Medium.value,
-                                top = WooPosSpacing.XLarge.value,
-                                bottom = WooPosSpacing.XLarge.value
-                            )
-                    )
-                }
-                else -> {
-                    WooPosEmptyScreen(
-                        modifier = Modifier.fillMaxSize(),
-                        icon = WooPosIcons.OrdersEmpty,
-                        title = stringResource(R.string.woopos_orders_no_order_selected),
-                        message = "",
-                        contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
-                    )
-                }
-            }
-        }
+                .weight(0.3f)
+                .fillMaxHeight()
+                .background(MaterialTheme.colorScheme.surfaceBright)
+        )
+        OrderDetailsPane(
+            state = state,
+            onUIEvent = onUIEvent,
+            showOrderNumber = true,
+            modifier = Modifier.weight(0.7f)
+        )
     }
+}
+
+@Composable
+private fun SingleOrderDetails(
+    state: WooPosOrdersState.Content,
+    onUIEvent: (WooPosOrdersUIEvent) -> Unit
+) {
+    OrderDetailsPane(
+        state = state,
+        onUIEvent = onUIEvent,
+        showOrderNumber = false,
+        modifier = Modifier.fillMaxSize()
+    )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
