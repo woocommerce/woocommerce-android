@@ -786,8 +786,13 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
-                .thenReturn(Result.failure(RuntimeException("error")))
+            whenever(
+                bookingListHandler.loadBookings(
+                    filters = anyOrNull(),
+                    sortBy = anyOrNull(),
+                    searchQuery = anyOrNull()
+                )
+            ).thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
             advanceUntilIdle()
