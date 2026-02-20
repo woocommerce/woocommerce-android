@@ -24,9 +24,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -57,8 +54,7 @@ fun WPComLoginMagicLinkRequestScreen(
     onOpenEmailClientClick: () -> Unit = {},
     onFallbackButtonClick: () -> Unit = {}
 ) {
-    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
-    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+    val titleRes = if (viewState.isJetpackInstalled) {
         R.string.login_jetpack_connect
     } else {
         R.string.login_jetpack_install
@@ -222,15 +218,7 @@ private fun JetpackModeRequestPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 avatarUrl = "avatar",
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
@@ -246,15 +234,7 @@ private fun MagicLinkSentPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 email = null,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
             )

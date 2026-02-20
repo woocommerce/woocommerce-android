@@ -26,9 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -57,8 +54,7 @@ fun WPComLoginEmailScreen(
     onContinueClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
-    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+    val titleRes = if (viewState.isJetpackInstalled) {
         R.string.login_jetpack_connect
     } else {
         R.string.login_jetpack_install
@@ -94,7 +90,7 @@ fun WPComLoginEmailScreen(
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = stringResource(
-                        id = if (jetpackStatus.isJetpackInstalled) {
+                        id = if (viewState.isJetpackInstalled) {
                             R.string.login_jetpack_connection_enter_wpcom_email
                         } else {
                             R.string.login_jetpack_installation_enter_wpcom_email
@@ -167,15 +163,7 @@ private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLoginEmailScreen(
             viewState = WPComLoginEmailViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 usernameOnly = false,
                 emailOrUsername = "",
             )

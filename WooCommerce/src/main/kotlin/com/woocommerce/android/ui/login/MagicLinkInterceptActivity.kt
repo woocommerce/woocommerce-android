@@ -27,7 +27,6 @@ import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenLogin
 import com.woocommerce.android.ui.login.MagicLinkInterceptViewModel.OpenSitePicker
 import com.woocommerce.android.ui.login.jetpack.dispatcher.JetpackActivationDispatcherFragmentArgs
 import com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkHandlerFragmentArgs
-import com.woocommerce.android.ui.login.wpcom.WPComLoginMode
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.ShowSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -178,7 +177,7 @@ class MagicLinkInterceptActivity : AppCompatActivity() {
             .addDestination(
                 R.id.wPComLoginMagicLinkHandlerFragment,
                 WPComLoginMagicLinkHandlerFragmentArgs(
-                    wpComLoginMode = WPComLoginMode.JetpackSetup(event.jetpackStatus)
+                    jetpackStatus = event.jetpackStatus
                 ).toBundle()
             )
             .createPendingIntent()

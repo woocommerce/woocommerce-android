@@ -37,7 +37,7 @@ class WPComLoginMagicLinkHandlerViewModel @Inject constructor(
 
     fun continueLogin() = launch {
         _viewState.value = ViewState.Loading
-        onLoginSuccess(navArgs.wpComLoginMode).onFailure {
+        onLoginSuccess(navArgs.jetpackStatus).onFailure {
             _viewState.value = ViewState.Error
         }
     }

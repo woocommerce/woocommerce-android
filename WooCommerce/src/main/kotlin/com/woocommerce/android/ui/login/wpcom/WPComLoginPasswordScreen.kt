@@ -26,9 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -63,8 +60,7 @@ fun WPComLoginPasswordScreen(
     onResetPasswordClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
-    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+    val titleRes = if (viewState.isJetpackInstalled) {
         R.string.login_jetpack_connect
     } else {
         R.string.login_jetpack_install
@@ -106,7 +102,7 @@ fun WPComLoginPasswordScreen(
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = stringResource(
-                        id = if (jetpackStatus.isJetpackInstalled) {
+                        id = if (viewState.isJetpackInstalled) {
                             R.string.login_jetpack_connection_enter_wpcom_password
                         } else {
                             R.string.login_jetpack_installation_enter_wpcom_password
@@ -174,15 +170,7 @@ private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLoginPasswordScreen(
             viewState = WPComLoginPasswordViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 password = "",
                 avatarUrl = ""

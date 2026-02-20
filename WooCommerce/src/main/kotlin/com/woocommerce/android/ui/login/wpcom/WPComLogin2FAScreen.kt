@@ -27,9 +27,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
-import com.woocommerce.android.model.JetpackSiteRegistrationStatus
-import com.woocommerce.android.model.JetpackStatus
 import com.woocommerce.android.ui.compose.component.ProgressDialog
 import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
@@ -62,8 +59,7 @@ fun WPComLogin2FAScreen(
     onSecurityKeyClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
-    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+    val titleRes = if (viewState.isJetpackInstalled) {
         R.string.login_jetpack_connect
     } else {
         R.string.login_jetpack_install
@@ -158,15 +154,7 @@ private fun JetpackModePreview() {
     WooThemeWithBackground {
         WPComLogin2FAScreen(
             viewState = WPComLogin2FAViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(
-                    JetpackStatus(
-                        isJetpackInstalled = false,
-                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
-                            blogId = null
-                        )
-                    )
-                ),
+                isJetpackInstalled = false,
                 emailOrUsername = "test@email.com",
                 password = "",
                 otp = "123456"

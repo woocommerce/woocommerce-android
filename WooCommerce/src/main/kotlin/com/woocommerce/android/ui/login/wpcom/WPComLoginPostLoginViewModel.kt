@@ -20,10 +20,8 @@ open class WPComLoginPostLoginViewModel(
     private val analyticsTrackerWrapper: AnalyticsTrackerWrapper
 ) : ScopedViewModel(savedStateHandle) {
     @VisibleForTesting
-    internal suspend fun onLoginSuccess(wpComLoginMode: WPComLoginMode): Result<Unit> {
-        return when (wpComLoginMode) {
-            is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
-        }
+    internal suspend fun onLoginSuccess(jetpackStatus: JetpackStatus): Result<Unit> {
+        return handleJetpackSetupPostLogin(jetpackStatus)
     }
 
     private suspend fun handleJetpackSetupPostLogin(jetpackStatus: JetpackStatus): Result<Unit> {
