@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -74,6 +75,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import org.wordpress.android.util.ToastUtils
 
 val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 
@@ -85,9 +87,16 @@ fun WooPosBookingsScreen(
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastEvent.collect { message ->
+            ToastUtils.showToast(context, message, ToastUtils.Duration.LONG)
+        }
     }
 
     val cashPaymentResult = backStackEntry.savedStateHandle
@@ -555,8 +564,8 @@ private fun WooPosBookingsError(
 ) {
     WooPosErrorScreen(
         modifier = modifier,
-        message = stringResource(id = R.string.woopos_orders_loading_error_title),
-        reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+        message = stringResource(id = R.string.woopos_bookings_loading_error_title),
+        reason = stringResource(id = R.string.woopos_bookings_loading_error_message),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked

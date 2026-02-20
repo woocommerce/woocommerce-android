@@ -56,7 +56,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)
@@ -312,20 +312,44 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        controllerEventFlow.emit(
-            CardReaderPaymentEvent.ShowErrorMessage(
-                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-    }
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
+
+    @Test
+    fun `given controller emits ShowPaymentErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowPaymentErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
 
     @Test
     fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
