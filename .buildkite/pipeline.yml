@@ -77,7 +77,7 @@ steps:
         prompt: Trigger an on-demand Wear OS prototype build
         key: watch_prototype_build_triggered
 
-      - label: ":firebase: Watch Prototype Build"
+      - label: ":amazon-s3: Watch Prototype Build"
         depends_on: watch_prototype_build_triggered
         command: .buildkite/commands/prototype-build.sh WooCommerce-Wear
         plugins: [$CI_TOOLKIT]
