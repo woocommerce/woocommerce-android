@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
@@ -133,12 +134,24 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 trackPaymentSuccess()
                 _state.value = WooPosCashPaymentState.Complete
                 when (source) {
-                    CashPaymentSource.BOOKINGS -> _navigationEvent.emit(
-                        WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                            BOOKING_CASH_PAYMENT_SUCCESS_KEY,
-                            true
+                    CashPaymentSource.BOOKINGS -> {
+                        val order = repository.getOrderById(orderId)
+                        val orderTotalText = if (order != null) {
+                            resourceProvider.getString(
+                                R.string.woopos_totals_success_payment_cash,
+                                priceFormat(order.total)
+                            )
+                        } else {
+                            resourceProvider.getString(R.string.woopos_payment_successful_label)
+                        }
+                        _navigationEvent.emit(
+                            WooPosNavigationEvent.OpenPaymentSuccess(
+                                orderId = orderId,
+                                orderTotalText = orderTotalText,
+                                source = PaymentSuccessSource.CASH_BOOKINGS,
+                            )
                         )
-                    )
+                    }
                     CashPaymentSource.CHECKOUT -> _navigationEvent.emit(
                         WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment
                     )
