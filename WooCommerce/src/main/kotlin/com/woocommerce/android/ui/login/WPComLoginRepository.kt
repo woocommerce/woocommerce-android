@@ -98,7 +98,7 @@ class WPComLoginRepository @Inject constructor(
     }
 
     suspend fun submitTwoStepCode(emailOrUsername: String, password: String, twoStepCode: String): Result<Unit> {
-        WooLog.i(WooLog.T.LOGIN, "Sumbitting 2FA verification code")
+        WooLog.i(WooLog.T.LOGIN, "Submitting 2FA verification code")
 
         return submitAuthRequest(emailOrUsername, password, twoStepCode, false)
     }
