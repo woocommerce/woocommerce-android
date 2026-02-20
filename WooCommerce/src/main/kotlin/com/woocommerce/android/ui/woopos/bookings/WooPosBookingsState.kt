@@ -23,7 +23,13 @@ sealed class WooPosBookingsState {
         data class EmailReceipt(override val orderId: Long) : BookingAction
 
         @Immutable
+        data class IssueRefund(override val orderId: Long) : BookingAction
+
+        @Immutable
         data class CancelBooking(val bookingId: Long, override val orderId: Long) : BookingAction
+
+        @Immutable
+        data class ViewOrder(override val orderId: Long) : BookingAction
     }
 
     @Immutable
