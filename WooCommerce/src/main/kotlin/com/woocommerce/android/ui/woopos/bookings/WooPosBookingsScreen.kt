@@ -602,7 +602,8 @@ fun WooPosBookingsScreenPreview() {
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 dateSelectorState = DateSelectorState(
-                    formattedDate = "19 Feb, Wed",
+                    formattedDate = "19 Feb",
+                    formattedDay = "Wed",
                     selectedDateMillis = System.currentTimeMillis(),
                 ),
                 selectedDetails = details1,
@@ -636,7 +637,8 @@ fun WooPosBookingsNothingFoundStatePreview() {
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
                 dateSelectorState = DateSelectorState(
-                    formattedDate = "19 Feb, Wed",
+                    formattedDate = "19 Feb",
+                    formattedDay = "Wed",
                     selectedDateMillis = System.currentTimeMillis(),
                 ),
                 selectedDetails = details,
