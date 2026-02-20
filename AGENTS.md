@@ -155,7 +155,7 @@ ViewModels never interact with Room or network directly — always through repos
 - Max line length: 120 characters (exception: test names can be longer)
 - No wildcard imports
 - No `FIXME` — use `TODO` instead
-- MUST NOT add comments to new code (keep existing comments if present)
+- Comments should be rare — only add them when they explain business logic or intent that isn't obvious from the code itself. Avoid restating what the code does. Keep existing comments if present
 - Constants: `UPPER_SNAKE_CASE`
 - Companion objects MUST be placed at the bottom of the class
 - Avoid reflection in new code
