@@ -285,8 +285,8 @@ class WooPosHomeFloatingToolbarViewModelTest {
 
         val menu = viewModel.state.value.menu
         assertThat(menu).isInstanceOf(WooPosHomeFloatingToolbarState.Menu.Visible::class.java)
-        val items = (menu as WooPosHomeFloatingToolbarState.Menu.Visible).menuItems
-        assertThat(items.any { it.title == R.string.woopos_bookings_title }).isFalse()
+        val items = (menu as WooPosHomeFloatingToolbarState.Menu.Visible).items
+        assertThat(items.any { it.title == R.string.woopos_bookings_title }).isFalse
     }
 
     private fun createViewModel() = WooPosHomeFloatingToolbarViewModel(
