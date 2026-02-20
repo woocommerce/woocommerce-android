@@ -354,6 +354,10 @@ class WooPosBookingsViewModel @Inject constructor(
         doRefresh()
     }
 
+    fun onPaymentCompleted() {
+        doRefresh()
+    }
+
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
             is WooPosBookingsState.BookingAction.ViewOrder -> {
