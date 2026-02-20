@@ -210,8 +210,8 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 
 ## Analytics
 
-- Add events to `AnalyticsEvent` enum in `WooCommerce/.../analytics/AnalyticsEvent.kt`
-- Track via injected `AnalyticsTrackerWrapper` — MUST NOT use the `AnalyticsTracker` singleton directly
+- Add events to `AnalyticsEvent` enum in `WooCommerce/.../analytics/AnalyticsEvent.kt`. **Exception:** POS uses its own `WooPosAnalyticsEvent`
+- Track via injected `AnalyticsTrackerWrapper` — MUST NOT use the `AnalyticsTracker` singleton directly. **Exception:** POS uses its own `WooPosAnalyticsTracker`
 - Properties as `Map<String, *>` with key constants from `AnalyticsTracker.KEY_*`
 - Enum constants: `UPPER_SNAKE_CASE` (e.g., `PRODUCT_DETAIL_LOADED`)
 - Naming token suffixes: `_tapped`, `_loaded`, `_failed`, `_success`, `_selected`, `_toggled`, `_open`
