@@ -91,7 +91,7 @@ fun WooPosBookingsDateSelector(
                 },
                 modifier = Modifier.widthIn(min = 150.dp),
                 colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.secondary,
+                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
                     labelColor = chipContentColor,
                     leadingIconContentColor = chipContentColor,
                 ),
