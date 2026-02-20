@@ -11,14 +11,13 @@ Create a pull request following the project's PR conventions and template.
 
 ## PR Title Format
 
-- Do NOT prefix with issue numbers — the issue is already linked in the branch name and PR description
-- Keep titles short and descriptive (under 70 characters)
+- **Always prefix with `[WOOMOB-XYZ]`** where XYZ is the issue number
+- Extract issue number from branch name (format: `issue/woomob-XYZ-...` or `woomob-XYZ-...`)
+- If issue number not available in branch name, ask the user for it
 
 ## PR Description Format
 
 - **Always start with `Fixes WOOMOB-XYZ`** on the first line of the Description section
-- Extract issue number from branch name (format: `issue/woomob-XYZ-...` or `woomob-XYZ-...`)
-- If issue number not available in branch name, ask the user for it
 
 ## Steps
 
@@ -43,7 +42,7 @@ Create a pull request following the project's PR conventions and template.
 8. **Create the PR.** Use the template format from `.github/PULL_REQUEST_TEMPLATE.md`:
 
 ```bash
-gh pr create --draft --title "<concise title>" --body "$(cat <<'EOF'
+gh pr create --draft --title "[WOOMOB-XYZ] <concise title>" --body "$(cat <<'EOF'
 ### Description
 Fixes WOOMOB-XYZ
 <1-3 sentence summary of what and why>
