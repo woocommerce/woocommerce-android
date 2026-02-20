@@ -81,7 +81,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onContinueClick() {
-        triggerEvent(NavigateToConnectionSteps)
+        triggerEvent(NavigateToConnectionSteps(isSiteConnectedToJetpack = _viewState.value !is ViewState.NotConnected))
     }
 
     fun onNotNowClick() {
@@ -104,7 +104,9 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         data object GenericError : ViewState
     }
 
-    data object NavigateToConnectionSteps : Event()
+    data class NavigateToConnectionSteps(
+        val isSiteConnectedToJetpack: Boolean
+    ) : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
 }

@@ -46,10 +46,12 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps -> {
+                is WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps -> {
                     findNavController().navigateSafely(
                         WooPushNotificationsIntroductionDialogDirections
-                            .actionWooPushNotificationsIntroductionDialogToWooPushNotificationsConnectionStepsFragment()
+                            .actionWooPushNotificationsIntroductionDialogToWooPushNotificationsConnectionStepsFragment(
+                                isSiteConnectedToJetpack = event.isSiteConnectedToJetpack
+                            )
                     )
                 }
 

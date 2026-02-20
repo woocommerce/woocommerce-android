@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
@@ -44,7 +43,10 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val stringUtils: StringUtils = mock()
 
-    private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+    private suspend fun setup(
+        isStoreAlreadyConnected: Boolean = false,
+        prepareMocks: suspend () -> Unit = {}
+    ) {
         whenever(jetpackActivationRepository.registerSite(any(), any()))
             .thenReturn(Result.success(1L))
         whenever(stringUtils.getSiteDomainAndPath(site))
@@ -56,7 +58,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             pushNotificationRepository = pushNotificationRepository,
             jetpackActivationRepository = jetpackActivationRepository,
             stringUtils = stringUtils,
-            savedStateHandle = SavedStateHandle()
+            savedStateHandle = WooPushNotificationsConnectionStepsFragmentArgs(
+                isSiteConnectedToJetpack = isStoreAlreadyConnected
+            ).toSavedStateHandle()
         )
     }
 
