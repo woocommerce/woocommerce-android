@@ -266,7 +266,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given content state, when onRefresh, then pullToRefreshState is Refreshing`() = runTest {
+    fun `given content state, when PTR, then pullToRefreshState is Refreshing`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
@@ -284,7 +284,7 @@ class WooPosBookingsViewModelTest {
             }
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -293,7 +293,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given non-content state, when onRefresh, then state becomes Loading`() = runTest {
+    fun `given non-content state, when PTR, then state becomes Loading`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
@@ -310,7 +310,7 @@ class WooPosBookingsViewModelTest {
             }
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -318,7 +318,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given refresh fails on content, when onRefresh, then pullToRefreshState returns to Enabled`() = runTest {
+    fun `given refresh fails on content, when PTR, then pullToRefreshState returns to Enabled`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -327,7 +327,7 @@ class WooPosBookingsViewModelTest {
             .thenReturn(Result.failure(RuntimeException("error")))
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -336,7 +336,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given refresh fails on non-content, when onRefresh, then state is Error`() = runTest {
+    fun `given refresh fails on non-content, when PTR, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
@@ -349,7 +349,7 @@ class WooPosBookingsViewModelTest {
             .thenReturn(Result.failure(RuntimeException("refresh error")))
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -358,13 +358,13 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given content state, when onRefresh, then cancels previous fetch job`() = runTest {
+    fun `given content state, when PTR, then cancels previous fetch job`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
