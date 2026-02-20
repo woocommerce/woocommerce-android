@@ -279,11 +279,11 @@ private fun WooPushNotificationsConnectionStepsPreview() {
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.ConnectStore,
+                        type = StepType.CheckPluginCompatibility,
                         state = StepState.Ongoing
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.CheckPluginCompatibility,
+                        type = StepType.ConnectStore,
                         state = StepState.Idle
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
@@ -309,11 +309,11 @@ private fun WooPushNotificationsConnectionStepsPreviewError() {
                 siteAddress = "coffeebeans.com",
                 steps = listOf(
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.ConnectStore,
+                        type = StepType.CheckPluginCompatibility,
                         state = StepState.Success
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
-                        type = StepType.CheckPluginCompatibility,
+                        type = StepType.ConnectStore,
                         state = StepState.Error(UiString.UiStringText("Error connecting to store"))
                     ),
                     WooPushNotificationsConnectionStepsViewModel.Step(
