@@ -73,6 +73,9 @@ steps:
         artifact_paths:
           - "WooCommerce/build/outputs/apk/**/*"
 
+  ########################################
+  - group: ":amazon-s3: Watch Prototype Build"
+    steps:
       - block: Build Watch Prototype?
         prompt: Trigger an on-demand Wear OS prototype build
         key: watch_prototype_build_triggered
