@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
+import com.woocommerce.android.ui.woopos.common.util.isNetworkError
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -50,6 +51,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
+
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
     private var fetchJob: Job? = null
@@ -120,6 +124,10 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val currentContentState = _state.value as? WooPosBookingsState.Content
+                val currentPTRState = currentContentState
+                    ?.pullToRefreshState
+                    ?.takeIf { it == WooPosPullToRefreshState.Refreshing }
+                    ?: WooPosPullToRefreshState.Enabled
                 val paginationState = when (currentContentState?.paginationState) {
                     WooPosPaginationState.Loading,
                     WooPosPaginationState.Error -> WooPosPaginationState.None
@@ -128,7 +136,7 @@ class WooPosBookingsViewModel @Inject constructor(
 
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
-                    pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                    pullToRefreshState = currentPTRState,
                     selectedDetails = selectedDetails,
                     paginationState = paginationState,
                     dialogState = currentContentState?.dialogState
@@ -170,14 +178,33 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 sortBy = BookingListSortOption.NewestToOldest
-            ).onFailure {
-                _state.value = when (val current = _state.value) {
-                    is WooPosBookingsState.Content -> current.copy(
+            ).onSuccess {
+                val current = _state.value
+                if (current is WooPosBookingsState.Content) {
+                    _state.value = current.copy(
                         pullToRefreshState = WooPosPullToRefreshState.Enabled
                     )
-                    else -> WooPosBookingsState.Error(
-                        message = it.message ?: "Failed to load bookings"
-                    )
+                }
+            }.onFailure {
+                when (val current = _state.value) {
+                    is WooPosBookingsState.Content -> {
+                        _state.value = current.copy(
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled
+                        )
+                        val messageResId = if (it.isNetworkError()) {
+                            R.string.woo_pos_ptr_offline_error
+                        } else {
+                            R.string.something_went_wrong_try_again
+                        }
+                        _toastEvent.emit(
+                            resourceProvider.getString(messageResId)
+                        )
+                    }
+                    else -> {
+                        _state.value = WooPosBookingsState.Error(
+                            message = it.message ?: "Failed to load bookings"
+                        )
+                    }
                 }
             }
         }
