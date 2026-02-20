@@ -82,6 +82,10 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 buildList {
                     add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
                     add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
+                    val isPaid = isBookingPaid(booking.status, paymentStatus)
+                    if (isPaid) {
+                        add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
+                    }
                     if (booking.isCancellable) {
                         add(
                             WooPosBookingsState.BookingAction.CancelBooking(
@@ -105,7 +109,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             location = null,
             customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
             attendanceSection = buildAttendanceSection(booking),
-            paymentSection = buildPaymentSection(booking),
+            paymentSection = buildPaymentSection(booking, paymentStatus),
             bookingNote = booking.note.ifBlank { null },
         )
     }
@@ -130,14 +134,22 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
+    private fun isBookingPaid(
+        bookingStatus: BookingEntity.Status,
+        paymentStatus: PaymentStatus,
+    ): Boolean = when (bookingStatus) {
+        BookingEntity.Status.Paid, BookingEntity.Status.Complete -> true
+        BookingEntity.Status.Cancelled -> paymentStatus == PaymentStatus.PAID
+        else -> false
+    }
+
     private fun buildPaymentSection(
-        booking: BookingEntity
+        booking: BookingEntity,
+        paymentStatus: PaymentStatus,
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
         val currency = booking.currency
-        val isPaid = booking.status == BookingEntity.Status.Paid ||
-            booking.status == BookingEntity.Status.Complete ||
-            booking.status == BookingEntity.Status.Cancelled
+        val isPaid = isBookingPaid(booking.status, paymentStatus)
 
         val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
