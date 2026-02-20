@@ -4,32 +4,34 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.compose.animations.SkeletonView
+import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
@@ -60,42 +62,55 @@ fun WooPushNotificationsIntroductionScreen(
     onContactSupportClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier
-            .background(MaterialTheme.colorScheme.surface)
-            .fillMaxSize()
-            .padding(16.dp)
-            .windowInsetsPadding(WindowInsets.safeDrawing)
-    ) {
-        when (viewState) {
-            ViewState.Loading -> LoadingContent(modifier = Modifier.fillMaxWidth())
-            ViewState.NotConnected -> IntroContent(
-                onContinueClick = onContinueClick,
-                onNotNowClick = onNotNowClick,
-                onWhatIsWPComClick = onWhatIsWPComClick,
-                modifier = Modifier.fillMaxWidth()
+    Scaffold(
+        topBar = {
+            Toolbar(
+                onNavigationButtonClick = onNotNowClick,
+                navigationIcon = ImageVector.vectorResource(R.drawable.ic_close_24dp),
+                windowInsets = TopAppBarDefaults.windowInsets
             )
-            ViewState.UpdateRequired -> UpdateRequiredContent(
-                onUpdatePluginClick = onUpdatePluginClick,
-                onNotNowClick = onNotNowClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-            ViewState.ForbiddenError -> ErrorContent(
-                bodyText = stringResource(
-                    id = R.string.woo_push_notifications_introduction_error_forbidden_body
-                ),
-                onContactSupportClick = onContactSupportClick,
-                onNotNowClick = onNotNowClick,
-                modifier = Modifier.fillMaxWidth()
-            )
-            ViewState.GenericError -> ErrorContent(
-                bodyText = stringResource(
-                    id = R.string.woo_push_notifications_introduction_error_body
-                ),
-                onContactSupportClick = onContactSupportClick,
-                onNotNowClick = onNotNowClick,
-                modifier = Modifier.fillMaxWidth()
-            )
+        },
+    ) { paddingValues ->
+        Column(
+            modifier = modifier
+                .background(MaterialTheme.colorScheme.surface)
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
+            when (viewState) {
+                ViewState.Loading -> LoadingContent(modifier = Modifier.fillMaxWidth())
+                ViewState.NotConnected -> IntroContent(
+                    onContinueClick = onContinueClick,
+                    onNotNowClick = onNotNowClick,
+                    onWhatIsWPComClick = onWhatIsWPComClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ViewState.UpdateRequired -> UpdateRequiredContent(
+                    onUpdatePluginClick = onUpdatePluginClick,
+                    onNotNowClick = onNotNowClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ViewState.ForbiddenError -> ErrorContent(
+                    bodyText = stringResource(
+                        id = R.string.woo_push_notifications_introduction_error_forbidden_body
+                    ),
+                    onContactSupportClick = onContactSupportClick,
+                    onNotNowClick = onNotNowClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                ViewState.GenericError -> ErrorContent(
+                    bodyText = stringResource(
+                        id = R.string.woo_push_notifications_introduction_error_body
+                    ),
+                    onContactSupportClick = onContactSupportClick,
+                    onNotNowClick = onNotNowClick,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
     }
 }
