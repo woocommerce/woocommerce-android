@@ -360,7 +360,11 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                // TBD: handle email receipt
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId)
+                    )
+                }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
                 val currentState = _state.value as? WooPosBookingsState.Content ?: return
