@@ -1072,4 +1072,24 @@ class WooPosBookingsViewModelTest {
         val content = viewModel.state.value as WooPosBookingsState.Content
         assertThat(content.dateSelectorState?.formattedDate).isNotEqualTo(initialDate)
     }
+
+    @Test
+    fun `given date selected from calendar picker, when DateSelected dispatched, then fetch called for selected date`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val selectedDateMillis = Instant.parse("2026-03-15T00:00:00Z").toEpochMilli()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.DateSelected(selectedDateMillis))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(content.dateSelectorState?.selectedDateMillis).isEqualTo(selectedDateMillis)
+        }
 }
