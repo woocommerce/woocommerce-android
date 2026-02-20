@@ -241,6 +241,7 @@ private fun WooPosBookingsContent(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onUIEvent = onUIEvent,
                 modifier = Modifier
                     .weight(0.3f)
                     .fillMaxHeight()
@@ -277,7 +278,7 @@ private fun WooPosBookingsContent(
                         WooPosEmptyScreen(
                             modifier = Modifier.fillMaxSize(),
                             icon = WooPosIcons.OrdersEmpty,
-                            title = stringResource(R.string.woopos_orders_no_order_selected),
+                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
                             message = "",
                             contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
                         )
@@ -313,6 +314,7 @@ private fun WooPosBookingsListPane(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -325,7 +327,12 @@ private fun WooPosBookingsListPane(
                 .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        state.dateSelectorState?.let { dateSelectorState ->
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -347,6 +354,7 @@ private fun WooPosBookingsListPane(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onRetry = onRefresh,
             )
 
             PullRefreshIndicator(
@@ -370,6 +378,7 @@ private fun WooPosBookingsList(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
@@ -404,7 +413,7 @@ private fun WooPosBookingsList(
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
                         text = stringResource(id = R.string.retry),
-                        click = { throw NotImplementedError("Retry button clicked") }
+                        click = onRetry
                     )
                 )
             }
@@ -621,6 +630,10 @@ fun WooPosBookingsScreenPreview() {
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -652,6 +665,10 @@ fun WooPosBookingsNothingFoundStatePreview() {
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden

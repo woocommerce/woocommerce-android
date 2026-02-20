@@ -26,7 +26,16 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,6 +46,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val mapper: WooPosBookingViewStateMapper,
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
+    private val clock: Clock,
 ) : ViewModel() {
 
     companion object {
@@ -56,6 +66,7 @@ class WooPosBookingsViewModel @Inject constructor(
     val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
+    private var selectedDate: LocalDate = LocalDate.now(clock)
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
 
@@ -70,17 +81,51 @@ class WooPosBookingsViewModel @Inject constructor(
         loadMoreJob?.cancel()
         fetchJob = viewModelScope.launch {
             val result = bookingListHandler.loadBookings(
+                filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
                 sortBy = BookingListSortOption.NewestToOldest
             )
-            result.onFailure {
-                if (_state.value is WooPosBookingsState.Loading) {
-                    _state.value = WooPosBookingsState.Error(
-                        message = it.message ?: "Failed to load bookings"
-                    )
+            val current = _state.value
+            result.onFailure { error ->
+                when {
+                    current is WooPosBookingsState.Loading -> {
+                        _state.value = WooPosBookingsState.Error(
+                            message = error.message ?: "Failed to load bookings"
+                        )
+                    }
+                    current is WooPosBookingsState.Content &&
+                        current.items is WooPosBookingsState.Content.Items.Searching -> {
+                        _state.value = current.copy(
+                            items = WooPosBookingsState.Content.Items.Error(
+                                title = resourceProvider.getString(
+                                    R.string.woopos_orders_loading_error_title
+                                ),
+                                message = resourceProvider.getString(
+                                    R.string.woopos_orders_loading_error_message
+                                )
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        )
+                    }
                 }
             }.onSuccess {
-                if (_state.value is WooPosBookingsState.Loading) {
-                    _state.value = WooPosBookingsState.Empty()
+                when {
+                    current is WooPosBookingsState.Loading -> {
+                        _state.value = WooPosBookingsState.Empty(
+                            dateSelectorState = buildDateSelectorState()
+                        )
+                    }
+                    current is WooPosBookingsState.Content &&
+                        current.items is WooPosBookingsState.Content.Items.Searching -> {
+                        _state.value = current.copy(
+                            items = WooPosBookingsState.Content.Items.NothingFound(
+                                title = resourceProvider.getString(
+                                    R.string.woopos_bookings_no_bookings_for_date
+                                ),
+                                message = ""
+                            ),
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        )
+                    }
                 }
             }
         }
@@ -92,6 +137,7 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private fun observeBookings() {
         viewModelScope.launch {
             combine(
@@ -100,12 +146,33 @@ class WooPosBookingsViewModel @Inject constructor(
             ) { bookings, resources ->
                 bookings to resources.associateBy { it.id.value }
             }.collectLatest { (bookings, resourcesMap) ->
-                if (bookings.isEmpty() && _state.value is WooPosBookingsState.Loading) {
+                val current = _state.value
+                if (bookings.isEmpty() && current is WooPosBookingsState.Loading) {
                     return@collectLatest
                 }
 
+                if (bookings.isEmpty() && current is WooPosBookingsState.Content &&
+                    current.items is WooPosBookingsState.Content.Items.Searching
+                ) {
+                    return@collectLatest
+                }
+
+                val dateSelectorState = buildDateSelectorState()
+
                 if (bookings.isEmpty()) {
-                    _state.value = WooPosBookingsState.Empty()
+                    _state.value = WooPosBookingsState.Content(
+                        items = WooPosBookingsState.Content.Items.NothingFound(
+                            title = resourceProvider.getString(
+                                R.string.woopos_bookings_no_bookings_for_date
+                            ),
+                            message = ""
+                        ),
+                        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                        dateSelectorState = dateSelectorState,
+                        selectedDetails = null,
+                        paginationState = WooPosPaginationState.None,
+                        dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                    )
                     return@collectLatest
                 }
 
@@ -137,6 +204,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
                     pullToRefreshState = currentPTRState,
+                    dateSelectorState = dateSelectorState,
                     selectedDetails = selectedDetails,
                     paginationState = paginationState,
                     dialogState = currentContentState?.dialogState
@@ -181,6 +249,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchResources()
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
+                filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
                 sortBy = BookingListSortOption.NewestToOldest
             ).onSuccess {
                 val current = _state.value
@@ -277,6 +346,11 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.CopyPhoneClicked -> handleCopyToClipboard(event.phone)
             is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
             is WooPosBookingsUIEvent.CancelBookingDismissed -> handleCancelDismissed()
+            is WooPosBookingsUIEvent.PreviousDayClicked -> handleDateChange(selectedDate.minusDays(1))
+            is WooPosBookingsUIEvent.NextDayClicked -> handleDateChange(selectedDate.plusDays(1))
+            is WooPosBookingsUIEvent.DateSelected -> handleDateChange(
+                Instant.ofEpochMilli(event.dateMillis).atZone(ZoneOffset.UTC).toLocalDate()
+            )
         }
     }
 
@@ -481,5 +555,36 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
+    }
+
+    private fun handleDateChange(newDate: LocalDate) {
+        selectedDate = newDate
+        selectedBookingId = null
+        _state.value = when (val current = _state.value) {
+            is WooPosBookingsState.Content -> current.copy(
+                items = WooPosBookingsState.Content.Items.Searching,
+                dateSelectorState = buildDateSelectorState(),
+                selectedDetails = null,
+                pullToRefreshState = WooPosPullToRefreshState.Disabled
+            )
+            else -> WooPosBookingsState.Loading
+        }
+        fetchBookings()
+    }
+
+    private fun buildDateSelectorState(): DateSelectorState {
+        val formatter = DateTimeFormatter.ofPattern("dd MMM, EEE", Locale.getDefault())
+        val formatted = selectedDate.format(formatter)
+        val millis = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
+        return DateSelectorState(
+            formattedDate = formatted,
+            selectedDateMillis = millis,
+        )
+    }
+
+    private fun dateRangeForDate(date: LocalDate): BookingsFilterOption.DateRange {
+        val start = date.atTime(LocalTime.MIDNIGHT).atOffset(ZoneOffset.UTC).toInstant()
+        val end = date.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant()
+        return BookingsFilterOption.DateRange(before = end, after = start)
     }
 }
