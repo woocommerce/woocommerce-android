@@ -229,8 +229,6 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 
 ## Operational Rules
 
-- MUST NOT run static analysis (detekt, lint) or tests automatically during coding — only run when explicitly requested by the user
-- MUST confirm with the user before committing, pushing, or creating PRs — never assume ongoing permission from a previous approval
 - MUST NOT run `./gradlew` commands in the background unless explicitly told to
 
 ## Common Pitfalls
