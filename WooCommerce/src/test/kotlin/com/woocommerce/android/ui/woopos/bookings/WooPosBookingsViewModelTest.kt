@@ -266,7 +266,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given content state, when onRefresh, then pullToRefreshState is Refreshing`() = runTest {
+    fun `given content state, when PTR, then pullToRefreshState is Refreshing`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
@@ -284,7 +284,7 @@ class WooPosBookingsViewModelTest {
             }
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -293,7 +293,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given non-content state, when onRefresh, then state becomes Loading`() = runTest {
+    fun `given non-content state, when PTR, then state becomes Loading`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
@@ -310,7 +310,7 @@ class WooPosBookingsViewModelTest {
             }
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -318,7 +318,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given refresh fails on content, when onRefresh, then pullToRefreshState returns to Enabled`() = runTest {
+    fun `given refresh fails on content, when PTR, then pullToRefreshState returns to Enabled`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -327,7 +327,7 @@ class WooPosBookingsViewModelTest {
             .thenReturn(Result.failure(RuntimeException("error")))
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -336,7 +336,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given refresh fails on non-content, when onRefresh, then state is Error`() = runTest {
+    fun `given refresh fails on non-content, when PTR, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
         whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
@@ -349,7 +349,7 @@ class WooPosBookingsViewModelTest {
             .thenReturn(Result.failure(RuntimeException("refresh error")))
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -358,13 +358,13 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given content state, when onRefresh, then cancels previous fetch job`() = runTest {
+    fun `given content state, when PTR, then cancels previous fetch job`() = runTest {
         // GIVEN
         viewModel = createViewModel()
         advanceUntilIdle()
 
         // WHEN
-        viewModel.onRefresh()
+        viewModel.onPullToRefresh()
         advanceUntilIdle()
 
         // THEN
@@ -977,6 +977,126 @@ class WooPosBookingsViewModelTest {
                 val orderDetailsEvent = event as WooPosNavigationEvent.OpenOrderDetails
                 assertThat(orderDetailsEvent.orderId).isEqualTo(orderId)
             }
+        }
+
+    @Test
+    fun `given cancel confirmed successfully, when handling event, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val updatedContent = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedContent.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
+    fun `given cancel confirmed successfully, when handling event, then bookings are refreshed`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+        }
+
+    @Test
+    fun `given IssueRefund dialog dismissed, when refreshing, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedState.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
+    fun `given booking note saved, when refreshing, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onBookingNoteSaved()
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(content.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
         }
 
     @Test
