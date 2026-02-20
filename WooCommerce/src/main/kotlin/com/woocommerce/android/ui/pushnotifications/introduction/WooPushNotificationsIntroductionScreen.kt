@@ -333,7 +333,7 @@ private fun ErrorContent(
             onClick = onContactSupportClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.help))
+            Text(text = stringResource(id = R.string.support_contact))
         }
 
         WCOutlinedButton(
