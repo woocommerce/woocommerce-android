@@ -26,9 +26,9 @@ fun NavController.navigateToHomeScreen() {
 }
 
 fun NavController.navigateToHomeScreenAfterSuccessfulCashPayment() {
-    previousBackStackEntry
-        ?.savedStateHandle
-        ?.set(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY, true)
+    getBackStackEntry(HOME_ROUTE)
+        .savedStateHandle
+        .set(HOME_PAYMENT_COMPLETED_VIA_CASH_KEY, true)
 
     navigate(HOME_ROUTE) {
         popUpTo(HOME_ROUTE) { inclusive = false }
