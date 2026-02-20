@@ -7,6 +7,7 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 @Immutable
 data class DateSelectorState(
     val formattedDate: String,
+    val formattedDay: String,
     val selectedDateMillis: Long,
 )
 
