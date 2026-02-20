@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
+import com.woocommerce.android.ui.woopos.common.util.isNetworkError
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -190,8 +191,13 @@ class WooPosBookingsViewModel @Inject constructor(
                         _state.value = current.copy(
                             pullToRefreshState = WooPosPullToRefreshState.Enabled
                         )
+                        val messageResId = if (it.isNetworkError()) {
+                            R.string.woo_pos_ptr_offline_error
+                        } else {
+                            R.string.something_went_wrong_try_again
+                        }
                         _toastEvent.emit(
-                            resourceProvider.getString(R.string.woo_pos_ptr_offline_error)
+                            resourceProvider.getString(messageResId)
                         )
                     }
                     else -> {
