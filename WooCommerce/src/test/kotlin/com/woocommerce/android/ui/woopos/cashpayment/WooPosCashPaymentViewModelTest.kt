@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.woopos.cashpayment
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.SavedStateHandle
+import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
+import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashCollectPaymentSuccess
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.CashPaymentFailed
@@ -235,6 +237,50 @@ class WooPosCashPaymentViewModelTest {
         // THEN
         assertThat(state).isEqualTo(WooPosCashPaymentState.Complete)
         verify(tracker).track(CashCollectPaymentSuccess)
+    }
+
+    @Test
+    fun `given source is CHECKOUT, when order completed successfully, then navigation event is OpenHomeFromCashPaymentAfterSuccessfulPayment`() = runTest {
+        // GIVEN
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
+
+        // WHEN & THEN
+        viewModel.navigationEvent.test {
+            viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+
+            val event = awaitItem()
+            assertThat(event).isEqualTo(WooPosNavigationEvent.OpenHomeFromCashPaymentAfterSuccessfulPayment)
+        }
+    }
+
+    @Test
+    fun `given source is BOOKINGS, when order completed successfully, then navigation event is GoBackWithResult`() = runTest {
+        // GIVEN
+        whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
+        val savedStateHandle = SavedStateHandle(
+            mapOf(
+                CASH_ROUTE_ORDER_ID_KEY to 123L,
+                CASH_ROUTE_SOURCE_KEY to CashPaymentSource.BOOKINGS.name,
+            )
+        )
+        viewModel = WooPosCashPaymentViewModel(
+            repository = repository,
+            priceFormat = priceFormat,
+            resourceProvider = resourceProvider,
+            analyticsTracker = tracker,
+            analyticsData = trackerData,
+            savedState = savedStateHandle,
+        )
+
+        // WHEN & THEN
+        viewModel.navigationEvent.test {
+            viewModel.onUIEvent(WooPosCashPaymentUIEvent.CompleteOrderClicked)
+
+            val event = awaitItem()
+            assertThat(event).isEqualTo(
+                WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(BOOKING_CASH_PAYMENT_SUCCESS_KEY, true)
+            )
+        }
     }
 
     private suspend fun givenRepoFailsToCompleteOrder(): String {

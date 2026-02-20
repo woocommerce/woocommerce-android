@@ -18,6 +18,7 @@ data class MoreMenuViewState(
 
 sealed class MoreMenuEvent : MultiLiveEvent.Event() {
     data object NavigateToSettingsEvent : MoreMenuEvent()
+    data object ViewBookingsEvent : MoreMenuEvent()
     data object NavigateToSubscriptionsEvent : MoreMenuEvent()
     data object StartSitePickerEvent : MoreMenuEvent()
     data object ViewPayments : MoreMenuEvent()
@@ -51,7 +52,7 @@ data class MoreMenuItemButton(
     }
 
     enum class Type {
-        Blaze, GoogleForWoo, Inbox, Settings, Payments
+        Blaze, GoogleForWoo, Inbox, Settings, Payments, Bookings
     }
 }
 

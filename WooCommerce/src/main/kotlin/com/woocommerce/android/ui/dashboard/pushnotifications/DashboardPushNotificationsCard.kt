@@ -1,12 +1,11 @@
 package com.woocommerce.android.ui.dashboard.pushnotifications
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -14,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
@@ -25,11 +23,13 @@ import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.dashboard.DashboardViewModel.DashboardWidgetMenu
 import com.woocommerce.android.ui.dashboard.defaultHideMenuEntry
+import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun DashboardPushNotificationsCard(
     onHideClicked: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit = {},
 ) {
     val menu = DashboardWidgetMenu(
         items = listOf(
@@ -39,6 +39,7 @@ fun DashboardPushNotificationsCard(
 
     Row(
         modifier = modifier
+            .clickable(onClick = onClick)
             .border(
                 width = 1.dp,
                 color = colorResource(id = R.color.woo_gray_5),
@@ -47,12 +48,9 @@ fun DashboardPushNotificationsCard(
             .padding(start = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.wp_woo),
-            contentDescription = null,
-            modifier = Modifier
-                .width(59.dp)
-                .padding(top = 16.dp)
+        WordPressWooBadge(
+            iconSize = 32.dp,
+            modifier = Modifier.padding(top = 16.dp)
         )
         Column(
             modifier = Modifier

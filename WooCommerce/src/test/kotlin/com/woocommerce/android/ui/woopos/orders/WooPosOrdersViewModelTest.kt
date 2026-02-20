@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.orders
 
+import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.model.Refund
@@ -12,12 +13,11 @@ import com.woocommerce.android.ui.woopos.home.ChildToParentEvent.NavigationEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.WooPosBookingInfoMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderDetailsMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderItemMapper
 import com.woocommerce.android.ui.woopos.orders.details.WooPosOrderStatusMapper
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosGetRefundableItems
 import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundInfoBuilder
-import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosRefundableItem
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
@@ -56,7 +56,7 @@ class WooPosOrdersViewModelTest {
     private val providedLocale: Locale = Locale.US
     private val childrenToParentEventSender: WooPosChildrenToParentEventSender = mock()
     private val ordersAnalyticsTracker: WooPosOrdersAnalyticsTracker = mock()
-    private val getRefundableItems: WooPosGetRefundableItems = mock()
+    private val bookingInfoMapper: WooPosBookingInfoMapper = mock()
     private lateinit var orderItemMapper: WooPosOrderItemMapper
     private lateinit var orderDetailsMapper: WooPosOrderDetailsMapper
     private lateinit var refundInfoBuilder: WooPosRefundInfoBuilder
@@ -68,8 +68,11 @@ class WooPosOrdersViewModelTest {
     private fun ordersMap(vararg orders: Order): Map<Order, RefundsFetchResult> =
         orders.associateWith { RefundsFetchResult.Success(emptyList()) }
 
-    private fun createViewModel(): WooPosOrdersViewModel {
+    private fun createViewModel(
+        savedStateHandle: SavedStateHandle = SavedStateHandle()
+    ): WooPosOrdersViewModel {
         return WooPosOrdersViewModel(
+            savedStateHandle = savedStateHandle,
             ordersDataSource = dataSource,
             resourceProvider = resourceProvider,
             childrenToParentEventSender = childrenToParentEventSender,
@@ -79,6 +82,7 @@ class WooPosOrdersViewModelTest {
             orderDetailsMapper = orderDetailsMapper,
             refundInfoBuilder = refundInfoBuilder,
             orderActionsProvider = orderActionsProvider,
+            bookingInfoMapper = bookingInfoMapper,
         )
     }
 
@@ -109,6 +113,8 @@ class WooPosOrdersViewModelTest {
         whenever(resourceProvider.getString(R.string.woopos_orders_status_cancelled)).thenReturn("Cancelled")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_completed)).thenReturn("Completed")
         whenever(resourceProvider.getString(R.string.woopos_orders_status_refunded)).thenReturn("Refunded")
+        whenever(resourceProvider.getString(R.string.woopos_orders_loading_error_message))
+            .thenReturn("Please check your connection try again.")
     }
 
     private suspend fun setupMockBehaviors() {
@@ -122,13 +128,12 @@ class WooPosOrdersViewModelTest {
         }
         whenever(getProductById.invoke(any())).thenReturn(null)
         whenever(retrieveOrderRefunds.invoke(any(), any())).thenReturn(Result.success(emptyList()))
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(emptyList())
     }
 
     private fun setupMappers() {
         orderStatusMapper = WooPosOrderStatusMapper(resourceProvider, providedLocale)
         refundInfoBuilder = WooPosRefundInfoBuilder(resourceProvider, formatPrice)
-        orderActionsProvider = WooPosOrderActionsProvider(getRefundableItems).apply {
+        orderActionsProvider = WooPosOrderActionsProvider().apply {
             isPosRefundsEnabled = { true }
         }
         orderDetailsMapper = WooPosOrderDetailsMapper(
@@ -137,7 +142,8 @@ class WooPosOrdersViewModelTest {
             formatPrice,
             orderStatusMapper,
             refundInfoBuilder,
-            orderActionsProvider
+            orderActionsProvider,
+            bookingInfoMapper,
         )
         orderItemMapper = WooPosOrderItemMapper(resourceProvider, formatPrice, orderStatusMapper)
     }
@@ -1234,25 +1240,13 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order with refundable items, when order details loaded, then Issue Refund action is available`() = runTest {
+    fun `given completed order, when order details loaded, then Issue Refund action is available`() = runTest {
         // GIVEN
-        val testOrder = order(1)
-        val refundableItem = WooPosRefundableItem(
-            orderItemId = 1L,
-            productId = 100L,
-            variationId = 0L,
-            name = "Test Product",
-            unitPrice = BigDecimal("10.00"),
-            unitTax = BigDecimal("1.00"),
-            formattedUnitPrice = "$10.00",
-            formattedUnitTax = "$1.00",
-            rowIndex = 0
-        )
+        val testOrder = order(1).copy(status = Order.Status.Completed)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
         )
-        whenever(getRefundableItems.invoke(any(), any())).thenReturn(listOf(refundableItem))
 
         // WHEN
         viewModel = createViewModel()
@@ -1267,9 +1261,9 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given order with no refundable items, when order details loaded, then Issue Refund action is absent`() = runTest {
+    fun `given non-completed order, when order details loaded, then Issue Refund action is absent`() = runTest {
         // GIVEN
-        val testOrder = order(2)
+        val testOrder = order(2).copy(status = Order.Status.Pending)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
@@ -1285,6 +1279,90 @@ class WooPosOrdersViewModelTest {
         val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
         assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
         assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given orderId in SavedStateHandle, when init, then single order mode with detail fetched`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(viewModel.isSingleOrderMode).isTrue()
+        assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
+        verify(dataSource, times(0)).loadOrders(any())
+    }
+
+    @Test
+    fun `given single order mode, when getOrderById fails, then state is Error`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.failure(RuntimeException("no connection")))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Error::class.java)
+        val error = state as WooPosOrdersState.Error
+        assertThat(error.message).isEqualTo("Please check your connection try again.")
+    }
+
+    @Test
+    fun `given single order mode error, when retry clicked, then retries loading single order`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.failure(RuntimeException("no connection")))
+
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosOrdersState.Error::class.java)
+
+        // GIVEN retry succeeds
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel.onOrdersLoadingErrorRetryButtonClicked()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value
+        assertThat(state).isInstanceOf(WooPosOrdersState.Content::class.java)
+        val content = state as WooPosOrdersState.Content
+        assertThat(viewModel.isSingleOrderMode).isTrue()
+        assertThat(content.selectedDetails?.id).isEqualTo(targetOrderId)
+        verify(dataSource, times(0)).loadOrders(any())
+    }
+
+    @Test
+    fun `given single order mode, when order loaded, then tracks OrderDetailsLoaded`() = runTest {
+        // GIVEN
+        val targetOrderId = 42L
+        val savedState = SavedStateHandle(mapOf(ORDERS_ROUTE_ORDER_ID_KEY to targetOrderId))
+        whenever(dataSource.getOrderById(targetOrderId)).thenReturn(Result.success(order(targetOrderId)))
+
+        // WHEN
+        viewModel = createViewModel(savedStateHandle = savedState)
+        advanceUntilIdle()
+
+        // THEN
+        verify(ordersAnalyticsTracker).trackOrderDetailsLoaded(
+            orderId = eq(targetOrderId),
+            orderStatus = any(),
+            createdAtMillis = any()
+        )
     }
 
     @Test

@@ -20,7 +20,6 @@ APP_DISPLAY_NAMES = {
 PROJECT_ROOT_FOLDER = File.dirname(File.expand_path(__dir__))
 VERSIONS_CATALOG_FILE = File.join(PROJECT_ROOT_FOLDER, 'gradle/libs.versions.toml')
 BUILD_PRODUCTS_PATH = File.join(PROJECT_ROOT_FOLDER, 'artifacts')
-PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
 # The `android_download_translations` action joins the `RES_DIR_PATH` with `PROJECT_ROOT_FOLDER`, so we don't want to
 # add `PROJECT_ROOT_FOLDER` to the beginning of this path
 RES_DIR_PATH = File.join('WooCommerce', 'src', 'main', 'res')
@@ -83,14 +82,18 @@ VERSION_FILE = Fastlane::Wpmreleasetoolkit::Versioning::AndroidVersionFile.new(v
 FIREBASE_APP_ID = '1:124902176124:android:4046dc320bf1825b1620f9'
 FIREBASE_TESTERS_GROUP = 'woocommerce-android---prototype-builds'
 
+# NOTE: Only Wear apps are uploaded to S3 and exposed via CDN.
+# FAD doesn't support Android Wear apps (yet?)
+PROTOTYPE_BUILD_DOMAIN = 'https://cdn.a8c-ci.services'
+
 ########################################################################
 # Environment
 ########################################################################
 Dotenv.load('~/.wcandroid-env.default')
-GITHUB_REPO = 'woocommerce/woocommerce-android'
 DEFAULT_BRANCH = 'trunk'
 REPOSITORY_NAME = 'woocommerce-android'
 GH_ORG_NAME = 'woocommerce'
+GITHUB_REPO = "#{GH_ORG_NAME}/#{REPOSITORY_NAME}".freeze
 
 UPLOAD_TO_PLAY_STORE_JSON_KEY = File.join(Dir.home, '.configure', 'woocommerce-android', 'secrets', 'google-upload-credentials.json')
 
@@ -1350,74 +1353,19 @@ platform :android do
   #####################################################################################
   # build_and_upload_prototype_build
   #
-  # This lane builds a prototype build and uploads it to S3
+  # This lane builds a prototype build and uploads it.
+  # - Mobile app is uploaded to Firebase App Distribution (FAD)
+  # - Wear app is uploaded to S3
   #
   # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
   #
-  desc 'Builds a prototype build and uploads it to S3'
-  lane :build_and_upload_prototype_build do |options|
-    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
-
-    app = get_app_param!(options)
-    prototype_flavor = 'Jalapeno'
-    prototype_build_type = 'Debug'
-
-    gradle(
-      task: ":#{app}:assemble",
-      flavor: prototype_flavor,
-      build_type: prototype_build_type
-    )
-
-    upload_path = upload_to_s3(
-      bucket: 'a8c-apps-public-artifacts',
-      key: "#{app.downcase}-prototype-build-#{generate_prototype_build_number}.apk",
-      file: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
-      skip_if_exists: true
-    )
-
-    install_url = "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
-    platform_name = APP_DISPLAY_NAMES.fetch(app, app)
-    comment_body = prototype_build_details_comment(
-      app_display_name: "#{app} Android",
-      download_url: install_url,
-      metadata: {
-        Platform: platform_name,
-        Flavor: prototype_flavor,
-        'Build Type': prototype_build_type
-      },
-      fold: app == WEAR_APP # Keep comment for Mobile app always expanded, but collapse comment for Wear app by default, as it's modified less often
-    )
-
-    unless ENV['BUILDKITE_PULL_REQUEST'].nil?
-      comment_on_pr(
-        project: 'woocommerce/woocommerce-android',
-        pr_number: Integer(ENV['BUILDKITE_PULL_REQUEST']),
-        reuse_identifier: "#{app}-prototype-build-link",
-        body: comment_body
-      )
-    end
-  end
-
-  # This lane builds a prototype build and uploads it to Firebase App Distribution
-  #
-  # @param [String] app The Android app to build (MOBILE_APP aka 'WooCommerce' or WEAR_APP aka 'WooCommerce-Wear')
-  #
-  desc 'Builds a prototype build and uploads it to Firebase App Distribution'
-  lane :build_and_upload_prototype_build_fad do |app:|
-    UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
-
+  desc 'Builds a prototype build and uploads it (Mobile to FAD, Wear to S3)'
+  lane :build_and_upload_prototype_build do |app:|
     validate_app_param!(app)
 
     prototype_build_type = 'Debug'
     prototype_flavor = 'Jalapeno'
-
-    # Build release notes with branch, commit, and app info
     platform_name = APP_DISPLAY_NAMES.fetch(app, app)
-    release_notes = <<~NOTES
-      App: #{platform_name}
-      Branch: `#{ENV.fetch('BUILDKITE_BRANCH', 'N/A')}`
-      Commit: #{ENV.fetch('BUILDKITE_COMMIT', 'N/A')[0...7]}
-    NOTES
 
     # Build the APK
     gradle(
@@ -1426,13 +1374,72 @@ platform :android do
       build_type: prototype_build_type
     )
 
-    # Upload to Firebase App Distribution
-    firebase_app_distribution(
+    # Upload to appropriate service based on app type
+    install_url = if app == MOBILE_APP
+                    upload_prototype_to_fad(platform_name: platform_name)
+                  else
+                    upload_prototype_to_s3(app: app)
+                  end
+
+    next unless is_ci
+
+    comment_on_pr_with_prototype_build_install_link(
+      app_display_name: "#{app} Android",
+      app_icon: app == WEAR_APP ? ':amazon-s3:' : nil,
+      download_url: install_url,
+      metadata: {
+        Platform: platform_name,
+        Flavor: prototype_flavor,
+        'Build Type': prototype_build_type
+      },
+      fold: false,
+      reuse_identifier: "#{app.downcase}-prototype-build-link"
+    )
+
+    annotate_ci_build_with_prototype_build_install_link(app: app, download_url: install_url)
+  end
+
+  # Uploads a prototype build to Firebase App Distribution
+  #
+  # @return [String] The install URL for the uploaded build
+  #
+  private_lane :upload_prototype_to_fad do |platform_name:|
+    UI.user_error!("'FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY' must be defined as an environment variable.") unless ENV['FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY']
+
+    release_notes = <<~NOTES
+      App: #{platform_name}
+      Branch: `#{ENV.fetch('BUILDKITE_BRANCH', 'N/A')}`
+      Commit: #{ENV.fetch('BUILDKITE_COMMIT', 'N/A')[0...7]}
+    NOTES
+
+    fad_release = firebase_app_distribution(
       app: FIREBASE_APP_ID,
       service_credentials_json_data: ENV.fetch('FIREBASE_APP_DISTRIBUTION_ACCOUNT_KEY', nil),
       release_notes: release_notes,
       groups: FIREBASE_TESTERS_GROUP
     )
+
+    fad_release&.dig(:testingUri)
+  end
+
+  # Uploads a prototype build to S3
+  #
+  # @return [String] The install URL for the uploaded build
+  #
+  private_lane :upload_prototype_to_s3 do |app:|
+    UI.user_error!("'BUILDKITE_ARTIFACTS_S3_BUCKET' must be defined as an environment variable.") unless ENV['BUILDKITE_ARTIFACTS_S3_BUCKET']
+
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
+    UI.user_error!('No APK found in Gradle output.') unless apk_path
+
+    upload_path = upload_to_s3(
+      bucket: 'a8c-apps-public-artifacts',
+      key: "#{app.downcase}-prototype-build-#{generate_prototype_build_number}.apk",
+      file: apk_path,
+      skip_if_exists: true
+    )
+
+    "#{PROTOTYPE_BUILD_DOMAIN}/#{upload_path}"
   end
 
   #####################################################################################
@@ -1559,6 +1566,20 @@ platform :android do
     buildkite_annotate(style: 'info', context: "sentry-mapping-uuid-#{app}", message: "Sentry mapping UUID for #{app}: #{uuid}")
   end
 
+  # Remove old `changelogs/default.txt` files for every locale except en-US.
+  # After updating the en-US copy for a new version and sending it for translation,
+  # we want to avoid having outdated translations in git in the meantime.
+  #
+  # @return [Array<String>] A list of file paths that were deleted.
+  def delete_old_changelogs
+    obsolete_changelogs = [MOBILE_APP, WEAR_APP].flat_map do |app|
+      Dir.glob(File.join(METADATA_DIR_PATH[app], '*', 'changelogs', 'default.txt'))
+         .reject { |file| File.basename(File.dirname(file, 2)) == 'en-US' }
+    end
+    FileUtils.rm_f(obsolete_changelogs)
+    obsolete_changelogs
+  end
+
   # This function is Buildkite-specific
   def generate_prototype_build_number
     if ENV['BUILDKITE']
@@ -1574,20 +1595,6 @@ platform :android do
 
       "#{branch}-#{commit}"
     end
-  end
-
-  # Remove old `changelogs/default.txt` files for every locale except en-US.
-  # After updating the en-US copy for a new version and sending it for translation,
-  # we want to avoid having outdated translations in git in the meantime.
-  #
-  # @return [Array<String>] A list of file paths that were deleted.
-  def delete_old_changelogs
-    obsolete_changelogs = [MOBILE_APP, WEAR_APP].flat_map do |app|
-      Dir.glob(File.join(METADATA_DIR_PATH[app], '*', 'changelogs', 'default.txt'))
-         .reject { |file| File.basename(File.dirname(file, 2)) == 'en-US' }
-    end
-    FileUtils.rm_f(obsolete_changelogs)
-    obsolete_changelogs
   end
 
   #####################################################################################
@@ -1722,4 +1729,46 @@ def report_milestone_error(error_title:)
   UI.error(error_message)
 
   buildkite_annotate(style: 'warning', context: 'error-with-milestone', message: error_message) if is_ci
+end
+
+# Adds an install link for prototype build via PR comment
+#
+def comment_on_pr_with_prototype_build_install_link(
+  app_display_name:,
+  download_url:,
+  metadata:,
+  fold:,
+  reuse_identifier:,
+  app_icon: nil
+)
+  pr_number = ENV.fetch('BUILDKITE_PULL_REQUEST', nil)
+  return unless pr_number && pr_number != 'false'
+
+  comment_args = {
+    app_icon: app_icon,
+    app_display_name: app_display_name,
+    download_url: download_url,
+    metadata: metadata,
+    fold: fold
+  }.compact
+
+  comment_on_pr(
+    project: GITHUB_REPO,
+    pr_number: Integer(pr_number),
+    reuse_identifier: reuse_identifier,
+    body: prototype_build_details_comment(**comment_args)
+  )
+end
+
+# If running in Buildkite, annotates the current build with prototype build info
+#
+def annotate_ci_build_with_prototype_build_install_link(app:, download_url:)
+  platform_name = APP_DISPLAY_NAMES.fetch(app, app)
+  install_link = download_url ? "[Download](#{download_url})" : 'N/A'
+
+  buildkite_annotate(
+    style: 'success',
+    context: "prototype-build-#{app.downcase}",
+    message: "#{platform_name} prototype build uploaded: #{install_link}"
+  )
 end

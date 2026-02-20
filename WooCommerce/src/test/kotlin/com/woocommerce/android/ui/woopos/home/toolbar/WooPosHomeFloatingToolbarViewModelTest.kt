@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.home.toolbar
 import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
+import com.woocommerce.android.ui.woopos.featureflags.IsPosBookingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -34,6 +35,9 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val isPosBookingsEnabled: IsPosBookingsEnabled = mock {
+        onBlocking { invoke() }.thenReturn(false)
+    }
 
     @Test
     fun `given card reader status is NotConnected, when initialized, then state should be NotConnected`() = runTest {
@@ -258,6 +262,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
         childrenToParentEventSender,
         networkStatus,
         resourceProvider,
-        analyticsTracker
+        analyticsTracker,
+        isPosBookingsEnabled,
     )
 }

@@ -16,16 +16,17 @@ msgid "This update makes the Wear app run more smoothly with faster startup time
 msgstr ""
 
 #. translators: Release notes for this version to be displayed in the Play Store. Limit to 500 characters including spaces and commas!
+msgctxt "release_note_241"
+msgid ""
+"24.1:\n"
+"We've made some under-the-hood improvements to make your WooCommerce experience even better. No flashy new features this time—just good old-fashioned maintenance to keep things running smoothly.\n"
+"Thanks for selling with WooCommerce! 🚀\n"
+msgstr ""
+
 msgctxt "release_note_240"
 msgid ""
 "24.0:\n"
 "Orders now show the correct currency and variation details. Notifications won’t double “cha-ching” anymore, hidden products stay hidden, and catalog syncing is faster and smoother. Plus, internal improvements make the app more reliable overall.\n"
-msgstr ""
-
-msgctxt "release_note_239"
-msgid ""
-"23.9:\n"
-"We’ve smoothed out the experience for you! This update brings a refined look to widgets and animations, plus faster loading for POS users. We also squashed several bugs, including a crash during checkout when handling deleted products and layout issues on tablets. It’s all about making your store management seamless.\n"
 msgstr ""
 
 #. translators: Short description of the app to be displayed in the Play Store. Limit to 80 characters including spaces and commas!

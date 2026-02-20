@@ -13,16 +13,16 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
 
     suspend fun registerPushToken(
         site: SiteModel,
-        token: String,
-        origin: String,
-        deviceUuid: String
+        request: PushTokenRegistrationRequest
     ): WooPayload<PushTokenIdResponse> {
         val path = WOOCOMMERCE.push_tokens.pathPushNotifications
-        val body = mapOf(
-            "token" to token,
+        val body = mutableMapOf(
+            "token" to request.token,
             "platform" to "android",
-            "origin" to origin,
-            "device_uuid" to deviceUuid,
+            "origin" to request.origin,
+            "device_uuid" to request.deviceUuid,
+            "device_locale" to request.deviceLocale,
+            "metadata" to request.metadata
         )
         return wooNetwork.executePostGsonRequest(
             site = site,
@@ -40,6 +40,14 @@ class PushNotificationsRestClient @Inject constructor(private val wooNetwork: Wo
         path = WOOCOMMERCE.push_tokens.id(pushTokenId.toLong()).pathPushNotifications,
         clazz = Unit::class.java,
     ).toWooPayload()
+
+    data class PushTokenRegistrationRequest(
+        val token: String,
+        val origin: String,
+        val deviceUuid: String,
+        val deviceLocale: String,
+        val metadata: Map<String, String> = emptyMap()
+    )
 
     /**
      * @param id The unique ID of the push token record in Woo Core
