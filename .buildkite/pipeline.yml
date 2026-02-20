@@ -67,7 +67,7 @@ steps:
   ########################################
   - group: "🚀 Prototype Build"
     steps:
-      - label: ":firebase: Prototype Build"
+      - label: ":firebase: Mobile Prototype Build"
         command: .buildkite/commands/prototype-build.sh WooCommerce
         plugins: [$CI_TOOLKIT]
         artifact_paths:
