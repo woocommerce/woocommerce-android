@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -35,7 +34,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
-import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import org.wordpress.android.login.MagicLinkFallbackButton
 
 @Composable
@@ -59,7 +57,12 @@ fun WPComLoginMagicLinkRequestScreen(
     onOpenEmailClientClick: () -> Unit = {},
     onFallbackButtonClick: () -> Unit = {}
 ) {
-    val branding = viewState.resolveBranding()
+    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
+    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -76,14 +79,10 @@ fun WPComLoginMagicLinkRequestScreen(
                 .padding(paddingValues)
                 .padding(16.dp)
         ) {
-            if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                WordPressWooBadge()
-            } else {
-                JetpackToWooHeader()
-            }
+            JetpackToWooHeader()
             Spacer(modifier = Modifier.height(32.dp))
             Text(
-                text = stringResource(id = branding.title),
+                text = stringResource(id = titleRes),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -217,26 +216,6 @@ private fun MagicLinkSentContent(
     }
 }
 
-private data class MagicLinkScreenBranding(
-    @StringRes val title: Int,
-)
-
-private fun WPComLoginMagicLinkRequestViewModel.ViewState.resolveBranding(): MagicLinkScreenBranding {
-    return when (val wpComLoginMode = this.wpComLoginMode) {
-        WPComLoginMode.PushNotificationsSetup -> MagicLinkScreenBranding(
-            title = R.string.login_wpcom_connect_title,
-        )
-
-        is WPComLoginMode.JetpackSetup -> MagicLinkScreenBranding(
-            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-        )
-    }
-}
-
 @Preview
 @Composable
 private fun JetpackModeRequestPreview() {
@@ -263,27 +242,19 @@ private fun JetpackModeRequestPreview() {
 
 @Preview
 @Composable
-private fun NotificationSetupModeRequestPreview() {
-    WooThemeWithBackground {
-        WPComLoginMagicLinkRequestScreen(
-            viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkRequestState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
-                emailOrUsername = "test@email.com",
-                avatarUrl = "avatar",
-                magicLinkFallbackButton = MagicLinkFallbackButton.Password,
-                isLoadingDialogShown = false
-            )
-        )
-    }
-}
-
-@Preview
-@Composable
 private fun MagicLinkSentPreview() {
     WooThemeWithBackground {
         WPComLoginMagicLinkRequestScreen(
             viewState = WPComLoginMagicLinkRequestViewModel.ViewState.MagicLinkSentState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
+                wpComLoginMode = WPComLoginMode.JetpackSetup(
+                    JetpackStatus(
+                        isJetpackInstalled = false,
+                        jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                            siteRegistrationStatus = JetpackSiteRegistrationStatus.UNKNOWN,
+                            blogId = null
+                        )
+                    )
+                ),
                 email = null,
                 magicLinkFallbackButton = MagicLinkFallbackButton.Password,
             )

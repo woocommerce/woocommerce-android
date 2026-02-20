@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -39,7 +38,6 @@ import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
 import com.woocommerce.android.ui.login.wpcom.components.UserInfo
-import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLoginPasswordScreen(viewModel: WPComLoginPasswordViewModel) {
@@ -65,7 +63,12 @@ fun WPComLoginPasswordScreen(
     onResetPasswordClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val branding = viewState.resolveBranding()
+    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
+    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -87,14 +90,10 @@ fun WPComLoginPasswordScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
             ) {
-                if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                    WordPressWooBadge()
-                } else {
-                    JetpackToWooHeader()
-                }
+                JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = branding.title),
+                    text = stringResource(id = titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -105,9 +104,15 @@ fun WPComLoginPasswordScreen(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                branding.subtitle?.let {
-                    Text(text = stringResource(id = it))
-                }
+                Text(
+                    text = stringResource(
+                        id = if (jetpackStatus.isJetpackInstalled) {
+                            R.string.login_jetpack_connection_enter_wpcom_password
+                        } else {
+                            R.string.login_jetpack_installation_enter_wpcom_password
+                        }
+                    )
+                )
                 Spacer(modifier = Modifier.height(16.dp))
                 WCPasswordField(
                     value = viewState.password,
@@ -142,7 +147,7 @@ fun WPComLoginPasswordScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = stringResource(id = branding.buttonText))
+                Text(text = stringResource(id = titleRes))
             }
             WCOutlinedButton(
                 onClick = onMagicLinkClick,
@@ -160,40 +165,6 @@ fun WPComLoginPasswordScreen(
 
     if (viewState.isLoadingDialogShown) {
         ProgressDialog(title = "", subtitle = stringResource(id = R.string.logging_in))
-    }
-}
-
-private data class PasswordScreenBranding(
-    @StringRes val title: Int,
-    @StringRes val subtitle: Int?,
-    @StringRes val buttonText: Int,
-)
-
-private fun WPComLoginPasswordViewModel.ViewState.resolveBranding(): PasswordScreenBranding {
-    return when (wpComLoginMode) {
-        WPComLoginMode.PushNotificationsSetup -> PasswordScreenBranding(
-            title = R.string.login_wpcom_connect_title,
-            subtitle = null,
-            buttonText = R.string.continue_button,
-        )
-
-        is WPComLoginMode.JetpackSetup -> PasswordScreenBranding(
-            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-            subtitle = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connection_enter_wpcom_password
-            } else {
-                R.string.login_jetpack_installation_enter_wpcom_password
-            },
-            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-        )
     }
 }
 
@@ -220,17 +191,3 @@ private fun JetpackModePreview() {
     }
 }
 
-@Preview
-@Composable
-private fun NotificationSetupModePreview() {
-    WooThemeWithBackground {
-        WPComLoginPasswordScreen(
-            viewState = WPComLoginPasswordViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
-                emailOrUsername = "test@email.com",
-                password = "",
-                avatarUrl = ""
-            )
-        )
-    }
-}

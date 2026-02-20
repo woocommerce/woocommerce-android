@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +37,6 @@ import com.woocommerce.android.ui.compose.component.WCOutlinedTextField
 import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.components.JetpackToWooHeader
-import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 
 @Composable
 fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
@@ -64,7 +62,12 @@ fun WPComLogin2FAScreen(
     onSecurityKeyClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
-    val branding = viewState.resolveBranding()
+    val jetpackStatus = (viewState.wpComLoginMode as WPComLoginMode.JetpackSetup).jetpackStatus
+    val titleRes = if (jetpackStatus.isJetpackInstalled) {
+        R.string.login_jetpack_connect
+    } else {
+        R.string.login_jetpack_install
+    }
 
     Scaffold(
         topBar = {
@@ -86,14 +89,10 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(16.dp),
             ) {
-                if (viewState.wpComLoginMode is WPComLoginMode.PushNotificationsSetup) {
-                    WordPressWooBadge()
-                } else {
-                    JetpackToWooHeader()
-                }
+                JetpackToWooHeader()
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
-                    text = stringResource(id = branding.title),
+                    text = stringResource(id = titleRes),
                     style = MaterialTheme.typography.headlineLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -143,40 +142,13 @@ fun WPComLogin2FAScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
-                Text(text = stringResource(id = branding.buttonText))
+                Text(text = stringResource(id = titleRes))
             }
         }
     }
 
     viewState.loadingMessage?.let {
         ProgressDialog(title = "", subtitle = stringResource(id = it))
-    }
-}
-
-private data class TwoFAScreenBranding(
-    @StringRes val title: Int,
-    @StringRes val buttonText: Int,
-)
-
-private fun WPComLogin2FAViewModel.ViewState.resolveBranding(): TwoFAScreenBranding {
-    return when (wpComLoginMode) {
-        WPComLoginMode.PushNotificationsSetup -> TwoFAScreenBranding(
-            title = R.string.login_wpcom_connect_title,
-            buttonText = R.string.login_wpcom_connect_title,
-        )
-
-        is WPComLoginMode.JetpackSetup -> TwoFAScreenBranding(
-            title = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-            buttonText = if (wpComLoginMode.jetpackStatus.isJetpackInstalled) {
-                R.string.login_jetpack_connect
-            } else {
-                R.string.login_jetpack_install
-            },
-        )
     }
 }
 
@@ -203,17 +175,3 @@ private fun JetpackModePreview() {
     }
 }
 
-@Preview
-@Composable
-private fun NotificationSetupModePreview() {
-    WooThemeWithBackground {
-        WPComLogin2FAScreen(
-            viewState = WPComLogin2FAViewModel.ViewState(
-                wpComLoginMode = WPComLoginMode.PushNotificationsSetup,
-                emailOrUsername = "test@email.com",
-                password = "",
-                otp = "123456"
-            )
-        )
-    }
-}
