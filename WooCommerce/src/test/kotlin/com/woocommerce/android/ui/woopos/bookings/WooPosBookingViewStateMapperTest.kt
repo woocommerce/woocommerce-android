@@ -316,7 +316,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given cancelled unpaid booking, when mapped to details, then collectPaymentLabel is shown`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking, resourceName = null)
