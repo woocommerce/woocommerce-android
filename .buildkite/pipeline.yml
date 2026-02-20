@@ -67,28 +67,21 @@ steps:
   ########################################
   - group: "🚀 Prototype Build"
     steps:
-      - input: Build Prototype?
-        prompt: Select which app to build and distribute via Firebase App Distribution
-        key: prototype_build_triggered
-        fields:
-          - select: "App to Build"
-            key: "app-to-build"
-            hint: "Which WooCommerce app should be built? 📱"
-            required: true
-            default: "WooCommerce"
-            options:
-              - label: "📱 WooCommerce Mobile"
-                value: "WooCommerce"
-              - label: "⌚️ WooCommerce Wear"
-                value: "WooCommerce-Wear"
-              - label: "📱⌚️ Both"
-                value: "Both"
       - label: ":firebase: Prototype Build"
-        depends_on: prototype_build_triggered
-        command: .buildkite/commands/prototype-build.sh
+        command: .buildkite/commands/prototype-build.sh WooCommerce
         plugins: [$CI_TOOLKIT]
         artifact_paths:
           - "WooCommerce/build/outputs/apk/**/*"
+
+      - block: Build Watch Prototype?
+        prompt: Trigger an on-demand Wear OS prototype build
+        key: watch_prototype_build_triggered
+
+      - label: ":firebase: Watch Prototype Build"
+        depends_on: watch_prototype_build_triggered
+        command: .buildkite/commands/prototype-build.sh WooCommerce-Wear
+        plugins: [$CI_TOOLKIT]
+        artifact_paths:
           - "WooCommerce-Wear/build/outputs/apk/**/*"
 
   ########################################
