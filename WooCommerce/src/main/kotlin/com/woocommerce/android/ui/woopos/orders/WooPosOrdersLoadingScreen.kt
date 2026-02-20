@@ -182,65 +182,64 @@ fun OrderDetailsLoadingPane(
 
         Spacer(modifier = Modifier.height(WooPosSpacing.Large.value))
 
-        WooPosCard(shadowType = ShadowType.Soft) {
-            Column(
-                modifier = Modifier.padding(WooPosSpacing.Medium.value)
-            ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_details_products_title),
-                    style = WooPosTypography.BodyXLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            WooPosCard(shadowType = ShadowType.Soft) {
+                Column(
+                    modifier = Modifier.padding(WooPosSpacing.Medium.value)
+                ) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_details_products_title),
+                        style = WooPosTypography.BodyXLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                repeat(3) {
-                    ProductLoadingItem()
-                    if (it < 2) {
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    repeat(3) {
+                        ProductLoadingItem()
+                        if (it < 2) {
+                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                        }
                     }
                 }
             }
-        }
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+            Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-        WooPosCard(
-            shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
-            elevation = WooPosElevation.Medium,
-            shadowType = ShadowType.Soft,
-        ) {
-            Column(
-                modifier = Modifier.padding(WooPosSpacing.Medium.value)
+            WooPosCard(
+                shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+                elevation = WooPosElevation.Medium,
+                shadowType = ShadowType.Soft,
             ) {
-                WooPosText(
-                    text = stringResource(R.string.woopos_orders_details_totals_title),
-                    style = WooPosTypography.BodyXLarge,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
+                Column(
+                    modifier = Modifier.padding(WooPosSpacing.Medium.value)
+                ) {
+                    WooPosText(
+                        text = stringResource(R.string.woopos_orders_details_totals_title),
+                        style = WooPosTypography.BodyXLarge,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.SemiBold
+                    )
 
-                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
-
-                repeat(3) {
-                    TotalLoadingItem()
                     Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                    repeat(3) {
+                        TotalLoadingItem()
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+                    }
+                    repeat(2) {
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                        TotalLoadingItem()
+                        Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
+                    }
                 }
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-                TotalLoadingItem()
-
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-                Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
-
-                TotalLoadingItem()
             }
         }
     }
