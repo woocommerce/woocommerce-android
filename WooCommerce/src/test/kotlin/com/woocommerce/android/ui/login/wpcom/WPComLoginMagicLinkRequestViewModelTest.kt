@@ -38,11 +38,12 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
 
     fun setup(
         fallbackButton: MagicLinkFallbackButton,
-        requestEmailAtStart: Boolean = true
+        requestEmailAtStart: Boolean = true,
+        wpComLoginMode: WPComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus)
     ) {
         viewModel = WPComLoginMagicLinkRequestViewModel(
             WPComLoginMagicLinkRequestFragmentArgs(
-                wpComLoginMode = WPComLoginMode.JetpackSetup(JetpackStatus),
+                wpComLoginMode = wpComLoginMode,
                 emailOrUsername = EMAIL,
                 fallbackButton = fallbackButton,
                 requestAtStart = requestEmailAtStart,
@@ -133,4 +134,22 @@ class WPComLoginMagicLinkRequestViewModelTest : BaseUnitTest() {
             )
         )
     }
+
+    @Test
+    fun `given push notifications mode, when request magic link, then use push notifications flow`() =
+        testBlocking {
+            setup(
+                MagicLinkFallbackButton.None,
+                requestEmailAtStart = false,
+                wpComLoginMode = WPComLoginMode.PushNotificationsSetup
+            )
+
+            viewModel.onRequestMagicLinkClick()
+
+            verify(wpComLoginRepository).requestMagicLink(
+                emailOrUsername = EMAIL,
+                flow = MagicLinkFlow.PushNotificationsSetup,
+                isSignup = false
+            )
+        }
 }

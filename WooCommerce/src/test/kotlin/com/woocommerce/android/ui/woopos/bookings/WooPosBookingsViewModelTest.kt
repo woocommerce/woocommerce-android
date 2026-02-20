@@ -156,6 +156,7 @@ class WooPosBookingsViewModelTest {
             bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }
@@ -382,11 +383,20 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given content state, when onEndOfBookingsListReached succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         // WHEN
         viewModel.onEndOfBookingsListReached()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
@@ -436,7 +446,13 @@ class WooPosBookingsViewModelTest {
     @Test
     fun `given pagination error, when onPaginationErrorTryAgain succeeds, then paginationState is None`() = runTest {
         // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
         viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2)))
         advanceUntilIdle()
 
         whenever(bookingListHandler.loadMore()).thenReturn(Result.failure(RuntimeException("error")))
@@ -447,6 +463,9 @@ class WooPosBookingsViewModelTest {
 
         // WHEN
         viewModel.onPaginationErrorTryAgain()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1), booking(2), booking(3)))
         advanceUntilIdle()
 
         // THEN
@@ -740,6 +759,81 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given content loaded, when IssueRefund action clicked, then issue refund dialog is shown`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            val state = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(state.dialogState)
+                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
+            val dialogState = state.dialogState as WooPosBookingsState.Content.DialogState.IssueRefund
+            assertThat(dialogState.orderId).isEqualTo(10L)
+        }
+
+    @Test
+    fun `given non-Content state, when IssueRefund action clicked, then state remains unchanged`() =
+        runTest {
+            // GIVEN
+            whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .thenReturn(Result.failure(RuntimeException("error")))
+
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val beforeState = viewModel.state.value
+
+            // WHEN
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+
+            // THEN
+            assertThat(viewModel.state.value).isEqualTo(beforeState)
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
+        }
+
+    @Test
+    fun `given IssueRefund dialog visible, when onIssueRefundDialogDismissed, then dialog is hidden`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+            val state = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(state.dialogState)
+                .isInstanceOf(WooPosBookingsState.Content.DialogState.IssueRefund::class.java)
+
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedState.dialogState)
+                .isInstanceOf(WooPosBookingsState.Content.DialogState.Hidden::class.java)
+        }
+
+    @Test
     fun `given cancel action clicked, when handling event, then dialog state is Confirmation`() =
         runTest {
             // GIVEN
@@ -866,6 +960,31 @@ class WooPosBookingsViewModelTest {
                 .isInstanceOf(
                     WooPosBookingsState.Content.DialogState.Hidden::class.java
                 )
+        }
+
+    @Test
+    fun `given ViewOrder action, when BookingMenuActionClicked, then OpenOrderDetails event emitted with correct orderId`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val orderId = content.selectedDetails!!.orderId
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.ViewOrder(orderId = orderId)
+                    )
+                )
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenOrderDetails::class.java)
+                val orderDetailsEvent = event as WooPosNavigationEvent.OpenOrderDetails
+                assertThat(orderDetailsEvent.orderId).isEqualTo(orderId)
+            }
         }
 
     @Test
@@ -1072,4 +1191,24 @@ class WooPosBookingsViewModelTest {
         val content = viewModel.state.value as WooPosBookingsState.Content
         assertThat(content.dateSelectorState?.formattedDate).isNotEqualTo(initialDate)
     }
+
+    @Test
+    fun `given date selected from calendar picker, when DateSelected dispatched, then fetch called for selected date`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val selectedDateMillis = Instant.parse("2026-03-15T00:00:00Z").toEpochMilli()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.DateSelected(selectedDateMillis))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(content.dateSelectorState?.selectedDateMillis).isEqualTo(selectedDateMillis)
+        }
 }

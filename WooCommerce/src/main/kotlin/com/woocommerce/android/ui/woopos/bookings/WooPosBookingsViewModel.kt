@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
 import com.woocommerce.android.ui.woopos.cardpayment.CardPaymentSource
 import com.woocommerce.android.ui.woopos.common.util.WooPosClipboardHelper
+import com.woocommerce.android.ui.woopos.common.util.isNetworkError
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 import com.woocommerce.android.ui.woopos.localcatalog.DateTimeProvider
@@ -60,6 +61,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _navigationEvent = MutableSharedFlow<WooPosNavigationEvent>()
     val navigationEvent: SharedFlow<WooPosNavigationEvent> = _navigationEvent.asSharedFlow()
+
+    private val _toastEvent = MutableSharedFlow<String>()
+    val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
     private var selectedDate: LocalDate = LocalDate.now(clock)
@@ -133,6 +137,7 @@ class WooPosBookingsViewModel @Inject constructor(
         }
     }
 
+    @Suppress("LongMethod")
     private fun observeBookings() {
         viewModelScope.launch {
             combine(
@@ -185,13 +190,25 @@ class WooPosBookingsViewModel @Inject constructor(
                     items.entries.find { it.key.id == id }?.value
                 }
 
+                val currentContentState = _state.value as? WooPosBookingsState.Content
+                val currentPTRState = currentContentState
+                    ?.pullToRefreshState
+                    ?.takeIf { it == WooPosPullToRefreshState.Refreshing }
+                    ?: WooPosPullToRefreshState.Enabled
+                val paginationState = when (currentContentState?.paginationState) {
+                    WooPosPaginationState.Loading,
+                    WooPosPaginationState.Error -> WooPosPaginationState.None
+                    else -> currentContentState?.paginationState ?: WooPosPaginationState.None
+                }
+
                 _state.value = WooPosBookingsState.Content(
                     items = WooPosBookingsState.Content.Items.Loaded(items),
-                    pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                    pullToRefreshState = currentPTRState,
                     dateSelectorState = dateSelectorState,
                     selectedDetails = selectedDetails,
-                    paginationState = WooPosPaginationState.None,
-                    dialogState = WooPosBookingsState.Content.DialogState.Hidden
+                    paginationState = paginationState,
+                    dialogState = currentContentState?.dialogState
+                        ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
             }
         }
@@ -230,14 +247,33 @@ class WooPosBookingsViewModel @Inject constructor(
             bookingListHandler.loadBookings(
                 filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
                 sortBy = BookingListSortOption.NewestToOldest
-            ).onFailure {
-                _state.value = when (val current = _state.value) {
-                    is WooPosBookingsState.Content -> current.copy(
+            ).onSuccess {
+                val current = _state.value
+                if (current is WooPosBookingsState.Content) {
+                    _state.value = current.copy(
                         pullToRefreshState = WooPosPullToRefreshState.Enabled
                     )
-                    else -> WooPosBookingsState.Error(
-                        message = it.message ?: "Failed to load bookings"
-                    )
+                }
+            }.onFailure {
+                when (val current = _state.value) {
+                    is WooPosBookingsState.Content -> {
+                        _state.value = current.copy(
+                            pullToRefreshState = WooPosPullToRefreshState.Enabled
+                        )
+                        val messageResId = if (it.isNetworkError()) {
+                            R.string.woo_pos_ptr_offline_error
+                        } else {
+                            R.string.something_went_wrong_try_again
+                        }
+                        _toastEvent.emit(
+                            resourceProvider.getString(messageResId)
+                        )
+                    }
+                    else -> {
+                        _state.value = WooPosBookingsState.Error(
+                            message = it.message ?: "Failed to load bookings"
+                        )
+                    }
                 }
             }
         }
@@ -247,18 +283,16 @@ class WooPosBookingsViewModel @Inject constructor(
         if (loadMoreJob?.isActive == true) return
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         if (currentState.paginationState is WooPosPaginationState.Error) return
+        if (!bookingListHandler.hasMorePages) return
 
         loadMoreJob = viewModelScope.launch {
             fetchJob?.join()
 
+            if (!bookingListHandler.hasMorePages) return@launch
             val currentState = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = currentState.copy(paginationState = WooPosPaginationState.Loading)
 
             bookingListHandler.loadMore()
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(
@@ -281,10 +315,6 @@ class WooPosBookingsViewModel @Inject constructor(
             }
 
             result
-                .onSuccess {
-                    val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
-                    _state.value = updated.copy(paginationState = WooPosPaginationState.None)
-                }
                 .onFailure {
                     val updated = _state.value as? WooPosBookingsState.Content ?: return@launch
                     _state.value = updated.copy(paginationState = WooPosPaginationState.Error)
@@ -329,6 +359,7 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
+        onRefresh()
     }
 
     private fun handleCollectPayment() {
@@ -422,8 +453,23 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
         when (action) {
+            is WooPosBookingsState.BookingAction.ViewOrder -> {
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
+                    )
+                }
+            }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
                 // TBD: handle email receipt
+            }
+            is WooPosBookingsState.BookingAction.IssueRefund -> {
+                val currentState = _state.value as? WooPosBookingsState.Content ?: return
+                _state.value = currentState.copy(
+                    dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(
+                        orderId = action.orderId
+                    )
+                )
             }
             is WooPosBookingsState.BookingAction.CancelBooking -> {
                 showCancelConfirmationDialog(action.bookingId)
