@@ -2649,7 +2649,6 @@
     <string name="woo_push_notifications_connection_steps_not_started">Not started</string>
     <string name="woo_push_notifications_connection_steps_error">Error</string>
     <string name="woo_push_notifications_connection_steps_error_connection_permission_message">You don’t have permission to connect this store to WordPress.com</string>
-    <string name="woo_push_notifications_connection_steps_generic_error_message">There was an error completing your request. Please try again or contact support if this error continues.</string>
     <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
     <string name="woo_push_notifications_connection_steps_retry">Try again</string>
     <string name="woo_push_notifications_connection_steps_generic_error">There was an error completing your request.\nPlease try again or contact support if this error continues.</string>

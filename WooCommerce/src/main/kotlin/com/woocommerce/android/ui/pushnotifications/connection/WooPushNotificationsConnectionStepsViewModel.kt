@@ -151,7 +151,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 advanceToNextStep()
             },
             onFailure = {
-                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error_message)
+                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
             }
         )
     }
@@ -174,7 +174,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         ) {
             R.string.woo_push_notifications_connection_steps_error_connection_permission_message
         } else {
-            R.string.woo_push_notifications_connection_steps_generic_error_message
+            R.string.woo_push_notifications_connection_steps_generic_error
         }
     }
 
