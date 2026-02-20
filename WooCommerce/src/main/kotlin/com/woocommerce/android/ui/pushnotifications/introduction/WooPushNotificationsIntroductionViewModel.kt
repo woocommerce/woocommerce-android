@@ -17,7 +17,6 @@ import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -40,13 +39,15 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
             }
     }
 
-    private val _viewState = MutableStateFlow(ViewState())
+    private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
     val viewState = _viewState.asLiveData()
 
-    fun onContinueClick() {
-        launch {
-            _viewState.update { it.copy(isLoading = true, errorType = null) }
+    init {
+        fetchStatus()
+    }
 
+    private fun fetchStatus() {
+        launch {
             val site = selectedSite.get()
 
             val result = fetchJetpackStatus(
@@ -58,25 +59,20 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                 onSuccess = { response ->
                     when (response) {
                         is JetpackStatusFetchResponse.ConnectionForbidden -> {
-                            _viewState.update {
-                                it.copy(isLoading = false, errorType = ErrorType.Forbidden)
-                            }
+                            _viewState.value = ViewState.ForbiddenError
                         }
 
                         is JetpackStatusFetchResponse.Success -> {
                             if (response.status.isSiteConnected) {
                                 checkWCVersion()
                             } else {
-                                _viewState.update { it.copy(isLoading = false) }
-                                triggerEvent(StartWPComLogin)
+                                _viewState.value = ViewState.NotConnected
                             }
                         }
                     }
                 },
                 onFailure = {
-                    _viewState.update {
-                        it.copy(isLoading = false, errorType = ErrorType.Generic)
-                    }
+                    _viewState.value = ViewState.GenericError
                 }
             )
         }
@@ -85,13 +81,18 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     private suspend fun checkWCVersion() {
         val wcVersion = fetchActiveWCPluginVersion()
         if (wcVersion != null && wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
-            _viewState.update {
-                it.copy(isLoading = false, errorType = ErrorType.Generic)
-            }
+            _viewState.value = ViewState.GenericError
         } else {
-            _viewState.update { it.copy(isLoading = false) }
-            triggerEvent(NavigateToConnectionSteps)
+            _viewState.value = ViewState.UpdateRequired
         }
+    }
+
+    fun onContinueClick() {
+        triggerEvent(StartWPComLogin)
+    }
+
+    fun onUpdatePluginClick() {
+        triggerEvent(NavigateToConnectionSteps)
     }
 
     fun onNotNowClick() {
@@ -106,16 +107,12 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
     }
 
-    data class ViewState(
-        val isLoading: Boolean = false,
-        val errorType: ErrorType? = null
-    ) {
-        val isError: Boolean get() = errorType != null
-    }
-
-    enum class ErrorType {
-        Generic,
-        Forbidden
+    sealed interface ViewState {
+        data object Loading : ViewState
+        data object NotConnected : ViewState
+        data object UpdateRequired : ViewState
+        data object ForbiddenError : ViewState
+        data object GenericError : ViewState
     }
 
     data object StartWPComLogin : Event()
