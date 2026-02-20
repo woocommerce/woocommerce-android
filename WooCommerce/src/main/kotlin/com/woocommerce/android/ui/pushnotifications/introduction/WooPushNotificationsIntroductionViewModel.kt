@@ -81,11 +81,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onContinueClick() {
-        if (_viewState.value is ViewState.UpdateRequired) {
-            triggerEvent(NavigateToConnectionSteps)
-        } else {
-            triggerEvent(StartWPComLogin)
-        }
+        triggerEvent(NavigateToConnectionSteps)
     }
 
     fun onNotNowClick() {
@@ -107,8 +103,6 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         data object ForbiddenError : ViewState
         data object GenericError : ViewState
     }
-
-    data object StartWPComLogin : Event()
 
     data object NavigateToConnectionSteps : Event()
 

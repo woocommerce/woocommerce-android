@@ -200,13 +200,13 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when continue is clicked, then StartWPComLogin event is triggered`() {
+    fun `when continue is clicked, then NavigateToConnectionSteps event is triggered`() {
         setup()
 
         viewModel.onContinueClick()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(WooPushNotificationsIntroductionViewModel.StartWPComLogin)
+        assertThat(event).isEqualTo(WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps)
     }
 
     @Test
