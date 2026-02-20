@@ -23,6 +23,93 @@ Build, install, and visually verify the app on an Android emulator or physical d
 
 Only use `mobile_take_screenshot` for **visual verification** — never for deriving coordinates.
 
+## Waiting for Screen Transitions
+
+After every navigation action (tap, BACK press, app launch, swipe), the screen may be animating or loading data. ALWAYS follow this stabilization protocol:
+
+1. Call `mobile_list_elements_on_screen` immediately after the action.
+2. If the expected target element is NOT present, call `mobile_list_elements_on_screen` again. Each tool round-trip takes ~1-2 seconds, which provides sufficient implicit delay.
+3. Repeat up to 5 times.
+4. If after 5 attempts the expected element is still missing, take a screenshot for diagnosis and report the issue.
+
+**Loading indicators to watch for:**
+- Skeleton/shimmer views (animated placeholder content) — the screen is loading data, keep waiting.
+- `CircularProgressIndicator` or `ProgressBar` elements — an operation is in progress, keep waiting.
+- Empty state views with text like "No orders yet" — the screen IS loaded, just empty. Do NOT keep waiting.
+
+**When NOT to retry:** If `mobile_list_elements_on_screen` returns the same result 3 times in a row with no change, the screen is stable. The element you want is genuinely not present — consider scrolling or navigating differently.
+
+### Timing Guidelines
+
+| Action | Expected Wait | Max Attempts |
+|--------|--------------|--------------|
+| App launch to dashboard | 3-8 seconds | 5 |
+| Tab navigation (bottom bar) | <1 second | 3 |
+| Opening a detail screen | 1-3 seconds | 4 |
+| Network data load (pull to refresh) | 2-10 seconds | 8 |
+| Dialog appearance after button tap | <1 second | 3 |
+| Keyboard appearing after field tap | <1 second | 2 |
+
+## Text Input Workflow
+
+Typing text into a field requires a specific sequence:
+
+1. **Find the input field** using `mobile_list_elements_on_screen`. Look for elements with type `EditText`, `TextField`, or hint text like "Search".
+2. **Tap the field** using `mobile_click_on_screen_at_coordinates` at its center to give it focus. The soft keyboard will appear.
+3. **Confirm focus** — call `mobile_list_elements_on_screen` to verify the field is focused.
+4. **Type the text** using `mobile_type_keys`. Set `submit: false` unless you want to press Enter after typing.
+5. **Dismiss the keyboard** if needed: call `mobile_press_button` with `BACK`. On Android, the first BACK press while the keyboard is visible dismisses the keyboard only — it does NOT navigate back. A second BACK press would navigate back.
+
+**Common pitfall:** Calling `mobile_type_keys` without first tapping the input field types into whatever element last had focus (or nothing).
+
+**Search fields:** The orders and products lists use a toolbar search icon. Tap the magnifying glass icon first, wait for the search field to expand, then type into the expanded field.
+
+## Handling Unexpected Dialogs
+
+WooCommerce may show dialogs automatically on launch or during navigation. Detect and dismiss these before proceeding.
+
+After launching the app or navigating to a new screen, call `mobile_list_elements_on_screen` and check for:
+
+| Dialog Type | How to Detect | How to Dismiss |
+|-------------|---------------|----------------|
+| **Privacy Banner** | Elements with text "Privacy Settings" or "Save" button on a bottom sheet. This is NOT cancellable — tapping outside won't work. | Tap the "Save" button. |
+| **What's New / Feature Announcement** | Element with identifier containing `closeFeatureAnnouncementButton` or text "Close". | Tap the close button. |
+| **App Rating Dialog** | AlertDialog with text containing "rate" or "enjoy". | Tap "No Thanks" or "Remind Me Later". |
+| **Android Permission Dialog** | Elements from `com.android.permissioncontroller`, or text containing "Allow" / "Don't allow". | Tap "Allow" for testing purposes. |
+| **Snackbar** | Element with identifier containing `snackbar_text` near the bottom of the screen. | Do NOT dismiss — auto-dismisses after a few seconds. May temporarily cover bottom nav tabs; if a bottom tab tap fails, wait 3-4 seconds and retry. |
+
+**General dialog dismissal strategy:** Look for a dismiss/close/cancel button and tap it. If none visible, try `mobile_press_button` with `BACK`. If BACK doesn't work (non-cancellable dialogs), look for any actionable button ("OK", "Save", "Got it") and tap it. After dismissing, call `mobile_list_elements_on_screen` to confirm the dialog is gone.
+
+## Finding Elements That Require Scrolling
+
+When `mobile_list_elements_on_screen` does not return the element you expect, it may be off-screen:
+
+1. Call `mobile_list_elements_on_screen` and check for the target element.
+2. If not found, call `mobile_swipe_on_screen` with direction `up` (swipe up = scroll down) from the center of the screen.
+3. Call `mobile_list_elements_on_screen` again.
+4. Repeat up to 10 times. If the same elements keep appearing (no new content), you have reached the bottom of the list.
+5. If still not found, try scrolling back up (direction `down`) or try an alternative navigation path.
+
+**Tip:** To scroll within a specific scrollable container (not the full screen), use the container's center coordinates as the swipe starting point.
+
+## Working with Element Lists
+
+`mobile_list_elements_on_screen` can return 50-200+ elements. To find what you need:
+
+- **By resource identifier (most reliable):** Match the `identifier` field (e.g., `com.woocommerce.android.dev:id/ordersList`). Resource IDs are stable across app versions.
+- **By display text:** Match the element's `text` or `label` field. Useful for finding specific list items (e.g., order "#1234").
+- **By position:** Elements are returned in document order (top to bottom, left to right). Toolbar/status bar elements appear first, list items in visual order.
+
+**Compose vs View elements:** View-based screens have stable `com.woocommerce.android.dev:id/*` identifiers. Compose-based screens (Dashboard cards, Settings, newer screens) may lack resource IDs — rely on `contentDescription` or display text instead.
+
+## Fresh Install vs. Upgrade
+
+- **Fresh install** (app not previously installed, or after `mobile_uninstall_app`): Always shows the login screen. The agent cannot proceed past login without user credentials.
+- **Upgrade/reinstall** (`mobile_install_app` when already installed): Session is preserved. App goes directly to the dashboard.
+- **After clearing data** (`adb shell pm clear com.woocommerce.android.dev`): Same as fresh install — session destroyed, login required.
+
+Plan your verification flow accordingly. If the user wants to test post-login features, ensure the app is already logged in.
+
 ## Steps
 
 ### 1. Discover Devices
@@ -49,7 +136,11 @@ Optionally call `mobile_list_apps` first to check if the app is already installe
 Use `mobile_launch_app` with:
 - **packageName:** `com.woocommerce.android.dev`
 
-### 5. Start Screen Recording (Optional)
+### 5. Handle Post-Launch Dialogs
+
+Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
+
+### 6. Start Screen Recording (Optional)
 
 If the user requests a recording or demo video, start an ADB screen recording **before** navigating:
 
@@ -60,11 +151,19 @@ adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
 
 Use `--size 720x1280` to keep the file small. The recording runs in the background while you perform navigation steps. See the Screen Recording section below for full details.
 
-### 6. Verify Launch and Navigate
+### 7. Navigate and Verify
 
-After launching, call `mobile_list_elements_on_screen` to confirm the app has loaded. Then navigate as needed per the user's request.
+Navigate as needed per the user's request. After each navigation action:
+1. Wait for the screen to stabilize (see "Waiting for Screen Transitions").
+2. Verify you arrived at the expected screen using the Key Screen Identifiers table.
+3. Take a screenshot with `mobile_save_screenshot` as evidence.
 
-### 7. Stop Recording and Save Evidence
+If the expected screen identifier is NOT present after retries:
+1. Take a screenshot with `mobile_take_screenshot`.
+2. Call `mobile_list_elements_on_screen` and identify which screen you are actually on.
+3. Report to the user: "Navigation to [target] failed. Currently on [detected screen]."
+
+### 8. Stop Recording and Save Evidence
 
 **If recording:** stop the recording, pull the file, and clean up:
 
@@ -77,7 +176,7 @@ adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
 
 **Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
 
-### 8. Report Results
+### 9. Report Results
 
 Summarize what was verified, include saved screenshot and recording paths, and flag any issues found.
 
@@ -184,9 +283,12 @@ The bottom nav bar has these tabs (identifiers are stable across screen sizes):
 
 To navigate between tabs, find the target tab element in `mobile_list_elements_on_screen` by its `identifier` field, compute the center of its bounding rect, and tap.
 
+**Determining the active tab:** The currently selected tab typically has a `selected: true` property in the accessibility tree. If indeterminate, take a screenshot and visually check which tab is highlighted.
+
 ### Common Navigation Patterns
 
 - **Go back:** Call `mobile_press_button` with button `BACK`. This is the most reliable way to navigate back.
+- **Dismiss the soft keyboard:** Call `mobile_press_button` with `BACK`. This only dismisses the keyboard; it does NOT navigate back. If you need to navigate back AND the keyboard is visible, press BACK twice: once to dismiss keyboard, once to navigate.
 - **Pull to refresh:** Use `mobile_swipe_on_screen` with direction `down` from the middle of the screen.
 - **Scroll down a list:** Use `mobile_swipe_on_screen` with direction `up` (swipe up to scroll down).
 - **Open a list item:** Find the item in `mobile_list_elements_on_screen` by its text or identifier, compute center coordinates, and tap.
@@ -209,10 +311,22 @@ To navigate between tabs, find the target tab element in `mobile_list_elements_o
 | **Build fails: "SDK location not found"** | Ensure `local.properties` exists at the repo root with `sdk.dir=/path/to/Android/sdk`. Copy from the main repo if working in a worktree. |
 | **Build fails: missing `secrets.properties`** | Copy from `~/.configure/woocommerce-android/secrets/` or use `defaults.properties` as a template. |
 | **App not responding / blank screen** | Call `mobile_terminate_app` then `mobile_launch_app` to restart. |
-| **Element not found on screen** | The screen may still be loading. Wait briefly, then call `mobile_list_elements_on_screen` again. |
+| **Element not found on screen** | The screen may still be loading — follow the "Waiting for Screen Transitions" protocol. If stable, try scrolling (see "Finding Elements That Require Scrolling"). |
 | **Tap lands on wrong element** | You likely used screenshot coordinates instead of element coordinates. Always use `mobile_list_elements_on_screen` and compute the center of the bounding rect. |
-| **Login screen appears** | The app requires authentication. Ask the user for test credentials or to log in manually. |
+| **Login screen appears** | The app requires authentication. The login screen shows elements with text like "Log in" or "Enter your store address". The agent CANNOT complete login autonomously without credentials. Stop and ask the user to provide test credentials or log in manually on the emulator. |
 | **App crashes on launch** | Run `adb logcat -d *:E` via Bash to check crash logs. Common cause: missing FluxC database migration. |
 | **No devices found** | Run `adb devices` via Bash to check ADB connectivity. Ensure the emulator is booted or the physical device has USB debugging enabled. |
 | **Recording MP4 is unplayable** | Stopped with SIGKILL instead of SIGINT. Always use `pkill -l SIGINT screenrecord` and wait 2s before pulling. |
 | **Recording cuts off at 3 min** | Android's hard 180s limit. Use chained recordings for longer flows. |
+
+### Diagnostic ADB Commands (via Bash)
+
+When mobile-mcp tools are not giving enough information:
+
+| Command | Purpose |
+|---------|---------|
+| `adb -s <device> shell dumpsys activity top \| head -20` | Identify the current foreground Activity/Fragment |
+| `adb -s <device> shell dumpsys window \| grep mCurrentFocus` | Get the current window/dialog in focus |
+| `adb -s <device> logcat -d *:E \| tail -30` | Check recent error logs |
+| `adb -s <device> shell am force-stop com.woocommerce.android.dev` | Force kill the app |
+| `adb -s <device> shell pm clear com.woocommerce.android.dev` | Clear app data (full reset — will require re-login) |
