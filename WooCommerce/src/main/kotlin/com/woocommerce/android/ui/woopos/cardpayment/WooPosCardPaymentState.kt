@@ -32,9 +32,4 @@ sealed class WooPosCardPaymentState {
         val actionButtonLabel: String? = null,
         val isDismissButtonVisible: Boolean,
     ) : WooPosCardPaymentState()
-
-    data class PaymentSuccess(
-        val orderTotalText: String,
-        val receiptSentMessage: String? = null,
-    ) : WooPosCardPaymentState()
 }

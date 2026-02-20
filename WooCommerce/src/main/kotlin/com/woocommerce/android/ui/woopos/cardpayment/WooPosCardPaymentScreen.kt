@@ -3,7 +3,6 @@ package com.woocommerce.android.ui.woopos.cardpayment
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -25,8 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -45,8 +42,6 @@ import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmark
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosSuccessCheckmarkAnimationStage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosIcons
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -73,8 +68,6 @@ fun WooPosCardPaymentScreen(
         onRetryClicked = viewModel::onRetryClicked,
         onDismissClicked = viewModel::onDismissClicked,
         onConnectReaderClicked = viewModel::onConnectReaderClicked,
-        onDoneClicked = viewModel::onDoneClicked,
-        onEmailReceiptClicked = viewModel::onEmailReceiptClicked,
         onBackClicked = viewModel::onBackClicked,
         onCashPaymentClicked = viewModel::onCashPaymentClicked,
     )
@@ -87,8 +80,6 @@ private fun WooPosCardPaymentScreenContent(
     onRetryClicked: () -> Unit,
     onDismissClicked: () -> Unit,
     onConnectReaderClicked: () -> Unit,
-    onDoneClicked: () -> Unit,
-    onEmailReceiptClicked: () -> Unit,
     onBackClicked: () -> Unit,
     onCashPaymentClicked: () -> Unit,
 ) {
@@ -141,16 +132,6 @@ private fun WooPosCardPaymentScreenContent(
                     onRetryClicked = onRetryClicked,
                     onDismissClicked = onDismissClicked,
                     onBackClicked = onBackClicked,
-                )
-            }
-        }
-
-        StateChangeAnimated(visible = state is WooPosCardPaymentState.PaymentSuccess) {
-            if (state is WooPosCardPaymentState.PaymentSuccess) {
-                CardPaymentSuccess(
-                    state = state,
-                    onDoneClicked = onDoneClicked,
-                    onEmailReceiptClicked = onEmailReceiptClicked,
                 )
             }
         }
@@ -468,117 +449,6 @@ private fun CardPaymentFailed(
     }
 }
 
-@Suppress("DestructuringDeclarationWithTooManyEntries")
-@Composable
-private fun CardPaymentSuccess(
-    state: WooPosCardPaymentState.PaymentSuccess,
-    onDoneClicked: () -> Unit,
-    onEmailReceiptClicked: () -> Unit,
-) {
-    val animationStage = remember { mutableStateOf(WooPosSuccessCheckmarkAnimationStage.INITIAL) }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surfaceBright),
-        contentAlignment = Alignment.Center
-    ) {
-        val hugeSpacing = WooPosSpacing.Huge.value
-        val mediumSpacing = WooPosSpacing.Medium.value
-        val marginBetweenButtonAndText by animateDpAsState(
-            targetValue = if (animationStage.value >= WooPosSuccessCheckmarkAnimationStage.BUTTONS) {
-                hugeSpacing
-            } else {
-                mediumSpacing
-            },
-            label = "Check mark size"
-        )
-        val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
-        val textsMargin = WooPosSpacing.Small.value
-        val receiptSentMargin = WooPosSpacing.Medium.value
-
-        ConstraintLayout {
-            val (icon, title, message, buttonDone, buttonEmailReceipts) = createRefs()
-            val receiptSent = createRef()
-
-            WooPosSuccessCheckmark(
-                contentDescription = stringResource(R.string.woopos_payment_successful_label),
-                onAnimationStageChanged = { stage -> animationStage.value = stage },
-                modifier = Modifier
-                    .constrainAs(icon) {
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(title.top, margin = checkMarkIconMargin)
-                    }
-            )
-
-            WooPosText(
-                text = stringResource(R.string.woopos_payment_successful_label),
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.constrainAs(title) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(message.top, margin = textsMargin)
-                }
-            )
-
-            WooPosText(
-                text = state.orderTotalText,
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurface,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(message) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(receiptSent.top, margin = receiptSentMargin)
-                }
-            )
-
-            WooPosText(
-                text = state.receiptSentMessage.orEmpty(),
-                style = WooPosTypography.BodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.constrainAs(receiptSent) {
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    bottom.linkTo(buttonDone.top, margin = marginBetweenButtonAndText)
-                }
-            )
-
-            val marginBetweenButtons = WooPosSpacing.Medium.value
-            WooPosButton(
-                modifier = Modifier
-                    .constrainAs(buttonDone) {
-                        bottom.linkTo(buttonEmailReceipts.top, margin = marginBetweenButtons)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .height(80.dp)
-                    .width(604.dp),
-                onClick = onDoneClicked,
-                text = stringResource(R.string.woopos_card_payment_done_button)
-            )
-
-            WooPosOutlinedButton(
-                modifier = Modifier
-                    .constrainAs(buttonEmailReceipts) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .height(80.dp)
-                    .width(604.dp),
-                onClick = onEmailReceiptClicked,
-                text = stringResource(R.string.woopos_receipt_button)
-            )
-        }
-    }
-}
-
 @WooPosPreview
 @Composable
 fun CardPaymentInitiatingPreview() {
@@ -589,8 +459,6 @@ fun CardPaymentInitiatingPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -610,8 +478,6 @@ fun CardPaymentPreparingReaderPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -631,8 +497,6 @@ fun CardPaymentReadyForPaymentPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -653,8 +517,6 @@ fun CardPaymentReaderDisconnectedPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -674,8 +536,6 @@ fun CardPaymentInProgressPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -697,8 +557,6 @@ fun CardPaymentFailedWithRetryPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )
@@ -720,28 +578,6 @@ fun CardPaymentFailedWithoutRetryPreview() {
             onRetryClicked = {},
             onDismissClicked = {},
             onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
-            onBackClicked = {},
-            onCashPaymentClicked = {},
-        )
-    }
-}
-
-@WooPosPreview
-@Composable
-fun CardPaymentSuccessPreview() {
-    WooPosTheme {
-        WooPosCardPaymentScreenContent(
-            state = WooPosCardPaymentState.PaymentSuccess(
-                orderTotalText = "$12.50",
-            ),
-            showCashPaymentButton = false,
-            onRetryClicked = {},
-            onDismissClicked = {},
-            onConnectReaderClicked = {},
-            onDoneClicked = {},
-            onEmailReceiptClicked = {},
             onBackClicked = {},
             onCashPaymentClicked = {},
         )

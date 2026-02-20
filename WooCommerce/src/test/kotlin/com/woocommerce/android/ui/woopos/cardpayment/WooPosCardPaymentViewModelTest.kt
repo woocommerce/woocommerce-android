@@ -15,6 +15,7 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
@@ -149,21 +150,47 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given connected reader, when controller emits PaymentSuccessful, then state is PaymentSuccess`() = runTest {
-        viewModel = createViewModel()
+    fun `given connected reader, when controller emits PaymentSuccessful, then OpenPaymentSuccess nav event emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenPaymentSuccess::class.java)
+            val successEvent = event as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(successEvent.source).isEqualTo(PaymentSuccessSource.CARD_BOOKINGS)
+        }
+    }
+
+    @Test
+    fun `given CHECKOUT source, when controller emits PaymentSuccessful, then OpenPaymentSuccess with CARD_CHECKOUT`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
         advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenPaymentSuccess::class.java)
+            val successEvent = event as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(successEvent.source).isEqualTo(PaymentSuccessSource.CARD_CHECKOUT)
+        }
     }
 
     @Test
@@ -258,49 +285,6 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given BOOKINGS source, when onDoneClicked, then GoBackWithResult emitted`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
-
-            val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBackWithResult::class.java)
-            val resultEvent = event as WooPosNavigationEvent.GoBackWithResult
-            assertThat(resultEvent.key).isEqualTo(BOOKING_CARD_PAYMENT_SUCCESS_KEY)
-            assertThat(resultEvent.value).isEqualTo(true)
-        }
-    }
-
-    @Test
-    fun `given CHECKOUT source, when onDoneClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            viewModel.onDoneClicked()
-
-            val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBack::class.java)
-        }
-    }
-
-    @Test
-    fun `when onEmailReceiptClicked, then OpenEmailReceipt emitted`() = runTest {
-        viewModel = createViewModel(orderId = 42L)
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            viewModel.onEmailReceiptClicked()
-
-            val event = awaitItem()
-            assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenEmailReceipt::class.java)
-            assertThat((event as WooPosNavigationEvent.OpenEmailReceipt).orderId).isEqualTo(42L)
-        }
-    }
-
-    @Test
     fun `given no network, when init, then state is PaymentFailed`() = runTest {
         whenever(networkStatus.isConnected()).thenReturn(false)
 
@@ -357,17 +341,6 @@ class WooPosCardPaymentViewModelTest {
         advanceUntilIdle()
 
         verify(analyticsTracker).trackPaymentStates(any())
-    }
-
-    @Test
-    fun `when onEmailReceiptClicked, then trackEmailReceiptTapped called`() = runTest {
-        viewModel = createViewModel(orderId = 42L)
-        advanceUntilIdle()
-
-        viewModel.onEmailReceiptClicked()
-        advanceUntilIdle()
-
-        verify(analyticsTracker).trackEmailReceiptTapped()
     }
 
     @Test
@@ -455,7 +428,7 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given order with billing email, when payment succeeds, then receiptSentMessage is set`() = runTest {
+    fun `given order with billing email, when payment succeeds, then receiptSentMessage is set in nav event`() = runTest {
         val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
             total = BigDecimal("50.00"),
             customer = Order.Customer(
@@ -471,34 +444,38 @@ class WooPosCardPaymentViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
 
-        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
-        assertThat(state.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
+            val event = awaitItem() as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(event.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
+        }
     }
 
     @Test
-    fun `given order without billing email, when payment succeeds, then receiptSentMessage is null`() = runTest {
+    fun `given order without billing email, when payment succeeds, then receiptSentMessage is null in nav event`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
+        viewModel.navigationEvent.test {
+            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+                .ExternalReaderPaymentSuccessful(
+                    amountWithCurrencyLabel = "$50.00",
+                    onPrintReceiptClicked = {},
+                    onSendReceiptClicked = {},
+                    onSaveUserClicked = {}
+                )
+            advanceUntilIdle()
 
-        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
-        assertThat(state.receiptSentMessage).isNull()
+            val event = awaitItem() as WooPosNavigationEvent.OpenPaymentSuccess
+            assertThat(event.receiptSentMessage).isNull()
+        }
     }
 }

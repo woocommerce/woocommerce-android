@@ -17,6 +17,7 @@ import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
+import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -75,9 +76,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
                 when (status) {
                     is NotConnected, is Connecting -> {
                         val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentSuccess ||
-                            currentState is WooPosCardPaymentState.PaymentInProgress
-                        ) {
+                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
                             return@collect
                         }
                         _state.value = buildReaderDisconnectedState()
@@ -86,9 +85,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
                     is Connected -> {
                         val currentState = _state.value
-                        if (currentState is WooPosCardPaymentState.PaymentSuccess ||
-                            currentState is WooPosCardPaymentState.PaymentInProgress
-                        ) {
+                        if (currentState is WooPosCardPaymentState.PaymentInProgress) {
                             return@collect
                         }
                         _state.value = buildPreparingState()
@@ -233,9 +230,17 @@ class WooPosCardPaymentViewModel @Inject constructor(
             ?.let { email ->
                 resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
             }
-        _state.value = WooPosCardPaymentState.PaymentSuccess(
-            orderTotalText = orderTotalText,
-            receiptSentMessage = receiptSentMessage
+        val successSource = when (source) {
+            CardPaymentSource.CHECKOUT -> PaymentSuccessSource.CARD_CHECKOUT
+            CardPaymentSource.BOOKINGS -> PaymentSuccessSource.CARD_BOOKINGS
+        }
+        _navigationEvent.emit(
+            WooPosNavigationEvent.OpenPaymentSuccess(
+                orderId = orderId,
+                orderTotalText = orderTotalText,
+                source = successSource,
+                receiptSentMessage = receiptSentMessage,
+            )
         )
     }
 
@@ -307,28 +312,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onConnectReaderClicked() {
         cardReaderFacade.connectToReader()
-    }
-
-    fun onDoneClicked() {
-        viewModelScope.launch {
-            if (source == CardPaymentSource.BOOKINGS) {
-                _navigationEvent.emit(
-                    WooPosNavigationEvent.GoBackWithResult(
-                        BOOKING_CARD_PAYMENT_SUCCESS_KEY,
-                        true
-                    )
-                )
-            } else {
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-            }
-        }
-    }
-
-    fun onEmailReceiptClicked() {
-        viewModelScope.launch {
-            analyticsTracker.trackEmailReceiptTapped()
-            _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
-        }
     }
 
     fun onCashPaymentClicked() {
