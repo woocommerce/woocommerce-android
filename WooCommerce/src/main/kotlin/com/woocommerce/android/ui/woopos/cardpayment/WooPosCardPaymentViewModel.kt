@@ -116,6 +116,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
             orderId = orderId,
             paymentType = PaymentOrRefund.Payment.PaymentType.WOO_POS,
             isTTPPaymentInProgress = ::isTTPPaymentInProgress,
+            allowCancelledStatus = source == CardPaymentSource.BOOKINGS,
         )
         cardReaderPaymentController?.start()
         listenToPaymentState()
@@ -227,7 +228,15 @@ class WooPosCardPaymentViewModel @Inject constructor(
         } else {
             resourceProvider.getString(R.string.woopos_payment_successful_label)
         }
-        _state.value = WooPosCardPaymentState.PaymentSuccess(orderTotalText = orderTotalText)
+        val receiptSentMessage = order?.billingAddress?.email
+            ?.takeIf { it.isNotBlank() }
+            ?.let { email ->
+                resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+            }
+        _state.value = WooPosCardPaymentState.PaymentSuccess(
+            orderTotalText = orderTotalText,
+            receiptSentMessage = receiptSentMessage
+        )
     }
 
     private fun buildPaymentFailedState(

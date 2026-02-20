@@ -35,5 +35,6 @@ sealed class WooPosCardPaymentState {
 
     data class PaymentSuccess(
         val orderTotalText: String,
+        val receiptSentMessage: String? = null,
     ) : WooPosCardPaymentState()
 }
