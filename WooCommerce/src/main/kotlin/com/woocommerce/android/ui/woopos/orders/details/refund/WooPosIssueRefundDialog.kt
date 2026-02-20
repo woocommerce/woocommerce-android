@@ -352,6 +352,17 @@ private fun RefundSuccessContent(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center
             )
+
+            if (state.receiptSentMessage != null) {
+                Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+
+                WooPosText(
+                    text = state.receiptSentMessage,
+                    style = WooPosTypography.BodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(marginBetweenButtonAndText))
