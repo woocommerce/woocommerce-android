@@ -41,7 +41,7 @@ docs/                        Development guidelines
 - Install on device: `./gradlew :WooCommerce:installWasabiDebug`
 - Clean build: `./gradlew clean`
 - Run detekt (with auto-correct): `./gradlew detektAll --auto-correct`
-- Android lint: `./gradlew lintVanillaRelease`
+- Android lint: `./gradlew lintWasabiRelease`
 
 ## Unit Test Commands
 
