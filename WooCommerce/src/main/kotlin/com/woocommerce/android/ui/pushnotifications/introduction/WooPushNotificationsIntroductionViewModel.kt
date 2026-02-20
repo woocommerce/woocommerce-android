@@ -68,8 +68,12 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     private suspend fun checkWCVersion() {
-        val wcVersion = fetchActiveWCPluginVersion()
-        if (wcVersion != null && wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
+        val wcVersion = fetchActiveWCPluginVersion() ?: run {
+            _viewState.value = ViewState.GenericError
+            return
+        }
+
+        if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
             _viewState.value = ViewState.GenericError
         } else {
             _viewState.value = ViewState.UpdateRequired
