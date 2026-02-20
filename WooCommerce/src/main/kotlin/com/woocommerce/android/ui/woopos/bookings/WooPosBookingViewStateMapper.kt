@@ -143,6 +143,14 @@ class WooPosBookingViewStateMapper @Inject constructor(
         else -> false
     }
 
+    private fun isBookingRefunded(
+        bookingStatus: BookingEntity.Status,
+        paymentStatus: PaymentStatus,
+    ): Boolean = when (bookingStatus) {
+        BookingEntity.Status.Cancelled -> paymentStatus == PaymentStatus.REFUNDED
+        else -> false
+    }
+
     private fun buildPaymentSection(
         booking: BookingEntity,
         paymentStatus: PaymentStatus,
@@ -150,6 +158,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         val paymentInfo = booking.order.paymentInfo
         val currency = booking.currency
         val isPaid = isBookingPaid(booking.status, paymentStatus)
+        val isRefunded = isBookingRefunded(booking.status, paymentStatus)
 
         val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
@@ -166,7 +175,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             } ?: "-",
             totalAmount = totalAmount,
             paidWithLabel = if (isPaid) paymentInfo?.paymentMethodTitle else null,
-            collectPaymentLabel = if (!isPaid) totalAmount else null,
+            collectPaymentLabel = if (!isPaid && !isRefunded) totalAmount else null,
         )
     }
 
