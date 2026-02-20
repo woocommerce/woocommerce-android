@@ -4,10 +4,6 @@
     android:id="@+id/nav_graph_push_notifications"
     app:startDestination="@id/wooPushNotificationsIntroductionDialog">
 
-    <action
-        android:id="@+id/action_global_to_wooPushNotificationsConnectionStepsFragment"
-        app:destination="@id/wooPushNotificationsConnectionStepsFragment" />
-
     <dialog
         android:id="@+id/wooPushNotificationsIntroductionDialog"
         android:name="com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionDialog"
