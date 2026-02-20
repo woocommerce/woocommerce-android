@@ -96,7 +96,7 @@ fun WooPosBookingsScreen(
 
     LaunchedEffect(cashPaymentResult.value) {
         if (cashPaymentResult.value) {
-            viewModel.onRefresh()
+            viewModel.onPullToRefresh()
             backStackEntry.savedStateHandle[BOOKING_CASH_PAYMENT_SUCCESS_KEY] = false
         }
     }
@@ -107,7 +107,7 @@ fun WooPosBookingsScreen(
 
     LaunchedEffect(cardPaymentResult.value) {
         if (cardPaymentResult.value) {
-            viewModel.onRefresh()
+            viewModel.onPullToRefresh()
             backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
         }
     }
@@ -127,7 +127,7 @@ fun WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onRefresh = viewModel::onRefresh,
+        onRefresh = viewModel::onPullToRefresh,
         onBookingSelected = viewModel::onBookingSelected,
         onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
