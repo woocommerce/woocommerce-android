@@ -157,7 +157,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given user is connected and WC version is null, when screen opens, then UpdateRequired state is shown`() =
+    fun `given checking WC version fails, when screen opens, then Error state is shown`() =
         testBlocking {
             val jetpackStatus = JetpackStatus(
                 isJetpackInstalled = true,
@@ -172,7 +172,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             setup()
 
             val viewState = viewModel.viewState.getOrAwaitValue()
-            assertThat(viewState).isEqualTo(ViewState.UpdateRequired)
+            assertThat(viewState).isEqualTo(ViewState.GenericError)
         }
 
     @Test
@@ -210,10 +210,21 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when update plugin is clicked, then NavigateToConnectionSteps event is triggered`() {
+    fun `when update plugin is clicked, then NavigateToConnectionSteps event is triggered`() = testBlocking {
+        val jetpackStatus = JetpackStatus(
+            isJetpackInstalled = true,
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+                blogId = 123L
+            )
+        )
+        whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+            .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+        whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+
         setup()
 
-        viewModel.onUpdatePluginClick()
+        viewModel.onContinueClick()
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps)
