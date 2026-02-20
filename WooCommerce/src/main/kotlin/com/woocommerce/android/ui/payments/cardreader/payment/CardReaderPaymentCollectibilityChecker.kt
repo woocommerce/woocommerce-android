@@ -21,11 +21,11 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
     private val cardReaderPaymentCurrencySupportedChecker: CardReaderPaymentCurrencySupportedChecker,
     private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) {
-    suspend fun isCollectable(order: Order): Boolean {
+    suspend fun isCollectable(order: Order, allowCancelledStatus: Boolean = false): Boolean {
         return ciabSiteGateKeeper.isFeatureSupported(CIABAffectedFeature.WooPayments) &&
             with(order) {
                 cardReaderPaymentCurrencySupportedChecker.isCurrencySupported(currency) &&
-                    isStatusCollectable() &&
+                    isStatusCollectable(allowCancelledStatus) &&
                     !isOrderPaid &&
                     order.total.compareTo(BigDecimal.ZERO) == 1 &&
                     BigDecimal.ZERO.compareTo(order.refundTotal) == 0 &&
@@ -45,11 +45,11 @@ class CardReaderPaymentCollectibilityChecker @Inject constructor(
             WOOCOMMERCE_BOOKINGS_PAYMENT_TYPE,
         )
 
-    private fun Order.isStatusCollectable() = status in arrayOf(
+    private fun Order.isStatusCollectable(allowCancelledStatus: Boolean) = status in arrayOf(
         Pending,
         Processing,
         OnHold,
         Custom(Order.Status.AUTO_DRAFT),
         Failed,
-    )
+    ) || (allowCancelledStatus && status == Order.Status.Cancelled)
 }
