@@ -466,6 +466,7 @@ private fun CardPaymentSuccess(
         )
         val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
         val textsMargin = WooPosSpacing.Small.value
+        val receiptSentMargin = WooPosSpacing.Medium.value
 
         ConstraintLayout {
             val (icon, title, message, buttonDone, buttonEmailReceipts) = createRefs()
@@ -503,7 +504,7 @@ private fun CardPaymentSuccess(
                 modifier = Modifier.constrainAs(message) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    bottom.linkTo(receiptSent.top, margin = textsMargin)
+                    bottom.linkTo(receiptSent.top, margin = receiptSentMargin)
                 }
             )
 
