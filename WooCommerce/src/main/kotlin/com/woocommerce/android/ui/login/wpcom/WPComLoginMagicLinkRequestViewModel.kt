@@ -150,7 +150,6 @@ class WPComLoginMagicLinkRequestViewModel @Inject constructor(
 
     private fun WPComLoginMode.toMagicLinkFlow(): MagicLinkFlow = when (this) {
         is WPComLoginMode.JetpackSetup -> MagicLinkFlow.JetpackConnection
-        WPComLoginMode.PushNotificationsSetup -> MagicLinkFlow.PushNotificationsSetup
     }
 
     sealed interface ViewState : Parcelable {

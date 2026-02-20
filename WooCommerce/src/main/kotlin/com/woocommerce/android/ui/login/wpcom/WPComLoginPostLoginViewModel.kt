@@ -23,10 +23,6 @@ open class WPComLoginPostLoginViewModel(
     internal suspend fun onLoginSuccess(wpComLoginMode: WPComLoginMode): Result<Unit> {
         return when (wpComLoginMode) {
             is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
-            WPComLoginMode.PushNotificationsSetup -> {
-                // no-op, TODO cleanup this code
-                Result.success(Unit)
-            }
         }
     }
 
