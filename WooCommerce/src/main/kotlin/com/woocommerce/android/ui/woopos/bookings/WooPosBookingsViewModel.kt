@@ -156,12 +156,14 @@ class WooPosBookingsViewModel @Inject constructor(
         )
     }
 
-    fun onRefresh() {
-        _state.value = when (val current = _state.value) {
-            is WooPosBookingsState.Content -> current.copy(
-                pullToRefreshState = WooPosPullToRefreshState.Refreshing
-            )
-            else -> WooPosBookingsState.Loading
+    fun onRefresh(silent: Boolean = false) {
+        if (!silent) {
+            _state.value = when (val current = _state.value) {
+                is WooPosBookingsState.Content -> current.copy(
+                    pullToRefreshState = WooPosPullToRefreshState.Refreshing
+                )
+                else -> WooPosBookingsState.Loading
+            }
         }
 
         fetchJob?.cancel()
@@ -258,7 +260,7 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
-        onRefresh()
+        onRefresh(silent = true)
     }
 
     private fun handleCollectPayment() {
@@ -347,7 +349,7 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingNoteSaved() {
-        onRefresh()
+        onRefresh(silent = true)
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
@@ -433,6 +435,9 @@ class WooPosBookingsViewModel @Inject constructor(
                         ),
                     )
                 )
+            }
+            if (result.isSuccess) {
+                onRefresh(silent = true)
             }
         }
     }

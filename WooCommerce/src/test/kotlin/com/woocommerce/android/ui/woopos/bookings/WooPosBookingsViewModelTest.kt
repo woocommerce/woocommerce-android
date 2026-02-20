@@ -980,6 +980,126 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given cancel confirmed successfully, when handling event, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            val updatedContent = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedContent.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
+    fun `given cancel confirmed successfully, when handling event, then bookings are refreshed`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+        }
+
+    @Test
+    fun `given IssueRefund dialog dismissed, when refreshing, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
+
+            // THEN
+            val updatedState = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(updatedState.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
+    fun `given booking note saved, when refreshing, then pullToRefreshState stays Enabled`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+                .doSuspendableAnswer {
+                    delay(Long.MAX_VALUE)
+                    Result.success(Unit)
+                }
+
+            // WHEN
+            viewModel.onBookingNoteSaved()
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(content.pullToRefreshState)
+                .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
     fun `given processing state, when dismiss event, then dialog stays open`() =
         runTest {
             // GIVEN
