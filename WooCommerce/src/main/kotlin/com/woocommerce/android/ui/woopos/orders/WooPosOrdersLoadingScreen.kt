@@ -234,13 +234,13 @@ fun OrderDetailsLoadingPane(
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                TotalLoadingItem(bold = true)
+                TotalLoadingItem()
 
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 Spacer(modifier = Modifier.height(WooPosSpacing.Medium.value))
 
-                TotalLoadingItem(bold = true)
+                TotalLoadingItem()
             }
         }
     }
@@ -300,15 +300,14 @@ private fun ProductLoadingItem() {
 }
 
 @Composable
-private fun TotalLoadingItem(bold: Boolean = false) {
+private fun TotalLoadingItem() {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         WooPosShimmerText(
-            text = if (bold) "Total" else "Subtotal",
-            style = if (bold) WooPosTypography.BodyLarge.style else WooPosTypography.BodyMedium.style,
-            fontWeight = if (bold) FontWeight.Bold else FontWeight.Normal
+            text = "Subtotal",
+            style = WooPosTypography.BodyMedium.style
         )
 
         WooPosShimmerText(
