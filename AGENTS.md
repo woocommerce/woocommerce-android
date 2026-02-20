@@ -37,7 +37,7 @@ docs/                        Development guidelines
 
 ## Build Commands
 
-- Build debug APK: `./gradlew assembleWasabiDebug`
+- Build debug APK: `./gradlew :WooCommerce:assembleWasabiDebug`
 - Install on device: `./gradlew installWasabiDebug`
 - Clean build: `./gradlew clean`
 - Run detekt: `./gradlew detektAll`
