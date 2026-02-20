@@ -66,7 +66,7 @@ class WooPosBookingsViewModel @Inject constructor(
         loadMoreJob?.cancel()
         fetchJob = viewModelScope.launch {
             val result = bookingListHandler.loadBookings(
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             )
             result.onFailure {
                 if (_state.value is WooPosBookingsState.Loading) {
