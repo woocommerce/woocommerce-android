@@ -44,7 +44,6 @@ fun WooPushNotificationsIntroductionScreen(viewModel: WooPushNotificationsIntrod
         WooPushNotificationsIntroductionScreen(
             viewState = viewState,
             onContinueClick = viewModel::onContinueClick,
-            onUpdatePluginClick = viewModel::onUpdatePluginClick,
             onNotNowClick = viewModel::onNotNowClick,
             onWhatIsWPComClick = viewModel::onWhatIsWPComClick,
             onContactSupportClick = viewModel::onContactSupportClick
@@ -56,7 +55,6 @@ fun WooPushNotificationsIntroductionScreen(viewModel: WooPushNotificationsIntrod
 fun WooPushNotificationsIntroductionScreen(
     viewState: ViewState,
     onContinueClick: () -> Unit,
-    onUpdatePluginClick: () -> Unit,
     onNotNowClick: () -> Unit,
     onWhatIsWPComClick: () -> Unit,
     onContactSupportClick: () -> Unit,
@@ -80,16 +78,11 @@ fun WooPushNotificationsIntroductionScreen(
         ) {
             when (viewState) {
                 ViewState.Loading -> LoadingContent(modifier = Modifier.fillMaxWidth())
-                ViewState.NotConnected -> IntroContent(
+                ViewState.NotConnected, ViewState.UpdateRequired -> IntroContent(
+                    isUpdateRequired = viewState is ViewState.UpdateRequired,
                     onContinueClick = onContinueClick,
                     onNotNowClick = onNotNowClick,
                     onWhatIsWPComClick = onWhatIsWPComClick,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                ViewState.UpdateRequired -> UpdateRequiredContent(
-                    onUpdatePluginClick = onUpdatePluginClick,
-                    onNotNowClick = onNotNowClick,
                     modifier = Modifier.fillMaxWidth()
                 )
 
@@ -178,6 +171,7 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun IntroContent(
+    isUpdateRequired: Boolean,
     onContinueClick: () -> Unit,
     onNotNowClick: () -> Unit,
     onWhatIsWPComClick: () -> Unit,
@@ -198,97 +192,63 @@ private fun IntroContent(
             )
 
             Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_title),
+                text = stringResource(
+                    id = if (isUpdateRequired) {
+                        R.string.woo_push_notifications_introduction_update_required_title
+                    } else {
+                        R.string.woo_push_notifications_introduction_title
+                    }
+                ),
                 style = MaterialTheme.typography.headlineMedium,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(top = 24.dp)
             )
 
             Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_body),
+                text = stringResource(
+                    id = if (isUpdateRequired) {
+                        R.string.woo_push_notifications_introduction_update_required_body
+                    } else {
+                        R.string.woo_push_notifications_introduction_body
+                    }
+                ),
                 style = MaterialTheme.typography.titleMedium,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(top = 24.dp)
             )
 
-            Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_body2),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(top = 24.dp)
-            )
+            if (!isUpdateRequired) {
+                Text(
+                    text = stringResource(id = R.string.woo_push_notifications_introduction_body2),
+                    style = MaterialTheme.typography.titleMedium,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(top = 24.dp)
+                )
 
-            Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_what_is_wpcom),
-                style = MaterialTheme.typography.bodyMedium,
-                color = colorResource(id = R.color.color_primary),
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .clickable { onWhatIsWPComClick() }
-            )
+                Text(
+                    text = stringResource(id = R.string.woo_push_notifications_introduction_what_is_wpcom),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colorResource(id = R.color.color_primary),
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .clickable { onWhatIsWPComClick() }
+                )
+            }
         }
 
         WCColoredButton(
             onClick = onContinueClick,
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = stringResource(id = R.string.woo_push_notifications_introduction_continue))
-        }
-
-        WCOutlinedButton(
-            onClick = onNotNowClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp)
-        ) {
             Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_not_now),
-                color = MaterialTheme.colorScheme.onSurface
+                text = stringResource(
+                    if (isUpdateRequired) {
+                        R.string.woo_push_notifications_introduction_update_plugin
+                    } else {
+                        R.string.woo_push_notifications_introduction_continue
+                    }
+                )
             )
-        }
-    }
-}
-
-@Composable
-private fun UpdateRequiredContent(
-    onUpdatePluginClick: () -> Unit,
-    onNotNowClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())
-                .padding(vertical = 16.dp)
-        ) {
-            WordPressWooBadge(
-                iconSize = 64.dp
-            )
-
-            Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_update_required_title),
-                style = MaterialTheme.typography.headlineMedium,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(top = 24.dp)
-            )
-
-            Text(
-                text = stringResource(id = R.string.woo_push_notifications_introduction_update_required_body),
-                style = MaterialTheme.typography.titleMedium,
-                textAlign = TextAlign.Start,
-                modifier = Modifier.padding(top = 24.dp)
-            )
-        }
-
-        WCColoredButton(
-            onClick = onUpdatePluginClick,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(text = stringResource(id = R.string.woo_push_notifications_introduction_update_plugin))
         }
 
         WCOutlinedButton(
@@ -372,7 +332,6 @@ private fun WooPushNotificationsIntroductionLoadingPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.Loading,
             onContinueClick = {},
-            onUpdatePluginClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -387,7 +346,6 @@ private fun WooPushNotificationsIntroductionNotConnectedPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.NotConnected,
             onContinueClick = {},
-            onUpdatePluginClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -402,7 +360,6 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.UpdateRequired,
             onContinueClick = {},
-            onUpdatePluginClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}
@@ -412,27 +369,11 @@ private fun WooPushNotificationsIntroductionUpdateRequiredPreview() {
 
 @Composable
 @Preview
-private fun WooPushNotificationsIntroductionGenericErrorPreview() {
+private fun WooPushNotificationsIntroductionErrorPreview() {
     WooThemeWithBackground {
         WooPushNotificationsIntroductionScreen(
             viewState = ViewState.GenericError,
             onContinueClick = {},
-            onUpdatePluginClick = {},
-            onNotNowClick = {},
-            onWhatIsWPComClick = {},
-            onContactSupportClick = {}
-        )
-    }
-}
-
-@Composable
-@Preview
-private fun WooPushNotificationsIntroductionForbiddenErrorPreview() {
-    WooThemeWithBackground {
-        WooPushNotificationsIntroductionScreen(
-            viewState = ViewState.ForbiddenError,
-            onContinueClick = {},
-            onUpdatePluginClick = {},
             onNotNowClick = {},
             onWhatIsWPComClick = {},
             onContactSupportClick = {}

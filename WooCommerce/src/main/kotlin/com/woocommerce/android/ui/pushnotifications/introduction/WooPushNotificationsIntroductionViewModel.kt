@@ -77,11 +77,11 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onContinueClick() {
-        triggerEvent(StartWPComLogin)
-    }
-
-    fun onUpdatePluginClick() {
-        triggerEvent(NavigateToConnectionSteps)
+        if (viewState.value is ViewState.UpdateRequired) {
+            triggerEvent(NavigateToConnectionSteps)
+        } else {
+            triggerEvent(StartWPComLogin)
+        }
     }
 
     fun onNotNowClick() {
