@@ -161,8 +161,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             }
 
             assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
-            assertThat(state.steps[1].state)
-                .isEqualTo(StepState.Error(R.string.woo_push_notifications_connection_steps_error_connection_permission_message))
+            assertThat(state.steps[1].state).isEqualTo(
+                StepState.Error(R.string.woo_push_notifications_connection_steps_error_connection_permission_message)
+            )
         }
 
     @Test
