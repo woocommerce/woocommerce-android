@@ -2,8 +2,10 @@ package com.woocommerce.android.ui.woopos.cardpayment
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
+import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
@@ -54,7 +56,7 @@ class WooPosCardPaymentViewModelTest {
         on { event }.thenReturn(controllerEventFlow)
     }
     private val cardReaderPaymentControllerFactory: WooPosCardReaderPaymentControllerFactory = mock {
-        on { create(any(), any(), any()) }.thenReturn(paymentController)
+        on { create(any(), any(), any(), any()) }.thenReturn(paymentController)
     }
     private val networkStatus: WooPosNetworkStatus = mock {
         on { isConnected() }.thenReturn(true)
@@ -310,20 +312,44 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
+    fun `given controller emits ShowErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        controllerEventFlow.emit(
-            CardReaderPaymentEvent.ShowErrorMessage(
-                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
             )
-        )
-        advanceUntilIdle()
+            advanceUntilIdle()
 
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
-    }
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
+
+    @Test
+    fun `given controller emits ShowPaymentErrorMessage, when collecting, then state is PaymentFailed with no action button`() =
+        runTest {
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowPaymentErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            val state = viewModel.state.value
+            assertThat(state).isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+            val failedState = state as WooPosCardPaymentState.PaymentFailed
+            assertThat(failedState.actionButtonLabel).isNull()
+            assertThat(failedState.isDismissButtonVisible).isTrue()
+        }
 
     @Test
     fun `given connected reader, when payment starts collecting, then trackPaymentStates called`() = runTest {
@@ -426,5 +452,53 @@ class WooPosCardPaymentViewModelTest {
 
         verify(paymentController).onBackPressed()
         verify(paymentController).stop()
+    }
+
+    @Test
+    fun `given order with billing email, when payment succeeds, then receiptSentMessage is set`() = runTest {
+        val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
+            total = BigDecimal("50.00"),
+            customer = Order.Customer(
+                billingAddress = Address.EMPTY.copy(email = "customer@example.com"),
+                shippingAddress = Address.EMPTY
+            )
+        )
+        whenever(totalsRepository.getOrderById(any())).thenReturn(orderWithEmail)
+        whenever(
+            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, "customer@example.com")
+        ).thenReturn("A receipt has been sent to customer@example.com.")
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+            .ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "$50.00",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {}
+            )
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
+        assertThat(state.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
+    }
+
+    @Test
+    fun `given order without billing email, when payment succeeds, then receiptSentMessage is null`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+            .ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "$50.00",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {}
+            )
+        advanceUntilIdle()
+
+        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
+        assertThat(state.receiptSentMessage).isNull()
     }
 }

@@ -18,6 +18,7 @@ internal class StripOrder @Inject constructor(private val gson: Gson) {
                             ?.filter {
                                 it.isDisplayable
                                     || it.key == WCMetaData.BundleMetadataKeys.BUNDLED_ITEM_ID
+                                    || it.key == WCMetaData.BookingMetadataKeys.BOOKING_ID
                             }
                     )
                 }),

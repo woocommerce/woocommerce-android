@@ -3,6 +3,7 @@ package com.woocommerce.android.ui.woopos.util.format
 import android.content.Context
 import com.woocommerce.android.R
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
@@ -14,6 +15,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.Locale
 
 class WooPosDateFormatterTest {
     private val context: Context = mock()
@@ -21,9 +23,12 @@ class WooPosDateFormatterTest {
     private val fixedClock = Clock.fixed(fixedInstant, ZoneId.of("UTC"))
     private val is24HourFormat: Is24HourFormat = mock()
     private var formatter: WooPosDateFormatter = WooPosDateFormatter(context, fixedClock, is24HourFormat)
+    private lateinit var originalLocale: Locale
 
     @Before
     fun setup() {
+        originalLocale = Locale.getDefault()
+        Locale.setDefault(Locale.US)
         whenever(is24HourFormat()).thenReturn(false)
         whenever(context.getString(R.string.woopos_date_never)).thenReturn("Never")
         whenever(context.getString(R.string.woopos_date_just_now)).thenReturn("Just now")
@@ -33,6 +38,11 @@ class WooPosDateFormatterTest {
         whenever(context.getString(eq(R.string.woopos_date_yesterday_at), any())).thenAnswer { invocation ->
             "Yesterday at ${invocation.arguments[1]}"
         }
+    }
+
+    @After
+    fun tearDown() {
+        Locale.setDefault(originalLocale)
     }
 
     @Test
@@ -209,6 +219,15 @@ class WooPosDateFormatterTest {
 
         // THEN
         assertThat(result).isEqualTo("Today at 12:30")
+    }
+
+    @Test
+    fun `when formatShortDate called, then returns short locale date`() {
+        val instant = Instant.parse("2025-03-15T10:00:00Z")
+
+        val result = formatter.formatShortDate(instant)
+
+        assertThat(result).isEqualTo("3/15/25")
     }
 
     @Test

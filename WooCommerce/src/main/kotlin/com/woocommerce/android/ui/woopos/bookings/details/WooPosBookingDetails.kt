@@ -552,6 +552,10 @@ private fun BookingOverflowMenu(
                                 stringResource(R.string.woopos_orders_email_receipt) to
                                     MaterialTheme.colorScheme.onSurface
                             }
+                            is WooPosBookingsState.BookingAction.IssueRefund -> {
+                                stringResource(R.string.booking_overflow_refund) to
+                                    MaterialTheme.colorScheme.onSurface
+                            }
 
                             is WooPosBookingsState.BookingAction.CancelBooking -> {
                                 stringResource(R.string.woopos_bookings_cancel_menu_item) to
