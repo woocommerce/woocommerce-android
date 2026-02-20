@@ -169,7 +169,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchResources()
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             ).onFailure {
                 _state.value = when (val current = _state.value) {
                     is WooPosBookingsState.Content -> current.copy(
