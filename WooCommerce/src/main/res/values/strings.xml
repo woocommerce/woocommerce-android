@@ -2639,6 +2639,9 @@
     <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
     <string name="woo_push_notifications_introduction_continue">Continue</string>
     <string name="woo_push_notifications_introduction_not_now">Not now</string>
+    <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
+    <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
+    <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
     <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
     <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b>%1$s&lt;/b> to your WordPress.com account.</string>
     <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
