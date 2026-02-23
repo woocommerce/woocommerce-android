@@ -1,7 +1,5 @@
 package com.woocommerce.android.ui.woopos.orders.details
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,17 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,9 +31,11 @@ import androidx.constraintlayout.compose.Dimension
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
-import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButtonSmall
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowPrimaryAction
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
@@ -123,31 +116,22 @@ private fun OrderActions(
 
         is WooPosOrdersState.OrderActionsState.Loaded -> {
             val actions = actionsState.actions
-            when {
-                actions.size > 1 -> {
-                    val primaryAction = actions.first()
-                    val overflowActions = actions.drop(1)
+            val primaryAction = actions.firstOrNull()
+            val overflowActions = actions.drop(1)
 
-                    OrderActionButton(
-                        action = primaryAction,
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
+            WooPosOverflowMenu(
+                primaryAction = primaryAction?.let { action ->
+                    WooPosOverflowPrimaryAction(
+                        label = orderActionLabel(action),
+                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(action)) }
                     )
-
-                    Spacer(Modifier.width(WooPosSpacing.Small.value))
-
-                    OrderDetailsOverflowMenu(
-                        actions = overflowActions,
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
-                    )
+                },
+                items = overflowActions.map { action ->
+                    orderActionToMenuItem(action) {
+                        onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it))
+                    }
                 }
-
-                actions.size == 1 -> {
-                    OrderActionButton(
-                        action = actions.first(),
-                        onClick = { onUIEvent(WooPosOrdersUIEvent.OrderActionClicked(it)) }
-                    )
-                }
-            }
+            )
         }
     }
 }
@@ -455,73 +439,26 @@ private fun DividerWithSpacing() {
 }
 
 @Composable
-private fun OrderActionButton(
-    action: WooPosOrdersState.OrderAction,
-    onClick: (WooPosOrdersState.OrderAction) -> Unit
-) {
-    when (action) {
-        is WooPosOrdersState.OrderAction.IssueRefund -> {
-            WooPosButtonSmall(
-                text = stringResource(R.string.orderdetail_issue_refund_button),
-                onClick = { onClick(action) }
-            )
-        }
-
-        is WooPosOrdersState.OrderAction.EmailReceipt -> {
-            WooPosButtonSmall(
-                text = stringResource(R.string.woopos_orders_email_receipt),
-                onClick = { onClick(action) }
-            )
-        }
+private fun orderActionLabel(action: WooPosOrdersState.OrderAction): String {
+    return when (action) {
+        is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(R.string.orderdetail_issue_refund_button)
+        is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(R.string.woopos_orders_email_receipt)
     }
 }
 
 @Composable
-private fun OrderDetailsOverflowMenu(
-    actions: List<WooPosOrdersState.OrderAction>,
+private fun orderActionToMenuItem(
+    action: WooPosOrdersState.OrderAction,
     onClick: (WooPosOrdersState.OrderAction) -> Unit
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box {
-        IconButton(onClick = { showMenu = true }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
-                contentDescription = stringResource(R.string.more_menu),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
-        }
-
-        DropdownMenu(
-            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            actions.forEach { action ->
-                DropdownMenuItem(
-                    text = {
-                        val text = when (action) {
-                            is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(
-                                R.string.orderdetail_issue_refund_button
-                            )
-
-                            is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(
-                                R.string.woopos_orders_email_receipt
-                            )
-                        }
-                        WooPosText(
-                            text = text,
-                            style = WooPosTypography.BodyMedium
-                        )
-                    },
-                    onClick = {
-                        showMenu = false
-                        onClick(action)
-                    }
-                )
-            }
-        }
+): WooPosOverflowMenuItem {
+    val label = when (action) {
+        is WooPosOrdersState.OrderAction.IssueRefund -> stringResource(R.string.orderdetail_issue_refund_button)
+        is WooPosOrdersState.OrderAction.EmailReceipt -> stringResource(R.string.woopos_orders_email_receipt)
     }
+    return WooPosOverflowMenuItem(
+        label = label,
+        onClick = { onClick(action) }
+    )
 }
 
 @WooPosPreview
