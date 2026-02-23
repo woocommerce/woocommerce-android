@@ -23,7 +23,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -58,16 +57,12 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         key = KEY_CURRENT_STEP
     )
 
-    private val _isPluginUpdateRequired = MutableStateFlow(false)
-
     val viewState = combine(
         currentStep,
         flowOf(StepType.entries.toList()),
-        _isPluginUpdateRequired
-    ) { currentStep, stepTypes, isPluginUpdateRequired ->
+    ) { currentStep, stepTypes ->
         ViewState(
             siteAddress = siteAddress,
-            isPluginUpdateRequired = isPluginUpdateRequired,
             steps = stepTypes.map { stepType ->
                 Step(
                     type = stepType,
@@ -97,7 +92,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     fun onRetryClick() {
-        _isPluginUpdateRequired.value = false
         startNextStep()
     }
 
@@ -137,7 +131,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         if (navArgs.shouldAutoOpenUpdatePlugin && !hasAutoOpenedUpdate) {
             hasAutoOpenedUpdate = true
             markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
-            _isPluginUpdateRequired.value = true
             val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PLUGIN_UPDATE_PATH)
             triggerEvent(NavigateToPluginUpdatePage(url))
             return
@@ -149,7 +142,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 advanceToNextStep()
             }
             is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
-                _isPluginUpdateRequired.value = true
                 markCurrentStepAsFailed(
                     UiString.UiStringRes(
                         R.string.woo_push_notifications_connection_steps_error_plugin_update_required,
@@ -250,11 +242,11 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     data class ViewState(
         val siteAddress: String,
-        val isPluginUpdateRequired: Boolean = false,
         val steps: List<Step>
     ) {
         val isDone = steps.all { it.state == StepState.Success }
         val isError = steps.any { it.state is StepState.Error }
+        val isPluginUpdateRequired = steps.first { it.type == StepType.CheckPluginCompatibility }.state is StepState.Error
     }
 
     @Parcelize
