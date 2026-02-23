@@ -562,12 +562,10 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun buildDateSelectorState(): DateSelectorState {
-        val dateFormatter = DateTimeFormatter.ofPattern("dd MMM", Locale.getDefault())
-        val dayFormatter = DateTimeFormatter.ofPattern("EEE", Locale.getDefault())
+        val formatter = DateTimeFormatter.ofPattern("dd MMM, EEE", Locale.getDefault())
         val millis = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
         return DateSelectorState(
-            formattedDate = selectedDate.format(dateFormatter),
-            formattedDay = selectedDate.format(dayFormatter),
+            formattedDate = selectedDate.format(formatter),
             selectedDateMillis = millis,
         )
     }

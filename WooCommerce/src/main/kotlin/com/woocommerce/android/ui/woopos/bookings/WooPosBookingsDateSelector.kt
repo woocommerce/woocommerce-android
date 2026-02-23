@@ -101,7 +101,7 @@ fun WooPosBookingsDateSelector(
                     )
                     Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
                     WooPosText(
-                        text = "${dateSelectorState.formattedDate}, ${dateSelectorState.formattedDay}",
+                        text = dateSelectorState.formattedDate,
                         style = WooPosTypography.BodySmall,
                         fontWeight = FontWeight.Bold,
                         color = contentColor,
@@ -148,8 +148,7 @@ fun WooPosBookingsDateSelectorPreview() {
     WooPosTheme {
         WooPosBookingsDateSelector(
             dateSelectorState = DateSelectorState(
-                formattedDate = "02 Sep",
-                formattedDay = "Tue",
+                formattedDate = "02 Sep, Tue",
                 selectedDateMillis = System.currentTimeMillis(),
             ),
             onUIEvent = {},
