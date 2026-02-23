@@ -48,7 +48,8 @@ fun WPComLogin2FAScreen(viewModel: WPComLogin2FAViewModel) {
             onCloseClick = viewModel::onCloseClick,
             onSMSLinkClick = viewModel::onSMSLinkClick,
             onContinueClick = viewModel::onContinueClick,
-            onOTPChanged = viewModel::onOTPChanged
+            onOTPChanged = viewModel::onOTPChanged,
+            onSecurityKeyClick = viewModel::onSecurityKeyClick
         )
     }
 }
@@ -59,7 +60,8 @@ fun WPComLogin2FAScreen(
     onCloseClick: () -> Unit = {},
     onSMSLinkClick: () -> Unit = {},
     onContinueClick: () -> Unit = {},
-    onOTPChanged: (String) -> Unit = {}
+    onOTPChanged: (String) -> Unit = {},
+    onSecurityKeyClick: () -> Unit = {}
 ) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val branding = viewState.resolveBranding()
@@ -120,6 +122,11 @@ fun WPComLogin2FAScreen(
                 )
                 WCTextButton(onClick = onSMSLinkClick) {
                     Text(text = stringResource(id = R.string.login_text_otp))
+                }
+                if (viewState.isSecurityKeySupported) {
+                    WCTextButton(onClick = onSecurityKeyClick) {
+                        Text(text = stringResource(id = R.string.login_text_security_key))
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }
