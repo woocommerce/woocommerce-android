@@ -2,11 +2,16 @@ package com.woocommerce.android.ui.pushnotifications.connection
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.OnChangedException
+import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
+import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.util.runAndGetValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -21,10 +26,14 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.store.JetpackStore
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
-    private val site = SiteModel().apply { name = "coffeebeans.com" }
+    private val site = SiteModel().apply {
+        name = "coffeebeans.com"
+        url = "https://coffeebeans.com"
+    }
 
     private lateinit var viewModel: WooPushNotificationsConnectionStepsViewModel
 
@@ -33,31 +42,44 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
+    private val jetpackActivationRepository: JetpackActivationRepository = mock()
+    private val stringUtils: StringUtils = mock()
 
     private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
+        whenever(
+            jetpackActivationRepository.connectJetpackAccount(
+                any(),
+                any<JetpackConnectionStatus.AccountNotConnected>(),
+                any()
+            )
+        )
+            .thenReturn(Result.success(Unit))
+        whenever(jetpackActivationRepository.fetchJetpackSite(any()))
+            .thenReturn(Result.success(site))
+        whenever(stringUtils.getSiteDomainAndPath(site))
+            .thenReturn(site.name)
         prepareMocks()
         viewModel = WooPushNotificationsConnectionStepsViewModel(
             selectedSite = selectedSite,
             appPrefsWrapper = appPrefsWrapper,
             pushNotificationRepository = pushNotificationRepository,
+            jetpackActivationRepository = jetpackActivationRepository,
+            stringUtils = stringUtils,
             savedStateHandle = SavedStateHandle()
         )
     }
 
     @Test
-    fun `when initialized, then first step is Ongoing and others are Idle`() {
+    fun `when initialized, then steps are shown in expected order`() {
         testBlocking {
             setup()
 
             val state = viewModel.viewState.getOrAwaitValue()
 
             assertThat(state.steps).hasSize(3)
-            assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
-            assertThat(state.steps[0].state).isEqualTo(StepState.Ongoing)
-            assertThat(state.steps[1].type).isEqualTo(StepType.CheckPluginCompatibility)
-            assertThat(state.steps[1].state).isEqualTo(StepState.Idle)
+            assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+            assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
             assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
-            assertThat(state.steps[2].state).isEqualTo(StepState.Idle)
         }
     }
 
@@ -109,6 +131,76 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         assertThat(event).isInstanceOf(NavigateToHelpScreen::class.java)
         assertThat((event as NavigateToHelpScreen).origin)
             .isEqualTo(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP)
+    }
+
+    @Test
+    fun `given connect account returns forbidden, when ConnectStore runs, then permission error is shown`() =
+        testBlocking {
+            setup {
+                whenever(
+                    jetpackActivationRepository.connectJetpackAccount(
+                        any(),
+                        any<JetpackConnectionStatus.AccountNotConnected>(),
+                        any()
+                    )
+                )
+                    .thenReturn(
+                        Result.failure(
+                            OnChangedException(
+                                JetpackStore.JetpackError(
+                                    message = "Forbidden",
+                                    errorCode = 403
+                                )
+                            )
+                        )
+                    )
+            }
+
+            val state = viewModel.viewState.runAndGetValue {
+                advanceUntilIdle()
+            }
+
+            assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+            assertThat(state.steps[1].state)
+                .isEqualTo(
+                    StepState.Error(
+                        R.string.woo_push_notifications_connection_steps_error_connection_permission_message
+                    )
+                )
+        }
+
+    @Test
+    fun `given confirm connection fails, when ConnectStore runs, then generic error is shown`() = testBlocking {
+        setup {
+            whenever(jetpackActivationRepository.fetchJetpackSite(any()))
+                .thenReturn(Result.failure(Exception("confirmation failed")))
+        }
+
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
+
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[1].state)
+            .isEqualTo(StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
+    }
+
+    @Test
+    fun `when connect store succeeds, then flow advances to enable push notifications step`() = testBlocking {
+        setup {
+            whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
+        }
+
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
+
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+        assertThat(state.steps[0].state).isEqualTo(StepState.Success)
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[1].state).isEqualTo(StepState.Success)
+        assertThat(state.steps[2].type).isEqualTo(StepType.EnablePushNotifications)
+        assertThat(state.steps[2].state).isInstanceOf(StepState.Error::class.java)
     }
 
     @Test
@@ -164,7 +256,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when all steps succeed, then ConnectStore and CheckPluginCompatibility show as Success`() = testBlocking {
+    fun `when all steps succeed, then CheckPluginCompatibility and ConnectStore show as Success`() = testBlocking {
         setup {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
             whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
@@ -175,9 +267,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             advanceUntilIdle()
         }
 
-        assertThat(state.steps[0].type).isEqualTo(StepType.ConnectStore)
+        assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
-        assertThat(state.steps[1].type).isEqualTo(StepType.CheckPluginCompatibility)
+        assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[1].state).isEqualTo(StepState.Success)
     }
 }

@@ -9,4 +9,7 @@ sealed interface WooPosBookingsUIEvent {
     data class CopyPhoneClicked(val phone: String) : WooPosBookingsUIEvent
     data object CancelBookingConfirmed : WooPosBookingsUIEvent
     data object CancelBookingDismissed : WooPosBookingsUIEvent
+    data object PreviousDayClicked : WooPosBookingsUIEvent
+    data object NextDayClicked : WooPosBookingsUIEvent
+    data class DateSelected(val dateMillis: Long) : WooPosBookingsUIEvent
 }

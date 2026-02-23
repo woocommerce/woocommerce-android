@@ -2,15 +2,20 @@ package com.woocommerce.android.ui.pushnotifications.connection
 
 import android.os.Parcelable
 import androidx.annotation.StringRes
+import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.AppPrefsWrapper
+import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.model.JetpackConnectionStatus
+import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.UiString
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -24,6 +29,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.wordpress.android.fluxc.store.JetpackStore
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -32,6 +38,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val selectedSite: SelectedSite,
     private val appPrefsWrapper: AppPrefsWrapper,
     private val pushNotificationRepository: PushNotificationRepository,
+    private val jetpackActivationRepository: JetpackActivationRepository,
+    private val stringUtils: StringUtils,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
 
@@ -39,7 +47,14 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = Step(StepType.ConnectStore),
+        initialValue = Step(type = StepType.CheckPluginCompatibility),
+        key = KEY_CURRENT_STEP
+    )
+
+    private val connectStoreStage = savedStateHandle.getStateFlow(
+        scope = viewModelScope,
+        initialValue = ConnectStoreStage.ConnectAccount,
+        key = KEY_CONNECT_STORE_STAGE
     )
 
     val viewState = combine(
@@ -63,7 +78,9 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     init {
         monitorCurrentStep()
-        startNextStep()
+        if (currentStep.value.state == StepState.Idle) {
+            startNextStep()
+        }
     }
 
     fun onGoToStoreClick() {
@@ -88,24 +105,80 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     private fun monitorCurrentStep() = launch {
-        currentStep
-            .collectLatest { step ->
+        combine(currentStep, connectStoreStage) { step, stage -> step to stage }
+            .collectLatest { (step, stage) ->
                 if (step.state != StepState.Ongoing) return@collectLatest
 
                 when (step.type) {
-                    StepType.ConnectStore -> { // TODO
+                    StepType.ConnectStore -> {
+                        when (stage) {
+                            ConnectStoreStage.ConnectAccount -> startConnectAccountStage()
+                            ConnectStoreStage.ConfirmConnection -> startConfirmConnectionStage()
+                        }
+                    }
+
+                    StepType.CheckPluginCompatibility -> {
                         delay(1.seconds)
                         advanceToNextStep()
                     }
-                    StepType.CheckPluginCompatibility -> { // TODO
-                        delay(1.seconds)
-                        advanceToNextStep()
-                    }
+
                     StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
     }
 
+    private suspend fun startConnectAccountStage() {
+        jetpackActivationRepository.connectJetpackAccount(
+            site = selectedSite.get(),
+            jetpackConnectionStatus = DEFAULT_CONNECTION_STATUS,
+            useApplicationPasswords = true
+        ).fold(
+            onSuccess = {
+                connectStoreStage.value = ConnectStoreStage.ConfirmConnection
+            },
+            onFailure = { error ->
+                markCurrentStepAsFailed(resolveConnectionErrorMessage(error))
+            }
+        )
+    }
+
+    private suspend fun startConfirmConnectionStage() {
+        val siteUrl = requireNotNull(selectedSite.get().url?.takeIf { it.isNotBlank() }) { "Site URL missing" }
+
+        jetpackActivationRepository.fetchJetpackSite(siteUrl).fold(
+            onSuccess = {
+                markCurrentStepAsCompleted()
+                advanceToNextStep()
+            },
+            onFailure = {
+                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+            }
+        )
+    }
+
+    private fun markCurrentStepAsCompleted() {
+        currentStep.update { it.copy(state = StepState.Success) }
+    }
+
+    private fun markCurrentStepAsFailed(@StringRes messageRes: Int) {
+        currentStep.update { current ->
+            current.copy(state = StepState.Error(messageRes))
+        }
+    }
+
+    private fun resolveConnectionErrorMessage(error: Throwable): Int {
+        return if ((error as? OnChangedException)
+                ?.error
+                ?.let { it as? JetpackStore.JetpackError }
+                ?.errorCode == ERROR_CODE_FORBIDDEN
+        ) {
+            R.string.woo_push_notifications_connection_steps_error_connection_permission_message
+        } else {
+            R.string.woo_push_notifications_connection_steps_generic_error
+        }
+    }
+
+    @Suppress("unused")
     private fun advanceToNextStep() {
         currentStep.update { current ->
             val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
@@ -128,7 +201,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
         val site = selectedSite.get()
         pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
-            onSuccess = { currentStep.update { it.copy(state = StepState.Success) } },
+            onSuccess = { markCurrentStepAsCompleted() },
             onFailure = {
                 currentStep.update {
                     it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
@@ -139,7 +212,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private fun getSiteAddress(): String {
         val site = selectedSite.get()
-        return StringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
+        return stringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
     }
 
     data class ViewState(
@@ -157,9 +230,14 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     ) : Parcelable
 
     enum class StepType {
-        ConnectStore,
         CheckPluginCompatibility,
+        ConnectStore,
         EnablePushNotifications
+    }
+
+    enum class ConnectStoreStage {
+        ConnectAccount,
+        ConfirmConnection
     }
 
     sealed interface StepState : Parcelable {
@@ -177,5 +255,19 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             constructor(message: String) : this(UiString.UiStringText(message))
             constructor(@StringRes messageRes: Int) : this(UiString.UiStringRes(messageRes))
         }
+    }
+
+    companion object {
+        private const val ERROR_CODE_FORBIDDEN = 403
+        private val DEFAULT_CONNECTION_STATUS = JetpackConnectionStatus.AccountNotConnected(
+            siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+            blogId = null
+        )
+
+        @VisibleForTesting
+        internal const val KEY_CURRENT_STEP = "woo-push-connection-current-step"
+
+        @VisibleForTesting
+        internal const val KEY_CONNECT_STORE_STAGE = "woo-push-connection-connect-store-stage"
     }
 }
