@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,11 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
@@ -33,10 +36,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +51,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
@@ -506,42 +515,95 @@ private fun WooPosBookingListItem(
         shadowType = ShadowType.Soft,
         isSelected = item.isSelected,
     ) {
-        Column(
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { onBookingSelected(item.id) }
                 .padding(WooPosSpacing.Medium.value),
         ) {
-            WooPosText(
-                item.timeRange,
-                style = WooPosTypography.BodySmall,
-                color = MaterialTheme.colorScheme.onSurface,
-                fontWeight = FontWeight.Bold,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column(modifier = Modifier.weight(1f)) {
+                WooPosText(
+                    item.timeRange,
+                    style = WooPosTypography.BodySmall,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-            Spacer(Modifier.height(WooPosSpacing.XSmall.value))
+                Spacer(Modifier.height(WooPosSpacing.XSmall.value))
 
-            WooPosText(
-                item.subtitle,
-                style = WooPosTypography.BodySmall,
-                color = WooPosTheme.colors.onSurfaceVariantHighest,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
-            )
+                WooPosText(
+                    item.subtitle,
+                    style = WooPosTypography.BodySmall,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
 
-            Spacer(Modifier.height(WooPosSpacing.Small.value))
+                Spacer(Modifier.height(WooPosSpacing.Small.value))
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
-            ) {
-                if (item.isCancelled) {
-                    WooPosCancelledBadge()
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.XSmall.value),
+                ) {
+                    if (item.isCancelled) {
+                        WooPosCancelledBadge()
+                    }
+                    WooPosAttendanceBadge(item.attendanceBadge)
+                    WooPosPaymentStatusBadge(item.paymentStatus)
                 }
-                WooPosAttendanceBadge(item.attendanceBadge)
-                WooPosPaymentStatusBadge(item.paymentStatus)
             }
+
+            item.teamMember?.let { teamMember ->
+                WooPosTeamMemberAvatar(
+                    teamMember = teamMember,
+                    modifier = Modifier.padding(start = WooPosSpacing.Small.value),
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun WooPosTeamMemberAvatar(
+    teamMember: WooPosBookingsState.BookingItemViewState.TeamMember,
+    modifier: Modifier = Modifier,
+) {
+    val avatarSize = 24.dp
+    var imageLoaded by remember { mutableStateOf(false) }
+    val borderModifier = if (imageLoaded) {
+        Modifier.border(1.dp, WooPosTheme.colors.outline, CircleShape)
+    } else {
+        Modifier
+    }
+    Box(
+        modifier = modifier
+            .size(avatarSize)
+            .then(borderModifier)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceDim),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (!imageLoaded) {
+            WooPosText(
+                text = teamMember.initials,
+                style = WooPosTypography.Caption,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                maxLines = 1,
+            )
+        }
+        if (teamMember.avatarUrl != null) {
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(teamMember.avatarUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.size(avatarSize),
+                onSuccess = { imageLoaded = true },
+                onError = { imageLoaded = false },
+            )
         }
     }
 }
@@ -586,6 +648,10 @@ fun WooPosBookingsScreenPreview() {
         paymentStatus = PaymentStatus.PAID,
         isCancelled = false,
         attendanceBadge = WooPosBookingsState.AttendanceState.ATTENDED,
+        teamMember = WooPosBookingsState.BookingItemViewState.TeamMember(
+            initials = "JD",
+            avatarUrl = null,
+        ),
     )
     val item2 = WooPosBookingsState.BookingItemViewState(
         id = 2,
@@ -595,6 +661,10 @@ fun WooPosBookingsScreenPreview() {
         paymentStatus = PaymentStatus.UNPAID,
         isCancelled = true,
         attendanceBadge = WooPosBookingsState.AttendanceState.UNATTENDED,
+        teamMember = WooPosBookingsState.BookingItemViewState.TeamMember(
+            initials = "JS",
+            avatarUrl = null,
+        ),
     )
 
     val details1 = sampleBookingDetails(id = 1L, number = "#014")

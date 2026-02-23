@@ -103,7 +103,14 @@ sealed class WooPosBookingsState {
         val paymentStatus: PaymentStatus,
         val isCancelled: Boolean,
         val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
-    )
+        val teamMember: TeamMember? = null,
+    ) {
+        @Immutable
+        data class TeamMember(
+            val initials: String,
+            val avatarUrl: String?,
+        )
+    }
 
     @Immutable
     data class Content(

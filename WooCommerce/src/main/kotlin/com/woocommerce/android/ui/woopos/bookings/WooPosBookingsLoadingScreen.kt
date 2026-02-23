@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
@@ -51,7 +52,12 @@ fun WooPosBookingsLoadingScreen(
                 .fillMaxHeight()
                 .statusBarsPadding()
         ) {
-            Spacer(Modifier.height(WOO_POS_BOOKINGS_TOOLBAR_HEIGHT))
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = WooPosSpacing.Medium.value)
+                    .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
+            )
 
             WooPosBookingsDateSelector(
                 dateSelectorState = dateSelectorState,
@@ -132,7 +138,7 @@ private fun ShimmerBadge(text: String) {
 @Composable
 fun WooPosBookingsListLoadingPane(modifier: Modifier = Modifier) {
     LazyColumn(
-        modifier = modifier.statusBarsPadding(),
+        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(WooPosSpacing.Medium.value),
         contentPadding = PaddingValues(WooPosSpacing.Medium.value)
     ) {
