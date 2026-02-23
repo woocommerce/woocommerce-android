@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.woocommerce.android.NavGraphMainDirections
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.handleDialogNotice
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
+import com.woocommerce.android.ui.common.webview.AuthenticatedWebViewFragment
 import com.woocommerce.android.ui.compose.composeView
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -41,6 +44,7 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupObservers()
+        setupResultHandlers()
     }
 
     private fun setupObservers() {
@@ -55,6 +59,14 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
                     )
                 }
 
+                is WooPushNotificationsIntroductionViewModel.NavigateToPluginUpdatePage -> {
+                    findNavController().navigateSafely(
+                        NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
+                            urlToLoad = event.url
+                        )
+                    )
+                }
+
                 is NavigateToHelpScreen -> navigateToHelpScreen(event.origin)
 
                 is WooPushNotificationsIntroductionViewModel.OpenUrlEvent -> {
@@ -63,6 +75,15 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
 
                 Exit -> findNavController().navigateUp()
             }
+        }
+    }
+
+    private fun setupResultHandlers() {
+        handleDialogNotice(
+            key = AuthenticatedWebViewFragment.WEBVIEW_DISMISSED,
+            entryId = R.id.wooPushNotificationsIntroductionDialog
+        ) {
+            viewModel.onPluginUpdateWebViewDismissed()
         }
     }
 
