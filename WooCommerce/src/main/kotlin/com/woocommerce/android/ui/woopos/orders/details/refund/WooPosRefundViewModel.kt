@@ -433,11 +433,17 @@ class WooPosRefundViewModel @AssistedInject constructor(
                 )
             } else {
                 analyticsTracker.track(WooPosAnalyticsEvent.Event.RefundProcessingSuccess)
+                val receiptSentMessage = currentOrder?.billingAddress?.email
+                    ?.takeIf { it.isNotBlank() }
+                    ?.let { email ->
+                        resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+                    }
                 _state.value = WooPosRefundState.RefundSuccess(
                     orderId = contentState.orderId,
                     orderNumber = contentState.orderNumber,
                     refundedAmount = contentState.formattedTotal,
-                    paymentMethod = contentState.paymentMethod
+                    paymentMethod = contentState.paymentMethod,
+                    receiptSentMessage = receiptSentMessage
                 )
             }
         }

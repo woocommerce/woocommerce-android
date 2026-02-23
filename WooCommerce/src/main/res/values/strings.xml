@@ -3747,6 +3747,7 @@
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
+    <string name="woopos_receipt_sent_to_customer">A receipt has been sent to %1$s.</string>
     <string name="woopos_payment_discount_label">Discount total</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
@@ -3955,6 +3956,10 @@
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
     <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
+    <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
+    <string name="woopos_bookings_no_booking_selected">No booking selected.</string>
+    <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
+    <string name="woopos_bookings_date_selector_next_day">Next day</string>
     <string name="woopos_bookings_loading_error_title">Unable to load bookings</string>
     <string name="woopos_bookings_loading_error_message">Please check your connection and try again.</string>
 

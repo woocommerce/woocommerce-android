@@ -18,18 +18,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,6 +46,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButtonSmall
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenu
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowMenuItem
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOverflowPrimaryAction
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosToggleButton
@@ -208,9 +206,24 @@ private fun BookingActions(
         }
 
         is WooPosBookingsState.BookingActionsState.Loaded -> {
-            BookingOverflowMenu(
-                actions = actionsState.actions,
-                onClick = { onUIEvent(WooPosBookingsUIEvent.BookingMenuActionClicked(it)) }
+            val viewOrder = actionsState.actions
+                .filterIsInstance<WooPosBookingsState.BookingAction.ViewOrder>()
+                .firstOrNull()
+            val otherActions = actionsState.actions
+                .filter { it !is WooPosBookingsState.BookingAction.ViewOrder }
+
+            WooPosOverflowMenu(
+                primaryAction = viewOrder?.let { action ->
+                    WooPosOverflowPrimaryAction(
+                        label = stringResource(R.string.booking_payment_view_order),
+                        onClick = { onUIEvent(WooPosBookingsUIEvent.BookingMenuActionClicked(action)) }
+                    )
+                },
+                items = otherActions.map { action ->
+                    bookingActionToMenuItem(action) {
+                        onUIEvent(WooPosBookingsUIEvent.BookingMenuActionClicked(it))
+                    }
+                }
             )
         }
     }
@@ -520,62 +533,33 @@ private fun DividerWithSpacing() {
 }
 
 @Composable
-private fun BookingOverflowMenu(
-    actions: List<WooPosBookingsState.BookingAction>,
+private fun bookingActionToMenuItem(
+    action: WooPosBookingsState.BookingAction,
     onClick: (WooPosBookingsState.BookingAction) -> Unit
-) {
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box {
-        IconButton(onClick = { showMenu = true }) {
-            Icon(
-                imageVector = ImageVector.vectorResource(R.drawable.ic_menu_more_vert),
-                contentDescription = stringResource(R.string.more_menu),
-                tint = MaterialTheme.colorScheme.onSurface
-            )
+): WooPosOverflowMenuItem {
+    val (label, color) = when (action) {
+        is WooPosBookingsState.BookingAction.ViewOrder -> {
+            stringResource(R.string.booking_payment_view_order) to
+                MaterialTheme.colorScheme.onSurface
         }
-
-        DropdownMenu(
-            modifier = Modifier.background(color = MaterialTheme.colorScheme.surfaceContainerLowest),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            actions.forEach { action ->
-                DropdownMenuItem(
-                    text = {
-                        val (text, textColor) = when (action) {
-                            is WooPosBookingsState.BookingAction.ViewOrder -> {
-                                stringResource(R.string.booking_payment_view_order) to
-                                    MaterialTheme.colorScheme.onSurface
-                            }
-                            is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                                stringResource(R.string.woopos_orders_email_receipt) to
-                                    MaterialTheme.colorScheme.onSurface
-                            }
-                            is WooPosBookingsState.BookingAction.IssueRefund -> {
-                                stringResource(R.string.booking_overflow_refund) to
-                                    MaterialTheme.colorScheme.onSurface
-                            }
-
-                            is WooPosBookingsState.BookingAction.CancelBooking -> {
-                                stringResource(R.string.woopos_bookings_cancel_menu_item) to
-                                    MaterialTheme.colorScheme.error
-                            }
-                        }
-                        WooPosText(
-                            text = text,
-                            style = WooPosTypography.BodyMedium,
-                            color = textColor
-                        )
-                    },
-                    onClick = {
-                        showMenu = false
-                        onClick(action)
-                    }
-                )
-            }
+        is WooPosBookingsState.BookingAction.EmailReceipt -> {
+            stringResource(R.string.woopos_orders_email_receipt) to
+                MaterialTheme.colorScheme.onSurface
+        }
+        is WooPosBookingsState.BookingAction.IssueRefund -> {
+            stringResource(R.string.booking_overflow_refund) to
+                MaterialTheme.colorScheme.onSurface
+        }
+        is WooPosBookingsState.BookingAction.CancelBooking -> {
+            stringResource(R.string.woopos_bookings_cancel_menu_item) to
+                MaterialTheme.colorScheme.error
         }
     }
+    return WooPosOverflowMenuItem(
+        label = label,
+        color = color,
+        onClick = { onClick(action) }
+    )
 }
 
 @WooPosPreview

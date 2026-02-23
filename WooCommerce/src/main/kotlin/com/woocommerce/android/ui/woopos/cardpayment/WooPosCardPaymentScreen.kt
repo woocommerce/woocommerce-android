@@ -495,9 +495,11 @@ private fun CardPaymentSuccess(
         )
         val checkMarkIconMargin = WooPosSpacing.XXXLarge.value
         val textsMargin = WooPosSpacing.Small.value
+        val receiptSentMargin = WooPosSpacing.Medium.value
 
         ConstraintLayout {
             val (icon, title, message, buttonDone, buttonEmailReceipts) = createRefs()
+            val receiptSent = createRef()
 
             WooPosSuccessCheckmark(
                 contentDescription = stringResource(R.string.woopos_payment_successful_label),
@@ -529,6 +531,18 @@ private fun CardPaymentSuccess(
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.constrainAs(message) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(receiptSent.top, margin = receiptSentMargin)
+                }
+            )
+
+            WooPosText(
+                text = state.receiptSentMessage.orEmpty(),
+                style = WooPosTypography.BodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.constrainAs(receiptSent) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(buttonDone.top, margin = marginBetweenButtonAndText)

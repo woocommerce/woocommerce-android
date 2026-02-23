@@ -47,7 +47,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
-        initialValue = Step(type = StepType.ConnectStore),
+        initialValue = Step(type = StepType.CheckPluginCompatibility),
         key = KEY_CURRENT_STEP
     )
 
@@ -230,8 +230,8 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     ) : Parcelable
 
     enum class StepType {
-        ConnectStore,
         CheckPluginCompatibility,
+        ConnectStore,
         EnablePushNotifications
     }
 
