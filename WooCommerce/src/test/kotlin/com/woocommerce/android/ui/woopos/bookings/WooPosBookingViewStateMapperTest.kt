@@ -230,6 +230,34 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given paid booking, when mapped to details, then actions include EmailReceipt`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Paid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given unpaid booking, when mapped to details, then actions do not include EmailReceipt`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.EmailReceipt }
+    }
+
+    @Test
     fun `given paid booking, when mapped to details, then actions include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Paid)
