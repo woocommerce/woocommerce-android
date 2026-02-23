@@ -1056,7 +1056,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(sortBy = BookingListSortOption.OldestToNewest)
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
         }
 
     @Test
