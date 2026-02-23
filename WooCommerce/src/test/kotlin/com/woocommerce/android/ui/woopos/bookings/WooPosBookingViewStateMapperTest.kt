@@ -1,6 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
@@ -14,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
@@ -22,6 +24,7 @@ import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -67,10 +70,23 @@ class WooPosBookingViewStateMapperTest {
 
     private lateinit var mapper: WooPosBookingViewStateMapper
 
+    private fun createSelectedSite(timezone: String = "0"): SelectedSite {
+        val siteModel = SiteModel().apply { this.timezone = timezone }
+        return mock {
+            on { get() } doAnswer { siteModel }
+        }
+    }
+
     @Before
     fun setup() {
         whenever(timeRangeFormatter.format(any(), any())).thenReturn(FORMATTED_TIME_RANGE)
-        mapper = WooPosBookingViewStateMapper(resourceProvider, formatPrice, paymentStatusResolver, timeRangeFormatter)
+        mapper = WooPosBookingViewStateMapper(
+            resourceProvider,
+            formatPrice,
+            paymentStatusResolver,
+            timeRangeFormatter,
+            createSelectedSite(),
+        )
     }
 
     @Test
@@ -106,40 +122,71 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() = runTest {
-        // GIVEN
-        val start = Instant.parse("2025-07-05T11:00:00Z")
-        val end = start.plus(Duration.ofMinutes(90))
-        val booking = sampleBooking(start = start, end = end)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+    fun `given booking, when mapped to details view state, then formats date time and duration correctly`() =
+        runTest {
+            // GIVEN
+            val start = Instant.parse("2025-07-05T11:00:00Z")
+            val end = start.plus(Duration.ofMinutes(90))
+            val booking = sampleBooking(start = start, end = end)
+            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
-        // THEN
-        val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-            .withZone(ZoneOffset.UTC)
-            .format(start)
-        assertThat(result.appointmentDate).isEqualTo(expectedDate)
-        assertThat(result.appointmentTime).isEqualTo(FORMATTED_TIME_RANGE)
-        assertThat(result.duration).isEqualTo("1 hour 30 minutes")
-    }
+            // THEN
+            val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                .withZone(ZoneOffset.UTC)
+                .format(start)
+            assertThat(result.appointmentDate).isEqualTo(expectedDate)
+            assertThat(result.appointmentTime).isEqualTo(FORMATTED_TIME_RANGE)
+            assertThat(result.duration).isEqualTo("1 hour 30 minutes")
+        }
 
     @Test
-    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() = runTest {
-        // GIVEN
-        val booking = sampleBooking(paymentInfo = null)
-        whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
+    fun `given store in UTC-5 and booking near midnight UTC, when mapped, then date reflects store timezone`() =
+        runTest {
+            // GIVEN
+            val storeZoneId = ZoneId.of("UTC-05:00")
+            mapper = WooPosBookingViewStateMapper(
+                resourceProvider,
+                formatPrice,
+                paymentStatusResolver,
+                timeRangeFormatter,
+                createSelectedSite("-5"),
+            )
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            val start = Instant.parse("2025-07-06T03:00:00Z")
+            val end = start.plus(Duration.ofHours(1))
+            val booking = sampleBooking(start = start, end = end)
+            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
 
-        // THEN
-        assertThat(result.paymentSection.serviceAmount).isEqualTo("-")
-        assertThat(result.paymentSection.taxAmount).isEqualTo("-")
-        assertThat(result.paymentSection.discountAmount).isEqualTo("-")
-        assertThat(result.paymentSection.totalAmount).isEqualTo("-")
-    }
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+            // THEN
+            val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
+                .withZone(storeZoneId)
+                .format(start)
+            assertThat(expectedDate).contains("July 5")
+            assertThat(result.appointmentDate).isEqualTo(expectedDate)
+        }
+
+    @Test
+    fun `given booking with null paymentInfo, when mapped to details, then payment section shows dashes`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(paymentInfo = null)
+            whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+            // THEN
+            assertThat(result.paymentSection.serviceAmount).isEqualTo("-")
+            assertThat(result.paymentSection.taxAmount).isEqualTo("-")
+            assertThat(result.paymentSection.discountAmount).isEqualTo("-")
+            assertThat(result.paymentSection.totalAmount).isEqualTo("-")
+        }
 
     @Test
     fun `given booking with discount, when mapped to details, then discount is negative formatted`() = runTest {
@@ -164,21 +211,23 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() = runTest {
-        // GIVEN
-        val booking = sampleBooking(
-            status = BookingEntity.Status.Confirmed,
-            attendanceStatus = BookingEntity.AttendanceStatus.Attended,
-        )
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+    fun `given booking with editable attendance status CheckedIn, when mapped, then attendance section shows ATTENDED`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(
+                status = BookingEntity.Status.Confirmed,
+                attendanceStatus = BookingEntity.AttendanceStatus.Attended,
+            )
+            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
 
-        // WHEN
-        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
-        // THEN
-        assertThat(result.attendanceSection).isNotNull
-        assertThat(result.attendanceSection?.selection).isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
-    }
+            // THEN
+            assertThat(result.attendanceSection).isNotNull
+            assertThat(result.attendanceSection?.selection)
+                .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
+        }
 
     @Test
     fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
