@@ -3,29 +3,32 @@ package com.woocommerce.android.ui.pushnotifications.introduction
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.asLiveData
 import com.woocommerce.android.AppUrls
-import com.woocommerce.android.extensions.isVersionAtLeast
+import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport.Result.Compatible
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport.Result.UpdateRequired
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.ScopedViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import org.wordpress.android.fluxc.utils.extensions.slashJoin
 import javax.inject.Inject
 
 @HiltViewModel
 class WooPushNotificationsIntroductionViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val fetchJetpackStatus: FetchJetpackStatus,
-    private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion,
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val selectedSite: SelectedSite
 ) : ScopedViewModel(savedStateHandle) {
     companion object {
-        const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.6.0" // TODO CHECK CORRECT VERSION LATER
+        const val WC_PLUGIN_UPDATE_PATH = "plugin-install.php?tab=plugin-information&plugin=woocommerce"
     }
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -68,20 +71,28 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     private suspend fun checkWCVersion() {
-        val wcVersion = fetchActiveWCPluginVersion() ?: run {
-            _viewState.value = ViewState.GenericError
-            return
-        }
-
-        if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
-            _viewState.value = ViewState.GenericError
-        } else {
-            _viewState.value = ViewState.UpdateRequired
+        when (checkWCPluginSupport()) {
+            Compatible -> _viewState.value = ViewState.GenericError
+            UpdateRequired -> _viewState.value = ViewState.UpdateRequired
+            CheckWooPluginPushNotificationsSupport.Result.Error -> _viewState.value = ViewState.GenericError
         }
     }
 
     fun onContinueClick() {
-        triggerEvent(NavigateToConnectionSteps(isSiteConnectedToJetpack = _viewState.value !is ViewState.NotConnected))
+        when (_viewState.value) {
+            ViewState.UpdateRequired -> {
+                val url = selectedSite.get().adminUrlOrDefault.slashJoin(WC_PLUGIN_UPDATE_PATH)
+                triggerEvent(NavigateToPluginUpdatePage(url))
+            }
+            ViewState.NotConnected -> {
+                triggerEvent(NavigateToConnectionSteps(isSiteConnectedToJetpack = false))
+            }
+            else -> Unit
+        }
+    }
+
+    fun onPluginUpdateWebViewDismissed() {
+        fetchStatus()
     }
 
     fun onNotNowClick() {
@@ -107,6 +118,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     data class NavigateToConnectionSteps(
         val isSiteConnectedToJetpack: Boolean
     ) : Event()
+
+    data class NavigateToPluginUpdatePage(val url: String) : Event()
 
     data class OpenUrlEvent(val url: String) : Event()
 }

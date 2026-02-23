@@ -9,8 +9,8 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
-import com.woocommerce.android.util.FetchActiveWCPluginVersion
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -22,12 +22,16 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
-    private val site = SiteModel()
+    private val site = SiteModel().apply {
+        url = "https://example.com"
+    }
 
     private val selectedSite: SelectedSite = mock {
         on { get() } doReturn site
@@ -46,7 +50,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
         )
     }
-    private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion = mock()
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock()
 
     private lateinit var viewModel: WooPushNotificationsIntroductionViewModel
 
@@ -54,7 +58,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         viewModel = WooPushNotificationsIntroductionViewModel(
             savedStateHandle = SavedStateHandle(),
             fetchJetpackStatus = fetchJetpackStatus,
-            fetchActiveWCPluginVersion = fetchActiveWCPluginVersion,
+            checkWCPluginSupport = checkWCPluginSupport,
             selectedSite = selectedSite
         )
     }
@@ -109,7 +113,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
 
             setup()
 
@@ -128,7 +133,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
 
             setup()
 
@@ -147,8 +153,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion())
-                .thenReturn(WooPushNotificationsIntroductionViewModel.PUSH_NOTIFICATIONS_MIN_WC_VERSION)
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup()
 
@@ -167,7 +173,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(fetchActiveWCPluginVersion()).thenReturn(null)
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup()
 
@@ -200,26 +207,80 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when update plugin is clicked, then NavigateToConnectionSteps event is triggered`() = testBlocking {
+    fun `given UpdateRequired state, when continue is clicked, then NavigateToPluginUpdatePage is triggered`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = true,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
+                    blogId = 123L
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+
+            setup()
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event)
+                .isInstanceOf(WooPushNotificationsIntroductionViewModel.NavigateToPluginUpdatePage::class.java)
+            val url = (event as WooPushNotificationsIntroductionViewModel.NavigateToPluginUpdatePage).url
+            assertThat(url).contains(WooPushNotificationsIntroductionViewModel.WC_PLUGIN_UPDATE_PATH)
+        }
+
+    @Test
+    fun `given NotConnected state, when continue is clicked, then NavigateToConnectionSteps is triggered`() =
+        testBlocking {
+            val jetpackStatus = JetpackStatus(
+                isJetpackInstalled = false,
+                jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
+                    siteRegistrationStatus = JetpackSiteRegistrationStatus.NOT_REGISTERED,
+                    blogId = null
+                )
+            )
+            whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
+                .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
+
+            setup()
+
+            viewModel.onContinueClick()
+
+            val event = viewModel.event.value
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = false
+                )
+            )
+        }
+
+    @Test
+    fun `when plugin update web view is dismissed, then status is re-fetched`() = testBlocking {
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountNotConnected(
-                siteRegistrationStatus = JetpackSiteRegistrationStatus.REGISTERED,
-                blogId = 123L
+            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected(
+                wpComEmail = "test@test.com"
             )
         )
         whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
             .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-        whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
+        whenever(checkWCPluginSupport())
+            .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
 
         setup()
+        assertThat(viewModel.viewState.getOrAwaitValue()).isEqualTo(ViewState.UpdateRequired)
 
-        viewModel.onContinueClick()
+        whenever(checkWCPluginSupport())
+            .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
-        val event = viewModel.event.value
-        assertThat(event).isEqualTo(
-            WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(isSiteConnectedToJetpack = true)
-        )
+        viewModel.onPluginUpdateWebViewDismissed()
+
+        val viewState = viewModel.viewState.getOrAwaitValue()
+        assertThat(viewState).isEqualTo(ViewState.GenericError)
+        verify(fetchJetpackStatus, times(2)).invoke(any(), any(), anyOrNull())
     }
 
     @Test
