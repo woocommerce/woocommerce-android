@@ -181,9 +181,9 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 val items = bookings.associate { booking ->
-                    val resourceName = resourcesMap[booking.resourceId]?.name
-                    mapper.mapToItemViewState(booking, selectedBookingId) to
-                        mapper.mapToDetailsViewState(booking, resourceName)
+                    val resource = resourcesMap[booking.resourceId]
+                    mapper.mapToItemViewState(booking, selectedBookingId, resource) to
+                        mapper.mapToDetailsViewState(booking, resource?.name)
                 }
 
                 val selectedDetails = selectedBookingId?.let { id ->
@@ -469,7 +469,11 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                // TBD: handle email receipt
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId)
+                    )
+                }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
                 val currentState = _state.value as? WooPosBookingsState.Content ?: return
@@ -574,10 +578,9 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private fun buildDateSelectorState(): DateSelectorState {
         val formatter = DateTimeFormatter.ofPattern("dd MMM, EEE", Locale.getDefault())
-        val formatted = selectedDate.format(formatter)
         val millis = selectedDate.atStartOfDay().toInstant(ZoneOffset.UTC).toEpochMilli()
         return DateSelectorState(
-            formattedDate = formatted,
+            formattedDate = selectedDate.format(formatter),
             selectedDateMillis = millis,
         )
     }

@@ -177,6 +177,7 @@ private fun WooPosOrdersScreen(
 
             is WooPosOrdersState.Loading -> if (isSingleOrderMode) {
                 OrderDetailsLoadingPane(
+                    showOrderNumber = false,
                     modifier = Modifier
                         .fillMaxSize()
                         .statusBarsPadding()
@@ -184,7 +185,6 @@ private fun WooPosOrdersScreen(
                         .padding(
                             start = WooPosSpacing.Medium.value,
                             end = WooPosSpacing.Medium.value,
-                            top = WOO_POS_ORDERS_TOOLBAR_HEIGHT + WooPosSpacing.XLarge.value,
                             bottom = WooPosSpacing.XLarge.value
                         )
                 )
@@ -196,8 +196,8 @@ private fun WooPosOrdersScreen(
         if (state.searchInputState is WooPosSearchInputState.Closed) {
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (state as? WooPosOrdersState.Content)
-                    ?.selectedDetails?.number?.removePrefix("#").orEmpty()
-                stringResource(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+                    ?.selectedDetails?.number.orEmpty()
+                stringResource(R.string.woopos_order_title, orderNumber)
             } else {
                 stringResource(R.string.woopos_orders_title)
             }
@@ -247,6 +247,7 @@ private fun OrderDetailsPane(
                 OrderDetailsLoadingPane(
                     modifier = Modifier
                         .fillMaxHeight()
+                        .statusBarsPadding()
                         .padding(
                             start = WooPosSpacing.Medium.value,
                             end = WooPosSpacing.Medium.value,
