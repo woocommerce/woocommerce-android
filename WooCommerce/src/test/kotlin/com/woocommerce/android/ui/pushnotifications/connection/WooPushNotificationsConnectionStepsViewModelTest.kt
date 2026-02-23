@@ -49,6 +49,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
     private suspend fun setup(
         isStoreAlreadyConnected: Boolean = false,
+        shouldAutoOpenUpdatePlugin: Boolean = false,
         prepareMocks: suspend () -> Unit = {}
     ) {
         whenever(jetpackActivationRepository.registerSite(any(), any()))
@@ -64,7 +65,8 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             checkWCPluginSupport = checkWCPluginSupport,
             stringUtils = stringUtils,
             savedStateHandle = WooPushNotificationsConnectionStepsFragmentArgs(
-                isSiteConnectedToJetpack = isStoreAlreadyConnected
+                isSiteConnectedToJetpack = isStoreAlreadyConnected,
+                shouldAutoOpenUpdatePlugin = shouldAutoOpenUpdatePlugin
             ).toSavedStateHandle()
         )
     }
@@ -138,7 +140,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         testBlocking {
             setup {
                 whenever(checkWCPluginSupport())
-                    .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+                    .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
             }
 
             val state = viewModel.viewState.runAndGetValue {
@@ -147,6 +149,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
             assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
             assertThat(state.steps[0].state).isInstanceOf(StepState.Error::class.java)
+            assertThat(state.isPluginUpdateRequired).isTrue()
         }
 
     @Test
@@ -297,5 +300,65 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
         assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[1].state).isEqualTo(StepState.Success)
+    }
+
+    @Test
+    fun `given shouldAutoOpenUpdatePlugin, when initialized, then auto-opens plugin update page`() = testBlocking {
+        site.adminUrl = "https://coffeebeans.com/wp-admin/"
+        setup(
+            isStoreAlreadyConnected = true,
+            shouldAutoOpenUpdatePlugin = true
+        )
+
+        advanceUntilIdle()
+
+        val event = viewModel.event.value
+        assertThat(event)
+            .isInstanceOf(WooPushNotificationsConnectionStepsViewModel.NavigateToPluginUpdatePage::class.java)
+        val url = (event as WooPushNotificationsConnectionStepsViewModel.NavigateToPluginUpdatePage).url
+        assertThat(url).contains(WooPushNotificationsConnectionStepsViewModel.WC_PLUGIN_UPDATE_PATH)
+    }
+
+    @Test
+    fun `given shouldAutoOpenUpdatePlugin, when web view dismissed, then plugin check runs normally`() = testBlocking {
+        setup(
+            isStoreAlreadyConnected = true,
+            shouldAutoOpenUpdatePlugin = true
+        ) {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
+            whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
+            whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
+                .thenReturn(Result.success(Unit))
+        }
+
+        advanceUntilIdle()
+
+        viewModel.onPluginUpdateWebViewDismissed()
+
+        val state = viewModel.viewState.runAndGetValue {
+            advanceUntilIdle()
+        }
+
+        assertThat(state.steps[0].state).isEqualTo(StepState.Success)
+    }
+
+    @Test
+    fun `when onUpdatePluginClick, then NavigateToPluginUpdatePage is triggered`() = testBlocking {
+        site.adminUrl = "https://coffeebeans.com/wp-admin/"
+        setup {
+            whenever(checkWCPluginSupport())
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
+        }
+
+        advanceUntilIdle()
+
+        viewModel.onUpdatePluginClick()
+
+        val event = viewModel.event.value
+        assertThat(event)
+            .isInstanceOf(WooPushNotificationsConnectionStepsViewModel.NavigateToPluginUpdatePage::class.java)
+        val url = (event as WooPushNotificationsConnectionStepsViewModel.NavigateToPluginUpdatePage).url
+        assertThat(url).contains(WooPushNotificationsConnectionStepsViewModel.WC_PLUGIN_UPDATE_PATH)
     }
 }
