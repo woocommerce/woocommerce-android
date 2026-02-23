@@ -21,24 +21,23 @@ class LogFileWriter(
     private val maxLogFiles: Int,
     private val dispatchers: CoroutineDispatchers,
     private val availableDiskBytes: () -> Long = {
-        runCatching { StatFs(logsDirectory.absolutePath).availableBytes }.getOrDefault(Long.MAX_VALUE)
+        if (!logsDirectory.exists()) {
+            logsDirectory.mkdirs()
+        }
+        runCatching { StatFs(logsDirectory.absolutePath).availableBytes }.getOrDefault(0L)
     }
 ) {
     private var lastUsedFile: File? = null
     private val dateFormatter
         get() = SimpleDateFormat(DATE_FORMAT_PATTERN, Locale.ROOT)
     private val mutex = Mutex()
+    @Volatile
+    private var cachedDiskSpace: Long = Long.MAX_VALUE
+    @Volatile
+    private var lastDiskSpaceCheckTime: Long = 0L
 
     suspend fun writeLogs(logs: String) {
         val logFile = getLogFile()
-
-        val exceedsMaxSize = withContext(dispatchers.io) {
-            logFile.length() >= MAX_LOG_FILE_SIZE_BYTES
-        }
-
-        if (exceedsMaxSize) {
-            return
-        }
 
         if (!hasEnoughDiskSpace()) {
             deleteOldestLogFiles()
@@ -47,6 +46,9 @@ class LogFileWriter(
 
         mutex.withLock {
             withContext(dispatchers.io) {
+                if (logFile.length() >= MAX_LOG_FILE_SIZE_BYTES) {
+                    return@withContext
+                }
                 logFile.appendText("$logs\n")
             }
         }
@@ -122,7 +124,12 @@ class LogFileWriter(
 
     private suspend fun hasEnoughDiskSpace(): Boolean {
         return withContext(dispatchers.io) {
-            availableDiskBytes() >= MIN_DISK_SPACE_BYTES
+            val now = System.currentTimeMillis()
+            if (now - lastDiskSpaceCheckTime > DISK_SPACE_CHECK_INTERVAL_MS) {
+                cachedDiskSpace = availableDiskBytes()
+                lastDiskSpaceCheckTime = now
+            }
+            cachedDiskSpace >= MIN_DISK_SPACE_BYTES
         }
     }
 
@@ -134,7 +141,9 @@ class LogFileWriter(
                     ?.sortedByDescending { it.lastModified() }
                     ?: return@withLock
 
-                logFiles.drop(1).forEach { it.delete() }
+                if (logFiles.size > MIN_LOG_FILES_TO_KEEP) {
+                    logFiles.drop(MIN_LOG_FILES_TO_KEEP).forEach { it.delete() }
+                }
             }
         }
     }
@@ -143,7 +152,9 @@ class LogFileWriter(
         const val LOG_FILE_NAME_PREFIX = "log_"
         const val DATE_FORMAT_PATTERN = "yyyy-MM-dd"
 
-        private const val MAX_LOG_FILE_SIZE_BYTES = 2L * 1024 * 1024 // 2 MB per file
-        private const val MIN_DISK_SPACE_BYTES = 50L * 1024 * 1024 // 50 MB
+        private const val MAX_LOG_FILE_SIZE_BYTES = 2L * 1024 * 1024
+        private const val MIN_DISK_SPACE_BYTES = 10L * 1024 * 1024
+        private const val DISK_SPACE_CHECK_INTERVAL_MS = 5_000L
+        private const val MIN_LOG_FILES_TO_KEEP = 2
     }
 }

@@ -260,13 +260,16 @@ class LogFileWriterTest : BaseUnitTest() {
         val today = dateFormatter.format(Date())
         val file1 = File(logsDirectory, "log_2025-01-01.txt")
         val file2 = File(logsDirectory, "log_2025-01-02.txt")
+        val file3 = File(logsDirectory, "log_2025-01-03.txt")
         val todayFile = File(logsDirectory, "log_$today.txt")
 
         logsDirectory.mkdirs()
         file1.writeText("oldest log")
         file2.writeText("older log")
-        file1.setLastModified(System.currentTimeMillis() - 3000)
-        file2.setLastModified(System.currentTimeMillis() - 2000)
+        file3.writeText("recent log")
+        file1.setLastModified(System.currentTimeMillis() - 4000)
+        file2.setLastModified(System.currentTimeMillis() - 3000)
+        file3.setLastModified(System.currentTimeMillis() - 2000)
 
         fakeDiskSpace = 0L
 
@@ -274,6 +277,7 @@ class LogFileWriterTest : BaseUnitTest() {
 
         assertThat(file1.exists()).isFalse()
         assertThat(file2.exists()).isFalse()
+        assertThat(file3.exists()).isTrue()
         assertThat(todayFile.exists()).isTrue()
         assertThat(todayFile.readText()).doesNotContain("This should not be written")
     }

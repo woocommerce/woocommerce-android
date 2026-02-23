@@ -47,11 +47,19 @@ interface WCDatabaseModule {
                     "Database open failed due to disk I/O error, freeing space and retrying: $e"
                 )
                 clearLogFiles(context)
-                WCAndroidDatabase.buildDb(
-                    context,
-                    currencyPositionConverter,
-                    statsGranularityConverter,
-                )
+                try {
+                    WCAndroidDatabase.buildDb(
+                        context,
+                        currencyPositionConverter,
+                        statsGranularityConverter,
+                    )
+                } catch (retryException: SQLiteDiskIOException) {
+                    AppLog.e(
+                        AppLog.T.DB,
+                        "Database retry failed after clearing logs: $retryException"
+                    )
+                    throw retryException
+                }
             }
         }
 
