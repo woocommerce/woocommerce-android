@@ -13,6 +13,7 @@ import com.woocommerce.android.ui.woopos.home.navigateToHomeScreen
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenAfterSuccessfulCashPayment
 import com.woocommerce.android.ui.woopos.home.navigateToHomeScreenIfHomeScreenNotOpen
 import com.woocommerce.android.ui.woopos.orders.details.refund.navigateToRefundReason
+import com.woocommerce.android.ui.woopos.orders.navigateToOrderDetailsScreen
 import com.woocommerce.android.ui.woopos.orders.navigateToOrdersScreen
 import com.woocommerce.android.ui.woopos.settings.navigateToSettingsScreen
 import com.woocommerce.android.ui.woopos.splash.navigateToSplashScreen
@@ -62,6 +63,9 @@ fun NavHostController.handleNavigationEvent(
 
         is WooPosNavigationEvent.OpenOrders ->
             navigateToOrdersScreen()
+
+        is WooPosNavigationEvent.OpenOrderDetails ->
+            navigateToOrderDetailsScreen(event.orderId)
 
         is WooPosNavigationEvent.OpenBookings ->
             navigateToBookingsScreen()

@@ -7,6 +7,7 @@ import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connected
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.Connecting
 import com.woocommerce.android.cardreader.connection.CardReaderStatus.NotConnected
+import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.featureflags.IsPosBookingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
@@ -33,7 +34,8 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val analyticsTracker: WooPosAnalyticsTracker,
-    private val isPosBookingsEnabled: IsPosBookingsEnabled
+    private val isPosBookingsEnabled: IsPosBookingsEnabled,
+    private val ciabSiteGateKeeper: CIABSiteGateKeeper
 ) : ViewModel() {
     private val _state = MutableStateFlow(
         WooPosHomeFloatingToolbarState(
@@ -143,13 +145,7 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
 
     private val toolbarMenuItems by lazy {
         buildList {
-            add(
-                WooPosHomeFloatingToolbarState.Menu.MenuItem(
-                    title = R.string.woopos_orders_title,
-                    icon = R.drawable.ic_description_filled_24dp,
-                )
-            )
-            if (isPosBookingsEnabled()) {
+            if (isPosBookingsEnabled() && ciabSiteGateKeeper.isCurrentSiteCIAB()) {
                 add(
                     WooPosHomeFloatingToolbarState.Menu.MenuItem(
                         title = R.string.woopos_bookings_title,
@@ -157,6 +153,12 @@ class WooPosHomeFloatingToolbarViewModel @Inject constructor(
                     )
                 )
             }
+            add(
+                WooPosHomeFloatingToolbarState.Menu.MenuItem(
+                    title = R.string.woopos_orders_title,
+                    icon = R.drawable.ic_description_filled_24dp,
+                )
+            )
             add(
                 WooPosHomeFloatingToolbarState.Menu.MenuItem(
                     title = R.string.woopos_settings_title,

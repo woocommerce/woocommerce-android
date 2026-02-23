@@ -44,6 +44,7 @@ import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosItemImage
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerBox
+import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosShimmerText
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -60,6 +61,7 @@ import com.woocommerce.android.ui.woopos.orders.WooPosOrdersUIEvent
 fun WooPosOrderDetails(
     modifier: Modifier = Modifier,
     details: WooPosOrdersState.OrderDetailsViewState.Computed.Details,
+    showOrderNumber: Boolean = true,
     onUIEvent: (WooPosOrdersUIEvent) -> Unit
 ) {
     Column(
@@ -77,11 +79,13 @@ fun WooPosOrderDetails(
             modifier = Modifier.heightIn(min = WOO_POS_ORDERS_TOOLBAR_HEIGHT),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            WooPosText(
-                text = details.number,
-                style = WooPosTypography.Heading,
-                fontWeight = FontWeight.Bold,
-            )
+            if (showOrderNumber) {
+                WooPosText(
+                    text = details.number,
+                    style = WooPosTypography.Heading,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
 
             Spacer(Modifier.weight(1f))
 
@@ -206,7 +210,7 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             .fillMaxWidth()
             .padding(vertical = marginSmall)
     ) {
-        val (image, nameText, attributesText, qtyText, totalText) = createRefs()
+        val (image, nameText, attributesText, subtitleText, totalText) = createRefs()
 
         WooPosText(
             text = row.name,
@@ -244,20 +248,25 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
             )
         }
 
-        WooPosText(
-            text = row.qtyAndUnitPrice,
-            style = WooPosTypography.BodyMedium,
-            color = WooPosTheme.colors.onSurfaceVariantHighest,
-            modifier = Modifier.constrainAs(qtyText) {
-                top.linkTo(
-                    if (hasAttributes) attributesText.bottom else nameText.bottom,
-                    margin = marginXSmall
-                )
-                start.linkTo(nameText.start)
-                end.linkTo(totalText.start, margin = marginSmall)
-                width = Dimension.fillToConstraints
-            }
-        )
+        val subtitleAnchor = if (hasAttributes) attributesText else nameText
+        val subtitleModifier = Modifier.constrainAs(subtitleText) {
+            top.linkTo(subtitleAnchor.bottom, margin = marginXSmall)
+            start.linkTo(nameText.start)
+            end.linkTo(totalText.start, margin = marginSmall)
+            width = Dimension.fillToConstraints
+        }
+
+        val bookingInfo = row.bookingInfo
+        if (bookingInfo != null) {
+            BookingInfoContent(bookingInfo = bookingInfo, modifier = subtitleModifier)
+        } else {
+            WooPosText(
+                text = row.qtyAndUnitPrice,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = subtitleModifier
+            )
+        }
 
         WooPosText(
             text = row.lineTotal,
@@ -267,6 +276,37 @@ private fun OrderProductItem(row: WooPosOrdersState.OrderDetailsViewState.Comput
                 end.linkTo(parent.end)
             }
         )
+    }
+}
+
+@Composable
+private fun BookingInfoContent(
+    bookingInfo: WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo,
+    modifier: Modifier = Modifier,
+) {
+    when (bookingInfo) {
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loading ->
+            WooPosShimmerText(
+                text = stringResource(R.string.woopos_orders_details_booking_info_shimmer_placeholder),
+                style = WooPosTypography.BodyMedium.style,
+                modifier = modifier
+            )
+
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded ->
+            WooPosText(
+                text = bookingInfo.text,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = modifier
+            )
+
+        is WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Error ->
+            WooPosText(
+                text = bookingInfo.text,
+                style = WooPosTypography.BodyMedium,
+                color = WooPosTheme.colors.onSurfaceVariantHighest,
+                modifier = modifier
+            )
     }
 }
 
@@ -518,6 +558,17 @@ fun WooPosOrderDetailsPreview() {
                 qtyAndUnitPrice = "1 x $5.00",
                 lineTotal = "$5.00",
                 imageUrl = null
+            ),
+            WooPosOrdersState.OrderDetailsViewState.Computed.Details.LineItemRow(
+                id = 104,
+                name = "Women's Haircut",
+                attributesDescription = null,
+                qtyAndUnitPrice = "1 x $55.00",
+                lineTotal = "$55.00",
+                imageUrl = null,
+                bookingInfo = WooPosOrdersState.OrderDetailsViewState.Computed.Details.BookingInfo.Loaded(
+                    "Booking #33 \u00B7 Jul 5, 2025, 10:00 AM - 10:30 AM"
+                )
             )
         ),
         breakdown = WooPosOrdersState.OrderDetailsViewState.Computed.Details.TotalsBreakdown(

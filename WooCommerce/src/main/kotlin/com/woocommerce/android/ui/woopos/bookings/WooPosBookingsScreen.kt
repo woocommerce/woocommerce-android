@@ -77,12 +77,14 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
+import com.woocommerce.android.ui.woopos.orders.details.refund.WooPosIssueRefundDialog
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
+import org.wordpress.android.util.ToastUtils
 
 val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 
@@ -90,12 +92,20 @@ val WOO_POS_BOOKINGS_TOOLBAR_HEIGHT = 56.dp
 fun WooPosBookingsScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     backStackEntry: NavBackStackEntry,
+    refundReasonResult: String? = null,
 ) {
     val viewModel: WooPosBookingsViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.toastEvent.collect { message ->
+            ToastUtils.showToast(context, message, ToastUtils.Duration.LONG)
+        }
     }
 
     val cashPaymentResult = backStackEntry.savedStateHandle
@@ -104,7 +114,7 @@ fun WooPosBookingsScreen(
 
     LaunchedEffect(cashPaymentResult.value) {
         if (cashPaymentResult.value) {
-            viewModel.onRefresh()
+            viewModel.onPaymentCompleted()
             backStackEntry.savedStateHandle[BOOKING_CASH_PAYMENT_SUCCESS_KEY] = false
         }
     }
@@ -115,7 +125,7 @@ fun WooPosBookingsScreen(
 
     LaunchedEffect(cardPaymentResult.value) {
         if (cardPaymentResult.value) {
-            viewModel.onRefresh()
+            viewModel.onPaymentCompleted()
             backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
         }
     }
@@ -135,20 +145,21 @@ fun WooPosBookingsScreen(
         state = state,
         scrollToTopEvent = viewModel.scrollToTopEvent,
         onBackClicked = { onNavigationEvent(WooPosNavigationEvent.GoBack) },
-        onRefresh = viewModel::onRefresh,
+        onRefresh = viewModel::onPullToRefresh,
         onBookingSelected = viewModel::onBookingSelected,
         onEndOfBookingsListReached = viewModel::onEndOfBookingsListReached,
         onPaginationErrorTryAgain = viewModel::onPaginationErrorTryAgain,
         onBookingsEmptyActionClicked = viewModel::onBookingsEmptyActionClicked,
         onBookingsLoadingErrorRetryButtonClicked = viewModel::onBookingsLoadingErrorRetryButtonClicked,
         onUIEvent = viewModel::onUIEvent,
+        onIssueRefundDialogDismissed = viewModel::onIssueRefundDialogDismissed,
         onNavigationEvent = onNavigationEvent,
+        refundReasonUpdate = refundReasonResult,
     )
 }
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-@Suppress("UnusedParameter")
 private fun WooPosBookingsScreen(
     state: WooPosBookingsState,
     scrollToTopEvent: SharedFlow<Unit>,
@@ -160,7 +171,9 @@ private fun WooPosBookingsScreen(
     onBookingsEmptyActionClicked: () -> Unit,
     onBookingsLoadingErrorRetryButtonClicked: () -> Unit,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    onIssueRefundDialogDismissed: () -> Unit,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    refundReasonUpdate: String? = null,
 ) {
     BackHandler { onBackClicked() }
 
@@ -199,6 +212,21 @@ private fun WooPosBookingsScreen(
                 .fillMaxWidth()
                 .statusBarsPadding()
         )
+
+        if (state is WooPosBookingsState.Content) {
+            when (val dialogState = state.dialogState) {
+                is WooPosBookingsState.Content.DialogState.IssueRefund -> {
+                    WooPosIssueRefundDialog(
+                        orderId = dialogState.orderId,
+                        onDismissRequest = onIssueRefundDialogDismissed,
+                        onNavigationEvent = onNavigationEvent,
+                        refundReasonUpdate = refundReasonUpdate
+                    )
+                }
+                WooPosBookingsState.Content.DialogState.Hidden -> Unit
+                is WooPosBookingsState.Content.DialogState.CancelBooking -> Unit
+            }
+        }
     }
 }
 
@@ -222,6 +250,7 @@ private fun WooPosBookingsContent(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onUIEvent = onUIEvent,
                 modifier = Modifier
                     .weight(0.3f)
                     .fillMaxHeight()
@@ -258,7 +287,7 @@ private fun WooPosBookingsContent(
                         WooPosEmptyScreen(
                             modifier = Modifier.fillMaxSize(),
                             icon = WooPosIcons.OrdersEmpty,
-                            title = stringResource(R.string.woopos_orders_no_order_selected),
+                            title = stringResource(R.string.woopos_bookings_no_booking_selected),
                             message = "",
                             contentDescription = stringResource(R.string.woopos_orders_empty_list_image_description)
                         )
@@ -294,6 +323,7 @@ private fun WooPosBookingsListPane(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -306,7 +336,12 @@ private fun WooPosBookingsListPane(
                 .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
         )
 
-        Spacer(modifier = Modifier.height(WooPosSpacing.Small.value))
+        state.dateSelectorState?.let { dateSelectorState ->
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+        }
 
         val pullRefreshState = rememberPullRefreshState(
             refreshing = isRefreshing,
@@ -328,6 +363,7 @@ private fun WooPosBookingsListPane(
                 onBookingSelected = onBookingSelected,
                 onEndOfBookingsListReached = onEndOfBookingsListReached,
                 onPaginationErrorTryAgain = onPaginationErrorTryAgain,
+                onRetry = onRefresh,
             )
 
             PullRefreshIndicator(
@@ -351,6 +387,7 @@ private fun WooPosBookingsList(
     onBookingSelected: (Long) -> Unit,
     onEndOfBookingsListReached: () -> Unit,
     onPaginationErrorTryAgain: () -> Unit,
+    onRetry: () -> Unit,
 ) {
     when (val items = state.items) {
         is WooPosBookingsState.Content.Items.Loaded -> {
@@ -385,7 +422,7 @@ private fun WooPosBookingsList(
                     reason = items.message,
                     primaryButton = WooPosErrorScreenButtonState(
                         text = stringResource(id = R.string.retry),
-                        click = { throw NotImplementedError("Retry button clicked") }
+                        click = onRetry
                     )
                 )
             }
@@ -598,8 +635,8 @@ private fun WooPosBookingsError(
 ) {
     WooPosErrorScreen(
         modifier = modifier,
-        message = stringResource(id = R.string.woopos_orders_loading_error_title),
-        reason = stringResource(id = R.string.woopos_orders_loading_error_message),
+        message = stringResource(id = R.string.woopos_bookings_loading_error_title),
+        reason = stringResource(id = R.string.woopos_bookings_loading_error_message),
         primaryButton = WooPosErrorScreenButtonState(
             text = stringResource(id = R.string.woopos_orders_loading_error_retry_button),
             click = onRetryClicked
@@ -663,6 +700,10 @@ fun WooPosBookingsScreenPreview() {
                     )
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details1,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -676,6 +717,7 @@ fun WooPosBookingsScreenPreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -693,6 +735,10 @@ fun WooPosBookingsNothingFoundStatePreview() {
                     message = stringResource(R.string.woopos_search_orders_empty_description)
                 ),
                 pullToRefreshState = WooPosPullToRefreshState.Enabled,
+                dateSelectorState = DateSelectorState(
+                    formattedDate = "19 Feb, Wed",
+                    selectedDateMillis = System.currentTimeMillis(),
+                ),
                 selectedDetails = details,
                 paginationState = WooPosPaginationState.None,
                 dialogState = WooPosBookingsState.Content.DialogState.Hidden
@@ -706,6 +752,7 @@ fun WooPosBookingsNothingFoundStatePreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {}
         )
     }
@@ -728,6 +775,7 @@ fun WooPosBookingsEmptyStatePreview() {
             onBookingsEmptyActionClicked = {},
             onBookingsLoadingErrorRetryButtonClicked = {},
             onUIEvent = {},
+            onIssueRefundDialogDismissed = {},
             onNavigationEvent = {},
         )
     }

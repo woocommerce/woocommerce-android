@@ -229,6 +229,62 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given paid booking, when mapped to details, then actions include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Paid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given complete booking, when mapped to details, then actions include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Complete)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given unpaid booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then actions do not include IssueRefund`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.IssueRefund }
+    }
+
+    @Test
     fun `given cancellable booking, when mapped to details, then actions include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
@@ -257,12 +313,28 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
-    fun `given cancelled booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
+    fun `given cancelled unpaid booking, when mapped to details, then collectPaymentLabel is shown`() = runTest {
+        // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
 
+        // WHEN
         val result = mapper.mapToDetailsViewState(booking, resourceName = null)
 
+        // THEN
+        assertThat(result.paymentSection.collectPaymentLabel).isNotNull()
+    }
+
+    @Test
+    fun `given cancelled paid booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
         assertThat(result.paymentSection.collectPaymentLabel).isNull()
     }
 
@@ -279,6 +351,23 @@ class WooPosBookingViewStateMapperTest {
         val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
         assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.CancelBooking }
     }
+
+    @Test
+    fun `given any booking, when mapped to details, then actions always include ViewOrder with correct orderId`() =
+        runTest {
+            // GIVEN
+            val booking = sampleBooking(id = 42L)
+            whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+            // WHEN
+            val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+            // THEN
+            val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+            val viewOrderAction = actions.filterIsInstance<WooPosBookingsState.BookingAction.ViewOrder>()
+            assertThat(viewOrderAction).hasSize(1)
+            assertThat(viewOrderAction.first().orderId).isEqualTo(420L)
+        }
 
     private fun sampleBooking(
         id: Long = 1L,
