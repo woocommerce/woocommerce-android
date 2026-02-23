@@ -6,6 +6,7 @@ import com.woocommerce.android.util.toHumanReadableFormat
 import com.woocommerce.android.viewmodel.ResourceProvider
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
@@ -25,6 +26,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     suspend fun mapToItemViewState(
         booking: BookingEntity,
         selectedBookingId: Long?,
+        resource: BookingResourceEntity?,
     ): WooPosBookingsState.BookingItemViewState {
         val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
         val customerName = buildCustomerName(booking.order.customerInfo)
@@ -46,6 +48,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             paymentStatus = paymentStatus,
             isCancelled = booking.status == BookingEntity.Status.Cancelled,
             attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            teamMember = resource?.let { mapTeamMember(it) },
         )
     }
 
@@ -218,5 +221,19 @@ class WooPosBookingViewStateMapper @Inject constructor(
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
             is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
+    }
+
+    private fun mapTeamMember(
+        resource: BookingResourceEntity
+    ): WooPosBookingsState.BookingItemViewState.TeamMember {
+        val initials = resource.name
+            .split(" ")
+            .filter { it.isNotBlank() }
+            .take(2)
+            .joinToString("") { it.first().uppercase() }
+        return WooPosBookingsState.BookingItemViewState.TeamMember(
+            initials = initials,
+            avatarUrl = resource.imageUrl,
+        )
     }
 }
