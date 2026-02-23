@@ -1155,7 +1155,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given date changed and cache empty, when fetch in progress, then state stays Searching`() = runTest {
+    fun `given date changed and cache empty, when fetch in progress, then state stays Loading`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
@@ -1182,7 +1182,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosBookingsState.Content
-        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Searching::class.java)
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Loading::class.java)
     }
 
     @Test

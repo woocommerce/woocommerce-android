@@ -93,7 +93,7 @@ class WooPosBookingsViewModel @Inject constructor(
                         )
                     }
                     current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Searching -> {
+                        current.items is WooPosBookingsState.Content.Items.Loading -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.Error(
                                 title = resourceProvider.getString(
@@ -113,7 +113,7 @@ class WooPosBookingsViewModel @Inject constructor(
                         _state.value = buildNothingFoundState()
                     }
                     current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Searching -> {
+                        current.items is WooPosBookingsState.Content.Items.Loading -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(
@@ -150,7 +150,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 if (bookings.isEmpty() && current is WooPosBookingsState.Content &&
-                    current.items is WooPosBookingsState.Content.Items.Searching
+                    current.items is WooPosBookingsState.Content.Items.Loading
                 ) {
                     return@collectLatest
                 }
@@ -555,7 +555,7 @@ class WooPosBookingsViewModel @Inject constructor(
         selectedBookingId = null
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
-                items = WooPosBookingsState.Content.Items.Searching,
+                items = WooPosBookingsState.Content.Items.Loading,
                 dateSelectorState = buildDateSelectorState(),
                 selectedDetails = null,
                 pullToRefreshState = WooPosPullToRefreshState.Disabled

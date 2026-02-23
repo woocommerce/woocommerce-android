@@ -116,7 +116,7 @@ sealed class WooPosBookingsState {
     ) : WooPosBookingsState() {
         sealed class Items {
             data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
-            object Searching : Items()
+            object Loading : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
         }
@@ -163,7 +163,6 @@ sealed class WooPosBookingsState {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
         override val dateSelectorState: DateSelectorState? = null
     }
-
 }
 
 enum class PaymentStatus {

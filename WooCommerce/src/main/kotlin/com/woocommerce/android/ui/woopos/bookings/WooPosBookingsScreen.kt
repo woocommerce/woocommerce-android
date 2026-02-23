@@ -255,7 +255,7 @@ private fun WooPosBookingsContent(
                             onUIEvent = onUIEvent
                         )
                     }
-                    state.items is WooPosBookingsState.Content.Items.Searching -> {
+                    state.items is WooPosBookingsState.Content.Items.Loading -> {
                         BookingDetailsLoadingPane(
                             modifier = Modifier
                                 .fillMaxHeight()
@@ -386,7 +386,7 @@ private fun WooPosBookingsList(
             )
         }
 
-        is WooPosBookingsState.Content.Items.Searching -> {
+        is WooPosBookingsState.Content.Items.Loading -> {
             WooPosBookingsListLoadingPane(
                 modifier = modifier.imePadding()
             )
