@@ -1,8 +1,7 @@
 package com.woocommerce.android.ui.woopos.paymentsuccess
 
+import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.EmailReceiptTapped
-import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
@@ -16,18 +15,18 @@ class WooPosPaymentSuccessViewModelTest {
     @JvmField
     val coroutinesTestRule = WooPosCoroutineTestRule()
 
-    private val analyticsTracker: WooPosAnalyticsTracker = mock()
+    private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
 
     private val viewModel = WooPosPaymentSuccessViewModel(
         analyticsTracker = analyticsTracker,
     )
 
     @Test
-    fun `when onEmailReceiptClicked, then EmailReceiptTapped is tracked`() = runTest {
+    fun `when onEmailReceiptClicked, then trackEmailReceiptTapped is called`() = runTest {
         // WHEN
         viewModel.onEmailReceiptClicked()
 
         // THEN
-        verify(analyticsTracker).track(EmailReceiptTapped)
+        verify(analyticsTracker).trackEmailReceiptTapped()
     }
 }
