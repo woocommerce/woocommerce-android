@@ -14,6 +14,7 @@ import org.wordpress.android.fluxc.network.BaseRequest.GenericErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooPayload
+import org.wordpress.android.fluxc.persistence.entity.OrderEntity
 import org.wordpress.android.fluxc.store.WCOrderStore
 import java.util.regex.Pattern
 
@@ -159,5 +160,50 @@ class WooPosEmailReceiptRepositoryTest {
 
         // THEN
         assertThat(result.isFailure).isTrue()
+    }
+
+    @Test
+    fun `given order with billing email, when getBillingEmail, then return email`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val orderEntity: OrderEntity = mock {
+            on { billingEmail }.thenReturn("customer@example.com")
+        }
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(orderEntity)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isEqualTo("customer@example.com")
+    }
+
+    @Test
+    fun `given order with blank billing email, when getBillingEmail, then return null`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        val orderEntity: OrderEntity = mock {
+            on { billingEmail }.thenReturn("")
+        }
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(orderEntity)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isNull()
+    }
+
+    @Test
+    fun `given no order found, when getBillingEmail, then return null`() = runTest {
+        // GIVEN
+        val orderId = 1L
+        whenever(orderStore.getOrderByIdAndSite(orderId, siteModel)).thenReturn(null)
+
+        // WHEN
+        val result = repository.getBillingEmail(orderId)
+
+        // THEN
+        assertThat(result).isNull()
     }
 }

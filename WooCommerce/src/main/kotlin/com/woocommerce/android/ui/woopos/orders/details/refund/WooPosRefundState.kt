@@ -74,7 +74,8 @@ sealed class WooPosRefundState {
         val orderId: Long,
         val orderNumber: String,
         val refundedAmount: String,
-        val paymentMethod: String
+        val paymentMethod: String,
+        val receiptSentMessage: String? = null,
     ) : WooPosRefundState() {
         override val showCloseButton: Boolean = true
     }
