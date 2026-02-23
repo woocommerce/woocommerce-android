@@ -17,13 +17,13 @@ class CheckWooPluginPushNotificationsSupport @Inject constructor(
         return if (wcVersion.isVersionAtLeast(PUSH_NOTIFICATIONS_MIN_WC_VERSION)) {
             Result.Compatible
         } else {
-            Result.UpdateRequired
+            Result.UpdateRequired(currentVersion = wcVersion)
         }
     }
 
     sealed interface Result {
         data object Compatible : Result
-        data object UpdateRequired : Result
+        data class UpdateRequired(val currentVersion: String) : Result
         data object Error : Result
     }
 }

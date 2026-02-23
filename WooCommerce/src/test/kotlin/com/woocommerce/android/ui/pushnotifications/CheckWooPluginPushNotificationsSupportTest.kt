@@ -34,12 +34,12 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given incompatible version, when invoked, then returns UpdateRequired`() = testBlocking {
+    fun `given incompatible version, when invoked, then returns UpdateRequired with version`() = testBlocking {
         whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
 
         val result = sut()
 
-        assertThat(result).isEqualTo(Result.UpdateRequired)
+        assertThat(result).isEqualTo(Result.UpdateRequired(currentVersion = "9.0.0"))
     }
 
     @Test
