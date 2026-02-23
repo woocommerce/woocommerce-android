@@ -52,6 +52,15 @@
         <argument
             android:name="password"
             app:argType="string" />
+        <argument
+            android:name="userId"
+            app:argType="string" />
+        <argument
+            android:name="webauthnNonce"
+            app:argType="string" />
+        <argument
+            android:name="supportedAuthTypes"
+            app:argType="string[]" />
     </fragment>
     <fragment
         android:id="@+id/wPComLoginMagicLinkRequestFragment"
