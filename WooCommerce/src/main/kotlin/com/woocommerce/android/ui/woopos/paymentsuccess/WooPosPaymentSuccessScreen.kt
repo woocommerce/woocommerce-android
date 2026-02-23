@@ -19,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
@@ -40,6 +41,7 @@ fun WooPosPaymentSuccessScreen(
     source: PaymentSuccessSource,
     receiptSentMessage: String?,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    viewModel: WooPosPaymentSuccessViewModel = hiltViewModel(),
 ) {
     BackHandler(enabled = true) { }
 
@@ -70,6 +72,7 @@ fun WooPosPaymentSuccessScreen(
             }
         },
         onEmailReceiptClicked = {
+            viewModel.onEmailReceiptClicked()
             onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(orderId))
         },
     )
