@@ -110,9 +110,7 @@ class WooPosBookingsViewModel @Inject constructor(
             }.onSuccess {
                 when {
                     current is WooPosBookingsState.Loading -> {
-                        _state.value = WooPosBookingsState.Empty(
-                            dateSelectorState = buildDateSelectorState()
-                        )
+                        _state.value = buildNothingFoundState()
                     }
                     current is WooPosBookingsState.Content &&
                         current.items is WooPosBookingsState.Content.Items.Searching -> {
@@ -571,6 +569,20 @@ class WooPosBookingsViewModel @Inject constructor(
         }
         fetchBookings()
     }
+
+    private fun buildNothingFoundState() = WooPosBookingsState.Content(
+        items = WooPosBookingsState.Content.Items.NothingFound(
+            title = resourceProvider.getString(
+                R.string.woopos_bookings_no_bookings_for_date
+            ),
+            message = ""
+        ),
+        pullToRefreshState = WooPosPullToRefreshState.Enabled,
+        dateSelectorState = buildDateSelectorState(),
+        selectedDetails = null,
+        paginationState = WooPosPaginationState.None,
+        dialogState = WooPosBookingsState.Content.DialogState.Hidden
+    )
 
     private fun buildDateSelectorState(): DateSelectorState {
         val formatter = DateTimeFormatter.ofPattern("dd MMM, EEE", Locale.getDefault())

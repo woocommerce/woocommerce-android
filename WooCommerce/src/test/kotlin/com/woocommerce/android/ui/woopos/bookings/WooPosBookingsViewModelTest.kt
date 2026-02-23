@@ -533,9 +533,11 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given empty state, when onBookingsEmptyActionClicked, then resets to Loading and fetches`() = runTest {
+    fun `given NothingFound state, when onBookingsEmptyActionClicked, then resets to Loading and fetches`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            .thenReturn(Result.success(Unit))
 
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -1013,7 +1015,7 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -1056,7 +1058,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
         }
 
     @Test
@@ -1073,7 +1075,7 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -1096,7 +1098,7 @@ class WooPosBookingsViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
