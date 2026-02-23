@@ -1,0 +1,73 @@
+# Smoke Test: Blaze - Campaign creation flow
+# P2 ref: Hub menu > Blaze > Create Campaign
+# Also: Blaze section - trigger campaign creation and verify the webview loads
+#
+# Verifies:
+#   - Blaze option accessible from More Menu
+#   - Blaze campaign list/dashboard loads
+#   - Create campaign flow can be triggered
+#   - Campaign creation webview loads
+appId: com.woocommerce.android.dev
+name: "Blaze - Campaign creation"
+tags:
+  - smoke
+  - blaze
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Find and tap Blaze
+- scrollUntilVisible:
+    element: "Blaze"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Blaze in hub menu"
+
+- tapOn: "Blaze"
+
+# Wait for Blaze screen to load (could be a list or campaign dashboard)
+- extendedWaitUntil:
+    visible: ".*Blaze.*|.*campaign.*|.*Campaign.*|.*Create.*|.*Promote.*"
+    timeout: 20000
+    label: "Wait for Blaze screen"
+
+- takeScreenshot: blaze_screen
+
+# Try to create a campaign
+- runFlow:
+    when:
+      visible: ".*Create.*campaign.*|.*Promote.*|.*Create Campaign.*"
+    commands:
+      - tapOn:
+          text: ".*Create.*campaign.*|.*Promote.*|.*Create Campaign.*"
+          optional: true
+      - extendedWaitUntil:
+          visible: ".*campaign.*|.*product.*|.*select.*|.*Blaze.*"
+          timeout: 20000
+          label: "Wait for campaign creation flow"
+          optional: true
+      - takeScreenshot: blaze_create_campaign
+      - back
+
+# Go back
+- back
+- runFlow:
+    when:
+      notVisible:
+        id: "more_menu_compose_view"
+    commands:
+      - back

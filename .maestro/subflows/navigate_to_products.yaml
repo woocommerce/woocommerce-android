@@ -1,0 +1,9 @@
+# Navigate to the Products tab
+appId: com.woocommerce.android.dev
+---
+- tapOn:
+    id: "products"
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 15000

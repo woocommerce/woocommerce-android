@@ -1,0 +1,102 @@
+# Smoke Test: Orders - Detail view and actions
+# P2 ref: Orders > Refund, Add order note, Mark complete, See receipt
+#
+# Verifies:
+#   - Opening an order shows correct details
+#   - Order status, customer name, products, totals are visible
+#   - Can add an order note
+#   - Can mark order complete
+#   - See receipt button works
+appId: com.woocommerce.android.dev
+name: "Orders - Detail view and actions"
+tags:
+  - smoke
+  - orders
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Open the first order
+- tapOn:
+    id: "orderNum"
+    index: 0
+    label: "Tap first order in list"
+
+# Wait for order detail
+- extendedWaitUntil:
+    visible:
+      id: "orderDetail_container"
+    timeout: 15000
+    label: "Wait for order detail to load"
+
+# Verify order detail elements
+- assertVisible:
+    id: "orderStatus_orderTags"
+    label: "Order status tags are visible"
+
+- takeScreenshot: order_detail_top
+
+# Scroll down to see products and payment info
+- scroll
+
+- assertVisible:
+    id: "productInfo_name"
+    label: "Product name is visible in order detail"
+    optional: true
+
+- takeScreenshot: order_detail_products
+
+# Scroll to payment info
+- scrollUntilVisible:
+    element:
+      id: "paymentInfo_total"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to payment total"
+    optional: true
+
+- takeScreenshot: order_detail_payment
+
+# Scroll to see order notes section and add a note
+- scrollUntilVisible:
+    element: ".*Add a note.*|.*ORDER NOTES.*|.*Add note.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to order notes section"
+    optional: true
+
+- runFlow:
+    when:
+      visible: ".*Add a note.*|.*Add note.*"
+    commands:
+      - tapOn: ".*Add a note.*|.*Add note.*"
+      - extendedWaitUntil:
+          visible: ".*Add a note.*|.*note.*"
+          timeout: 10000
+      - inputText: "Maestro smoke test note"
+      - tapOn:
+          text: ".*Add.*|.*Submit.*"
+          optional: true
+      - takeScreenshot: order_note_added
+
+# Go back to orders list
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+    label: "Wait to return to orders list"

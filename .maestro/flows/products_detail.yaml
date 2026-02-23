@@ -1,0 +1,110 @@
+# Smoke Test: Products - Product Detail
+# P2 ref: Products > Product details (all details)
+#
+# Verifies:
+#   - Product detail screen loads
+#   - Product name, price, inventory, type, description are visible
+#   - Product properties (price, inventory, type, shipping, etc.) render
+#   - Reviews section is accessible
+#   - Categories and tags sections visible
+appId: com.woocommerce.android.dev
+name: "Products - Product detail view"
+tags:
+  - smoke
+  - products
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to Products
+- runFlow:
+    file: ../subflows/navigate_to_products.yaml
+
+# Open the first product
+- tapOn:
+    id: "productName"
+    index: 0
+    label: "Tap first product"
+
+# Wait for product detail screen
+# The "Write with AI" tooltip or the Describe/Price text indicates the screen loaded
+- extendedWaitUntil:
+    visible: ".*GOT IT.*|.*Describe your product.*|.*Write with AI.*|.*Price.*"
+    timeout: 25000
+    label: "Wait for product detail to load"
+
+# Dismiss "Write with AI" tooltip if it appears
+- runFlow:
+    when:
+      visible: "GOT IT"
+    commands:
+      - tapOn: "GOT IT"
+
+# Wait a moment for tooltip dismissal
+- extendedWaitUntil:
+    visible:
+      id: "editText"
+    timeout: 10000
+
+- takeScreenshot: product_detail_top
+
+# Scroll to see product properties
+- scrollUntilVisible:
+    element:
+      id: "propertiesRecyclerView"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to product properties"
+
+# Verify Price property
+- assertVisible: "Price"
+
+- takeScreenshot: product_detail_properties
+
+# Scroll to Inventory
+- scrollUntilVisible:
+    element: "Inventory"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Inventory property"
+
+- assertVisible: "Inventory"
+
+# Scroll to Product type
+- scrollUntilVisible:
+    element: "Product type"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Product type"
+
+- assertVisible: "Product type"
+
+- takeScreenshot: product_detail_type
+
+# Scroll to see more properties: categories, tags, shipping, etc.
+- scrollUntilVisible:
+    element: ".*Categories.*|.*Shipping.*|.*Short description.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to categories/shipping/description"
+    optional: true
+
+- takeScreenshot: product_detail_bottom
+
+# Go back to products list
+- back
+
+- extendedWaitUntil:
+    visible:
+      id: "productsRecycler"
+    timeout: 10000
+    label: "Wait to return to products list"

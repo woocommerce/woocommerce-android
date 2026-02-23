@@ -1,0 +1,70 @@
+# Smoke Test: Hub Menu - Customers and Inbox
+# P2 ref: Hub menu > Customers, Inbox
+#
+# Verifies:
+#   - Customers section accessible and loads
+#   - Inbox section accessible and loads
+appId: com.woocommerce.android.dev
+name: "Hub Menu - Customers and Inbox"
+tags:
+  - smoke
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# --- Customers ---
+- scrollUntilVisible:
+    element: "Customers"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Customers in hub menu"
+
+- tapOn: "Customers"
+
+# Wait for Customers screen to load
+- extendedWaitUntil:
+    visible: ".*Customer.*|.*customer.*|.*Search.*|.*No customers.*"
+    timeout: 15000
+    label: "Wait for Customers screen"
+
+- takeScreenshot: hub_customers
+
+# Go back to More Menu
+- back
+
+# --- Inbox ---
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+- scrollUntilVisible:
+    element: "Inbox"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Inbox in hub menu"
+
+- tapOn: "Inbox"
+
+# Wait for Inbox screen to load
+- extendedWaitUntil:
+    visible: ".*Inbox.*|.*inbox.*|.*notification.*|.*No messages.*|.*message.*"
+    timeout: 15000
+    label: "Wait for Inbox screen"
+
+- takeScreenshot: hub_inbox
+
+# Go back
+- back

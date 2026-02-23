@@ -1,0 +1,70 @@
+# Smoke Test: Hub Menu - Coupons
+# P2 ref: Hub menu > Coupons > Create a coupon
+#
+# Verifies:
+#   - Coupons section accessible from More Menu
+#   - Coupon list loads
+#   - Create coupon flow accessible
+appId: com.woocommerce.android.dev
+name: "Hub Menu - Coupons"
+tags:
+  - smoke
+  - coupons
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Find and tap Coupons
+- scrollUntilVisible:
+    element: "Coupons"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Coupons in hub menu"
+
+- tapOn: "Coupons"
+
+# Wait for Coupons screen
+- extendedWaitUntil:
+    visible: ".*Coupon.*|.*coupon.*|.*No coupons yet.*"
+    timeout: 15000
+    label: "Wait for Coupons screen"
+
+- takeScreenshot: hub_coupons_list
+
+# Try to create a coupon if the FAB or add button is available
+- runFlow:
+    when:
+      visible: ".*Add.*|.*Create.*"
+    commands:
+      - tapOn:
+          text: ".*Add.*|.*Create.*"
+          optional: true
+      - extendedWaitUntil:
+          visible: ".*Coupon code.*|.*Discount type.*|.*coupon.*"
+          timeout: 15000
+          label: "Wait for coupon creation screen"
+      - takeScreenshot: hub_coupon_create
+      - back
+      # Handle discard dialog if present
+      - runFlow:
+          when:
+            visible: ".*Discard.*|.*discard.*"
+          commands:
+            - tapOn: ".*Discard.*|.*discard.*"
+
+# Go back
+- back

@@ -1,0 +1,54 @@
+# Smoke Test: Google for Woo
+# P2 ref: Google for Woo > Trigger campaign creation, check webview loads
+#
+# Verifies:
+#   - Google for Woo option accessible from More Menu
+#   - Webview loads correctly for Google campaign creation
+appId: com.woocommerce.android.dev
+name: "Google for Woo - Campaign creation webview"
+tags:
+  - smoke
+  - google_for_woo
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Find and tap Google for Woo
+- scrollUntilVisible:
+    element: ".*Google.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Google for Woo in hub menu"
+
+- tapOn: ".*Google.*"
+
+# Wait for Google for Woo webview to load
+- extendedWaitUntil:
+    visible: ".*Google.*|.*campaign.*|.*Ads.*|.*google.*|.*Get started.*"
+    timeout: 25000
+    label: "Wait for Google for Woo webview"
+
+- takeScreenshot: google_for_woo
+
+# Go back
+- back
+- runFlow:
+    when:
+      notVisible:
+        id: "more_menu_compose_view"
+    commands:
+      - back

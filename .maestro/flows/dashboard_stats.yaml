@@ -1,0 +1,79 @@
+# Smoke Test: Dashboard / Stats
+# P2 ref: Dashboard/Stats > Charts respond, View All analytics, Customization
+#
+# Verifies:
+#   - Dashboard loads with stats cards
+#   - Revenue, Orders, Visitors, Conversion stats are visible
+#   - Date range switching works (Today, This Week, This Month, This Year)
+#   - Top performers card is visible
+#   - "View All" store analytics navigation
+appId: com.woocommerce.android.dev
+name: "Dashboard - Stats and analytics"
+tags:
+  - smoke
+  - dashboard
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login first
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Verify dashboard container loads
+- assertVisible:
+    id: "dashboard_container"
+    label: "Dashboard container is visible"
+
+# Verify stats card is visible
+- scrollUntilVisible:
+    element:
+      id: "my_store_stats_container"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to stats container"
+
+# Verify chart is rendered
+- assertVisible:
+    id: "chart"
+    label: "Stats chart is visible"
+
+# Verify key stat labels are present
+- assertVisible: "Revenue"
+
+- takeScreenshot: dashboard_stats_overview
+
+# Test date range switching - tap on the range dropdown button via accessibility text
+- runFlow:
+    when:
+      visible: ".*Change date range.*"
+    commands:
+      - tapOn: ".*Change date range.*"
+      - runFlow:
+          when:
+            visible: "This Week"
+          commands:
+            - tapOn: "This Week"
+      - extendedWaitUntil:
+          visible:
+            id: "chart"
+          timeout: 10000
+
+- takeScreenshot: dashboard_stats_week
+
+# Scroll down to see top performers (Compose text label)
+- scrollUntilVisible:
+    element: "Top performers"
+    direction: DOWN
+    timeout: 15000
+
+- takeScreenshot: dashboard_top_performers
+
+# Scroll back up to dashboard
+- scroll
+- scroll

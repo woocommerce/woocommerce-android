@@ -1,0 +1,94 @@
+# Smoke Test: Hub Menu - WC Admin and View Store
+# P2 ref: Hub menu > WC Admin, View Store, Change store
+#
+# Verifies:
+#   - WC Admin opens (webview/browser)
+#   - View Store opens (webview/browser)
+#   - Change store is accessible
+appId: com.woocommerce.android.dev
+name: "Hub Menu - WC Admin, View Store, Change store"
+tags:
+  - smoke
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# --- View Store ---
+- scrollUntilVisible:
+    element: "View Store"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to View Store"
+
+- tapOn: "View Store"
+
+# Wait for webview or browser to load
+- extendedWaitUntil:
+    visible: ".*store.*|.*Shop.*|.*cart.*|.*product.*"
+    timeout: 20000
+    label: "Wait for store webview to load"
+    optional: true
+
+- takeScreenshot: hub_view_store
+
+# Go back to the app
+- back
+- runFlow:
+    when:
+      notVisible:
+        id: "more_menu_compose_view"
+    commands:
+      - back
+
+# --- WC Admin ---
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+- scrollUntilVisible:
+    element: ".*Admin.*|.*WooCommerce Admin.*"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to WC Admin"
+    optional: true
+
+- runFlow:
+    when:
+      visible: ".*Admin.*"
+    commands:
+      - tapOn: ".*Admin.*"
+      - extendedWaitUntil:
+          visible: ".*admin.*|.*WooCommerce.*|.*Dashboard.*|.*Orders.*"
+          timeout: 20000
+          label: "Wait for admin webview"
+          optional: true
+      - takeScreenshot: hub_wc_admin
+      - back
+
+# --- Change Store ---
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# The store name/switcher is typically at the top of the More Menu
+- runFlow:
+    when:
+      visible: ".*switch.*|.*Switch.*|.*Change store.*"
+    commands:
+      - tapOn:
+          text: ".*switch.*|.*Switch.*|.*Change store.*"
+          optional: true
+      - takeScreenshot: hub_change_store
+      - back

@@ -128,3 +128,7 @@ google-upload-credentials.json
 **/.codex/*.local.*
 
 .grepai/
+
+# Maestro test artifacts (screenshots, reports)
+report.xml
+*.maestro-screenshots/

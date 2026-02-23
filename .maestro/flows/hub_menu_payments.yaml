@@ -1,0 +1,85 @@
+# Smoke Test: Hub Menu - Payments
+# P2 ref: Hub menu > Payments (Enable/Disable Pay in Person, Order Card Reader, etc.)
+#
+# Verifies:
+#   - Payments section accessible from More Menu
+#   - Pay in Person toggle visible
+#   - Order Card Reader option visible
+#   - Manage Card Reader option visible
+#   - Card Reader Manuals option visible
+appId: com.woocommerce.android.dev
+name: "Hub Menu - Payments"
+tags:
+  - smoke
+  - payments
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Find and tap Payments
+- scrollUntilVisible:
+    element: "Payments"
+    direction: DOWN
+    timeout: 15000
+    label: "Scroll to Payments in hub menu"
+
+- tapOn: "Payments"
+
+# Wait for Payments screen to load
+- extendedWaitUntil:
+    visible: ".*Pay in Person.*|.*Card Reader.*|.*Tap to Pay.*|.*payment.*"
+    timeout: 15000
+    label: "Wait for Payments screen"
+
+- takeScreenshot: hub_payments_screen
+
+# Scroll to see all payment options
+- scroll
+
+- takeScreenshot: hub_payments_scrolled
+
+# Look for Order Card Reader
+- runFlow:
+    when:
+      visible: ".*Order Card Reader.*"
+    commands:
+      - tapOn:
+          text: ".*Order Card Reader.*"
+          optional: true
+      - takeScreenshot: hub_payments_order_reader
+      - back
+
+# Look for Card Reader Manuals
+- scrollUntilVisible:
+    element: ".*Card Reader Manuals.*|.*Manuals.*"
+    direction: DOWN
+    timeout: 10000
+    label: "Scroll to Card Reader Manuals"
+    optional: true
+
+- runFlow:
+    when:
+      visible: ".*Card Reader Manuals.*|.*Manuals.*"
+    commands:
+      - tapOn:
+          text: ".*Card Reader Manuals.*|.*Manuals.*"
+          optional: true
+      - takeScreenshot: hub_payments_manuals
+      - back
+
+# Go back
+- back

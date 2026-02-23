@@ -1,0 +1,50 @@
+# Smoke Test: Hub Menu - Settings
+# P2 ref: Hub menu > Settings > Smoke test all items (ignore Delete Account)
+#
+# Verifies:
+#   - Settings screen opens from More Menu
+#   - Key settings options are visible (Subscriptions, Theme, etc.)
+appId: com.woocommerce.android.dev
+name: "Hub Menu - Settings"
+tags:
+  - smoke
+  - settings
+  - hub_menu
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to More Menu
+- runFlow:
+    file: ../subflows/navigate_to_more_menu.yaml
+
+# Verify More Menu items are visible
+- assertVisible: "Settings"
+- assertVisible: "Payments"
+
+- takeScreenshot: hub_menu_overview
+
+# Open Settings (the settings preferences screen)
+- tapOn:
+    text: "Settings"
+    index: 0
+
+# Wait for Settings preferences screen
+- extendedWaitUntil:
+    visible: ".*Update your preferences.*|.*Notifications.*|.*Theme.*|.*Help and support.*"
+    timeout: 15000
+    label: "Wait for Settings preferences screen"
+
+- takeScreenshot: settings_screen
+
+# Go back to More Menu
+- back

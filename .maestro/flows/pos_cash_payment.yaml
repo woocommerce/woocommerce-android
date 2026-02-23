@@ -1,0 +1,113 @@
+# Smoke Test: POS - Cash Payment flow (Tablet)
+# P2 ref: POS > Search products, Add to cart, Pay with Cash
+#
+# NOTE: This flow requires a tablet device/emulator.
+# POS exposes Compose test tags as resource IDs (via Modifier.testTag).
+#
+# Verifies:
+#   - POS screen loads from bottom navigation
+#   - Products load and can be added to cart
+#   - Checkout flow works
+#   - Cash payment can be completed
+#   - Payment success screen displays
+appId: com.woocommerce.android.dev
+name: "POS - Cash payment flow"
+tags:
+  - smoke
+  - pos
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to POS tab (only available on tablets with POS enabled)
+- runFlow:
+    when:
+      visible:
+        id: "point_of_sale"
+    commands:
+      - tapOn:
+          id: "point_of_sale"
+          label: "Tap POS tab"
+
+      # Wait for POS products to load
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_product_item"
+          timeout: 20000
+          label: "Wait for POS products to load"
+
+      - takeScreenshot: pos_products
+
+      # Add first product to cart
+      - tapOn:
+          id: "woo_pos_product_item"
+          index: 0
+          label: "Add first product to cart"
+
+      # Add another product to cart
+      - tapOn:
+          id: "woo_pos_product_item"
+          index: 2
+          label: "Add third product to cart"
+          optional: true
+
+      - takeScreenshot: pos_cart
+
+      # Proceed to checkout
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_checkout_button"
+          timeout: 10000
+      - tapOn:
+          id: "woo_pos_checkout_button"
+          label: "Tap Checkout"
+
+      # Wait for totals/payment screen
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_cash_payment_button"
+          timeout: 15000
+          label: "Wait for payment options"
+
+      - takeScreenshot: pos_totals
+
+      # Select cash payment
+      - tapOn:
+          id: "woo_pos_cash_payment_button"
+          label: "Select Cash payment"
+
+      # Complete cash payment
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_complete_payment_button"
+          timeout: 10000
+      - tapOn:
+          id: "woo_pos_complete_payment_button"
+          label: "Complete payment"
+
+      # Verify payment success
+      - extendedWaitUntil:
+          visible:
+            id: "woo_pos_new_order_button"
+          timeout: 15000
+          label: "Wait for payment success screen"
+
+      - assertVisible:
+          id: "woo_pos_success_checkmark_icon"
+          label: "Payment success checkmark visible"
+
+      - takeScreenshot: pos_payment_success
+
+      # Start new order
+      - tapOn:
+          id: "woo_pos_new_order_button"
+          label: "Start new order"

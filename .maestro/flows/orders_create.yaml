@@ -1,0 +1,66 @@
+# Smoke Test: Orders - Create Order
+# P2 ref: Orders > Create an order (add products, shipping, customer note, collect payment)
+#
+# Verifies:
+#   - Order creation FAB works
+#   - Order creation screen loads with key sections
+#   - Products section is visible
+#   - Can discard order creation
+appId: com.woocommerce.android.dev
+name: "Orders - Create a new order"
+tags:
+  - smoke
+  - orders
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Tap Create Order FAB
+- tapOn:
+    id: "createOrderButton"
+    label: "Tap Create Order FAB"
+
+# Wait for order creation screen (look for status or product sections)
+- extendedWaitUntil:
+    visible: ".*Order status.*|.*Products.*|.*Add products.*|.*Pending payment.*"
+    timeout: 15000
+    label: "Wait for order creation screen"
+
+- takeScreenshot: order_create_empty
+
+# Verify key sections are visible
+- assertVisible: ".*Products.*|.*Add products.*"
+
+# Scroll down to see more sections
+- scroll
+
+- takeScreenshot: order_create_sections
+
+# Discard the order (go back)
+- back
+
+# Handle discard dialog
+- runFlow:
+    when:
+      visible: ".*Discard.*|.*discard.*"
+    commands:
+      - tapOn: ".*Discard.*|.*discard.*"
+
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+    label: "Wait to return to orders list"

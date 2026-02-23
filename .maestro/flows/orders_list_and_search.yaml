@@ -1,0 +1,110 @@
+# Smoke Test: Orders - List and Search
+# P2 ref: Orders > Verify pagination works, Search for an order
+#
+# Verifies:
+#   - Orders list loads
+#   - Order cards show number, name, total, status
+#   - Pagination works (scroll down to load more)
+#   - Search for an order works
+#   - Filters can be opened
+appId: com.woocommerce.android.dev
+name: "Orders - List, pagination, and search"
+tags:
+  - smoke
+  - orders
+env:
+  WOO_EMAIL: ${WOO_EMAIL}
+  WOO_PASSWORD: ${WOO_PASSWORD}
+  WOO_STORE_URL: ${WOO_STORE_URL}
+---
+# Login
+- runFlow:
+    file: ../subflows/login.yaml
+    env:
+      WOO_EMAIL: ${WOO_EMAIL}
+      WOO_PASSWORD: ${WOO_PASSWORD}
+      WOO_STORE_URL: ${WOO_STORE_URL}
+
+# Navigate to Orders
+- runFlow:
+    file: ../subflows/navigate_to_orders.yaml
+
+# Verify orders list is loaded
+- assertVisible:
+    id: "ordersList"
+    label: "Orders list is visible"
+
+- takeScreenshot: orders_list
+
+# Verify at least one order card is present
+- assertVisible:
+    id: "orderNum"
+    label: "At least one order number is visible"
+
+# Test pagination - scroll down to load more orders
+- scroll
+- scroll
+- scroll
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
+    timeout: 10000
+    label: "Wait for more orders to load after scrolling"
+
+- takeScreenshot: orders_list_scrolled
+
+# Scroll back to top
+- swipe:
+    direction: DOWN
+    duration: 500
+- swipe:
+    direction: DOWN
+    duration: 500
+
+# Test search
+- tapOn:
+    id: "menu_search"
+    label: "Open order search"
+
+- extendedWaitUntil:
+    visible:
+      id: "search_src_text"
+    timeout: 10000
+
+- tapOn:
+    id: "search_src_text"
+- inputText: "1"
+- pressKey: Enter
+
+# Wait for search results
+- extendedWaitUntil:
+    visible:
+      id: "orderNum"
+    timeout: 15000
+    label: "Wait for search results"
+
+- takeScreenshot: orders_search_results
+
+# Go back from search
+- back
+
+# Test filters button
+- extendedWaitUntil:
+    visible:
+      id: "ordersList"
+    timeout: 10000
+
+- runFlow:
+    when:
+      visible:
+        id: "btn_order_filter"
+    commands:
+      - tapOn:
+          id: "btn_order_filter"
+          label: "Open order filters"
+      - extendedWaitUntil:
+          visible: ".*filter.*|.*Filter.*|.*Order status.*"
+          timeout: 10000
+          label: "Wait for filter screen"
+      - takeScreenshot: orders_filters
+      - back
