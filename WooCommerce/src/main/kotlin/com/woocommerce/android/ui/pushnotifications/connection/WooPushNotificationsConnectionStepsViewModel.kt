@@ -119,7 +119,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 markCurrentStepAsCompleted()
                 advanceToNextStep()
             }
-            CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
+            is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
                 markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
             }
             CheckWooPluginPushNotificationsSupport.Result.Error -> {

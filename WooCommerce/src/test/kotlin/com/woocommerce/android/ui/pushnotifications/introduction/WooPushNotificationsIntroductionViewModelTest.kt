@@ -22,8 +22,6 @@ import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -114,7 +112,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
             whenever(checkWCPluginSupport())
-                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
 
@@ -134,7 +132,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
             whenever(checkWCPluginSupport())
-                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
 
@@ -207,7 +205,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given UpdateRequired state, when continue is clicked, then NavigateToPluginUpdatePage is triggered`() =
+    fun `given UpdateRequired state, when continue is clicked, then NavigateToConnectionSteps with update required`() =
         testBlocking {
             val jetpackStatus = JetpackStatus(
                 isJetpackInstalled = true,
@@ -219,17 +217,19 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
             whenever(checkWCPluginSupport())
-                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+                .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
 
             viewModel.onContinueClick()
 
             val event = viewModel.event.value
-            assertThat(event)
-                .isInstanceOf(WooPushNotificationsIntroductionViewModel.NavigateToPluginUpdatePage::class.java)
-            val url = (event as WooPushNotificationsIntroductionViewModel.NavigateToPluginUpdatePage).url
-            assertThat(url).contains(WooPushNotificationsIntroductionViewModel.WC_PLUGIN_UPDATE_PATH)
+            assertThat(event).isEqualTo(
+                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
+                    isSiteConnectedToJetpack = true,
+                    shouldAutoOpenUpdatePlugin = true
+                )
+            )
         }
 
     @Test
@@ -252,36 +252,11 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             val event = viewModel.event.value
             assertThat(event).isEqualTo(
                 WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(
-                    isSiteConnectedToJetpack = false
+                    isSiteConnectedToJetpack = false,
+                    shouldAutoOpenUpdatePlugin = false
                 )
             )
         }
-
-    @Test
-    fun `when plugin update web view is dismissed, then status is re-fetched`() = testBlocking {
-        val jetpackStatus = JetpackStatus(
-            isJetpackInstalled = true,
-            jetpackConnectionStatus = JetpackConnectionStatus.AccountConnected(
-                wpComEmail = "test@test.com"
-            )
-        )
-        whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
-            .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-        whenever(checkWCPluginSupport())
-            .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
-
-        setup()
-        assertThat(viewModel.viewState.getOrAwaitValue()).isEqualTo(ViewState.UpdateRequired)
-
-        whenever(checkWCPluginSupport())
-            .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
-
-        viewModel.onPluginUpdateWebViewDismissed()
-
-        val viewState = viewModel.viewState.getOrAwaitValue()
-        assertThat(viewState).isEqualTo(ViewState.GenericError)
-        verify(fetchJetpackStatus, times(2)).invoke(any(), any(), anyOrNull())
-    }
 
     @Test
     fun `when contact support is clicked, then NavigateToHelpScreen event is triggered`() {
