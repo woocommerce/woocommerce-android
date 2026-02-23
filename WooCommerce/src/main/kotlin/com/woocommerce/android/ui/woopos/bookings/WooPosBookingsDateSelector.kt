@@ -1,17 +1,19 @@
 package com.woocommerce.android.ui.woopos.bookings
 
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.widthIn
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.AssistChipDefaults
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,6 +35,9 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 import java.util.Date
 
+private val DateSelectorButtonHeight = 40.dp
+private val DateSelectorButtonCornerRadius = 8.dp
+
 @Composable
 fun WooPosBookingsDateSelector(
     dateSelectorState: DateSelectorState,
@@ -41,70 +46,84 @@ fun WooPosBookingsDateSelector(
 ) {
     var showDatePicker by remember { mutableStateOf(false) }
 
-    val chevronColor = MaterialTheme.colorScheme.primary
-    val chipContentColor = WooPosTheme.colors.tertiaryIconColor
+    val buttonShape = RoundedCornerShape(DateSelectorButtonCornerRadius)
+    val buttonColor = MaterialTheme.colorScheme.surface
+    val contentColor = MaterialTheme.colorScheme.onSurface
 
-    Column(modifier = modifier.fillMaxWidth()) {
-        HorizontalDivider(
-            color = MaterialTheme.colorScheme.outlineVariant,
-            modifier = Modifier.padding(top = WooPosSpacing.Small.value),
-        )
-
-        Row(
-            modifier = Modifier
-                .padding(vertical = WooPosSpacing.XSmall.value),
-            verticalAlignment = Alignment.CenterVertically,
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = WooPosSpacing.Medium.value,
+                vertical = WooPosSpacing.Medium.value,
+            ),
+        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Surface(
+            shape = buttonShape,
+            color = buttonColor,
         ) {
-            IconButton(
-                onClick = { onUIEvent(WooPosBookingsUIEvent.PreviousDayClicked) },
+            Box(
+                modifier = Modifier
+                    .size(DateSelectorButtonHeight)
+                    .clickable { onUIEvent(WooPosBookingsUIEvent.PreviousDayClicked) },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_left_24dp),
                     contentDescription = stringResource(R.string.woopos_bookings_date_selector_previous_day),
-                    tint = chevronColor,
+                    tint = contentColor,
                     modifier = Modifier.size(24.dp),
                 )
             }
+        }
 
-            AssistChip(
-                onClick = { showDatePicker = true },
-                label = {
-                    Row {
-                        WooPosText(
-                            text = dateSelectorState.formattedDate,
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.Bold,
-                        )
-                        WooPosText(
-                            text = " ${dateSelectorState.formattedDay}",
-                            style = WooPosTypography.BodySmall,
-                            fontWeight = FontWeight.Normal,
-                        )
-                    }
-                },
-                leadingIcon = {
+        Surface(
+            shape = buttonShape,
+            color = buttonColor,
+            modifier = Modifier.weight(1f),
+        ) {
+            Box(
+                modifier = Modifier
+                    .height(DateSelectorButtonHeight)
+                    .clickable { showDatePicker = true },
+                contentAlignment = Alignment.Center,
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_date_range_24dp),
                         contentDescription = null,
                         modifier = Modifier.size(16.dp),
+                        tint = contentColor,
                     )
-                },
-                modifier = Modifier.widthIn(min = 150.dp),
-                colors = AssistChipDefaults.assistChipColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.15f),
-                    labelColor = chipContentColor,
-                    leadingIconContentColor = chipContentColor,
-                ),
-                border = null,
-            )
+                    Spacer(modifier = Modifier.width(WooPosSpacing.XSmall.value))
+                    WooPosText(
+                        text = "${dateSelectorState.formattedDate}, ${dateSelectorState.formattedDay}",
+                        style = WooPosTypography.BodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = contentColor,
+                    )
+                }
+            }
+        }
 
-            IconButton(
-                onClick = { onUIEvent(WooPosBookingsUIEvent.NextDayClicked) },
+        Surface(
+            shape = buttonShape,
+            color = buttonColor,
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(DateSelectorButtonHeight)
+                    .clickable { onUIEvent(WooPosBookingsUIEvent.NextDayClicked) },
+                contentAlignment = Alignment.Center,
             ) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_chevron_right_24dp),
                     contentDescription = stringResource(R.string.woopos_bookings_date_selector_next_day),
-                    tint = chevronColor,
+                    tint = contentColor,
                     modifier = Modifier.size(24.dp),
                 )
             }
@@ -129,8 +148,8 @@ fun WooPosBookingsDateSelectorPreview() {
     WooPosTheme {
         WooPosBookingsDateSelector(
             dateSelectorState = DateSelectorState(
-                formattedDate = "19 Feb",
-                formattedDay = "Wed",
+                formattedDate = "02 Sep",
+                formattedDay = "Tue",
                 selectedDateMillis = System.currentTimeMillis(),
             ),
             onUIEvent = {},
