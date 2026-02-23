@@ -164,11 +164,6 @@ sealed class WooPosBookingsState {
         override val dateSelectorState: DateSelectorState? = null
     }
 
-    @Immutable
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-        override val dateSelectorState: DateSelectorState? = null,
-    ) : WooPosBookingsState()
 }
 
 enum class PaymentStatus {

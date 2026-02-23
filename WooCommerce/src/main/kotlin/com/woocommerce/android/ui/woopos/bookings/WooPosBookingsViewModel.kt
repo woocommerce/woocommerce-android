@@ -329,11 +329,6 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchBookings()
     }
 
-    fun onBookingsEmptyActionClicked() {
-        _state.value = WooPosBookingsState.Loading
-        fetchBookings()
-    }
-
     fun onUIEvent(event: WooPosBookingsUIEvent) {
         when (event) {
             is WooPosBookingsUIEvent.BookingMenuActionClicked -> handleBookingAction(event.action)

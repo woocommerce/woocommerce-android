@@ -533,35 +533,6 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given NothingFound state, when onBookingsEmptyActionClicked, then resets to Loading and fetches`() = runTest {
-        // GIVEN
-        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
-            .thenReturn(Result.success(Unit))
-
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
-            .doSuspendableAnswer {
-                delay(Long.MAX_VALUE)
-                Result.success(Unit)
-            }
-
-        // WHEN
-        viewModel.onBookingsEmptyActionClicked()
-        advanceUntilIdle()
-
-        // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Loading::class.java)
-        verify(bookingListHandler, times(2)).loadBookings(
-            anyOrNull(),
-            any(),
-            eq(BookingListSortOption.NewestToOldest)
-        )
-    }
-
-    @Test
     fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
