@@ -368,6 +368,19 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given cancelled refunded booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.REFUNDED)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        assertThat(result.paymentSection.collectPaymentLabel).isNull()
+    }
+
+    @Test
     fun `given complete booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Complete)

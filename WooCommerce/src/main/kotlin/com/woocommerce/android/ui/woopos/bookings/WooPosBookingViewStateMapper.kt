@@ -84,8 +84,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 buildList {
                     add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
-                    val isPaid = isBookingPaid(booking.status, paymentStatus)
-                    if (isPaid) {
+                    val paymentState = resolvePaymentState(booking.status, paymentStatus)
+                    if (paymentState == PaymentState.Paid) {
                         add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
                         add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
                     }
@@ -137,13 +137,19 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
-    private fun isBookingPaid(
+    private enum class PaymentState { Paid, Refunded, Unpaid }
+
+    private fun resolvePaymentState(
         bookingStatus: BookingEntity.Status,
         paymentStatus: PaymentStatus,
-    ): Boolean = when (bookingStatus) {
-        BookingEntity.Status.Paid, BookingEntity.Status.Complete -> true
-        BookingEntity.Status.Cancelled -> paymentStatus == PaymentStatus.PAID
-        else -> false
+    ): PaymentState = when (bookingStatus) {
+        BookingEntity.Status.Paid, BookingEntity.Status.Complete -> PaymentState.Paid
+        BookingEntity.Status.Cancelled -> when (paymentStatus) {
+            PaymentStatus.PAID -> PaymentState.Paid
+            PaymentStatus.REFUNDED -> PaymentState.Refunded
+            else -> PaymentState.Unpaid
+        }
+        else -> PaymentState.Unpaid
     }
 
     private fun buildPaymentSection(
@@ -152,7 +158,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
         val currency = booking.currency
-        val isPaid = isBookingPaid(booking.status, paymentStatus)
+        val paymentState = resolvePaymentState(booking.status, paymentStatus)
 
         val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
@@ -168,8 +174,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 }
             } ?: "-",
             totalAmount = totalAmount,
-            paidWithLabel = if (isPaid) paymentInfo?.paymentMethodTitle else null,
-            collectPaymentLabel = if (!isPaid) totalAmount else null,
+            paidWithLabel = if (paymentState == PaymentState.Paid) paymentInfo?.paymentMethodTitle else null,
+            collectPaymentLabel = if (paymentState == PaymentState.Unpaid) totalAmount else null,
         )
     }
 
