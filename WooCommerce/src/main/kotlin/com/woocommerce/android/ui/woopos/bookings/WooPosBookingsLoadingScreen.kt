@@ -36,17 +36,32 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosBookingsLoadingScreen(modifier: Modifier = Modifier) {
+fun WooPosBookingsLoadingScreen(
+    dateSelectorState: DateSelectorState,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxSize()
     ) {
-        WooPosBookingsListLoadingPane(
+        Column(
             modifier = Modifier
                 .background(MaterialTheme.colorScheme.surfaceBright)
-                .padding(top = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT + WooPosSpacing.Small.value)
                 .weight(0.3f)
                 .fillMaxHeight()
-        )
+                .statusBarsPadding()
+        ) {
+            Spacer(Modifier.height(WOO_POS_BOOKINGS_TOOLBAR_HEIGHT))
+
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
+
+            WooPosBookingsListLoadingPane(
+                modifier = Modifier.fillMaxSize()
+            )
+        }
 
         Box(
             modifier = Modifier
@@ -136,6 +151,12 @@ fun BookingDetailsLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 fun WooPosBookingsLoadingStatePreview() {
     WooPosTheme {
-        WooPosBookingsLoadingScreen()
+        WooPosBookingsLoadingScreen(
+            dateSelectorState = DateSelectorState(
+                formattedDate = "23 Feb, Mon",
+                selectedDateMillis = System.currentTimeMillis(),
+            ),
+            onUIEvent = {},
+        )
     }
 }

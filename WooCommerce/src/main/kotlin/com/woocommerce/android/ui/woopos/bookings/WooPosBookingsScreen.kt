@@ -186,7 +186,10 @@ private fun WooPosBookingsScreen(
                 modifier = Modifier.statusBarsPadding()
             )
 
-            is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen()
+            is WooPosBookingsState.Loading -> WooPosBookingsLoadingScreen(
+                dateSelectorState = state.dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
         }
 
         WooPosToolbar(

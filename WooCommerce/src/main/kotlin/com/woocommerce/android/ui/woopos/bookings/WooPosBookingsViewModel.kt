@@ -46,14 +46,21 @@ class WooPosBookingsViewModel @Inject constructor(
     private val mapper: WooPosBookingViewStateMapper,
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
-    private val clock: Clock,
+    clock: Clock,
 ) : ViewModel() {
 
     companion object {
         private const val MIN_LOADING_DURATION_MS = 300L
     }
 
-    private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
+    private var selectedBookingId: Long? = null
+    private var selectedDate: LocalDate = LocalDate.now(clock)
+    private var fetchJob: Job? = null
+    private var loadMoreJob: Job? = null
+
+    private val _state = MutableStateFlow<WooPosBookingsState>(
+        WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
+    )
     val state: StateFlow<WooPosBookingsState> = _state.asStateFlow()
 
     private val _scrollToTopEvent = MutableSharedFlow<Unit>()
@@ -64,11 +71,6 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _toastEvent = MutableSharedFlow<String>()
     val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
-
-    private var selectedBookingId: Long? = null
-    private var selectedDate: LocalDate = LocalDate.now(clock)
-    private var fetchJob: Job? = null
-    private var loadMoreJob: Job? = null
 
     init {
         observeBookings()
@@ -235,7 +237,7 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsState.Content -> current.copy(
                 pullToRefreshState = WooPosPullToRefreshState.Refreshing
             )
-            else -> WooPosBookingsState.Loading
+            else -> WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
         }
 
         doRefresh()
@@ -325,7 +327,7 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingsLoadingErrorRetryButtonClicked() {
-        _state.value = WooPosBookingsState.Loading
+        _state.value = WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
         fetchBookings()
     }
 
@@ -560,7 +562,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 selectedDetails = null,
                 pullToRefreshState = WooPosPullToRefreshState.Disabled
             )
-            else -> WooPosBookingsState.Loading
+            else -> WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
         }
         fetchBookings()
     }

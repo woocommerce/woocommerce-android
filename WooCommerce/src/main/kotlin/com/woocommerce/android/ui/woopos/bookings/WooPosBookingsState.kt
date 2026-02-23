@@ -159,9 +159,10 @@ sealed class WooPosBookingsState {
     }
 
     @Immutable
-    data object Loading : WooPosBookingsState() {
+    data class Loading(
+        override val dateSelectorState: DateSelectorState,
+    ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
-        override val dateSelectorState: DateSelectorState? = null
     }
 }
 
