@@ -7,6 +7,7 @@ import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepState
 import com.woocommerce.android.ui.pushnotifications.connection.WooPushNotificationsConnectionStepsViewModel.StepType
 import com.woocommerce.android.util.StringUtils
@@ -41,6 +42,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val appPrefsWrapper: AppPrefsWrapper = mock()
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport = mock {
+        onBlocking { invoke() } doReturn CheckWooPluginPushNotificationsSupport.Result.Compatible
+    }
     private val stringUtils: StringUtils = mock()
 
     private suspend fun setup(
@@ -57,6 +61,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             appPrefsWrapper = appPrefsWrapper,
             pushNotificationRepository = pushNotificationRepository,
             jetpackActivationRepository = jetpackActivationRepository,
+            checkWCPluginSupport = checkWCPluginSupport,
             stringUtils = stringUtils,
             savedStateHandle = WooPushNotificationsConnectionStepsFragmentArgs(
                 isSiteConnectedToJetpack = isStoreAlreadyConnected
@@ -127,6 +132,38 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         assertThat((event as NavigateToHelpScreen).origin)
             .isEqualTo(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP)
     }
+
+    @Test
+    fun `given plugin check returns UpdateRequired, when CheckPluginCompatibility runs, then step is Error`() =
+        testBlocking {
+            setup {
+                whenever(checkWCPluginSupport())
+                    .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired)
+            }
+
+            val state = viewModel.viewState.runAndGetValue {
+                advanceUntilIdle()
+            }
+
+            assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+            assertThat(state.steps[0].state).isInstanceOf(StepState.Error::class.java)
+        }
+
+    @Test
+    fun `given plugin check returns Error, when CheckPluginCompatibility runs, then step is Error`() =
+        testBlocking {
+            setup {
+                whenever(checkWCPluginSupport())
+                    .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
+            }
+
+            val state = viewModel.viewState.runAndGetValue {
+                advanceUntilIdle()
+            }
+
+            assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
+            assertThat(state.steps[0].state).isInstanceOf(StepState.Error::class.java)
+        }
 
     @Test
     fun `given register site returns forbidden, when ConnectStore runs, then permission error is shown`() =

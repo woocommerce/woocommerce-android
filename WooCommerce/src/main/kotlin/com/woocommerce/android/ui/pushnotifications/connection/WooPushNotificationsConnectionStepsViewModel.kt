@@ -14,6 +14,7 @@ import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
+import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -21,7 +22,6 @@ import com.woocommerce.android.viewmodel.ScopedViewModel
 import com.woocommerce.android.viewmodel.getStateFlow
 import com.woocommerce.android.viewmodel.navArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOf
@@ -30,7 +30,6 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import org.wordpress.android.fluxc.store.JetpackStore
 import javax.inject.Inject
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
@@ -38,6 +37,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     private val appPrefsWrapper: AppPrefsWrapper,
     private val pushNotificationRepository: PushNotificationRepository,
     private val jetpackActivationRepository: JetpackActivationRepository,
+    private val checkWCPluginSupport: CheckWooPluginPushNotificationsSupport,
     private val stringUtils: StringUtils,
     savedStateHandle: SavedStateHandle
 ) : ScopedViewModel(savedStateHandle) {
@@ -106,14 +106,26 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 when (step.type) {
                     StepType.ConnectStore -> connectStoreToJetpack()
 
-                    StepType.CheckPluginCompatibility -> {
-                        delay(1.seconds)
-                        advanceToNextStep()
-                    }
+                    StepType.CheckPluginCompatibility -> checkPluginCompatibility()
 
                     StepType.EnablePushNotifications -> registerPushNotifications()
                 }
             }
+    }
+
+    private suspend fun checkPluginCompatibility() {
+        when (checkWCPluginSupport()) {
+            CheckWooPluginPushNotificationsSupport.Result.Compatible -> {
+                markCurrentStepAsCompleted()
+                advanceToNextStep()
+            }
+            CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
+                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+            }
+            CheckWooPluginPushNotificationsSupport.Result.Error -> {
+                markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+            }
+        }
     }
 
     private suspend fun connectStoreToJetpack() {
@@ -159,7 +171,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         }
     }
 
-    @Suppress("unused")
     private fun advanceToNextStep() {
         currentStep.update { current ->
             val nextType = StepType.entries.getOrNull(current.type.ordinal + 1)
