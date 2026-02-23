@@ -197,7 +197,7 @@ private fun WooPosOrdersScreen(
             val toolbarTitle = if (isSingleOrderMode) {
                 val orderNumber = (state as? WooPosOrdersState.Content)
                     ?.selectedDetails?.number.orEmpty()
-                stringResource(R.string.orderdetail_orderstatus_ordernum, orderNumber)
+                stringResource(R.string.woopos_order_title, orderNumber)
             } else {
                 stringResource(R.string.woopos_orders_title)
             }
