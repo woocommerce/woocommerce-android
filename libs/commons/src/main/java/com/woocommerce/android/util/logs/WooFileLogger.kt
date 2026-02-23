@@ -31,7 +31,8 @@ class WooFileLogger(
     private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
     private val processLifecycleOwner: LifecycleOwner,
-    private val crashLogging: Provider<CrashLogging>? = null
+    private val crashLogging: Provider<CrashLogging>? = null,
+    availableDiskBytes: (() -> Long)? = null
 ) {
     @Inject
     constructor(
@@ -50,7 +51,8 @@ class WooFileLogger(
     private val logFileWriter: LogFileWriter = LogFileWriter(
         logsDirectory = logsDirectory,
         maxLogFiles = MAX_LOG_FILES,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        availableDiskBytes = availableDiskBytes ?: LogFileWriter.defaultAvailableDiskBytes(logsDirectory)
     )
 
     private val internalLogsBuffer = Channel<LogEntry>(Channel.UNLIMITED)

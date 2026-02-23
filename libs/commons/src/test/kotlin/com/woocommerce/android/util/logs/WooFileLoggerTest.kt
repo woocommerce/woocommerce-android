@@ -31,7 +31,8 @@ class WooFileLoggerTest : BaseUnitTest() {
             logsDirectory = logsDirectory,
             appCoroutineScope = testScope,
             processLifecycleOwner = testLifecycleOwner,
-            dispatchers = coroutinesTestRule.testDispatchers
+            dispatchers = coroutinesTestRule.testDispatchers,
+            availableDiskBytes = { Long.MAX_VALUE }
         )
     }
 
