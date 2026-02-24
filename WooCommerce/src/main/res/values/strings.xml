@@ -3737,6 +3737,7 @@
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_orders_title">Orders</string>
+    <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
@@ -3913,9 +3914,6 @@
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
-    <string name="woopos_bookings_empty_list_title">No bookings found</string>
-    <string name="woopos_bookings_empty_list_image_description">No bookings</string>
-    <string name="woopos_bookings_empty_action_label">Refresh</string>
     <string name="woopos_bookings_details_attendance_attended">Attended</string>
     <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
     <string name="woopos_bookings_details_title">Booking #%s</string>
@@ -3962,6 +3960,10 @@
     <string name="woopos_bookings_note_screen_hint">Type booking note</string>
     <string name="woopos_bookings_note_screen_button_save">Save</string>
     <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
+    <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
+    <string name="woopos_bookings_no_booking_selected">No booking selected.</string>
+    <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
+    <string name="woopos_bookings_date_selector_next_day">Next day</string>
     <string name="woopos_bookings_loading_error_title">Unable to load bookings</string>
     <string name="woopos_bookings_loading_error_message">Please check your connection and try again.</string>
 

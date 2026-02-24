@@ -2,6 +2,7 @@ package com.woocommerce.android.ui.woopos.bookings
 
 import app.cash.turbine.test
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
@@ -28,19 +29,26 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
+import org.wordpress.android.fluxc.model.SiteModel
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import java.math.BigDecimal
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosBookingsViewModelTest {
@@ -91,6 +99,7 @@ class WooPosBookingsViewModelTest {
     }
     private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
+    private val clock: Clock = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
     private lateinit var viewModel: WooPosBookingsViewModel
 
     private fun booking(id: Long = 1L) = BookingEntity(
@@ -121,7 +130,18 @@ class WooPosBookingsViewModelTest {
         )
     )
 
-    private fun createViewModel(): WooPosBookingsViewModel {
+    private fun createSelectedSite(siteTimezone: String = "0"): SelectedSite {
+        val siteModel = SiteModel().apply { timezone = siteTimezone }
+        return mock {
+            on { get() } doAnswer { siteModel }
+        }
+    }
+
+    private fun createViewModel(
+        siteTimezone: String = "0",
+        clock: Clock = this.clock,
+    ): WooPosBookingsViewModel {
+        val selectedSite = createSelectedSite(siteTimezone)
         return WooPosBookingsViewModel(
             bookingListHandler = bookingListHandler,
             bookingsRepository = bookingsRepository,
@@ -131,9 +151,12 @@ class WooPosBookingsViewModelTest {
                 formatPrice,
                 paymentStatusResolver,
                 timeRangeFormatter,
+                selectedSite,
             ),
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
+            clock = clock,
+            selectedSite = selectedSite,
         )
     }
 
@@ -148,9 +171,9 @@ class WooPosBookingsViewModelTest {
             flowOf(listOf(booking(1), booking(2)))
         )
         whenever(
-            bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest)
-        ).thenReturn(Result.success(Unit))
-        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+            bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        ).thenReturn(Result.success(0))
+        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(0))
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
@@ -182,7 +205,7 @@ class WooPosBookingsViewModelTest {
     fun `given fetch fails and state is Loading, when init, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("Network error")))
 
         // WHEN
@@ -195,50 +218,53 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given no bookings exist, when init completes, then state is Empty`() = runTest {
+    fun `given no bookings exist, when init completes, then state is Content with NothingFound`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
-            .thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
+            .thenReturn(Result.success(0))
 
         // WHEN
         viewModel = createViewModel()
         advanceUntilIdle()
 
         // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
+        val state = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
     }
 
     @Test
-    fun `given empty bookings after content was shown, when flow emits empty, then state is Empty`() = runTest {
-        // GIVEN
-        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
-        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+    fun `given empty bookings after content was shown, when flow emits empty, then state is Content with NothingFound`() =
+        runTest {
+            // GIVEN
+            val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+            whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
 
-        viewModel = createViewModel()
-        advanceUntilIdle()
+            viewModel = createViewModel()
+            advanceUntilIdle()
 
-        bookingsFlow.emit(listOf(booking(1)))
-        advanceUntilIdle()
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+            bookingsFlow.emit(listOf(booking(1)))
+            advanceUntilIdle()
+            assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        // WHEN
-        bookingsFlow.emit(emptyList())
-        advanceUntilIdle()
+            // WHEN
+            bookingsFlow.emit(emptyList())
+            advanceUntilIdle()
 
-        // THEN
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
-    }
+            // THEN
+            val state = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(state.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
+        }
 
     @Test
     fun `given empty bookings while Loading, when flow emits empty, then state stays Loading`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -277,10 +303,10 @@ class WooPosBookingsViewModelTest {
         bookingsFlow.emit(listOf(booking(1)))
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -296,17 +322,17 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when PTR, then state becomes Loading`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -323,7 +349,7 @@ class WooPosBookingsViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         // WHEN
@@ -339,13 +365,13 @@ class WooPosBookingsViewModelTest {
     fun `given refresh fails on non-content, when PTR, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("first error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("refresh error")))
 
         // WHEN
@@ -369,7 +395,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         verify(bookingListHandler, times(2))
-            .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
     }
 
     @Test
@@ -451,7 +477,7 @@ class WooPosBookingsViewModelTest {
         viewModel.onEndOfBookingsListReached()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(0))
 
         // WHEN
         viewModel.onPaginationErrorTryAgain()
@@ -470,10 +496,10 @@ class WooPosBookingsViewModelTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(1000)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         viewModel = createViewModel()
@@ -498,17 +524,17 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
             advanceUntilIdle()
             assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -517,29 +543,25 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Loading::class.java)
-            verify(bookingListHandler, times(2)).loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+            verify(bookingListHandler, times(2)).loadBookings(
+                anyOrNull(),
+                any(),
+                eq(BookingListSortOption.OldestToNewest)
+            )
         }
 
     @Test
     fun `given empty state, when onBookingsEmptyActionClicked, then resets to Loading and fetches`() = runTest {
         // GIVEN
-        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
-        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+        whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        bookingsFlow.emit(listOf(booking(1)))
-        advanceUntilIdle()
-
-        bookingsFlow.emit(emptyList())
-        advanceUntilIdle()
-        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Empty::class.java)
-
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -548,14 +570,18 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Loading::class.java)
-        verify(bookingListHandler, times(2)).loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+        verify(bookingListHandler, times(2)).loadBookings(
+            anyOrNull(),
+            any(),
+            eq(BookingListSortOption.OldestToNewest)
+        )
     }
 
     @Test
     fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -573,7 +599,7 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when onBookingSelected, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -648,7 +674,7 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
@@ -778,8 +804,13 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
-                .thenReturn(Result.failure(RuntimeException("error")))
+            whenever(
+                bookingListHandler.loadBookings(
+                    filters = anyOrNull(),
+                    sortBy = anyOrNull(),
+                    searchQuery = anyOrNull()
+                )
+            ).thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
             advanceUntilIdle()
@@ -980,6 +1011,31 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given EmailReceipt action, when BookingMenuActionClicked, then OpenEmailReceipt event emitted with correct orderId`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val orderId = content.selectedDetails!!.orderId
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.EmailReceipt(orderId = orderId)
+                    )
+                )
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenEmailReceipt::class.java)
+                val emailEvent = event as WooPosNavigationEvent.OpenEmailReceipt
+                assertThat(emailEvent.orderId).isEqualTo(orderId)
+            }
+        }
+
+    @Test
     fun `given cancel confirmed successfully, when handling event, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
@@ -1000,10 +1056,10 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1043,7 +1099,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(sortBy = BookingListSortOption.NewestToOldest)
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
         }
 
     @Test
@@ -1060,10 +1116,10 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1083,10 +1139,10 @@ class WooPosBookingsViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(sortBy = BookingListSortOption.NewestToOldest))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1132,5 +1188,231 @@ class WooPosBookingsViewModelTest {
                 .isInstanceOf(
                     WooPosBookingsState.Content.DialogState.CancelBooking.Processing::class.java
                 )
+        }
+
+    @Test
+    fun `given date changed, when state becomes Content, then dateSelectorState is updated`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val contentBefore = viewModel.state.value as WooPosBookingsState.Content
+        val dateBefore = contentBefore.dateSelectorState?.formattedDate
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val contentAfter = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(contentAfter.dateSelectorState).isNotNull
+        assertThat(contentAfter.dateSelectorState?.formattedDate).isNotEqualTo(dateBefore)
+    }
+
+    @Test
+    fun `given date changed, when previous day clicked, then fetch called with new date`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.PreviousDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        verify(bookingListHandler, times(2))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+    }
+
+    @Test
+    fun `given date changed and cache empty, when fetch in progress, then state stays Loading`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(0)
+            }
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        bookingsFlow.emit(emptyList())
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Loading::class.java)
+    }
+
+    @Test
+    fun `given date changed and cache has data, when observe emits, then cached data shown immediately`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
+            .doSuspendableAnswer {
+                delay(Long.MAX_VALUE)
+                Result.success(0)
+            }
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(5)))
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Loaded::class.java)
+        val loaded = content.items as WooPosBookingsState.Content.Items.Loaded
+        assertThat(loaded.items.keys.first().id).isEqualTo(5L)
+    }
+
+    @Test
+    fun `given date changed and cache empty, when fetch succeeds with no data, then state is NothingFound`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
+            .thenReturn(Result.success(0))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.NothingFound::class.java)
+    }
+
+    @Test
+    fun `given date changed and cache empty, when fetch fails, then state is Error`() = runTest {
+        // GIVEN
+        val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
+        whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
+
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        bookingsFlow.emit(listOf(booking(1)))
+        advanceUntilIdle()
+        assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
+
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Error::class.java)
+    }
+
+    @Test
+    fun `given rapid date changes, when multiple next day clicks, then intermediate fetches are cancelled`() = runTest {
+        // GIVEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        val initialDate = (viewModel.state.value as WooPosBookingsState.Content)
+            .dateSelectorState?.formattedDate
+
+        // WHEN - rapid tapping next 3 times without advancing the dispatcher
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
+        advanceUntilIdle()
+
+        // THEN - only 2 loadBookings calls: initial + last date change (intermediate ones cancelled)
+        verify(bookingListHandler, times(2))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        val content = viewModel.state.value as WooPosBookingsState.Content
+        assertThat(content.dateSelectorState?.formattedDate).isNotEqualTo(initialDate)
+    }
+
+    @Test
+    fun `given date selected from calendar picker, when DateSelected dispatched, then fetch called for selected date`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            val selectedDateMillis = Instant.parse("2026-03-15T00:00:00Z").toEpochMilli()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.DateSelected(selectedDateMillis))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            assertThat(content.dateSelectorState?.selectedDateMillis).isEqualTo(selectedDateMillis)
+        }
+
+    @Test
+    fun `given store in UTC-11, when clock is 2026-02-19T10-00Z, then today is Feb 18 in store timezone`() =
+        runTest {
+            // GIVEN
+            val clockAt10amUtc = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
+            viewModel = createViewModel(siteTimezone = "-11", clock = clockAt10amUtc)
+            advanceUntilIdle()
+
+            // THEN
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val dateSelectorState = content.dateSelectorState!!
+            assertThat(dateSelectorState.formattedDate).startsWith("18")
+            assertThat(dateSelectorState.formattedDate).doesNotContain("19")
+        }
+
+    @Test
+    fun `given store in UTC-5, when date selected via DatePicker, then API filter boundaries use store timezone`() =
+        runTest {
+            // GIVEN
+            val filtersCaptor = argumentCaptor<BookingFilters>()
+            viewModel = createViewModel(siteTimezone = "-5")
+            advanceUntilIdle()
+
+            // WHEN
+            val march15MidnightUtc = Instant.parse("2026-03-15T00:00:00Z")
+            viewModel.onUIEvent(WooPosBookingsUIEvent.DateSelected(march15MidnightUtc.toEpochMilli()))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(anyOrNull(), filtersCaptor.capture(), eq(BookingListSortOption.OldestToNewest))
+            val dateRange = filtersCaptor.lastValue.dateRange as BookingsFilterOption.DateRange
+            assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T05:00:00Z"))
+            assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-16T04:59:59.999999999Z"))
         }
 }

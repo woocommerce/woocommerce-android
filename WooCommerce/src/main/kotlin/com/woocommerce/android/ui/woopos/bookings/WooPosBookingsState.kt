@@ -5,8 +5,15 @@ import com.woocommerce.android.ui.woopos.home.items.WooPosPaginationState
 import com.woocommerce.android.ui.woopos.home.items.WooPosPullToRefreshState
 
 @Immutable
+data class DateSelectorState(
+    val formattedDate: String,
+    val selectedDateMillis: Long,
+)
+
+@Immutable
 sealed class WooPosBookingsState {
     abstract val pullToRefreshState: WooPosPullToRefreshState
+    abstract val dateSelectorState: DateSelectorState?
 
     @Immutable
     sealed interface BookingAction {
@@ -96,19 +103,27 @@ sealed class WooPosBookingsState {
         val paymentStatus: PaymentStatus,
         val isCancelled: Boolean,
         val attendanceBadge: AttendanceState = AttendanceState.UNATTENDED,
-    )
+        val teamMember: TeamMember? = null,
+    ) {
+        @Immutable
+        data class TeamMember(
+            val initials: String,
+            val avatarUrl: String?,
+        )
+    }
 
     @Immutable
     data class Content(
         val items: Items,
         override val pullToRefreshState: WooPosPullToRefreshState,
+        override val dateSelectorState: DateSelectorState?,
         val selectedDetails: BookingDetailsViewState?,
         val paginationState: WooPosPaginationState,
         val dialogState: DialogState
     ) : WooPosBookingsState() {
         sealed class Items {
             data class Loaded(val items: Map<BookingItemViewState, BookingDetailsViewState>) : Items()
-            object Searching : Items()
+            object Loading : Items()
             data class Error(val title: String, val message: String) : Items()
             data class NothingFound(val title: String, val message: String) : Items()
         }
@@ -147,17 +162,15 @@ sealed class WooPosBookingsState {
         val message: String,
     ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
+        override val dateSelectorState: DateSelectorState? = null
     }
 
     @Immutable
-    data object Loading : WooPosBookingsState() {
+    data class Loading(
+        override val dateSelectorState: DateSelectorState,
+    ) : WooPosBookingsState() {
         override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Disabled
     }
-
-    @Immutable
-    data class Empty(
-        override val pullToRefreshState: WooPosPullToRefreshState = WooPosPullToRefreshState.Enabled,
-    ) : WooPosBookingsState()
 }
 
 enum class PaymentStatus {

@@ -51,8 +51,8 @@ class BookingListViewModelTest : BaseUnitTest() {
                 filters = any(),
                 sortBy = any()
             )
-        } doReturn Result.success(Unit)
-        onBlocking { loadMore() } doReturn Result.success(Unit)
+        } doReturn Result.success(0)
+        onBlocking { loadMore() } doReturn Result.success(0)
     }
     private val mockedNow = Instant.parse("2025-01-01T12:00:00Z")
     private val filtersBuilder = BookingListDateFilterBuilder(Clock.fixed(mockedNow, ZoneId.of("UTC")))
