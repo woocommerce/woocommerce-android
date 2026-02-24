@@ -99,6 +99,7 @@ class WooPosBookingsViewModelTest {
     }
     private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker = mock()
     private val clock: Clock = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
     private lateinit var viewModel: WooPosBookingsViewModel
 
@@ -156,6 +157,7 @@ class WooPosBookingsViewModelTest {
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
             clock = clock,
+            analyticsTracker = analyticsTracker,
             selectedSite = selectedSite,
         )
     }
