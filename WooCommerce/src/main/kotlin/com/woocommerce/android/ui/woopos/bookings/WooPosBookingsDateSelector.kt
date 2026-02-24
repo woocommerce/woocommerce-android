@@ -5,12 +5,10 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
@@ -24,6 +22,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupProperties
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.compose.component.WCTextButton
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
@@ -166,6 +164,12 @@ private fun DatePickerPopup(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDateMillis,
     )
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        val millis = datePickerState.selectedDateMillis ?: return@LaunchedEffect
+        if (millis != selectedDateMillis) {
+            onDateSelected(millis)
+        }
+    }
     val colors = DatePickerDefaults.colors()
     val shape = DatePickerDefaults.shape
     val density = LocalDensity.current
@@ -185,36 +189,10 @@ private fun DatePickerPopup(
             shadowElevation = 8.dp,
             shape = shape,
         ) {
-            Column {
-                Box {
-                    DatePicker(
-                        state = datePickerState,
-                        colors = colors,
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(
-                            horizontal = WooPosSpacing.Small.value,
-                            vertical = WooPosSpacing.XSmall.value,
-                        ),
-                    horizontalArrangement = Arrangement.End,
-                ) {
-                    WCTextButton(
-                        text = stringResource(id = android.R.string.cancel),
-                        onClick = onDismiss,
-                    )
-                    WCTextButton(
-                        text = stringResource(id = android.R.string.ok),
-                        enabled = datePickerState.selectedDateMillis != null,
-                        onClick = {
-                            datePickerState.selectedDateMillis?.let { onDateSelected(it) }
-                        },
-                    )
-                }
-            }
+            DatePicker(
+                state = datePickerState,
+                colors = colors,
+            )
         }
     }
 }
