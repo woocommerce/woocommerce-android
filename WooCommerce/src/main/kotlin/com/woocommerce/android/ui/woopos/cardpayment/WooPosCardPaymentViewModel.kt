@@ -305,7 +305,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     fun onDismissClicked() {
         cancelPayment()
-        onDoneClicked()
+        viewModelScope.launch {
+            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+        }
     }
 
     fun onConnectReaderClicked() {
