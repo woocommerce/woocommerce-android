@@ -58,6 +58,11 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val storeZoneId = selectedSite.get().clock.zone
 
+    private var selectedBookingId: Long? = null
+    private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
+    private var fetchJob: Job? = null
+    private var loadMoreJob: Job? = null
+
     private val _state = MutableStateFlow<WooPosBookingsState>(
         WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
     )
@@ -71,12 +76,6 @@ class WooPosBookingsViewModel @Inject constructor(
 
     private val _toastEvent = MutableSharedFlow<String>()
     val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
-
-    private var selectedBookingId: Long? = null
-    private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
-    private var fetchJob: Job? = null
-    private var loadMoreJob: Job? = null
-
 
     init {
         observeBookings()
