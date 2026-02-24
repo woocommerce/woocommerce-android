@@ -3908,9 +3908,6 @@
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
-    <string name="woopos_bookings_empty_list_title">No bookings found</string>
-    <string name="woopos_bookings_empty_list_image_description">No bookings</string>
-    <string name="woopos_bookings_empty_action_label">Refresh</string>
     <string name="woopos_bookings_details_attendance_attended">Attended</string>
     <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
     <string name="woopos_bookings_details_title">Booking #%s</string>
