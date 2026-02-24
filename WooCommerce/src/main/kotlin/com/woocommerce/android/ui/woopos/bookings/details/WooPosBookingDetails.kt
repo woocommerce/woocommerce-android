@@ -276,8 +276,8 @@ private fun BookingCustomerCard(
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_customer_title),
-                style = WooPosTypography.BodyLarge,
-                fontWeight = FontWeight.Bold,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
             )
 
             customerSection.email?.let { email ->
@@ -372,7 +372,7 @@ private fun BookingPaymentCard(
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_payment_title),
                 style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -426,8 +426,8 @@ private fun BookingNoteSection(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     WooPosText(
                         text = stringResource(R.string.woopos_bookings_details_booking_note_title),
-                        style = WooPosTypography.BodyLarge,
-                        fontWeight = FontWeight.Bold,
+                        style = WooPosTypography.BodyXLarge,
+                        fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
                     WooPosOutlinedButtonSmall(
