@@ -541,10 +541,12 @@ class WooPosBookingsViewModel @Inject constructor(
             val result = bookingsRepository.cancelBooking(bookingId)
             val state = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = if (result.isSuccess) {
+                analyticsTracker.trackBookingCancelled()
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.Hidden
                 )
             } else {
+                analyticsTracker.trackBookingCancelFailed()
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(
                         bookingId = dialog.bookingId,
