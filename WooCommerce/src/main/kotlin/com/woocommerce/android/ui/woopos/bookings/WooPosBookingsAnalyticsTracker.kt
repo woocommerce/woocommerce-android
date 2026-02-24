@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingDatePreviousTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingIssueRefundTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingListItemTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingViewOrderTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingNoteAdded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
 import javax.inject.Inject
@@ -49,5 +50,9 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
 
     suspend fun trackIssueRefundTapped() {
         analyticsTracker.track(BookingIssueRefundTapped)
+    }
+
+    suspend fun trackViewOrderTapped() {
+        analyticsTracker.track(BookingViewOrderTapped)
     }
 }

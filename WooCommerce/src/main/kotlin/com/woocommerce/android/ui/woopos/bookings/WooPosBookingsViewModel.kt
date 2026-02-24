@@ -484,6 +484,7 @@ class WooPosBookingsViewModel @Inject constructor(
         when (action) {
             is WooPosBookingsState.BookingAction.ViewOrder -> {
                 viewModelScope.launch {
+                    analyticsTracker.trackViewOrderTapped()
                     _navigationEvent.emit(
                         WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
                     )
