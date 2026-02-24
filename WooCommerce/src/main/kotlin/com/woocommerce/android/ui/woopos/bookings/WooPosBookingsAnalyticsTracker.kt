@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingAttendanceChanged
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingCancelFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingCancelled
@@ -11,11 +13,19 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingNoteAdded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingViewOrderTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
+import java.time.Clock
+import java.time.Instant
+import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
 class WooPosBookingsAnalyticsTracker @Inject constructor(
-    private val analyticsTracker: WooPosAnalyticsTracker
+    private val analyticsTracker: WooPosAnalyticsTracker,
+    private val clock: Clock,
+    selectedSite: SelectedSite,
 ) {
+    private val storeZoneId = selectedSite.get().clock.zone
+
     suspend fun trackListItemTapped() {
         analyticsTracker.track(BookingListItemTapped)
     }
@@ -36,16 +46,16 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(BookingNoteAdded)
     }
 
-    suspend fun trackDatePreviousTapped(deltaFromToday: Long) {
-        analyticsTracker.track(BookingDatePreviousTapped(deltaFromToday))
+    suspend fun trackDatePreviousTapped(selectedDate: LocalDate) {
+        analyticsTracker.track(BookingDatePreviousTapped(deltaFromToday(selectedDate)))
     }
 
-    suspend fun trackDateNextTapped(deltaFromToday: Long) {
-        analyticsTracker.track(BookingDateNextTapped(deltaFromToday))
+    suspend fun trackDateNextTapped(selectedDate: LocalDate) {
+        analyticsTracker.track(BookingDateNextTapped(deltaFromToday(selectedDate)))
     }
 
-    suspend fun trackDateCalendarSelected(deltaFromToday: Long) {
-        analyticsTracker.track(BookingDateCalendarSelected(deltaFromToday))
+    suspend fun trackDateCalendarSelected(selectedDate: LocalDate) {
+        analyticsTracker.track(BookingDateCalendarSelected(deltaFromToday(selectedDate)))
     }
 
     suspend fun trackIssueRefundTapped() {
@@ -54,5 +64,10 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
 
     suspend fun trackViewOrderTapped() {
         analyticsTracker.track(BookingViewOrderTapped)
+    }
+
+    private fun deltaFromToday(date: LocalDate): Long {
+        val today = Instant.now(clock).atZone(storeZoneId).toLocalDate()
+        return ChronoUnit.DAYS.between(today, date)
     }
 }

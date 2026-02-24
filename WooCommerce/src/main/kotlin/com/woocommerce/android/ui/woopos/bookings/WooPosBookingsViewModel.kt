@@ -37,7 +37,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 import javax.inject.Inject
 
@@ -358,17 +357,17 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.PreviousDayClicked -> {
                 val newDate = selectedDate.minusDays(1)
                 handleDateChange(newDate)
-                viewModelScope.launch { analyticsTracker.trackDatePreviousTapped(deltaFromToday(newDate)) }
+                viewModelScope.launch { analyticsTracker.trackDatePreviousTapped(newDate) }
             }
             is WooPosBookingsUIEvent.NextDayClicked -> {
                 val newDate = selectedDate.plusDays(1)
                 handleDateChange(newDate)
-                viewModelScope.launch { analyticsTracker.trackDateNextTapped(deltaFromToday(newDate)) }
+                viewModelScope.launch { analyticsTracker.trackDateNextTapped(newDate) }
             }
             is WooPosBookingsUIEvent.DateSelected -> {
                 val newDate = Instant.ofEpochMilli(event.dateMillis).atZone(ZoneOffset.UTC).toLocalDate()
                 handleDateChange(newDate)
-                viewModelScope.launch { analyticsTracker.trackDateCalendarSelected(deltaFromToday(newDate)) }
+                viewModelScope.launch { analyticsTracker.trackDateCalendarSelected(newDate) }
             }
         }
     }
@@ -622,11 +621,6 @@ class WooPosBookingsViewModel @Inject constructor(
             formattedDate = selectedDate.format(formatter),
             selectedDateMillis = millis,
         )
-    }
-
-    private fun deltaFromToday(date: LocalDate): Long {
-        val today = Instant.now(clock).atZone(storeZoneId).toLocalDate()
-        return ChronoUnit.DAYS.between(today, date)
     }
 
     private fun dateRangeForDate(date: LocalDate): BookingsFilterOption.DateRange {
