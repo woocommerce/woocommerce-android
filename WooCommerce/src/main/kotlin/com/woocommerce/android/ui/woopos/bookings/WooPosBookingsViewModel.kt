@@ -591,8 +591,8 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun dateRangeForDate(date: LocalDate): BookingsFilterOption.DateRange {
-        val start = date.atStartOfDay(storeZoneId).toInstant()
-        val end = date.atTime(LocalTime.MAX).atZone(storeZoneId).toInstant()
+        val start = date.atStartOfDay(ZoneOffset.UTC).toInstant()
+        val end = date.atTime(LocalTime.MAX).atZone(ZoneOffset.UTC).toInstant()
         return BookingsFilterOption.DateRange(before = end, after = start)
     }
 }
