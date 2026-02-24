@@ -2,6 +2,9 @@ package com.woocommerce.android.ui.pushnotifications.introduction
 
 import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppUrls
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
@@ -21,7 +24,9 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.SiteModel
 
@@ -47,6 +52,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         )
     }
     private val fetchActiveWCPluginVersion: FetchActiveWCPluginVersion = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private lateinit var viewModel: WooPushNotificationsIntroductionViewModel
 
@@ -55,7 +61,8 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             savedStateHandle = SavedStateHandle(),
             fetchJetpackStatus = fetchJetpackStatus,
             fetchActiveWCPluginVersion = fetchActiveWCPluginVersion,
-            selectedSite = selectedSite
+            selectedSite = selectedSite,
+            analyticsTrackerWrapper = analyticsTrackerWrapper
         )
     }
 
@@ -76,6 +83,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.NotConnected)
+            verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW)
         }
 
     @Test
@@ -220,6 +228,22 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         assertThat(event).isEqualTo(
             WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(isSiteConnectedToJetpack = true)
         )
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "update_plugin"))
+        )
+    }
+
+    @Test
+    fun `when continue is clicked on not connected state, then continue label is tracked`() = testBlocking {
+        setup()
+
+        viewModel.onContinueClick()
+
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "continue"))
+        )
     }
 
     @Test
@@ -242,6 +266,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(Exit)
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "not_now"))
+        )
     }
 
     @Test
