@@ -12,7 +12,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.woocommerce.android.NavGraphJetpackActivationDirections
 import com.woocommerce.android.NavGraphJetpackInstallDirections
-import com.woocommerce.android.NavGraphPushNotificationsDirections
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.ui.base.BaseFragment
@@ -21,7 +20,6 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 import com.woocommerce.android.ui.login.jetpack.GoToStore
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackActivationScreen
 import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowJetpackCPInstallationScreen
-import com.woocommerce.android.ui.login.wpcom.WPComLoginPostLoginViewModel.ShowPushNotificationsConnectionSteps
 import com.woocommerce.android.ui.main.AppBarStatus
 import com.woocommerce.android.ui.main.MainActivity
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -57,17 +55,10 @@ class WPComLoginMagicLinkHandlerFragment : BaseFragment() {
                 is ShowSnackbar -> uiMessageResolver.showSnack(event.message)
                 is ShowJetpackActivationScreen -> navigateToJetpackActivationScreen(event)
                 is ShowJetpackCPInstallationScreen -> navigateToJetpackCPInstallationScreen()
-                is ShowPushNotificationsConnectionSteps -> navigateToPushNotificationsConnectionSteps()
                 is GoToStore -> goToStore()
                 is Exit -> findNavController().popBackStack(R.id.jetpackActivationDispatcherFragment, true)
             }
         }
-    }
-
-    private fun navigateToPushNotificationsConnectionSteps() {
-        findNavController().navigateSafely(
-            NavGraphPushNotificationsDirections.actionGlobalToWooPushNotificationsConnectionStepsFragment()
-        )
     }
 
     private fun navigateToJetpackActivationScreen(event: ShowJetpackActivationScreen) {

@@ -60,7 +60,7 @@ class BookingListHandler @Inject constructor(
         searchQuery: String? = null,
         filters: BookingFilters = BookingFilters.EMPTY,
         sortBy: BookingListSortOption
-    ): Result<Unit> = mutex.withLock {
+    ): Result<Int> = mutex.withLock {
         // Reset pagination attributes
         page.value = 1
         _canLoadMore.set(true)
@@ -80,19 +80,19 @@ class BookingListHandler @Inject constructor(
                 // If the query is empty, return cached results directly
                 // Mimic network delay to allow the UI to show then hide the refreshing indicator
                 delay(MIN_FETCH_DURATION_MS)
-                Result.success(Unit)
+                Result.success(0)
             } else {
                 fetchBookings()
             }
         }
     }
 
-    suspend fun loadMore(): Result<Unit> = mutex.withLock {
-        if (!_canLoadMore.get()) return@withLock Result.success(Unit)
+    suspend fun loadMore(): Result<Int> = mutex.withLock {
+        if (!_canLoadMore.get()) return@withLock Result.success(0)
         return fetchBookings()
     }
 
-    private suspend fun fetchBookings(): Result<Unit> {
+    private suspend fun fetchBookings(): Result<Int> {
         val pageToFetch = page.value
         val isSearching = !searchQuery.value.isNullOrEmpty()
         val order = sortBy.value.toBookingsOrderOption()
@@ -114,7 +114,7 @@ class BookingListHandler @Inject constructor(
                     searchResults.update { it + result.bookings }
                 }
             }
-        }.map { }
+        }.map { it.bookings.size }
     }
 
     private fun BookingListSortOption.toBookingsOrderOption() = when (this) {
