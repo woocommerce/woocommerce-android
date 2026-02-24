@@ -49,6 +49,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
     private val clock: Clock,
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker,
     selectedSite: SelectedSite,
 ) : ViewModel() {
 
@@ -221,6 +222,7 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingSelected(bookingId: Long) {
+        viewModelScope.launch { analyticsTracker.trackListItemTapped() }
         selectedBookingId = bookingId
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
