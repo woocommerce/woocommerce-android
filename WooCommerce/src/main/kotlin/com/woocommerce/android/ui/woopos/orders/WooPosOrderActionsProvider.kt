@@ -14,7 +14,9 @@ class WooPosOrderActionsProvider @Inject constructor() {
             if (isPosRefundsEnabled() && order.status == Order.Status.Completed) {
                 add(WooPosOrdersState.OrderAction.IssueRefund(order.id))
             }
-            add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
+            if (order.status == Order.Status.Completed) {
+                add(WooPosOrdersState.OrderAction.EmailReceipt(order.id))
+            }
         }
     }
 }

@@ -1261,7 +1261,7 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given non-completed order, when order details loaded, then Issue Refund action is absent`() = runTest {
+    fun `given non-completed order, when order details loaded, then Issue Refund and Email Receipt actions are absent`() = runTest {
         // GIVEN
         val testOrder = order(2).copy(status = Order.Status.Pending)
 
@@ -1278,7 +1278,7 @@ class WooPosOrdersViewModelTest {
         val details = state.selectedDetails!!
         val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
         assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
-        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
     }
 
     @Test
