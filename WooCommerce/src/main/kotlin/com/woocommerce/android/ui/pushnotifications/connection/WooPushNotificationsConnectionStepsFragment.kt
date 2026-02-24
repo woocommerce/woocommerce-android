@@ -44,7 +44,7 @@ class WooPushNotificationsConnectionStepsFragment : BaseFragment() {
                     findNavController().navigateSafely(
                         NavGraphMainDirections.actionGlobalAuthenticatedWebViewFragment(
                             urlToLoad = event.url,
-                            displayMode = AuthenticatedWebViewViewModel.DisplayMode.MODAL
+                            displayMode = AuthenticatedWebViewViewModel.DisplayMode.TASK
                         )
                     )
                 }
