@@ -78,7 +78,11 @@ fun WooPosBookingDetails(
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
-                    bottom = 92.dp + WooPosSpacing.Large.value
+                    bottom = if (hasCollectButton) {
+                        92.dp + WooPosSpacing.Large.value + WooPosSpacing.Medium.value
+                    } else {
+                        WooPosSpacing.XLarge.value
+                    }
                 )
         ) {
             BookingHeader(details = details, onUIEvent = onUIEvent)
