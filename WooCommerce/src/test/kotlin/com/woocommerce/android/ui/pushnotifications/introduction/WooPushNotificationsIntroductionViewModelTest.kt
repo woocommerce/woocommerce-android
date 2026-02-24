@@ -200,16 +200,6 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `when continue is clicked, then StartWPComLogin event is triggered`() {
-        setup()
-
-        viewModel.onContinueClick()
-
-        val event = viewModel.event.value
-        assertThat(event).isEqualTo(WooPushNotificationsIntroductionViewModel.StartWPComLogin)
-    }
-
-    @Test
     fun `when update plugin is clicked, then NavigateToConnectionSteps event is triggered`() = testBlocking {
         val jetpackStatus = JetpackStatus(
             isJetpackInstalled = true,
@@ -227,7 +217,9 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
         viewModel.onContinueClick()
 
         val event = viewModel.event.value
-        assertThat(event).isEqualTo(WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps)
+        assertThat(event).isEqualTo(
+            WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps(isSiteConnectedToJetpack = true)
+        )
     }
 
     @Test

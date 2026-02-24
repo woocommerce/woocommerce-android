@@ -11,7 +11,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.extensions.navigateSafely
 import com.woocommerce.android.extensions.navigateToHelpScreen
 import com.woocommerce.android.ui.compose.composeView
-import com.woocommerce.android.ui.login.wpcom.WPComLoginMode
 import com.woocommerce.android.util.ChromeCustomTabUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.NavigateToHelpScreen
@@ -47,19 +46,12 @@ class WooPushNotificationsIntroductionDialog : DialogFragment() {
     private fun setupObservers() {
         viewModel.event.observe(viewLifecycleOwner) { event ->
             when (event) {
-                WooPushNotificationsIntroductionViewModel.StartWPComLogin -> {
+                is WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps -> {
                     findNavController().navigateSafely(
                         WooPushNotificationsIntroductionDialogDirections
-                            .actionWooPushNotificationsIntroductionDialogToWpcomLogin(
-                                wpComLoginMode = WPComLoginMode.PushNotificationsSetup
+                            .actionWooPushNotificationsIntroductionDialogToWooPushNotificationsConnectionStepsFragment(
+                                isSiteConnectedToJetpack = event.isSiteConnectedToJetpack
                             )
-                    )
-                }
-
-                WooPushNotificationsIntroductionViewModel.NavigateToConnectionSteps -> {
-                    findNavController().navigateSafely(
-                        WooPushNotificationsIntroductionDialogDirections
-                            .actionWooPushNotificationsIntroductionDialogToWooPushNotificationsConnectionStepsFragment()
                     )
                 }
 
