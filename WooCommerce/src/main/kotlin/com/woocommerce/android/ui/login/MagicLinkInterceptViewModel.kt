@@ -61,9 +61,6 @@ class MagicLinkInterceptViewModel @Inject constructor(
                         selectedSite.connectionType == SiteConnectionType.ApplicationPasswords -> {
                         handleJetpackConnectionFlow()
                     }
-                    flow == MagicLinkFlow.PushNotificationsSetup -> {
-                        triggerEvent(ContinuePushNotificationsSetup)
-                    }
                     else -> {
                         triggerEvent(OpenSitePicker)
                     }
@@ -135,5 +132,4 @@ class MagicLinkInterceptViewModel @Inject constructor(
         val siteUrl: String
     ) : MultiLiveEvent.Event()
     data object CancelJetpackActivation : MultiLiveEvent.Event()
-    data object ContinuePushNotificationsSetup : MultiLiveEvent.Event()
 }

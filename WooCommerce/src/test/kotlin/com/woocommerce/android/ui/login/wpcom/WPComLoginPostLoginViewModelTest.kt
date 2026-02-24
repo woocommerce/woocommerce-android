@@ -53,7 +53,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(
@@ -76,7 +76,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(GoToStore)
@@ -94,7 +94,7 @@ class WPComLoginPostLoginViewModelTest : BaseUnitTest() {
             val viewModel = createViewModel()
             val events = viewModel.event.captureValues()
 
-            val result = viewModel.onLoginSuccess(WPComLoginMode.JetpackSetup(jetpackStatus))
+            val result = viewModel.onLoginSuccess(jetpackStatus)
 
             assertThat(result.isSuccess).isTrue()
             assertThat(events.last()).isEqualTo(ShowJetpackCPInstallationScreen)

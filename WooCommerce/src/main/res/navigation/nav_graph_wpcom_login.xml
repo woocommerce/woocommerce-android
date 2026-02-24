@@ -9,8 +9,8 @@
         android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginEmailFragment"
         android:label="WPComLoginEmailFragment">
         <argument
-            android:name="wpComLoginMode"
-            app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
         <action
             android:id="@+id/action_wPComLoginEmailFragment_to_wPComLoginPasswordFragment"
             app:destination="@id/wPComLoginPasswordFragment" />
@@ -27,8 +27,8 @@
         android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginPasswordFragment"
         android:label="WPComLoginPasswordFragment">
         <argument
-            android:name="wpComLoginMode"
-            app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
         <argument
             android:name="emailOrUsername"
             app:argType="string" />
@@ -44,8 +44,8 @@
         android:name="com.woocommerce.android.ui.login.wpcom.WPComLogin2FAFragment"
         android:label="WPComLogin2FAFragment">
         <argument
-            android:name="wpComLoginMode"
-            app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
         <argument
             android:name="emailOrUsername"
             app:argType="string" />
@@ -67,8 +67,8 @@
         android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkRequestFragment"
         android:label="WPComLoginMagicLinkRequestFragment">
         <argument
-            android:name="wpComLoginMode"
-            app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
         <argument
             android:name="emailOrUsername"
             app:argType="string" />
@@ -99,7 +99,7 @@
         android:name="com.woocommerce.android.ui.login.wpcom.WPComLoginMagicLinkHandlerFragment"
         android:label="WPComLoginMagicLinkHandlerFragment">
         <argument
-            android:name="wpComLoginMode"
-            app:argType="com.woocommerce.android.ui.login.wpcom.WPComLoginMode" />
+            android:name="jetpackStatus"
+            app:argType="com.woocommerce.android.model.JetpackStatus" />
     </fragment>
 </navigation>
