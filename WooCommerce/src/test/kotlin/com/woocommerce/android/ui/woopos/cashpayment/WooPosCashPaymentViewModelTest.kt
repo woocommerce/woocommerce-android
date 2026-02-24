@@ -258,8 +258,6 @@ class WooPosCashPaymentViewModelTest {
     fun `given source is BOOKINGS, when order completed successfully, then navigation event is OpenPaymentSuccess`() = runTest {
         // GIVEN
         whenever(repository.completeOrder(any(), any())).thenReturn(Result.success(Unit))
-        whenever(resourceProvider.getString(eq(R.string.woopos_totals_success_payment_cash), any()))
-            .thenReturn("A cash payment of 100.00 was successfully made.")
         val savedStateHandle = SavedStateHandle(
             mapOf(
                 CASH_ROUTE_ORDER_ID_KEY to 123L,

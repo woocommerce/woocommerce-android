@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,9 +21,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
-import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosOutlinedButton
@@ -36,45 +36,26 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 
 @Composable
 fun WooPosPaymentSuccessScreen(
-    orderId: Long,
-    orderTotalText: String,
-    source: PaymentSuccessSource,
-    receiptSentMessage: String?,
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
     viewModel: WooPosPaymentSuccessViewModel = hiltViewModel(),
 ) {
-    BackHandler(enabled = true) { }
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigationEvent.collect { event ->
+            onNavigationEvent(event)
+        }
+    }
+
+    BackHandler(enabled = true) {
+        viewModel.onBackPressed()
+    }
 
     PaymentSuccessContent(
-        orderTotalText = orderTotalText,
-        receiptSentMessage = receiptSentMessage,
-        onDoneClicked = {
-            when (source) {
-                PaymentSuccessSource.CARD_CHECKOUT -> {
-                    onNavigationEvent(WooPosNavigationEvent.GoBack)
-                }
-                PaymentSuccessSource.CARD_BOOKINGS -> {
-                    onNavigationEvent(
-                        WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                            BOOKING_CARD_PAYMENT_SUCCESS_KEY,
-                            true
-                        )
-                    )
-                }
-                PaymentSuccessSource.CASH_BOOKINGS -> {
-                    onNavigationEvent(
-                        WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                            BOOKING_CASH_PAYMENT_SUCCESS_KEY,
-                            true
-                        )
-                    )
-                }
-            }
-        },
-        onEmailReceiptClicked = {
-            viewModel.onEmailReceiptClicked()
-            onNavigationEvent(WooPosNavigationEvent.OpenEmailReceipt(orderId))
-        },
+        orderTotalText = state.orderTotalText,
+        receiptSentMessage = state.receiptSentMessage,
+        onDoneClicked = viewModel::onDoneClicked,
+        onEmailReceiptClicked = viewModel::onEmailReceiptClicked,
     )
 }
 

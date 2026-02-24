@@ -135,19 +135,9 @@ class WooPosCashPaymentViewModel @Inject constructor(
                 _state.value = WooPosCashPaymentState.Complete
                 when (source) {
                     CashPaymentSource.BOOKINGS -> {
-                        val order = repository.getOrderById(orderId)
-                        val orderTotalText = if (order != null) {
-                            resourceProvider.getString(
-                                R.string.woopos_totals_success_payment_cash,
-                                priceFormat(order.total)
-                            )
-                        } else {
-                            resourceProvider.getString(R.string.woopos_payment_successful_label)
-                        }
                         _navigationEvent.emit(
                             WooPosNavigationEvent.OpenPaymentSuccess(
                                 orderId = orderId,
-                                orderTotalText = orderTotalText,
                                 source = PaymentSuccessSource.CASH_BOOKINGS,
                             )
                         )

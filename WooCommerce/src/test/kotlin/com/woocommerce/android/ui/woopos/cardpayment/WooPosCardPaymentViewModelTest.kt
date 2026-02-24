@@ -2,11 +2,8 @@ package com.woocommerce.android.ui.woopos.cardpayment
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
-import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReader
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
-import com.woocommerce.android.model.Address
-import com.woocommerce.android.model.Order
 import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
@@ -14,12 +11,10 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,15 +23,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import java.math.BigDecimal
-import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WooPosCardPaymentViewModelTest {
@@ -69,18 +61,9 @@ class WooPosCardPaymentViewModelTest {
     private val uiStringParser: UiStringParser = mock {
         on { asString(any()) }.thenReturn("parsed error")
     }
-    private val priceFormat: WooPosFormatPrice = mock()
-    private val totalsRepository: WooPosTotalsRepository = mock()
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker = mock()
 
     private lateinit var viewModel: WooPosCardPaymentViewModel
-
-    @Before
-    fun setUp() = runTest {
-        val order = Order.getEmptyOrder(Date(), Date()).copy(total = BigDecimal("50.00"))
-        whenever(totalsRepository.getOrderById(any())).thenReturn(order)
-        whenever(priceFormat(any<BigDecimal>())).thenReturn("$50.00")
-    }
 
     private fun createViewModel(
         orderId: Long = 100L,
@@ -101,8 +84,6 @@ class WooPosCardPaymentViewModelTest {
             networkStatus = networkStatus,
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
-            priceFormat = priceFormat,
-            totalsRepository = totalsRepository,
             analyticsTracker = analyticsTracker,
         )
     }
@@ -374,8 +355,6 @@ class WooPosCardPaymentViewModelTest {
             networkStatus = networkStatus,
             resourceProvider = resourceProvider,
             uiStringParser = uiStringParser,
-            priceFormat = priceFormat,
-            totalsRepository = totalsRepository,
             analyticsTracker = analyticsTracker,
         )
         advanceUntilIdle()
@@ -425,57 +404,5 @@ class WooPosCardPaymentViewModelTest {
 
         verify(paymentController).onBackPressed()
         verify(paymentController).stop()
-    }
-
-    @Test
-    fun `given order with billing email, when payment succeeds, then receiptSentMessage is set in nav event`() = runTest {
-        val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
-            total = BigDecimal("50.00"),
-            customer = Order.Customer(
-                billingAddress = Address.EMPTY.copy(email = "customer@example.com"),
-                shippingAddress = Address.EMPTY
-            )
-        )
-        whenever(totalsRepository.getOrderById(any())).thenReturn(orderWithEmail)
-        whenever(
-            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, "customer@example.com")
-        ).thenReturn("A receipt has been sent to customer@example.com.")
-
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-                .ExternalReaderPaymentSuccessful(
-                    amountWithCurrencyLabel = "$50.00",
-                    onPrintReceiptClicked = {},
-                    onSendReceiptClicked = {},
-                    onSaveUserClicked = {}
-                )
-            advanceUntilIdle()
-
-            val event = awaitItem() as WooPosNavigationEvent.OpenPaymentSuccess
-            assertThat(event.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
-        }
-    }
-
-    @Test
-    fun `given order without billing email, when payment succeeds, then receiptSentMessage is null in nav event`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        viewModel.navigationEvent.test {
-            controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-                .ExternalReaderPaymentSuccessful(
-                    amountWithCurrencyLabel = "$50.00",
-                    onPrintReceiptClicked = {},
-                    onSendReceiptClicked = {},
-                    onSaveUserClicked = {}
-                )
-            advanceUntilIdle()
-
-            val event = awaitItem() as WooPosNavigationEvent.OpenPaymentSuccess
-            assertThat(event.receiptSentMessage).isNull()
-        }
     }
 }

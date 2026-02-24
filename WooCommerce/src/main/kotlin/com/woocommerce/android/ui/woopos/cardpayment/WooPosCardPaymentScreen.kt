@@ -421,6 +421,7 @@ private fun CardPaymentCenteredLayout(
         buttons()
     }
 }
+
 @WooPosPreview
 @Composable
 fun CardPaymentInitiatingPreview() {

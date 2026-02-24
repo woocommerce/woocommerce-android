@@ -37,8 +37,6 @@ sealed class WooPosNavigationEvent {
     data class OpenBookingNote(val bookingId: Long) : WooPosNavigationEvent()
     data class OpenPaymentSuccess(
         val orderId: Long,
-        val orderTotalText: String,
         val source: PaymentSuccessSource,
-        val receiptSentMessage: String? = null,
     ) : WooPosNavigationEvent()
 }

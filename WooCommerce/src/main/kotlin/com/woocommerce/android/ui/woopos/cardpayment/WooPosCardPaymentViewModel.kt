@@ -16,11 +16,9 @@ import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
-import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosNetworkStatus
-import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.UiStringParser
 import com.woocommerce.android.viewmodel.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -42,8 +40,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private val networkStatus: WooPosNetworkStatus,
     private val resourceProvider: ResourceProvider,
     private val uiStringParser: UiStringParser,
-    private val priceFormat: WooPosFormatPrice,
-    private val totalsRepository: WooPosTotalsRepository,
     private val analyticsTracker: WooPosCardPaymentAnalyticsTracker,
 ) : ViewModel() {
 
@@ -216,20 +212,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     }
 
     private suspend fun handlePaymentSuccessful() {
-        val order = totalsRepository.getOrderById(orderId)
-        val orderTotalText = if (order != null) {
-            resourceProvider.getString(
-                R.string.woopos_totals_success_payment_card,
-                priceFormat(order.total)
-            )
-        } else {
-            resourceProvider.getString(R.string.woopos_payment_successful_label)
-        }
-        val receiptSentMessage = order?.billingAddress?.email
-            ?.takeIf { it.isNotBlank() }
-            ?.let { email ->
-                resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
-            }
         val successSource = when (source) {
             CardPaymentSource.CHECKOUT -> PaymentSuccessSource.CARD_CHECKOUT
             CardPaymentSource.BOOKINGS -> PaymentSuccessSource.CARD_BOOKINGS
@@ -237,9 +219,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
         _navigationEvent.emit(
             WooPosNavigationEvent.OpenPaymentSuccess(
                 orderId = orderId,
-                orderTotalText = orderTotalText,
                 source = successSource,
-                receiptSentMessage = receiptSentMessage,
             )
         )
     }

@@ -88,9 +88,7 @@ fun NavHostController.handleNavigationEvent(
         is WooPosNavigationEvent.OpenPaymentSuccess ->
             navigateToPaymentSuccessScreen(
                 event.orderId,
-                event.orderTotalText,
                 event.source,
-                event.receiptSentMessage,
             )
     }
 }
