@@ -24,7 +24,7 @@ open class WPComLoginPostLoginViewModel(
         return when (wpComLoginMode) {
             is WPComLoginMode.JetpackSetup -> handleJetpackSetupPostLogin(wpComLoginMode.jetpackStatus)
             WPComLoginMode.PushNotificationsSetup -> {
-                triggerEvent(ShowPushNotificationsConnectionSteps)
+                // no-op, TODO cleanup this code
                 Result.success(Unit)
             }
         }
@@ -68,6 +68,4 @@ open class WPComLoginPostLoginViewModel(
     ) : MultiLiveEvent.Event()
 
     object ShowJetpackCPInstallationScreen : MultiLiveEvent.Event()
-
-    object ShowPushNotificationsConnectionSteps : MultiLiveEvent.Event()
 }

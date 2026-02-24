@@ -1,10 +1,8 @@
 package com.woocommerce.android.ui.pushnotifications.connection
 
-import androidx.lifecycle.SavedStateHandle
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
-import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -45,17 +43,12 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val stringUtils: StringUtils = mock()
 
-    private suspend fun setup(prepareMocks: suspend () -> Unit = {}) {
-        whenever(
-            jetpackActivationRepository.connectJetpackAccount(
-                any(),
-                any<JetpackConnectionStatus.AccountNotConnected>(),
-                any()
-            )
-        )
-            .thenReturn(Result.success(Unit))
-        whenever(jetpackActivationRepository.fetchJetpackSite(any()))
-            .thenReturn(Result.success(site))
+    private suspend fun setup(
+        isStoreAlreadyConnected: Boolean = false,
+        prepareMocks: suspend () -> Unit = {}
+    ) {
+        whenever(jetpackActivationRepository.registerSite(any(), any()))
+            .thenReturn(Result.success(1L))
         whenever(stringUtils.getSiteDomainAndPath(site))
             .thenReturn(site.name)
         prepareMocks()
@@ -65,7 +58,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             pushNotificationRepository = pushNotificationRepository,
             jetpackActivationRepository = jetpackActivationRepository,
             stringUtils = stringUtils,
-            savedStateHandle = SavedStateHandle()
+            savedStateHandle = WooPushNotificationsConnectionStepsFragmentArgs(
+                isSiteConnectedToJetpack = isStoreAlreadyConnected
+            ).toSavedStateHandle()
         )
     }
 
@@ -134,16 +129,10 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `given connect account returns forbidden, when ConnectStore runs, then permission error is shown`() =
+    fun `given register site returns forbidden, when ConnectStore runs, then permission error is shown`() =
         testBlocking {
             setup {
-                whenever(
-                    jetpackActivationRepository.connectJetpackAccount(
-                        any(),
-                        any<JetpackConnectionStatus.AccountNotConnected>(),
-                        any()
-                    )
-                )
+                whenever(jetpackActivationRepository.registerSite(any(), any()))
                     .thenReturn(
                         Result.failure(
                             OnChangedException(
@@ -170,10 +159,10 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given confirm connection fails, when ConnectStore runs, then generic error is shown`() = testBlocking {
+    fun `given register site fails, when ConnectStore runs, then generic error is shown`() = testBlocking {
         setup {
-            whenever(jetpackActivationRepository.fetchJetpackSite(any()))
-                .thenReturn(Result.failure(Exception("confirmation failed")))
+            whenever(jetpackActivationRepository.registerSite(any(), any()))
+                .thenReturn(Result.failure(Exception("registration failed")))
         }
 
         val state = viewModel.viewState.runAndGetValue {
