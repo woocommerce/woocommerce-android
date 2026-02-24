@@ -239,7 +239,7 @@ fun `given user is logged in, when refresh is pulled, then data reloads`() = tes
 - Don't force unwrap with `!!` — handle nullability properly
 - Don't create new XML layouts for Compose screens — use `ComposeView` in Fragment
 - Don't use `remember` outside of `@Composable` functions
-- Don't pass `ViewModel` instances between composables — pass state and callbacks instead
+- Don't pass `ViewModel` instances between composables — pass state and callbacks instead. Exception: a single top-level wrapper composable that accepts the ViewModel, observes its state, and delegates to a stateless overload is acceptable.
 
 ## Environment Setup
 
