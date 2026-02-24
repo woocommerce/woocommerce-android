@@ -124,7 +124,7 @@ google-upload-credentials.json
 # Agent config local files (Claude, Codex, etc.)
 # Keep main config files under version control, ignore user-local overrides
 **/CLAUDE.local.md
-**/.claude/*.local.*
-**/.codex/*.local.*
+**/.claude/**/*.local.*
+**/.codex/**/*.local.*
 
 .grepai/
