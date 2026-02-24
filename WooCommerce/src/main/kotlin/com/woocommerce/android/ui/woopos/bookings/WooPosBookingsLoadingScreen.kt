@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -26,7 +25,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -39,7 +37,11 @@ import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosThe
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 @Composable
-fun WooPosBookingsLoadingScreen(modifier: Modifier = Modifier) {
+fun WooPosBookingsLoadingScreen(
+    dateSelectorState: DateSelectorState,
+    onUIEvent: (WooPosBookingsUIEvent) -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Row(
         modifier = modifier.fillMaxSize()
     ) {
@@ -57,7 +59,10 @@ fun WooPosBookingsLoadingScreen(modifier: Modifier = Modifier) {
                     .heightIn(min = WOO_POS_BOOKINGS_TOOLBAR_HEIGHT),
             )
 
-            ShimmerDateSelector()
+            WooPosBookingsDateSelector(
+                dateSelectorState = dateSelectorState,
+                onUIEvent = onUIEvent,
+            )
 
             WooPosBookingsListLoadingPane(
                 modifier = Modifier.fillMaxSize()
@@ -113,41 +118,6 @@ fun WooPosBookingsBookingLoadingRow() {
 }
 
 @Composable
-private fun ShimmerDateSelector() {
-    val buttonHeight = 40.dp
-    val buttonCornerRadius = 8.dp
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = WooPosSpacing.Medium.value,
-                vertical = WooPosSpacing.Medium.value,
-            ),
-        horizontalArrangement = Arrangement.spacedBy(WooPosSpacing.Small.value),
-    ) {
-        WooPosShimmerBox(
-            modifier = Modifier
-                .size(buttonHeight)
-                .clip(RoundedCornerShape(buttonCornerRadius))
-        )
-
-        WooPosShimmerBox(
-            modifier = Modifier
-                .weight(1f)
-                .height(buttonHeight)
-                .clip(RoundedCornerShape(buttonCornerRadius))
-        )
-
-        WooPosShimmerBox(
-            modifier = Modifier
-                .size(buttonHeight)
-                .clip(RoundedCornerShape(buttonCornerRadius))
-        )
-    }
-}
-
-@Composable
 private fun ShimmerBadge(text: String) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
@@ -187,6 +157,12 @@ fun BookingDetailsLoadingPane(modifier: Modifier = Modifier) {
 @Composable
 fun WooPosBookingsLoadingStatePreview() {
     WooPosTheme {
-        WooPosBookingsLoadingScreen()
+        WooPosBookingsLoadingScreen(
+            dateSelectorState = DateSelectorState(
+                formattedDate = "23 Feb, Mon",
+                selectedDateMillis = System.currentTimeMillis(),
+            ),
+            onUIEvent = {},
+        )
     }
 }

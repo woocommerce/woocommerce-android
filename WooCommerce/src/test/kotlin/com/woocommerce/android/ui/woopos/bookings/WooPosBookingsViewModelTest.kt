@@ -172,8 +172,8 @@ class WooPosBookingsViewModelTest {
         )
         whenever(
             bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
-        ).thenReturn(Result.success(Unit))
-        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        ).thenReturn(Result.success(0))
+        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(0))
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
@@ -222,7 +222,7 @@ class WooPosBookingsViewModelTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-            .thenReturn(Result.success(Unit))
+            .thenReturn(Result.success(0))
 
         // WHEN
         viewModel = createViewModel()
@@ -264,7 +264,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -306,7 +306,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -332,7 +332,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -477,7 +477,7 @@ class WooPosBookingsViewModelTest {
         viewModel.onEndOfBookingsListReached()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
+        whenever(bookingListHandler.loadMore()).thenReturn(Result.success(0))
 
         // WHEN
         viewModel.onPaginationErrorTryAgain()
@@ -499,7 +499,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(1000)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         viewModel = createViewModel()
@@ -534,7 +534,7 @@ class WooPosBookingsViewModelTest {
             whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -561,7 +561,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -1059,7 +1059,7 @@ class WooPosBookingsViewModelTest {
             whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1119,7 +1119,7 @@ class WooPosBookingsViewModelTest {
             whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1142,7 +1142,7 @@ class WooPosBookingsViewModelTest {
             whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
-                    Result.success(Unit)
+                    Result.success(0)
                 }
 
             // WHEN
@@ -1225,7 +1225,7 @@ class WooPosBookingsViewModelTest {
     }
 
     @Test
-    fun `given date changed and cache empty, when fetch in progress, then state stays Searching`() = runTest {
+    fun `given date changed and cache empty, when fetch in progress, then state stays Loading`() = runTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
@@ -1240,7 +1240,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -1252,7 +1252,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         val content = viewModel.state.value as WooPosBookingsState.Content
-        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Searching::class.java)
+        assertThat(content.items).isInstanceOf(WooPosBookingsState.Content.Items.Loading::class.java)
     }
 
     @Test
@@ -1271,7 +1271,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
-                Result.success(Unit)
+                Result.success(0)
             }
 
         // WHEN
@@ -1302,7 +1302,7 @@ class WooPosBookingsViewModelTest {
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
         whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-            .thenReturn(Result.success(Unit))
+            .thenReturn(Result.success(0))
 
         // WHEN
         viewModel.onUIEvent(WooPosBookingsUIEvent.NextDayClicked)
