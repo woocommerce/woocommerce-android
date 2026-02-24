@@ -65,11 +65,12 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             }
             val receiptSentMessage = when (source) {
                 PaymentSuccessSource.CARD_CHECKOUT,
-                PaymentSuccessSource.CARD_BOOKINGS -> order?.billingAddress?.email
-                    ?.takeIf { it.isNotBlank() }
-                    ?.let { email ->
-                        resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
-                    }
+                PaymentSuccessSource.CARD_BOOKINGS ->
+                    order?.billingAddress?.email
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { email ->
+                            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, email)
+                        }
                 PaymentSuccessSource.CASH_BOOKINGS -> null
             }
             _state.value = PaymentSuccessViewState(
