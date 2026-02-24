@@ -82,7 +82,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             val result = bookingListHandler.loadBookings(
                 filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             )
             val current = _state.value
             result.onFailure { error ->
@@ -250,7 +250,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             ).onSuccess {
                 val current = _state.value
                 if (current is WooPosBookingsState.Content) {
