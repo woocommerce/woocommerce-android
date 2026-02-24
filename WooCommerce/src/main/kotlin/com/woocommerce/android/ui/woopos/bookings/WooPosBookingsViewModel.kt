@@ -497,6 +497,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
+                viewModelScope.launch { analyticsTracker.trackIssueRefundTapped() }
                 val currentState = _state.value as? WooPosBookingsState.Content ?: return
                 _state.value = currentState.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(

@@ -6,6 +6,7 @@ import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Eve
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingDateCalendarSelected
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingDateNextTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingDatePreviousTapped
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingIssueRefundTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingListItemTapped
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingNoteAdded
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsTracker
@@ -44,5 +45,9 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
 
     suspend fun trackDateCalendarSelected(deltaFromToday: Long) {
         analyticsTracker.track(BookingDateCalendarSelected(deltaFromToday))
+    }
+
+    suspend fun trackIssueRefundTapped() {
+        analyticsTracker.track(BookingIssueRefundTapped)
     }
 }

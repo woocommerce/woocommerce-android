@@ -197,6 +197,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             }
         }
 
+        data object BookingIssueRefundTapped : Event() {
+            override val name: String = "booking_issue_refund_tapped"
+        }
+
         data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }
