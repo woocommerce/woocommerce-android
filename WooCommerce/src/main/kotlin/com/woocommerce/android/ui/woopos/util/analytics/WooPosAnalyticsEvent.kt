@@ -165,6 +165,10 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "booking_cancel_failed"
         }
 
+        data object BookingAttendanceChanged : Event() {
+            override val name: String = "booking_attendance_changed"
+        }
+
         data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }

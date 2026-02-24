@@ -419,7 +419,9 @@ class WooPosBookingsViewModel @Inject constructor(
             bookingsRepository.updateAttendanceStatus(
                 bookingId = details.id,
                 attendanceStatus = entityStatus,
-            ).onFailure {
+            ).onSuccess {
+                analyticsTracker.trackAttendanceChanged()
+            }.onFailure {
                 val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
                 val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
                 if (rollbackDetails.id != details.id) return@onFailure

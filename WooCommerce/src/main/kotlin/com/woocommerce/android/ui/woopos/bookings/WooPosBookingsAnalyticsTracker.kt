@@ -1,5 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingAttendanceChanged
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingCancelFailed
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingCancelled
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BookingListItemTapped
@@ -19,5 +20,9 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
 
     suspend fun trackBookingCancelFailed() {
         analyticsTracker.track(BookingCancelFailed)
+    }
+
+    suspend fun trackAttendanceChanged() {
+        analyticsTracker.track(BookingAttendanceChanged)
     }
 }
