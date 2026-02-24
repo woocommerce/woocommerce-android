@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
@@ -46,17 +48,15 @@ class WooPosBookingsViewModel @Inject constructor(
     private val mapper: WooPosBookingViewStateMapper,
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
-    clock: Clock,
+    private val clock: Clock,
+    selectedSite: SelectedSite,
 ) : ViewModel() {
 
     companion object {
         private const val MIN_LOADING_DURATION_MS = 300L
     }
 
-    private var selectedBookingId: Long? = null
-    private var selectedDate: LocalDate = LocalDate.now(clock)
-    private var fetchJob: Job? = null
-    private var loadMoreJob: Job? = null
+    private val storeZoneId = selectedSite.get().clock.zone
 
     private val _state = MutableStateFlow<WooPosBookingsState>(
         WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
@@ -72,6 +72,12 @@ class WooPosBookingsViewModel @Inject constructor(
     private val _toastEvent = MutableSharedFlow<String>()
     val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
 
+    private var selectedBookingId: Long? = null
+    private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
+    private var fetchJob: Job? = null
+    private var loadMoreJob: Job? = null
+
+
     init {
         observeBookings()
         fetchBookings()
@@ -84,7 +90,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             val result = bookingListHandler.loadBookings(
                 filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             )
             val current = _state.value
             result.onFailure { error ->
@@ -250,7 +256,7 @@ class WooPosBookingsViewModel @Inject constructor(
         fetchJob = viewModelScope.launch {
             bookingListHandler.loadBookings(
                 filters = BookingFilters(dateRange = dateRangeForDate(selectedDate)),
-                sortBy = BookingListSortOption.NewestToOldest
+                sortBy = BookingListSortOption.OldestToNewest
             ).onSuccess {
                 val current = _state.value
                 if (current is WooPosBookingsState.Content) {
@@ -327,6 +333,11 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingsLoadingErrorRetryButtonClicked() {
+        _state.value = WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
+        fetchBookings()
+    }
+
+    fun onBookingsEmptyActionClicked() {
         _state.value = WooPosBookingsState.Loading(dateSelectorState = buildDateSelectorState())
         fetchBookings()
     }
@@ -464,7 +475,11 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.EmailReceipt -> {
-                // TBD: handle email receipt
+                viewModelScope.launch {
+                    _navigationEvent.emit(
+                        WooPosNavigationEvent.OpenEmailReceipt(orderId = action.orderId)
+                    )
+                }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
                 val currentState = _state.value as? WooPosBookingsState.Content ?: return
@@ -591,8 +606,8 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun dateRangeForDate(date: LocalDate): BookingsFilterOption.DateRange {
-        val start = date.atTime(LocalTime.MIDNIGHT).atOffset(ZoneOffset.UTC).toInstant()
-        val end = date.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant()
+        val start = date.atStartOfDay(storeZoneId).toInstant()
+        val end = date.atTime(LocalTime.MAX).atZone(storeZoneId).toInstant()
         return BookingsFilterOption.DateRange(before = end, after = start)
     }
 }

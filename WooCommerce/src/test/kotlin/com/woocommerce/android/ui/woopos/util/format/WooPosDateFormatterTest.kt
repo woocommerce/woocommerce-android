@@ -2,14 +2,17 @@ package com.woocommerce.android.ui.woopos.util.format
 
 import android.content.Context
 import com.woocommerce.android.R
+import com.woocommerce.android.tools.SelectedSite
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.model.SiteModel
 import java.time.Clock
 import java.time.Duration
 import java.time.Instant
@@ -22,7 +25,16 @@ class WooPosDateFormatterTest {
     private val fixedInstant = Instant.parse("2024-01-15T15:30:00Z")
     private val fixedClock = Clock.fixed(fixedInstant, ZoneId.of("UTC"))
     private val is24HourFormat: Is24HourFormat = mock()
-    private var formatter: WooPosDateFormatter = WooPosDateFormatter(context, fixedClock, is24HourFormat)
+
+    private fun createSelectedSite(timezone: String = "0"): SelectedSite {
+        val siteModel = SiteModel().apply { this.timezone = timezone }
+        return mock {
+            on { get() } doAnswer { siteModel }
+        }
+    }
+
+    private var formatter: WooPosDateFormatter =
+        WooPosDateFormatter(context, fixedClock, is24HourFormat, createSelectedSite())
     private lateinit var originalLocale: Locale
 
     @Before
@@ -225,8 +237,21 @@ class WooPosDateFormatterTest {
     fun `when formatShortDate called, then returns short locale date`() {
         val instant = Instant.parse("2025-03-15T10:00:00Z")
 
-        val result = formatter.formatShortDate(instant)
+        val result = formatter.formatShortDateInStoreTimeZone(instant)
 
+        assertThat(result).isEqualTo("3/15/25")
+    }
+
+    @Test
+    fun `given store in UTC-5, when formatShortDate called near midnight UTC, then date reflects store timezone`() {
+        // GIVEN
+        val storeFormatter = WooPosDateFormatter(context, fixedClock, is24HourFormat, createSelectedSite("-5"))
+        val instant = Instant.parse("2025-03-16T03:00:00Z")
+
+        // WHEN
+        val result = storeFormatter.formatShortDateInStoreTimeZone(instant)
+
+        // THEN — 3 AM UTC is still March 15 in UTC-5
         assertThat(result).isEqualTo("3/15/25")
     }
 

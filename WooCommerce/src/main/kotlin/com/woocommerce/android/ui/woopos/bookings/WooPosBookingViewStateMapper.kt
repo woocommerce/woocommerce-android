@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.normalizeDuration
 import com.woocommerce.android.util.toHumanReadableFormat
@@ -11,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.inject.Inject
@@ -21,7 +23,9 @@ class WooPosBookingViewStateMapper @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val paymentStatusResolver: WooPosPaymentStatusResolver,
     private val timeRangeFormatter: WooPosBookingTimeRangeFormatter,
+    private val selectedSite: SelectedSite,
 ) {
+    private val storeZoneId: ZoneId by lazy { selectedSite.get().clock.zone }
 
     suspend fun mapToItemViewState(
         booking: BookingEntity,
@@ -57,7 +61,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         resourceName: String?,
     ): WooPosBookingsState.BookingDetailsViewState {
         val detailsDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-            .withZone(ZoneOffset.UTC)
+            .withZone(storeZoneId)
 
         val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
         val appointmentTime = formatTimeRange(booking)
@@ -84,9 +88,9 @@ class WooPosBookingViewStateMapper @Inject constructor(
             actionsState = WooPosBookingsState.BookingActionsState.Loaded(
                 buildList {
                     add(WooPosBookingsState.BookingAction.ViewOrder(booking.orderId))
-                    add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
-                    val isPaid = isBookingPaid(booking.status, paymentStatus)
-                    if (isPaid) {
+                    val paymentState = resolvePaymentState(booking.status, paymentStatus)
+                    if (paymentState == PaymentState.Paid) {
+                        add(WooPosBookingsState.BookingAction.EmailReceipt(booking.orderId))
                         add(WooPosBookingsState.BookingAction.IssueRefund(booking.orderId))
                     }
                     if (booking.isCancellable) {
@@ -137,13 +141,19 @@ class WooPosBookingViewStateMapper @Inject constructor(
         return WooPosBookingsState.AttendanceSection(selection = selection)
     }
 
-    private fun isBookingPaid(
+    private enum class PaymentState { Paid, Refunded, Unpaid }
+
+    private fun resolvePaymentState(
         bookingStatus: BookingEntity.Status,
         paymentStatus: PaymentStatus,
-    ): Boolean = when (bookingStatus) {
-        BookingEntity.Status.Paid, BookingEntity.Status.Complete -> true
-        BookingEntity.Status.Cancelled -> paymentStatus == PaymentStatus.PAID
-        else -> false
+    ): PaymentState = when (bookingStatus) {
+        BookingEntity.Status.Paid, BookingEntity.Status.Complete -> PaymentState.Paid
+        BookingEntity.Status.Cancelled -> when (paymentStatus) {
+            PaymentStatus.PAID -> PaymentState.Paid
+            PaymentStatus.REFUNDED -> PaymentState.Refunded
+            else -> PaymentState.Unpaid
+        }
+        else -> PaymentState.Unpaid
     }
 
     private fun buildPaymentSection(
@@ -152,7 +162,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     ): WooPosBookingsState.PaymentSection {
         val paymentInfo = booking.order.paymentInfo
         val currency = booking.currency
-        val isPaid = isBookingPaid(booking.status, paymentStatus)
+        val paymentState = resolvePaymentState(booking.status, paymentStatus)
 
         val totalAmount = paymentInfo?.let { formatPrice(it.total + it.totalTax, currency) } ?: "-"
 
@@ -168,8 +178,8 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 }
             } ?: "-",
             totalAmount = totalAmount,
-            paidWithLabel = if (isPaid) paymentInfo?.paymentMethodTitle else null,
-            collectPaymentLabel = if (!isPaid) totalAmount else null,
+            paidWithLabel = if (paymentState == PaymentState.Paid) paymentInfo?.paymentMethodTitle else null,
+            collectPaymentLabel = if (paymentState == PaymentState.Unpaid) totalAmount else null,
         )
     }
 

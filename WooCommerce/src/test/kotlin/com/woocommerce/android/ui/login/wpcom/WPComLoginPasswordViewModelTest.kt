@@ -1,6 +1,5 @@
 package com.woocommerce.android.ui.login.wpcom
 
-import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
@@ -67,10 +66,8 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
         testBlocking {
             setup()
             whenever(wpComLoginRepository.login(EMAIL, PASSWORD)).thenReturn(
-                Result.failure(
-                    OnChangedException(
-                        AuthenticationError(AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED, "")
-                    )
+                WPComLoginRepository.LoginResult.Error(
+                    AuthenticationError(AuthenticationErrorType.EMAIL_LOGIN_NOT_ALLOWED, "")
                 )
             )
 
