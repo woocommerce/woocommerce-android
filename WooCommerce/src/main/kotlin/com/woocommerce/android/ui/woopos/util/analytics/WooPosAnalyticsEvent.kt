@@ -173,6 +173,30 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "booking_note_added"
         }
 
+        data class BookingDatePreviousTapped(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_previous_tapped"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
+        data class BookingDateNextTapped(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_next_tapped"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
+        data class BookingDateCalendarSelected(val deltaFromToday: Long) : Event() {
+            override val name: String = "booking_date_calendar_selected"
+
+            init {
+                addProperties(mapOf("delta_from_today" to deltaFromToday.toString()))
+            }
+        }
+
         data object OrdersListPullToRefreshTriggered : Event() {
             override val name: String = "orders_list_pull_to_refresh"
         }
