@@ -114,7 +114,8 @@ class WooPosBookingsViewModel @Inject constructor(
                         )
                     }
                 }
-            }.onSuccess {
+            }.onSuccess { fetchedCount ->
+                if (fetchedCount > 0) return@onSuccess
                 when {
                     current is WooPosBookingsState.Loading -> {
                         _state.value = buildNothingFoundState()
