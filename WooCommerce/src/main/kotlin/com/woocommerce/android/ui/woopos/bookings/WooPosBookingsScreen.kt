@@ -58,6 +58,7 @@ import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
 import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
+import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_ORDER_ALREADY_PAID_KEY
 import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
@@ -127,6 +128,17 @@ fun WooPosBookingsScreen(
         if (cardPaymentResult.value) {
             viewModel.onPaymentCompleted()
             backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
+        }
+    }
+
+    val orderAlreadyPaidResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_ORDER_ALREADY_PAID_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(orderAlreadyPaidResult.value) {
+        if (orderAlreadyPaidResult.value) {
+            viewModel.onPaymentCompleted()
+            backStackEntry.savedStateHandle[BOOKING_ORDER_ALREADY_PAID_KEY] = false
         }
     }
 

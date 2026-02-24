@@ -395,6 +395,74 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
+    fun `given BOOKINGS source and order already paid error, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted with order already paid key`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                viewModel.onBackClicked()
+
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+                val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+                assertThat(navEvent.key).isEqualTo(BOOKING_ORDER_ALREADY_PAID_KEY)
+                assertThat(navEvent.value).isEqualTo(true)
+            }
+        }
+
+    @Test
+    fun `given BOOKINGS source and order already paid error, when onDismissClicked, then NavigateBackToBookingsAfterPayment emitted with order already paid key`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            controllerEventFlow.emit(
+                CardReaderPaymentEvent.ShowErrorMessage(
+                    com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+                )
+            )
+            advanceUntilIdle()
+
+            viewModel.navigationEvent.test {
+                viewModel.onDismissClicked()
+
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+                val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+                assertThat(navEvent.key).isEqualTo(BOOKING_ORDER_ALREADY_PAID_KEY)
+                assertThat(navEvent.value).isEqualTo(true)
+            }
+        }
+
+    @Test
+    fun `given CHECKOUT source and order already paid error, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
+        advanceUntilIdle()
+
+        controllerEventFlow.emit(
+            CardReaderPaymentEvent.ShowErrorMessage(
+                com.woocommerce.android.R.string.card_reader_payment_order_paid_payment_cancelled
+            )
+        )
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onBackClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBack::class.java)
+        }
+    }
+
+    @Test
     fun `given BOOKINGS source, when onCashPaymentClicked, then payment is cancelled`() = runTest {
         viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
         advanceUntilIdle()

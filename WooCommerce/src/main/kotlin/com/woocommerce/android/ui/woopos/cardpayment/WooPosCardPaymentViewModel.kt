@@ -61,6 +61,7 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var controllerEventJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
     private var analyticsTrackerJob: Job? = null
+    private var isOrderAlreadyPaid: Boolean = false
 
     init {
         observeCardReaderStatus()
@@ -185,6 +186,9 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             is CardReaderPaymentEvent.ShowErrorMessage -> event.message
                             is CardReaderPaymentEvent.ShowPaymentErrorMessage -> event.message
                         }
+                        if (messageRes == R.string.card_reader_payment_order_paid_payment_cancelled) {
+                            isOrderAlreadyPaid = true
+                        }
                         _state.value = WooPosCardPaymentState.PaymentFailed(
                             title = resourceProvider.getString(
                                 R.string.woopos_success_totals_payment_failed_title
@@ -278,15 +282,26 @@ class WooPosCardPaymentViewModel @Inject constructor(
             return
         }
         cancelPayment()
-        viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
-        }
+        navigateBack()
     }
 
     fun onDismissClicked() {
         cancelPayment()
+        navigateBack()
+    }
+
+    private fun navigateBack() {
         viewModelScope.launch {
-            _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            if (source == CardPaymentSource.BOOKINGS && isOrderAlreadyPaid) {
+                _navigationEvent.emit(
+                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
+                        BOOKING_ORDER_ALREADY_PAID_KEY,
+                        true
+                    )
+                )
+            } else {
+                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            }
         }
     }
 
