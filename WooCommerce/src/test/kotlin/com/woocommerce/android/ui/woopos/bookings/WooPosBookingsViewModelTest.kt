@@ -1410,7 +1410,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(anyOrNull(), filtersCaptor.capture(), eq(BookingListSortOption.NewestToOldest))
+                .loadBookings(anyOrNull(), filtersCaptor.capture(), eq(BookingListSortOption.OldestToNewest))
             val dateRange = filtersCaptor.lastValue.dateRange as BookingsFilterOption.DateRange
             assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T05:00:00Z"))
             assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-16T04:59:59.999999999Z"))
