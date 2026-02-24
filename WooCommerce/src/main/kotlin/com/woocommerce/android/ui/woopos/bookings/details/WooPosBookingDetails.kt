@@ -130,7 +130,7 @@ fun WooPosBookingDetails(
                     )
             ) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = panelAlpha),
+                    color = WooPosTheme.colors.outlineVariant.copy(alpha = panelAlpha),
                     thickness = 0.5.dp,
                 )
                 WooPosButton(
@@ -532,7 +532,10 @@ private fun CopyableRow(
 @Composable
 private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    HorizontalDivider(
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.5.dp,
+    )
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 
