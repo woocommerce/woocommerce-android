@@ -49,7 +49,9 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
     private var hasAutoOpenedUpdate: Boolean
         get() = savedState.get<Boolean>(KEY_HAS_AUTO_OPENED_UPDATE) ?: false
-        set(value) { savedState[KEY_HAS_AUTO_OPENED_UPDATE] = value }
+        set(value) {
+            savedState[KEY_HAS_AUTO_OPENED_UPDATE] = value
+        }
 
     private val currentStep = savedStateHandle.getStateFlow(
         scope = viewModelScope,
@@ -141,14 +143,17 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
                 markCurrentStepAsCompleted()
                 advanceToNextStep()
             }
+
             is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> {
                 markCurrentStepAsFailed(
-                    UiString.UiStringRes(
+                    message = UiString.UiStringRes(
                         R.string.woo_push_notifications_connection_steps_error_plugin_update_required,
                         listOf(UiString.UiStringText(result.currentVersion))
-                    )
+                    ),
+                    errorType = StepState.ErrorType.PLUGIN_UPDATE_REQUIRED
                 )
             }
+
             CheckWooPluginPushNotificationsSupport.Result.Error -> {
                 markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
             }
@@ -176,19 +181,39 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         )
     }
 
+    private suspend fun registerPushNotifications() {
+        val token = appPrefsWrapper.getFCMToken()
+        if (token.isEmpty()) {
+            markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error)
+            return
+        }
+
+        val site = selectedSite.get()
+        pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
+            onSuccess = { markCurrentStepAsCompleted() },
+            onFailure = { markCurrentStepAsFailed(R.string.woo_push_notifications_connection_steps_generic_error) }
+        )
+    }
+
     private fun markCurrentStepAsCompleted() {
         currentStep.update { it.copy(state = StepState.Success) }
     }
 
-    private fun markCurrentStepAsFailed(@StringRes messageRes: Int) {
+    private fun markCurrentStepAsFailed(
+        @StringRes messageRes: Int,
+        errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
+    ) {
         currentStep.update { current ->
-            current.copy(state = StepState.Error(messageRes))
+            current.copy(state = StepState.Error(messageRes, errorType))
         }
     }
 
-    private fun markCurrentStepAsFailed(message: UiString) {
+    private fun markCurrentStepAsFailed(
+        message: UiString,
+        errorType: StepState.ErrorType = StepState.ErrorType.GENERIC_ERROR
+    ) {
         currentStep.update { current ->
-            current.copy(state = StepState.Error(message))
+            current.copy(state = StepState.Error(message, errorType))
         }
     }
 
@@ -215,26 +240,6 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         }
     }
 
-    private suspend fun registerPushNotifications() {
-        val token = appPrefsWrapper.getFCMToken()
-        if (token.isEmpty()) {
-            currentStep.update {
-                it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
-            }
-            return
-        }
-
-        val site = selectedSite.get()
-        pushNotificationRepository.registerPushTokenInWooCoreSystem(token, site).fold(
-            onSuccess = { markCurrentStepAsCompleted() },
-            onFailure = {
-                currentStep.update {
-                    it.copy(state = StepState.Error(R.string.woo_push_notifications_connection_steps_generic_error))
-                }
-            }
-        )
-    }
-
     private fun getSiteAddress(): String {
         val site = selectedSite.get()
         return stringUtils.getSiteDomainAndPath(site).ifBlank { site.name.orEmpty() }
@@ -246,7 +251,10 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     ) {
         val isDone = steps.all { it.state == StepState.Success }
         val isError = steps.any { it.state is StepState.Error }
-        val isPluginUpdateRequired = steps.first { it.type == StepType.CheckPluginCompatibility }.state is StepState.Error
+        val isPluginUpdateRequired = steps.first { it.type == StepType.CheckPluginCompatibility }
+            .let {
+                it.state is StepState.Error && it.state.errorType == StepState.ErrorType.PLUGIN_UPDATE_REQUIRED
+            }
     }
 
     @Parcelize
@@ -272,9 +280,24 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
         data object Success : StepState
 
         @Parcelize
-        data class Error(val errorMessage: UiString) : StepState {
-            constructor(message: String) : this(UiString.UiStringText(message))
-            constructor(@StringRes messageRes: Int) : this(UiString.UiStringRes(messageRes))
+        data class Error(
+            val errorMessage: UiString,
+            val errorType: ErrorType = ErrorType.GENERIC_ERROR
+        ) : StepState {
+            constructor(
+                message: String,
+                errorType: ErrorType = ErrorType.GENERIC_ERROR
+            ) : this(UiString.UiStringText(message), errorType)
+
+            constructor(
+                @StringRes messageRes: Int,
+                errorType: ErrorType = ErrorType.GENERIC_ERROR
+            ) : this(UiString.UiStringRes(messageRes), errorType)
+        }
+
+        enum class ErrorType {
+            GENERIC_ERROR,
+            PLUGIN_UPDATE_REQUIRED
         }
     }
 

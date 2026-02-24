@@ -166,6 +166,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
             assertThat(state.steps[0].type).isEqualTo(StepType.CheckPluginCompatibility)
             assertThat(state.steps[0].state).isInstanceOf(StepState.Error::class.java)
+            assertThat(state.isPluginUpdateRequired).isFalse()
         }
 
     @Test
