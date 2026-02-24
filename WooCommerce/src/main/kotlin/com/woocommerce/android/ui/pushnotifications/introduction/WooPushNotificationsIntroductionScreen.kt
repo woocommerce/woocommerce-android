@@ -35,6 +35,7 @@ import com.woocommerce.android.ui.compose.component.Toolbar
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
+import com.woocommerce.android.ui.login.wpcom.components.WPComConsent
 import com.woocommerce.android.ui.pushnotifications.WordPressWooBadge
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 
@@ -260,6 +261,15 @@ private fun IntroContent(
             Text(
                 text = stringResource(id = R.string.woo_push_notifications_introduction_not_now),
                 color = MaterialTheme.colorScheme.onSurface
+            )
+        }
+
+        if (!isUpdateRequired) {
+            WPComConsent(
+                forJetpackSetup = false,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
             )
         }
     }
