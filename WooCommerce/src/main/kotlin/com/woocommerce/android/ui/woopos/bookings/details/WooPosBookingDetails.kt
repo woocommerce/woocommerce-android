@@ -91,14 +91,14 @@ fun WooPosBookingDetails(
 
             BookingDetailsCard(details = details)
 
-            details.customerSection?.let { section ->
-                Spacer(Modifier.height(WooPosSpacing.Large.value))
-                BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
-            }
-
             details.attendanceSection?.let { section ->
                 Spacer(Modifier.height(WooPosSpacing.Large.value))
                 BookingAttendanceSection(attendanceSection = section, onUIEvent = onUIEvent)
+            }
+
+            details.customerSection?.let { section ->
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+                BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
             }
 
             Spacer(Modifier.height(WooPosSpacing.Large.value))
