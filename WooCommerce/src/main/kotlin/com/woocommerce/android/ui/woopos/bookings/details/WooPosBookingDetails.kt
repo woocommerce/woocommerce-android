@@ -88,7 +88,7 @@ fun WooPosBookingDetails(
             BookingDetailsCard(details = details)
 
             details.customerSection?.let { section ->
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
                 BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
             }
 
