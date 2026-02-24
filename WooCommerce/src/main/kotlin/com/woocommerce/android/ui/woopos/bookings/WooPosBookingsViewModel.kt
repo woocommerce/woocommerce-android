@@ -3,6 +3,8 @@ package com.woocommerce.android.ui.woopos.bookings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.bookings.BookingsRepository
 import com.woocommerce.android.ui.bookings.list.BookingListHandler
 import com.woocommerce.android.ui.bookings.list.BookingListSortOption
@@ -47,11 +49,14 @@ class WooPosBookingsViewModel @Inject constructor(
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
     private val clock: Clock,
+    selectedSite: SelectedSite,
 ) : ViewModel() {
 
     companion object {
         private const val MIN_LOADING_DURATION_MS = 300L
     }
+
+    private val storeZoneId = selectedSite.get().clock.zone
 
     private val _state = MutableStateFlow<WooPosBookingsState>(WooPosBookingsState.Loading)
     val state: StateFlow<WooPosBookingsState> = _state.asStateFlow()
@@ -66,7 +71,7 @@ class WooPosBookingsViewModel @Inject constructor(
     val toastEvent: SharedFlow<String> = _toastEvent.asSharedFlow()
 
     private var selectedBookingId: Long? = null
-    private var selectedDate: LocalDate = LocalDate.now(clock)
+    private var selectedDate: LocalDate = Instant.now(clock).atZone(storeZoneId).toLocalDate()
     private var fetchJob: Job? = null
     private var loadMoreJob: Job? = null
 
@@ -586,8 +591,8 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     private fun dateRangeForDate(date: LocalDate): BookingsFilterOption.DateRange {
-        val start = date.atTime(LocalTime.MIDNIGHT).atOffset(ZoneOffset.UTC).toInstant()
-        val end = date.atTime(LocalTime.MAX).atOffset(ZoneOffset.UTC).toInstant()
+        val start = date.atStartOfDay(storeZoneId).toInstant()
+        val end = date.atTime(LocalTime.MAX).atZone(storeZoneId).toInstant()
         return BookingsFilterOption.DateRange(before = end, after = start)
     }
 }

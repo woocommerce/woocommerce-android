@@ -1,5 +1,7 @@
 package com.woocommerce.android.ui.woopos.bookings
 
+import com.woocommerce.android.extensions.clock
+import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.util.normalizeDuration
 import com.woocommerce.android.util.toHumanReadableFormat
@@ -11,7 +13,7 @@ import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import org.wordpress.android.fluxc.persistence.entity.isCancellable
 import java.math.BigDecimal
 import java.time.Duration
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import javax.inject.Inject
@@ -21,7 +23,9 @@ class WooPosBookingViewStateMapper @Inject constructor(
     private val formatPrice: WooPosFormatPrice,
     private val paymentStatusResolver: WooPosPaymentStatusResolver,
     private val timeRangeFormatter: WooPosBookingTimeRangeFormatter,
+    private val selectedSite: SelectedSite,
 ) {
+    private val storeZoneId: ZoneId by lazy { selectedSite.get().clock.zone }
 
     suspend fun mapToItemViewState(
         booking: BookingEntity,
@@ -57,7 +61,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
         resourceName: String?,
     ): WooPosBookingsState.BookingDetailsViewState {
         val detailsDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-            .withZone(ZoneOffset.UTC)
+            .withZone(storeZoneId)
 
         val bookingName = booking.order.productInfo?.name ?: "#${booking.id.value}"
         val appointmentTime = formatTimeRange(booking)
