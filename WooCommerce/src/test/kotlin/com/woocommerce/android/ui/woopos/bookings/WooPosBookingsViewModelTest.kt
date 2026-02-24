@@ -171,7 +171,7 @@ class WooPosBookingsViewModelTest {
             flowOf(listOf(booking(1), booking(2)))
         )
         whenever(
-            bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
         ).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(Unit))
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
@@ -205,7 +205,7 @@ class WooPosBookingsViewModelTest {
     fun `given fetch fails and state is Loading, when init, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("Network error")))
 
         // WHEN
@@ -221,7 +221,7 @@ class WooPosBookingsViewModelTest {
     fun `given no bookings exist, when init completes, then state is Content with NothingFound`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(flowOf(emptyList()))
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.success(Unit))
 
         // WHEN
@@ -261,7 +261,7 @@ class WooPosBookingsViewModelTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -303,7 +303,7 @@ class WooPosBookingsViewModelTest {
         bookingsFlow.emit(listOf(booking(1)))
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -322,14 +322,14 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when PTR, then state becomes Loading`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -349,7 +349,7 @@ class WooPosBookingsViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         // WHEN
@@ -365,13 +365,13 @@ class WooPosBookingsViewModelTest {
     fun `given refresh fails on non-content, when PTR, then state is Error`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("first error")))
 
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("refresh error")))
 
         // WHEN
@@ -395,7 +395,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         verify(bookingListHandler, times(2))
-            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
     }
 
     @Test
@@ -496,7 +496,7 @@ class WooPosBookingsViewModelTest {
         // GIVEN
         val bookingsFlow = MutableSharedFlow<List<BookingEntity>>()
         whenever(bookingListHandler.bookingsFlow).thenReturn(bookingsFlow)
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(1000)
                 Result.success(Unit)
@@ -524,14 +524,14 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
             advanceUntilIdle()
             assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Error::class.java)
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -546,7 +546,7 @@ class WooPosBookingsViewModelTest {
             verify(bookingListHandler, times(2)).loadBookings(
                 anyOrNull(),
                 any(),
-                eq(BookingListSortOption.NewestToOldest)
+                eq(BookingListSortOption.OldestToNewest)
             )
         }
 
@@ -558,7 +558,7 @@ class WooPosBookingsViewModelTest {
         viewModel = createViewModel()
         advanceUntilIdle()
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -573,7 +573,7 @@ class WooPosBookingsViewModelTest {
         verify(bookingListHandler, times(2)).loadBookings(
             anyOrNull(),
             any(),
-            eq(BookingListSortOption.NewestToOldest)
+            eq(BookingListSortOption.OldestToNewest)
         )
     }
 
@@ -581,7 +581,7 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when onIssueRefundDialogDismissed, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -599,7 +599,7 @@ class WooPosBookingsViewModelTest {
     fun `given non-content state, when onBookingSelected, then state remains unchanged`() = runTest {
         // GIVEN
         whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("error")))
 
         viewModel = createViewModel()
@@ -674,7 +674,7 @@ class WooPosBookingsViewModelTest {
         runTest {
             // GIVEN
             whenever(bookingListHandler.bookingsFlow).thenReturn(MutableSharedFlow())
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .thenReturn(Result.failure(RuntimeException("error")))
 
             viewModel = createViewModel()
@@ -1011,6 +1011,31 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
+    fun `given EmailReceipt action, when BookingMenuActionClicked, then OpenEmailReceipt event emitted with correct orderId`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val orderId = content.selectedDetails!!.orderId
+
+            viewModel.navigationEvent.test {
+                // WHEN
+                viewModel.onUIEvent(
+                    WooPosBookingsUIEvent.BookingMenuActionClicked(
+                        WooPosBookingsState.BookingAction.EmailReceipt(orderId = orderId)
+                    )
+                )
+
+                // THEN
+                val event = awaitItem()
+                assertThat(event).isInstanceOf(WooPosNavigationEvent.OpenEmailReceipt::class.java)
+                val emailEvent = event as WooPosNavigationEvent.OpenEmailReceipt
+                assertThat(emailEvent.orderId).isEqualTo(orderId)
+            }
+        }
+
+    @Test
     fun `given cancel confirmed successfully, when handling event, then pullToRefreshState stays Enabled`() =
         runTest {
             // GIVEN
@@ -1031,7 +1056,7 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -1074,7 +1099,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
         }
 
     @Test
@@ -1091,7 +1116,7 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -1114,7 +1139,7 @@ class WooPosBookingsViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
                 .doSuspendableAnswer {
                     delay(Long.MAX_VALUE)
                     Result.success(Unit)
@@ -1196,7 +1221,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN
         verify(bookingListHandler, times(2))
-            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
     }
 
     @Test
@@ -1212,7 +1237,7 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -1243,7 +1268,7 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .doSuspendableAnswer {
                 delay(Long.MAX_VALUE)
                 Result.success(Unit)
@@ -1276,7 +1301,7 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.success(Unit))
 
         // WHEN
@@ -1301,7 +1326,7 @@ class WooPosBookingsViewModelTest {
         advanceUntilIdle()
         assertThat(viewModel.state.value).isInstanceOf(WooPosBookingsState.Content::class.java)
 
-        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest)))
+        whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
             .thenReturn(Result.failure(RuntimeException("network error")))
 
         // WHEN
@@ -1330,7 +1355,7 @@ class WooPosBookingsViewModelTest {
 
         // THEN - only 2 loadBookings calls: initial + last date change (intermediate ones cancelled)
         verify(bookingListHandler, times(2))
-            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+            .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
         val content = viewModel.state.value as WooPosBookingsState.Content
         assertThat(content.dateSelectorState?.formattedDate).isNotEqualTo(initialDate)
     }
@@ -1350,7 +1375,7 @@ class WooPosBookingsViewModelTest {
 
             // THEN
             verify(bookingListHandler, times(2))
-                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.NewestToOldest))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
             val content = viewModel.state.value as WooPosBookingsState.Content
             assertThat(content.dateSelectorState?.selectedDateMillis).isEqualTo(selectedDateMillis)
         }

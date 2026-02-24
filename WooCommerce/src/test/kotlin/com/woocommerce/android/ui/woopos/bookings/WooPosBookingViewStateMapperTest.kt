@@ -21,6 +21,7 @@ import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderIn
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingProductInfo
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
@@ -96,7 +97,7 @@ class WooPosBookingViewStateMapperTest {
         whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
-        val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
 
         // THEN
         assertThat(result.id).isEqualTo(1L)
@@ -114,7 +115,7 @@ class WooPosBookingViewStateMapperTest {
         whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
-        val result = mapper.mapToItemViewState(booking, selectedBookingId = null)
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
 
         // THEN
         assertThat(result.isCancelled).isTrue()
@@ -278,6 +279,34 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given paid booking, when mapped to details, then actions include EmailReceipt`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Paid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.PAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).anyMatch { it is WooPosBookingsState.BookingAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given unpaid booking, when mapped to details, then actions do not include EmailReceipt`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Unpaid)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        val actions = (result.actionsState as WooPosBookingsState.BookingActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosBookingsState.BookingAction.EmailReceipt }
+    }
+
+    @Test
     fun `given paid booking, when mapped to details, then actions include IssueRefund`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Paid)
@@ -388,6 +417,19 @@ class WooPosBookingViewStateMapperTest {
     }
 
     @Test
+    fun `given cancelled refunded booking, when mapped to details, then collectPaymentLabel is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.REFUNDED)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null)
+
+        // THEN
+        assertThat(result.paymentSection.collectPaymentLabel).isNull()
+    }
+
+    @Test
     fun `given complete booking, when mapped to details, then actions do not include CancelBooking`() = runTest {
         // GIVEN
         val booking = sampleBooking(status = BookingEntity.Status.Complete)
@@ -417,6 +459,68 @@ class WooPosBookingViewStateMapperTest {
             assertThat(viewOrderAction).hasSize(1)
             assertThat(viewOrderAction.first().orderId).isEqualTo(420L)
         }
+
+    @Test
+    fun `given resource with full name, when mapped to item, then team member has correct initials`() = runTest {
+        // GIVEN
+        val booking = sampleBooking()
+        val resource = sampleResource(name = "John Doe")
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = resource)
+
+        // THEN
+        assertThat(result.teamMember).isNotNull
+        assertThat(result.teamMember?.initials).isEqualTo("JD")
+        assertThat(result.teamMember?.avatarUrl).isNull()
+    }
+
+    @Test
+    fun `given resource with avatar url, when mapped to item, then team member has avatar url`() = runTest {
+        // GIVEN
+        val booking = sampleBooking()
+        val resource = sampleResource(name = "Jane", imageUrl = "https://example.com/avatar.jpg")
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = resource)
+
+        // THEN
+        assertThat(result.teamMember?.avatarUrl).isEqualTo("https://example.com/avatar.jpg")
+        assertThat(result.teamMember?.initials).isEqualTo("J")
+    }
+
+    @Test
+    fun `given null resource, when mapped to item, then team member is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking()
+        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
+
+        // THEN
+        assertThat(result.teamMember).isNull()
+    }
+
+    private fun sampleResource(
+        name: String = "John Doe",
+        imageUrl: String? = null,
+    ): BookingResourceEntity {
+        return BookingResourceEntity(
+            id = RemoteId(1L),
+            localSiteId = LocalId(1),
+            name = name,
+            qty = 1,
+            role = null,
+            email = null,
+            phoneNumber = null,
+            imageId = 0L,
+            imageUrl = imageUrl,
+            description = null,
+        )
+    }
 
     private fun sampleBooking(
         id: Long = 1L,
