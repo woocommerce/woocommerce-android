@@ -3,6 +3,10 @@ package com.woocommerce.android.ui.pushnotifications.connection
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
+import com.woocommerce.android.WooException
+import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.analytics.AnalyticsTracker
+import com.woocommerce.android.analytics.AnalyticsTrackerWrapper
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
@@ -21,8 +25,13 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.wordpress.android.fluxc.network.BaseRequest
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooError
+import org.wordpress.android.fluxc.network.rest.wpcom.wc.WooErrorType
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.store.JetpackStore
 
@@ -42,6 +51,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     private val pushNotificationRepository: PushNotificationRepository = mock()
     private val jetpackActivationRepository: JetpackActivationRepository = mock()
     private val stringUtils: StringUtils = mock()
+    private val analyticsTrackerWrapper: AnalyticsTrackerWrapper = mock()
 
     private suspend fun setup(
         isStoreAlreadyConnected: Boolean = false,
@@ -58,6 +68,7 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
             pushNotificationRepository = pushNotificationRepository,
             jetpackActivationRepository = jetpackActivationRepository,
             stringUtils = stringUtils,
+            analyticsTrackerWrapper = analyticsTrackerWrapper,
             savedStateHandle = WooPushNotificationsConnectionStepsFragmentArgs(
                 isSiteConnectedToJetpack = isStoreAlreadyConnected
             ).toSavedStateHandle()
@@ -114,6 +125,32 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(Exit)
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_CLOSE)
+    }
+
+    @Test
+    fun `when go to store is clicked, then tracks tap and close events`() = testBlocking {
+        setup()
+
+        viewModel.onGoToStoreClick()
+
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "go_to_my_store"))
+        )
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_CLOSE)
+    }
+
+    @Test
+    fun `when retry is clicked, then try again is tracked`() = testBlocking {
+        setup()
+
+        viewModel.onRetryClick()
+
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "try_again"))
+        )
     }
 
     @Test
@@ -156,6 +193,17 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
                         R.string.woo_push_notifications_connection_steps_error_connection_permission_message
                     )
                 )
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_ERROR),
+                eq(
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to "connect_wpcom",
+                        AnalyticsTracker.KEY_ERROR_DESC to "Forbidden",
+                        AnalyticsTracker.KEY_ERROR_CODE to "403",
+                        AnalyticsTracker.KEY_ERROR_TYPE to "JetpackError"
+                    )
+                )
+            )
         }
 
     @Test
@@ -209,6 +257,43 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
     }
 
     @Test
+    fun `given push registration fails with WooException, when EnablePushNotifications runs, then tracks error details`() =
+        testBlocking {
+            setup {
+                whenever(appPrefsWrapper.getFCMToken()).thenReturn("test-token")
+                whenever(pushNotificationRepository.registerPushTokenInWooCoreSystem(any(), any()))
+                    .thenReturn(
+                        Result.failure(
+                            WooException(
+                                WooError(
+                                    type = WooErrorType.API_ERROR,
+                                    original = BaseRequest.GenericErrorType.SERVER_ERROR,
+                                    message = "Server error",
+                                    apiErrorCode = "rest_forbidden"
+                                )
+                            )
+                        )
+                    )
+            }
+
+            viewModel.viewState.runAndGetValue {
+                advanceUntilIdle()
+            }
+
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_ERROR),
+                eq(
+                    mapOf(
+                        AnalyticsTracker.KEY_STEP to "enable_push_notifications",
+                        AnalyticsTracker.KEY_ERROR_DESC to "Server error",
+                        AnalyticsTracker.KEY_ERROR_CODE to "rest_forbidden",
+                        AnalyticsTracker.KEY_ERROR_TYPE to "API_ERROR"
+                    )
+                )
+            )
+        }
+
+    @Test
     fun `given empty FCM token, when EnablePushNotifications runs, then step is Error`() = testBlocking {
         setup {
             whenever(appPrefsWrapper.getFCMToken()).thenReturn("")
@@ -260,5 +345,9 @@ class WooPushNotificationsConnectionStepsViewModelTest : BaseUnitTest() {
         assertThat(state.steps[0].state).isEqualTo(StepState.Success)
         assertThat(state.steps[1].type).isEqualTo(StepType.ConnectStore)
         assertThat(state.steps[1].state).isEqualTo(StepState.Success)
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_SUCCESS),
+            eq(mapOf(AnalyticsTracker.KEY_STEP to "enable_push_notifications"))
+        )
     }
 }
