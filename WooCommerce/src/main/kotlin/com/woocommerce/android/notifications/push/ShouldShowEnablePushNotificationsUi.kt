@@ -1,6 +1,5 @@
 package com.woocommerce.android.notifications.push
 
-import com.woocommerce.android.notifications.push.PushNotificationRegistrationStatus.Status
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.tools.SiteConnectionType
 import com.woocommerce.android.tools.connectionType
@@ -30,7 +29,7 @@ class ShouldShowEnablePushNotificationsUi @Inject constructor(
                     flowOf(false)
                 } else {
                     pushNotificationRegistrationStatus.observe(site.siteId).map { registrationStatus ->
-                        registrationStatus != Status.REGISTERED_WOO_ONLY && registrationStatus != Status.REGISTERED_BOTH
+                        !registrationStatus.isWooRegistered
                     }
                 }
             }
