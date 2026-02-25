@@ -282,7 +282,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given token stored but plugin not found, when isWooPushTokenRegisteredForSite called, then returns false`() =
+    fun `given token stored but plugin version not cached, when isWooPushTokenRegisteredForSite called, then returns true`() =
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn("token-id-1")
@@ -290,7 +290,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
 
-            assertThat(result).isFalse()
+            assertThat(result).isTrue()
         }
 
     @Test
@@ -317,7 +317,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given token stored but plugin not found, when observeWooPushTokenRegisteredForSite, then emits false`() =
+    fun `given token stored but plugin version not cached, when observeWooPushTokenRegisteredForSite, then emits true`() =
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn("token-id-1")
@@ -325,7 +325,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
 
             val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
 
-            assertThat(result).isFalse()
+            assertThat(result).isTrue()
         }
 
     @Test

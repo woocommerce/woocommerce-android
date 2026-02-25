@@ -148,7 +148,7 @@ class PushNotificationRepository @Inject constructor(
         val tokenKey = getPushTokenKeyForSite(siteId)
         val isTokenStored = preferences[tokenKey] != null
         return isTokenStored &&
-            checkWooPluginPushNotificationsSupport(forceRefresh = false) == CheckWooPluginPushNotificationsSupport.Result.Compatible
+            checkWooPluginPushNotificationsSupport(forceRefresh = false) !is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired
     }
 
     fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
@@ -156,7 +156,7 @@ class PushNotificationRepository @Inject constructor(
         return pushNotificationsDataStore.data.map { preferences ->
             val isTokenStored = preferences[tokenKey] != null
             isTokenStored &&
-                checkWooPluginPushNotificationsSupport(forceRefresh = false) == CheckWooPluginPushNotificationsSupport.Result.Compatible
+                checkWooPluginPushNotificationsSupport(forceRefresh = false) !is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired
         }
     }
 
