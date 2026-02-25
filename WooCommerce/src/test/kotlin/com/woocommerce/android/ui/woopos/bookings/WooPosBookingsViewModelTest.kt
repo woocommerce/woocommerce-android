@@ -99,6 +99,7 @@ class WooPosBookingsViewModelTest {
     }
     private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker = mock()
     private val clock: Clock = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
     private lateinit var viewModel: WooPosBookingsViewModel
 
@@ -155,6 +156,7 @@ class WooPosBookingsViewModelTest {
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
             clock = clock,
+            analyticsTracker = analyticsTracker,
             selectedSite = selectedSite,
         )
     }
@@ -1435,4 +1437,94 @@ class WooPosBookingsViewModelTest {
             assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T00:00:00Z"))
             assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-15T23:59:59.999999999Z"))
         }
+
+    @Test
+    fun `given cancel confirmed successfully, when handling event, then tracks booking cancelled`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).trackBookingCancelled()
+        }
+
+    @Test
+    fun `given cancel confirmed with failure, when handling event, then tracks cancel failed`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.failure(RuntimeException("Network error")))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).trackBookingCancelFailed(any(), any())
+        }
+
+    @Test
+    fun `given attendance toggled successfully, when handling event, then tracks attendance changed`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.success(Unit))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).trackAttendanceChanged()
+    }
+
+    @Test
+    fun `given attendance toggle fails, when handling event, then tracks attendance change failed`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).trackAttendanceChangeFailed(any(), any())
+    }
 }

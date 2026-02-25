@@ -49,6 +49,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private val clipboardHelper: WooPosClipboardHelper,
     private val resourceProvider: ResourceProvider,
     private val clock: Clock,
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker,
     selectedSite: SelectedSite,
 ) : ViewModel() {
 
@@ -221,6 +222,7 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingSelected(bookingId: Long) {
+        viewModelScope.launch { analyticsTracker.trackListItemTapped() }
         selectedBookingId = bookingId
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val items = (currentState.items as? WooPosBookingsState.Content.Items.Loaded) ?: return
@@ -352,11 +354,21 @@ class WooPosBookingsViewModel @Inject constructor(
             is WooPosBookingsUIEvent.CopyPhoneClicked -> handleCopyToClipboard(event.phone)
             is WooPosBookingsUIEvent.CancelBookingConfirmed -> handleCancelConfirmed()
             is WooPosBookingsUIEvent.CancelBookingDismissed -> handleCancelDismissed()
-            is WooPosBookingsUIEvent.PreviousDayClicked -> handleDateChange(selectedDate.minusDays(1))
-            is WooPosBookingsUIEvent.NextDayClicked -> handleDateChange(selectedDate.plusDays(1))
-            is WooPosBookingsUIEvent.DateSelected -> handleDateChange(
-                Instant.ofEpochMilli(event.dateMillis).atZone(ZoneOffset.UTC).toLocalDate()
-            )
+            is WooPosBookingsUIEvent.PreviousDayClicked -> {
+                val newDate = selectedDate.minusDays(1)
+                handleDateChange(newDate)
+                viewModelScope.launch { analyticsTracker.trackDatePreviousTapped(newDate) }
+            }
+            is WooPosBookingsUIEvent.NextDayClicked -> {
+                val newDate = selectedDate.plusDays(1)
+                handleDateChange(newDate)
+                viewModelScope.launch { analyticsTracker.trackDateNextTapped(newDate) }
+            }
+            is WooPosBookingsUIEvent.DateSelected -> {
+                val newDate = Instant.ofEpochMilli(event.dateMillis).atZone(ZoneOffset.UTC).toLocalDate()
+                handleDateChange(newDate)
+                viewModelScope.launch { analyticsTracker.trackDateCalendarSelected(newDate) }
+            }
         }
     }
 
@@ -417,7 +429,10 @@ class WooPosBookingsViewModel @Inject constructor(
             bookingsRepository.updateAttendanceStatus(
                 bookingId = details.id,
                 attendanceStatus = entityStatus,
-            ).onFailure {
+            ).onSuccess {
+                analyticsTracker.trackAttendanceChanged()
+            }.onFailure { error ->
+                analyticsTracker.trackAttendanceChangeFailed(this@WooPosBookingsViewModel::class, error)
                 val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
                 val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
                 if (rollbackDetails.id != details.id) return@onFailure
@@ -453,6 +468,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleAddBookingNote() {
         val bookingId = selectedBookingId ?: return
         viewModelScope.launch {
+            analyticsTracker.trackAddNoteTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenBookingNote(bookingId))
         }
     }
@@ -469,6 +485,7 @@ class WooPosBookingsViewModel @Inject constructor(
         when (action) {
             is WooPosBookingsState.BookingAction.ViewOrder -> {
                 viewModelScope.launch {
+                    analyticsTracker.trackViewOrderTapped()
                     _navigationEvent.emit(
                         WooPosNavigationEvent.OpenOrderDetails(orderId = action.orderId)
                     )
@@ -482,6 +499,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
             }
             is WooPosBookingsState.BookingAction.IssueRefund -> {
+                viewModelScope.launch { analyticsTracker.trackIssueRefundTapped() }
                 val currentState = _state.value as? WooPosBookingsState.Content ?: return
                 _state.value = currentState.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.IssueRefund(
@@ -539,10 +557,15 @@ class WooPosBookingsViewModel @Inject constructor(
             val result = bookingsRepository.cancelBooking(bookingId)
             val state = _state.value as? WooPosBookingsState.Content ?: return@launch
             _state.value = if (result.isSuccess) {
+                analyticsTracker.trackBookingCancelled()
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.Hidden
                 )
             } else {
+                analyticsTracker.trackBookingCancelFailed(
+                    this@WooPosBookingsViewModel::class,
+                    result.exceptionOrNull() ?: Exception("Unknown error")
+                )
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(
                         bookingId = dialog.bookingId,
