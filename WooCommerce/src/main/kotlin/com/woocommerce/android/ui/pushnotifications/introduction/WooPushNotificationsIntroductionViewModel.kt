@@ -105,7 +105,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onCloseClick() {
-        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_CLOSE)
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_CLOSE)
         triggerEvent(Exit)
     }
 

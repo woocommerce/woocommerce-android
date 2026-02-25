@@ -273,14 +273,14 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when close is clicked, then flow close is tracked and Exit event is triggered`() {
+    fun `when close is clicked, then introduction close is tracked and Exit event is triggered`() {
         setup()
 
         viewModel.onCloseClick()
 
         val event = viewModel.event.value
         assertThat(event).isEqualTo(Exit)
-        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_CLOSE)
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_CLOSE)
     }
 
     @Test
