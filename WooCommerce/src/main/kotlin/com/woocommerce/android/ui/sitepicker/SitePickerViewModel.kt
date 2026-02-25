@@ -32,6 +32,7 @@ import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.H
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.NonWooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.SitePickerViewModel.SitesListItem.WooSiteUiModel
 import com.woocommerce.android.ui.sitepicker.sitevisibility.GetWooVisibleSites
+import com.woocommerce.android.ui.sitepicker.sitevisibility.VisibleWooSitesDataStore
 import com.woocommerce.android.util.WooLog
 import com.woocommerce.android.viewmodel.LiveDataDelegate
 import com.woocommerce.android.viewmodel.MultiLiveEvent
@@ -70,6 +71,7 @@ class SitePickerViewModel @Inject constructor(
     private val userEligibilityFetcher: UserEligibilityFetcher,
     private val experimentTracker: ExperimentTracker,
     private val getWooVisibleSites: GetWooVisibleSites,
+    private val visibleWooSitesDataStore: VisibleWooSitesDataStore,
     private val registerDevice: RegisterDevice
 ) : ScopedViewModel(savedState) {
     companion object {
@@ -295,7 +297,7 @@ class SitePickerViewModel @Inject constructor(
      * - Connected to the same account the user logged in with
      * - Has WooCommerce installed
      */
-    private fun processLoginSiteAddress(url: String) {
+    private suspend fun processLoginSiteAddress(url: String) {
         val site = repository.getSiteBySiteUrl(url)
         when {
             site == null -> {
@@ -315,6 +317,9 @@ class SitePickerViewModel @Inject constructor(
             else -> {
                 // We have a pre-validation woo store. Attempt to just
                 // login with this store directly.
+                if (getWooVisibleSites().none { it.siteId == site.siteId }) {
+                    visibleWooSitesDataStore.updateSiteVisibilityStatus(mapOf(site.siteId to true))
+                }
                 onSiteSelected(site)
                 onContinueButtonClick(true)
             }
