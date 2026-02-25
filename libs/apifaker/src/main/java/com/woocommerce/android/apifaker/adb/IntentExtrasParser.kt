@@ -42,15 +42,21 @@ internal object IntentExtrasParser {
 
     fun parseResponseBody(intent: Intent): String? {
         intent.getStringExtra(Extras.RESPONSE_BODY_FILE)?.let { filePath ->
-            return File(filePath).readText()
+            return readFileContent(filePath)
         }
         return intent.getStringExtra(Extras.RESPONSE_BODY)
     }
 
     fun parseRequestBody(intent: Intent): String? {
         intent.getStringExtra(Extras.REQUEST_BODY_FILE)?.let { filePath ->
-            return File(filePath).readText()
+            return readFileContent(filePath)
         }
         return intent.getStringExtra(Extras.REQUEST_BODY)
+    }
+
+    private fun readFileContent(filePath: String): String {
+        val file = File(filePath)
+        require(file.exists()) { "File not found: $filePath" }
+        return file.readText()
     }
 }

@@ -47,7 +47,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 |-------|------|---------|-------------|
 | `custom_host` | string | - | Required when `api_type` is `custom`. The host to match (e.g., `api.stripe.com`) |
 | `http_method` | string | any | HTTP method: `GET`, `POST`, `PUT`, `DELETE`, `PATCH` |
-| `query_params` | string | - | Comma-separated `key=value` pairs (e.g., `per_page=10,status=publish`) |
+| `query_params` | string | - | Comma-separated `key=value` pairs (e.g., `per_page=10,status=publish`). Note: values cannot contain commas |
 | `request_body` | string | - | Request body pattern to match |
 | `request_body_file` | string | - | Path to file containing request body pattern (takes priority over `request_body`) |
 | `response_status_code` | int | 200 | HTTP status code for the mocked response |
