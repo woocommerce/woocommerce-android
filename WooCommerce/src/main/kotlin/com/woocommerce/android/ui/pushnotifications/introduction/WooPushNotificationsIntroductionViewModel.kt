@@ -104,6 +104,11 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         triggerEvent(Exit)
     }
 
+    fun onCloseClick() {
+        analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_CLOSE)
+        triggerEvent(Exit)
+    }
+
     fun onWhatIsWPComClick() {
         triggerEvent(OpenUrlEvent(AppUrls.LOGIN_WITH_EMAIL_WHAT_IS_WORDPRESS_COM_ACCOUNT))
     }
