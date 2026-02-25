@@ -19,9 +19,6 @@ const val CARD_PAYMENT_ROUTE =
         "?$CARD_PAYMENT_ROUTE_SOURCE_KEY={$CARD_PAYMENT_ROUTE_SOURCE_KEY}" +
         "&$CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY={$CARD_PAYMENT_ROUTE_SHOW_CASH_PAYMENT_KEY}"
 
-const val BOOKING_CARD_PAYMENT_SUCCESS_KEY = "booking_card_payment_success"
-const val BOOKING_ORDER_ALREADY_PAID_KEY = "booking_order_already_paid"
-
 enum class CardPaymentSource {
     CHECKOUT,
     BOOKINGS,

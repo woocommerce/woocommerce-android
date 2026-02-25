@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.paymentsuccess.PaymentSuccessSource
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.analytics.WooPosAnalyticsEvent.Event.BackToCheckoutFromCash
@@ -172,6 +173,15 @@ class WooPosCashPaymentViewModel @Inject constructor(
     fun onBackClicked() {
         viewModelScope.launch {
             analyticsTracker.track(BackToCheckoutFromCash)
+            when (source) {
+                CashPaymentSource.BOOKINGS -> _navigationEvent.emit(
+                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
+                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
+                        true
+                    )
+                )
+                CashPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+            }
         }
     }
 

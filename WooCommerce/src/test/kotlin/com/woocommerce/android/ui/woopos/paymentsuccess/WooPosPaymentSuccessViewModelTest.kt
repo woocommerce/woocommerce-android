@@ -5,9 +5,8 @@ import app.cash.turbine.test
 import com.woocommerce.android.R
 import com.woocommerce.android.model.Address
 import com.woocommerce.android.model.Order
-import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
-import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -188,7 +187,7 @@ class WooPosPaymentSuccessViewModelTest {
         viewModel.navigationEvent.test {
             viewModel.onDoneClicked()
             val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_CARD_PAYMENT_SUCCESS_KEY)
+            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
             assertThat(event.value).isEqualTo(true)
         }
     }
@@ -204,7 +203,7 @@ class WooPosPaymentSuccessViewModelTest {
         viewModel.navigationEvent.test {
             viewModel.onDoneClicked()
             val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_CASH_PAYMENT_SUCCESS_KEY)
+            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
             assertThat(event.value).isEqualTo(true)
         }
     }
@@ -220,7 +219,7 @@ class WooPosPaymentSuccessViewModelTest {
         viewModel.navigationEvent.test {
             viewModel.onBackPressed()
             val event = awaitItem() as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-            assertThat(event.key).isEqualTo(BOOKING_CARD_PAYMENT_SUCCESS_KEY)
+            assertThat(event.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
             assertThat(event.value).isEqualTo(true)
         }
     }

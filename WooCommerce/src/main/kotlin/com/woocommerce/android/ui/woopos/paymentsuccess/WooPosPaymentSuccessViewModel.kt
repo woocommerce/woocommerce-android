@@ -4,9 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.woocommerce.android.R
-import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardpayment.WooPosCardPaymentAnalyticsTracker
-import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.home.totals.WooPosTotalsRepository
 import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
@@ -104,18 +103,11 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
             PaymentSuccessSource.CARD_CHECKOUT -> {
                 _navigationEvent.emit(WooPosNavigationEvent.GoBack)
             }
-            PaymentSuccessSource.CARD_BOOKINGS -> {
-                _navigationEvent.emit(
-                    WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                        BOOKING_CARD_PAYMENT_SUCCESS_KEY,
-                        true
-                    )
-                )
-            }
+            PaymentSuccessSource.CARD_BOOKINGS,
             PaymentSuccessSource.CASH_BOOKINGS -> {
                 _navigationEvent.emit(
                     WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                        BOOKING_CASH_PAYMENT_SUCCESS_KEY,
+                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
                         true
                     )
                 )

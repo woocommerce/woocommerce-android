@@ -8,6 +8,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.PaymentFlowError
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentController
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.WooPosCardReaderPaymentControllerFactory
@@ -253,8 +254,8 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given collecting state, when onBackClicked, then GoBack emitted`() = runTest {
-        viewModel = createViewModel()
+    fun `given CHECKOUT source and collecting state, when onBackClicked, then GoBack emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.CHECKOUT)
         advanceUntilIdle()
 
         viewModel.navigationEvent.test {
@@ -262,6 +263,22 @@ class WooPosCardPaymentViewModelTest {
 
             val event = awaitItem()
             assertThat(event).isInstanceOf(WooPosNavigationEvent.GoBack::class.java)
+        }
+    }
+
+    @Test
+    fun `given BOOKINGS source, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.navigationEvent.test {
+            viewModel.onBackClicked()
+
+            val event = awaitItem()
+            assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
+            val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
+            assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
+            assertThat(navEvent.value).isEqualTo(true)
         }
     }
 
@@ -395,7 +412,7 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
-    fun `given BOOKINGS source and order already paid error, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted with order already paid key`() =
+    fun `given BOOKINGS source and order already paid error, when onBackClicked, then NavigateBackToBookingsAfterPayment emitted`() =
         runTest {
             viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
             advanceUntilIdle()
@@ -413,13 +430,13 @@ class WooPosCardPaymentViewModelTest {
                 val event = awaitItem()
                 assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
                 val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-                assertThat(navEvent.key).isEqualTo(BOOKING_ORDER_ALREADY_PAID_KEY)
+                assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
                 assertThat(navEvent.value).isEqualTo(true)
             }
         }
 
     @Test
-    fun `given BOOKINGS source and order already paid error, when onDismissClicked, then NavigateBackToBookingsAfterPayment emitted with order already paid key`() =
+    fun `given BOOKINGS source and order already paid error, when onDismissClicked, then NavigateBackToBookingsAfterPayment emitted`() =
         runTest {
             viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
             advanceUntilIdle()
@@ -437,7 +454,7 @@ class WooPosCardPaymentViewModelTest {
                 val event = awaitItem()
                 assertThat(event).isInstanceOf(WooPosNavigationEvent.NavigateBackToBookingsAfterPayment::class.java)
                 val navEvent = event as WooPosNavigationEvent.NavigateBackToBookingsAfterPayment
-                assertThat(navEvent.key).isEqualTo(BOOKING_ORDER_ALREADY_PAID_KEY)
+                assertThat(navEvent.key).isEqualTo(BOOKING_PAYMENT_FLOW_FINISHED_KEY)
                 assertThat(navEvent.value).isEqualTo(true)
             }
         }

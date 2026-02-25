@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardRea
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentEvent
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState
 import com.woocommerce.android.ui.payments.cardreader.payment.controller.CardReaderPaymentOrRefundState.CardReaderPaymentState
+import com.woocommerce.android.ui.woopos.bookings.BOOKING_PAYMENT_FLOW_FINISHED_KEY
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
 import com.woocommerce.android.ui.woopos.cashpayment.CashPaymentSource
 import com.woocommerce.android.ui.woopos.home.totals.TTPPaymentProgressDelegate
@@ -61,7 +62,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
     private var controllerEventJob: Job? = null
     private var isTTPPaymentInProgress: Boolean by TTPPaymentProgressDelegate(savedState)
     private var analyticsTrackerJob: Job? = null
-    private var isOrderAlreadyPaid: Boolean = false
 
     init {
         observeCardReaderStatus()
@@ -186,9 +186,6 @@ class WooPosCardPaymentViewModel @Inject constructor(
                             is CardReaderPaymentEvent.ShowErrorMessage -> event.message
                             is CardReaderPaymentEvent.ShowPaymentErrorMessage -> event.message
                         }
-                        if (messageRes == R.string.card_reader_payment_order_paid_payment_cancelled) {
-                            isOrderAlreadyPaid = true
-                        }
                         _state.value = WooPosCardPaymentState.PaymentFailed(
                             title = resourceProvider.getString(
                                 R.string.woopos_success_totals_payment_failed_title
@@ -292,15 +289,14 @@ class WooPosCardPaymentViewModel @Inject constructor(
 
     private fun navigateBack() {
         viewModelScope.launch {
-            if (source == CardPaymentSource.BOOKINGS && isOrderAlreadyPaid) {
-                _navigationEvent.emit(
+            when (source) {
+                CardPaymentSource.BOOKINGS -> _navigationEvent.emit(
                     WooPosNavigationEvent.NavigateBackToBookingsAfterPayment(
-                        BOOKING_ORDER_ALREADY_PAID_KEY,
+                        BOOKING_PAYMENT_FLOW_FINISHED_KEY,
                         true
                     )
                 )
-            } else {
-                _navigationEvent.emit(WooPosNavigationEvent.GoBack)
+                CardPaymentSource.CHECKOUT -> _navigationEvent.emit(WooPosNavigationEvent.GoBack)
             }
         }
     }
