@@ -1,45 +1,23 @@
 package com.woocommerce.android.ui.woopos.bookings
 
-import com.woocommerce.android.tools.SelectedSite
+import com.woocommerce.android.ui.bookings.PaymentStatus
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
-import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
-import org.wordpress.android.fluxc.model.SiteModel
-import org.wordpress.android.fluxc.persistence.entity.OrderEntity
-import org.wordpress.android.fluxc.store.WCOrderStore
 import java.math.BigDecimal
 
 class WooPosPaymentStatusResolverTest {
 
-    private val orderStore: WCOrderStore = mock()
-    private val site: SiteModel = mock {
-        on { localId() }.thenReturn(LocalId(1))
-    }
-    private val selectedSite: SelectedSite = mock {
-        on { get() }.thenReturn(site)
-    }
-    private val sut = WooPosPaymentStatusResolver(orderStore, selectedSite)
+    private val paymentStatusResolver: PaymentStatusResolver = mock()
+    private val sut = WooPosPaymentStatusResolver(paymentStatusResolver)
 
     @Test
-    fun `given order not found, when resolve, then returns UNPAID`() = runTest {
+    fun `when resolve called, then delegates to shared PaymentStatusResolver`() = runTest {
         // GIVEN
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(null)
-
-        // WHEN
-        val result = sut.resolve(1L, BigDecimal.TEN)
-
-        // THEN
-        assertThat(result).isEqualTo(PaymentStatus.UNPAID)
-    }
-
-    @Test
-    fun `given order with datePaid, when resolve, then returns PAID`() = runTest {
-        // GIVEN
-        val order = createOrder(datePaid = "2025-01-01", refundTotal = BigDecimal.ZERO)
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
+        whenever(paymentStatusResolver.resolve(1L, BigDecimal.TEN)).thenReturn(PaymentStatus.PAID)
 
         // WHEN
         val result = sut.resolve(1L, BigDecimal.TEN)
@@ -49,10 +27,21 @@ class WooPosPaymentStatusResolverTest {
     }
 
     @Test
+    fun `given order not found, when resolve, then returns UNPAID`() = runTest {
+        // GIVEN
+        whenever(paymentStatusResolver.resolve(1L, BigDecimal.TEN)).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = sut.resolve(1L, BigDecimal.TEN)
+
+        // THEN
+        assertThat(result).isEqualTo(PaymentStatus.UNPAID)
+    }
+
+    @Test
     fun `given full refund, when resolve, then returns REFUNDED`() = runTest {
         // GIVEN
-        val order = createOrder(refundTotal = BigDecimal("-10"), datePaid = "2025-01-01")
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
+        whenever(paymentStatusResolver.resolve(1L, BigDecimal.TEN)).thenReturn(PaymentStatus.REFUNDED)
 
         // WHEN
         val result = sut.resolve(1L, BigDecimal.TEN)
@@ -64,8 +53,7 @@ class WooPosPaymentStatusResolverTest {
     @Test
     fun `given partial refund, when resolve, then returns PARTIALLY_REFUNDED`() = runTest {
         // GIVEN
-        val order = createOrder(refundTotal = BigDecimal("-5"), datePaid = "2025-01-01")
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
+        whenever(paymentStatusResolver.resolve(1L, BigDecimal.TEN)).thenReturn(PaymentStatus.PARTIALLY_REFUNDED)
 
         // WHEN
         val result = sut.resolve(1L, BigDecimal.TEN)
@@ -75,10 +63,9 @@ class WooPosPaymentStatusResolverTest {
     }
 
     @Test
-    fun `given failed order status, when resolve, then returns FAILED`() = runTest {
+    fun `given failed order, when resolve, then returns FAILED`() = runTest {
         // GIVEN
-        val order = createOrder(status = "failed", datePaid = "", refundTotal = BigDecimal.ZERO)
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
+        whenever(paymentStatusResolver.resolve(1L, BigDecimal.TEN)).thenReturn(PaymentStatus.FAILED)
 
         // WHEN
         val result = sut.resolve(1L, BigDecimal.TEN)
@@ -86,29 +73,4 @@ class WooPosPaymentStatusResolverTest {
         // THEN
         assertThat(result).isEqualTo(PaymentStatus.FAILED)
     }
-
-    @Test
-    fun `given cancelled order status, when resolve, then returns FAILED`() = runTest {
-        // GIVEN
-        val order = createOrder(status = "cancelled", datePaid = "", refundTotal = BigDecimal.ZERO)
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
-
-        // WHEN
-        val result = sut.resolve(1L, BigDecimal.TEN)
-
-        // THEN
-        assertThat(result).isEqualTo(PaymentStatus.FAILED)
-    }
-
-    private fun createOrder(
-        status: String = "processing",
-        datePaid: String = "",
-        refundTotal: BigDecimal = BigDecimal.ZERO,
-    ) = OrderEntity(
-        localSiteId = LocalId(1),
-        orderId = 1L,
-        status = status,
-        datePaid = datePaid,
-        refundTotal = refundTotal,
-    )
 }
