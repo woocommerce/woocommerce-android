@@ -6,6 +6,7 @@ import com.google.gson.Gson
 import com.woocommerce.android.apifaker.ApiFakerConfig
 import com.woocommerce.android.apifaker.LOG_TAG
 import com.woocommerce.android.apifaker.db.EndpointDao
+import com.woocommerce.android.apifaker.di.ApiFakerGson
 import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import java.io.File
@@ -14,7 +15,7 @@ import javax.inject.Inject
 internal class BroadcastActionHandler @Inject constructor(
     private val endpointDao: EndpointDao,
     private val apiFakerConfig: ApiFakerConfig,
-    private val gson: Gson
+    @ApiFakerGson private val gson: Gson
 ) {
     suspend fun handle(intent: Intent) {
         when (intent.action) {
