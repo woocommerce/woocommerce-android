@@ -4396,6 +4396,9 @@
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
+    <string name="booking_payment_status_refunded">Refunded</string>
+    <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="booking_payment_status_failed">Failed</string>
     <string name="booking_attendance_status_attended">Attended</string>
     <string name="booking_attendance_status_unattended">Unattended</string>
     <string name="booking_mark_as_attended">Mark as attended</string>
