@@ -36,7 +36,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
     }
 
     private val savedStateHandle = WPComLoginPasswordFragmentArgs(
-        wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
+        jetpackStatus = JETPACK_STATUS,
         emailOrUsername = EMAIL
     ).toSavedStateHandle()
     private val wpComLoginRepository: WPComLoginRepository = mock()
@@ -78,7 +78,7 @@ class WPComLoginPasswordViewModelTest : BaseUnitTest() {
             assertThat(event).isEqualTo(
                 ShowMagicLinkScreen(
                     emailOrUsername = EMAIL,
-                    wpComLoginMode = WPComLoginMode.JetpackSetup(JETPACK_STATUS),
+                    jetpackStatus = JETPACK_STATUS,
                     magicLinkFallbackButton = MagicLinkFallbackButton.UsernameAndPassword,
                     requestAtStart = false
                 )
