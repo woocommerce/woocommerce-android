@@ -510,6 +510,27 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
+    fun `given payment failed, when screen resumed, then payment is not restarted`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentFailed
+            .ExternalReaderFailedPayment.Cancelable(
+                errorType = PaymentFlowError.Generic,
+                amountWithCurrencyLabel = "$50.00",
+                onCancel = {},
+                onRetry = {},
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentFailed::class.java)
+    }
+
+    @Test
     fun `given collecting state, when screen paused, then payment is cancelled`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -538,6 +559,30 @@ class WooPosCardPaymentViewModelTest {
 
         assertThat(viewModel.state.value)
             .isInstanceOf(WooPosCardPaymentState.PaymentInProgress::class.java)
+    }
+
+    @Test
+    fun `given payment succeeded, when screen paused, then payment is not cancelled`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+            .ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "$50.00",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {}
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenPaused()
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
     }
 
     @Test
