@@ -52,7 +52,7 @@ fun WooPosCashPaymentScreen(onNavigationEvent: (WooPosNavigationEvent) -> Unit) 
 
     val onBackClicked = {
         viewModel.onBackClicked()
-        onNavigationEvent(WooPosNavigationEvent.GoBack)
+        onNavigationEvent(WooPosNavigationEvent.GoBackWithResult(CASH_PAYMENT_DISMISSED_KEY, true))
     }
 
     LaunchedEffect(Unit) {
