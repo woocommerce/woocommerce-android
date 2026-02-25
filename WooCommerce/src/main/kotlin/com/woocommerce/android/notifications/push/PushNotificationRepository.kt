@@ -151,9 +151,14 @@ class PushNotificationRepository @Inject constructor(
         val tokenKey = getPushTokenKeyForSite(siteId)
         return pushNotificationsDataStore.data.map { preferences ->
             val isTokenStored = preferences[tokenKey] != null
-            isTokenStored && checkWooPluginPushNotificationsSupport(
-                forceRefresh = false
-            ) !is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired
+            val supportResult = checkWooPluginPushNotificationsSupport(forceRefresh = false)
+            // Treat errors as "compatible" to avoid hiding entry points during temporary failures
+            val isPluginCompatible = when (supportResult) {
+                is CheckWooPluginPushNotificationsSupport.Result.UpdateRequired -> false
+                is CheckWooPluginPushNotificationsSupport.Result.Error -> true
+                else -> true
+            }
+            isTokenStored && isPluginCompatible
         }
     }
 
