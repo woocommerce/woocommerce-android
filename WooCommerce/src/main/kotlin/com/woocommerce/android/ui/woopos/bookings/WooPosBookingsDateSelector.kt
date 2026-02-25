@@ -191,7 +191,7 @@ private fun DatePickerContent(datePickerState: DatePickerState) {
             .requiredWidth(360.dp),
         color = MaterialTheme.colorScheme.surface,
         shadowElevation = WooPosElevation.Medium.value,
-        shape = RoundedCornerShape(WooPosCornerRadius.Medium.value),
+        shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
     ) {
         DatePicker(
             state = datePickerState,
