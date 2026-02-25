@@ -46,7 +46,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val errorType: String?,
             override val errorDescription: String?,
         ) : Error() {
-            override val name: String = "pos_booking_cancel_failed"
+            override val name: String = "booking_cancel_failed"
         }
 
         data class BookingAttendanceChangeError(
@@ -54,7 +54,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val errorType: String?,
             override val errorDescription: String?,
         ) : Error() {
-            override val name: String = "pos_booking_attendance_change_failed"
+            override val name: String = "booking_attendance_change_failed"
         }
 
         data class BookingNoteAddError(
@@ -62,7 +62,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val errorType: String?,
             override val errorDescription: String?,
         ) : Error() {
-            override val name: String = "pos_booking_note_add_failed"
+            override val name: String = "booking_note_add_failed"
         }
 
         data class BookingRefundError(
@@ -70,7 +70,7 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val errorType: String?,
             override val errorDescription: String?,
         ) : Error() {
-            override val name: String = "pos_booking_refund_failed"
+            override val name: String = "booking_refund_failed"
         }
     }
 
@@ -182,31 +182,31 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data object GoToBookingsTapped : Event() {
-            override val name: String = "pos_bookings_menu_item_tapped"
+            override val name: String = "bookings_menu_item_tapped"
         }
 
         data object BookingListItemTapped : Event() {
-            override val name: String = "pos_bookings_list_booking_tapped"
+            override val name: String = "bookings_list_booking_tapped"
         }
 
         data object BookingsListSearchButtonTapped : Event() {
-            override val name: String = "pos_bookings_list_search_button_tapped"
+            override val name: String = "bookings_list_search_button_tapped"
         }
 
         data object BookingCancelled : Event() {
-            override val name: String = "pos_booking_cancelled"
+            override val name: String = "booking_cancelled"
         }
 
         data object BookingAttendanceChanged : Event() {
-            override val name: String = "pos_booking_attendance_changed"
+            override val name: String = "booking_attendance_changed"
         }
 
         data object BookingAddNoteTapped : Event() {
-            override val name: String = "pos_booking_add_note_tapped"
+            override val name: String = "booking_add_note_tapped"
         }
 
         data object BookingNoteAdded : Event() {
-            override val name: String = "pos_booking_note_added"
+            override val name: String = "booking_note_added"
         }
 
         data class BookingDatePreviousTapped(val deltaFromToday: Long) : Event() {
@@ -234,11 +234,11 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         }
 
         data object BookingIssueRefundTapped : Event() {
-            override val name: String = "pos_booking_issue_refund_tapped"
+            override val name: String = "booking_issue_refund_tapped"
         }
 
         data object BookingViewOrderTapped : Event() {
-            override val name: String = "pos_booking_view_order_tapped"
+            override val name: String = "booking_view_order_tapped"
         }
 
         data object OrdersListPullToRefreshTriggered : Event() {
