@@ -7,6 +7,7 @@ import com.woocommerce.android.apifaker.ApiFakerConfig
 import com.woocommerce.android.apifaker.LOG_TAG
 import com.woocommerce.android.apifaker.db.EndpointDao
 import com.woocommerce.android.apifaker.di.ApiFakerGson
+import com.woocommerce.android.apifaker.models.MockedEndpoint
 import com.woocommerce.android.apifaker.models.Request
 import com.woocommerce.android.apifaker.models.Response
 import java.io.File
@@ -46,7 +47,7 @@ internal class BroadcastActionHandler @Inject constructor(
             body = IntentExtrasParser.parseRequestBody(intent)
         )
         val response = Response(
-            statusCode = intent.getIntExtra(Extras.RESPONSE_STATUS_CODE, 200),
+            statusCode = intent.getIntExtra(Extras.RESPONSE_STATUS_CODE, DEFAULT_STATUS_CODE),
             body = IntentExtrasParser.parseResponseBody(intent)
         )
         endpointDao.insertEndpoint(request, response)
@@ -134,13 +135,14 @@ internal class BroadcastActionHandler @Inject constructor(
         require(file.exists()) { "File not found: $filePath" }
 
         val endpoints = file.bufferedReader().use { reader ->
-            gson.fromJson(reader, Array<com.woocommerce.android.apifaker.models.MockedEndpoint>::class.java).toList()
+            gson.fromJson(reader, Array<MockedEndpoint>::class.java).toList()
         }
         endpointDao.insertEndpoints(endpoints)
         Log.i(LOG_TAG, "ADB: Imported ${endpoints.size} endpoints from $filePath")
     }
 
     companion object {
+        private const val DEFAULT_STATUS_CODE = 200
         private const val MAX_LOG_LENGTH = 3000
     }
 }

@@ -21,7 +21,7 @@ class ApiFakerBroadcastReceiver : BroadcastReceiver() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 actionHandler.handle(intent)
-            } catch (e: Exception) {
+            } catch (@Suppress("TooGenericExceptionCaught") e: Exception) {
                 Log.e(LOG_TAG, "ADB: Command failed: ${e.message}", e)
             } finally {
                 pendingResult.finish()
