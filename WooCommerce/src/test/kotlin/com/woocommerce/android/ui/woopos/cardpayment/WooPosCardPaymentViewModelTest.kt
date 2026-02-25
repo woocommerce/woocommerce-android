@@ -455,6 +455,92 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
+    fun `given payment cancelled by cash navigation, when screen resumed, then payment restarts`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentClicked()
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.Collecting.Preparing::class.java)
+    }
+
+    @Test
+    fun `given reader disconnected after cash navigation, when screen resumed, then payment does not restart`() =
+        runTest {
+            viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+            advanceUntilIdle()
+
+            viewModel.onCashPaymentClicked()
+            advanceUntilIdle()
+
+            readerStatusFlow.value = CardReaderStatus.NotConnected()
+            advanceUntilIdle()
+
+            viewModel.onScreenResumed()
+            advanceUntilIdle()
+
+            assertThat(viewModel.state.value)
+                .isInstanceOf(WooPosCardPaymentState.Collecting.ReaderDisconnected::class.java)
+        }
+
+    @Test
+    fun `given payment succeeded, when screen resumed, then payment is not restarted`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
+            .ExternalReaderPaymentSuccessful(
+                amountWithCurrencyLabel = "$50.00",
+                onPrintReceiptClicked = {},
+                onSendReceiptClicked = {},
+                onSaveUserClicked = {}
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenResumed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
+    }
+
+    @Test
+    fun `given collecting state, when screen paused, then payment is cancelled`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        viewModel.onScreenPaused()
+        advanceUntilIdle()
+
+        verify(paymentController).onBackPressed()
+        verify(paymentController).stop()
+    }
+
+    @Test
+    fun `given payment in progress, when screen paused, then payment is not cancelled`() = runTest {
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        controllerPaymentState.value = CardReaderPaymentState.ProcessingPayment
+            .ExternalReaderProcessingPayment(
+                amountWithCurrencyLabel = "$50.00",
+                onCancel = {}
+            )
+        advanceUntilIdle()
+
+        viewModel.onScreenPaused()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.PaymentInProgress::class.java)
+    }
+
+    @Test
     fun `given order with billing email, when payment succeeds, then receiptSentMessage is set`() = runTest {
         val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
             total = BigDecimal("50.00"),

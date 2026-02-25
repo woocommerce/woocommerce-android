@@ -269,6 +269,18 @@ class WooPosCardPaymentViewModel @Inject constructor(
         ),
     )
 
+    fun onScreenResumed() {
+        if (_state.value is WooPosCardPaymentState.Collecting) {
+            collectPayment()
+        }
+    }
+
+    fun onScreenPaused() {
+        if (_state.value is WooPosCardPaymentState.Collecting) {
+            cancelPayment()
+        }
+    }
+
     fun onRetryClicked() {
         val paymentState = cardReaderPaymentController?.paymentState?.value
         check(paymentState != null) {
