@@ -289,6 +289,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
         viewModel.onWhatIsWPComClick()
 
+        verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_LINK_TAP)
         val event = viewModel.event.value
         assertThat(event).isInstanceOf(WooPushNotificationsIntroductionViewModel.OpenUrlEvent::class.java)
         assertThat((event as WooPushNotificationsIntroductionViewModel.OpenUrlEvent).url)
