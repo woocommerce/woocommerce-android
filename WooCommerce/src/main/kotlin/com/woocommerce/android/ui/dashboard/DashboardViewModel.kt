@@ -240,7 +240,7 @@ class DashboardViewModel @Inject constructor(
         // We add the other cards even if they should not be visible, so that the addition/deletion
         // of the cards is animated properly
 
-        val shouldShowShareCard = !widgets.first { it.type == DashboardWidget.Type.STATS }.isAvailable &&
+        val shouldShowShareCard = widgets.firstOrNull { it.type == DashboardWidget.Type.STATS }?.isAvailable != true &&
             selectedSite.get().isSitePublic &&
             selectedSite.get().url != null
         add(DashboardWidgetUiModel.ShareStoreWidget(shouldShowShareCard, ::onShareStoreClicked))
