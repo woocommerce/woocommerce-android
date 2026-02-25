@@ -209,3 +209,28 @@ fun WooPosBookingsDateSelectorPreview() {
         )
     }
 }
+
+@OptIn(ExperimentalMaterial3Api::class)
+@WooPosPreview
+@Composable
+fun DatePickerPopupPreview() {
+    WooPosTheme {
+        val datePickerState = rememberDatePickerState(
+            initialSelectedDateMillis = System.currentTimeMillis(),
+        )
+        val colors = DatePickerDefaults.colors()
+        val shape = DatePickerDefaults.shape
+        Surface(
+            modifier = Modifier
+                .clip(shape)
+                .requiredWidth(360.dp),
+            color = colors.containerColor,
+            shape = shape,
+        ) {
+            DatePicker(
+                state = datePickerState,
+                colors = colors,
+            )
+        }
+    }
+}
