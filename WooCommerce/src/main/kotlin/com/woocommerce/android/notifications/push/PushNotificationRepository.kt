@@ -41,7 +41,8 @@ class PushNotificationRepository @Inject constructor(
     @DataStoreQualifier(WOO_CORE_PUSH_NOTIFICATIONS_TOKENS)
     private val pushNotificationsDataStore: DataStore<Preferences>,
     private val notificationAnalyticsTracker: NotificationAnalyticsTracker,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport
 ) {
 
     suspend fun registerPushTokenInWpComSystem(token: String) {
@@ -145,12 +146,18 @@ class PushNotificationRepository @Inject constructor(
     suspend fun isWooPushTokenRegisteredForSite(siteId: Long): Boolean {
         val preferences = pushNotificationsDataStore.data.first()
         val tokenKey = getPushTokenKeyForSite(siteId)
-        return preferences[tokenKey] != null
+        val isTokenStored = preferences[tokenKey] != null
+        return isTokenStored &&
+            checkWooPluginPushNotificationsSupport(forceRefresh = false) == CheckWooPluginPushNotificationsSupport.Result.Compatible
     }
 
     fun observeWooPushTokenRegisteredForSite(siteId: Long): Flow<Boolean> {
         val tokenKey = getPushTokenKeyForSite(siteId)
-        return pushNotificationsDataStore.data.map { preferences -> preferences[tokenKey] != null }
+        return pushNotificationsDataStore.data.map { preferences ->
+            val isTokenStored = preferences[tokenKey] != null
+            isTokenStored &&
+                checkWooPluginPushNotificationsSupport(forceRefresh = false) == CheckWooPluginPushNotificationsSupport.Result.Compatible
+        }
     }
 
     suspend fun getWooPushRegisteredSiteIds(): Set<Long> {
