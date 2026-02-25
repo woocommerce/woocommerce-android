@@ -94,7 +94,14 @@ class WooPosPaymentSuccessViewModel @Inject constructor(
     fun onEmailReceiptClicked() {
         viewModelScope.launch {
             analyticsTracker.trackEmailReceiptTapped()
-            _navigationEvent.emit(WooPosNavigationEvent.OpenEmailReceipt(orderId))
+            val receiptAlreadySent =
+                (_state.value as? PaymentSuccessViewState)?.receiptSentMessage != null
+            _navigationEvent.emit(
+                WooPosNavigationEvent.OpenEmailReceipt(
+                    orderId = orderId,
+                    receiptAlreadySent = receiptAlreadySent,
+                )
+            )
         }
     }
 
