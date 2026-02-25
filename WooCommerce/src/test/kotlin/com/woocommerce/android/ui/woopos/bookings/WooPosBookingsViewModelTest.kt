@@ -151,7 +151,6 @@ class WooPosBookingsViewModelTest {
                 formatPrice,
                 paymentStatusResolver,
                 timeRangeFormatter,
-                selectedSite,
             ),
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
@@ -1396,7 +1395,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given store in UTC-5, when date selected via DatePicker, then API filter boundaries use store timezone`() =
+    fun `given store in UTC-5, when date selected via DatePicker, then API filter boundaries use UTC`() =
         runTest {
             // GIVEN
             val filtersCaptor = argumentCaptor<BookingFilters>()
@@ -1412,7 +1411,28 @@ class WooPosBookingsViewModelTest {
             verify(bookingListHandler, times(2))
                 .loadBookings(anyOrNull(), filtersCaptor.capture(), eq(BookingListSortOption.OldestToNewest))
             val dateRange = filtersCaptor.lastValue.dateRange as BookingsFilterOption.DateRange
-            assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T05:00:00Z"))
-            assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-16T04:59:59.999999999Z"))
+            assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T00:00:00Z"))
+            assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-15T23:59:59.999999999Z"))
+        }
+
+    @Test
+    fun `given store in UTC+5, when date selected, then API filter boundaries use UTC not store timezone`() =
+        runTest {
+            // GIVEN
+            val filtersCaptor = argumentCaptor<BookingFilters>()
+            viewModel = createViewModel(siteTimezone = "5")
+            advanceUntilIdle()
+
+            // WHEN
+            val march15MidnightUtc = Instant.parse("2026-03-15T00:00:00Z")
+            viewModel.onUIEvent(WooPosBookingsUIEvent.DateSelected(march15MidnightUtc.toEpochMilli()))
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingListHandler, times(2))
+                .loadBookings(anyOrNull(), filtersCaptor.capture(), eq(BookingListSortOption.OldestToNewest))
+            val dateRange = filtersCaptor.lastValue.dateRange as BookingsFilterOption.DateRange
+            assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T00:00:00Z"))
+            assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-15T23:59:59.999999999Z"))
         }
 }

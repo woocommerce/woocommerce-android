@@ -38,7 +38,7 @@ class WooPosBookingInfoMapper @Inject constructor(
     }
 
     private fun formatBookingInfo(bookingId: Long, booking: Booking): String {
-        val date = dateFormatter.formatShortDateInStoreTimeZone(booking.start)
+        val date = dateFormatter.formatShortDate(booking.start)
         val timeRange = timeRangeFormatter.format(booking.start, booking.end)
         return resourceProvider.getString(
             R.string.woopos_orders_details_booking_info,
