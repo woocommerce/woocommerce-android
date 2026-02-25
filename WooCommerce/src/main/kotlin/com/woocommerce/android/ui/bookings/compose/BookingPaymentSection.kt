@@ -21,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.bookings.PaymentStatus
 import com.woocommerce.android.ui.compose.component.WCColoredButton
 import com.woocommerce.android.ui.compose.component.WCOutlinedButton
 import com.woocommerce.android.ui.compose.preview.LightDarkThemePreviews
@@ -29,7 +30,7 @@ import com.woocommerce.android.ui.compose.theme.WooThemeWithBackground
 @Composable
 fun BookingPaymentSection(
     model: BookingPaymentDetailsModel,
-    status: BookingStatus,
+    paymentStatus: PaymentStatus,
     onMarkAsPaid: () -> Unit,
     onViewOrder: () -> Unit,
     modifier: Modifier = Modifier,
@@ -60,7 +61,7 @@ fun BookingPaymentSection(
                 modifier = Modifier.padding(start = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
-            AnimatedVisibility(status == BookingStatus.Unpaid) {
+            AnimatedVisibility(paymentStatus == PaymentStatus.UNPAID) {
                 WCColoredButton(
                     onClick = onMarkAsPaid,
                     text = stringResource(id = R.string.booking_payment_mark_as_paid),
@@ -136,7 +137,7 @@ private fun BookingPaymentSectionPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Unpaid,
+            paymentStatus = PaymentStatus.UNPAID,
             onMarkAsPaid = {},
             onViewOrder = {},
             modifier = Modifier.fillMaxWidth()
@@ -155,7 +156,7 @@ private fun BookingPaymentSectionWithPaidBookingPreview() {
                 discount = "-",
                 total = "$59.50"
             ),
-            status = BookingStatus.Paid,
+            paymentStatus = PaymentStatus.PAID,
             onMarkAsPaid = {},
             onViewOrder = {},
             modifier = Modifier.fillMaxWidth()
