@@ -78,7 +78,11 @@ fun WooPosBookingDetails(
                 .padding(
                     start = WooPosSpacing.Medium.value,
                     end = WooPosSpacing.Medium.value,
-                    bottom = 92.dp + WooPosSpacing.Large.value
+                    bottom = if (hasCollectButton) {
+                        92.dp + WooPosSpacing.Large.value + WooPosSpacing.Medium.value
+                    } else {
+                        WooPosSpacing.XLarge.value
+                    }
                 )
         ) {
             BookingHeader(details = details, onUIEvent = onUIEvent)
@@ -87,14 +91,14 @@ fun WooPosBookingDetails(
 
             BookingDetailsCard(details = details)
 
-            details.customerSection?.let { section ->
-                Spacer(Modifier.height(WooPosSpacing.Medium.value))
-                BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
-            }
-
             details.attendanceSection?.let { section ->
                 Spacer(Modifier.height(WooPosSpacing.Large.value))
                 BookingAttendanceSection(attendanceSection = section, onUIEvent = onUIEvent)
+            }
+
+            details.customerSection?.let { section ->
+                Spacer(Modifier.height(WooPosSpacing.Large.value))
+                BookingCustomerCard(customerSection = section, onUIEvent = onUIEvent)
             }
 
             Spacer(Modifier.height(WooPosSpacing.Large.value))
@@ -126,7 +130,7 @@ fun WooPosBookingDetails(
                     )
             ) {
                 HorizontalDivider(
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = panelAlpha),
+                    color = WooPosTheme.colors.outlineVariant.copy(alpha = panelAlpha),
                     thickness = 0.5.dp,
                 )
                 WooPosButton(
@@ -276,8 +280,8 @@ private fun BookingCustomerCard(
         Column(Modifier.padding(WooPosSpacing.Medium.value)) {
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_customer_title),
-                style = WooPosTypography.BodyLarge,
-                fontWeight = FontWeight.Bold,
+                style = WooPosTypography.BodyXLarge,
+                fontWeight = FontWeight.SemiBold,
             )
 
             customerSection.email?.let { email ->
@@ -303,7 +307,7 @@ private fun BookingCustomerCard(
                 WooPosText(
                     text = stringResource(R.string.woopos_bookings_details_customer_note_label),
                     style = WooPosTypography.BodyMedium,
-                    color = WooPosTheme.colors.onSurfaceVariantLowest,
+                    color = WooPosTheme.colors.onSurfaceVariantHighest,
                 )
                 Spacer(Modifier.height(WooPosSpacing.Small.value))
                 WooPosText(
@@ -372,7 +376,7 @@ private fun BookingPaymentCard(
             WooPosText(
                 text = stringResource(R.string.woopos_bookings_details_payment_title),
                 style = WooPosTypography.BodyXLarge,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
             )
 
             Spacer(Modifier.height(WooPosSpacing.Medium.value))
@@ -426,8 +430,8 @@ private fun BookingNoteSection(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     WooPosText(
                         text = stringResource(R.string.woopos_bookings_details_booking_note_title),
-                        style = WooPosTypography.BodyLarge,
-                        fontWeight = FontWeight.Bold,
+                        style = WooPosTypography.BodyXLarge,
+                        fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.weight(1f)
                     )
                     WooPosOutlinedButtonSmall(
@@ -528,7 +532,10 @@ private fun CopyableRow(
 @Composable
 private fun DividerWithSpacing() {
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
-    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+    HorizontalDivider(
+        color = WooPosTheme.colors.outlineVariant,
+        thickness = 0.5.dp,
+    )
     Spacer(Modifier.height(WooPosSpacing.Medium.value))
 }
 

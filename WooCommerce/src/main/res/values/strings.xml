@@ -321,9 +321,6 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
-    <string name="login_wpcom_connect_title">Connect to WordPress.com</string>
-    <string name="login_wpcom_connect_subtitle">Log in with your WordPress.com account to connect your store.</string>
-    <string name="login_wpcom_connect_create_account_hint">If you don\'t have a WordPress.com account, we\'ll use this email to create one.</string>
     <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="login_wpcom_connection_consent_jetpack">By tapping the Connect Jetpack button</string>
     <string name="login_wpcom_connection_consent_generic">By continuing</string>
