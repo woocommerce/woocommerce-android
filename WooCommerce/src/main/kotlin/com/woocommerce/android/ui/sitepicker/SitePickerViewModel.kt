@@ -93,6 +93,8 @@ class SitePickerViewModel @Inject constructor(
     private val _sites = MutableLiveData<List<SitesListItem>>()
     val sites: LiveData<List<SitesListItem>> = _sites
 
+    private var loadedWooSites: List<SiteModel> = emptyList()
+
     private val selectedSiteId: MutableLiveData<Int> = savedState.getLiveData("selected-site-id")
 
     private val _isWooUpgradeDialogVisible: MutableState<Boolean> by lazy { mutableStateOf(false) }
@@ -218,6 +220,7 @@ class SitePickerViewModel @Inject constructor(
 
         val wooSites = sites.filter { it.hasWooCommerce }
         val nonWooSites = sites.filter { !it.hasWooCommerce }
+        loadedWooSites = wooSites
 
         if (_sites.value == null) {
             // Track events only on the first call
@@ -489,64 +492,77 @@ class SitePickerViewModel @Inject constructor(
     }
 
     fun onContinueButtonClick(isAutoLogin: Boolean = false) {
-        _sites.value?.first { (it is WooSiteUiModel) && it.isSelected }
-            ?.let { it as WooSiteUiModel }
-            ?.let {
-                // the current site is selected again so do nothing
-                if (it.site.id == selectedSite.getIfExists()?.id) {
-                    triggerEvent(Exit)
-                    return
-                }
-                val eventProperties = mapOf(
-                    AnalyticsTracker.KEY_SELECTED_STORE_ID to it.site.id,
-                    AnalyticsTracker.KEY_IS_JETPACK_CP_CONNECTED to it.site.isJetpackCPConnected,
-                    AnalyticsTracker.KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS
-                        to it.site.activeJetpackConnectionPlugins.orEmpty()
-                )
-                if (isAutoLogin) {
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
-                        eventProperties
-                    )
-                } else {
-                    analyticsTrackerWrapper.track(
-                        AnalyticsEvent.SITE_PICKER_CONTINUE_TAPPED,
-                        eventProperties
-                    )
-                }
+        val selectedSiteModel = getSelectedWooSite() ?: return
 
-                sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
-                launch {
-                    val siteVerificationResult = repository.verifySiteWooAPIVersion(it.site)
-                    val siteVerificationModel = siteVerificationResult.model
-                    when {
-                        siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, it)
-                        siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
-                            experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
-                            selectedSite.set(siteVerificationModel.siteModel)
-                            trackAppPasswordsSupport(siteVerificationModel.siteModel)
-                            userEligibilityFetcher.fetchUserInfo().fold(
-                                onSuccess = {
-                                    sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+        // the current site is selected again so do nothing
+        if (selectedSiteModel.id == selectedSite.getIfExists()?.id) {
+            triggerEvent(Exit)
+            return
+        }
+        val eventProperties = mapOf(
+            AnalyticsTracker.KEY_SELECTED_STORE_ID to selectedSiteModel.id,
+            AnalyticsTracker.KEY_IS_JETPACK_CP_CONNECTED to selectedSiteModel.isJetpackCPConnected,
+            AnalyticsTracker.KEY_ACTIVE_JETPACK_CONNECTION_PLUGINS
+                to selectedSiteModel.activeJetpackConnectionPlugins.orEmpty()
+        )
+        if (isAutoLogin) {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_PICKER_AUTO_LOGIN_SUBMITTED,
+                eventProperties
+            )
+        } else {
+            analyticsTrackerWrapper.track(
+                AnalyticsEvent.SITE_PICKER_CONTINUE_TAPPED,
+                eventProperties
+            )
+        }
 
-                                    trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
-                                    appPrefsWrapper.removeLoginSiteAddress()
-                                    registerDevice(RegisterDevice.Mode.IF_NEEDED)
-                                    triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
-                                },
-                                onFailure = {
-                                    triggerEvent(ShowSnackbar(R.string.error_generic))
-                                }
-                            )
-                        }
-
-                        else -> {
+        sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = true)
+        launch {
+            val siteVerificationResult = repository.verifySiteWooAPIVersion(selectedSiteModel)
+            val siteVerificationModel = siteVerificationResult.model
+            when {
+                siteVerificationResult.isError -> onSiteVerificationError(siteVerificationResult, selectedSiteModel)
+                siteVerificationModel?.apiVersion == WooCommerceStore.WOO_API_NAMESPACE_V3 -> {
+                    experimentTracker.log(ExperimentTracker.SITE_VERIFICATION_SUCCESSFUL_EVENT)
+                    selectedSite.set(siteVerificationModel.siteModel)
+                    trackAppPasswordsSupport(siteVerificationModel.siteModel)
+                    userEligibilityFetcher.fetchUserInfo().fold(
+                        onSuccess = {
                             sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
-                            _isWooUpgradeDialogVisible.value = true
+
+                            trackLoginEvent(currentStep = UnifiedLoginTracker.Step.SUCCESS)
+                            appPrefsWrapper.removeLoginSiteAddress()
+                            registerDevice(RegisterDevice.Mode.IF_NEEDED)
+                            triggerEvent(SitePickerEvent.NavigateToMainActivityEvent)
+                        },
+                        onFailure = {
+                            triggerEvent(ShowSnackbar(R.string.error_generic))
                         }
-                    }
+                    )
+                }
+
+                else -> {
+                    sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
+                    _isWooUpgradeDialogVisible.value = true
                 }
             }
+        }
+    }
+
+    private fun getSelectedWooSite(): SiteModel? {
+        val selectedVisibleSite = _sites.value
+            ?.filterIsInstance<WooSiteUiModel>()
+            ?.firstOrNull { it.isSelected }
+            ?.site
+        if (selectedVisibleSite != null) return selectedVisibleSite
+
+        val currentSelectedSiteId = selectedSiteId.value
+        if (currentSelectedSiteId != null) {
+            loadedWooSites.firstOrNull { it.id == currentSelectedSiteId }?.let { return it }
+        }
+
+        return loadedWooSites.firstOrNull()
     }
 
     private fun trackAppPasswordsSupport(site: SiteModel) {
@@ -557,7 +573,7 @@ class SitePickerViewModel @Inject constructor(
 
     private fun onSiteVerificationError(
         siteVerificationResult: WooResult<WCApiVersionResponse>,
-        it: WooSiteUiModel
+        site: SiteModel
     ) {
         sitePickerViewState = sitePickerViewState.copy(isProgressDiaLogVisible = false)
         val event = when (siteVerificationResult.error.type) {
@@ -570,7 +586,7 @@ class SitePickerViewModel @Inject constructor(
 
             else -> ShowSnackbar(
                 message = string.login_verifying_site_error,
-                args = arrayOf(it.site.getSiteName())
+                args = arrayOf(site.getSiteName())
             )
         }
         triggerEvent(event)
