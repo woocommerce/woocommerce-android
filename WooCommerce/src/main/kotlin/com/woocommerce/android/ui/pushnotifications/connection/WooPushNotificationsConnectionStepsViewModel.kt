@@ -99,6 +99,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
     }
 
     fun onContactSupportClick() {
+        trackFlowButtonTap(BUTTON_LABEL_SUPPORT)
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
     }
 
@@ -310,6 +311,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
 
         private const val BUTTON_LABEL_TRY_AGAIN = "try_again"
         private const val BUTTON_LABEL_GO_TO_MY_STORE = "go_to_my_store"
+        private const val BUTTON_LABEL_SUPPORT = "support"
 
         @VisibleForTesting
         internal const val KEY_CURRENT_STEP = "woo-push-connection-current-step"
