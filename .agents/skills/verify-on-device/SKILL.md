@@ -131,16 +131,20 @@ Use `mobile_install_app` with:
 
 Optionally call `mobile_list_apps` first to check if the app is already installed.
 
-### 4. Launch the App
+### 4. Set Up API Mocks (Optional)
+
+If the user requests verification of a specific scenario (error states, empty data, custom responses), set up ApiFaker mock endpoints **before** launching the app. See the "API Mocking with ApiFaker" section and `docs/api-faker-adb.md` for commands and workflow.
+
+### 5. Launch the App
 
 Use `mobile_launch_app` with:
 - **packageName:** `com.woocommerce.android.dev`
 
-### 5. Handle Post-Launch Dialogs
+### 6. Handle Post-Launch Dialogs
 
 Call `mobile_list_elements_on_screen` to check what appeared. If a dialog or overlay is blocking the main UI, dismiss it using the guidance in "Handling Unexpected Dialogs" above. Repeat until you reach the dashboard or the expected screen.
 
-### 6. Start Screen Recording (Optional)
+### 7. Start Screen Recording (Optional)
 
 If the user requests a recording or demo video, start an ADB screen recording **before** navigating:
 
@@ -151,7 +155,7 @@ adb -s <device_id> shell "screenrecord --size 720x1280 /sdcard/_agent_rec.mp4" &
 
 Use `--size 720x1280` to keep the file small. The recording runs in the background while you perform navigation steps. See the Screen Recording section below for full details.
 
-### 7. Navigate and Verify
+### 8. Navigate and Verify
 
 Navigate as needed per the user's request. After each navigation action:
 1. Wait for the screen to stabilize (see "Waiting for Screen Transitions").
@@ -163,7 +167,7 @@ If the expected screen identifier is NOT present after retries:
 2. Call `mobile_list_elements_on_screen` and identify which screen you are actually on.
 3. Report to the user: "Navigation to [target] failed. Currently on [detected screen]."
 
-### 8. Stop Recording and Save Evidence
+### 9. Stop Recording and Save Evidence
 
 **If recording:** stop the recording, pull the file, and clean up:
 
@@ -176,7 +180,7 @@ adb -s <device_id> shell rm /sdcard/_agent_rec.mp4
 
 **Always:** use `mobile_save_screenshot` at each verification step to save screenshots to disk.
 
-### 9. Report Results
+### 10. Report Results
 
 Summarize what was verified, include saved screenshot and recording paths, and flag any issues found.
 
@@ -267,6 +271,24 @@ Note: with `--time-limit`, the command blocks until done, so navigation must hap
 | Recording stops after 3 min | Hit 180s Android limit | Use chained recordings |
 | Black screen in video | DRM-protected content on screen | OS-level restriction, cannot be avoided |
 | `screenrecord: not found` | Android < 4.4 | Not supported on very old devices |
+
+## API Mocking with ApiFaker
+
+ApiFaker intercepts API calls at the OkHttp layer and returns fake responses from a local database. Control it via ADB broadcast commands to test specific scenarios (error states, empty lists, custom data) during device verification. ApiFaker is available only in debug builds.
+
+When the user requests verification of a specific scenario, follow this workflow:
+1. Clear any existing endpoints
+2. Add mock endpoint(s) for the scenario
+3. Enable ApiFaker
+4. Launch or navigate the app — mocked endpoints return fake responses
+5. Verify the UI shows the expected behavior
+6. Disable ApiFaker and clear endpoints when done
+
+For all ADB commands, extras, API types, examples, and debugging tips, read `docs/api-faker-adb.md`.
+
+**Key tips:**
+- ApiFaker requires at least one endpoint before it can be enabled.
+- All actions log results to logcat under the `WCApiFaker` tag — use `adb logcat -s WCApiFaker -d` to check feedback.
 
 ## WooCommerce Navigation Reference
 
