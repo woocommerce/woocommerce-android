@@ -40,6 +40,38 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
         ) : Error() {
             override val name: String = "order_creation_failed"
         }
+
+        data class BookingCancelError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "pos_booking_cancel_failed"
+        }
+
+        data class BookingAttendanceChangeError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "pos_booking_attendance_change_failed"
+        }
+
+        data class BookingNoteAddError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "pos_booking_note_add_failed"
+        }
+
+        data class BookingRefundError(
+            override val errorContext: KClass<out Any>,
+            override val errorType: String?,
+            override val errorDescription: String?,
+        ) : Error() {
+            override val name: String = "pos_booking_refund_failed"
+        }
     }
 
     sealed class Event : WooPosAnalyticsEvent() {
@@ -157,16 +189,20 @@ sealed class WooPosAnalyticsEvent : IAnalyticsEvent {
             override val name: String = "pos_bookings_list_booking_tapped"
         }
 
+        data object BookingsListSearchButtonTapped : Event() {
+            override val name: String = "pos_bookings_list_search_button_tapped"
+        }
+
         data object BookingCancelled : Event() {
             override val name: String = "pos_booking_cancelled"
         }
 
-        data object BookingCancelFailed : Event() {
-            override val name: String = "pos_booking_cancel_failed"
-        }
-
         data object BookingAttendanceChanged : Event() {
             override val name: String = "pos_booking_attendance_changed"
+        }
+
+        data object BookingAddNoteTapped : Event() {
+            override val name: String = "pos_booking_add_note_tapped"
         }
 
         data object BookingNoteAdded : Event() {

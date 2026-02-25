@@ -431,7 +431,8 @@ class WooPosBookingsViewModel @Inject constructor(
                 attendanceStatus = entityStatus,
             ).onSuccess {
                 analyticsTracker.trackAttendanceChanged()
-            }.onFailure {
+            }.onFailure { error ->
+                analyticsTracker.trackAttendanceChangeFailed(this@WooPosBookingsViewModel::class, error)
                 val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
                 val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
                 if (rollbackDetails.id != details.id) return@onFailure
@@ -467,6 +468,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleAddBookingNote() {
         val bookingId = selectedBookingId ?: return
         viewModelScope.launch {
+            analyticsTracker.trackAddNoteTapped()
             _navigationEvent.emit(WooPosNavigationEvent.OpenBookingNote(bookingId))
         }
     }
@@ -560,7 +562,10 @@ class WooPosBookingsViewModel @Inject constructor(
                     dialogState = WooPosBookingsState.Content.DialogState.Hidden
                 )
             } else {
-                analyticsTracker.trackBookingCancelFailed()
+                analyticsTracker.trackBookingCancelFailed(
+                    this@WooPosBookingsViewModel::class,
+                    result.exceptionOrNull()
+                )
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(
                         bookingId = dialog.bookingId,

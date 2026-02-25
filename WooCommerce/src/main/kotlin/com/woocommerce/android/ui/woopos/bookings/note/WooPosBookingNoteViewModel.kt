@@ -69,7 +69,8 @@ class WooPosBookingNoteViewModel @Inject constructor(
                 bookingId = bookingId,
                 note = currentState.noteText.trim()
             )
-            result.onFailure {
+            result.onFailure { error ->
+                analyticsTracker.trackNoteAddFailed(this@WooPosBookingNoteViewModel::class, error)
                 _state.update {
                     it.copy(buttonState = WooPosButtonState.ENABLED)
                 }
