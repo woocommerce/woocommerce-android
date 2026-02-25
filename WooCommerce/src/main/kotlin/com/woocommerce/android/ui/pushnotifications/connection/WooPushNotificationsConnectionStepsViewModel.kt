@@ -11,11 +11,11 @@ import com.woocommerce.android.OnChangedException
 import com.woocommerce.android.R
 import com.woocommerce.android.extensions.adminUrlOrDefault
 import com.woocommerce.android.model.UiString
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.notifications.push.PushNotificationRepository
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.login.jetpack.JetpackActivationRepository
-import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.util.StringUtils
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event
 import com.woocommerce.android.viewmodel.MultiLiveEvent.Event.Exit
@@ -138,7 +138,7 @@ class WooPushNotificationsConnectionStepsViewModel @Inject constructor(
             return
         }
 
-        when (val result = checkWCPluginSupport()) {
+        when (val result = checkWCPluginSupport(forceRefresh = true)) {
             CheckWooPluginPushNotificationsSupport.Result.Compatible -> {
                 markCurrentStepAsCompleted()
                 advanceToNextStep()

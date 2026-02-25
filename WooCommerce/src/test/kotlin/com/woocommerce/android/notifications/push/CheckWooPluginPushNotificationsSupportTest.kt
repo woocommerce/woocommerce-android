@@ -26,7 +26,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     fun `given compatible version, when invoked, then returns Compatible`() = testBlocking {
         whenever(fetchActiveWCPluginVersion()).thenReturn("10.6.0")
 
-        val result = sut()
+        val result = sut(forceRefresh = true)
 
         assertThat(result).isEqualTo(Result.Compatible)
     }
@@ -35,7 +35,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     fun `given newer version, when invoked, then returns Compatible`() = testBlocking {
         whenever(fetchActiveWCPluginVersion()).thenReturn("11.0.0")
 
-        val result = sut()
+        val result = sut(forceRefresh = true)
 
         assertThat(result).isEqualTo(Result.Compatible)
     }
@@ -44,7 +44,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     fun `given incompatible version, when invoked, then returns UpdateRequired with version`() = testBlocking {
         whenever(fetchActiveWCPluginVersion()).thenReturn("9.0.0")
 
-        val result = sut()
+        val result = sut(forceRefresh = true)
 
         assertThat(result).isEqualTo(Result.UpdateRequired(currentVersion = "9.0.0"))
     }
@@ -53,7 +53,7 @@ class CheckWooPluginPushNotificationsSupportTest : BaseUnitTest() {
     fun `given fetch fails, when invoked, then returns Error`() = testBlocking {
         whenever(fetchActiveWCPluginVersion()).thenReturn(null)
 
-        val result = sut()
+        val result = sut(forceRefresh = true)
 
         assertThat(result).isEqualTo(Result.Error)
     }

@@ -5,11 +5,11 @@ import com.woocommerce.android.AppUrls
 import com.woocommerce.android.model.JetpackConnectionStatus
 import com.woocommerce.android.model.JetpackSiteRegistrationStatus
 import com.woocommerce.android.model.JetpackStatus
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
@@ -111,7 +111,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
@@ -131,7 +131,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()
@@ -151,7 +151,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Compatible)
 
             setup()
@@ -171,7 +171,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.Error)
 
             setup()
@@ -216,7 +216,7 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
             )
             whenever(fetchJetpackStatus(any(), any(), anyOrNull()))
                 .thenReturn(Result.success(JetpackStatusFetchResponse.Success(jetpackStatus)))
-            whenever(checkWCPluginSupport())
+            whenever(checkWCPluginSupport(forceRefresh = true))
                 .thenReturn(CheckWooPluginPushNotificationsSupport.Result.UpdateRequired("9.0.0"))
 
             setup()

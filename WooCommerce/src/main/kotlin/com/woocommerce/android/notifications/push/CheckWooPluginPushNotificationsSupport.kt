@@ -13,7 +13,7 @@ class CheckWooPluginPushNotificationsSupport @Inject constructor(
         const val PUSH_NOTIFICATIONS_MIN_WC_VERSION = "10.6.0"
     }
 
-    suspend operator fun invoke(forceRefresh: Boolean = true): Result {
+    suspend operator fun invoke(forceRefresh: Boolean): Result {
         val wcVersion = if (forceRefresh) {
             fetchActiveWCPluginVersion()
         } else {
