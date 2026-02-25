@@ -1261,9 +1261,51 @@ class WooPosOrdersViewModelTest {
     }
 
     @Test
-    fun `given non-completed order, when order details loaded, then Issue Refund action is absent`() = runTest {
+    fun `given pending order, when order details loaded, then Issue Refund and Email Receipt actions are absent`() = runTest {
         // GIVEN
         val testOrder = order(2).copy(status = Order.Status.Pending)
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given processing order, when order details loaded, then Email Receipt is available but Issue Refund is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(3).copy(status = Order.Status.Processing)
+
+        whenever(dataSource.loadOrders(any())).thenReturn(
+            flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
+        )
+
+        // WHEN
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // THEN
+        val state = viewModel.state.value as WooPosOrdersState.Content
+        val details = state.selectedDetails!!
+        val actions = (details.actionsState as WooPosOrdersState.OrderActionsState.Loaded).actions
+        assertThat(actions).noneMatch { it is WooPosOrdersState.OrderAction.IssueRefund }
+        assertThat(actions).anyMatch { it is WooPosOrdersState.OrderAction.EmailReceipt }
+    }
+
+    @Test
+    fun `given refunded order, when order details loaded, then Email Receipt is available but Issue Refund is absent`() = runTest {
+        // GIVEN
+        val testOrder = order(4).copy(status = Order.Status.Refunded)
 
         whenever(dataSource.loadOrders(any())).thenReturn(
             flow { emit(LoadOrdersResult.SuccessRemote(ordersMap(testOrder))) }
