@@ -193,6 +193,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.GenericError)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "generic"))
+            )
         }
 
     @Test
@@ -205,6 +209,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.ForbiddenError)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR),
+                eq(mapOf(AnalyticsTracker.KEY_ERROR_TYPE to "no_permission"))
+            )
         }
 
     @Test

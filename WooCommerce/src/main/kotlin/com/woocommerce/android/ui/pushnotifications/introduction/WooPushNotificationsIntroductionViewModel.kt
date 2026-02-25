@@ -33,6 +33,8 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
         const val BUTTON_LABEL_CONTINUE = "continue"
         const val BUTTON_LABEL_UPDATE_PLUGIN = "update_plugin"
         const val BUTTON_LABEL_NOT_NOW = "not_now"
+        const val ERROR_TYPE_NO_PERMISSION = "no_permission"
+        const val ERROR_TYPE_GENERIC = "generic"
     }
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Loading)
@@ -70,8 +72,14 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
                 onFailure = { _viewState.value = ViewState.GenericError }
             )
 
-            if (_viewState.value is ViewState.NotConnected || _viewState.value is ViewState.UpdateRequired) {
-                trackIntroductionView()
+            when (_viewState.value) {
+                is ViewState.NotConnected,
+                is ViewState.UpdateRequired -> trackIntroductionView()
+
+                is ViewState.ForbiddenError -> trackIntroductionError(ERROR_TYPE_NO_PERMISSION)
+
+                is ViewState.GenericError -> trackIntroductionError(ERROR_TYPE_GENERIC)
+                is ViewState.Loading -> {}
             }
         }
     }
@@ -120,6 +128,13 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
 
     private fun trackIntroductionView() {
         analyticsTrackerWrapper.track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW)
+    }
+
+    private fun trackIntroductionError(errorType: String) {
+        analyticsTrackerWrapper.track(
+            AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_ERROR,
+            mapOf(AnalyticsTracker.KEY_ERROR_TYPE to errorType)
+        )
     }
 
     private fun trackIntroductionButtonTap(buttonLabel: String) {
