@@ -27,12 +27,11 @@ import javax.inject.Singleton
 
 @Singleton
 class WooFileLogger(
-    private val logsDirectory: File,
     private val appCoroutineScope: CoroutineScope,
     private val dispatchers: CoroutineDispatchers,
     private val processLifecycleOwner: LifecycleOwner,
     private val crashLogging: Provider<CrashLogging>? = null,
-    availableDiskBytes: (() -> Long)? = null
+    private val logFileWriter: LogFileWriter,
 ) {
     @Inject
     constructor(
@@ -41,18 +40,15 @@ class WooFileLogger(
         dispatchers: CoroutineDispatchers,
         crashLogging: Provider<CrashLogging>
     ) : this(
-        logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
         appCoroutineScope = appCoroutineScope,
         dispatchers = dispatchers,
         processLifecycleOwner = ProcessLifecycleOwner.get(),
-        crashLogging = crashLogging
-    )
-
-    private val logFileWriter: LogFileWriter = LogFileWriter(
-        logsDirectory = logsDirectory,
-        maxLogFiles = MAX_LOG_FILES,
-        dispatchers = dispatchers,
-        availableDiskBytes = availableDiskBytes ?: LogFileWriter.defaultAvailableDiskBytes(logsDirectory)
+        crashLogging = crashLogging,
+        logFileWriter = LogFileWriter(
+            logsDirectory = File(context.filesDir, LOG_FILE_DIRECTORY),
+            maxLogFiles = MAX_LOG_FILES,
+            dispatchers = dispatchers,
+        ),
     )
 
     private val internalLogsBuffer = Channel<LogEntry>(Channel.UNLIMITED)

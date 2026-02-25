@@ -20,7 +20,12 @@ class LogFileWriter(
     private val logsDirectory: File,
     private val maxLogFiles: Int,
     private val dispatchers: CoroutineDispatchers,
-    private val availableDiskBytes: () -> Long = defaultAvailableDiskBytes(logsDirectory)
+    private val availableDiskBytes: () -> Long = {
+        if (!logsDirectory.exists()) {
+            logsDirectory.mkdirs()
+        }
+        runCatching { StatFs(logsDirectory.absolutePath).availableBytes }.getOrDefault(0L)
+    }
 ) {
     private var lastUsedFile: File? = null
     private val dateFormatter
@@ -44,7 +49,8 @@ class LogFileWriter(
         mutex.withLock {
             withContext(dispatchers.io) {
                 if (logFile.length() >= MAX_LOG_FILE_SIZE_BYTES) {
-                    return@withContext
+                    logFile.delete()
+                    logFile.createNewFile()
                 }
                 logFile.appendText("$logs\n")
             }
@@ -153,12 +159,5 @@ class LogFileWriter(
         private const val MIN_DISK_SPACE_BYTES = 10L * 1024 * 1024
         private const val DISK_SPACE_CHECK_INTERVAL_MS = 5_000L
         private const val MIN_LOG_FILES_TO_KEEP = 2
-
-        fun defaultAvailableDiskBytes(logsDirectory: File): () -> Long = {
-            if (!logsDirectory.exists()) {
-                logsDirectory.mkdirs()
-            }
-            runCatching { StatFs(logsDirectory.absolutePath).availableBytes }.getOrDefault(0L)
-        }
     }
 }

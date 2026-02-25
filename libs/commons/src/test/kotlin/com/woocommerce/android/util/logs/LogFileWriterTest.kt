@@ -229,17 +229,17 @@ class LogFileWriterTest : BaseUnitTest() {
     }
 
     @Test
-    fun `when log file exceeds max size, then writes should be skipped`() = testBlocking {
+    fun `when log file exceeds max size, then file is reset and new logs are written`() = testBlocking {
         val currentLogFile = logFileWriter.getCurrentLogFile()
 
         val largeContent = "x".repeat(2 * 1024 * 1024)
         currentLogFile.writeText(largeContent)
 
-        logFileWriter.writeLogs("This should not be written")
+        logFileWriter.writeLogs("New log entry after reset")
 
         val fileContent = currentLogFile.readText()
-        assertThat(fileContent).isEqualTo(largeContent)
-        assertThat(fileContent).doesNotContain("This should not be written")
+        assertThat(fileContent).doesNotContain(largeContent)
+        assertThat(fileContent).contains("New log entry after reset")
     }
 
     @Test
