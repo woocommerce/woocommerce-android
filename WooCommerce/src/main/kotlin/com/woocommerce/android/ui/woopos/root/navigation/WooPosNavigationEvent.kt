@@ -18,7 +18,10 @@ sealed class WooPosNavigationEvent {
         val source: CardPaymentSource = CardPaymentSource.CHECKOUT,
         val showCashPaymentButton: Boolean = false,
     ) : WooPosNavigationEvent()
-    data class OpenEmailReceipt(val orderId: Long) : WooPosNavigationEvent()
+    data class OpenEmailReceipt(
+        val orderId: Long,
+        val receiptAlreadySent: Boolean = false,
+    ) : WooPosNavigationEvent()
     data class OpenRefundReason(val orderId: Long, val initialReason: String = "") : WooPosNavigationEvent()
     data object GoBack : WooPosNavigationEvent()
     data class GoBackWithResult(val key: String, val value: Any) : WooPosNavigationEvent()

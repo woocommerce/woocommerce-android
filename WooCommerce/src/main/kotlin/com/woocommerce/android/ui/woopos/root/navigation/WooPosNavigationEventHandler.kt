@@ -47,7 +47,7 @@ fun NavHostController.handleNavigationEvent(
             navigateToHomeScreenAfterSuccessfulCashPayment()
 
         is WooPosNavigationEvent.OpenEmailReceipt ->
-            navigateToEmailReceipt(event.orderId)
+            navigateToEmailReceipt(event.orderId, event.receiptAlreadySent)
 
         is WooPosNavigationEvent.OpenRefundReason ->
             navigateToRefundReason(event.orderId, event.initialReason)
