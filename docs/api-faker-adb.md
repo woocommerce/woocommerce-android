@@ -7,16 +7,18 @@ The ApiFaker module can be controlled via ADB broadcast commands, enabling autom
 - Debug build installed on the device/emulator
 - ADB connected to the device
 
+**Note:** All commands include `-p com.woocommerce.android.dev` to target the debug app package. This is required on Android 8.0+ because implicit broadcasts are not delivered to manifest-registered receivers without a package qualifier.
+
 ## Commands
 
 ### Enable / Disable
 
 ```bash
 # Enable
-adb shell am broadcast -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled true
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled true
 
 # Disable
-adb shell am broadcast -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled false
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled false
 ```
 
 Note: ApiFaker can only be enabled when at least one endpoint is configured. If no endpoints exist, the status will remain disabled even after sending `enabled true`.
@@ -24,7 +26,7 @@ Note: ApiFaker can only be enabled when at least one endpoint is configured. If 
 ### Add Endpoint
 
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "<type>" \
   --es path "<path>" \
   [--es http_method "<method>"] \
@@ -58,7 +60,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 
 **WP-API** (`wp-api`): WordPress REST API endpoints accessed via `/wp-json`.
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "wp-api" \
   --es path "/wc/v3/products" \
   --es http_method "GET" \
@@ -68,7 +70,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 
 **WP.COM** (`wp-com`): WordPress.com Public API endpoints on `public-api.wordpress.com`.
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "wp-com" \
   --es path "/rest/v1.1/me" \
   --es http_method "GET" \
@@ -78,7 +80,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 
 **Custom** (`custom`): Third-party API endpoints with an arbitrary host.
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "custom" \
   --es custom_host "api.stripe.com" \
   --es path "/v1/tokens" \
@@ -92,7 +94,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 Partially updates an existing endpoint. Only the extras you provide will be changed; all other fields are preserved.
 
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.EDIT_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.EDIT_ENDPOINT \
   --el endpoint_id <id> \
   [--es path "<new_path>"] \
   [--ei response_status_code <new_code>] \
@@ -109,14 +111,14 @@ All other extras from `ADD_ENDPOINT` are accepted and optional.
 ### Remove Endpoint
 
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.REMOVE_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.REMOVE_ENDPOINT \
   --el endpoint_id <id>
 ```
 
 ### Clear All Endpoints
 
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
 ```
 
 ### List Endpoints
@@ -124,7 +126,7 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
 Outputs all configured endpoints to logcat as JSON.
 
 ```bash
-adb shell am broadcast -a com.woocommerce.android.apifaker.LIST_ENDPOINTS
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.LIST_ENDPOINTS
 ```
 
 Read the output:
@@ -149,7 +151,7 @@ Import multiple endpoints from a JSON file. The file format matches the ApiFaker
 adb push endpoints.json /data/local/tmp/endpoints.json
 
 # Import it
-adb shell am broadcast -a com.woocommerce.android.apifaker.IMPORT_ENDPOINTS \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.IMPORT_ENDPOINTS \
   --es file "/data/local/tmp/endpoints.json"
 ```
 
@@ -193,7 +195,7 @@ EOF
 adb push /tmp/response.json /data/local/tmp/response.json
 
 # Reference the file in the broadcast
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "wp-api" \
   --es path "/wc/v3/products" \
   --es http_method "GET" \
@@ -205,21 +207,21 @@ adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
 
 ```bash
 # 1. Clear any existing endpoints
-adb shell am broadcast -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
 
 # 2. Add mock endpoints
-adb shell am broadcast -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.ADD_ENDPOINT \
   --es api_type "wp-api" --es path "/wc/v3/products" --es http_method "GET" \
   --ei response_status_code 200 --es response_body '[]'
 
 # 3. Enable ApiFaker
-adb shell am broadcast -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled true
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled true
 
 # 4. Run your test scenario...
 
 # 5. Disable and clean up
-adb shell am broadcast -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled false
-adb shell am broadcast -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.SET_STATUS --ez enabled false
+adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android.apifaker.CLEAR_ENDPOINTS
 ```
 
 ## Feedback and Debugging
