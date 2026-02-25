@@ -109,7 +109,7 @@ class WooPosRefundViewModel @AssistedInject constructor(
     }
 
     private fun loadRefundableItems() {
-        if (_state.value is WooPosRefundState.Content) return
+        if (_state.value is WooPosRefundState.Content || _state.value is WooPosRefundState.RefundSuccess) return
         loadingJob?.cancel()
         loadingJob = viewModelScope.launch {
             _state.value = WooPosRefundState.Loading

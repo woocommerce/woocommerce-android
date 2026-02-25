@@ -12,6 +12,7 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 import com.woocommerce.android.ui.woopos.root.navigation.navigateOnce
 
 const val BOOKINGS_ROUTE = "$HOME_ROUTE/bookings"
+const val BOOKING_PAYMENT_FLOW_FINISHED_KEY = "booking_payment_flow_finished"
 
 fun NavController.navigateToBookingsScreen() {
     navigateOnce(BOOKINGS_ROUTE)
