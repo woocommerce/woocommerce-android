@@ -106,7 +106,7 @@ class WooPosSyncTimestampRepository @Inject constructor(
     private fun buildSiteSpecificKey(key: String): Preferences.Key<String>? {
         val site = selectedSite.getOrNull()
         return if (site != null) {
-            stringPreferencesKey("${site.siteId}-$key")
+            stringPreferencesKey("${site.remoteId().value}-$key")
         } else {
             logger.e("Cannot build site-specific key '$key': no site selected")
             null
