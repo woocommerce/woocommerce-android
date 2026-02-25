@@ -83,7 +83,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.NotConnected)
-            verify(analyticsTrackerWrapper).track(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "not_connected"))
+            )
         }
 
     @Test
@@ -123,6 +126,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
             val viewState = viewModel.viewState.getOrAwaitValue()
             assertThat(viewState).isEqualTo(ViewState.UpdateRequired)
+            verify(analyticsTrackerWrapper).track(
+                eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_INTRODUCTION_VIEW),
+                eq(mapOf(AnalyticsTracker.KEY_STATE to "update_required"))
+            )
         }
 
     @Test
