@@ -455,6 +455,39 @@ class WooPosCardPaymentViewModelTest {
     }
 
     @Test
+    fun `given connected reader, when cash payment dismissed, then payment restarts`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentClicked()
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentDismissed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.Collecting.Preparing::class.java)
+    }
+
+    @Test
+    fun `given disconnected reader, when cash payment dismissed, then payment does not restart`() = runTest {
+        viewModel = createViewModel(source = CardPaymentSource.BOOKINGS)
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentClicked()
+        advanceUntilIdle()
+
+        readerStatusFlow.value = CardReaderStatus.NotConnected()
+        advanceUntilIdle()
+
+        viewModel.onCashPaymentDismissed()
+        advanceUntilIdle()
+
+        assertThat(viewModel.state.value)
+            .isInstanceOf(WooPosCardPaymentState.Collecting.ReaderDisconnected::class.java)
+    }
+
+    @Test
     fun `given order with billing email, when payment succeeds, then receiptSentMessage is set`() = runTest {
         val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
             total = BigDecimal("50.00"),

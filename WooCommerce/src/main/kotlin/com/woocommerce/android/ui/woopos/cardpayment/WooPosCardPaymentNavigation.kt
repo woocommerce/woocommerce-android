@@ -75,9 +75,10 @@ fun NavGraphBuilder.cardPaymentScreen(
                 targetOffsetX = { fullWidth -> fullWidth },
             )
         },
-    ) {
+    ) { backStackEntry ->
         WooPosCardPaymentScreen(
             onNavigationEvent = onNavigationEvent,
+            backStackEntry = backStackEntry,
         )
     }
 }

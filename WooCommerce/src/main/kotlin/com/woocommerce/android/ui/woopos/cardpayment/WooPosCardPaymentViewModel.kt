@@ -329,6 +329,13 @@ class WooPosCardPaymentViewModel @Inject constructor(
         }
     }
 
+    fun onCashPaymentDismissed() {
+        if (cardReaderFacade.readerStatus.value is Connected) {
+            _state.value = buildPreparingState()
+            collectPayment()
+        }
+    }
+
     fun onCashPaymentClicked() {
         cancelPayment()
         val cashSource = when (source) {

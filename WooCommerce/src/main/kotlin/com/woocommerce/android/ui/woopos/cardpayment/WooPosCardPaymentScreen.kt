@@ -32,12 +32,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieClipSpec
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
 import com.woocommerce.android.R
+import com.woocommerce.android.ui.woopos.cashpayment.CASH_PAYMENT_DISMISSED_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosButton
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCircularLoadingIndicator
@@ -54,12 +56,24 @@ import com.woocommerce.android.ui.woopos.root.navigation.WooPosNavigationEvent
 @Composable
 fun WooPosCardPaymentScreen(
     onNavigationEvent: (WooPosNavigationEvent) -> Unit,
+    backStackEntry: NavBackStackEntry,
 ) {
     val viewModel: WooPosCardPaymentViewModel = hiltViewModel()
     val state by viewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.navigationEvent.collect { onNavigationEvent(it) }
+    }
+
+    val cashPaymentDismissed = backStackEntry.savedStateHandle
+        .getStateFlow(CASH_PAYMENT_DISMISSED_KEY, false)
+        .collectAsState()
+
+    LaunchedEffect(cashPaymentDismissed.value) {
+        if (cashPaymentDismissed.value) {
+            viewModel.onCashPaymentDismissed()
+            backStackEntry.savedStateHandle[CASH_PAYMENT_DISMISSED_KEY] = false
+        }
     }
 
     BackHandler { viewModel.onBackClicked() }
