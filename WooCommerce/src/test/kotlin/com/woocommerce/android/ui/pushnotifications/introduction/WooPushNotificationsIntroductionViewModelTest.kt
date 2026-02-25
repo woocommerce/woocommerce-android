@@ -260,6 +260,10 @@ class WooPushNotificationsIntroductionViewModelTest : BaseUnitTest() {
 
         viewModel.onContactSupportClick()
 
+        verify(analyticsTrackerWrapper).track(
+            eq(AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_BUTTON_TAP),
+            eq(mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to "support"))
+        )
         val event = viewModel.event.value
         assertThat(event).isInstanceOf(NavigateToHelpScreen::class.java)
         assertThat((event as NavigateToHelpScreen).origin)
