@@ -4,7 +4,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.cardreader.connection.CardReaderStatus
 import com.woocommerce.android.ciab.CIABSiteGateKeeper
 import com.woocommerce.android.ui.woopos.cardreader.WooPosCardReaderFacade
-import com.woocommerce.android.ui.woopos.featureflags.IsPosBookingsEnabled
 import com.woocommerce.android.ui.woopos.home.ChildToParentEvent
 import com.woocommerce.android.ui.woopos.home.WooPosChildrenToParentEventSender
 import com.woocommerce.android.ui.woopos.util.WooPosCoroutineTestRule
@@ -36,9 +35,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
     private val networkStatus: WooPosNetworkStatus = mock()
     private val resourceProvider: ResourceProvider = mock()
     private val analyticsTracker: WooPosAnalyticsTracker = mock()
-    private val isPosBookingsEnabled: IsPosBookingsEnabled = mock {
-        onBlocking { invoke() }.thenReturn(false)
-    }
     private val ciabSiteGateKeeper: CIABSiteGateKeeper = mock {
         on { isCurrentSiteCIAB() }.thenReturn(false)
     }
@@ -262,8 +258,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `given bookings enabled and CIAB site, when menu opened, then bookings item is shown`() = runTest {
-        whenever(isPosBookingsEnabled.invoke()).thenReturn(true)
+    fun `given CIAB site, when menu opened, then bookings item is shown`() = runTest {
         whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(true)
         val viewModel = createViewModel()
 
@@ -276,8 +271,7 @@ class WooPosHomeFloatingToolbarViewModelTest {
     }
 
     @Test
-    fun `given bookings enabled and non-CIAB site, when menu opened, then bookings item is not shown`() = runTest {
-        whenever(isPosBookingsEnabled.invoke()).thenReturn(true)
+    fun `given non-CIAB site, when menu opened, then bookings item is not shown`() = runTest {
         whenever(ciabSiteGateKeeper.isCurrentSiteCIAB()).thenReturn(false)
         val viewModel = createViewModel()
 
@@ -295,7 +289,6 @@ class WooPosHomeFloatingToolbarViewModelTest {
         networkStatus,
         resourceProvider,
         analyticsTracker,
-        isPosBookingsEnabled,
         ciabSiteGateKeeper,
     )
 }
