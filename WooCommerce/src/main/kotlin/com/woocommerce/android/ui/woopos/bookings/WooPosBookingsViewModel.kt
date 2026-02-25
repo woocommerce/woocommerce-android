@@ -564,7 +564,7 @@ class WooPosBookingsViewModel @Inject constructor(
             } else {
                 analyticsTracker.trackBookingCancelFailed(
                     this@WooPosBookingsViewModel::class,
-                    result.exceptionOrNull()
+                    result.exceptionOrNull() ?: Exception("Unknown error")
                 )
                 state.copy(
                     dialogState = WooPosBookingsState.Content.DialogState.CancelBooking.Error(

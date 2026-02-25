@@ -44,12 +44,12 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(BookingCancelled)
     }
 
-    suspend fun trackBookingCancelFailed(errorContext: KClass<out Any>, error: Throwable?) {
+    suspend fun trackBookingCancelFailed(errorContext: KClass<out Any>, error: Throwable) {
         analyticsTracker.track(
             BookingCancelError(
                 errorContext = errorContext,
                 errorType = null,
-                errorDescription = error?.message,
+                errorDescription = error.message,
             )
         )
     }
@@ -58,12 +58,12 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(BookingAttendanceChanged)
     }
 
-    suspend fun trackAttendanceChangeFailed(errorContext: KClass<out Any>, error: Throwable?) {
+    suspend fun trackAttendanceChangeFailed(errorContext: KClass<out Any>, error: Throwable) {
         analyticsTracker.track(
             BookingAttendanceChangeError(
                 errorContext = errorContext,
                 errorType = null,
-                errorDescription = error?.message,
+                errorDescription = error.message,
             )
         )
     }
@@ -76,12 +76,12 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(BookingNoteAdded)
     }
 
-    suspend fun trackNoteAddFailed(errorContext: KClass<out Any>, error: Throwable?) {
+    suspend fun trackNoteAddFailed(errorContext: KClass<out Any>, error: Throwable) {
         analyticsTracker.track(
             BookingNoteAddError(
                 errorContext = errorContext,
                 errorType = null,
-                errorDescription = error?.message,
+                errorDescription = error.message,
             )
         )
     }
@@ -106,12 +106,12 @@ class WooPosBookingsAnalyticsTracker @Inject constructor(
         analyticsTracker.track(BookingViewOrderTapped)
     }
 
-    suspend fun trackRefundFailed(errorContext: KClass<out Any>, error: Throwable?) {
+    suspend fun trackRefundFailed(errorContext: KClass<out Any>, error: Throwable) {
         analyticsTracker.track(
             BookingRefundError(
                 errorContext = errorContext,
                 errorType = null,
-                errorDescription = error?.message,
+                errorDescription = error.message,
             )
         )
     }
