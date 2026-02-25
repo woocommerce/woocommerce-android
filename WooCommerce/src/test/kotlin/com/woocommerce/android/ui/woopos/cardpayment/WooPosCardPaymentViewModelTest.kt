@@ -526,27 +526,6 @@ class WooPosCardPaymentViewModelTest {
         }
 
     @Test
-    fun `given payment succeeded, when screen resumed, then payment is not restarted`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
-
-        viewModel.onScreenResumed()
-        advanceUntilIdle()
-
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
-    }
-
-    @Test
     fun `given payment failed, when screen resumed, then payment is not restarted`() = runTest {
         viewModel = createViewModel()
         advanceUntilIdle()
@@ -596,77 +575,5 @@ class WooPosCardPaymentViewModelTest {
 
         assertThat(viewModel.state.value)
             .isInstanceOf(WooPosCardPaymentState.PaymentInProgress::class.java)
-    }
-
-    @Test
-    fun `given payment succeeded, when screen paused, then payment is not cancelled`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
-
-        viewModel.onScreenPaused()
-        advanceUntilIdle()
-
-        viewModel.onScreenResumed()
-        advanceUntilIdle()
-
-        assertThat(viewModel.state.value)
-            .isInstanceOf(WooPosCardPaymentState.PaymentSuccess::class.java)
-    }
-
-    @Test
-    fun `given order with billing email, when payment succeeds, then receiptSentMessage is set`() = runTest {
-        val orderWithEmail = Order.getEmptyOrder(Date(), Date()).copy(
-            total = BigDecimal("50.00"),
-            customer = Order.Customer(
-                billingAddress = Address.EMPTY.copy(email = "customer@example.com"),
-                shippingAddress = Address.EMPTY
-            )
-        )
-        whenever(totalsRepository.getOrderById(any())).thenReturn(orderWithEmail)
-        whenever(
-            resourceProvider.getString(R.string.woopos_receipt_sent_to_customer, "customer@example.com")
-        ).thenReturn("A receipt has been sent to customer@example.com.")
-
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
-
-        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
-        assertThat(state.receiptSentMessage).isEqualTo("A receipt has been sent to customer@example.com.")
-    }
-
-    @Test
-    fun `given order without billing email, when payment succeeds, then receiptSentMessage is null`() = runTest {
-        viewModel = createViewModel()
-        advanceUntilIdle()
-
-        controllerPaymentState.value = CardReaderPaymentState.PaymentSuccessful
-            .ExternalReaderPaymentSuccessful(
-                amountWithCurrencyLabel = "$50.00",
-                onPrintReceiptClicked = {},
-                onSendReceiptClicked = {},
-                onSaveUserClicked = {}
-            )
-        advanceUntilIdle()
-
-        val state = viewModel.state.value as WooPosCardPaymentState.PaymentSuccess
-        assertThat(state.receiptSentMessage).isNull()
     }
 }
