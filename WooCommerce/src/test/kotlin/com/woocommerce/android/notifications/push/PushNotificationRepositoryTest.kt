@@ -7,10 +7,12 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.woocommerce.android.AppPrefsWrapper
 import com.woocommerce.android.analytics.AnalyticsEvent
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport.Result
 import com.woocommerce.android.util.locale.LocaleProvider
 import com.woocommerce.android.viewmodel.BaseUnitTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.first
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
@@ -52,6 +54,9 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
     private val pushNotificationsDataStore: DataStore<Preferences> = mock {
         on { data } doReturn flowOf(preferences)
     }
+    private val checkWooPluginPushNotificationsSupport: CheckWooPluginPushNotificationsSupport = mock {
+        onBlocking { invoke(forceRefresh = false) } doReturn Result.Compatible
+    }
 
     private lateinit var sut: PushNotificationRepository
 
@@ -68,7 +73,8 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             prefsWrapper,
             pushNotificationsDataStore,
             notificationAnalyticsTracker,
-            localeProvider
+            localeProvider,
+            checkWooPluginPushNotificationsSupport
         )
     }
 
@@ -242,7 +248,7 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         }
 
     @Test
-    fun `given token exists for site, when isWooPushTokenRegisteredForSite called, then returns true`() =
+    fun `given token exists for site and plugin is compatible, when isWooPushTokenRegisteredForSite called, then returns true`() =
         testBlocking {
             val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
             whenever(preferences[tokenKey]).thenReturn("token-id-1")
@@ -259,6 +265,65 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
             whenever(preferences[tokenKey]).thenReturn(null)
 
             val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given token stored but plugin incompatible, when isWooPushTokenRegisteredForSite called, then returns false`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            setupPluginCompatibility(isCompatible = false)
+
+            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given token stored but plugin not found, when isWooPushTokenRegisteredForSite called, then returns false`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            doReturn(Result.Error).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+
+            val result = sut.isWooPushTokenRegisteredForSite(SITE_ID)
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given token stored and plugin compatible, when observeWooPushTokenRegisteredForSite, then emits true`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+
+            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
+
+            assertThat(result).isTrue()
+        }
+
+    @Test
+    fun `given token stored but plugin incompatible, when observeWooPushTokenRegisteredForSite, then emits false`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            setupPluginCompatibility(isCompatible = false)
+
+            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
+
+            assertThat(result).isFalse()
+        }
+
+    @Test
+    fun `given token stored but plugin not found, when observeWooPushTokenRegisteredForSite, then emits false`() =
+        testBlocking {
+            val tokenKey = stringPreferencesKey("push_token_$SITE_ID")
+            whenever(preferences[tokenKey]).thenReturn("token-id-1")
+            doReturn(Result.Error).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
+
+            val result = sut.observeWooPushTokenRegisteredForSite(SITE_ID).first()
 
             assertThat(result).isFalse()
         }
@@ -332,6 +397,11 @@ class PushNotificationRepositoryTest : BaseUnitTest() {
         val deviceId = if (isRegistered) "device-id-123" else null
         whenever(sharedPreferences.getString(WpComPushNotificationStore.WPCOM_PUSH_DEVICE_SERVER_ID, null))
             .thenReturn(deviceId)
+    }
+
+    private suspend fun setupPluginCompatibility(isCompatible: Boolean) {
+        val result = if (isCompatible) Result.Compatible else Result.UpdateRequired(currentVersion = "9.0.0")
+        doReturn(result).whenever(checkWooPluginPushNotificationsSupport).invoke(forceRefresh = false)
     }
 
     private companion object {

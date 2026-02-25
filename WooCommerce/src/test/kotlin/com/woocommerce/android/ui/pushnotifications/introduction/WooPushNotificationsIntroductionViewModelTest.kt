@@ -9,7 +9,7 @@ import com.woocommerce.android.support.help.HelpOrigin
 import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus
 import com.woocommerce.android.ui.jetpack.FetchJetpackStatus.JetpackStatusFetchResponse
-import com.woocommerce.android.ui.pushnotifications.CheckWooPluginPushNotificationsSupport
+import com.woocommerce.android.notifications.push.CheckWooPluginPushNotificationsSupport
 import com.woocommerce.android.ui.pushnotifications.introduction.WooPushNotificationsIntroductionViewModel.ViewState
 import com.woocommerce.android.util.getOrAwaitValue
 import com.woocommerce.android.viewmodel.BaseUnitTest
