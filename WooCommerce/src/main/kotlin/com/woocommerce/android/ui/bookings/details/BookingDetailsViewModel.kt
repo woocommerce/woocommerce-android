@@ -11,6 +11,7 @@ import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingResource
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingAttendanceStatus
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
@@ -47,6 +48,7 @@ class BookingDetailsViewModel @Inject constructor(
     private val bookingsRepository: BookingsRepository,
     private val bookingMapper: BookingMapper,
     private val networkStatus: NetworkStatus,
+    private val paymentStatusResolver: PaymentStatusResolver,
 ) : ScopedViewModel(savedState) {
 
     private var bookingFetchJob: Job? = null
@@ -269,9 +271,10 @@ class BookingDetailsViewModel @Inject constructor(
     ): BookingUiState {
         val bookingId = booking.id.value
         val orderId = booking.orderId
+        val paymentStatus = paymentStatusResolver.resolve(orderId)
         return BookingUiState(
             orderId = orderId,
-            bookingSummary = booking.toBookingSummaryModel(attendanceUpdateStatus),
+            bookingSummary = booking.toBookingSummaryModel(paymentStatus, attendanceUpdateStatus),
             bookingsAppointmentDetails = booking.toAppointmentDetailsModel(
                 staffMemberStatus = buildStaffMemberStatus(
                     resourceId = booking.resourceId,
