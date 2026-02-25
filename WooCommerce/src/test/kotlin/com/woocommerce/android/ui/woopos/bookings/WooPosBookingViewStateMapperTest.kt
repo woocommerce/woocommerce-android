@@ -1,7 +1,6 @@
 package com.woocommerce.android.ui.woopos.bookings
 
 import com.woocommerce.android.R
-import com.woocommerce.android.tools.SelectedSite
 import com.woocommerce.android.ui.woopos.util.format.WooPosFormatPrice
 import com.woocommerce.android.viewmodel.ResourceProvider
 import kotlinx.coroutines.test.runTest
@@ -15,7 +14,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.LocalId
 import org.wordpress.android.fluxc.model.LocalOrRemoteId.RemoteId
-import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingCustomerInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingOrderInfo
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingPaymentInfo
@@ -25,7 +23,6 @@ import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.math.BigDecimal
 import java.time.Duration
 import java.time.Instant
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
@@ -71,13 +68,6 @@ class WooPosBookingViewStateMapperTest {
 
     private lateinit var mapper: WooPosBookingViewStateMapper
 
-    private fun createSelectedSite(timezone: String = "0"): SelectedSite {
-        val siteModel = SiteModel().apply { this.timezone = timezone }
-        return mock {
-            on { get() } doAnswer { siteModel }
-        }
-    }
-
     @Before
     fun setup() {
         whenever(timeRangeFormatter.format(any(), any())).thenReturn(FORMATTED_TIME_RANGE)
@@ -86,7 +76,6 @@ class WooPosBookingViewStateMapperTest {
             formatPrice,
             paymentStatusResolver,
             timeRangeFormatter,
-            createSelectedSite(),
         )
     }
 
@@ -144,18 +133,9 @@ class WooPosBookingViewStateMapperTest {
         }
 
     @Test
-    fun `given store in UTC-5 and booking near midnight UTC, when mapped, then date reflects store timezone`() =
+    fun `given booking near midnight UTC, when mapped to details, then date uses UTC`() =
         runTest {
             // GIVEN
-            val storeZoneId = ZoneId.of("UTC-05:00")
-            mapper = WooPosBookingViewStateMapper(
-                resourceProvider,
-                formatPrice,
-                paymentStatusResolver,
-                timeRangeFormatter,
-                createSelectedSite("-5"),
-            )
-
             val start = Instant.parse("2025-07-06T03:00:00Z")
             val end = start.plus(Duration.ofHours(1))
             val booking = sampleBooking(start = start, end = end)
@@ -166,9 +146,9 @@ class WooPosBookingViewStateMapperTest {
 
             // THEN
             val expectedDate = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
-                .withZone(storeZoneId)
+                .withZone(ZoneOffset.UTC)
                 .format(start)
-            assertThat(expectedDate).contains("July 5")
+            assertThat(expectedDate).contains("July 6")
             assertThat(result.appointmentDate).isEqualTo(expectedDate)
         }
 

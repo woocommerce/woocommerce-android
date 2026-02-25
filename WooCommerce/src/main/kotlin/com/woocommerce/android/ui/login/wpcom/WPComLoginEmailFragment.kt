@@ -67,7 +67,7 @@ class WPComLoginEmailFragment : BaseFragment() {
         findNavController().navigateSafely(
             WPComLoginEmailFragmentDirections
                 .actionWPComLoginEmailFragmentToWPComLoginPasswordFragment(
-                    wpComLoginMode = event.wpComLoginMode,
+                    jetpackStatus = event.jetpackStatus,
                     emailOrUsername = event.emailOrUsername
                 )
         )
@@ -78,7 +78,7 @@ class WPComLoginEmailFragment : BaseFragment() {
             WPComLoginEmailFragmentDirections
                 .actionWPComLoginEmailFragmentToWPComLoginMagicLinkRequestFragment(
                     emailOrUsername = event.emailOrUsername,
-                    wpComLoginMode = event.wpComLoginMode,
+                    jetpackStatus = event.jetpackStatus,
                     fallbackButton = event.magicLinkFallbackButton,
                     requestAtStart = event.requestAtStart,
                     isNewWpComAccount = event.isNewWpComAccount
