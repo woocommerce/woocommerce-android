@@ -7,6 +7,8 @@ import com.woocommerce.android.tools.NetworkStatus
 import com.woocommerce.android.ui.bookings.Booking
 import com.woocommerce.android.ui.bookings.BookingMapper
 import com.woocommerce.android.ui.bookings.BookingsRepository
+import com.woocommerce.android.ui.bookings.PaymentStatus
+import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import com.woocommerce.android.ui.bookings.compose.BookingStaffMemberStatus
 import com.woocommerce.android.ui.compose.DialogState
 import com.woocommerce.android.util.CurrencyFormatter
@@ -55,6 +57,9 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
     }
     private val networkStatus = mock<NetworkStatus> {
         on { isConnected() } doReturn true
+    }
+    private val paymentStatusResolver = mock<PaymentStatusResolver> {
+        onBlocking { resolve(any(), anyOrNull()) } doReturn PaymentStatus.UNPAID
     }
 
     @Before
@@ -384,7 +389,8 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
             resourceProvider = resourceProvider,
             bookingsRepository = bookingsRepository,
             bookingMapper = bookingMapper,
-            networkStatus = networkStatus
+            networkStatus = networkStatus,
+            paymentStatusResolver = paymentStatusResolver
         ).apply {
             state.observeForever { }
         }
