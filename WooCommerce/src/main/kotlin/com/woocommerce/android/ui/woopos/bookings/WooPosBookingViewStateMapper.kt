@@ -54,6 +54,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
     suspend fun mapToDetailsViewState(
         booking: BookingEntity,
         resourceName: String?,
+        location: String?,
     ): WooPosBookingsState.BookingDetailsViewState {
         val detailsDateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL)
             .withZone(ZoneOffset.UTC)
@@ -107,7 +108,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
                 .normalizeDuration()
                 .toHumanReadableFormat(resourceProvider),
             teamMember = resourceName,
-            location = null,
+            location = location?.ifBlank { null },
             customerSection = buildCustomerSection(customerInfo, customerName, booking.customerNote),
             attendanceSection = buildAttendanceSection(booking),
             paymentSection = buildPaymentSection(booking, paymentStatus),

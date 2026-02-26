@@ -99,6 +99,7 @@ class WooPosBookingsViewModelTest {
     }
     private val clipboardHelper: WooPosClipboardHelper = mock()
     private val paymentStatusResolver: WooPosPaymentStatusResolver = mock()
+    private val analyticsTracker: WooPosBookingsAnalyticsTracker = mock()
     private val clock: Clock = Clock.fixed(Instant.parse("2026-02-19T10:00:00Z"), ZoneOffset.UTC)
     private lateinit var viewModel: WooPosBookingsViewModel
 
@@ -155,6 +156,7 @@ class WooPosBookingsViewModelTest {
             clipboardHelper = clipboardHelper,
             resourceProvider = resourceProvider,
             clock = clock,
+            analyticsTracker = analyticsTracker,
             selectedSite = selectedSite,
         )
     }
@@ -176,6 +178,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(bookingsRepository.fetchBooking(any())).thenReturn(Result.success(booking()))
     }
 
     @Test
@@ -1055,12 +1058,6 @@ class WooPosBookingsViewModelTest {
             )
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-                .doSuspendableAnswer {
-                    delay(Long.MAX_VALUE)
-                    Result.success(0)
-                }
-
             // WHEN
             viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
             advanceUntilIdle()
@@ -1072,7 +1069,7 @@ class WooPosBookingsViewModelTest {
         }
 
     @Test
-    fun `given cancel confirmed successfully, when handling event, then bookings are refreshed`() =
+    fun `given cancel confirmed successfully, when handling event, then single booking is refreshed`() =
         runTest {
             // GIVEN
             whenever(bookingsRepository.cancelBooking(any()))
@@ -1097,8 +1094,7 @@ class WooPosBookingsViewModelTest {
             advanceUntilIdle()
 
             // THEN
-            verify(bookingListHandler, times(2))
-                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+            verify(bookingsRepository).fetchBooking(bookingId)
         }
 
     @Test
@@ -1114,12 +1110,6 @@ class WooPosBookingsViewModelTest {
                 )
             )
             advanceUntilIdle()
-
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-                .doSuspendableAnswer {
-                    delay(Long.MAX_VALUE)
-                    Result.success(0)
-                }
 
             // WHEN
             viewModel.onIssueRefundDialogDismissed()
@@ -1138,12 +1128,6 @@ class WooPosBookingsViewModelTest {
             viewModel = createViewModel()
             advanceUntilIdle()
 
-            whenever(bookingListHandler.loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest)))
-                .doSuspendableAnswer {
-                    delay(Long.MAX_VALUE)
-                    Result.success(0)
-                }
-
             // WHEN
             viewModel.onBookingNoteSaved()
             advanceUntilIdle()
@@ -1152,6 +1136,88 @@ class WooPosBookingsViewModelTest {
             val content = viewModel.state.value as WooPosBookingsState.Content
             assertThat(content.pullToRefreshState)
                 .isEqualTo(WooPosPullToRefreshState.Enabled)
+        }
+
+    @Test
+    fun `when payment completed, then single booking is fetched instead of full refresh`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            // WHEN
+            viewModel.onPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingsRepository).fetchBooking(bookingId)
+            verify(bookingListHandler, times(1))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        }
+
+    @Test
+    fun `when booking note saved, then single booking is fetched instead of full refresh`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            // WHEN
+            viewModel.onBookingNoteSaved()
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingsRepository).fetchBooking(bookingId)
+            verify(bookingListHandler, times(1))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        }
+
+    @Test
+    fun `when issue refund dialog dismissed, then single booking is fetched instead of full refresh`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.IssueRefund(orderId = 10L)
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onIssueRefundDialogDismissed()
+            advanceUntilIdle()
+
+            // THEN
+            verify(bookingsRepository).fetchBooking(bookingId)
+            verify(bookingListHandler, times(1))
+                .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        }
+
+    @Test
+    fun `when single booking refresh fails, then error toast is shown`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            whenever(bookingsRepository.fetchBooking(any()))
+                .thenReturn(Result.failure(RuntimeException("Network error")))
+
+            // WHEN
+            viewModel.onPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(resourceProvider).getString(R.string.something_went_wrong_try_again)
         }
 
     @Test
@@ -1435,4 +1501,94 @@ class WooPosBookingsViewModelTest {
             assertThat(dateRange.after).isEqualTo(Instant.parse("2026-03-15T00:00:00Z"))
             assertThat(dateRange.before).isEqualTo(Instant.parse("2026-03-15T23:59:59.999999999Z"))
         }
+
+    @Test
+    fun `given cancel confirmed successfully, when handling event, then tracks booking cancelled`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.success(Unit))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).trackBookingCancelled()
+        }
+
+    @Test
+    fun `given cancel confirmed with failure, when handling event, then tracks cancel failed`() =
+        runTest {
+            // GIVEN
+            whenever(bookingsRepository.cancelBooking(any()))
+                .thenReturn(Result.failure(RuntimeException("Network error")))
+            viewModel = createViewModel()
+            advanceUntilIdle()
+            val content = viewModel.state.value as WooPosBookingsState.Content
+            val bookingId = content.selectedDetails!!.id
+
+            viewModel.onUIEvent(
+                WooPosBookingsUIEvent.BookingMenuActionClicked(
+                    WooPosBookingsState.BookingAction.CancelBooking(
+                        bookingId = bookingId,
+                        orderId = bookingId * 10
+                    )
+                )
+            )
+            advanceUntilIdle()
+
+            // WHEN
+            viewModel.onUIEvent(WooPosBookingsUIEvent.CancelBookingConfirmed)
+            advanceUntilIdle()
+
+            // THEN
+            verify(analyticsTracker).trackBookingCancelFailed(any(), any())
+        }
+
+    @Test
+    fun `given attendance toggled successfully, when handling event, then tracks attendance changed`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.success(Unit))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(true))
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).trackAttendanceChanged()
+    }
+
+    @Test
+    fun `given attendance toggle fails, when handling event, then tracks attendance change failed`() = runTest {
+        // GIVEN
+        whenever(bookingsRepository.updateAttendanceStatus(any(), any()))
+            .thenReturn(Result.failure(RuntimeException("network error")))
+        viewModel = createViewModel()
+        advanceUntilIdle()
+
+        // WHEN
+        viewModel.onUIEvent(WooPosBookingsUIEvent.AttendanceToggled(false))
+        advanceUntilIdle()
+
+        // THEN
+        verify(analyticsTracker).trackAttendanceChangeFailed(any(), any())
+    }
 }

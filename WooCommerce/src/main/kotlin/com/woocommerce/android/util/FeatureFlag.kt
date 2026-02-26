@@ -37,10 +37,11 @@ enum class FeatureFlag {
                 PackageUtils.isDebugBuild() || context != null && PackageUtils.isBetaBuild(context)
             }
 
+            BOOKINGS_MVP -> true
+
             WC_SHIPPING_BANNER,
             BETTER_CUSTOMER_SEARCH_M2,
             ORDER_CREATION_AUTO_TAX_RATE,
-            BOOKINGS_MVP,
             POS_PRODUCTS_FTS,
             POS_REFUNDS,
             WOO_POS_CLIENT_SIDE_BANNER,

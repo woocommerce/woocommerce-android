@@ -57,8 +57,6 @@ import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosBookingDetails
 import com.woocommerce.android.ui.woopos.bookings.details.WooPosCancelBookingDialog
 import com.woocommerce.android.ui.woopos.bookings.note.BOOKING_NOTE_RESULT_KEY
-import com.woocommerce.android.ui.woopos.cardpayment.BOOKING_CARD_PAYMENT_SUCCESS_KEY
-import com.woocommerce.android.ui.woopos.cashpayment.BOOKING_CASH_PAYMENT_SUCCESS_KEY
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.ShadowType
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosCard
@@ -108,25 +106,14 @@ fun WooPosBookingsScreen(
         }
     }
 
-    val cashPaymentResult = backStackEntry.savedStateHandle
-        .getStateFlow(BOOKING_CASH_PAYMENT_SUCCESS_KEY, false)
+    val paymentFlowFinishedResult = backStackEntry.savedStateHandle
+        .getStateFlow(BOOKING_PAYMENT_FLOW_FINISHED_KEY, false)
         .collectAsState()
 
-    LaunchedEffect(cashPaymentResult.value) {
-        if (cashPaymentResult.value) {
+    LaunchedEffect(paymentFlowFinishedResult.value) {
+        if (paymentFlowFinishedResult.value) {
             viewModel.onPaymentCompleted()
-            backStackEntry.savedStateHandle[BOOKING_CASH_PAYMENT_SUCCESS_KEY] = false
-        }
-    }
-
-    val cardPaymentResult = backStackEntry.savedStateHandle
-        .getStateFlow(BOOKING_CARD_PAYMENT_SUCCESS_KEY, false)
-        .collectAsState()
-
-    LaunchedEffect(cardPaymentResult.value) {
-        if (cardPaymentResult.value) {
-            viewModel.onPaymentCompleted()
-            backStackEntry.savedStateHandle[BOOKING_CARD_PAYMENT_SUCCESS_KEY] = false
+            backStackEntry.savedStateHandle[BOOKING_PAYMENT_FLOW_FINISHED_KEY] = false
         }
     }
 

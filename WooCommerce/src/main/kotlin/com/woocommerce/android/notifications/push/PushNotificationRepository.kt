@@ -121,7 +121,14 @@ class PushNotificationRepository @Inject constructor(
                 stat = AnalyticsEvent.WPCOM_DEVICE_DISABLE_PUSH_NOTIFICATIONS_ERROR,
                 siteId = siteId,
                 errorDescription = error?.message,
-                errorType = error?.type?.let { it::class.simpleName }
+                errorType = error?.type?.let { it::class.simpleName },
+                errorCode = when (val type = error?.type) {
+                    is WpComPushNotificationStore.NotificationSettingErrorType.ApiError -> type.apiErrorCode
+                    WpComPushNotificationStore.NotificationSettingErrorType.UnregisteredDevice ->
+                        WPCOM_UNREGISTERED_DEVICE_ERROR_CODE
+
+                    null -> null
+                }
             )
         } else {
             WooLog.d(WooLog.T.NOTIFICATIONS, "WPCom notifications disabled for site $siteId")
@@ -226,5 +233,6 @@ class PushNotificationRepository @Inject constructor(
 
     companion object {
         private const val PUSH_TOKEN_KEY_PREFIX = "push_token_"
+        private const val WPCOM_UNREGISTERED_DEVICE_ERROR_CODE = "unregistered_device"
     }
 }

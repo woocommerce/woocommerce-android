@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,7 +27,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
@@ -40,12 +39,13 @@ import androidx.compose.ui.window.PopupProperties
 import com.woocommerce.android.R
 import com.woocommerce.android.ui.woopos.common.composeui.WooPosPreview
 import com.woocommerce.android.ui.woopos.common.composeui.component.WooPosText
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosCornerRadius
+import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosElevation
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosSpacing
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTheme
 import com.woocommerce.android.ui.woopos.common.composeui.designsystem.WooPosTypography
 
 private val DateSelectorButtonHeight = 40.dp
-private val DateSelectorButtonCornerRadius = 8.dp
 
 @Composable
 fun WooPosBookingsDateSelector(
@@ -55,7 +55,7 @@ fun WooPosBookingsDateSelector(
 ) {
     var showDatePicker by rememberSaveable { mutableStateOf(false) }
 
-    val buttonShape = RoundedCornerShape(DateSelectorButtonCornerRadius)
+    val buttonShape = RoundedCornerShape(WooPosCornerRadius.Medium.value)
     val buttonColor = MaterialTheme.colorScheme.surface
     val contentColor = MaterialTheme.colorScheme.onSurface
 
@@ -153,7 +153,6 @@ fun WooPosBookingsDateSelector(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DatePickerPopup(
     selectedDateMillis: Long,
@@ -169,8 +168,6 @@ private fun DatePickerPopup(
             onDateSelected(millis)
         }
     }
-    val colors = DatePickerDefaults.colors()
-    val shape = DatePickerDefaults.shape
     val density = LocalDensity.current
     val offsetY = with(density) { (DateSelectorButtonHeight + WooPosSpacing.XSmall.value).roundToPx() }
 
@@ -180,19 +177,26 @@ private fun DatePickerPopup(
         onDismissRequest = onDismiss,
         properties = PopupProperties(focusable = true),
     ) {
-        Surface(
-            modifier = Modifier
-                .clip(shape)
-                .requiredWidth(360.dp),
-            color = colors.containerColor,
-            shadowElevation = 8.dp,
-            shape = shape,
-        ) {
-            DatePicker(
-                state = datePickerState,
-                colors = colors,
-            )
-        }
+        DatePickerContent(datePickerState = datePickerState)
+    }
+}
+
+@Composable
+private fun DatePickerContent(datePickerState: DatePickerState) {
+    val colors = DatePickerDefaults.colors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerLowest,
+    )
+    Surface(
+        modifier = Modifier
+            .requiredWidth(360.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = WooPosElevation.Medium.value,
+        shape = RoundedCornerShape(WooPosCornerRadius.Large.value),
+    ) {
+        DatePicker(
+            state = datePickerState,
+            colors = colors,
+        )
     }
 }
 
@@ -206,6 +210,18 @@ fun WooPosBookingsDateSelectorPreview() {
                 selectedDateMillis = System.currentTimeMillis(),
             ),
             onUIEvent = {},
+        )
+    }
+}
+
+@WooPosPreview
+@Composable
+fun DatePickerContentPreview() {
+    WooPosTheme {
+        DatePickerContent(
+            datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = System.currentTimeMillis(),
+            ),
         )
     }
 }
