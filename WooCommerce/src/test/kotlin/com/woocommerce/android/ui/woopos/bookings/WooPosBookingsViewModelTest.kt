@@ -175,7 +175,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.loadMore()).thenReturn(Result.success(0))
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
-        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
     }
 
     @Test

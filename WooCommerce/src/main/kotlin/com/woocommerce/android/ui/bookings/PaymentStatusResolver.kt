@@ -9,11 +9,13 @@ class PaymentStatusResolver @Inject constructor(
     private val orderStore: WCOrderStore,
     private val selectedSite: SelectedSite,
 ) {
-    suspend fun resolve(orderId: Long): PaymentStatus {
+    suspend fun resolve(orderId: Long, orderTotal: BigDecimal? = null): PaymentStatus {
         val order = orderStore.getOrderByIdAndSite(orderId, selectedSite.get())
             ?: return PaymentStatus.UNPAID
 
-        val total = order.total.toBigDecimalOrNull() ?: BigDecimal.ZERO
+        val total = orderTotal
+            ?: order.total.toBigDecimalOrNull()
+            ?: BigDecimal.ZERO
         return computeStatus(order.refundTotal.abs(), total, order.datePaid, order.status)
     }
 
