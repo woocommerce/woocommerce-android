@@ -36,7 +36,8 @@ class BookingsStore @Inject internal constructor(
         order: BookingsOrderOption
     ): WooResult<BookingsFetchResult> {
         return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchBookings") {
-            val response = bookingsRestClient.fetchBookings(site, perPage, page, query, filters, order)
+            val restFilters = filters.withInclusiveDateRangeOffset()
+            val response = bookingsRestClient.fetchBookings(site, perPage, page, query, restFilters, order)
             when {
                 response.isError -> WooResult(response.error)
                 response.result != null -> {
@@ -293,4 +294,13 @@ class BookingsStore @Inject internal constructor(
         }
         return entity
     }
+}
+
+private fun BookingFilters.withInclusiveDateRangeOffset(): BookingFilters {
+    return copy(
+        dateRange = dateRange.copy(
+            before = dateRange.before?.plusSeconds(1),
+            after = dateRange.after?.minusSeconds(1),
+        )
+    )
 }
