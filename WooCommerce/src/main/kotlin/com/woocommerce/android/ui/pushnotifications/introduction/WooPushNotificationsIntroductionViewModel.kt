@@ -126,10 +126,7 @@ class WooPushNotificationsIntroductionViewModel @Inject constructor(
     }
 
     fun onContactSupportClick() {
-        analyticsTrackerWrapper.track(
-            AnalyticsEvent.PUSH_NOTIFICATIONS_SETUP_FLOW_BUTTON_TAP,
-            mapOf(AnalyticsTracker.KEY_BUTTON_LABEL to BUTTON_LABEL_SUPPORT)
-        )
+        trackIntroductionButtonTap(BUTTON_LABEL_SUPPORT)
         triggerEvent(Event.NavigateToHelpScreen(HelpOrigin.WOO_PUSH_NOTIFICATIONS_SETUP))
     }
 
