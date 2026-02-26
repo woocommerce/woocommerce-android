@@ -25,98 +25,99 @@ class PaymentStatusResolverTest {
 
     @Test
     fun `given order not found, when resolve, then returns UNPAID`() = runTest {
+        // GIVEN
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(null)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.UNPAID)
     }
 
     @Test
     fun `given order with datePaid, when resolve, then returns PAID`() = runTest {
+        // GIVEN
         val order = createOrder(datePaid = "2025-01-01", refundTotal = BigDecimal.ZERO)
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.PAID)
     }
 
     @Test
     fun `given full refund, when resolve, then returns REFUNDED`() = runTest {
-        val order = createOrder(refundTotal = BigDecimal("-10"), datePaid = "2025-01-01")
+        // GIVEN
+        val order = createOrder(
+            total = "100",
+            refundTotal = BigDecimal("-100"),
+            datePaid = "2025-01-01"
+        )
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.REFUNDED)
     }
 
     @Test
     fun `given partial refund, when resolve, then returns PARTIALLY_REFUNDED`() = runTest {
-        val order = createOrder(refundTotal = BigDecimal("-5"), datePaid = "2025-01-01")
+        // GIVEN
+        val order = createOrder(
+            total = "100",
+            refundTotal = BigDecimal("-50"),
+            datePaid = "2025-01-01"
+        )
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.PARTIALLY_REFUNDED)
     }
 
     @Test
     fun `given failed order status, when resolve, then returns FAILED`() = runTest {
+        // GIVEN
         val order = createOrder(status = "failed", datePaid = "", refundTotal = BigDecimal.ZERO)
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.FAILED)
     }
 
     @Test
     fun `given cancelled order status, when resolve, then returns FAILED`() = runTest {
+        // GIVEN
         val order = createOrder(status = "cancelled", datePaid = "", refundTotal = BigDecimal.ZERO)
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.FAILED)
     }
 
     @Test
-    fun `given no orderTotal provided, when resolve, then uses order total from entity`() = runTest {
-        val order = createOrder(
-            datePaid = "2025-01-01",
-            refundTotal = BigDecimal("-50"),
-            total = "100"
-        )
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
-
-        val result = sut.resolve(1L)
-
-        assertThat(result).isEqualTo(PaymentStatus.PARTIALLY_REFUNDED)
-    }
-
-    @Test
-    fun `given no orderTotal and full refund, when resolve, then returns REFUNDED`() = runTest {
-        val order = createOrder(
-            datePaid = "2025-01-01",
-            refundTotal = BigDecimal("-100"),
-            total = "100"
-        )
-        whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
-
-        val result = sut.resolve(1L)
-
-        assertThat(result).isEqualTo(PaymentStatus.REFUNDED)
-    }
-
-    @Test
     fun `given unpaid order with no refunds, when resolve, then returns UNPAID`() = runTest {
+        // GIVEN
         val order = createOrder(datePaid = "", refundTotal = BigDecimal.ZERO, status = "pending")
         whenever(orderStore.getOrderByIdAndSite(1L, site)).thenReturn(order)
 
-        val result = sut.resolve(1L, BigDecimal.TEN)
+        // WHEN
+        val result = sut.resolve(1L)
 
+        // THEN
         assertThat(result).isEqualTo(PaymentStatus.UNPAID)
     }
 
@@ -124,7 +125,7 @@ class PaymentStatusResolverTest {
         status: String = "processing",
         datePaid: String = "",
         refundTotal: BigDecimal = BigDecimal.ZERO,
-        total: String = "",
+        total: String = "100",
     ) = OrderEntity(
         localSiteId = LocalId(1),
         orderId = 1L,
