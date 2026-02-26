@@ -28,7 +28,9 @@ interface BookingsDao {
             AND ((:productIdsSize = 0) OR productId IN (:productIds))
             ORDER BY
                 CASE WHEN :order = 'ASC' THEN start END ASC,
-                CASE WHEN :order = 'DESC' THEN start END DESC
+                CASE WHEN :order = 'DESC' THEN start END DESC,
+                CASE WHEN :order = 'ASC' THEN id END ASC,
+                CASE WHEN :order = 'DESC' THEN id END DESC
             LIMIT CASE WHEN :limit IS NULL THEN -1 ELSE :limit END
             """
     }

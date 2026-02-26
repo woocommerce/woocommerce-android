@@ -261,6 +261,20 @@ class WooPosBookingsViewModel @Inject constructor(
         doRefresh()
     }
 
+    private fun refreshSingleBooking(bookingId: Long) {
+        viewModelScope.launch {
+            bookingsRepository.fetchBooking(bookingId)
+                .onFailure {
+                    val messageResId = if (it.isNetworkError()) {
+                        R.string.offline_error
+                    } else {
+                        R.string.something_went_wrong_try_again
+                    }
+                    _toastEvent.emit(resourceProvider.getString(messageResId))
+                }
+        }
+    }
+
     private fun doRefresh() {
         fetchJob?.cancel()
         loadMoreJob?.cancel()
@@ -391,7 +405,7 @@ class WooPosBookingsViewModel @Inject constructor(
         _state.value = currentState.copy(
             dialogState = WooPosBookingsState.Content.DialogState.Hidden
         )
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     private fun handleCollectPayment() {
@@ -484,11 +498,11 @@ class WooPosBookingsViewModel @Inject constructor(
     }
 
     fun onBookingNoteSaved() {
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     fun onPaymentCompleted() {
-        doRefresh()
+        selectedBookingId?.let { refreshSingleBooking(it) } ?: doRefresh()
     }
 
     private fun handleBookingAction(action: WooPosBookingsState.BookingAction) {
@@ -587,7 +601,7 @@ class WooPosBookingsViewModel @Inject constructor(
                 )
             }
             if (result.isSuccess) {
-                doRefresh()
+                refreshSingleBooking(bookingId)
             }
         }
     }
