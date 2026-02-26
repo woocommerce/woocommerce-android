@@ -53,4 +53,3 @@ sealed interface AttendanceUpdateStatus {
     data object Idle : AttendanceUpdateStatus
     data object InProgress : AttendanceUpdateStatus
 }
-
