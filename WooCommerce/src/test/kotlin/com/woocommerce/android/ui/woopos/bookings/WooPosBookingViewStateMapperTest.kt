@@ -427,7 +427,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given location provided, when mapped to details, then location is passed through`() = runTest {
         // GIVEN
         val booking = sampleBooking()
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = "Room 5")
@@ -440,7 +440,7 @@ class WooPosBookingViewStateMapperTest {
     fun `given blank location, when mapped to details, then location is null`() = runTest {
         // GIVEN
         val booking = sampleBooking()
-        whenever(paymentStatusResolver.resolve(any(), any())).thenReturn(PaymentStatus.UNPAID)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
 
         // WHEN
         val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = "   ")
