@@ -5,19 +5,19 @@ import com.woocommerce.android.ui.bookings.PaymentStatusResolver
 import kotlinx.coroutines.test.runTest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
-import org.mockito.kotlin.whenever
 
 class WooPosPaymentStatusResolverTest {
 
-    private val paymentStatusResolver: PaymentStatusResolver = mock()
+    private val paymentStatusResolver: PaymentStatusResolver = mock {
+        onBlocking { resolve(any()) } doReturn PaymentStatus.PAID
+    }
     private val sut = WooPosPaymentStatusResolver(paymentStatusResolver)
 
     @Test
     fun `when resolve called, then delegates to shared PaymentStatusResolver`() = runTest {
-        // GIVEN
-        whenever(paymentStatusResolver.resolve(1L)).thenReturn(PaymentStatus.PAID)
-
         // WHEN
         val result = sut.resolve(1L)
 

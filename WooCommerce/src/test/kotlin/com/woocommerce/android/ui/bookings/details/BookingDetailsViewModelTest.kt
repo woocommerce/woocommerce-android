@@ -59,7 +59,7 @@ class BookingDetailsViewModelTest : BaseUnitTest() {
         on { isConnected() } doReturn true
     }
     private val paymentStatusResolver = mock<PaymentStatusResolver> {
-        onBlocking { resolve(any(), anyOrNull()) } doReturn PaymentStatus.UNPAID
+        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
 
     @Before

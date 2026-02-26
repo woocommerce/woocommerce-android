@@ -70,7 +70,7 @@ class BookingListViewModelTest : BaseUnitTest() {
     }
     private val isWindowClassLargeThanCompact: IsWindowClassLargeThanCompact = mock()
     private val paymentStatusResolver: PaymentStatusResolver = mock {
-        onBlocking { resolve(any(), anyOrNull()) } doReturn PaymentStatus.UNPAID
+        onBlocking { resolve(any()) } doReturn PaymentStatus.UNPAID
     }
 
     private lateinit var viewModel: BookingListViewModel
