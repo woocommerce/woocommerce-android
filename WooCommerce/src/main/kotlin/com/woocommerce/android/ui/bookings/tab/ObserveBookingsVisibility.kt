@@ -84,7 +84,7 @@ class ObserveBookingsVisibility @Inject constructor(
             bookingsRepository.fetchBookings(
                 page = 1,
                 perPage = 25,
-                order = BookingsOrderOption.ASC
+                order = BookingsOrderOption.DESC
             ).onFailure {
                 WooLog.w(WooLog.T.BOOKINGS, "Failed to fetch bookings")
             }
