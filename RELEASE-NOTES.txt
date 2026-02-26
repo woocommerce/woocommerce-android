@@ -5,6 +5,7 @@
 24.2
 -----
 - Add support for signing in using passkeys for WordPress.com accounts during Jetpack Setup [https://github.com/woocommerce/woocommerce-android/pull/15379]
+- [Internal] Enable Bookings MVP for CIAB sites [https://github.com/woocommerce/woocommerce-android/pull/15445]
 
 24.1
 -----
