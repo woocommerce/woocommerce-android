@@ -173,10 +173,4 @@ sealed class WooPosBookingsState {
     }
 }
 
-enum class PaymentStatus {
-    PAID,
-    UNPAID,
-    FAILED,
-    REFUNDED,
-    PARTIALLY_REFUNDED,
-}
+typealias PaymentStatus = com.woocommerce.android.ui.bookings.PaymentStatus

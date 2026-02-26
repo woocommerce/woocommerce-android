@@ -37,7 +37,6 @@ class WooPosBookingViewStateMapper @Inject constructor(
         val timeRange = formatTimeRange(booking)
         val paymentStatus = paymentStatusResolver.resolve(
             orderId = booking.orderId,
-            orderTotal = booking.order.paymentInfo?.total,
         )
 
         return WooPosBookingsState.BookingItemViewState(
@@ -73,7 +72,6 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
         val paymentStatus = paymentStatusResolver.resolve(
             orderId = booking.orderId,
-            orderTotal = booking.order.paymentInfo?.total,
         )
 
         return WooPosBookingsState.BookingDetailsViewState(
