@@ -287,6 +287,7 @@ When the user requests verification of a specific scenario, follow this workflow
 For all ADB commands, extras, API types, examples, and debugging tips, read `docs/api-faker-adb.md`.
 
 **Key tips:**
+- All am broadcast commands must include -p com.woocommerce.android.dev — without it, Android 8.0+ silently drops the broadcast.
 - ApiFaker requires at least one endpoint before it can be enabled.
 - All actions log results to logcat under the `WCApiFaker` tag — use `adb logcat -s WCApiFaker -d` to check feedback.
 
