@@ -48,7 +48,7 @@ adb shell am broadcast -p com.woocommerce.android.dev -a com.woocommerce.android
 | Extra | Type | Default | Description |
 |-------|------|---------|-------------|
 | `custom_host` | string | - | Required when `api_type` is `custom`. The host to match (e.g., `api.stripe.com`) |
-| `http_method` | string | any | HTTP method: `GET`, `POST`, `PUT`, `DELETE`, `PATCH` |
+| `http_method` | string | any | HTTP method: `GET`, `POST`, `PUT`, `DELETE`, `PATCH`, `OPTIONS`, `HEAD`, `TRACE`, `CONNECT` |
 | `query_params` | string | - | Comma-separated `key=value` pairs (e.g., `per_page=10,status=publish`). Note: values cannot contain commas |
 | `request_body` | string | - | Request body pattern to match |
 | `request_body_file` | string | - | Path to file containing request body pattern (takes priority over `request_body`) |
