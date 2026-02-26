@@ -178,6 +178,7 @@ class WooPosBookingsViewModelTest {
         whenever(bookingListHandler.hasMorePages).thenReturn(true)
         whenever(dateTimeProvider.now()).thenReturn(0L)
         whenever(paymentStatusResolver.resolve(any(), anyOrNull())).thenReturn(PaymentStatus.UNPAID)
+        whenever(bookingsRepository.fetchBooking(any())).thenReturn(Result.success(mock()))
     }
 
     @Test
@@ -1199,6 +1200,24 @@ class WooPosBookingsViewModelTest {
             verify(bookingsRepository).fetchBooking(bookingId)
             verify(bookingListHandler, times(1))
                 .loadBookings(anyOrNull(), any(), eq(BookingListSortOption.OldestToNewest))
+        }
+
+    @Test
+    fun `when single booking refresh fails, then error toast is shown`() =
+        runTest {
+            // GIVEN
+            viewModel = createViewModel()
+            advanceUntilIdle()
+
+            whenever(bookingsRepository.fetchBooking(any()))
+                .thenReturn(Result.failure(RuntimeException("Network error")))
+
+            // WHEN
+            viewModel.onPaymentCompleted()
+            advanceUntilIdle()
+
+            // THEN
+            verify(resourceProvider).getString(R.string.something_went_wrong_try_again)
         }
 
     @Test

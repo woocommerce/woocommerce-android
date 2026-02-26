@@ -254,6 +254,14 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun refreshSingleBooking(bookingId: Long) {
         viewModelScope.launch {
             bookingsRepository.fetchBooking(bookingId)
+                .onFailure {
+                    val messageResId = if (it.isNetworkError()) {
+                        R.string.offline_error
+                    } else {
+                        R.string.something_went_wrong_try_again
+                    }
+                    _toastEvent.emit(resourceProvider.getString(messageResId))
+                }
         }
     }
 
