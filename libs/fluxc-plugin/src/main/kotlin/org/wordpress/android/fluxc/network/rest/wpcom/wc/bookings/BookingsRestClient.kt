@@ -1,5 +1,6 @@
 package org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings
 
+import com.google.gson.annotations.SerializedName
 import org.wordpress.android.fluxc.generated.endpoint.WOOCOMMERCE
 import org.wordpress.android.fluxc.model.SiteModel
 import org.wordpress.android.fluxc.network.rest.wpapi.WPAPIResponse.Error
@@ -102,6 +103,23 @@ class BookingsRestClient @Inject constructor(
         }
     }
 
+    suspend fun fetchProductBookingLocation(
+        site: SiteModel,
+        productId: Long
+    ): WooPayload<ProductBookingLocationDto> {
+        val url = WOOCOMMERCE.products.id(productId).pathV3
+        val response = wooNetwork.executeGetGsonRequest(
+            site = site,
+            path = url,
+            clazz = ProductBookingLocationDto::class.java,
+            params = mapOf("_fields" to "id,booking_location")
+        )
+        return when (response) {
+            is Success -> WooPayload(response.data)
+            is Error -> WooPayload(response.error.toWooError())
+        }
+    }
+
     suspend fun fetchResource(
         site: SiteModel,
         resourceId: Long
@@ -157,6 +175,12 @@ class BookingsRestClient @Inject constructor(
         if (location != null) TODO()
     }
 }
+
+data class ProductBookingLocationDto(
+    val id: Long? = null,
+    @SerializedName("booking_location")
+    val bookingLocation: String? = null,
+)
 
 private val BookingUpdatePayload.asMap: Map<String, Any>
     get() = mutableMapOf<String, Any>().putIfNotNull(

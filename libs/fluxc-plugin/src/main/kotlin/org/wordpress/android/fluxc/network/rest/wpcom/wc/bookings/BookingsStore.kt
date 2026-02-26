@@ -191,6 +191,20 @@ class BookingsStore @Inject internal constructor(
         site: SiteModel
     ): Flow<List<BookingResourceEntity>> = bookingsDao.observeResources(site.localId())
 
+    suspend fun fetchProductBookingLocation(
+        site: SiteModel,
+        productId: Long
+    ): WooResult<String?> {
+        return coroutineEngine.withDefaultContext(AppLog.T.API, this, "fetchProductBookingLocation") {
+            val response = bookingsRestClient.fetchProductBookingLocation(site, productId)
+            when {
+                response.isError -> WooResult(response.error)
+                response.result != null -> WooResult(response.result.bookingLocation)
+                else -> WooResult(WooError(GENERIC_ERROR, UNKNOWN))
+            }
+        }
+    }
+
     suspend fun updateBooking(
         site: SiteModel,
         bookingId: Long,
