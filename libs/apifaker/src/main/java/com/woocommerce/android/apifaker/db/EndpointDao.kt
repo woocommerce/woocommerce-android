@@ -27,7 +27,7 @@ internal interface EndpointDao {
         """Select * FROM Request WHERE
         type = :type AND
         (httpMethod is NULL OR httpMethod = :httpMethod) AND
-        :path LIKE path AND
+        :path LIKE RTRIM(path, '/') AND
         :body LIKE COALESCE(body, '%')
         """
     )
