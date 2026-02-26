@@ -162,13 +162,13 @@ class BookingsRestClient @Inject constructor(
         if (paymentStatus != null) TODO()
         if (customer != null) set("customer", customer.customerId.toString())
         if (dateRange != BookingsFilterOption.DateRange.DEFAULT) {
-            // Plus/minus one minute to make the range inclusive
+            // Plus/minus one second to make the range inclusive
             dateRange.before?.let {
-                val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusMinutes(1).toInstant()
+                val inclusiveBefore = it.atZone(ZoneOffset.UTC).plusSeconds(1).toInstant()
                 set("start_date_before", inclusiveBefore.toString())
             }
             dateRange.after?.let {
-                val inclusiveAfter = it.atZone(ZoneOffset.UTC).minusMinutes(1).toInstant()
+                val inclusiveAfter = it.atZone(ZoneOffset.UTC).minusSeconds(1).toInstant()
                 set("start_date_after", inclusiveAfter.toString())
             }
         }
