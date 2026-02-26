@@ -120,7 +120,6 @@ fun BookingDetailsScreen(
                                     BookingDetailsContent(
                                         booking = viewState.bookingUiState,
                                         onCancelBooking = viewState.bookingUiState.onCancelBooking,
-                                        onMarkAsPaid = viewState.bookingUiState.onMarkAsPaid,
                                     )
                                 }
                             }
@@ -137,7 +136,6 @@ fun BookingDetailsScreen(
 private fun BookingDetailsContent(
     booking: BookingUiState,
     onCancelBooking: () -> Unit,
-    onMarkAsPaid: () -> Unit,
 ) {
     BookingSummary(
         model = booking.bookingSummary,
@@ -158,11 +156,8 @@ private fun BookingDetailsContent(
     booking.bookingPaymentDetails?.let {
         BookingPaymentSection(
             model = it,
-            paymentStatus = booking.bookingSummary.paymentStatus,
-            onMarkAsPaid = onMarkAsPaid,
             onViewOrder = booking.onViewOrderClicked,
             modifier = Modifier.fillMaxWidth(),
-            markAsPaidInProgress = booking.paymentUpdateStatus == PaymentUpdateStatus.InProgress,
         )
     }
     BookingNoteSection(

@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
 import org.wordpress.android.fluxc.persistence.entity.isAttendanceStatusEditable
 import javax.inject.Inject
-import com.woocommerce.android.extensions.combine as woocombine
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
@@ -80,8 +79,6 @@ class BookingDetailsViewModel @Inject constructor(
     private val cancelStatusState = MutableStateFlow<CancelStatus>(CancelStatus.Idle)
     private val showCancelBookingDialog = MutableStateFlow(false)
 
-    private val paymentUpdateStatus = MutableStateFlow<PaymentUpdateStatus>(PaymentUpdateStatus.Idle)
-
     private val cancelBookingDialogState = combine(
         booking,
         showCancelBookingDialog,
@@ -105,14 +102,13 @@ class BookingDetailsViewModel @Inject constructor(
         }
     }
 
-    private val bookingUiStateFlow = woocombine(
+    private val bookingUiStateFlow = combine(
         booking,
         attendanceUpdateStatus,
         loadingState,
         resource,
         cancelStatusState,
-        paymentUpdateStatus,
-    ) { booking, attendanceUpdate, loadingState, resource, cancelStatus, paymentUpdate ->
+    ) { booking, attendanceUpdate, loadingState, resource, cancelStatus ->
         if (booking != null) {
             bookingMapper.buildBookingUiState(
                 booking = booking,
@@ -120,7 +116,6 @@ class BookingDetailsViewModel @Inject constructor(
                 resource = resource,
                 loadingState = loadingState,
                 cancelStatus = cancelStatus,
-                paymentUpdateStatus = paymentUpdate,
             )
         } else {
             null
@@ -132,8 +127,7 @@ class BookingDetailsViewModel @Inject constructor(
         bookingUiStateFlow,
         loadingState,
         cancelBookingDialogState,
-        paymentUpdateStatus,
-    ) { booking, bookingUiState, loadingState, cancelBookingDialog, paymentUpdateStatus ->
+    ) { booking, bookingUiState, loadingState, cancelBookingDialog ->
         when (val mode = navArgs.mode) {
             BookingDetailsFragment.Mode.Empty -> BookingDetailsViewState.Empty
             is BookingDetailsFragment.Mode.ShowBooking -> {
@@ -239,19 +233,6 @@ class BookingDetailsViewModel @Inject constructor(
         cancelStatusState.value = CancelStatus.Idle
     }
 
-    private fun onMarkAsPaid(bookingId: Long) = launch {
-        if (!networkStatus.isConnected()) {
-            triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.offline_error))
-            return@launch
-        }
-        paymentUpdateStatus.value = PaymentUpdateStatus.InProgress
-        bookingsRepository.markAsPaid(bookingId)
-            .onFailure {
-                triggerEvent(MultiLiveEvent.Event.ShowSnackbar(R.string.booking_mark_as_paid_error))
-            }
-        paymentUpdateStatus.value = PaymentUpdateStatus.Idle
-    }
-
     private fun openBookingNote(bookingId: Long) {
         triggerEvent(NavigateToBookingNote(bookingId))
     }
@@ -260,14 +241,12 @@ class BookingDetailsViewModel @Inject constructor(
         triggerEvent(NavigateToOrder(orderId))
     }
 
-    @Suppress("LongParameterList")
     private suspend fun BookingMapper.buildBookingUiState(
         booking: Booking,
         attendanceUpdateStatus: AttendanceUpdateStatus,
         resource: BookingResource?,
         loadingState: BookingDetailsLoadingState,
         cancelStatus: CancelStatus,
-        paymentUpdateStatus: PaymentUpdateStatus,
     ): BookingUiState {
         val bookingId = booking.id.value
         val orderId = booking.orderId
@@ -296,8 +275,6 @@ class BookingDetailsViewModel @Inject constructor(
                 }
                 onAttendanceStatusSelected(bookingId, targetStatus)
             },
-            onMarkAsPaid = { onMarkAsPaid(bookingId) },
-            paymentUpdateStatus = paymentUpdateStatus,
             onViewOrderClicked = { openOrderDetails(orderId) },
             onNoteClicked = { openBookingNote(bookingId) }
         )
