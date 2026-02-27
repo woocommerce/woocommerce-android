@@ -752,7 +752,7 @@ private fun sampleBookingDetails(
         billingAddress = null,
         note = null,
     ),
-    attendanceSection = WooPosBookingsState.AttendanceSection(
+    attendanceSection = WooPosBookingsState.AttendanceSection.Visible(
         selection = WooPosBookingsState.AttendanceState.ATTENDED,
     ),
     paymentSection = WooPosBookingsState.PaymentSection(

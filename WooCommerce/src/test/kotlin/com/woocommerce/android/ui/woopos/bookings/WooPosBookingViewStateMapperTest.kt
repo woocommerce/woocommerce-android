@@ -232,13 +232,13 @@ class WooPosBookingViewStateMapperTest {
             val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
             // THEN
-            assertThat(result.attendanceSection).isNotNull
-            assertThat(result.attendanceSection?.selection)
+            assertThat(result.attendanceSection).isInstanceOf(WooPosBookingsState.AttendanceSection.Visible::class.java)
+            assertThat((result.attendanceSection as WooPosBookingsState.AttendanceSection.Visible).selection)
                 .isEqualTo(WooPosBookingsState.AttendanceState.ATTENDED)
         }
 
     @Test
-    fun `given booking with non-editable attendance, when mapped, then attendance section is null`() = runTest {
+    fun `given booking with non-editable attendance, when mapped, then attendance section is Hidden`() = runTest {
         // GIVEN
         val booking = sampleBooking(
             status = BookingEntity.Status.Cancelled,
@@ -250,7 +250,7 @@ class WooPosBookingViewStateMapperTest {
         val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
 
         // THEN
-        assertThat(result.attendanceSection).isNull()
+        assertThat(result.attendanceSection).isInstanceOf(WooPosBookingsState.AttendanceSection.Hidden::class.java)
     }
 
     @Test

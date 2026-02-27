@@ -424,7 +424,7 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleAttendanceToggle(attended: Boolean) {
         val currentState = _state.value as? WooPosBookingsState.Content ?: return
         val details = currentState.selectedDetails ?: return
-        val attendanceSection = details.attendanceSection ?: return
+        val attendanceSection = details.attendanceSection as? WooPosBookingsState.AttendanceSection.Visible ?: return
 
         val newAttendanceState = if (attended) {
             WooPosBookingsState.AttendanceState.ATTENDED
@@ -460,8 +460,10 @@ class WooPosBookingsViewModel @Inject constructor(
                 val rollbackState = _state.value as? WooPosBookingsState.Content ?: return@onFailure
                 val rollbackDetails = rollbackState.selectedDetails ?: return@onFailure
                 if (rollbackDetails.id != details.id) return@onFailure
+                val rollbackAttendance = rollbackDetails.attendanceSection
+                    as? WooPosBookingsState.AttendanceSection.Visible ?: return@onFailure
                 val reverted = rollbackDetails.copy(
-                    attendanceSection = rollbackDetails.attendanceSection?.copy(selection = previousSelection),
+                    attendanceSection = rollbackAttendance.copy(selection = previousSelection),
                     attendanceBadge = previousBadge,
                 )
                 _state.value = rollbackState.copy(

@@ -91,9 +91,10 @@ fun WooPosBookingDetails(
 
             BookingDetailsCard(details = details)
 
-            details.attendanceSection?.let { section ->
+            val attendanceSection = details.attendanceSection
+            if (attendanceSection is WooPosBookingsState.AttendanceSection.Visible) {
                 Spacer(Modifier.height(WooPosSpacing.Large.value))
-                BookingAttendanceSection(attendanceSection = section, onUIEvent = onUIEvent)
+                BookingAttendanceSection(attendanceSection = attendanceSection, onUIEvent = onUIEvent)
             }
 
             details.customerSection?.let { section ->
@@ -321,7 +322,7 @@ private fun BookingCustomerCard(
 
 @Composable
 private fun BookingAttendanceSection(
-    attendanceSection: WooPosBookingsState.AttendanceSection,
+    attendanceSection: WooPosBookingsState.AttendanceSection.Visible,
     onUIEvent: (WooPosBookingsUIEvent) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -601,7 +602,7 @@ fun WooPosBookingDetailsPreview() {
             billingAddress = "238 Willow Creek Drive, Montgomery, AL 36109",
             note = "Prefers eco-friendly products, shorter length cuts",
         ),
-        attendanceSection = WooPosBookingsState.AttendanceSection(
+        attendanceSection = WooPosBookingsState.AttendanceSection.Visible(
             selection = WooPosBookingsState.AttendanceState.UNATTENDED,
         ),
         paymentSection = WooPosBookingsState.PaymentSection(

@@ -126,14 +126,14 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     private fun buildAttendanceSection(
         booking: BookingEntity
-    ): WooPosBookingsState.AttendanceSection? {
-        if (!booking.isAttendanceStatusEditable) return null
+    ): WooPosBookingsState.AttendanceSection {
+        if (!booking.isAttendanceStatusEditable) return WooPosBookingsState.AttendanceSection.Hidden
         val selection = when (booking.attendanceStatus) {
             BookingEntity.AttendanceStatus.Attended -> WooPosBookingsState.AttendanceState.ATTENDED
             BookingEntity.AttendanceStatus.Unattended -> WooPosBookingsState.AttendanceState.UNATTENDED
-            else -> null
+            is BookingEntity.AttendanceStatus.Unknown -> WooPosBookingsState.AttendanceState.UNATTENDED
         }
-        return WooPosBookingsState.AttendanceSection(selection = selection)
+        return WooPosBookingsState.AttendanceSection.Visible(selection = selection)
     }
 
     private enum class PaymentState { Paid, Refunded, Unpaid }
