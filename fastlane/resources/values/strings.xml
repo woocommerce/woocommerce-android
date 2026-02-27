@@ -257,7 +257,6 @@
     <string name="login_account_mismatch_connect_wpcom">Connect to the site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_title">Connecting to a WordPress.com site</string>
     <string name="login_account_mismatch_connect_wpcom_dialog_message">Please contact the site owner for an invitation to the site as a shop manager or administrator to use the app.</string>
-    <string name="login_jetpack_connection_consent">By tapping the Connect Jetpack button, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
     <string name="login_jetpack_installation_screen_title">Connect store</string>
     <string name="login_jetpack_installation_explanation">Please install the free Jetpack plugin to access your store on this app.</string>
     <string name="login_jetpack_connection_explanation">Please connect your store to Jetpack to access it on this app.</string>
@@ -322,6 +321,9 @@
     <string name="login_site_credentials_web_authorization_connection_rejected">Unable to login because application password creation is not approved.</string>
     <string name="login_app_login_malformed_link">We couldn\'t process your app login request</string>
     <string name="login_jetpack_connection_create_account">If you don\'t have an account, we\'ll use this email to create one.</string>
+    <string name="login_wpcom_connection_consent">%1$s, you agree to our &lt;a href=\'terms\'&gt;Terms of Service&lt;/a&gt; and to &lt;a href=\'sync\'&gt;share details&lt;/a&gt; with WordPress.com.</string>
+    <string name="login_wpcom_connection_consent_jetpack">By tapping the Connect Jetpack button</string>
+    <string name="login_wpcom_connection_consent_generic">By continuing</string>
 
     <!--
         Site picker
@@ -2627,6 +2629,33 @@
     <string name="jetpack_benefits_modal_multiple_stores_subtitle">Get access to all of your WooCommerce stores.</string>
     <string name="jetpack_benefits_modal_login">Log In to Continue</string>
 
+    <!-- Woo Push Notifications Introduction Screen -->
+    <string name="woo_push_notifications_introduction_title">Unlock push notifications with WordPress.com</string>
+    <string name="woo_push_notifications_introduction_body">Connect your store to WordPress.com to get access to push notifications for new orders, reviews and more.</string>
+    <string name="woo_push_notifications_introduction_body2">It only takes a minute.</string>
+    <string name="woo_push_notifications_introduction_what_is_wpcom">What is WordPress.com?</string>
+    <string name="woo_push_notifications_introduction_continue">Continue</string>
+    <string name="woo_push_notifications_introduction_not_now">Not now</string>
+    <string name="woo_push_notifications_introduction_error_title">Something went wrong</string>
+    <string name="woo_push_notifications_introduction_error_body">We could not complete the push notifications setup. Please contact support for assistance.</string>
+    <string name="woo_push_notifications_introduction_error_forbidden_body">Your account does not have permission to complete push notifications setup. Please ask your store administrator to handle this.</string>
+    <string name="woo_push_notifications_introduction_update_required_title">Get push notifications for your store</string>
+    <string name="woo_push_notifications_introduction_update_required_body">Your store is already connected to WordPress.com, but you\'ll need to update the WooCommerce plugin to enable push notifications for new orders, reviews, and more.</string>
+    <string name="woo_push_notifications_introduction_update_plugin">Update plugin</string>
+    <string name="woo_push_notifications_connection_steps_title">Connect to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_body">Please wait while we finalize connecting your store &lt;b&gt;%1$s&lt;/b&gt; to WordPress.com.</string>
+    <string name="woo_push_notifications_connection_steps_step_connect_store">Connect store to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_step_check_plugin_compatibility">Check plugin compatibility</string>
+    <string name="woo_push_notifications_connection_steps_step_enable_push_notifications">Enable push notifications</string>
+    <string name="woo_push_notifications_connection_steps_complete">Complete</string>
+    <string name="woo_push_notifications_connection_steps_in_progress">In progress</string>
+    <string name="woo_push_notifications_connection_steps_not_started">Not started</string>
+    <string name="woo_push_notifications_connection_steps_error">Error</string>
+    <string name="woo_push_notifications_connection_steps_error_connection_permission_message">You don’t have permission to connect this store to WordPress.com</string>
+    <string name="woo_push_notifications_connection_steps_go_to_my_store">Go to My Store</string>
+    <string name="woo_push_notifications_connection_steps_retry">Try again</string>
+    <string name="woo_push_notifications_connection_steps_generic_error">There was an error completing your request.\nPlease try again or contact support if this error continues.</string>
+
     <string name="jetpack_install_start_title">Install Jetpack</string>
     <string name="jetpack_install_start_subtitle">Install the free Jetpack plugin to &lt;strong&gt;%s&lt;/strong&gt; to experience the best mobile experience.</string>
     <string name="jetpack_install_start_default_name">your site</string>
@@ -3137,6 +3166,8 @@
 
     <string name="more_menu_button_payments">Payments</string>
     <string name="more_menu_button_payments_description">Take payments on the go</string>
+
+    <string name="more_menu_button_bookings_description">Manage your client appointments</string>
 
     <string name="more_menu_button_google">Google for WooCommerce</string>
     <string name="more_menu_button_google_description">Drive sales and generate more traffic with Google Ads</string>
@@ -3703,6 +3734,7 @@
     <string name="woopos_product_limitations_title">Where are my products?</string>
     <string name="woopos_documentation_title">Documentation</string>
     <string name="woopos_orders_title">Orders</string>
+    <string name="woopos_order_title">Order %s</string>
     <string name="woopos_exit_dialog_confirmation_close_content_description">Close</string>
     <string name="woopos_exit_dialog_confirmation_title">Exit Point of Sale mode?</string>
     <string name="woopos_exit_dialog_confirmation_message">Any orders in progress will be lost.</string>
@@ -3719,6 +3751,7 @@
     <string name="woopos_payment_successful_label">Payment successful</string>
     <string name="woopos_new_order_button">New order</string>
     <string name="woopos_receipt_button">Email receipt</string>
+    <string name="woopos_receipt_sent_to_customer">A receipt has been sent to %1$s.</string>
     <string name="woopos_payment_discount_label">Discount total</string>
     <string name="woopos_payment_subtotal_label">Subtotal</string>
     <string name="woopos_payment_tax_label">Taxes</string>
@@ -3779,6 +3812,9 @@
     <string name="woo_pos_payment_failed_try_another_payment_method">Try another payment method</string>
     <string name="woo_pos_payment_failed_try_again">Try payment again</string>
     <string name="woo_pos_payment_failed_go_back_to_checkout">Go back to checkout</string>
+    <string name="woo_pos_payment_failed_go_back">Go back</string>
+
+    <string name="woopos_card_payment_done_button">Done</string>
 
     <string name="woopos_floating_toolbar_overlay_menu_content_description">Dimmed background. Tap to close the menu.</string>
     <string name="woopos_floating_toolbar_card_reader_connected_status_content_description">Card reader connected</string>
@@ -3861,17 +3897,72 @@
     <string name="woopos_orders_details_net_payment_label">Net Payment</string>
     <string name="woopos_orders_details_products_list_content_description">Order products list</string>
     <string name="woopos_orders_details_totals_card_content_description">Order totals breakdown</string>
+    <string name="woopos_orders_details_booking_info">Booking #%1$d · %2$s, %3$s</string>
+    <string name="woopos_orders_details_booking_info_error">Booking info unavailable</string>
+    <string name="woopos_orders_details_booking_info_shimmer_placeholder">Booking #000 · Jan 1, 2025, 12:00 AM - 1:00 AM</string>
 
     <string name="woopos_orders_status_auto_draft">Draft</string>
     <string name="woopos_orders_status_pending">Pending Payment</string>
     <string name="woopos_orders_status_processing">Processing</string>
     <string name="woopos_orders_status_on_hold">On hold</string>
     <string name="woopos_orders_status_failed">Failed</string>
-    <string name="woopos_orders_status_cancelled">Cancelled</string>
+    <string name="woopos_orders_status_cancelled">Canceled</string>
     <string name="woopos_orders_status_completed">Completed</string>
     <string name="woopos_orders_status_refunded">Refunded</string>
 
     <string name="woopos_bookings_title">Bookings</string>
+    <string name="woopos_bookings_details_attendance_attended">Attended</string>
+    <string name="woopos_bookings_details_attendance_unattended">Unattended</string>
+    <string name="woopos_bookings_details_title">Booking #%s</string>
+    <string name="woopos_bookings_details_service_name_label">Service name</string>
+    <string name="woopos_bookings_details_date_label">Date</string>
+    <string name="woopos_bookings_details_time_label">Time</string>
+    <string name="woopos_bookings_details_team_member_label">Team member</string>
+    <string name="woopos_bookings_details_location_label">Location</string>
+    <string name="woopos_bookings_details_duration_label">Duration</string>
+    <string name="woopos_bookings_details_customer_title">Customer</string>
+    <string name="woopos_bookings_details_billing_address_label">Billing address</string>
+    <string name="woopos_bookings_details_customer_note_label">Note</string>
+    <string name="woopos_bookings_payment_status_paid">Paid</string>
+    <string name="woopos_bookings_payment_status_unpaid">Unpaid</string>
+    <string name="woopos_bookings_payment_status_failed">Failed</string>
+    <string name="woopos_bookings_payment_status_refunded">Refunded</string>
+    <string name="woopos_bookings_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="woopos_bookings_status_cancelled">Canceled</string>
+    <string name="woopos_bookings_details_attendance_title">Attendance status</string>
+    <string name="woopos_bookings_details_attendance_hint">Mark attendance to keep your reports accurate and spot booking trends.</string>
+    <string name="woopos_bookings_details_payment_title">Payment</string>
+    <string name="woopos_bookings_details_service_label">Service</string>
+    <string name="woopos_bookings_details_tax_label">Taxes</string>
+    <string name="woopos_bookings_details_discount_label">Discount</string>
+    <string name="woopos_bookings_details_total_label">Total</string>
+    <string name="woopos_bookings_details_collect_payment">Collect payment · %s</string>
+    <string name="woopos_bookings_details_booking_note_title">Booking note</string>
+    <string name="woopos_bookings_details_add_note">Add note</string>
+    <string name="woopos_bookings_details_edit_note">Edit note</string>
+    <string name="woopos_bookings_details_booking_note_hint">This is a private note. It\'ll not be shared with the customer.</string>
+    <string name="woopos_bookings_details_copy_email">Copy email</string>
+    <string name="woopos_bookings_details_copy_phone">Copy phone</string>
+    <string name="woopos_bookings_cancel_menu_item">Cancel booking</string>
+    <string name="woopos_bookings_cancel_dialog_title">Cancel this booking?</string>
+    <string name="woopos_bookings_cancel_dialog_message">Booking #%1$s for %2$s on %3$s at %4$s for %5$s will be canceled.</string>
+    <string name="woopos_bookings_cancel_dialog_email_notice">The customer will be notified via email.</string>
+    <string name="woopos_bookings_cancel_dialog_confirm">Yes, cancel booking</string>
+    <string name="woopos_bookings_cancel_dialog_keep">No, keep it</string>
+    <string name="woopos_bookings_cancel_dialog_background">Cancel booking dialog background</string>
+    <string name="woopos_bookings_cancel_dialog_unknown_customer">unknown customer</string>
+    <string name="woopos_bookings_cancel_error">Failed to cancel booking. Please try again.</string>
+    <string name="woopos_bookings_note_screen_title_add">Add note</string>
+    <string name="woopos_bookings_note_screen_title_edit">Edit note</string>
+    <string name="woopos_bookings_note_screen_hint">Type booking note</string>
+    <string name="woopos_bookings_note_screen_button_save">Save</string>
+    <string name="woopos_bookings_note_screen_save_error">Error saving booking note</string>
+    <string name="woopos_bookings_no_bookings_for_date">No bookings for this date</string>
+    <string name="woopos_bookings_no_booking_selected">No booking selected.</string>
+    <string name="woopos_bookings_date_selector_previous_day">Previous day</string>
+    <string name="woopos_bookings_date_selector_next_day">Next day</string>
+    <string name="woopos_bookings_loading_error_title">Unable to load bookings</string>
+    <string name="woopos_bookings_loading_error_message">Please check your connection and try again.</string>
 
     <string name="woopos_cash_payment_title">Cash payment</string>
     <string name="woopos_complete_cash_order_button">Mark payment as complete</string>
@@ -4300,29 +4391,26 @@
     <string name="booking_payment_status_unpaid">Unpaid</string>
     <string name="booking_payment_status_paid">Paid</string>
     <string name="booking_payment_status_pending_confirmation">Pending Confirmation</string>
-    <string name="booking_payment_status_cancelled">Cancelled</string>
+    <string name="booking_payment_status_cancelled">Canceled</string>
     <string name="booking_payment_status_in_cart">In Cart</string>
     <string name="booking_payment_status_confirmed">Confirmed</string>
     <string name="booking_payment_status_complete">Complete</string>
     <string name="booking_payment_status_pay_on_site">Pay on site</string>
-    <string name="booking_attendance_status_booked">Booked</string>
-    <string name="booking_attendance_status_checked_in">Checked-in</string>
-    <string name="booking_attendance_status_cancelled">Cancelled</string>
-    <string name="booking_attendance_status_no_show">No-show</string>
+    <string name="booking_payment_status_refunded">Refunded</string>
+    <string name="booking_payment_status_partially_refunded">Partially Refunded</string>
+    <string name="booking_payment_status_failed">Failed</string>
+    <string name="booking_attendance_status_attended">Attended</string>
+    <string name="booking_attendance_status_unattended">Unattended</string>
+    <string name="booking_mark_as_attended">Mark as attended</string>
+    <string name="booking_mark_as_unattended">Mark as unattended</string>
+    <string name="booking_attendance_status_cancelled">Canceled</string>
     <string name="booking_details_cancel_booking_button">Cancel booking</string>
     <string name="booking_customer_details_header">CUSTOMER</string>
-    <string name="booking_attendance_header">ATTENDANCE</string>
-    <string name="booking_attendance_label_status">Status</string>
     <string name="booking_customer_label_name">Customer name</string>
     <string name="booking_customer_label_email">Email</string>
     <string name="booking_customer_label_phone">Phone</string>
     <string name="booking_billing_address_label">Billing address</string>
     <string name="booking_customer_note_label">Note</string>
-    <string name="booking_attendance_change_status_description">Mark attendance to keep your reports accurate and spot booking trends.</string>
-    <string name="booking_attendance_update_title">Update attendance status</string>
-    <string name="booking_attendance_status_booked_desc">The appointment is scheduled but hasn’t happened yet.</string>
-    <string name="booking_attendance_status_checked_in_desc">The customer arrived and the session took place as planned.</string>
-    <string name="booking_attendance_status_no_show_desc">The client missed the appointment without canceling in advance.</string>
     <string name="booking_payment_header">PAYMENT</string>
     <string name="booking_payment_label_service">Service</string>
     <string name="booking_payment_mark_as_paid">Mark as paid</string>
@@ -4348,9 +4436,10 @@
     <string name="booking_note_screen_title">Booking note</string>
     <string name="booking_note_screen_done">DONE</string>
     <string name="booking_note_screen_update_error">Error saving booking note</string>
-    <string name="booking_cancel_error">Error cancelling the booking</string>
+    <string name="booking_cancel_error">Error canceling the booking</string>
     <string name="booking_mark_as_paid_error">Error marking the booking as paid</string>
     <string name="booking_not_selected">Booking not selected</string>
+    <string name="booking_overflow_refund">Issue refund</string>
 
     <string name="or_use_password" a8c-src-lib="module:login">Use password to sign in</string>
     <string name="about_automattic_main_page_title">About %1$s</string>
