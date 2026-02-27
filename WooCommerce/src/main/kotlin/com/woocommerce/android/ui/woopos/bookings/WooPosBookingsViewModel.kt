@@ -34,6 +34,7 @@ import kotlinx.coroutines.launch
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingFilters
 import org.wordpress.android.fluxc.network.rest.wpcom.wc.bookings.BookingsFilterOption
 import org.wordpress.android.fluxc.persistence.entity.BookingEntity
+import org.wordpress.android.fluxc.persistence.entity.BookingResourceEntity
 import java.time.Clock
 import java.time.Instant
 import java.time.LocalDate
@@ -191,8 +192,6 @@ class WooPosBookingsViewModel @Inject constructor(
                     selectedBookingId = bookings.first().id.value
                 }
 
-                fetchBookingLocations(bookings)
-
                 val items = bookings.associate { booking ->
                     val resource = resourcesMap[booking.resourceId]
                     mapper.mapToItemViewState(booking, selectedBookingId, resource) to
@@ -227,8 +226,42 @@ class WooPosBookingsViewModel @Inject constructor(
                     dialogState = currentContentState?.dialogState
                         ?: WooPosBookingsState.Content.DialogState.Hidden
                 )
+
+                val hasMissingLocations = bookings.any {
+                    it.productId != 0L && it.productId !in locationCache
+                }
+                if (hasMissingLocations) {
+                    fetchBookingLocations(bookings)
+                    rebuildStateWithLocations(bookings, resourcesMap)
+                }
             }
         }
+    }
+
+    private suspend fun rebuildStateWithLocations(
+        bookings: List<BookingEntity>,
+        resourcesMap: Map<Long, BookingResourceEntity>
+    ) {
+        val currentState = _state.value as? WooPosBookingsState.Content ?: return
+
+        val items = bookings.associate { booking ->
+            val resource = resourcesMap[booking.resourceId]
+            mapper.mapToItemViewState(booking, selectedBookingId, resource) to
+                mapper.mapToDetailsViewState(
+                    booking,
+                    resource?.name,
+                    locationCache[booking.productId]
+                )
+        }
+
+        val selectedDetails = selectedBookingId?.let { id ->
+            items.entries.find { it.key.id == id }?.value
+        }
+
+        _state.value = currentState.copy(
+            items = WooPosBookingsState.Content.Items.Loaded(items),
+            selectedDetails = selectedDetails,
+        )
     }
 
     fun onBookingSelected(bookingId: Long) {
@@ -636,7 +669,6 @@ class WooPosBookingsViewModel @Inject constructor(
     private fun handleDateChange(newDate: LocalDate) {
         selectedDate = newDate
         selectedBookingId = null
-        locationCache.clear()
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
                 items = WooPosBookingsState.Content.Items.Loading,
