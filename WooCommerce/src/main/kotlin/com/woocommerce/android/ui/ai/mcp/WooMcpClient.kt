@@ -139,7 +139,7 @@ class WooMcpClient @Inject constructor(
         }
 
         val responseBody = response.body.string()
-        val fixedBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1{}")
+        val fixedBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1:{}")
 
         response.newBuilder()
             .body(fixedBody.toResponseBody(responseMediaType))
