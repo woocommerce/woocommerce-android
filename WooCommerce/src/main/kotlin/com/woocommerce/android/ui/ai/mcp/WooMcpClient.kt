@@ -13,6 +13,7 @@ import io.modelcontextprotocol.kotlin.sdk.types.Tool
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
@@ -45,7 +46,7 @@ class WooMcpClient @Inject constructor(
 
         val ktorClient = HttpClient(OkHttp) {
             engine {
-                addInterceptor(createIntegerIdInterceptor())
+                addInterceptor(createCompatibilityInterceptor())
             }
             install(SSE)
         }
@@ -103,39 +104,53 @@ class WooMcpClient @Inject constructor(
     }
 
     /**
-     * The WooCommerce MCP server (wp-mcp-adapter) expects JSON-RPC `id` fields to be integers,
-     * but the MCP Kotlin SDK sends them as UUID strings. This interceptor rewrites string IDs
-     * to sequential integers in outgoing requests.
+     * Interceptor that patches WooCommerce MCP server compatibility issues:
+     *
+     * Request: The SDK sends UUID string IDs but the server expects integer IDs.
+     * Response: PHP's json_encode outputs [] for empty associative arrays, but the SDK
+     *           expects {} (JSON objects) for capability fields like "tools", "resources", etc.
      */
-    private fun createIntegerIdInterceptor(): Interceptor = Interceptor { chain ->
+    private fun createCompatibilityInterceptor(): Interceptor = Interceptor { chain ->
         val request = chain.request()
         val body = request.body
         val contentType = body?.contentType()?.toString() ?: ""
 
-        if (request.method != "POST" || !contentType.contains("json")) {
-            return@Interceptor chain.proceed(request)
+        val newRequest = if (request.method == "POST" && contentType.contains("json")) {
+            val buffer = Buffer()
+            body?.writeTo(buffer)
+            val originalJson = buffer.readUtf8()
+            val rewrittenJson = STRING_ID_PATTERN.replace(originalJson) {
+                val nextId = requestIdCounter.getAndIncrement()
+                "\"id\":$nextId"
+            }
+            request.newBuilder()
+                .method(request.method, rewrittenJson.toRequestBody(JSON_MEDIA_TYPE))
+                .build()
+        } else {
+            request
         }
 
-        val buffer = Buffer()
-        body?.writeTo(buffer)
-        val originalJson = buffer.readUtf8()
+        val response = chain.proceed(newRequest)
 
-        val rewrittenJson = STRING_ID_PATTERN.replace(originalJson) {
-            val nextId = requestIdCounter.getAndIncrement()
-            "\"id\":$nextId"
+        val responseMediaType = response.body.contentType()
+        val responseContentType = responseMediaType?.toString() ?: ""
+        if (!responseContentType.contains("json")) {
+            return@Interceptor response
         }
 
-        val newBody = rewrittenJson.toRequestBody(JSON_MEDIA_TYPE)
-        val newRequest = request.newBuilder()
-            .method(request.method, newBody)
+        val responseBody = response.body.string()
+        val fixedBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1{}")
+
+        response.newBuilder()
+            .body(fixedBody.toResponseBody(responseMediaType))
             .build()
-
-        chain.proceed(newRequest)
     }
 
     companion object {
         private const val MCP_API_KEY_HEADER = "X-MCP-API-Key"
         private val JSON_MEDIA_TYPE = "application/json".toMediaType()
         private val STRING_ID_PATTERN = """"id"\s*:\s*"[^"]+"""".toRegex()
+        private val CAPABILITY_EMPTY_ARRAY_PATTERN =
+            """("(?:tools|resources|prompts|logging|completions)")\s*:\s*\[]""".toRegex()
     }
 }
