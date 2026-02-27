@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.androidx.navigation.safeargs)
     alias(libs.plugins.google.services)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.protobuf)
     alias(libs.plugins.fladle)
     alias(libs.plugins.dependency.analysis)
@@ -452,6 +453,11 @@ dependencies {
     implementation(libs.google.guava)
 
     implementation(libs.google.protobuf.kotlinlite)
+
+    // MCP (Model Context Protocol) client
+    implementation(libs.mcp.kotlin.sdk.client)
+    implementation(libs.ktor.client.okhttp)
+    implementation(libs.kotlinx.serialization.json)
 
     testImplementation(testFixtures(project(":libs:fluxc")))
     testImplementation(testFixtures(project(":libs:fluxc-plugin")))
