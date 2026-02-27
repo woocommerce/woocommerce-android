@@ -105,8 +105,7 @@ class WooPosBookingsViewModel @Inject constructor(
                             message = error.message ?: "Failed to load bookings"
                         )
                     }
-                    current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Loading -> {
+                    current is WooPosBookingsState.Content -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.Error(
                                 title = resourceProvider.getString(
@@ -126,8 +125,7 @@ class WooPosBookingsViewModel @Inject constructor(
                     current is WooPosBookingsState.Loading -> {
                         _state.value = buildNothingFoundState()
                     }
-                    current is WooPosBookingsState.Content &&
-                        current.items is WooPosBookingsState.Content.Items.Loading -> {
+                    current is WooPosBookingsState.Content -> {
                         _state.value = current.copy(
                             items = WooPosBookingsState.Content.Items.NothingFound(
                                 title = resourceProvider.getString(
@@ -164,7 +162,8 @@ class WooPosBookingsViewModel @Inject constructor(
                 }
 
                 if (bookings.isEmpty() && current is WooPosBookingsState.Content &&
-                    current.items is WooPosBookingsState.Content.Items.Loading
+                    (current.items is WooPosBookingsState.Content.Items.Loading ||
+                        fetchJob?.isActive == true)
                 ) {
                     return@collectLatest
                 }
@@ -671,7 +670,6 @@ class WooPosBookingsViewModel @Inject constructor(
         selectedBookingId = null
         _state.value = when (val current = _state.value) {
             is WooPosBookingsState.Content -> current.copy(
-                items = WooPosBookingsState.Content.Items.Loading,
                 dateSelectorState = buildDateSelectorState(),
                 selectedDetails = null,
                 pullToRefreshState = WooPosPullToRefreshState.Disabled
