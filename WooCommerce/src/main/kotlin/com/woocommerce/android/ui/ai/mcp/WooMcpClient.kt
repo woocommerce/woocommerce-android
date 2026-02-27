@@ -15,6 +15,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
+import org.json.JSONObject
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
@@ -24,9 +25,9 @@ import javax.inject.Singleton
 class WooMcpClient @Inject constructor(
     private val selectedSite: SelectedSite
 ) {
-    private var mcpClient: Client? = null
-    private var httpClient: HttpClient? = null
-    private var cachedTools: List<Tool> = emptyList()
+    @Volatile private var mcpClient: Client? = null
+    @Volatile private var httpClient: HttpClient? = null
+    @Volatile private var cachedTools: List<Tool> = emptyList()
     private val requestIdCounter = AtomicLong(1)
     private val idMapping = ConcurrentHashMap<Long, String>()
 
@@ -125,12 +126,7 @@ class WooMcpClient @Inject constructor(
             val buffer = Buffer()
             body?.writeTo(buffer)
             val originalJson = buffer.readUtf8()
-            val rewrittenJson = STRING_ID_PATTERN.replace(originalJson) { matchResult ->
-                val originalUuid = matchResult.groupValues[1]
-                val nextId = requestIdCounter.getAndIncrement()
-                idMapping[nextId] = originalUuid
-                "\"id\":$nextId"
-            }
+            val rewrittenJson = rewriteRequestId(originalJson)
             request.newBuilder()
                 .method(request.method, rewrittenJson.toRequestBody(JSON_MEDIA_TYPE))
                 .build()
@@ -146,28 +142,49 @@ class WooMcpClient @Inject constructor(
             return@Interceptor response
         }
 
-        var responseBody = response.body.string()
-        responseBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1:{}")
-        responseBody = INTEGER_ID_PATTERN.replace(responseBody) { matchResult ->
-            val integerId = matchResult.groupValues[1].toLongOrNull()
-            val originalUuid = integerId?.let { idMapping.remove(it) }
-            if (originalUuid != null) {
-                "\"id\":\"$originalUuid\""
-            } else {
-                matchResult.value
-            }
-        }
+        val responseBody = response.body.string()
+        val fixedBody = fixResponseBody(responseBody)
 
         response.newBuilder()
-            .body(responseBody.toResponseBody(responseMediaType))
+            .body(fixedBody.toResponseBody(responseMediaType))
             .build()
+    }
+
+    /**
+     * Replaces the top-level JSON-RPC "id" (a UUID string) with a sequential integer
+     * and stores the mapping for restoring it in the response.
+     */
+    private fun rewriteRequestId(json: String): String {
+        val jsonObject = runCatching { JSONObject(json) }.getOrNull() ?: return json
+        val originalId = jsonObject.opt("id") as? String ?: return json
+        val nextId = requestIdCounter.getAndIncrement()
+        idMapping[nextId] = originalId
+        jsonObject.put("id", nextId)
+        return jsonObject.toString()
+    }
+
+    /**
+     * Fixes the response body for SDK compatibility:
+     * - Restores the original UUID string "id" from the integer the server echoed back.
+     * - Replaces empty JSON arrays with objects for capability fields.
+     */
+    private fun fixResponseBody(body: String): String {
+        var fixed = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(body, "$1:{}")
+        val jsonObject = runCatching { JSONObject(fixed) }.getOrNull() ?: return fixed
+        val responseId = jsonObject.opt("id")
+        if (responseId is Number) {
+            val originalUuid = idMapping.remove(responseId.toLong())
+            if (originalUuid != null) {
+                jsonObject.put("id", originalUuid)
+                fixed = jsonObject.toString()
+            }
+        }
+        return fixed
     }
 
     companion object {
         private const val MCP_API_KEY_HEADER = "X-MCP-API-Key"
         private val JSON_MEDIA_TYPE = "application/json".toMediaType()
-        private val STRING_ID_PATTERN = """"id"\s*:\s*"([^"]+)"""".toRegex()
-        private val INTEGER_ID_PATTERN = """"id"\s*:\s*(\d+)""".toRegex()
         private val CAPABILITY_EMPTY_ARRAY_PATTERN =
             """("(?:tools|resources|prompts|logging|completions)")\s*:\s*\[]""".toRegex()
     }
