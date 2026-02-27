@@ -109,6 +109,33 @@ class WooPosBookingViewStateMapperTest {
         // THEN
         assertThat(result.isCancelled).isTrue()
         assertThat(result.paymentStatus).isEqualTo(PaymentStatus.FAILED)
+        assertThat(result.attendanceBadge).isNull()
+    }
+
+    @Test
+    fun `given cancelled booking, when mapped to details, then attendanceBadge is null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Cancelled)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.FAILED)
+
+        // WHEN
+        val result = mapper.mapToDetailsViewState(booking, resourceName = null, location = null)
+
+        // THEN
+        assertThat(result.attendanceBadge).isNull()
+    }
+
+    @Test
+    fun `given non-cancelled booking, when mapped to item view state, then attendanceBadge is not null`() = runTest {
+        // GIVEN
+        val booking = sampleBooking(status = BookingEntity.Status.Confirmed)
+        whenever(paymentStatusResolver.resolve(any())).thenReturn(PaymentStatus.UNPAID)
+
+        // WHEN
+        val result = mapper.mapToItemViewState(booking, selectedBookingId = null, resource = null)
+
+        // THEN
+        assertThat(result.attendanceBadge).isNotNull()
     }
 
     @Test

@@ -46,7 +46,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             isSelected = booking.id.value == selectedBookingId,
             paymentStatus = paymentStatus,
             isCancelled = booking.status == BookingEntity.Status.Cancelled,
-            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            attendanceBadge = mapAttendanceBadgeOrNull(booking),
             teamMember = resource?.let { mapTeamMember(it) },
         )
     }
@@ -100,7 +100,7 @@ class WooPosBookingViewStateMapper @Inject constructor(
             ),
             headerTitle = appointmentTime,
             headerSubtitle = headerSubtitle,
-            attendanceBadge = mapAttendanceBadge(booking.attendanceStatus),
+            attendanceBadge = mapAttendanceBadgeOrNull(booking),
             bookingName = bookingName,
             appointmentDate = detailsDateFormatter.format(booking.start),
             appointmentTime = appointmentTime,
@@ -216,6 +216,13 @@ class WooPosBookingViewStateMapper @Inject constructor(
 
     private fun formatTimeRange(booking: BookingEntity): String {
         return timeRangeFormatter.format(booking.start, booking.end)
+    }
+
+    private fun mapAttendanceBadgeOrNull(
+        booking: BookingEntity
+    ): WooPosBookingsState.AttendanceState? {
+        if (booking.status == BookingEntity.Status.Cancelled) return null
+        return mapAttendanceBadge(booking.attendanceStatus)
     }
 
     private fun mapAttendanceBadge(
