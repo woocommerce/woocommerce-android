@@ -15,6 +15,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody.Companion.toResponseBody
 import okio.Buffer
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -27,6 +28,7 @@ class WooMcpClient @Inject constructor(
     private var httpClient: HttpClient? = null
     private var cachedTools: List<Tool> = emptyList()
     private val requestIdCounter = AtomicLong(1)
+    private val idMapping = ConcurrentHashMap<Long, String>()
 
     val isConnected: Boolean
         get() = mcpClient != null
@@ -40,6 +42,7 @@ class WooMcpClient @Inject constructor(
     ): Result<Unit> = runCatching {
         disconnect()
         requestIdCounter.set(1)
+        idMapping.clear()
 
         val siteUrl = selectedSite.get().url.trimEnd('/')
         val mcpUrl = "$siteUrl/wp-json/woocommerce/mcp"
@@ -107,7 +110,10 @@ class WooMcpClient @Inject constructor(
      * Interceptor that patches WooCommerce MCP server compatibility issues:
      *
      * Request: The SDK sends UUID string IDs but the server expects integer IDs.
-     * Response: PHP's json_encode outputs [] for empty associative arrays, but the SDK
+     *          The mapping is stored so response IDs can be restored to the original UUIDs.
+     * Response: Integer IDs are mapped back to the original UUID strings so the SDK can
+     *           match responses to pending requests.
+     *           PHP's json_encode outputs [] for empty associative arrays, but the SDK
      *           expects {} (JSON objects) for capability fields like "tools", "resources", etc.
      */
     private fun createCompatibilityInterceptor(): Interceptor = Interceptor { chain ->
@@ -119,8 +125,10 @@ class WooMcpClient @Inject constructor(
             val buffer = Buffer()
             body?.writeTo(buffer)
             val originalJson = buffer.readUtf8()
-            val rewrittenJson = STRING_ID_PATTERN.replace(originalJson) {
+            val rewrittenJson = STRING_ID_PATTERN.replace(originalJson) { matchResult ->
+                val originalUuid = matchResult.groupValues[1]
                 val nextId = requestIdCounter.getAndIncrement()
+                idMapping[nextId] = originalUuid
                 "\"id\":$nextId"
             }
             request.newBuilder()
@@ -138,18 +146,28 @@ class WooMcpClient @Inject constructor(
             return@Interceptor response
         }
 
-        val responseBody = response.body.string()
-        val fixedBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1:{}")
+        var responseBody = response.body.string()
+        responseBody = CAPABILITY_EMPTY_ARRAY_PATTERN.replace(responseBody, "$1:{}")
+        responseBody = INTEGER_ID_PATTERN.replace(responseBody) { matchResult ->
+            val integerId = matchResult.groupValues[1].toLongOrNull()
+            val originalUuid = integerId?.let { idMapping.remove(it) }
+            if (originalUuid != null) {
+                "\"id\":\"$originalUuid\""
+            } else {
+                matchResult.value
+            }
+        }
 
         response.newBuilder()
-            .body(fixedBody.toResponseBody(responseMediaType))
+            .body(responseBody.toResponseBody(responseMediaType))
             .build()
     }
 
     companion object {
         private const val MCP_API_KEY_HEADER = "X-MCP-API-Key"
         private val JSON_MEDIA_TYPE = "application/json".toMediaType()
-        private val STRING_ID_PATTERN = """"id"\s*:\s*"[^"]+"""".toRegex()
+        private val STRING_ID_PATTERN = """"id"\s*:\s*"([^"]+)"""".toRegex()
+        private val INTEGER_ID_PATTERN = """"id"\s*:\s*(\d+)""".toRegex()
         private val CAPABILITY_EMPTY_ARRAY_PATTERN =
             """("(?:tools|resources|prompts|logging|completions)")\s*:\s*\[]""".toRegex()
     }
